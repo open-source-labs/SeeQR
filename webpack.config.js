@@ -3,9 +3,9 @@ const path = require('path');
 module.exports = {
   mode: process.env.NODE_ENV,
   entry: './frontend/index.tsx',
-  target: 'electron-name',
+  target: 'electron-renderer',
   output: {
-    filename: 'bundle.js',
+    filename: 'electron.js',
     path: `${__dirname}/dist`,
   },
   devServer: {

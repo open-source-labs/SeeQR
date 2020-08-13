@@ -4,9 +4,9 @@
   "description": "SeeQR",
   "main": "webpack.config.js",
   "scripts": {
-    "start": "cross-env NODE_ENV=production nodemon server/server.js",
-    "build": "cross-env NODE_ENV=production webpack",
-    "dev": "cross-env NODE_ENV=development webpack-dev-server --open & nodemon server/server.js",
+    "start": "cross-env NODE_ENV=production npm run build && electron ./dist/electron.js",
+    "build": "cross-env NODE_ENV=production webpack --config ./webpack.config.js",
+    "dev": "cross-env NODE_ENV=development webpack-dev-server --open & nodemon ./backend/main.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
