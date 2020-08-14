@@ -1,9 +1,12 @@
 const webpack = require('webpack');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const { spawn } = require('child_process');
 
 module.exports = {
   entry: './frontend/electron.tsx',
+  mode: 'development',
+  devtool: 'source-map',
   output: {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'dist'),
@@ -58,6 +61,23 @@ module.exports = {
   target: 'electron-renderer',
   devServer: {
     contentBase: path.resolve(__dirname, 'dist'),
+    host: 'localhost',
+    port: '8080',
+    hot: true,
+    compress: true,
+    watchContentBase: true,
+    watchOptions: {
+      ignored: /node_modules/,
+    },
+    before() {
+      spawn('electron', ['.', 'dev'], {
+        shell: true,
+        env: process.env,
+        stdio: 'inherit',
+      })
+        .on('close', (code) => process.exit(0))
+        .on('error', (spawnError) => console.error(spawnError));
+    },
   },
   plugins: [
     new HtmlWebpackPlugin({

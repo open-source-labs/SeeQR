@@ -28,15 +28,16 @@ function createWindow() {
   let indexPath;
   if (dev && process.argv.indexOf('--noDevServer') === -1) {
     indexPath = url.format({
-      // protocol: 'http:',
-      // host: 'localhost:8080',
-      // pathname: 'index.html',
-      // slashes: true,
-
-      protocol: 'file:',
-      pathname: path.join(__dirname, '../frontend', 'dev.html'),
+      protocol: 'http:',
+      host: 'localhost:8080',
+      pathname: 'index.html',
       slashes: true,
     });
+    // indexPath = url.format({
+    //   protocol: 'file:',
+    //   pathname: path.join(__dirname, '../frontend', 'dev.html'),
+    //   slashes: true,
+    // });
     mainWindow.webContents.openDevTools();
   } else {
     indexPath = url.format({
