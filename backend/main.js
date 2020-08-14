@@ -28,11 +28,16 @@ function createWindow() {
   let indexPath;
   if (dev && process.argv.indexOf('--noDevServer') === -1) {
     indexPath = url.format({
-      protocol: 'http:',
-      host: 'localhost:8080',
-      pathname: 'index.html',
+      // protocol: 'http:',
+      // host: 'localhost:8080',
+      // pathname: 'index.html',
+      // slashes: true,
+
+      protocol: 'file:',
+      pathname: path.join(__dirname, '../frontend', 'dev.html'),
       slashes: true,
     });
+    mainWindow.webContents.openDevTools();
   } else {
     indexPath = url.format({
       protocol: 'file:',
@@ -46,6 +51,7 @@ function createWindow() {
   mainWindow.once('ready-to-show', () => {
     mainWindow.show();
   });
+  // Open DevTools - Remove for PRODUCTION!
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
