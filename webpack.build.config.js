@@ -1,12 +1,15 @@
 const webpack = require('webpack');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CspHtmlWebpackPlugin = require("csp-html-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = {
   entry: './frontend/electron.js',
   output: {
-    filename: 'bundle.js',
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, "dist"),
+    filename: "bundle.js",
+    publicPath: "./",
   },
   devtool: "nosources-source-map",
   module: {
@@ -59,7 +62,26 @@ module.exports = {
   target: 'electron-renderer',
   plugins: [
     new HtmlWebpackPlugin({
-      template: './frontend/index.html',
+      // template: './frontend/index.html',
+      filename: "index.html",
+      title: "SeeQR",
+      cspPlugin: {
+        enabled: true,
+        policy: {
+          "base-uri": "'self'",
+          "object-src": "'none'",
+          "script-src": ["'self'"],
+          "style-src": ["'self'"],
+        },
+        hashEnabled: {
+          "script-src": true,
+          "style-src": true,
+        },
+        nonceEnabled: {
+          "script-src": true,
+          "style-src": true,
+        },
+      },
     }),
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('production'),
