@@ -7,7 +7,8 @@
     "prod": "cross-env NODE_ENV=production webpack --mode production --config webpack.build.config.js && electron --noDevServer .",
     "build": "cross-env NODE_ENV=production webpack --config webpack.build.config.js --mode production",
     "start": "cross-env NODE_ENV=development webpack-dev-server --hot --config=./webpack.dev.config.js --mode development --exec 'electron .'",
-    "dev": "cross-env NODE_ENV=development webpack-dev-server --mode=development --config ./webpack.dev.config.js"
+    "dev": "cross-env NODE_ENV=development webpack-dev-server --mode=development --config ./webpack.dev.config.js",
+    "dev1": "NODE_ENV=development webpack-dev-server --config ./webpack.dev.config.js"
   },
   "repository": {
     "type": "git",
