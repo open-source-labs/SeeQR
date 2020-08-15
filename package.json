@@ -1,0 +1,60 @@
+{
+  "name": "SeeQR",
+  "version": "1.0.0",
+  "description": "SeeQR",
+  "main": "backend/main.js",
+  "scripts": {
+    "prod": "cross-env NODE_ENV=production webpack --mode production --config webpack.build.config.js && electron --noDevServer .",
+    "build": "cross-env NODE_ENV=production webpack --config webpack.build.config.js --mode production",
+    "start": "cross-env NODE_ENV=development webpack-dev-server --hot --config=./webpack.dev.config.js --mode development --exec 'electron .'",
+    "dev": "cross-env NODE_ENV=development webpack-dev-server --config ./webpack.dev.config.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oslabs-beta/SeeQR"
+  },
+  "keywords": [],
+  "author": "Team SeeQR",
+  "license": "ISC",
+  "dependencies": {
+    "electron": "^9.0.0",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-router-dom": "^5.2.0",
+    "autoprefixer": "^9.8.5"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.10.5",
+    "@babel/preset-env": "^7.10.4",
+    "@babel/preset-react": "^7.10.4",
+    "@types/node": "^14.0.27",
+    "@types/react": "^16.9.46",
+    "@types/react-dom": "^16.9.8",
+    "babel-loader": "^8.1.0",
+    "babel-minify-webpack-plugin": "^0.3.1",
+    "cross-env": "^7.0.2",
+    "csp-html-webpack-plugin": "^4.0.0",
+    "css-loader": "^3.5.3",
+    "electron-devtools-installer": "^3.0.0",
+    "electron-packager": "^14.2.1",
+    "file-loader": "^6.0.0",
+    "html-webpack-plugin": "^4.3.0",
+    "mini-css-extract-plugin": "^0.9.0",
+    "nodemon": "^2.0.4",
+    "postcss-loader": "^3.0.0",
+    "sass": "^1.26.10",
+    "sass-loader": "^9.0.2",
+    "source-map-loader": "^1.0.1",
+    "style-loader": "^1.2.1",
+    "ts-loader": "^8.0.2",
+    "ts-node": "^8.10.2",
+    "typescript": "^3.9.7",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.11.0"
+  },
+  "bugs": {
+    "url": "https://github.com/oslabs-beta/SeeQR/issues"
+  },
+  "homepage": "https://github.com/oslabs-beta/SeeQR"
+}
