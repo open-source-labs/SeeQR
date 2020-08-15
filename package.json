@@ -7,7 +7,7 @@
     "prod": "cross-env NODE_ENV=production webpack --mode production --config webpack.build.config.js && electron --noDevServer .",
     "build": "cross-env NODE_ENV=production webpack --config webpack.build.config.js --mode production",
     "start": "cross-env NODE_ENV=development webpack-dev-server --hot --config=./webpack.dev.config.js --mode development --exec 'electron .'",
-    "dev": "cross-env NODE_ENV=development webpack-dev-server --mode=development --config ./webpack.dev.config.js"
+    "dev": "cross-env NODE_ENV=development webpack-dev-server --config ./webpack.dev.config.js"
   },
   "repository": {
     "type": "git",
@@ -17,6 +17,7 @@
   "author": "Team SeeQR",
   "license": "ISC",
   "dependencies": {
+    "electron": "^9.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.2.0",
@@ -34,7 +35,6 @@
     "cross-env": "^7.0.2",
     "csp-html-webpack-plugin": "^4.0.0",
     "css-loader": "^3.5.3",
-    "electron": "^9.0.0",
     "electron-devtools-installer": "^3.0.0",
     "electron-packager": "^14.2.1",
     "file-loader": "^6.0.0",
