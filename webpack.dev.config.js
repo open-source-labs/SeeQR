@@ -6,7 +6,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const { spawn } = require('child_process');
 
 module.exports = {
-  entry: ['./frontend/electron.js'],
+  entry: ['./frontend/index.js'],
   mode: 'development',
   devtool: 'source-map',
   output: {

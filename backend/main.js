@@ -3,6 +3,10 @@ const { app, BrowserWindow } = require('electron');
 const path = require('path');
 const url = require('url');
 
+/************************************************************
+********* CREATE & CLOSE WINDOW UPON INITIALIZATION *********
+************************************************************/
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
@@ -13,18 +17,21 @@ if (process.env.NODE_ENV !== undefined && process.env.NODE_ENV === 'development'
   dev = true;
 }
 
+// Create browser window
 function createWindow() {
-  // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 1600,
     height: 1200,
+    minWidth: 800,
+    minHeight: 600,
+    title: "SeeQR",
     show: false,
     webPreferences: {
       nodeIntegration: true,
     },
   });
 
-  // and load the index.html of the app.
+  // Load index.html of the app
   let indexPath;
   if (dev && process.argv.indexOf('--noDevServer') === -1) {
     indexPath = url.format({
@@ -33,13 +40,9 @@ function createWindow() {
       pathname: 'index.html',
       slashes: true,
     });
-    // indexPath = url.format({
-    //   protocol: 'file:',
-    //   pathname: path.join(__dirname, '../frontend', 'dev.html'),
-    //   slashes: true,
-    // });
     mainWindow.webContents.openDevTools();
   } else {
+    // In production mode, load the bundled version of index.html inside the dist folder.
     indexPath = url.format({
       protocol: 'file:',
       pathname: path.join(__dirname, '../dist', 'index.html'),
@@ -52,20 +55,18 @@ function createWindow() {
   mainWindow.once('ready-to-show', () => {
     mainWindow.show();
   });
-  // Open DevTools - Remove for PRODUCTION!
-
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
-    // Dereference the window object, usually you would store windows
+    // De-reference the window object. Usually you would store windows
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
     mainWindow = null;
   });
 }
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
+// Invoke createWindow to create browser windows after 
+// Electron has been initialized.Some APIs can only be used 
+// after this event occurs.
 app.on('ready', createWindow);
 
 // Quit when all windows are closed.

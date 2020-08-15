@@ -5,7 +5,7 @@ const CspHtmlWebpackPlugin = require("csp-html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = {
-  entry: './frontend/electron.js',
+  entry: './frontend/index.js',
   output: {
     path: path.resolve(__dirname, "dist"),
     filename: "bundle.js",
