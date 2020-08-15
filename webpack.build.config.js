@@ -3,11 +3,12 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-  entry: './frontend/electron.tsx',
+  entry: './frontend/electron.js',
   output: {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'dist'),
   },
+  devtool: "nosources-source-map",
   module: {
     rules: [
       {

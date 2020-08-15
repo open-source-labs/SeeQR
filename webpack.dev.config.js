@@ -4,7 +4,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { spawn } = require('child_process');
 
 module.exports = {
-  entry: './frontend/electron.tsx',
+  entry: ['./frontend/electron.js'],
   mode: 'development',
   devtool: 'source-map',
   output: {
