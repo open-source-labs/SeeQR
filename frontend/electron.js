@@ -8,7 +8,6 @@ document.body.appendChild(root);
 
 render(
   <div>
-    <h1>Hiii</h1>
     <App />
   </div>,
   document.getElementById('root')
