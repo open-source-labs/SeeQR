@@ -1,3 +1,5 @@
+// main.js is the entry point to the main process (the node process)
+
 // Import parts of electron to use
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
