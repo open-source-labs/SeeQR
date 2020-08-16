@@ -1,9 +1,10 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const { spawn } = require('child_process');
 
 module.exports = {
-  entry: "./frontend/index.js",
-  mode: "development",
+  entry: "./frontend/index.tsx",
+  mode: process.env.NODE_ENV,
   devtool: "eval-source-map",
   output: {
     filename: "bundle.js",
@@ -68,21 +69,12 @@ module.exports = {
   },
   resolve: {
     // Enable importing JS / JSX files without specifying their extension
-    modules: [path.resolve(__dirname, "node_modules")],
-    extensions: [
-      ".js",
-      ".jsx",
-      ".json",
-      ".scss",
-      ".less",
-      ".css",
-      ".tsx",
-      ".ts",
-    ],
+    modules: [path.resolve(__dirname, 'node_modules')],
+    extensions: ['.js', '.jsx', '.json', '.scss', '.less', '.css', '.tsx', '.ts'],
   },
   target: "electron-renderer",
   devServer: {
-    contentBase: path.resolve(__dirname, "dist"),
+    contentBase: path.resolve(__dirname, "/build/frontend"),
     host: "localhost",
     port: "8080",
     hot: true,
@@ -90,6 +82,15 @@ module.exports = {
     watchContentBase: true,
     watchOptions: {
       ignored: /node_modules/,
+    },
+    before() {
+      spawn('electron', ['.', 'dev'], {
+        shell: true,
+        env: process.env,
+        stdio: 'inherit',
+      })
+        .on('close', (code) => process.exit(0))
+        .on('error', (spawnError) => console.error(spawnError));
     },
   },
   plugins: [

@@ -1,9 +1,9 @@
 // main.js is the entry point to the main process (the node process)
 
 // Import parts of electron to use
-const { app, BrowserWindow } = require('electron');
-const path = require('path');
-const url = require('url');
+import { app, BrowserWindow } from 'electron';
+import { join } from 'path';
+import { format } from 'url';
 
 /************************************************************
 ********* CREATE & CLOSE WINDOW UPON INITIALIZATION *********
@@ -11,7 +11,7 @@ const url = require('url');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let mainWindow;
+let mainWindow: any;
 
 // Keep a reference for dev mode
 let dev = false;
@@ -36,7 +36,7 @@ function createWindow() {
   // Load index.html of the app
   let indexPath;
   if (dev && process.argv.indexOf('--noDevServer') === -1) {
-    indexPath = url.format({
+    indexPath = format({
       protocol: 'http:',
       host: 'localhost:8080',
       pathname: 'index.html',
@@ -45,9 +45,9 @@ function createWindow() {
     mainWindow.webContents.openDevTools();
   } else {
     // In production mode, load the bundled version of index.html inside the dist folder.
-    indexPath = url.format({
+    indexPath = format({
       protocol: 'file:',
-      pathname: path.join(__dirname, '../dist', 'index.html'),
+      pathname: join(__dirname, '../dist', 'index.html'),
       slashes: true,
     });
   }

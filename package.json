@@ -9,9 +9,8 @@
     "start0": "cross-env NODE_ENV=development webpack-dev-server --hot --config=./webpack.dev.config.js --mode development --exec 'electron .'",
     "dev0": "cross-env NODE_ENV=development webpack-dev-server --config ./webpack.dev.config.js",
     "build": "tsc && webpack",
-    "start": "cross-env NODE_ENV=production webpack-dev-server",
-    "electron": "electron .",
-    "prod": "npm run start & sleep 5 && npm run electron"
+    "start": "cross-env NODE_ENV=production electron --noDevServer .",
+    "dev": "concurrently \"cross-env NODE_ENV=development webpack-dev-server --open --hot\" \"cross-env NODE_ENV=development nodemon ./backend"
   },
   "repository": {
     "type": "git",
@@ -21,11 +20,12 @@
   "author": "Team SeeQR",
   "license": "ISC",
   "dependencies": {
+    "autoprefixer": "^9.8.5",
+    "concurrently": "^5.3.0",
     "electron": "^9.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-router-dom": "^5.2.0",
-    "autoprefixer": "^9.8.5"
+    "react-router-dom": "^5.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.10.5",

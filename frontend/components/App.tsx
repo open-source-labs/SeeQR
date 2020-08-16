@@ -5,7 +5,7 @@ const { dialog } = remote;
 
 
 class App extends React.Component {
-  constructor(props) {
+  constructor(props: any) {
     super(props);
     // this.handleFileClick = this.handleFileClick.bind(this);
   }
