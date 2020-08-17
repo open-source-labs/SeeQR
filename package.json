@@ -2,7 +2,7 @@
   "name": "SeeQR",
   "version": "1.0.0",
   "description": "SeeQR",
-  "main": "./build/backend/main.js",
+  "main": "./build/backend/main",
   "scripts": {
     "prod0": "cross-env NODE_ENV=production webpack --mode production --config webpack.build.config.js && electron --noDevServer .",
     "build0": "cross-env NODE_ENV=production webpack --config webpack.build.config.js --mode production",
@@ -10,7 +10,7 @@
     "dev0": "cross-env NODE_ENV=development webpack-dev-server --config ./webpack.dev.config.js",
     "build": "tsc && webpack",
     "start": "cross-env NODE_ENV=production electron --noDevServer .",
-    "dev": "concurrently \"cross-env NODE_ENV=development webpack-dev-server --open --hot\" \"cross-env NODE_ENV=development nodemon ./backend"
+    "dev": "npm run build && cross-env NODE_ENV=development webpack-dev-server --open --hot"
   },
   "repository": {
     "type": "git",
