@@ -1,49 +1,51 @@
-// import React, { useState, useEffect } from 'react';
-// import '../style/style.css';
-// import dialog from 'electron';
+import React, { Component, MouseEvent } from 'react';
+import '../assets/stylesheets/styles.css';
+const { dialog } = require('electron').remote;
 
-// // for safetyping any react components.
-// export interface SplashProps {
-//   setOpenApp: React.Dispatch<React.SetStateAction<boolean>>;
-// }
-// // export a file obj in the state
-// export interface File {
-//   filePath: string;
-// }
+type SplashProps = {
+  openSplash: boolean;
+};
 
-// const Splash: React.FC<SplashProps> = ({ setOpenApp }) => {
-//   const [file, setFile] = useState<File>();
-//   // a dialogue menu with retrieve the file path
-//   const getFile = async () => {
-//     dialog
-//       .showOpenDialog(
-//         {
-//           properties: ['openFile', 'multiSelections'],
-//         },
-//         (input: any) => {
-//           if (input !== undefined) {
-//             // handle files
-//             console.log('file path undefined');
-//           }
-//         }
-//       )
-//       .then((result: any) => {
-//         setFile(result);
-//         console.log('result', result);
-//       })
-//       .catch((err: any) => {
-//         console.log(err);
-//       });
-//   };
-//   // run dialogue menu
-//   useEffect(() => {
-//     getFile();
-//   }, []);
-//   return (
-//     <div>
-//       <h3>{file}</h3>
-//     </div>
-//   );
-// };
+export class Splash extends Component<SplashProps> {
+  // a dialogue menu with retrieve the file path
+  constructor(props: SplashProps) {
+    super(props);
+    this.handleFileClick = this.handleFileClick.bind(this);
+  }
 
-// export default Splash;
+  handleFileClick(event: MouseEvent) {
+    const options = {
+      filters: [{ name: 'All Files', extensions: ['*'] }],
+    };
+    dialog.showOpenDialog( 
+        {
+          properties: ['openFile', 'multiSelections'],
+        },
+        (files: string) => {
+          if (files !== undefined) {
+            // handle files
+            console.log('file path undefined');
+          }
+        }
+      )
+      .then((result: object) => {
+        console.log('result', result);
+      })
+      .catch((err: object) => {
+        console.log(err);
+      });
+  }
+  render() {
+    return (
+      <div>
+        <h1 style={{ color: 'black' }}>SeeQR!</h1>
+        <h3 style={{ color: 'black' }}>Welcome!</h3>
+        <h3 style={{ color: 'black' }}>Import database?</h3>
+        <button>Skip</button>
+        <button onClick={this.handleFileClick}>Yes</button>
+      </div>
+    );
+  }
+}
+
+// export const Splash;

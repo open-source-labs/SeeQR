@@ -10,7 +10,7 @@
     "dev0": "cross-env NODE_ENV=development webpack-dev-server --config ./webpack.dev.config.js",
     "build": "tsc && webpack",
     "start": "cross-env NODE_ENV=production electron --noDevServer .",
-    "dev": "tsc && cross-env NODE_ENV=development webpack-dev-server --open --hot"
+    "dev": "tsc && cross-env NODE_ENV=development webpack-dev-server --hot"
   },
   "repository": {
     "type": "git",
