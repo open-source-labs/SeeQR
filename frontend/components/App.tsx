@@ -3,9 +3,8 @@ import React from 'react';
 const { remote } = require('electron');
 const { dialog } = remote;
 
-
 class App extends React.Component {
-  constructor(props) {
+  constructor(props: any) {
     super(props);
     // this.handleFileClick = this.handleFileClick.bind(this);
   }
@@ -37,15 +36,14 @@ class App extends React.Component {
   render() {
     return (
       <div>
-        <h1 style={{ "color": "black" }}>SeeQR</h1>
+        <h1 style={{ color: 'black' }}>SeeQR</h1>
         {/* <h3 style={{ "color": "black" }}>Welcome!</h3>
         <h3 style={{ "color": "black" }}>Import database?</h3>
         <button>Skip</button>
         <button onClick={this.handleFileClick}>Yes</button> */}
-      </div >
-    )
+      </div>
+    );
   }
-
 }
 
 export default App;

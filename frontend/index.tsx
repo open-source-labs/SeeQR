@@ -9,7 +9,7 @@ document.body.appendChild(root);
 
 render(
   <div>
-    <App />
+    <App/>
   </div>,
   document.getElementById('root')
 );

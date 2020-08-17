@@ -1,17 +1,19 @@
 // main.js is the entry point to the main process (the node process)
 
 // Import parts of electron to use
-const { app, BrowserWindow } = require('electron');
-const path = require('path');
-const url = require('url');
+import { app, BrowserWindow } from 'electron';
+import { join } from 'path';
+import { format } from 'url';
+import { Children } from 'react';
 
 /************************************************************
-********* CREATE & CLOSE WINDOW UPON INITIALIZATION *********
-************************************************************/
+ ********* CREATE & CLOSE WINDOW UPON INITIALIZATION *********
+ ************************************************************/
 
-// Keep a global reference of the window object, if you don't, the window will
+// Keep a global reference of the window objects, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let mainWindow;
+let mainWindow: any;
+let splashWindow: any;
 
 // Keep a reference for dev mode
 let dev = false;
@@ -26,17 +28,24 @@ function createWindow() {
     height: 1200,
     minWidth: 800,
     minHeight: 600,
-    title: "SeeQR",
+    title: 'SeeQR',
     show: false,
     webPreferences: {
       nodeIntegration: true,
     },
   });
+  // Create splash window
+  splashWindow = new BrowserWindow({
+    width: 800,
+    height: 600,
+    webPreferences: { nodeIntegration: true },
+    parent: mainWindow,
+  });
 
   // Load index.html of the app
   let indexPath;
   if (dev && process.argv.indexOf('--noDevServer') === -1) {
-    indexPath = url.format({
+    indexPath = format({
       protocol: 'http:',
       host: 'localhost:8080',
       pathname: 'index.html',
@@ -45,18 +54,27 @@ function createWindow() {
     mainWindow.webContents.openDevTools();
   } else {
     // In production mode, load the bundled version of index.html inside the dist folder.
-    indexPath = url.format({
+    indexPath = format({
       protocol: 'file:',
-      pathname: path.join(__dirname, '../dist', 'index.html'),
+      pathname: join(__dirname, '../dist', 'index.html'),
       slashes: true,
     });
   }
 
   mainWindow.loadURL(indexPath);
+  splashWindow.loadURL(indexPath);
+
   // Don't show until we are ready and loaded
+  // Once the main window is ready, it will remain hidden when splash is focused
   mainWindow.once('ready-to-show', () => {
-    mainWindow.show();
+    if (splashWindow != null && splashWindow.isVisible()) {
+      mainWindow.hide();
+      splashWindow.focus();
+    }
   });
+  // When splash window is open and visible, it sits on top
+  // Main window is hidden
+
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
     // De-reference the window object. Usually you would store windows
@@ -64,10 +82,15 @@ function createWindow() {
     // when you should delete the corresponding element.
     mainWindow = null;
   });
+  // when splash window is closed, main window is shown
+  splashWindow.on('closed', () => {
+    splashWindow = null;
+    mainWindow.show();
+  });
 }
 
-// Invoke createWindow to create browser windows after 
-// Electron has been initialized.Some APIs can only be used 
+// Invoke createWindow to create browser windows after
+// Electron has been initialized.Some APIs can only be used
 // after this event occurs.
 app.on('ready', createWindow);
 
