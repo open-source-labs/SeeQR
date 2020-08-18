@@ -15,12 +15,6 @@ import { Children } from 'react';
 let mainWindow: any;
 let splashWindow: any;
 
-// Listen for files upload
-ipcMain.on('database-file-submission', (event, filePaths: any) => {
-  console.log('file paths sent from renderer', filePaths);
-  splashWindow.close();
-});
-
 // Keep a reference for dev mode
 let dev = false;
 if (process.env.NODE_ENV !== undefined && process.env.NODE_ENV === 'development') {
@@ -39,12 +33,12 @@ function createWindow() {
     webPreferences: { nodeIntegration: true, enableRemoteModule: true },
   });
   // Create splash window
-  splashWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
-    webPreferences: { nodeIntegration: true, enableRemoteModule: true },
-    parent: mainWindow,
-  });
+  // splashWindow = new BrowserWindow({
+  //   width: 1600,
+  //   height: 1200,
+  //   webPreferences: { nodeIntegration: true, enableRemoteModule: true },
+  //   parent: mainWindow,
+  // });
 
   // Load index.html of the app
   let indexPath;
@@ -56,6 +50,7 @@ function createWindow() {
       slashes: true,
     });
     mainWindow.webContents.openDevTools();
+    // splashWindow.webContents.openDevTools();
   } else {
     // In production mode, load the bundled version of index.html inside the dist folder.
     indexPath = format({
@@ -66,15 +61,16 @@ function createWindow() {
   }
 
   mainWindow.loadURL(indexPath);
-  splashWindow.loadURL(indexPath);
+  // splashWindow.loadURL(indexPath);
 
   // Don't show until we are ready and loaded
   // Once the main window is ready, it will remain hidden when splash is focused
   mainWindow.once('ready-to-show', () => {
-    if (splashWindow != null && splashWindow.isVisible()) {
-      mainWindow.hide();
-      splashWindow.focus();
-    }
+    mainWindow.show();
+    // if (splashWindow != null && splashWindow.isVisible()) {
+    //   mainWindow.hide();
+    //   // splashWindow.focus();
+    // }
   });
   // When splash window is open and visible, it sits on top
   // Main window is hidden
@@ -87,10 +83,10 @@ function createWindow() {
     mainWindow = null;
   });
   // when splash window is closed, main window is shown
-  splashWindow.on('closed', () => {
-    splashWindow = null;
-    mainWindow.show();
-  });
+  // splashWindow.on('closed', () => {
+  //   splashWindow = null;
+  //   mainWindow.show();
+  // });
 }
 
 // Invoke createWindow to create browser windows after
@@ -113,4 +109,19 @@ app.on('activate', () => {
   if (mainWindow === null) {
     createWindow();
   }
+});
+
+/************************************************************
+ *********************** IPC CHANNELS ***********************
+ ************************************************************/
+
+// Listen for files upload
+ipcMain.on('database-file-submission', (event, filePaths: any) => {
+  console.log('file paths sent from renderer', filePaths);
+  // splashWindow.close();
+});
+
+// Listen for user clicking skip button
+ipcMain.on('skip-file-upload', (event) => {
+  // splashWindow.close();
 });
