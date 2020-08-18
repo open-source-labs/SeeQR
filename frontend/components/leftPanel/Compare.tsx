@@ -12,7 +12,7 @@ export const Compare = (props: CompareProps) => {
   
   return (
     <div>
-      <h3>Compare Panel</h3>
+      <h3 style={{border: '1px solid blue'}}>Compare Panel</h3>
     </div>
   );
 

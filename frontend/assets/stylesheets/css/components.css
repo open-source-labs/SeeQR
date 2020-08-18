@@ -1,1 +1,13 @@
-/* No CSS */
+#query-window .text-field {
+  width: 100%;
+  height: 200px;
+}
+
+#query-window button {
+  background: #6db3a3;
+  color: white;
+  border-radius: 5px;
+  border: none;
+  font-size: 20px;
+  outline: none;
+}

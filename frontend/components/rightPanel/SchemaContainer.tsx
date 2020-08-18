@@ -21,10 +21,14 @@ export class SchemaContainer extends Component<SchemaContainerProps> {
   render() {
     return (
       <div>
-        <h3>SchemaContainer Panel</h3>
-        <Data />
+        <h3 style={{border: '1px solid blue'}}>SchemaContainer Panel</h3>
+        <div id="schema-left">
         <Query />
+        <Data />
+        </div>
+        <div id="schema-right">
         <Results />
+        </div>
       </div>
     );
   }

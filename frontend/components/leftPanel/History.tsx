@@ -12,7 +12,7 @@ export const History = (props: HistoryProps) => {
   
     return (
       <div>
-        <h3>History Panel</h3>
+        <h3 style={{border: '1px solid blue'}}>History Panel</h3>
       </div>
     );
   

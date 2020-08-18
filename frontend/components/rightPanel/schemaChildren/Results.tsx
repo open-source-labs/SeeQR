@@ -12,7 +12,7 @@ export const Results = (props: ResultsProps) => {
   
   return (
     <div>
-      <h3>Results Panel</h3>
+      <h3 style={{border: '1px solid blue'}}>Results Panel</h3>
     </div>
   );
 

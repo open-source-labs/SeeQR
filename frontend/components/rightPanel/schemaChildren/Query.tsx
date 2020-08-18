@@ -3,9 +3,7 @@ const { ipcRenderer } = window.require('electron');
 
 type ClickEvent = React.MouseEvent<HTMLElement>;
 
-type QueryProps = {
-
-}
+type QueryProps = {};
 
 class Query extends Component<QueryProps> {
   constructor(props: QueryProps) {
@@ -16,8 +14,11 @@ class Query extends Component<QueryProps> {
   // };
   render() {
     return (
-      <div>
-        <h3>Query Panel</h3>
+      <div id="query-window">
+        <h3 style={{border: '1px solid blue'}}>Query Panel</h3>
+        <input className="text-field" type="text" placeholder="insert query here..." value="" />
+        <input type="submit" value="previous queries" />
+        <input type="submit" value="submit query" />
       </div>
     );
   }

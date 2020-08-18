@@ -12,7 +12,7 @@ export const Data = (props: DataProps) => {
   
   return (
     <div>
-      <h3>Data Panel</h3>
+      <h3 style={{border: '1px solid blue'}}>Data Panel</h3>
     </div>
   );
 
