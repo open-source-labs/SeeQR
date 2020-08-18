@@ -1,32 +1,31 @@
 import React, { Component } from 'react';
 import { Splash } from './Splash';
+import MainPanel from './MainPanel';
 import '../assets/stylesheets/styles.css';
-// import { MainPanel } from './MainPanel';
-
-// set state of openApp to true, passing set state of setOpenApp
-// FC = function component
-// SFC = stateless functional component
 
 type state = {
   openSplash: boolean;
+  //files: string[];
 };
 type AppProps = {};
 
-//const App: React.FC = () => {
 export class App extends Component<AppProps, state> {
   constructor(props: AppProps) {
     super(props);
   }
   state: state = {
-    openSplash: false,
+    openSplash: true,
+    //files: [],
   };
 
   render() {
-    //const [openApp, setOpenApp] = useState(true);
-    // if openApp eval truthy, pass setOpenApp to Splash, otherwise load main component
     return (
       <div>
-        <Splash openSplash={this.state.openSplash} />
+        {this.state.openSplash ? (
+          <Splash openSplash={this.state.openSplash} />
+        ) : (
+          <MainPanel />
+        )}
       </div>
     );
   }

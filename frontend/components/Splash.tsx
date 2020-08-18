@@ -1,9 +1,11 @@
 import React, { Component, MouseEvent } from 'react';
 import '../assets/stylesheets/styles.css';
 const { dialog } = require('electron').remote;
+const { ipcRenderer } = window.require('electron');
 
 type SplashProps = {
   openSplash: boolean;
+  //files: string[];
 };
 
 export class Splash extends Component<SplashProps> {
@@ -14,10 +16,13 @@ export class Splash extends Component<SplashProps> {
   }
 
   handleFileClick(event: MouseEvent) {
+    // event.preventDefault();
+    // alert('event triggered');
     const options = {
       filters: [{ name: 'All Files', extensions: ['*'] }],
     };
-    dialog.showOpenDialog( 
+    dialog
+      .showOpenDialog(
         {
           properties: ['openFile', 'multiSelections'],
         },
@@ -29,8 +34,12 @@ export class Splash extends Component<SplashProps> {
         }
       )
       .then((result: object) => {
-        console.log('result', result);
+        // there is definitely a better way to reference the object key of filePaths
+        const filePathArr = Object.values(result)[1];
+        // send via channel to main process
+        ipcRenderer.send('database-file-submission', filePathArr)
       })
+
       .catch((err: object) => {
         console.log(err);
       });
@@ -44,6 +53,7 @@ export class Splash extends Component<SplashProps> {
         <button>Skip</button>
         <button onClick={this.handleFileClick}>Yes</button>
       </div>
+      // <button onClick={this.handleFileClick}></button>
     );
   }
 }

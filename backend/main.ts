@@ -1,7 +1,7 @@
 // main.js is the entry point to the main process (the node process)
 
 // Import parts of electron to use
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import { join } from 'path';
 import { format } from 'url';
 import { Children } from 'react';
@@ -14,6 +14,11 @@ import { Children } from 'react';
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow: any;
 let splashWindow: any;
+
+// Listen for files upload
+ipcMain.on('database-file-submission', (event, filePaths: any) => {
+  console.log('file paths sent from renderer', filePaths);
+});
 
 // Keep a reference for dev mode
 let dev = false;
