@@ -22,7 +22,7 @@ export class App extends Component<AppProps, state> {
     return (
       <div>
         {this.state.openSplash ? (
-          <Splash openSplash={this.state.openSplash} />
+          <Splash openSplash={(this.state.openSplash)} />
         ) : (
           <MainPanel />
         )}

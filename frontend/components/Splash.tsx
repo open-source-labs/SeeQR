@@ -37,7 +37,7 @@ export class Splash extends Component<SplashProps> {
         // there is definitely a better way to reference the object key of filePaths
         const filePathArr = Object.values(result)[1];
         // send via channel to main process
-        ipcRenderer.send('database-file-submission', filePathArr)
+        ipcRenderer.send('database-file-submission', filePathArr);
       })
 
       .catch((err: object) => {

@@ -18,6 +18,7 @@ let splashWindow: any;
 // Listen for files upload
 ipcMain.on('database-file-submission', (event, filePaths: any) => {
   console.log('file paths sent from renderer', filePaths);
+  splashWindow.close();
 });
 
 // Keep a reference for dev mode
