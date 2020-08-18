@@ -1,5 +1,5 @@
 import React, { Component, MouseEvent } from 'react';
-import '../assets/stylesheets/styles.css';
+import '../assets/stylesheets/css/style.css';
 const { dialog } = require('electron').remote;
 const { ipcRenderer } = window.require('electron');
 

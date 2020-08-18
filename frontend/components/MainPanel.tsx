@@ -1,5 +1,5 @@
 import React from 'react';
-import '../assets/stylesheets/styles.css';
+import '../assets/stylesheets/css/style.css';
 
 const Main = () => {
   return <div>This is the main menu</div>;
