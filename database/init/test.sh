@@ -1,0 +1,5 @@
+#!/bin/bash
+
+echo "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+echo "                    YUH                "
+echo "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"

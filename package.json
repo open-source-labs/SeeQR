@@ -10,7 +10,9 @@
     "dev0": "cross-env NODE_ENV=development webpack-dev-server --config ./webpack.dev.config.js",
     "build": "tsc && webpack",
     "start": "cross-env NODE_ENV=production electron --noDevServer .",
-    "dev": "tsc && cross-env NODE_ENV=development webpack-dev-server --open --hot"
+    "dev": "tsc && npm run docker && cross-env NODE_ENV=development webpack-dev-server --open --hot",
+    "docker": "cd database && docker-compose up -d && docker exec -it database_db_1 bash",
+    "docker0": "cd database && docker-compose up -d && docker exec -it database_db_1 bash & npm run echo"
   },
   "repository": {
     "type": "git",

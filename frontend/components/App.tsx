@@ -1,6 +1,6 @@
 import React from 'react';
 
-const { remote } = require('electron');
+const { remote, ipcRenderer } = require('electron');
 const { dialog } = remote;
 
 class App extends React.Component {
@@ -33,10 +33,22 @@ class App extends React.Component {
   //     })
   // };
 
+  sendDBRequest = () => {
+    ipcRenderer.send('dbRequest', 'yo');
+  }
+
+
+
   render() {
     return (
       <div>
         <h1 style={{ color: 'black' }}>SeeQR</h1>
+        <h2>Mercer Version</h2>
+        <textarea></textarea>
+        <button onClick={this.sendDBRequest}>Submit</button>
+        <button>Spin up Database</button>
+
+
         {/* <h3 style={{ "color": "black" }}>Welcome!</h3>
         <h3 style={{ "color": "black" }}>Import database?</h3>
         <button>Skip</button>

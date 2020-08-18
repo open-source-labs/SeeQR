@@ -1,7 +1,7 @@
 // main.js is the entry point to the main process (the node process)
 
 // Import parts of electron to use
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import { join } from 'path';
 import { format } from 'url';
 import { Children } from 'react';
@@ -110,3 +110,10 @@ app.on('activate', () => {
     createWindow();
   }
 });
+
+
+
+
+ipcMain.on("dbRequest", (event, arg) => {
+  console.log("thread recieved")
+})
