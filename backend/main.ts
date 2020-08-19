@@ -118,20 +118,23 @@ app.on('activate', () => {
 // Listen for files upload
 ipcMain.on('database-file-submission', (event, filePaths: any) => {
   console.log('file paths sent from renderer', filePaths);
-  // splashWindow.close();
+  // Process
+  // Send result back to renderer
 });
 
 // Listen for user clicking skip button
-ipcMain.on('skip-file-upload', (event) => {
-  // splashWindow.close();
-});
+ipcMain.on('skip-file-upload', (event) => {});
 
 // Listen for queries being sent from renderer
 ipcMain.on('execute-query', (event, query: string) => {
-  console.log('query sent from frontend', query)
-})
+  console.log('query sent from frontend', query);
+  // Process
+  // Send result back to renderer
+});
 
 // Listen for schema edits sent from renderer
 ipcMain.on('edit-schema', (event, schema: string) => {
-  console.log('schema string sent from frontend', schema)
-})
+  console.log('schema string sent from frontend', schema);
+  // Process
+  // Send result back to renderer
+});
