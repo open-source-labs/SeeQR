@@ -2,7 +2,7 @@ const database = {};
 const { exec } = require("child_process");
 
 database.testing = () => {
-    exec("docker exec -it postgres-1 bash", (error, stdout, stderr) => {
+    exec("docker container attach postgres-1", (error, stdout, stderr) => {
         if (error) {
             console.log(`error: ${error.message}`);
             return;
