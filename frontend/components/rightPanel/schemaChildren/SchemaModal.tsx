@@ -1,4 +1,5 @@
 import React, { Component, MouseEvent, ChangeEvent } from 'react';
+// import PropTypes from "prop-types";
 const { ipcRenderer } = window.require('electron');
 
 type ClickEvent = React.MouseEvent<HTMLElement>;
@@ -49,6 +50,16 @@ class SchemaModal extends Component<SchemaModalProps, state> {
       <div className="modal" id="modal">
         <h2>Modal Window</h2>
         <div className="content">{this.props.children}</div>
+        <form onSubmit={this.handleSubmit}>
+          <input
+            className="text-field"
+            type="text"
+            placeholder="revise schema here..."
+            onChange={(e) => this.handleSchemaEntry(e)}
+          />
+          {/* <input type="select" onClick={this.handleQueryPrevious}/> */}
+          <button>submit</button>
+        </form>
         <div className="actions">
           <button className="toggle-button" onClick={this.onClose}>
             close
@@ -58,5 +69,8 @@ class SchemaModal extends Component<SchemaModalProps, state> {
     );
   }
 }
-
+// SchemaModal.propTypes = {
+//   onClose: PropTypes.func.isRequired,
+//   show: PropTypes.bool.isRequired
+// };
 export default SchemaModal;
