@@ -3,9 +3,9 @@ import React, { Component, MouseEvent } from 'react';
 // const { ipcRenderer } = window.require('electron');
 
 type SplashProps = {
-  openSplash: boolean,
-  handleFileClick: any,
-  handleSkipClick: any,
+  openSplash: boolean;
+  handleFileClick: any;
+  handleSkipClick: any;
   //files: string[];
 };
 
@@ -17,7 +17,7 @@ export class Splash extends Component<SplashProps> {
 
   render() {
     return (
-      <div>
+      <div id="splash-menu">
         <h1 style={{ color: 'black' }}>SeeQR!</h1>
         <h3 style={{ color: 'black' }}>Welcome!</h3>
         <h3 style={{ color: 'black' }}>Import database?</h3>

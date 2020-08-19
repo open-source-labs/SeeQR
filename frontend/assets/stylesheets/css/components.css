@@ -3,10 +3,11 @@
   height: 200px;
 }
 
-#query-window button {
+#splash-menu button {
   background: #6db3a3;
   color: white;
   border-radius: 5px;
+  padding: 5px;
   border: none;
   font-size: 20px;
   outline: none;

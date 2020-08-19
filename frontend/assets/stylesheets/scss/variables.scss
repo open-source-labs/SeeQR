@@ -1,5 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
-$background-dark: #373737;
-$background-light: #e2e2e2;
-$primary-color: #000000;
-$font-stack: "font-family: 'PT Sans', sans-serif";
+
+// typography
+$font-stack: 'PT Sans', sans-serif;
+$p-weight: 100;
+$title-weight: 300;
+
+// colors
+$background-darkmode: #373737;
+$background-lightmode: #9abacc;
+$primary-color-lightmode: #1a1a1a;
+$primary-color-darkmode: #e2e2e2;
+
+$primary-color-lightmode-75: lighten($primary-color-lightmode, 25%);
