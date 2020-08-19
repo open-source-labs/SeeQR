@@ -10,7 +10,6 @@ type ClickEvent = React.MouseEvent<HTMLElement>;
 
 type state = {
   openSplash: boolean;
-  //files: string[];
 };
 type AppProps = {};
 
@@ -22,7 +21,6 @@ export class App extends Component<AppProps, state> {
   }
   state: state = {
     openSplash: true,
-    //files: [],
   };
 
   handleFileClick(event: ClickEvent) {

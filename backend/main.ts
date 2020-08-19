@@ -125,3 +125,13 @@ ipcMain.on('database-file-submission', (event, filePaths: any) => {
 ipcMain.on('skip-file-upload', (event) => {
   // splashWindow.close();
 });
+
+// Listen for queries being sent from renderer
+ipcMain.on('execute-query', (event, query: string) => {
+  console.log('query sent from frontend', query)
+})
+
+// Listen for schema edits sent from renderer
+ipcMain.on('edit-schema', (event, schema: string) => {
+  console.log('schema string sent from frontend', schema)
+})
