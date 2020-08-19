@@ -1,16 +1,37 @@
 #main-panel {
   display: flex;
   flex-direction: row;
+
+  height: 100vh;
+  // border: solid 1px red;
 }
 
-// #main-left {
-//   display: flex;
-// }
-#main-right {
-  display: flex;
-  flex-direction: row;
+#main-left {
+  width: 34%;
+  height: 100%;
 }
+
+#main-right {
+
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
 #schema-left {
   display: flex;
   flex-direction: column;
+}
+
+
+#schema-right {
+  border: 1px solid purple;
+  display: flex;
+  flex-direction: column;
+  width: 100%
+}
+
+#results-panel {
+  display: flex;
+  flex-direction: row;
 }

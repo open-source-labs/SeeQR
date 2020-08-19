@@ -22,14 +22,12 @@ class MainPanel extends Component<MainProps, MainState> {
   render() {
     return (
       <div id="main-panel">
-        <h3 style={{ border: '1px solid blue' }}>This is the main panel!</h3>
         <div id="main-left">
+          <h3 style={{ border: '1px solid blue' }}>This is the main panel!</h3>
           <History />
           <Compare />
         </div>
-        <div id="main-right">
-          <SchemaContainer />
-        </div>
+        <SchemaContainer />
       </div>
     );
   }
