@@ -116,7 +116,7 @@ app.on('activate', () => {
  ************************************************************/
 
 // Listen for files upload
-ipcMain.on('database-file-submission', (event, filePaths: any) => {
+ipcMain.on('upload-file', (event, filePaths: any) => {
   console.log('file paths sent from renderer', filePaths);
   // Process
   // Send result back to renderer

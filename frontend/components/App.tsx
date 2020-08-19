@@ -45,7 +45,7 @@ export class App extends Component<AppProps, state> {
         // there is definitely a better way to reference the object key of filePaths
         const filePathArr = Object.values(result)[1];
         // send via channel to main process
-        ipcRenderer.send('database-file-submission', filePathArr)
+        ipcRenderer.send('upload-file', filePathArr)
       })
       .catch((err: object) => {
         console.log(err);
