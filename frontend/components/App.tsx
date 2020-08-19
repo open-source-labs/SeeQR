@@ -9,7 +9,7 @@ const { ipcRenderer } = window.require('electron');
 type ClickEvent = React.MouseEvent<HTMLElement>;
 
 type state = {
-  openSplash: boolean;
+  // openSplash: boolean;
 };
 type AppProps = {};
 
