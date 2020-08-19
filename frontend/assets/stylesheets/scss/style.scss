@@ -1,0 +1,21 @@
+@import './variables.scss';
+@import './components.scss';
+@import './layout.scss';
+@import './modal.scss';
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: $background-lightmode;
+  font-family: $font-stack;
+  font-weight: $p-weight;
+  line-height: 1/6;
+  color: $primary-color-lightmode;
+}
+
+h3 {
+  font-weight: $title-weight;
+}
