@@ -1,37 +1,62 @@
-import React from 'react';
+import React, { Component, MouseEvent } from 'react';
+import { Splash } from './Splash';
+import MainPanel from './MainPanel';
+// import '../assets/stylesheets/css/style.css';
 
-const { remote, ipcRenderer } = require('electron');
-const { dialog } = remote;
+const { dialog } = require('electron').remote;
+const { ipcRenderer } = window.require('electron');
 
-class App extends React.Component {
-  constructor(props: any) {
+type ClickEvent = React.MouseEvent<HTMLElement>;
+
+type state = {
+  openSplash: boolean;
+};
+type AppProps = {};
+
+export class App extends Component<AppProps, state> {
+  constructor(props: AppProps) {
     super(props);
-    // this.handleFileClick = this.handleFileClick.bind(this);
+    this.handleFileClick = this.handleFileClick.bind(this);
+    this.handleSkipClick = this.handleSkipClick.bind(this);
+  }
+  state: state = {
+    openSplash: true,
+  };
+
+  handleFileClick(event: ClickEvent) {
+    // event.preventDefault();
+    // alert('event triggered');
+    const options = {
+      filters: [{ name: 'All Files', extensions: ['*'] }],
+    };
+    dialog
+      .showOpenDialog(
+        {
+          properties: ['openFile', 'multiSelections'],
+        },
+        (files: string) => {
+          if (files !== undefined) {
+            // handle files
+            console.log('file path undefined');
+          }
+        }
+      )
+      .then((result: object) => {
+        // there is definitely a better way to reference the object key of filePaths
+        const filePathArr = Object.values(result)[1];
+        // send via channel to main process
+        ipcRenderer.send('upload-file', filePathArr)
+      })
+      .catch((err: object) => {
+        console.log(err);
+      });
   }
 
-  // handleFileClick() {
-  //   const options = {
-  //     filters: [
-  //       { name: 'Images', extensions: ['png'] },
-  //       { name: 'Custom File Type', extensions: ['as'] },
-  //     ]
-  //   }
+  handleSkipClick(event: ClickEvent) {
+    ipcRenderer.send('skip-file-upload');
+    this.setState({ openSplash: false });
+  }
 
-  //   dialog.showOpenDialog({
-  //     properties: ['openFile', 'multiSelections']
-  //   }, function (files) {
-  //     if (files !== undefined) {
-  //       // handle files
-  //       console.log('file path undefined');
-  //     }
-  //   })
-  //     .then(result => {
-  //       console.log('result', result);
-  //     })
-  //     .catch(err => {
-  //       console.log(err);
-  //     })
-  // };
 
   sendDBRequest = () => {
     ipcRenderer.send('dbRequest', 'yo');
@@ -42,20 +67,18 @@ class App extends React.Component {
   render() {
     return (
       <div>
-        <h1 style={{ color: 'black' }}>SeeQR</h1>
-        <h2>Mercer Version</h2>
-        <textarea></textarea>
-        <button onClick={this.sendDBRequest}>Submit</button>
-        <button>Spin up Database</button>
-
-
-        {/* <h3 style={{ "color": "black" }}>Welcome!</h3>
-        <h3 style={{ "color": "black" }}>Import database?</h3>
-        <button>Skip</button>
-        <button onClick={this.handleFileClick}>Yes</button> */}
+        {this.state.openSplash ? (
+          <Splash
+            openSplash={this.state.openSplash}
+            handleFileClick={this.handleFileClick}
+            handleSkipClick={this.handleSkipClick}
+          />
+        ) : (
+            <MainPanel />
+          )}
       </div>
     );
   }
 }
 
-export default App;
+// export default App;
