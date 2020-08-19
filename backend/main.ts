@@ -5,6 +5,7 @@ import { app, BrowserWindow, ipcMain } from 'electron';
 import { join } from 'path';
 import { format } from 'url';
 import { Children } from 'react';
+import database from './controllers';
 
 /************************************************************
  ********* CREATE & CLOSE WINDOW UPON INITIALIZATION *********
