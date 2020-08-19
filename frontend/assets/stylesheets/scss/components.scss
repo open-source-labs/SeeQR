@@ -1,0 +1,19 @@
+#query-window {
+  .text-field {
+    width: 90%;
+    height: 200px;
+    padding: 10px;
+  }
+}
+
+#splash-menu {
+  button {
+    background: $primary-color-lightmode-75;
+    color: white;
+    border-radius: 5px;
+    padding: 5px;
+    border: none;
+    font-size: 20px;
+    outline: none;
+  }
+}
