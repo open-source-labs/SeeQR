@@ -10,6 +10,7 @@ type QueryProps = { currentSchema: string };
 type state = {
   queryString: string;
   currentSchema: string;
+  queryLabel: string;
   show: boolean;
 };
 
@@ -25,12 +26,16 @@ class Query extends Component<QueryProps, state> {
 
   state: state = {
     queryString: '',
+    queryLabel: '',
     currentSchema: '',
     show: false,
   };
 
   handleQueryEntry(event: any) {
     this.setState({ queryString: event.target.value, currentSchema: event.target.name });
+  }
+  handleLabelEntry(event: any) {
+    this.setState({ queryLabel: event.target.value });
   }
 
   handleSubmit(event: any) {
@@ -39,8 +44,10 @@ class Query extends Component<QueryProps, state> {
     const queryAndSchema = {
       queryString: this.state.queryString,
       queryCurrentSchema: this.state.currentSchema,
+      queryLabel: this.state.queryLabel,
     };
     ipcRenderer.send('execute-query', queryAndSchema);
+    this.setState({ queryString: '' });
   }
 
   showModal = (event: any) => {
@@ -48,27 +55,36 @@ class Query extends Component<QueryProps, state> {
   };
 
   render() {
-    console.log(this.state);
     return (
-      <div id="query-window">
-        <h3 style={{ border: '1px solid blue' }}>Query Panel</h3>
-        <button
+      <div id="query-panel">
+        <h3>Query</h3>
+        {/* <button
           onClick={(e) => {
             this.showModal(e);
           }}
         >
           Edit Schema
-        </button>
+        </button> */}
         <SchemaModal show={this.state.show} onClose={this.showModal} />
         <form onSubmit={this.handleSubmit}>
+          <label>Query Label: </label>
           <input
-            className="text-field"
+            className="label-field"
             type="text"
+            placeholder="enter label for query"
+            onChange={(e) => this.handleLabelEntry(e)}
+          />
+          <br />
+          <br />
+          <label>Query:</label>
+          <br />
+          <textarea
             name={this.props.currentSchema}
             placeholder="insert query here..."
             onChange={(e) => this.handleQueryEntry(e)}
           />
           {/* <input type="select" onClick={this.handleQueryPrevious}/> */}
+          <br />
           <button>submit</button>
         </form>
       </div>
