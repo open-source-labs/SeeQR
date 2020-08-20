@@ -1,4 +1,4 @@
-import React, { Component, MouseEvent } from 'react';
+import React, { Component } from 'react';
 
 type DataProps = {
   // queries: {
@@ -10,7 +10,6 @@ type DataProps = {
   queries: any;
 };
 
-
 export class Data extends Component<DataProps> {
   constructor(props: DataProps) {
     super(props);
@@ -18,7 +17,9 @@ export class Data extends Component<DataProps> {
 
   render() {
     const { queries } = this.props;
-    const { queryData } = queries[0];
+    let { queryData } = queries[0];
+    // Take off quotation marks
+    queryData = queryData.slice(1, queryData.length - 1)
 
     return (
       <div style={{ border: '1px solid purple', fontSize: '12px' }}>

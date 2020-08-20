@@ -1,6 +1,5 @@
 import React, { Component, MouseEvent, ChangeEvent } from 'react';
 const { ipcRenderer } = window.require('electron');
-import SchemaModal from './SchemaModal';
 
 require('codemirror/lib/codemirror.css');
 require('codemirror/mode/javascript/javascript');
@@ -16,7 +15,11 @@ require('codemirror/theme/solarized.css');
 // Codemirror Component
 var CodeMirror = require('react-codemirror');
 
-type ClickEvent = React.MouseEvent<HTMLElement>;
+/************************************************************
+ *********************** TYPESCRIPT: TYPES ***********************
+ ************************************************************/
+
+type ClickEvent = React.MouseEvent<HTMLElement>; // assign type ClickEvent to handleQuerySubmit & debug
 type InputChangeEvent = React.ChangeEvent<HTMLInputElement>;
 
 type QueryProps = { currentSchema: string };
@@ -43,7 +46,7 @@ class Query extends Component<QueryProps, state> {
     show: false,
   };
 
-  handleQueryEntry(event: any) {
+  handleQueryEntry(event: InputChangeEvent) {
     this.setState({ queryString: event.target.value, currentSchema: event.target.name });
   }
 
@@ -69,18 +72,13 @@ class Query extends Component<QueryProps, state> {
   render() {
     var options = {
       lineNumbers: true,
-      // mode: 'javascript',
       mode: 'sql',
-      // mode: 'markdown',
-      // theme: 'monokai',
-      // theme: 'midnight',
       theme: 'lesser-dark',
-      // theme: 'solarized dark',
     };
 
     return (
       <div id="query-window">
-        <h3 style={{ border: '1px solid blue' }}>Query Panel</h3>
+        <h2 style={{ border: '1px solid blue' }}>Input Query</h2>
         {/* <button
           onClick={(e) => {
             this.showModal(e);
@@ -99,7 +97,7 @@ class Query extends Component<QueryProps, state> {
           /> */}
           {/* <input type="select" onClick={this.handleQueryPrevious}/> */}
           <CodeMirror value={this.state.queryString} onChange={this.updateCode} options={options} />
-          <button onSubmit={this.handleQuerySubmit}>Submit</button>
+          <button>Submit</button>
         </form>
       </div>
     );
