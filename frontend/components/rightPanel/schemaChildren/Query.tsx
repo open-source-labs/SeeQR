@@ -10,6 +10,7 @@ type QueryProps = { currentSchema: string };
 type state = {
   queryString: string;
   currentSchema: string;
+  labelString: string;
   show: boolean;
 };
 
@@ -25,6 +26,7 @@ class Query extends Component<QueryProps, state> {
 
   state: state = {
     queryString: '',
+    labelString: '',
     currentSchema: '',
     show: false,
   };
@@ -32,15 +34,20 @@ class Query extends Component<QueryProps, state> {
   handleQueryEntry(event: any) {
     this.setState({ queryString: event.target.value, currentSchema: event.target.name });
   }
+  handleLabelEntry(event: any) {
+    this.setState({ labelString: event.target.value });
+  }
 
   handleSubmit(event: any) {
-    event.preventDefault();
+    // event.preventDefault();
     console.log(this.state.queryString);
     const queryAndSchema = {
       queryString: this.state.queryString,
       queryCurrentSchema: this.state.currentSchema,
+      labelString: this.state.labelString,
     };
     ipcRenderer.send('execute-query', queryAndSchema);
+    this.setState({queryString : ''});
   }
 
   showModal = (event: any) => {
@@ -51,19 +58,24 @@ class Query extends Component<QueryProps, state> {
     console.log(this.state);
     return (
       <div id="query-window">
-        <h3 style={{ border: '1px solid blue' }}>Query Panel</h3>
-        <button
+        <h2 style={{ border: '1px solid blue' }}>Query</h2>
+        {/* <button
           onClick={(e) => {
             this.showModal(e);
           }}
         >
           Edit Schema
-        </button>
+        </button> */}
         <SchemaModal show={this.state.show} onClose={this.showModal} />
         <form onSubmit={this.handleSubmit}>
           <input
-            className="text-field"
+            className="label-field"
             type="text"
+            placeholder="enter label for query"
+            onChange={(e) => this.handleLabelEntry(e)}
+          />
+          <textarea
+            className="text-field"
             name={this.props.currentSchema}
             placeholder="insert query here..."
             onChange={(e) => this.handleQueryEntry(e)}

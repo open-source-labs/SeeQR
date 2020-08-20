@@ -12,6 +12,7 @@
           transform: scale(1);
   opacity: 1;
   visibility: visible;
+  z-index: 100;
 }
 
 .modal.off {

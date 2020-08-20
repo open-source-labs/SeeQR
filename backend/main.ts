@@ -24,10 +24,10 @@ if (process.env.NODE_ENV !== undefined && process.env.NODE_ENV === 'development'
 // Create browser window
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 1600,
-    height: 1200,
-    minWidth: 800,
-    minHeight: 600,
+    width: 1280,
+    height: 1024,
+    minWidth: 720,
+    minHeight: 480,
     title: 'SeeQR',
     show: false,
     webPreferences: { nodeIntegration: true, enableRemoteModule: true },
@@ -66,6 +66,7 @@ function createWindow() {
   // Don't show until we are ready and loaded
   // Once the main window is ready, it will remain hidden when splash is focused
   mainWindow.once('ready-to-show', () => {
+    //ipcMain.send('open-splash', (event:any, {openSplash: boolean})=>{{openSplash: true}})
     mainWindow.show();
     // if (splashWindow != null && splashWindow.isVisible()) {
     //   mainWindow.hide();

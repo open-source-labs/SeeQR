@@ -1,8 +1,7 @@
 #query-window {
   .text-field {
-    width: 90%;
+    width: 100%;
     height: 200px;
-    padding: 10px;
   }
 }
 
@@ -16,4 +15,37 @@
     font-size: 20px;
     outline: none;
   }
+}
+
+textarea {
+  min-height: 300px;
+  width: fixed;
+}
+
+#history-topbar {
+  font-weight: 300;
+  height: 15px;
+}
+
+.col-1 {
+  position: absolute;
+  left: 0;
+}
+.col-2 {
+  position: absolute;
+  left: 8%;
+}
+.col-3 {
+  position: absolute;
+  left: 15%;
+}
+.col-4 {
+  position: absolute;
+  left: 25%;
+}
+.scroll-box {
+  background-color: white;
+  min-height: 300px;
+  overflow-y: scroll;
+  overflow-x: hidden;
 }

@@ -8,6 +8,8 @@
 #main-left {
   width: 34%;
   height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 #main-right {
@@ -27,6 +29,17 @@
   display: flex;
   flex-direction: column;
   width: 50%;
+}
+
+#history-panel {
+  display: flex;
+  flex-direction: column;
+  height: 50%;
+}
+
+#compare-panel {
+  display: flex;
+  flex: 1;
 }
 
 #results-panel {
