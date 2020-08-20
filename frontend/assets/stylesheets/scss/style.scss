@@ -9,13 +9,16 @@
 }
 
 body {
-  background-color: $background-lightmode;
+  background-color: $background-darkmode;
   font-family: $font-stack;
   font-weight: $p-weight;
-  line-height: 1/6;
-  color: $primary-color-lightmode;
+  font-size: $default-text;
+  line-height: 1/5;
+  color: $primary-color-darkmode;
 }
 
 h3 {
-  font-weight: $title-weight;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-bottom: 10px;
 }

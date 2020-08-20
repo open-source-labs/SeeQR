@@ -45,7 +45,7 @@ export class App extends Component<AppProps, state> {
         // there is definitely a better way to reference the object key of filePaths
         const filePathArr = Object.values(result)[1];
         // send via channel to main process
-        ipcRenderer.send('upload-file', filePathArr)
+        ipcRenderer.send('upload-file', filePathArr);
       })
       .catch((err: object) => {
         console.log(err);
@@ -57,14 +57,10 @@ export class App extends Component<AppProps, state> {
     this.setState({ openSplash: false });
   }
 
-
-  sendDBRequest = () => {
-    ipcRenderer.send('dbRequest', 'yo');
-  }
-
-
-
   render() {
+    // ipcRenderer.on('open-splash', (event: any, splashState: object) => {
+    //   this.setState(splashState);
+    // });
     return (
       <div>
         {this.state.openSplash ? (
@@ -74,8 +70,8 @@ export class App extends Component<AppProps, state> {
             handleSkipClick={this.handleSkipClick}
           />
         ) : (
-            <MainPanel />
-          )}
+          <MainPanel />
+        )}
       </div>
     );
   }
