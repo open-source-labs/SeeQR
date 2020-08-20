@@ -5,7 +5,7 @@ import { app, BrowserWindow, ipcMain } from 'electron';
 import { join } from 'path';
 import { format } from 'url';
 import { Children } from 'react';
-import database from './controllers';
+const { exec } = require("child_process");
 
 /************************************************************
  ********* CREATE & CLOSE WINDOW UPON INITIALIZATION *********
@@ -117,7 +117,7 @@ app.on('activate', () => {
  ************************************************************/
 
 // Listen for files upload
-ipcMain.on('upload-file', (event, filePaths: any) => {
+ipcMain.on('upload-file', (event, filePaths: string) => {
   console.log('file paths sent from renderer', filePaths);
   // Process
   // Send result back to renderer
@@ -126,16 +126,47 @@ ipcMain.on('upload-file', (event, filePaths: any) => {
 // Listen for user clicking skip button
 ipcMain.on('skip-file-upload', (event) => {});
 
+interface QueryType {
+    queryCurrentSchema: string,
+    queryString: string,
+}
+
 // Listen for queries being sent from renderer
-ipcMain.on('execute-query', (event, queryAndCurrentSchema: object) => {
-  console.log('query sent from frontend', queryAndCurrentSchema);
-  // Process
-  // Send result back to renderer
+ipcMain.on('execute-query', (event, data: QueryType) => {
+    exec(`docker exec postgres-1 psql -h localhost -p 5432 -U postgres -d test -c "EXPLAIN (FORMAT JSON, ANALYZE) ${data.queryString}"`,
+    (error, stdout, stderr) => {
+        if (error) {
+            console.log(`error: ${error.message}`);
+            return;
+        }
+        if (stderr) {
+            console.log(`stderr: ${stderr}`);
+            return;
+        }
+        console.log(`stdout: ${stdout}`);
+        stdout = stdout.slice(stdout.indexOf("["), stdout.lastIndexOf("]") + 1).split("+").join("");
+        event.sender.send('return-execute-query', stdout);
+    });
 });
 
+interface SchemaType {
+    currentSchema: string,
+    schemaString: string,
+}
+
 // Listen for schema edits sent from renderer
-ipcMain.on('edit-schema', (event, schema: string) => {
-  console.log('schema string sent from frontend', schema);
-  // Process
+ipcMain.on('edit-schema', (event, data: SchemaType) => {
+  console.log('schema string sent from frontend', data);
+  exec(`docker exec postgres-1 psql -h localhost -p 5432 -U postgres -d ${data.currentSchema} -c "${data.schemaString}"`, (error, stdout, stderr) => {
+    if (error) {
+      console.log(`error: ${error.message}`);
+      return;
+    }
+    if (stderr) {
+      console.log(`stderr: ${stderr}`);
+      return;
+    }
+    console.log(`stdout: ${stdout}`);
+  });
   // Send result back to renderer
 });
