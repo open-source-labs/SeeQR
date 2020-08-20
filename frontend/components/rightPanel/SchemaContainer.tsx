@@ -7,7 +7,7 @@ const { ipcRenderer } = window.require('electron');
 
 type ClickEvent = React.MouseEvent<HTMLElement>;
 
-type SchemaContainerProps = {};
+type SchemaContainerProps = {currentSchema: string};
 
 export class SchemaContainer extends Component<SchemaContainerProps> {
   constructor(props: SchemaContainerProps) {
@@ -26,7 +26,7 @@ export class SchemaContainer extends Component<SchemaContainerProps> {
 
         <div id="results-panel">
           <div id="schema-left">
-            <Query />
+            <Query currentSchema={this.props.currentSchema}/>
             <Data />
           </div>
           <div id="schema-right">

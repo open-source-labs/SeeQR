@@ -5,10 +5,11 @@ import SchemaModal from './SchemaModal';
 type ClickEvent = React.MouseEvent<HTMLElement>;
 type InputChangeEvent = React.ChangeEvent<HTMLInputElement>;
 
-type QueryProps = {};
+type QueryProps = { currentSchema: string };
 
 type state = {
   queryString: string;
+  currentSchema: string;
   show: boolean;
 };
 
@@ -24,17 +25,22 @@ class Query extends Component<QueryProps, state> {
 
   state: state = {
     queryString: '',
+    currentSchema: '',
     show: false,
   };
 
   handleQueryEntry(event: any) {
-    this.setState({ queryString: event.target.value });
+    this.setState({ queryString: event.target.value, currentSchema: event.target.name });
   }
 
   handleSubmit(event: any) {
     event.preventDefault();
     console.log(this.state.queryString);
-    ipcRenderer.send('execute-query', this.state.queryString);
+    const queryAndSchema = {
+      queryString: this.state.queryString,
+      queryCurrentSchema: this.state.currentSchema,
+    };
+    ipcRenderer.send('execute-query', queryAndSchema);
   }
 
   showModal = (event: any) => {
@@ -58,6 +64,7 @@ class Query extends Component<QueryProps, state> {
           <input
             className="text-field"
             type="text"
+            name={this.props.currentSchema}
             placeholder="insert query here..."
             onChange={(e) => this.handleQueryEntry(e)}
           />
