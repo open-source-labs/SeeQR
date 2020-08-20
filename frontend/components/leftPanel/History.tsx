@@ -4,7 +4,12 @@ const { ipcRenderer } = window.require('electron');
 type ClickEvent = React.MouseEvent<HTMLElement>;
 
 type HistoryProps = {
-  queries: object[];
+  queries: {
+    queryString: string;
+    queryData: object[];
+    queryStatistics: object[];
+    querySchema: string;
+  }[];
   currentSchema: string;
 };
 
@@ -13,7 +18,7 @@ export const History = (props: HistoryProps) => {
     <div>
       <h3 style={{ border: '1px solid blue' }}>History Panel</h3>
       <h4>{props.currentSchema}</h4>
-      {/* <h2>{props.queries}</h2> */}
+      <h2>{props.queries[0].queryString}</h2>
     </div>
   );
 };
