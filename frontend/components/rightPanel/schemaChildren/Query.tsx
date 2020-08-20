@@ -27,6 +27,7 @@ type QueryProps = { currentSchema: string };
 type state = {
   queryString: string;
   currentSchema: string;
+  queryLabel: string;
   show: boolean;
 };
 
@@ -42,6 +43,7 @@ class Query extends Component<QueryProps, state> {
 
   state: state = {
     queryString: '',
+    queryLabel: '',
     currentSchema: '',
     show: false,
   };
@@ -49,14 +51,19 @@ class Query extends Component<QueryProps, state> {
   handleQueryEntry(event: InputChangeEvent) {
     this.setState({ queryString: event.target.value, currentSchema: event.target.name });
   }
+  handleLabelEntry(event: any) {
+    this.setState({ queryLabel: event.target.value });
+  }
 
   handleQuerySubmit(event: any) {
     event.preventDefault();
     const queryAndSchema = {
       queryString: this.state.queryString,
       queryCurrentSchema: this.state.currentSchema,
+      queryLabel: this.state.queryLabel,
     };
     ipcRenderer.send('execute-query', queryAndSchema);
+    this.setState({ queryString: '' });
   }
 
   // showModal = (event: any) => {
@@ -77,30 +84,35 @@ class Query extends Component<QueryProps, state> {
     };
 
     return (
-      <div id="query-window">
-        <h2 style={{ border: '1px solid blue' }}>Input Query</h2>
+      <div id="query-panel">
+        <h3>Query</h3>
         {/* <button
           onClick={(e) => {
             this.showModal(e);
           }}
         >
           Edit Schema
-        </button>
-        <SchemaModal show={this.state.show} onClose={this.showModal} /> */}
+        </button> */}
+        {/* <SchemaModal show={this.state.show} onClose={this.showModal} /> */}
         <form onSubmit={this.handleQuerySubmit}>
-          {/* <input
-            className="text-field"
+          <label>Query Label: </label>
+          <input
+            className="label-field"
             type="text"
-            name={this.props.currentSchema}
-            placeholder="insert query here..."
-            onChange={(e) => this.handleQueryEntry(e)}
-          /> */}
+            placeholder="enter label for query"
+            onChange={(e) => this.handleLabelEntry(e)}
+          />
+          <br />
+          <br />
+          <label>Query:</label>
+          <br />
           {/* <input type="select" onClick={this.handleQueryPrevious}/> */}
           <CodeMirror value={this.state.queryString} onChange={this.updateCode} options={options} />
           <button>Submit</button>
         </form>
       </div>
     );
+
   }
 }
 

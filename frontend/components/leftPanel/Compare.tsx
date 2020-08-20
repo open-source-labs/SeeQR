@@ -3,18 +3,12 @@ const { ipcRenderer } = window.require('electron');
 
 type ClickEvent = React.MouseEvent<HTMLElement>;
 
-type CompareProps = {
-
-}
+type CompareProps = {};
 
 export const Compare = (props: CompareProps) => {
-  
-  
   return (
-    <div>
-      <h3 style={{border: '1px solid blue'}}>Compare Panel</h3>
+    <div id="compare-panel">
+      <h3>Compare Panel</h3>
     </div>
   );
-
-}
-
+};

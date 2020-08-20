@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Compare } from './leftPanel/Compare';
-import { History } from './leftPanel/History';
+import History from './leftPanel/History';
 import { SchemaContainer } from './rightPanel/SchemaContainer';
 const { ipcRenderer } = window.require('electron');
 
@@ -68,34 +68,34 @@ class MainPanel extends Component<MainProps, MainState> {
         // ]
         ,
         queryStatistics: {
-          "items": [
+          items: [
             {
-              "QUERY PLAN": [
+              'QUERY PLAN': [
                 {
-                  "Plan": {
-                    "Node Type": "Seq Scan",
-                    "Parallel Aware": false,
-                    "Relation Name": "items",
-                    "Alias": "items",
-                    "Startup Cost": 0,
-                    "Total Cost": 11.9,
-                    "Plan Rows": 190,
-                    "Plan Width": 391,
-                    "Actual Startup Time": 0.014,
-                    "Actual Total Time": 0.015,
-                    "Actual Rows": 6,
-                    "Actual Loops": 1
+                  Plan: {
+                    'Node Type': 'Seq Scan',
+                    'Parallel Aware': false,
+                    'Relation Name': 'items',
+                    Alias: 'items',
+                    'Startup Cost': 0,
+                    'Total Cost': 11.9,
+                    'Plan Rows': 190,
+                    'Plan Width': 391,
+                    'Actual Startup Time': 0.014,
+                    'Actual Total Time': 0.015,
+                    'Actual Rows': 6,
+                    'Actual Loops': 1,
                   },
-                  "Planning Time": 0.262,
-                  "Triggers": [],
-                  "Execution Time": 0.038
-                }
-              ]
-            }
-          ]
+                  'Planning Time': 0.262,
+                  Triggers: [],
+                  'Execution Time': 0.038,
+                },
+              ],
+            },
+          ],
         },
         querySchema: 'schemaA',
-        // queryLabel: 'query label 2',
+        queryLabel: 'get all from items',
       },
       {
         queryString: 'SELECT * FROM public.users',
@@ -129,44 +129,408 @@ class MainPanel extends Component<MainProps, MainState> {
         // ]
         ,
         queryStatistics: {
-          "items": [
+          items: [
             {
-              "QUERY PLAN": [
+              'QUERY PLAN': [
                 {
-                  "Plan": {
-                    "Node Type": "Seq Scan",
-                    "Parallel Aware": false,
-                    "Relation Name": "users",
-                    "Alias": "users",
-                    "Startup Cost": 0,
-                    "Total Cost": 12.3,
-                    "Plan Rows": 230,
-                    "Plan Width": 316,
-                    "Actual Startup Time": 0.012,
-                    "Actual Total Time": 0.013,
-                    "Actual Rows": 15,
-                    "Actual Loops": 1
+                  Plan: {
+                    'Node Type': 'Seq Scan',
+                    'Parallel Aware': false,
+                    'Relation Name': 'users',
+                    Alias: 'users',
+                    'Startup Cost': 0,
+                    'Total Cost': 12.3,
+                    'Plan Rows': 230,
+                    'Plan Width': 316,
+                    'Actual Startup Time': 0.012,
+                    'Actual Total Time': 0.013,
+                    'Actual Rows': 15,
+                    'Actual Loops': 1,
                   },
-                  "Planning Time": 0.367,
-                  "Triggers": [],
-                  "Execution Time": 0.034
-                }
-              ]
-            }
-          ]
+                  'Planning Time': 0.367,
+                  Triggers: [],
+                  'Execution Time': 0.034,
+                },
+              ],
+            },
+          ],
         },
         querySchema: 'schemaB',
-        // queryLabel: 'query label 2',
+        queryLabel: 'get all from users',
+      },
+      {
+        queryString: 'SELECT * FROM public.users',
+        queryData: `" _id |       email        | firstName | lastName |  password  | points | address_id 
+        -----+--------------------+-----------+----------+------------+--------+------------
+           1 | cc2368@cornell.edu | Catherine | Chiu     | helloworld |    500 |          1
+           2 | jm@gmail.com       | John      | Madrigal | helloworld |    500 |          2
+           3 | mh@gmail.com       | Michelle  | Holland  | helloworld |    500 |          3
+           4 | sk@gmail.com       | Serena    | Kuo      | helloworld |    500 |          4
+        (4 rows)
+        "`,
+        queryStatistics: {
+          items: [
+            {
+              'QUERY PLAN': [
+                {
+                  Plan: {
+                    'Node Type': 'Seq Scan',
+                    'Parallel Aware': false,
+                    'Relation Name': 'users',
+                    Alias: 'users',
+                    'Startup Cost': 0,
+                    'Total Cost': 12.3,
+                    'Plan Rows': 230,
+                    'Plan Width': 316,
+                    'Actual Startup Time': 0.012,
+                    'Actual Total Time': 0.013,
+                    'Actual Rows': 15,
+                    'Actual Loops': 1,
+                  },
+                  'Planning Time': 0.367,
+                  Triggers: [],
+                  'Execution Time': 0.034,
+                },
+              ],
+            },
+          ],
+        },
+        querySchema: 'schemaB',
+        queryLabel: 'get all from users',
+      },
+      {
+        queryString: 'SELECT * FROM public.users',
+        queryData: `" _id |       email        | firstName | lastName |  password  | points | address_id 
+        -----+--------------------+-----------+----------+------------+--------+------------
+           1 | cc2368@cornell.edu | Catherine | Chiu     | helloworld |    500 |          1
+           2 | jm@gmail.com       | John      | Madrigal | helloworld |    500 |          2
+           3 | mh@gmail.com       | Michelle  | Holland  | helloworld |    500 |          3
+           4 | sk@gmail.com       | Serena    | Kuo      | helloworld |    500 |          4
+        (4 rows)
+        "`,
+        queryStatistics: {
+          items: [
+            {
+              'QUERY PLAN': [
+                {
+                  Plan: {
+                    'Node Type': 'Seq Scan',
+                    'Parallel Aware': false,
+                    'Relation Name': 'users',
+                    Alias: 'users',
+                    'Startup Cost': 0,
+                    'Total Cost': 12.3,
+                    'Plan Rows': 230,
+                    'Plan Width': 316,
+                    'Actual Startup Time': 0.012,
+                    'Actual Total Time': 0.013,
+                    'Actual Rows': 15,
+                    'Actual Loops': 1,
+                  },
+                  'Planning Time': 0.367,
+                  Triggers: [],
+                  'Execution Time': 0.034,
+                },
+              ],
+            },
+          ],
+        },
+        querySchema: 'schemaB',
+        queryLabel: 'get all from users',
+      },
+      {
+        queryString: 'SELECT * FROM public.users',
+        queryData: `" _id |       email        | firstName | lastName |  password  | points | address_id 
+        -----+--------------------+-----------+----------+------------+--------+------------
+           1 | cc2368@cornell.edu | Catherine | Chiu     | helloworld |    500 |          1
+           2 | jm@gmail.com       | John      | Madrigal | helloworld |    500 |          2
+           3 | mh@gmail.com       | Michelle  | Holland  | helloworld |    500 |          3
+           4 | sk@gmail.com       | Serena    | Kuo      | helloworld |    500 |          4
+        (4 rows)
+        "`,
+        queryStatistics: {
+          items: [
+            {
+              'QUERY PLAN': [
+                {
+                  Plan: {
+                    'Node Type': 'Seq Scan',
+                    'Parallel Aware': false,
+                    'Relation Name': 'users',
+                    Alias: 'users',
+                    'Startup Cost': 0,
+                    'Total Cost': 12.3,
+                    'Plan Rows': 230,
+                    'Plan Width': 316,
+                    'Actual Startup Time': 0.012,
+                    'Actual Total Time': 0.013,
+                    'Actual Rows': 15,
+                    'Actual Loops': 1,
+                  },
+                  'Planning Time': 0.367,
+                  Triggers: [],
+                  'Execution Time': 0.034,
+                },
+              ],
+            },
+          ],
+        },
+        querySchema: 'schemaB',
+        queryLabel: 'get all from users',
+      },
+      {
+        queryString: 'SELECT * FROM public.users',
+        queryData: `" _id |       email        | firstName | lastName |  password  | points | address_id 
+        -----+--------------------+-----------+----------+------------+--------+------------
+           1 | cc2368@cornell.edu | Catherine | Chiu     | helloworld |    500 |          1
+           2 | jm@gmail.com       | John      | Madrigal | helloworld |    500 |          2
+           3 | mh@gmail.com       | Michelle  | Holland  | helloworld |    500 |          3
+           4 | sk@gmail.com       | Serena    | Kuo      | helloworld |    500 |          4
+        (4 rows)
+        "`,
+        queryStatistics: {
+          items: [
+            {
+              'QUERY PLAN': [
+                {
+                  Plan: {
+                    'Node Type': 'Seq Scan',
+                    'Parallel Aware': false,
+                    'Relation Name': 'users',
+                    Alias: 'users',
+                    'Startup Cost': 0,
+                    'Total Cost': 12.3,
+                    'Plan Rows': 230,
+                    'Plan Width': 316,
+                    'Actual Startup Time': 0.012,
+                    'Actual Total Time': 0.013,
+                    'Actual Rows': 15,
+                    'Actual Loops': 1,
+                  },
+                  'Planning Time': 0.367,
+                  Triggers: [],
+                  'Execution Time': 0.034,
+                },
+              ],
+            },
+          ],
+        },
+        querySchema: 'schemaB',
+        queryLabel: 'get all from users',
+      },
+      {
+        queryString: 'SELECT * FROM public.items',
+        queryData: `" _id |       email        | firstName | lastName |  password  | points | address_id 
+        -----+--------------------+-----------+----------+------------+--------+------------
+           1 | cc2368@cornell.edu | Catherine | Chiu     | helloworld |    500 |          1
+           2 | jm@gmail.com       | John      | Madrigal | helloworld |    500 |          2
+           3 | mh@gmail.com       | Michelle  | Holland  | helloworld |    500 |          3
+           4 | sk@gmail.com       | Serena    | Kuo      | helloworld |    500 |          4
+        (4 rows)
+        "`,
+        queryStatistics: {
+          items: [
+            {
+              'QUERY PLAN': [
+                {
+                  Plan: {
+                    'Node Type': 'Seq Scan',
+                    'Parallel Aware': false,
+                    'Relation Name': 'items',
+                    Alias: 'items',
+                    'Startup Cost': 0,
+                    'Total Cost': 11.9,
+                    'Plan Rows': 190,
+                    'Plan Width': 391,
+                    'Actual Startup Time': 0.014,
+                    'Actual Total Time': 0.015,
+                    'Actual Rows': 6,
+                    'Actual Loops': 1,
+                  },
+                  'Planning Time': 0.262,
+                  Triggers: [],
+                  'Execution Time': 0.038,
+                },
+              ],
+            },
+          ],
+        },
+        querySchema: 'schemaA',
+        queryLabel: 'get all from items',
+      },
+      {
+        queryString: 'SELECT * FROM public.users',
+        queryData: `" _id |       email        | firstName | lastName |  password  | points | address_id 
+        -----+--------------------+-----------+----------+------------+--------+------------
+           1 | cc2368@cornell.edu | Catherine | Chiu     | helloworld |    500 |          1
+           2 | jm@gmail.com       | John      | Madrigal | helloworld |    500 |          2
+           3 | mh@gmail.com       | Michelle  | Holland  | helloworld |    500 |          3
+           4 | sk@gmail.com       | Serena    | Kuo      | helloworld |    500 |          4
+        (4 rows)
+        "`,
+        queryStatistics: {
+          items: [
+            {
+              'QUERY PLAN': [
+                {
+                  Plan: {
+                    'Node Type': 'Seq Scan',
+                    'Parallel Aware': false,
+                    'Relation Name': 'users',
+                    Alias: 'users',
+                    'Startup Cost': 0,
+                    'Total Cost': 12.3,
+                    'Plan Rows': 230,
+                    'Plan Width': 316,
+                    'Actual Startup Time': 0.012,
+                    'Actual Total Time': 0.013,
+                    'Actual Rows': 15,
+                    'Actual Loops': 1,
+                  },
+                  'Planning Time': 0.367,
+                  Triggers: [],
+                  'Execution Time': 0.034,
+                },
+              ],
+            },
+          ],
+        },
+        querySchema: 'schemaB',
+        queryLabel: 'get all from users',
+      },
+      {
+        queryString: 'SELECT * FROM public.users',
+        queryData: `" _id |       email        | firstName | lastName |  password  | points | address_id 
+        -----+--------------------+-----------+----------+------------+--------+------------
+           1 | cc2368@cornell.edu | Catherine | Chiu     | helloworld |    500 |          1
+           2 | jm@gmail.com       | John      | Madrigal | helloworld |    500 |          2
+           3 | mh@gmail.com       | Michelle  | Holland  | helloworld |    500 |          3
+           4 | sk@gmail.com       | Serena    | Kuo      | helloworld |    500 |          4
+        (4 rows)
+        "`,
+        queryStatistics: {
+          items: [
+            {
+              'QUERY PLAN': [
+                {
+                  Plan: {
+                    'Node Type': 'Seq Scan',
+                    'Parallel Aware': false,
+                    'Relation Name': 'users',
+                    Alias: 'users',
+                    'Startup Cost': 0,
+                    'Total Cost': 12.3,
+                    'Plan Rows': 230,
+                    'Plan Width': 316,
+                    'Actual Startup Time': 0.012,
+                    'Actual Total Time': 0.013,
+                    'Actual Rows': 15,
+                    'Actual Loops': 1,
+                  },
+                  'Planning Time': 0.367,
+                  Triggers: [],
+                  'Execution Time': 0.034,
+                },
+              ],
+            },
+          ],
+        },
+        querySchema: 'schemaB',
+        queryLabel: 'get all from users',
+      },
+      {
+        queryString: 'SELECT * FROM public.users',
+        queryData: `" _id |       email        | firstName | lastName |  password  | points | address_id 
+        -----+--------------------+-----------+----------+------------+--------+------------
+           1 | cc2368@cornell.edu | Catherine | Chiu     | helloworld |    500 |          1
+           2 | jm@gmail.com       | John      | Madrigal | helloworld |    500 |          2
+           3 | mh@gmail.com       | Michelle  | Holland  | helloworld |    500 |          3
+           4 | sk@gmail.com       | Serena    | Kuo      | helloworld |    500 |          4
+        (4 rows)
+        "`,
+        queryStatistics: {
+          items: [
+            {
+              'QUERY PLAN': [
+                {
+                  Plan: {
+                    'Node Type': 'Seq Scan',
+                    'Parallel Aware': false,
+                    'Relation Name': 'users',
+                    Alias: 'users',
+                    'Startup Cost': 0,
+                    'Total Cost': 12.3,
+                    'Plan Rows': 230,
+                    'Plan Width': 316,
+                    'Actual Startup Time': 0.012,
+                    'Actual Total Time': 0.013,
+                    'Actual Rows': 15,
+                    'Actual Loops': 1,
+                  },
+                  'Planning Time': 0.367,
+                  Triggers: [],
+                  'Execution Time': 0.034,
+                },
+              ],
+            },
+          ],
+        },
+        querySchema: 'schemaB',
+        queryLabel: 'get all from users',
+      },
+      {
+        queryString: 'SELECT * FROM public.items',
+        queryData: `" _id |       email        | firstName | lastName |  password  | points | address_id 
+        -----+--------------------+-----------+----------+------------+--------+------------
+           1 | cc2368@cornell.edu | Catherine | Chiu     | helloworld |    500 |          1
+           2 | jm@gmail.com       | John      | Madrigal | helloworld |    500 |          2
+           3 | mh@gmail.com       | Michelle  | Holland  | helloworld |    500 |          3
+           4 | sk@gmail.com       | Serena    | Kuo      | helloworld |    500 |          4
+        (4 rows)
+        "`,
+        queryStatistics: {
+          items: [
+            {
+              'QUERY PLAN': [
+                {
+                  Plan: {
+                    'Node Type': 'Seq Scan',
+                    'Parallel Aware': false,
+                    'Relation Name': 'items',
+                    Alias: 'items',
+                    'Startup Cost': 0,
+                    'Total Cost': 11.9,
+                    'Plan Rows': 190,
+                    'Plan Width': 391,
+                    'Actual Startup Time': 0.014,
+                    'Actual Total Time': 0.015,
+                    'Actual Rows': 6,
+                    'Actual Loops': 1,
+                  },
+                  'Planning Time': 0.262,
+                  Triggers: [],
+                  'Execution Time': 0.038,
+                },
+              ],
+            },
+          ],
+        },
+        querySchema: 'schemaA',
+        queryLabel: 'get all from items',
       },
     ],
     currentSchema: 'schemaB',
   };
 
   render() {
+    ipcRenderer.on('return-execute-query', (event: any, data: any) => {
+      console.log('data', data);
+      let output = JSON.parse(data.analyze);
+      console.log("PARSED-ANALYZE", output, "DATA", data.data);
+    });
     return (
       <div id="main-panel">
         <div id="main-left">
-          <h3 style={{ border: '1px solid blue' }}>This is the main panel!</h3>
           <History queries={this.state.queries} currentSchema={this.state.currentSchema} />
           <Compare />
         </div>

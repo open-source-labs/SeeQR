@@ -4,12 +4,13 @@ import { Results } from './schemaChildren/Results';
 import Query from './schemaChildren/Query';
 
 type SchemaContainerProps = {
-  queries: {
-    queryString: string;
-    queryData: object[];
-    queryStatistics: any
-    querySchema: string;
-  }[];
+  // queries: {
+  //   queryString: string;
+  //   queryData: object[];
+  //   queryStatistics: any;
+  //   querySchema: string;
+  // }[];
+  queries: any;
   currentSchema: string;
 };
 
@@ -22,11 +23,10 @@ export class SchemaContainer extends Component<SchemaContainerProps> {
     return (
       <div id="main-right">
         <div id="schema-tabs">
-          <h3 style={{ border: '1px solid blue' }}>SchemaContainer Panel</h3>
-          <div>Schema Tabs Here</div>
+          {/* <div>Schema Tabs Here</div> */}
         </div>
 
-        <div id="results-panel">
+        <div id="test-panels">
           <div id="schema-left">
             <Query currentSchema={this.props.currentSchema} />
             <Data queries={this.props.queries} />

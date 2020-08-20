@@ -26,7 +26,7 @@ export class Results extends Component<ResultsProps> {
         ['Actual Rows']: actualRows,
         ['Actual Startup Time']: actualStartupTime,
         ['Actual Total Time']: actualTotalTime,
-        ['Actual Loops']: loops
+        ['Actual Loops']: loops,
       } = Plan;
       const runtime = ((planningTime + executionTime).toFixed(3));
 
@@ -44,19 +44,19 @@ export class Results extends Component<ResultsProps> {
           <td id='loops'>{loops}</td>
           {/* <td id='notes'>{'Notes'}</td> */}
         </tr>
-      )
-    })
+      );
+    });
   }
 
   render() {
     const { queries } = this.props
 
     return (
-      <div style={{ fontSize: '12px' }}>
-        <h2 id='results-title'>Results</h2>
+      <div>
+        <h3>Results</h3>
         <table id='results'>
           <tbody>
-            <tr style={{ fontWeight: 600 }} id='results-columns'>
+            <tr className="top-row">
               {/* <td>{'Label'}</td> */}
               <td>{'Query'}</td>
               <td>{'Scan Type'}</td>
@@ -72,7 +72,7 @@ export class Results extends Component<ResultsProps> {
             {this.renderTableData()}
           </tbody>
         </table>
-      </div >
+      </div>
     );
   }
 }
