@@ -184,6 +184,7 @@ ipcMain.on('skip-file-upload', (event) => {});
 interface QueryType {
     queryCurrentSchema: string,
     queryString: string,
+    queryLabel: string
 }
 
 // Listen for queries being sent from renderer
@@ -203,6 +204,7 @@ ipcMain.on('execute-query', (event, data: QueryType) => {
         console.log(`stdout-analyze: ${stdout}`);
         stdout = stdout.slice(stdout.indexOf("["), stdout.lastIndexOf("]") + 1).split("+").join("");
         responseObj.analyze = stdout;
+        responseObj.queryLabel = data.queryLabel;
         // event.sender.send('return-execute-query', stdout);
         exec(`docker exec postgres-1 psql -h localhost -p 5432 -U postgres -d test -c "${data.queryString}"`,
         (error, stdout, stderr) => {
