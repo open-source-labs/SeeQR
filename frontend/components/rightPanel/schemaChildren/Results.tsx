@@ -1,16 +1,13 @@
 import React, { Component } from 'react';
-import { execArgv } from 'process';
-const { ipcRenderer } = window.require('electron');
-
-type ClickEvent = React.MouseEvent<HTMLElement>;
 
 type ResultsProps = {
-  queries: {
-    queryString: string;
-    queryData: object[];
-    queryStatistics: any
-    querySchema: string;
-  }[];
+  // queries: {
+  //   queryString: string;
+  //   queryData: string;
+  //   queryStatistics: any
+  //   querySchema: string;
+  // }[];
+  queries: any;
 };
 
 export class Results extends Component<ResultsProps> {
@@ -31,12 +28,6 @@ export class Results extends Component<ResultsProps> {
         ['Actual Total Time']: actualTotalTime,
         ['Actual Loops']: loops
       } = Plan;
-
-      console.log('planningTime', planningTime);
-      console.log('executionTime', executionTime);
-
-
-
       const runtime = ((planningTime + executionTime).toFixed(3));
 
       return (
@@ -61,7 +52,7 @@ export class Results extends Component<ResultsProps> {
     const { queries } = this.props
 
     return (
-      <div style={{ border: '1px solid blue', fontSize: '12px' }}>
+      <div style={{ fontSize: '12px' }}>
         <h2 id='results-title'>Results</h2>
         <table id='results'>
           <tbody>
