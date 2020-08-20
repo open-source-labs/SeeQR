@@ -619,6 +619,11 @@ class MainPanel extends Component<MainProps, MainState> {
   };
 
   render() {
+    ipcRenderer.on('return-execute-query', (event: any, data: any) => {
+      console.log('data', data);
+      let output = JSON.parse(data.analyze);
+      console.log("PARSED-ANALYZE", output, "DATA", data.data);
+    });
     return (
       <div id="main-panel">
         <div id="main-left">
