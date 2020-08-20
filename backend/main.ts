@@ -143,18 +143,36 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
             return;
           }
           console.log(`stdout: ${stdout}`);
-          exec(`docker exec postgres-1 pg_restore -U postgres -d ${db_name} /data_dump`,
-            (error, stdout, stderr) => {
-              if (error) {
-                console.log(`error: ${error.message}`);
-                return;
-              }
-              if (stderr) {
-                console.log(`stderr: ${stderr}`);
-                return;
-              }
-              console.log(`stdout: ${stdout}`);
-            });
+          const extension: string = filePaths[0].slice(filePaths[0].lastIndexOf('.'));
+          console.log(extension);
+          if (extension === '.sql'){
+            exec(`docker exec postgres-1 psql -U postgres -d ${db_name} -f /data_dump`,
+              (error, stdout, stderr) => {
+                if (error) {
+                  console.log(`error: ${error.message}`);
+                  return;
+                }
+                if (stderr) {
+                  console.log(`stderr: ${stderr}`);
+                  return;
+                }
+                console.log(`stdout: ${stdout}`);
+              });
+          }
+          else if (extension === '.tar'){
+            exec(`docker exec postgres-1 pg_restore -U postgres -d ${db_name} /data_dump`,
+              (error, stdout, stderr) => {
+                if (error) {
+                  console.log(`error: ${error.message}`);
+                  return;
+                }
+                if (stderr) {
+                  console.log(`stderr: ${stderr}`);
+                  return;
+                }
+                console.log(`stdout: ${stdout}`);
+              });
+          }
         });
     });
   // Send result back to renderer
@@ -170,6 +188,8 @@ interface QueryType {
 
 // Listen for queries being sent from renderer
 ipcMain.on('execute-query', (event, data: QueryType) => {
+
+  const responseObj: any = {};
     exec(`docker exec postgres-1 psql -h localhost -p 5432 -U postgres -d test -c "EXPLAIN (FORMAT JSON, ANALYZE) ${data.queryString}"`,
     (error, stdout, stderr) => {
         if (error) {
@@ -180,9 +200,25 @@ ipcMain.on('execute-query', (event, data: QueryType) => {
             console.log(`stderr: ${stderr}`);
             return;
         }
-        console.log(`stdout: ${stdout}`);
+        console.log(`stdout-analyze: ${stdout}`);
         stdout = stdout.slice(stdout.indexOf("["), stdout.lastIndexOf("]") + 1).split("+").join("");
-        event.sender.send('return-execute-query', stdout);
+        responseObj.analyze = stdout;
+        // event.sender.send('return-execute-query', stdout);
+        exec(`docker exec postgres-1 psql -h localhost -p 5432 -U postgres -d test -c "${data.queryString}"`,
+        (error, stdout, stderr) => {
+            if (error) {
+                console.log(`error: ${error.message}`);
+                return;
+            }
+            if (stderr) {
+                console.log(`stderr: ${stderr}`);
+                return;
+            }
+            responseObj.data = stdout;
+            console.log(`stdout-data: ${typeof stdout}`);
+            // stdout = stdout.slice(stdout.indexOf("["), stdout.lastIndexOf("]") + 1).split("+").join("");
+            event.sender.send('return-execute-query', responseObj);
+        });
     });
 });
 
