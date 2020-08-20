@@ -127,8 +127,8 @@ ipcMain.on('upload-file', (event, filePaths: any) => {
 ipcMain.on('skip-file-upload', (event) => {});
 
 // Listen for queries being sent from renderer
-ipcMain.on('execute-query', (event, query: string) => {
-  console.log('query sent from frontend', query);
+ipcMain.on('execute-query', (event, queryAndCurrentSchema: object) => {
+  console.log('query sent from frontend', queryAndCurrentSchema);
   // Process
   // Send result back to renderer
 });
