@@ -1,8 +1,6 @@
 import React, { Component, MouseEvent } from 'react';
 const { ipcRenderer } = window.require('electron');
 
-type ClickEvent = React.MouseEvent<HTMLElement>;
-
 type HistoryProps = {
   queries: {
     queryLabel: string;
