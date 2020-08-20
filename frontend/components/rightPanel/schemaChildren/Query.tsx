@@ -43,22 +43,22 @@ class Query extends Component<QueryProps, state> {
     ipcRenderer.send('execute-query', queryAndSchema);
   }
 
-  showModal = (event: any) => {
-    this.setState({ show: !this.state.show });
-  };
+  // showModal = (event: any) => {
+  //   this.setState({ show: !this.state.show });
+  // };
 
   render() {
     return (
       <div id="query-window">
         <h3 style={{ border: '1px solid blue' }}>Query Panel</h3>
-        <button
+        {/* <button
           onClick={(e) => {
             this.showModal(e);
           }}
         >
           Edit Schema
         </button>
-        <SchemaModal show={this.state.show} onClose={this.showModal} />
+        <SchemaModal show={this.state.show} onClose={this.showModal} /> */}
         <form onSubmit={this.handleSubmit}>
           <input
             className="text-field"
