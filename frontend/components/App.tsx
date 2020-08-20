@@ -58,6 +58,12 @@ export class App extends Component<AppProps, state> {
   }
 
 
+  sendDBRequest = () => {
+    ipcRenderer.send('dbRequest', 'yo');
+  }
+
+
+
   render() {
     return (
       <div>

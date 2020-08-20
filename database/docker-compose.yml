@@ -1,0 +1,24 @@
+version: '3.7'
+services:
+    bb:
+        image: busybox
+        volumes:
+        - database-data:/var/lib/postgresql/data
+        ports:
+        - 5432:5432
+        container_name: busybox-1
+    db:
+        image: postgres:12
+        environment:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+          # POSTGRES_DB: test
+        volumes:
+          - database-data
+        depends_on:
+          - bb
+        container_name: postgres-1
+
+volumes:
+  database-data: # named volumes can be managed easier using docker-compose
+
