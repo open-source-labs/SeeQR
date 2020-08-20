@@ -11,6 +11,9 @@
   height: 100vh;
   overflow: hidden;
   background-image: url("../../images/logo_monochrome.png");
+  background-repeat: no-repeat;
+  background-position-x: right;
+  background-position-y: bottom;
 }
 
 #main-left {
