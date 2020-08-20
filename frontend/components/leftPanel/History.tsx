@@ -5,43 +5,64 @@ type ClickEvent = React.MouseEvent<HTMLElement>;
 
 type HistoryProps = {
   queries: {
-    queryString: string;
-    queryData: object[];
+    queryLabel: string;
     queryStatistics: any;
     querySchema: string;
   }[];
   currentSchema: string;
 };
 
-type HistoryState = {
-};
+export class History extends Component<HistoryProps> {
+  constructor(props: HistoryProps) {
+    super(props);
+  }
 
-class History extends Component<HistoryProps, HistoryState> {
+  renderTableHistory() {
+    return this.props.queries.map((query, index) => {
+      const { queryStatistics, querySchema, queryLabel } = query;
+
+      const { ['QUERY PLAN']: queryPlan } = queryStatistics['items'][0];
+      console.log('queryPlan', queryPlan);
+
+      const {
+        Plan,
+        ['Planning Time']: planningTime,
+        ['Execution Time']: executionTime,
+      } = queryPlan[0];
+      const { ['Actual Rows']: actualRows, ['Actual Total Time']: actualTotalTime } = Plan;
+
+      return (
+        <tr key={index}>
+          <td id="query-label">{queryLabel}</td>
+          <td id="schema-name">{querySchema}</td>
+          <td id="actual-rows">{actualRows}</td>
+          <td id="total-time">{actualTotalTime}</td>
+        </tr>
+      );
+    });
+  }
+
   render() {
-    
-    const mappedHistory = this.props.queries.map((el) => {
-      const queryLabel = el.queryString;
-      const schemaName = el.querySchema;
-      const responseTime = el.queryStatistics.items[0]['QUERY PLAN'][0]['Planning Time'] + el.queryStatistics.items[0]['QUERY PLAN'][0]['Execution Time']
-      const rows = el.queryStatistics.items[0]['QUERY PLAN'][0].Plan['Plan Rows'];
-      return queryLabel+schemaName+responseTime+rows
-      }
-    )
+    const { queries } = this.props;
+    console.log('queries', queries);
+
     return (
-      <div id="history-panel" style={{ border: '1px solid blue' }}>
-      <h2>History</h2>
-      <div id="history-topbar">
-        <span className="col-1">Query Label</span>
-        <span className="col-2">Schema</span>
-        <span className="col-3">Response Time</span>
-        <span className="col-4">Rows Returned</span>
+      <div id="history-panel">
+        <h3>History</h3>
+        <table className="scroll-box">
+          <tbody>
+            <tr className="top-row">
+              <td>{'Query Label'}</td>
+              <td>{'Schema'}</td>
+              <td>{'Total Rows'}</td>
+              <td>{'Total Time'}</td>
+            </tr>
+            {this.renderTableHistory()}
+          </tbody>
+        </table>
       </div>
-      <div className="scroll-box">
-        <h2>{mappedHistory}</h2>
-      </div>
-    </div>
-  );
-};
+    );
+  }
 }
 
 export default History;

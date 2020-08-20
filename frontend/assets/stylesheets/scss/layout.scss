@@ -1,48 +1,73 @@
+@import './variables.scss';
+
 #main-panel {
   display: flex;
   flex-direction: row;
   height: 100vh;
-  // border: solid 1px red;
+  overflow: hidden;
+  background-image: url('../../images/logo_monochrome.png');
+  // background-repeat: no-repeat;
 }
 
 #main-left {
   width: 34%;
-  height: 100%;
   display: flex;
   flex-direction: column;
+  padding: 15px;
+  background-color: $background-darkmode-darker;
+}
+#history-panel {
+  height: 50%;
+  display: flex;
+  flex-direction: column;
+}
+
+#compare-panel {
+  display: flex;
+  flex-grow: 1;
 }
 
 #main-right {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
+  height: 100%;
+}
+
+#test-panels {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
 }
 
 #schema-left {
   display: flex;
   flex-direction: column;
   width: 50%;
+  flex: 1;
+  padding: 15px;
+  border-right: 0.5px solid $border-darkmode;
 }
-
-#schema-right {
-  border: 1px solid purple;
-  display: flex;
-  flex-direction: column;
-  width: 50%;
-}
-
-#history-panel {
+#query-panel {
   display: flex;
   flex-direction: column;
   height: 50%;
 }
-
-#compare-panel {
+#data-panel {
   display: flex;
-  flex: 1;
+  flex-direction: column;
+  flex-grow: 1;
+}
+#schema-right {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  padding: 15px;
+  height: 100%;
 }
 
 #results-panel {
   display: flex;
-  flex-direction: row;
+  flex-grow: 1;
+  flex-direction: column;
 }

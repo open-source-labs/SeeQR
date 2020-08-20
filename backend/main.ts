@@ -24,10 +24,10 @@ if (process.env.NODE_ENV !== undefined && process.env.NODE_ENV === 'development'
 // Create browser window
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 1280,
-    height: 1024,
-    minWidth: 720,
-    minHeight: 480,
+    width: 1500,
+    height: 1200,
+    minWidth: 900,
+    minHeight: 720,
     title: 'SeeQR',
     show: false,
     webPreferences: { nodeIntegration: true, enableRemoteModule: true },
