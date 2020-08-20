@@ -12,7 +12,7 @@ services:
         environment:
           POSTGRES_PASSWORD: postgres
           POSTGRES_USER: postgres
-          POSTGRES_DB: test
+          # POSTGRES_DB: test
         volumes:
           - database-data
         depends_on:
