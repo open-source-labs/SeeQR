@@ -10,7 +10,7 @@ type MainState = {
   queries: {
     queryString: string;
     queryData: object[];
-    queryStatistics: object[];
+    queryStatistics: any
     querySchema: string;
   }[];
   currentSchema: string;
@@ -53,14 +53,33 @@ class MainPanel extends Component<MainProps, MainState> {
             item_longitude: '-122.0842499',
           },
         ],
-        queryStatistics: [
-          {
-            'QUERY PLAN':
-              'Seq Scan on items  (cost=0.00..11.90 rows=190 width=391) (actual time=0.004..0.004 rows=6 loops=1)',
-          },
-          { 'QUERY PLAN': 'Planning Time: 0.284 ms' },
-          { 'QUERY PLAN': 'Execution Time: 0.027 ms' },
-        ],
+        queryStatistics: {
+          "items": [
+            {
+              "QUERY PLAN": [
+                {
+                  "Plan": {
+                    "Node Type": "Seq Scan",
+                    "Parallel Aware": false,
+                    "Relation Name": "items",
+                    "Alias": "items",
+                    "Startup Cost": 0,
+                    "Total Cost": 11.9,
+                    "Plan Rows": 190,
+                    "Plan Width": 391,
+                    "Actual Startup Time": 0.014,
+                    "Actual Total Time": 0.015,
+                    "Actual Rows": 6,
+                    "Actual Loops": 1
+                  },
+                  "Planning Time": 0.262,
+                  "Triggers": [],
+                  "Execution Time": 0.038
+                }
+              ]
+            }
+          ]
+        },
         querySchema: 'schemaA',
       },
       {
@@ -85,14 +104,33 @@ class MainPanel extends Component<MainProps, MainState> {
             address_id: '2',
           },
         ],
-        queryStatistics: [
-          {
-            'QUERY PLAN':
-              'Seq Scan on users  (cost=0.00..12.30 rows=230 width=316) (actual time=0.015..0.016 rows=15 loops=1)',
-          },
-          { 'QUERY PLAN': 'Planning Time: 0.329 ms' },
-          { 'QUERY PLAN': 'Execution Time: 0.037 ms' },
-        ],
+        queryStatistics: {
+          "items": [
+            {
+              "QUERY PLAN": [
+                {
+                  "Plan": {
+                    "Node Type": "Seq Scan",
+                    "Parallel Aware": false,
+                    "Relation Name": "users",
+                    "Alias": "users",
+                    "Startup Cost": 0,
+                    "Total Cost": 12.3,
+                    "Plan Rows": 230,
+                    "Plan Width": 316,
+                    "Actual Startup Time": 0.012,
+                    "Actual Total Time": 0.013,
+                    "Actual Rows": 15,
+                    "Actual Loops": 1
+                  },
+                  "Planning Time": 0.367,
+                  "Triggers": [],
+                  "Execution Time": 0.034
+                }
+              ]
+            }
+          ]
+        },
         querySchema: 'schemaB',
       },
     ],

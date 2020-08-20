@@ -7,7 +7,7 @@ type HistoryProps = {
   queries: {
     queryString: string;
     queryData: object[];
-    queryStatistics: object[];
+    queryStatistics: any;
     querySchema: string;
   }[];
   currentSchema: string;
