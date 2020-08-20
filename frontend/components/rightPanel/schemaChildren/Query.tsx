@@ -5,12 +5,12 @@ import SchemaModal from './SchemaModal';
 type ClickEvent = React.MouseEvent<HTMLElement>;
 type InputChangeEvent = React.ChangeEvent<HTMLInputElement>;
 
-type QueryProps = {currentSchema: string};
+type QueryProps = { currentSchema: string };
 
 type state = {
-  queryString: string,
-  querySchema: string,
-  show: boolean,
+  queryString: string;
+  currentSchema: string;
+  show: boolean;
 };
 
 class Query extends Component<QueryProps, state> {
@@ -25,18 +25,21 @@ class Query extends Component<QueryProps, state> {
 
   state: state = {
     queryString: '',
-    querySchema: '',
+    currentSchema: '',
     show: false,
   };
 
   handleQueryEntry(event: any) {
-    this.setState({ queryString: event.target.value, querySchema: event.target.name });
+    this.setState({ queryString: event.target.value, currentSchema: event.target.name });
   }
 
   handleSubmit(event: any) {
     event.preventDefault();
     console.log(this.state.queryString);
-    const queryAndSchema = [this.state.queryString, this.state.querySchema]
+    const queryAndSchema = {
+      queryString: this.state.queryString,
+      queryCurrentSchema: this.state.currentSchema,
+    };
     ipcRenderer.send('execute-query', queryAndSchema);
   }
 
