@@ -3,17 +3,14 @@ import { Data } from './schemaChildren/Data';
 import { Results } from './schemaChildren/Results';
 import Query from './schemaChildren/Query';
 
-const { ipcRenderer } = window.require('electron');
-
-type ClickEvent = React.MouseEvent<HTMLElement>;
-
 type SchemaContainerProps = {
-  queries: {
-    queryString: string;
-    queryData: object[];
-    queryStatistics: any;
-    querySchema: string;
-  }[];
+  // queries: {
+  //   queryString: string;
+  //   queryData: object[];
+  //   queryStatistics: any;
+  //   querySchema: string;
+  // }[];
+  queries: any;
   currentSchema: string;
 };
 
@@ -32,7 +29,7 @@ export class SchemaContainer extends Component<SchemaContainerProps> {
         <div id="test-panels">
           <div id="schema-left">
             <Query currentSchema={this.props.currentSchema} />
-            <Data />
+            <Data queries={this.props.queries} />
           </div>
           <div id="schema-right">
             <Results queries={this.props.queries} />

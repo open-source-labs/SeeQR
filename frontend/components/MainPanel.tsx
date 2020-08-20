@@ -1,21 +1,27 @@
 import React, { Component } from 'react';
-const { ipcRenderer } = window.require('electron');
 import { Compare } from './leftPanel/Compare';
 import History from './leftPanel/History';
 import { SchemaContainer } from './rightPanel/SchemaContainer';
+const { ipcRenderer } = window.require('electron');
 
 type MainState = {
-  queries: {
-    queryString: string;
-    queryLabel: string;
-    queryData: object[];
-    queryStatistics: any;
-    querySchema: string;
-  }[];
+  // queries: {
+  //   queryString: string;
+  //   queryData: string;
+  //   queryStatistics: any
+  //   querySchema: string;
+  // }[];
+  queries: any;
   currentSchema: string;
+  // queryLabel: string;
 };
 
 type MainProps = {};
+
+// interface MainState {
+//   queries: any;
+//   currentSchema: string;
+// }
 
 class MainPanel extends Component<MainProps, MainState> {
   constructor(props: MainProps) {
@@ -26,32 +32,41 @@ class MainPanel extends Component<MainProps, MainState> {
     queries: [
       {
         queryString: 'SELECT * FROM public.items',
-        queryData: [
-          {
-            _id: 1,
-            title: 'fiddle leaf fig',
-            description: 'lovely green addition to your home',
-            image:
-              'https://cdn.shopify.com/s/files/1/0013/3529/6118/products/Kent-48-3265.048-WH_Fiddle-Leaf-Fig-Tree-14.jpg?v=1590447682',
-            category: 'home goods',
-            status: false,
-            user_id: '1',
-            item_latitude: '37.4224764',
-            item_longitude: '-122.0842499',
-          },
-          {
-            _id: 2,
-            title: 'monstera leaf',
-            description: 'lovely green addition to your home',
-            image:
-              'https://cdn.shopify.com/s/files/1/0150/6262/products/the-sill_monstera_variant_medium_grant_cream_54108884-3d3d-44f4-9c34-d741345067ab_1200x.jpg?v=1589821773',
-            category: 'home goods',
-            status: false,
-            user_id: '1',
-            item_latitude: '37.4224764',
-            item_longitude: '-122.0842499',
-          },
-        ],
+        queryData: `" _id |       email        | firstName | lastName |  password  | points | address_id 
+        -----+--------------------+-----------+----------+------------+--------+------------
+           1 | cc2368@cornell.edu | Catherine | Chiu     | helloworld |    500 |          1
+           2 | jm@gmail.com       | John      | Madrigal | helloworld |    500 |          2
+           3 | mh@gmail.com       | Michelle  | Holland  | helloworld |    500 |          3
+           4 | sk@gmail.com       | Serena    | Kuo      | helloworld |    500 |          4
+        (4 rows)
+        "`
+        // [
+        //   {
+        //     _id: 1,
+        //     title: 'fiddle leaf fig',
+        //     description: 'lovely green addition to your home',
+        //     image:
+        //       'https://cdn.shopify.com/s/files/1/0013/3529/6118/products/Kent-48-3265.048-WH_Fiddle-Leaf-Fig-Tree-14.jpg?v=1590447682',
+        //     category: 'home goods',
+        //     status: false,
+        //     user_id: '1',
+        //     item_latitude: '37.4224764',
+        //     item_longitude: '-122.0842499',
+        //   },
+        //   {
+        //     _id: 2,
+        //     title: 'monstera leaf',
+        //     description: 'lovely green addition to your home',
+        //     image:
+        //       'https://cdn.shopify.com/s/files/1/0150/6262/products/the-sill_monstera_variant_medium_grant_cream_54108884-3d3d-44f4-9c34-d741345067ab_1200x.jpg?v=1589821773',
+        //     category: 'home goods',
+        //     status: false,
+        //     user_id: '1',
+        //     item_latitude: '37.4224764',
+        //     item_longitude: '-122.0842499',
+        //   },
+        // ]
+        ,
         queryStatistics: {
           items: [
             {
@@ -84,26 +99,35 @@ class MainPanel extends Component<MainProps, MainState> {
       },
       {
         queryString: 'SELECT * FROM public.users',
-        queryData: [
-          {
-            _id: 1,
-            email: 'cc2368@cornell.edu',
-            firstName: 'Catherine',
-            lastName: 'Chiu',
-            password: 'helloworld',
-            points: 500,
-            address_id: '1',
-          },
-          {
-            _id: 2,
-            email: 'jm@gmail.com',
-            firstName: 'John',
-            lastName: 'Madrigal',
-            password: 'helloworld',
-            points: 500,
-            address_id: '2',
-          },
-        ],
+        queryData: `" _id |       email        | firstName | lastName |  password  | points | address_id 
+        -----+--------------------+-----------+----------+------------+--------+------------
+           1 | cc2368@cornell.edu | Catherine | Chiu     | helloworld |    500 |          1
+           2 | jm@gmail.com       | John      | Madrigal | helloworld |    500 |          2
+           3 | mh@gmail.com       | Michelle  | Holland  | helloworld |    500 |          3
+           4 | sk@gmail.com       | Serena    | Kuo      | helloworld |    500 |          4
+        (4 rows)
+        "`
+        // [
+        //   {
+        //     _id: 1,
+        //     email: 'cc2368@cornell.edu',
+        //     firstName: 'Catherine',
+        //     lastName: 'Chiu',
+        //     password: 'helloworld',
+        //     points: 500,
+        //     address_id: '1',
+        //   },
+        //   {
+        //     _id: 2,
+        //     email: 'jm@gmail.com',
+        //     firstName: 'John',
+        //     lastName: 'Madrigal',
+        //     password: 'helloworld',
+        //     points: 500,
+        //     address_id: '2',
+        //   },
+        // ]
+        ,
         queryStatistics: {
           items: [
             {
@@ -136,26 +160,14 @@ class MainPanel extends Component<MainProps, MainState> {
       },
       {
         queryString: 'SELECT * FROM public.users',
-        queryData: [
-          {
-            _id: 1,
-            email: 'cc2368@cornell.edu',
-            firstName: 'Catherine',
-            lastName: 'Chiu',
-            password: 'helloworld',
-            points: 500,
-            address_id: '1',
-          },
-          {
-            _id: 2,
-            email: 'jm@gmail.com',
-            firstName: 'John',
-            lastName: 'Madrigal',
-            password: 'helloworld',
-            points: 500,
-            address_id: '2',
-          },
-        ],
+        queryData: `" _id |       email        | firstName | lastName |  password  | points | address_id 
+        -----+--------------------+-----------+----------+------------+--------+------------
+           1 | cc2368@cornell.edu | Catherine | Chiu     | helloworld |    500 |          1
+           2 | jm@gmail.com       | John      | Madrigal | helloworld |    500 |          2
+           3 | mh@gmail.com       | Michelle  | Holland  | helloworld |    500 |          3
+           4 | sk@gmail.com       | Serena    | Kuo      | helloworld |    500 |          4
+        (4 rows)
+        "`,
         queryStatistics: {
           items: [
             {
@@ -188,26 +200,14 @@ class MainPanel extends Component<MainProps, MainState> {
       },
       {
         queryString: 'SELECT * FROM public.users',
-        queryData: [
-          {
-            _id: 1,
-            email: 'cc2368@cornell.edu',
-            firstName: 'Catherine',
-            lastName: 'Chiu',
-            password: 'helloworld',
-            points: 500,
-            address_id: '1',
-          },
-          {
-            _id: 2,
-            email: 'jm@gmail.com',
-            firstName: 'John',
-            lastName: 'Madrigal',
-            password: 'helloworld',
-            points: 500,
-            address_id: '2',
-          },
-        ],
+        queryData: `" _id |       email        | firstName | lastName |  password  | points | address_id 
+        -----+--------------------+-----------+----------+------------+--------+------------
+           1 | cc2368@cornell.edu | Catherine | Chiu     | helloworld |    500 |          1
+           2 | jm@gmail.com       | John      | Madrigal | helloworld |    500 |          2
+           3 | mh@gmail.com       | Michelle  | Holland  | helloworld |    500 |          3
+           4 | sk@gmail.com       | Serena    | Kuo      | helloworld |    500 |          4
+        (4 rows)
+        "`,
         queryStatistics: {
           items: [
             {
@@ -240,26 +240,14 @@ class MainPanel extends Component<MainProps, MainState> {
       },
       {
         queryString: 'SELECT * FROM public.users',
-        queryData: [
-          {
-            _id: 1,
-            email: 'cc2368@cornell.edu',
-            firstName: 'Catherine',
-            lastName: 'Chiu',
-            password: 'helloworld',
-            points: 500,
-            address_id: '1',
-          },
-          {
-            _id: 2,
-            email: 'jm@gmail.com',
-            firstName: 'John',
-            lastName: 'Madrigal',
-            password: 'helloworld',
-            points: 500,
-            address_id: '2',
-          },
-        ],
+        queryData: `" _id |       email        | firstName | lastName |  password  | points | address_id 
+        -----+--------------------+-----------+----------+------------+--------+------------
+           1 | cc2368@cornell.edu | Catherine | Chiu     | helloworld |    500 |          1
+           2 | jm@gmail.com       | John      | Madrigal | helloworld |    500 |          2
+           3 | mh@gmail.com       | Michelle  | Holland  | helloworld |    500 |          3
+           4 | sk@gmail.com       | Serena    | Kuo      | helloworld |    500 |          4
+        (4 rows)
+        "`,
         queryStatistics: {
           items: [
             {
@@ -292,26 +280,14 @@ class MainPanel extends Component<MainProps, MainState> {
       },
       {
         queryString: 'SELECT * FROM public.users',
-        queryData: [
-          {
-            _id: 1,
-            email: 'cc2368@cornell.edu',
-            firstName: 'Catherine',
-            lastName: 'Chiu',
-            password: 'helloworld',
-            points: 500,
-            address_id: '1',
-          },
-          {
-            _id: 2,
-            email: 'jm@gmail.com',
-            firstName: 'John',
-            lastName: 'Madrigal',
-            password: 'helloworld',
-            points: 500,
-            address_id: '2',
-          },
-        ],
+        queryData: `" _id |       email        | firstName | lastName |  password  | points | address_id 
+        -----+--------------------+-----------+----------+------------+--------+------------
+           1 | cc2368@cornell.edu | Catherine | Chiu     | helloworld |    500 |          1
+           2 | jm@gmail.com       | John      | Madrigal | helloworld |    500 |          2
+           3 | mh@gmail.com       | Michelle  | Holland  | helloworld |    500 |          3
+           4 | sk@gmail.com       | Serena    | Kuo      | helloworld |    500 |          4
+        (4 rows)
+        "`,
         queryStatistics: {
           items: [
             {
@@ -344,32 +320,14 @@ class MainPanel extends Component<MainProps, MainState> {
       },
       {
         queryString: 'SELECT * FROM public.items',
-        queryData: [
-          {
-            _id: 1,
-            title: 'fiddle leaf fig',
-            description: 'lovely green addition to your home',
-            image:
-              'https://cdn.shopify.com/s/files/1/0013/3529/6118/products/Kent-48-3265.048-WH_Fiddle-Leaf-Fig-Tree-14.jpg?v=1590447682',
-            category: 'home goods',
-            status: false,
-            user_id: '1',
-            item_latitude: '37.4224764',
-            item_longitude: '-122.0842499',
-          },
-          {
-            _id: 2,
-            title: 'monstera leaf',
-            description: 'lovely green addition to your home',
-            image:
-              'https://cdn.shopify.com/s/files/1/0150/6262/products/the-sill_monstera_variant_medium_grant_cream_54108884-3d3d-44f4-9c34-d741345067ab_1200x.jpg?v=1589821773',
-            category: 'home goods',
-            status: false,
-            user_id: '1',
-            item_latitude: '37.4224764',
-            item_longitude: '-122.0842499',
-          },
-        ],
+        queryData: `" _id |       email        | firstName | lastName |  password  | points | address_id 
+        -----+--------------------+-----------+----------+------------+--------+------------
+           1 | cc2368@cornell.edu | Catherine | Chiu     | helloworld |    500 |          1
+           2 | jm@gmail.com       | John      | Madrigal | helloworld |    500 |          2
+           3 | mh@gmail.com       | Michelle  | Holland  | helloworld |    500 |          3
+           4 | sk@gmail.com       | Serena    | Kuo      | helloworld |    500 |          4
+        (4 rows)
+        "`,
         queryStatistics: {
           items: [
             {
@@ -402,26 +360,14 @@ class MainPanel extends Component<MainProps, MainState> {
       },
       {
         queryString: 'SELECT * FROM public.users',
-        queryData: [
-          {
-            _id: 1,
-            email: 'cc2368@cornell.edu',
-            firstName: 'Catherine',
-            lastName: 'Chiu',
-            password: 'helloworld',
-            points: 500,
-            address_id: '1',
-          },
-          {
-            _id: 2,
-            email: 'jm@gmail.com',
-            firstName: 'John',
-            lastName: 'Madrigal',
-            password: 'helloworld',
-            points: 500,
-            address_id: '2',
-          },
-        ],
+        queryData: `" _id |       email        | firstName | lastName |  password  | points | address_id 
+        -----+--------------------+-----------+----------+------------+--------+------------
+           1 | cc2368@cornell.edu | Catherine | Chiu     | helloworld |    500 |          1
+           2 | jm@gmail.com       | John      | Madrigal | helloworld |    500 |          2
+           3 | mh@gmail.com       | Michelle  | Holland  | helloworld |    500 |          3
+           4 | sk@gmail.com       | Serena    | Kuo      | helloworld |    500 |          4
+        (4 rows)
+        "`,
         queryStatistics: {
           items: [
             {
@@ -454,26 +400,14 @@ class MainPanel extends Component<MainProps, MainState> {
       },
       {
         queryString: 'SELECT * FROM public.users',
-        queryData: [
-          {
-            _id: 1,
-            email: 'cc2368@cornell.edu',
-            firstName: 'Catherine',
-            lastName: 'Chiu',
-            password: 'helloworld',
-            points: 500,
-            address_id: '1',
-          },
-          {
-            _id: 2,
-            email: 'jm@gmail.com',
-            firstName: 'John',
-            lastName: 'Madrigal',
-            password: 'helloworld',
-            points: 500,
-            address_id: '2',
-          },
-        ],
+        queryData: `" _id |       email        | firstName | lastName |  password  | points | address_id 
+        -----+--------------------+-----------+----------+------------+--------+------------
+           1 | cc2368@cornell.edu | Catherine | Chiu     | helloworld |    500 |          1
+           2 | jm@gmail.com       | John      | Madrigal | helloworld |    500 |          2
+           3 | mh@gmail.com       | Michelle  | Holland  | helloworld |    500 |          3
+           4 | sk@gmail.com       | Serena    | Kuo      | helloworld |    500 |          4
+        (4 rows)
+        "`,
         queryStatistics: {
           items: [
             {
@@ -506,26 +440,14 @@ class MainPanel extends Component<MainProps, MainState> {
       },
       {
         queryString: 'SELECT * FROM public.users',
-        queryData: [
-          {
-            _id: 1,
-            email: 'cc2368@cornell.edu',
-            firstName: 'Catherine',
-            lastName: 'Chiu',
-            password: 'helloworld',
-            points: 500,
-            address_id: '1',
-          },
-          {
-            _id: 2,
-            email: 'jm@gmail.com',
-            firstName: 'John',
-            lastName: 'Madrigal',
-            password: 'helloworld',
-            points: 500,
-            address_id: '2',
-          },
-        ],
+        queryData: `" _id |       email        | firstName | lastName |  password  | points | address_id 
+        -----+--------------------+-----------+----------+------------+--------+------------
+           1 | cc2368@cornell.edu | Catherine | Chiu     | helloworld |    500 |          1
+           2 | jm@gmail.com       | John      | Madrigal | helloworld |    500 |          2
+           3 | mh@gmail.com       | Michelle  | Holland  | helloworld |    500 |          3
+           4 | sk@gmail.com       | Serena    | Kuo      | helloworld |    500 |          4
+        (4 rows)
+        "`,
         queryStatistics: {
           items: [
             {
@@ -558,32 +480,14 @@ class MainPanel extends Component<MainProps, MainState> {
       },
       {
         queryString: 'SELECT * FROM public.items',
-        queryData: [
-          {
-            _id: 1,
-            title: 'fiddle leaf fig',
-            description: 'lovely green addition to your home',
-            image:
-              'https://cdn.shopify.com/s/files/1/0013/3529/6118/products/Kent-48-3265.048-WH_Fiddle-Leaf-Fig-Tree-14.jpg?v=1590447682',
-            category: 'home goods',
-            status: false,
-            user_id: '1',
-            item_latitude: '37.4224764',
-            item_longitude: '-122.0842499',
-          },
-          {
-            _id: 2,
-            title: 'monstera leaf',
-            description: 'lovely green addition to your home',
-            image:
-              'https://cdn.shopify.com/s/files/1/0150/6262/products/the-sill_monstera_variant_medium_grant_cream_54108884-3d3d-44f4-9c34-d741345067ab_1200x.jpg?v=1589821773',
-            category: 'home goods',
-            status: false,
-            user_id: '1',
-            item_latitude: '37.4224764',
-            item_longitude: '-122.0842499',
-          },
-        ],
+        queryData: `" _id |       email        | firstName | lastName |  password  | points | address_id 
+        -----+--------------------+-----------+----------+------------+--------+------------
+           1 | cc2368@cornell.edu | Catherine | Chiu     | helloworld |    500 |          1
+           2 | jm@gmail.com       | John      | Madrigal | helloworld |    500 |          2
+           3 | mh@gmail.com       | Michelle  | Holland  | helloworld |    500 |          3
+           4 | sk@gmail.com       | Serena    | Kuo      | helloworld |    500 |          4
+        (4 rows)
+        "`,
         queryStatistics: {
           items: [
             {

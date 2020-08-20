@@ -1,8 +1,25 @@
 import React, { Component, MouseEvent, ChangeEvent } from 'react';
 const { ipcRenderer } = window.require('electron');
-import SchemaModal from './SchemaModal';
 
-type ClickEvent = React.MouseEvent<HTMLElement>;
+require('codemirror/lib/codemirror.css');
+require('codemirror/mode/javascript/javascript');
+require('codemirror/mode/sql/sql');
+
+// Codemirror Themes
+require('codemirror/mode/markdown/markdown');
+require('codemirror/theme/monokai.css');
+require('codemirror/theme/midnight.css');
+require('codemirror/theme/lesser-dark.css');
+require('codemirror/theme/solarized.css');
+
+// Codemirror Component
+var CodeMirror = require('react-codemirror');
+
+/************************************************************
+ *********************** TYPESCRIPT: TYPES ***********************
+ ************************************************************/
+
+type ClickEvent = React.MouseEvent<HTMLElement>; // assign type ClickEvent to handleQuerySubmit & debug
 type InputChangeEvent = React.ChangeEvent<HTMLInputElement>;
 
 type QueryProps = { currentSchema: string };
@@ -17,11 +34,11 @@ type state = {
 class Query extends Component<QueryProps, state> {
   constructor(props: QueryProps) {
     super(props);
-    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleQuerySubmit = this.handleQuerySubmit.bind(this);
     this.handleQueryEntry = this.handleQueryEntry.bind(this);
     // this.showModal = this.showModal.bind(this);
     // this.handleQueryPrevious = this.handleQueryPrevious.bind(this);
-    // this.handleQuerySubmit = this.handleQuerySubmit.bind(this);
+    this.updateCode = this.updateCode.bind(this);
   }
 
   state: state = {
@@ -31,16 +48,15 @@ class Query extends Component<QueryProps, state> {
     show: false,
   };
 
-  handleQueryEntry(event: any) {
+  handleQueryEntry(event: InputChangeEvent) {
     this.setState({ queryString: event.target.value, currentSchema: event.target.name });
   }
   handleLabelEntry(event: any) {
     this.setState({ queryLabel: event.target.value });
   }
 
-  handleSubmit(event: any) {
+  handleQuerySubmit(event: any) {
     event.preventDefault();
-    console.log(this.state.queryString);
     const queryAndSchema = {
       queryString: this.state.queryString,
       queryCurrentSchema: this.state.currentSchema,
@@ -50,11 +66,23 @@ class Query extends Component<QueryProps, state> {
     this.setState({ queryString: '' });
   }
 
-  showModal = (event: any) => {
-    this.setState({ show: !this.state.show });
-  };
+  // showModal = (event: any) => {
+  //   this.setState({ show: !this.state.show });
+  // };
+
+  updateCode(newQueryString: string) {
+    this.setState({
+      queryString: newQueryString,
+    });
+  }
 
   render() {
+    var options = {
+      lineNumbers: true,
+      mode: 'sql',
+      theme: 'lesser-dark',
+    };
+
     return (
       <div id="query-panel">
         <h3>Query</h3>
@@ -65,8 +93,8 @@ class Query extends Component<QueryProps, state> {
         >
           Edit Schema
         </button> */}
-        <SchemaModal show={this.state.show} onClose={this.showModal} />
-        <form onSubmit={this.handleSubmit}>
+        {/* <SchemaModal show={this.state.show} onClose={this.showModal} /> */}
+        <form onSubmit={this.handleQuerySubmit}>
           <label>Query Label: </label>
           <input
             className="label-field"
@@ -78,17 +106,13 @@ class Query extends Component<QueryProps, state> {
           <br />
           <label>Query:</label>
           <br />
-          <textarea
-            name={this.props.currentSchema}
-            placeholder="insert query here..."
-            onChange={(e) => this.handleQueryEntry(e)}
-          />
           {/* <input type="select" onClick={this.handleQueryPrevious}/> */}
-          <br />
-          <button>submit</button>
+          <CodeMirror value={this.state.queryString} onChange={this.updateCode} options={options} />
+          <button>Submit</button>
         </form>
       </div>
     );
+
   }
 }
 
