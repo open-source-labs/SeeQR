@@ -48,7 +48,6 @@ class Query extends Component<QueryProps, state> {
   };
 
   render() {
-    console.log(this.state);
     return (
       <div id="query-window">
         <h3 style={{ border: '1px solid blue' }}>Query Panel</h3>

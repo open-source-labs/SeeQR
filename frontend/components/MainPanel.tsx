@@ -1,10 +1,8 @@
-import React, { Component, MouseEvent } from 'react';
+import React, { Component } from 'react';
 const { ipcRenderer } = window.require('electron');
 import { Compare } from './leftPanel/Compare';
 import { History } from './leftPanel/History';
 import { SchemaContainer } from './rightPanel/SchemaContainer';
-
-type ClickEvent = React.MouseEvent<HTMLElement>;
 
 type MainState = {
   queries: {
@@ -145,7 +143,7 @@ class MainPanel extends Component<MainProps, MainState> {
           <History queries={this.state.queries} currentSchema={this.state.currentSchema} />
           <Compare />
         </div>
-        <SchemaContainer currentSchema={this.state.currentSchema} />
+        <SchemaContainer queries={this.state.queries} currentSchema={this.state.currentSchema} />
       </div>
     );
   }

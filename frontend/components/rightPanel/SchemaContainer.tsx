@@ -7,15 +7,21 @@ const { ipcRenderer } = window.require('electron');
 
 type ClickEvent = React.MouseEvent<HTMLElement>;
 
-type SchemaContainerProps = {currentSchema: string};
+type SchemaContainerProps = {
+  queries: {
+    queryString: string;
+    queryData: object[];
+    queryStatistics: any
+    querySchema: string;
+  }[];
+  currentSchema: string;
+};
 
 export class SchemaContainer extends Component<SchemaContainerProps> {
   constructor(props: SchemaContainerProps) {
     super(props);
   }
-  // state: QueryState = {
-  //   queries: [],
-  // };
+
   render() {
     return (
       <div id="main-right">
@@ -26,11 +32,11 @@ export class SchemaContainer extends Component<SchemaContainerProps> {
 
         <div id="results-panel">
           <div id="schema-left">
-            <Query currentSchema={this.props.currentSchema}/>
+            <Query currentSchema={this.props.currentSchema} />
             <Data />
           </div>
           <div id="schema-right">
-            <Results />
+            <Results queries={this.props.queries} />
           </div>
         </div>
       </div>

@@ -17,8 +17,8 @@ export const History = (props: HistoryProps) => {
   return (
     <div>
       <h3 style={{ border: '1px solid blue' }}>History Panel</h3>
-      <h4>{props.currentSchema}</h4>
-      <h2>{props.queries[0].queryString}</h2>
+      {/* <h4>{props.currentSchema}</h4>
+      <h2>{props.queries[0].queryString}</h2> */}
     </div>
   );
 };
