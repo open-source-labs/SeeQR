@@ -8,7 +8,7 @@ type CompareProps = {};
 export const Compare = (props: CompareProps) => {
   return (
     <div id="compare-panel">
-      <h3>Compare Panel</h3>
+      <h3>Compare Panel - Saved for Stretch</h3>
     </div>
   );
 };

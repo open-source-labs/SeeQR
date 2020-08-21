@@ -5,7 +5,7 @@ import { app, BrowserWindow, ipcMain } from 'electron';
 import { join } from 'path';
 import { format } from 'url';
 import { Children } from 'react';
-const { exec } = require("child_process");
+const { exec } = require('child_process');
 
 /************************************************************
  ********* CREATE & CLOSE WINDOW UPON INITIALIZATION *********
@@ -25,7 +25,7 @@ if (process.env.NODE_ENV !== undefined && process.env.NODE_ENV === 'development'
 // Create browser window
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 1500,
+    width: 1800,
     height: 1200,
     minWidth: 900,
     minHeight: 720,
@@ -122,7 +122,8 @@ const db_name: string = 'test';
 ipcMain.on('upload-file', (event, filePaths: string) => {
   console.log('file paths sent from renderer', filePaths);
   // Process
-  exec(`docker exec postgres-1 psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE ${db_name}"`,
+  exec(
+    `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE ${db_name}"`,
     (error, stdout, stderr) => {
       if (error) {
         console.log(`error: ${error.message}`);
@@ -133,7 +134,88 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
         return;
       }
       console.log(`stdout: ${stdout}`);
-      exec(`docker cp ${filePaths} postgres-1:/data_dump`,
+      exec(`docker cp ${filePaths} postgres-1:/data_dump`, (error, stdout, stderr) => {
+        if (error) {
+          console.log(`error: ${error.message}`);
+          return;
+        }
+        if (stderr) {
+          console.log(`stderr: ${stderr}`);
+          return;
+        }
+        console.log(`stdout: ${stdout}`);
+        const extension: string = filePaths[0].slice(filePaths[0].lastIndexOf('.'));
+        console.log(extension);
+        if (extension === '.sql') {
+          exec(
+            `docker exec postgres-1 psql -U postgres -d ${db_name} -f /data_dump`,
+            (error, stdout, stderr) => {
+              if (error) {
+                console.log(`error: ${error.message}`);
+                return;
+              }
+              if (stderr) {
+                console.log(`stderr: ${stderr}`);
+                return;
+              }
+              console.log(`stdout: ${stdout}`);
+            }
+          );
+        } else if (extension === '.tar') {
+          exec(
+            `docker exec postgres-1 pg_restore -U postgres -d ${db_name} /data_dump`,
+            (error, stdout, stderr) => {
+              if (error) {
+                console.log(`error: ${error.message}`);
+                return;
+              }
+              if (stderr) {
+                console.log(`stderr: ${stderr}`);
+                return;
+              }
+              console.log(`stdout: ${stdout}`);
+            }
+          );
+        }
+      });
+    }
+  );
+  // Send result back to renderer
+});
+
+// Listen for user clicking skip button
+ipcMain.on('skip-file-upload', (event) => {});
+
+interface QueryType {
+  queryCurrentSchema: string;
+  queryString: string;
+  queryLabel: string;
+}
+
+// Listen for queries being sent from renderer
+ipcMain.on('execute-query', (event, data: QueryType) => {
+  const responseObj: any = {};
+  exec(
+    `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -d test -c "EXPLAIN (FORMAT JSON, ANALYZE) ${data.queryString}"`,
+    (error, stdout, stderr) => {
+      if (error) {
+        console.log(`error: ${error.message}`);
+        return;
+      }
+      if (stderr) {
+        console.log(`stderr: ${stderr}`);
+        return;
+      }
+      console.log(`stdout-analyze: ${stdout}`);
+      stdout = stdout
+        .slice(stdout.indexOf('['), stdout.lastIndexOf(']') + 1)
+        .split('+')
+        .join('');
+      responseObj.analyze = stdout;
+      responseObj.queryLabel = data.queryLabel;
+      // event.sender.send('return-execute-query', stdout);
+      exec(
+        `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -d test -c "${data.queryString}"`,
         (error, stdout, stderr) => {
           if (error) {
             console.log(`error: ${error.message}`);
@@ -143,106 +225,37 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
             console.log(`stderr: ${stderr}`);
             return;
           }
-          console.log(`stdout: ${stdout}`);
-          const extension: string = filePaths[0].slice(filePaths[0].lastIndexOf('.'));
-          console.log(extension);
-          if (extension === '.sql'){
-            exec(`docker exec postgres-1 psql -U postgres -d ${db_name} -f /data_dump`,
-              (error, stdout, stderr) => {
-                if (error) {
-                  console.log(`error: ${error.message}`);
-                  return;
-                }
-                if (stderr) {
-                  console.log(`stderr: ${stderr}`);
-                  return;
-                }
-                console.log(`stdout: ${stdout}`);
-              });
-          }
-          else if (extension === '.tar'){
-            exec(`docker exec postgres-1 pg_restore -U postgres -d ${db_name} /data_dump`,
-              (error, stdout, stderr) => {
-                if (error) {
-                  console.log(`error: ${error.message}`);
-                  return;
-                }
-                if (stderr) {
-                  console.log(`stderr: ${stderr}`);
-                  return;
-                }
-                console.log(`stdout: ${stdout}`);
-              });
-          }
-        });
-    });
-  // Send result back to renderer
-});
-
-// Listen for user clicking skip button
-ipcMain.on('skip-file-upload', (event) => {});
-
-interface QueryType {
-    queryCurrentSchema: string,
-    queryString: string,
-    queryLabel: string
-}
-
-// Listen for queries being sent from renderer
-ipcMain.on('execute-query', (event, data: QueryType) => {
-
-  const responseObj: any = {};
-    exec(`docker exec postgres-1 psql -h localhost -p 5432 -U postgres -d test -c "EXPLAIN (FORMAT JSON, ANALYZE) ${data.queryString}"`,
-    (error, stdout, stderr) => {
-        if (error) {
-            console.log(`error: ${error.message}`);
-            return;
+          responseObj.data = stdout;
+          console.log(`stdout-data: ${typeof stdout}`);
+          // stdout = stdout.slice(stdout.indexOf("["), stdout.lastIndexOf("]") + 1).split("+").join("");
+          event.sender.send('return-execute-query', responseObj);
         }
-        if (stderr) {
-            console.log(`stderr: ${stderr}`);
-            return;
-        }
-        console.log(`stdout-analyze: ${stdout}`);
-        stdout = stdout.slice(stdout.indexOf("["), stdout.lastIndexOf("]") + 1).split("+").join("");
-        responseObj.analyze = stdout;
-        responseObj.queryLabel = data.queryLabel;
-        // event.sender.send('return-execute-query', stdout);
-        exec(`docker exec postgres-1 psql -h localhost -p 5432 -U postgres -d test -c "${data.queryString}"`,
-        (error, stdout, stderr) => {
-            if (error) {
-                console.log(`error: ${error.message}`);
-                return;
-            }
-            if (stderr) {
-                console.log(`stderr: ${stderr}`);
-                return;
-            }
-            responseObj.data = stdout;
-            console.log(`stdout-data: ${typeof stdout}`);
-            // stdout = stdout.slice(stdout.indexOf("["), stdout.lastIndexOf("]") + 1).split("+").join("");
-            event.sender.send('return-execute-query', responseObj);
-        });
-    });
+      );
+    }
+  );
 });
 
 interface SchemaType {
-    currentSchema: string,
-    schemaString: string,
+  currentSchema: string;
+  schemaString: string;
 }
 
 // Listen for schema edits sent from renderer
 ipcMain.on('edit-schema', (event, data: SchemaType) => {
   console.log('schema string sent from frontend', data);
-  exec(`docker exec postgres-1 psql -h localhost -p 5432 -U postgres -d ${data.currentSchema} -c "${data.schemaString}"`, (error, stdout, stderr) => {
-    if (error) {
-      console.log(`error: ${error.message}`);
-      return;
+  exec(
+    `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -d ${data.currentSchema} -c "${data.schemaString}"`,
+    (error, stdout, stderr) => {
+      if (error) {
+        console.log(`error: ${error.message}`);
+        return;
+      }
+      if (stderr) {
+        console.log(`stderr: ${stderr}`);
+        return;
+      }
+      console.log(`stdout: ${stdout}`);
     }
-    if (stderr) {
-      console.log(`stderr: ${stderr}`);
-      return;
-    }
-    console.log(`stdout: ${stdout}`);
-  });
+  );
   // Send result back to renderer
 });

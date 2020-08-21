@@ -46,6 +46,7 @@ export class App extends Component<AppProps, state> {
         const filePathArr = Object.values(result)[1];
         // send via channel to main process
         ipcRenderer.send('upload-file', filePathArr);
+        this.setState({ openSplash: false });
       })
       .catch((err: object) => {
         console.log(err);

@@ -17,12 +17,15 @@ export class Splash extends Component<SplashProps> {
 
   render() {
     return (
-      <div id="splash-menu">
-        <h1 style={{ color: 'black' }}>SeeQR!</h1>
-        <h3 style={{ color: 'black' }}>Welcome!</h3>
-        <h3 style={{ color: 'black' }}>Import database?</h3>
-        <button onClick={this.props.handleSkipClick}>Skip</button>
-        <button onClick={this.props.handleFileClick}>Yes</button>
+      <div id="splash-page">
+        <div className="splash-prompt">
+          <h4>Welcome!</h4>
+          <h4>Import database?</h4>
+        </div>
+        <div className="splash-buttons">
+          <button onClick={this.props.handleSkipClick}>Skip</button>
+          <button onClick={this.props.handleFileClick}>Yes</button>
+        </div>
       </div>
     );
   }
