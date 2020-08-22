@@ -7,6 +7,8 @@ import { format } from 'url';
 import { Children } from 'react';
 const { exec } = require("child_process");
 
+const db = require('./modal');
+
 /************************************************************
  ********* CREATE & CLOSE WINDOW UPON INITIALIZATION *********
  ************************************************************/
@@ -117,11 +119,14 @@ app.on('activate', () => {
  *********************** IPC CHANNELS ***********************
  ************************************************************/
 
-const db_name: string = 'test';
+
 // Listen for files upload
 ipcMain.on('upload-file', (event, filePaths: string) => {
   console.log('file paths sent from renderer', filePaths);
+  //Getting fileName from filePath algo
+  const db_name : string = filePaths[0].slice(filePaths[0].lastIndexOf('\\') + 1, filePaths[0].lastIndexOf('.'));
   // Process
+  //CREATING THE NEW DB
   exec(`docker exec postgres-1 psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE ${db_name}"`,
     (error, stdout, stderr) => {
       if (error) {
@@ -133,6 +138,7 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
         return;
       }
       console.log(`stdout: ${stdout}`);
+      //UPLOADING DATA
       exec(`docker cp ${filePaths} postgres-1:/data_dump`,
         (error, stdout, stderr) => {
           if (error) {
@@ -146,6 +152,7 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
           console.log(`stdout: ${stdout}`);
           const extension: string = filePaths[0].slice(filePaths[0].lastIndexOf('.'));
           console.log(extension);
+          //CHECKING WHETHER file is SQL or TAR
           if (extension === '.sql'){
             exec(`docker exec postgres-1 psql -U postgres -d ${db_name} -f /data_dump`,
               (error, stdout, stderr) => {
@@ -174,9 +181,15 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
                 console.log(`stdout: ${stdout}`);
               });
           }
+          //Auto change from defaultDB to importted db
+          db.changeDB(db_name)
+          console.log("getConnectionString")
+          db.getConnectionString();
+          console.log(`Connected to database ${db_name}`);
         });
     });
   // Send result back to renderer
+  console.log("New Database Created :)")
 });
 
 // Listen for user clicking skip button
@@ -190,40 +203,30 @@ interface QueryType {
 
 // Listen for queries being sent from renderer
 ipcMain.on('execute-query', (event, data: QueryType) => {
+  // ---------Refactor-------------------
+  console.log('query sent from frontend', data.queryString);
+  //Checking to see if user wants to change db
+  if(data.queryString[0] === '\\' && data.queryString[1] === 'c'){
+    let dbName = data.queryString.slice(3);
+    db.changeDB(dbName);
+    console.log("getConnectionString")
+    db.getConnectionString();
+    event.sender.send('return-execute-query', `Connected to database ${dbName}`);
+  }else{
+    //If normal query
+    db.query(data.queryString)
+    .then(returnedData => {
+    //Getting data in row format for frontend
+      returnedData = returnedData.rows;
+    // Send result back to renderer
+      event.sender.send('return-execute-query', returnedData);
+    })
+  }
 
-  const responseObj: any = {};
-    exec(`docker exec postgres-1 psql -h localhost -p 5432 -U postgres -d test -c "EXPLAIN (FORMAT JSON, ANALYZE) ${data.queryString}"`,
-    (error, stdout, stderr) => {
-        if (error) {
-            console.log(`error: ${error.message}`);
-            return;
-        }
-        if (stderr) {
-            console.log(`stderr: ${stderr}`);
-            return;
-        }
-        console.log(`stdout-analyze: ${stdout}`);
-        stdout = stdout.slice(stdout.indexOf("["), stdout.lastIndexOf("]") + 1).split("+").join("");
-        responseObj.analyze = stdout;
-        responseObj.queryLabel = data.queryLabel;
-        // event.sender.send('return-execute-query', stdout);
-        exec(`docker exec postgres-1 psql -h localhost -p 5432 -U postgres -d test -c "${data.queryString}"`,
-        (error, stdout, stderr) => {
-            if (error) {
-                console.log(`error: ${error.message}`);
-                return;
-            }
-            if (stderr) {
-                console.log(`stderr: ${stderr}`);
-                return;
-            }
-            responseObj.data = stdout;
-            console.log(`stdout-data: ${typeof stdout}`);
-            // stdout = stdout.slice(stdout.indexOf("["), stdout.lastIndexOf("]") + 1).split("+").join("");
-            event.sender.send('return-execute-query', responseObj);
-        });
-    });
+  
+  
 });
+
 
 interface SchemaType {
     currentSchema: string,
