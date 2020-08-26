@@ -62,6 +62,10 @@ export class App extends Component<AppProps, state> {
     // ipcRenderer.on('open-splash', (event: any, splashState: object) => {
     //   this.setState(splashState);
     // });
+    // listen for menu to invoke handleFileClick
+    ipcRenderer.on('menu-upload-file', () => {
+      this.handleFileClick;
+    });
     return (
       <div>
         {this.state.openSplash ? (

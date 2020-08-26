@@ -1,21 +1,21 @@
 // main.js is the entry point to the main process (the node process)
 
 // Import parts of electron to use
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow, ipcMain, Menu } from 'electron';
 import { join } from 'path';
 import { format } from 'url';
 import { Children } from 'react';
 const { exec } = require('child_process');
-
+const appMenu = require('./mainMenu');
 /************************************************************
  ********* CREATE & CLOSE WINDOW UPON INITIALIZATION *********
  ************************************************************/
-
 // Keep a global reference of the window objects, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow: any;
 let splashWindow: any;
 
+let mainMenu = Menu.buildFromTemplate(require('./mainMenu'));
 // Keep a reference for dev mode
 let dev = false;
 if (process.env.NODE_ENV !== undefined && process.env.NODE_ENV === 'development') {
@@ -52,6 +52,7 @@ function createWindow() {
     });
     mainWindow.webContents.openDevTools();
     // splashWindow.webContents.openDevTools();
+    Menu.setApplicationMenu(mainMenu);
   } else {
     // In production mode, load the bundled version of index.html inside the dist folder.
     indexPath = format({
