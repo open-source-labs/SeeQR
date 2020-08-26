@@ -39,7 +39,7 @@ class MainPanel extends Component<MainProps, MainState> {
            3 | mh@gmail.com       | Michelle  | Holland  | helloworld |    500 |          3
            4 | sk@gmail.com       | Serena    | Kuo      | helloworld |    500 |          4
         (4 rows)
-        "`
+        "`,
         // [
         //   {
         //     _id: 1,
@@ -66,7 +66,6 @@ class MainPanel extends Component<MainProps, MainState> {
         //     item_longitude: '-122.0842499',
         //   },
         // ]
-        ,
         queryStatistics: {
           items: [
             {
@@ -81,12 +80,12 @@ class MainPanel extends Component<MainProps, MainState> {
                     'Total Cost': 11.9,
                     'Plan Rows': 190,
                     'Plan Width': 391,
-                    'Actual Startup Time': 0.014,
+                    'Actual Startup Time': 0.01,
                     'Actual Total Time': 0.015,
-                    'Actual Rows': 6,
+                    'Actual Rows': 12,
                     'Actual Loops': 1,
                   },
-                  'Planning Time': 0.262,
+                  'Planning Time': 0.281,
                   Triggers: [],
                   'Execution Time': 0.038,
                 },
@@ -106,7 +105,7 @@ class MainPanel extends Component<MainProps, MainState> {
            3 | mh@gmail.com       | Michelle  | Holland  | helloworld |    500 |          3
            4 | sk@gmail.com       | Serena    | Kuo      | helloworld |    500 |          4
         (4 rows)
-        "`
+        "`,
         // [
         //   {
         //     _id: 1,
@@ -127,7 +126,46 @@ class MainPanel extends Component<MainProps, MainState> {
         //     address_id: '2',
         //   },
         // ]
-        ,
+        queryStatistics: {
+          items: [
+            {
+              'QUERY PLAN': [
+                {
+                  Plan: {
+                    'Node Type': 'Seq Scan',
+                    'Parallel Aware': false,
+                    'Relation Name': 'users',
+                    Alias: 'users',
+                    'Startup Cost': 0,
+                    'Total Cost': 12.3,
+                    'Plan Rows': 230,
+                    'Plan Width': 316,
+                    'Actual Startup Time': 0.011,
+                    'Actual Total Time': 0.011,
+                    'Actual Rows': 15,
+                    'Actual Loops': 1,
+                  },
+                  'Planning Time': 0.367,
+                  Triggers: [],
+                  'Execution Time': 0.045,
+                },
+              ],
+            },
+          ],
+        },
+        querySchema: 'schemaC',
+        queryLabel: 'get all from users',
+      },
+      {
+        queryString: 'SELECT * FROM public.locations',
+        queryData: `" _id |       email        | firstName | lastName |  password  | points | address_id 
+        -----+--------------------+-----------+----------+------------+--------+------------
+           1 | cc2368@cornell.edu | Catherine | Chiu     | helloworld |    500 |          1
+           2 | jm@gmail.com       | John      | Madrigal | helloworld |    500 |          2
+           3 | mh@gmail.com       | Michelle  | Holland  | helloworld |    500 |          3
+           4 | sk@gmail.com       | Serena    | Kuo      | helloworld |    500 |          4
+        (4 rows)
+        "`,
         queryStatistics: {
           items: [
             {
@@ -143,11 +181,11 @@ class MainPanel extends Component<MainProps, MainState> {
                     'Plan Rows': 230,
                     'Plan Width': 316,
                     'Actual Startup Time': 0.012,
-                    'Actual Total Time': 0.013,
-                    'Actual Rows': 15,
+                    'Actual Total Time': 0.011,
+                    'Actual Rows': 33,
                     'Actual Loops': 1,
                   },
-                  'Planning Time': 0.367,
+                  'Planning Time': 0.378,
                   Triggers: [],
                   'Execution Time': 0.034,
                 },
@@ -156,7 +194,47 @@ class MainPanel extends Component<MainProps, MainState> {
           ],
         },
         querySchema: 'schemaB',
-        queryLabel: 'get all from users',
+        queryLabel: 'get all from locations',
+      },
+      {
+        queryString: 'SELECT * FROM public.users INNER JOIN public.locations...',
+        queryData: `" _id |       email        | firstName | lastName |  password  | points | address_id 
+        -----+--------------------+-----------+----------+------------+--------+------------
+           1 | cc2368@cornell.edu | Catherine | Chiu     | helloworld |    500 |          1
+           2 | jm@gmail.com       | John      | Madrigal | helloworld |    500 |          2
+           3 | mh@gmail.com       | Michelle  | Holland  | helloworld |    500 |          3
+           4 | sk@gmail.com       | Serena    | Kuo      | helloworld |    500 |          4
+        (4 rows)
+        "`,
+        queryStatistics: {
+          items: [
+            {
+              'QUERY PLAN': [
+                {
+                  Plan: {
+                    'Node Type': 'Seq Scan',
+                    'Parallel Aware': false,
+                    'Relation Name': 'users',
+                    Alias: 'users',
+                    'Startup Cost': 0,
+                    'Total Cost': 12.3,
+                    'Plan Rows': 230,
+                    'Plan Width': 316,
+                    'Actual Startup Time': 0.03,
+                    'Actual Total Time': 0.4,
+                    'Actual Rows': 12,
+                    'Actual Loops': 1,
+                  },
+                  'Planning Time': 0.367,
+                  Triggers: [],
+                  'Execution Time': 0.023,
+                },
+              ],
+            },
+          ],
+        },
+        querySchema: 'schemaB',
+        queryLabel: 'join tables users and locations',
       },
       {
         queryString: 'SELECT * FROM public.users',
@@ -182,12 +260,12 @@ class MainPanel extends Component<MainProps, MainState> {
                     'Total Cost': 12.3,
                     'Plan Rows': 230,
                     'Plan Width': 316,
-                    'Actual Startup Time': 0.012,
-                    'Actual Total Time': 0.013,
-                    'Actual Rows': 15,
+                    'Actual Startup Time': 0.019,
+                    'Actual Total Time': 0.019,
+                    'Actual Rows': 19,
                     'Actual Loops': 1,
                   },
-                  'Planning Time': 0.367,
+                  'Planning Time': 0.411,
                   Triggers: [],
                   'Execution Time': 0.034,
                 },
@@ -195,11 +273,11 @@ class MainPanel extends Component<MainProps, MainState> {
             },
           ],
         },
-        querySchema: 'schemaB',
-        queryLabel: 'get all from users',
+        querySchema: 'schemaC',
+        queryLabel: 'get all from users - revised',
       },
       {
-        queryString: 'SELECT * FROM public.users',
+        queryString: 'SELECT * FROM public.locations UNION public.regions',
         queryData: `" _id |       email        | firstName | lastName |  password  | points | address_id 
         -----+--------------------+-----------+----------+------------+--------+------------
            1 | cc2368@cornell.edu | Catherine | Chiu     | helloworld |    500 |          1
@@ -224,10 +302,10 @@ class MainPanel extends Component<MainProps, MainState> {
                     'Plan Width': 316,
                     'Actual Startup Time': 0.012,
                     'Actual Total Time': 0.013,
-                    'Actual Rows': 15,
+                    'Actual Rows': 11,
                     'Actual Loops': 1,
                   },
-                  'Planning Time': 0.367,
+                  'Planning Time': 0.201,
                   Triggers: [],
                   'Execution Time': 0.034,
                 },
@@ -236,87 +314,7 @@ class MainPanel extends Component<MainProps, MainState> {
           ],
         },
         querySchema: 'schemaB',
-        queryLabel: 'get all from users',
-      },
-      {
-        queryString: 'SELECT * FROM public.users',
-        queryData: `" _id |       email        | firstName | lastName |  password  | points | address_id 
-        -----+--------------------+-----------+----------+------------+--------+------------
-           1 | cc2368@cornell.edu | Catherine | Chiu     | helloworld |    500 |          1
-           2 | jm@gmail.com       | John      | Madrigal | helloworld |    500 |          2
-           3 | mh@gmail.com       | Michelle  | Holland  | helloworld |    500 |          3
-           4 | sk@gmail.com       | Serena    | Kuo      | helloworld |    500 |          4
-        (4 rows)
-        "`,
-        queryStatistics: {
-          items: [
-            {
-              'QUERY PLAN': [
-                {
-                  Plan: {
-                    'Node Type': 'Seq Scan',
-                    'Parallel Aware': false,
-                    'Relation Name': 'users',
-                    Alias: 'users',
-                    'Startup Cost': 0,
-                    'Total Cost': 12.3,
-                    'Plan Rows': 230,
-                    'Plan Width': 316,
-                    'Actual Startup Time': 0.012,
-                    'Actual Total Time': 0.013,
-                    'Actual Rows': 15,
-                    'Actual Loops': 1,
-                  },
-                  'Planning Time': 0.367,
-                  Triggers: [],
-                  'Execution Time': 0.034,
-                },
-              ],
-            },
-          ],
-        },
-        querySchema: 'schemaB',
-        queryLabel: 'get all from users',
-      },
-      {
-        queryString: 'SELECT * FROM public.users',
-        queryData: `" _id |       email        | firstName | lastName |  password  | points | address_id 
-        -----+--------------------+-----------+----------+------------+--------+------------
-           1 | cc2368@cornell.edu | Catherine | Chiu     | helloworld |    500 |          1
-           2 | jm@gmail.com       | John      | Madrigal | helloworld |    500 |          2
-           3 | mh@gmail.com       | Michelle  | Holland  | helloworld |    500 |          3
-           4 | sk@gmail.com       | Serena    | Kuo      | helloworld |    500 |          4
-        (4 rows)
-        "`,
-        queryStatistics: {
-          items: [
-            {
-              'QUERY PLAN': [
-                {
-                  Plan: {
-                    'Node Type': 'Seq Scan',
-                    'Parallel Aware': false,
-                    'Relation Name': 'users',
-                    Alias: 'users',
-                    'Startup Cost': 0,
-                    'Total Cost': 12.3,
-                    'Plan Rows': 230,
-                    'Plan Width': 316,
-                    'Actual Startup Time': 0.012,
-                    'Actual Total Time': 0.013,
-                    'Actual Rows': 15,
-                    'Actual Loops': 1,
-                  },
-                  'Planning Time': 0.367,
-                  Triggers: [],
-                  'Execution Time': 0.034,
-                },
-              ],
-            },
-          ],
-        },
-        querySchema: 'schemaB',
-        queryLabel: 'get all from users',
+        queryLabel: 'union locations and regions',
       },
       {
         queryString: 'SELECT * FROM public.items',
@@ -342,12 +340,12 @@ class MainPanel extends Component<MainProps, MainState> {
                     'Total Cost': 11.9,
                     'Plan Rows': 190,
                     'Plan Width': 391,
-                    'Actual Startup Time': 0.014,
-                    'Actual Total Time': 0.015,
+                    'Actual Startup Time': 0.012,
+                    'Actual Total Time': 0.021,
                     'Actual Rows': 6,
                     'Actual Loops': 1,
                   },
-                  'Planning Time': 0.262,
+                  'Planning Time': 0.45,
                   Triggers: [],
                   'Execution Time': 0.038,
                 },
@@ -356,7 +354,7 @@ class MainPanel extends Component<MainProps, MainState> {
           ],
         },
         querySchema: 'schemaA',
-        queryLabel: 'get all from items',
+        queryLabel: 'get all from items - add items',
       },
       {
         queryString: 'SELECT * FROM public.users',
@@ -382,12 +380,12 @@ class MainPanel extends Component<MainProps, MainState> {
                     'Total Cost': 12.3,
                     'Plan Rows': 230,
                     'Plan Width': 316,
-                    'Actual Startup Time': 0.012,
-                    'Actual Total Time': 0.013,
-                    'Actual Rows': 15,
+                    'Actual Startup Time': 0.02,
+                    'Actual Total Time': 0.011,
+                    'Actual Rows': 11,
                     'Actual Loops': 1,
                   },
-                  'Planning Time': 0.367,
+                  'Planning Time': 0.211,
                   Triggers: [],
                   'Execution Time': 0.034,
                 },
@@ -396,10 +394,10 @@ class MainPanel extends Component<MainProps, MainState> {
           ],
         },
         querySchema: 'schemaB',
-        queryLabel: 'get all from users',
+        queryLabel: 'get all from users - system update',
       },
       {
-        queryString: 'SELECT * FROM public.users',
+        queryString: 'SELECT items.id FROM public.items',
         queryData: `" _id |       email        | firstName | lastName |  password  | points | address_id 
         -----+--------------------+-----------+----------+------------+--------+------------
            1 | cc2368@cornell.edu | Catherine | Chiu     | helloworld |    500 |          1
@@ -423,23 +421,23 @@ class MainPanel extends Component<MainProps, MainState> {
                     'Plan Rows': 230,
                     'Plan Width': 316,
                     'Actual Startup Time': 0.012,
-                    'Actual Total Time': 0.013,
-                    'Actual Rows': 15,
+                    'Actual Total Time': 0.009,
+                    'Actual Rows': 17,
                     'Actual Loops': 1,
                   },
                   'Planning Time': 0.367,
                   Triggers: [],
-                  'Execution Time': 0.034,
+                  'Execution Time': 0.235,
                 },
               ],
             },
           ],
         },
-        querySchema: 'schemaB',
-        queryLabel: 'get all from users',
+        querySchema: 'schemaA',
+        queryLabel: 'get ids from items',
       },
       {
-        queryString: 'SELECT * FROM public.users',
+        queryString: 'SELECT items.categories FROM public.items',
         queryData: `" _id |       email        | firstName | lastName |  password  | points | address_id 
         -----+--------------------+-----------+----------+------------+--------+------------
            1 | cc2368@cornell.edu | Catherine | Chiu     | helloworld |    500 |          1
@@ -462,21 +460,21 @@ class MainPanel extends Component<MainProps, MainState> {
                     'Total Cost': 12.3,
                     'Plan Rows': 230,
                     'Plan Width': 316,
-                    'Actual Startup Time': 0.012,
-                    'Actual Total Time': 0.013,
+                    'Actual Startup Time': 0.019,
+                    'Actual Total Time': 0.011,
                     'Actual Rows': 15,
                     'Actual Loops': 1,
                   },
                   'Planning Time': 0.367,
                   Triggers: [],
-                  'Execution Time': 0.034,
+                  'Execution Time': 0.124,
                 },
               ],
             },
           ],
         },
-        querySchema: 'schemaB',
-        queryLabel: 'get all from users',
+        querySchema: 'schemaD',
+        queryLabel: 'get categories from items',
       },
       {
         queryString: 'SELECT * FROM public.items',
@@ -502,12 +500,12 @@ class MainPanel extends Component<MainProps, MainState> {
                     'Total Cost': 11.9,
                     'Plan Rows': 190,
                     'Plan Width': 391,
-                    'Actual Startup Time': 0.014,
-                    'Actual Total Time': 0.015,
+                    'Actual Startup Time': 0.013,
+                    'Actual Total Time': 0.019,
                     'Actual Rows': 6,
                     'Actual Loops': 1,
                   },
-                  'Planning Time': 0.262,
+                  'Planning Time': 0.288,
                   Triggers: [],
                   'Execution Time': 0.038,
                 },

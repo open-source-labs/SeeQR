@@ -87,3 +87,23 @@ input {
     outline: none;
   }
 }
+
+#data-table {
+  overflow: auto;
+  height: 300px;
+}
+
+.query-data {
+  width: 1000px;
+}
+
+#codemirror {
+  padding: 15px 0;
+}
+
+#data-table::-webkit-scrollbar-track {
+  background: $primary-color-darkmode;
+}
+#data-table::-webkit-scrollbar-thumb {
+  background-color: $border-darkmode;
+}

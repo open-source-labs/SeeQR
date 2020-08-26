@@ -46,6 +46,7 @@ export class App extends Component<AppProps, state> {
         const filePathArr = Object.values(result)[1];
         // send via channel to main process
         ipcRenderer.send('upload-file', filePathArr);
+        this.setState({ openSplash: false });
       })
       .catch((err: object) => {
         console.log(err);
@@ -61,6 +62,10 @@ export class App extends Component<AppProps, state> {
     // ipcRenderer.on('open-splash', (event: any, splashState: object) => {
     //   this.setState(splashState);
     // });
+    // listen for menu to invoke handleFileClick
+    ipcRenderer.on('menu-upload-file', () => {
+      this.handleFileClick;
+    });
     return (
       <div>
         {this.state.openSplash ? (
