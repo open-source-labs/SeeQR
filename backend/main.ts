@@ -127,10 +127,16 @@ app.on('activate', () => {
 /* ---IMPORT DATABASE: CREATE AN INSTANCE OF DATABASE FROM A PRE-MADE .TAR OR .SQL FILE--- */
 ipcMain.on('upload-file', (event, filePaths: string) => {
   console.log('file paths sent from renderer', filePaths);
-
-  
+  const isMac = process.platform === 'darwin';
+  let db_name: string;
+  if (isMac) {
+    db_name = filePaths[0].slice(filePaths[0].lastIndexOf('/') + 1, filePaths[0].lastIndexOf('.'));
+  } else {
+    db_name = filePaths[0].slice(filePaths[0].lastIndexOf('\\') + 1, filePaths[0].lastIndexOf('.'));
+  }
+  console.log('dbname', db_name);
   // command strings 
-  const db_name : string = filePaths[0].slice(filePaths[0].lastIndexOf('\\') + 1, filePaths[0].lastIndexOf('.'));
+  // const db_name: string = filePaths[0].slice(filePaths[0].lastIndexOf('\\') + 1, filePaths[0].lastIndexOf('.'));
   const createDB : string = `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE ${db_name}"`;
   const importFile : string = `docker cp ${filePaths} postgres-1:/data_dump`;
   const runSQL : string = `docker exec postgres-1 psql -U postgres -d ${db_name} -f /data_dump`;
