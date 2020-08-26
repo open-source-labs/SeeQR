@@ -14,9 +14,9 @@ services:
           POSTGRES_USER: postgres
           POSTGRES_DB: defaultDB
         volumes:
-          - database-data
+        - database-data
         depends_on:
-          - bb
+        - bb
         container_name: postgres-1
         ports:
         - 5432:5432
