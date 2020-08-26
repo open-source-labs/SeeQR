@@ -128,30 +128,40 @@ app.on('activate', () => {
 ipcMain.on('upload-file', (event, filePaths: string) => {
   console.log('file paths sent from renderer', filePaths);
 
-  
+  const isMac = process.platform === 'darwin';
+  let db_name: string;
+  if (isMac) {
+    db_name = filePaths[0].slice(filePaths[0].lastIndexOf('/') + 1, filePaths[0].lastIndexOf('.'));
+  } else {
+    db_name = filePaths[0].slice(filePaths[0].lastIndexOf('\\') + 1, filePaths[0].lastIndexOf('.'));
+  }
+
+  // console.log('dbname', db_name);
+
+
   // command strings 
-  const db_name : string = filePaths[0].slice(filePaths[0].lastIndexOf('\\') + 1, filePaths[0].lastIndexOf('.'));
-  const createDB : string = `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE ${db_name}"`;
-  const importFile : string = `docker cp ${filePaths} postgres-1:/data_dump`;
-  const runSQL : string = `docker exec postgres-1 psql -U postgres -d ${db_name} -f /data_dump`;
-  const runTAR : string = `docker exec postgres-1 pg_restore -U postgres -d ${db_name} /data_dump`;
+  // const db_name: string = filePaths[0].slice(filePaths[0].lastIndexOf('\\') + 1, filePaths[0].lastIndexOf('.'));
+  const createDB: string = `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE ${db_name}"`;
+  const importFile: string = `docker cp ${filePaths} postgres-1:/data_dump`;
+  const runSQL: string = `docker exec postgres-1 psql -U postgres -d ${db_name} -f /data_dump`;
+  const runTAR: string = `docker exec postgres-1 pg_restore -U postgres -d ${db_name} /data_dump`;
   const extension: string = filePaths[0].slice(filePaths[0].lastIndexOf('.'));
 
   // CALLBACK FUNCTION : execute commands in the child process
-  const addDB = (str : string, nextStep : any) => {
+  const addDB = (str: string, nextStep: any) => {
     exec(str,
-    (error, stdout, stderr) => {
-      if (error) {
-        console.log(`error: ${error.message}`);
-        return;
-      }
-      if (stderr) {
-        console.log(`stderr: ${stderr}`);
-        return;
-      }
-      console.log(`stdout: ${stdout}`);
-      if (nextStep) nextStep();
-    });
+      (error, stdout, stderr) => {
+        if (error) {
+          console.log(`error: ${error.message}`);
+          return;
+        }
+        if (stderr) {
+          console.log(`stderr: ${stderr}`);
+          return;
+        }
+        console.log(`stdout: ${stdout}`);
+        if (nextStep) nextStep();
+      });
   }
 
   // SEQUENCE OF EXECUTING COMMANDS
@@ -159,7 +169,7 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
 
   // Step 3 : Given the file path extension, run the appropriate command in postgres to build the db
   const step3 = () => {
-    let runCmd : string = '';
+    let runCmd: string = '';
     if (extension === '.sql') runCmd = runSQL;
     else if (extension === '.tar') runCmd = runTAR;;
     addDB(runCmd, () => console.log(`Created Database: ${db_name}`));
@@ -181,7 +191,7 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
 
 
 // Listen for user clicking skip button
-ipcMain.on('skip-file-upload', (event) => {});
+ipcMain.on('skip-file-upload', (event) => { });
 
 interface QueryType {
   queryCurrentSchema: string;
@@ -194,25 +204,25 @@ ipcMain.on('execute-query', (event, data: QueryType) => {
   // ---------Refactor-------------------
   console.log('query sent from frontend', data.queryString);
   //Checking to see if user wants to change db
-  if(data.queryString[0] === '\\' && data.queryString[1] === 'c'){
+  if (data.queryString[0] === '\\' && data.queryString[1] === 'c') {
     let dbName = data.queryString.slice(3);
     db.changeDB(dbName);
     console.log("getConnectionString")
     db.getConnectionString();
     event.sender.send('return-execute-query', `Connected to database ${dbName}`);
-  }else{
+  } else {
     //If normal query
     db.query(data.queryString)
-    .then(returnedData => {
-    //Getting data in row format for frontend
-      returnedData = returnedData.rows;
-    // Send result back to renderer
-      event.sender.send('return-execute-query', returnedData);
-    })
+      .then(returnedData => {
+        //Getting data in row format for frontend
+        returnedData = returnedData.rows;
+        // Send result back to renderer
+        event.sender.send('return-execute-query', returnedData);
+      })
   }
 
-  
-  
+
+
 });
 
 
