@@ -1,21 +1,21 @@
 // main.js is the entry point to the main process (the node process)
 
 // Import parts of electron to use
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow, ipcMain, Menu } from 'electron';
 import { join } from 'path';
 import { format } from 'url';
 import { Children } from 'react';
-const { exec } = require("child_process");
-
+const { exec } = require('child_process');
+const appMenu = require('./mainMenu');
 /************************************************************
  ********* CREATE & CLOSE WINDOW UPON INITIALIZATION *********
  ************************************************************/
-
 // Keep a global reference of the window objects, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow: any;
 let splashWindow: any;
 
+let mainMenu = Menu.buildFromTemplate(require('./mainMenu'));
 // Keep a reference for dev mode
 let dev = false;
 if (process.env.NODE_ENV !== undefined && process.env.NODE_ENV === 'development') {
@@ -25,7 +25,7 @@ if (process.env.NODE_ENV !== undefined && process.env.NODE_ENV === 'development'
 // Create browser window
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 1500,
+    width: 1800,
     height: 1200,
     minWidth: 900,
     minHeight: 720,
@@ -52,6 +52,7 @@ function createWindow() {
     });
     mainWindow.webContents.openDevTools();
     // splashWindow.webContents.openDevTools();
+    Menu.setApplicationMenu(mainMenu);
   } else {
     // In production mode, load the bundled version of index.html inside the dist folder.
     indexPath = format({
@@ -172,66 +173,75 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
 ipcMain.on('skip-file-upload', (event) => {});
 
 interface QueryType {
-    queryCurrentSchema: string,
-    queryString: string,
-    queryLabel: string
+  queryCurrentSchema: string;
+  queryString: string;
+  queryLabel: string;
 }
 
 // Listen for queries being sent from renderer
 ipcMain.on('execute-query', (event, data: QueryType) => {
-
   const responseObj: any = {};
-    exec(`docker exec postgres-1 psql -h localhost -p 5432 -U postgres -d test -c "EXPLAIN (FORMAT JSON, ANALYZE) ${data.queryString}"`,
+  exec(
+    `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -d test -c "EXPLAIN (FORMAT JSON, ANALYZE) ${data.queryString}"`,
     (error, stdout, stderr) => {
-        if (error) {
+      if (error) {
+        console.log(`error: ${error.message}`);
+        return;
+      }
+      if (stderr) {
+        console.log(`stderr: ${stderr}`);
+        return;
+      }
+      console.log(`stdout-analyze: ${stdout}`);
+      stdout = stdout
+        .slice(stdout.indexOf('['), stdout.lastIndexOf(']') + 1)
+        .split('+')
+        .join('');
+      responseObj.analyze = stdout;
+      responseObj.queryLabel = data.queryLabel;
+      // event.sender.send('return-execute-query', stdout);
+      exec(
+        `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -d test -c "${data.queryString}"`,
+        (error, stdout, stderr) => {
+          if (error) {
             console.log(`error: ${error.message}`);
             return;
-        }
-        if (stderr) {
+          }
+          if (stderr) {
             console.log(`stderr: ${stderr}`);
             return;
+          }
+          responseObj.data = stdout;
+          console.log(`stdout-data: ${typeof stdout}`);
+          // stdout = stdout.slice(stdout.indexOf("["), stdout.lastIndexOf("]") + 1).split("+").join("");
+          event.sender.send('return-execute-query', responseObj);
         }
-        console.log(`stdout-analyze: ${stdout}`);
-        stdout = stdout.slice(stdout.indexOf("["), stdout.lastIndexOf("]") + 1).split("+").join("");
-        responseObj.analyze = stdout;
-        responseObj.queryLabel = data.queryLabel;
-        // event.sender.send('return-execute-query', stdout);
-        exec(`docker exec postgres-1 psql -h localhost -p 5432 -U postgres -d test -c "${data.queryString}"`,
-        (error, stdout, stderr) => {
-            if (error) {
-                console.log(`error: ${error.message}`);
-                return;
-            }
-            if (stderr) {
-                console.log(`stderr: ${stderr}`);
-                return;
-            }
-            responseObj.data = stdout;
-            console.log(`stdout-data: ${typeof stdout}`);
-            // stdout = stdout.slice(stdout.indexOf("["), stdout.lastIndexOf("]") + 1).split("+").join("");
-            event.sender.send('return-execute-query', responseObj);
-        });
-    });
+      );
+    }
+  );
 });
 
 interface SchemaType {
-    currentSchema: string,
-    schemaString: string,
+  currentSchema: string;
+  schemaString: string;
 }
 
 // Listen for schema edits sent from renderer
 ipcMain.on('edit-schema', (event, data: SchemaType) => {
   console.log('schema string sent from frontend', data);
-  exec(`docker exec postgres-1 psql -h localhost -p 5432 -U postgres -d ${data.currentSchema} -c "${data.schemaString}"`, (error, stdout, stderr) => {
-    if (error) {
-      console.log(`error: ${error.message}`);
-      return;
+  exec(
+    `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -d ${data.currentSchema} -c "${data.schemaString}"`,
+    (error, stdout, stderr) => {
+      if (error) {
+        console.log(`error: ${error.message}`);
+        return;
+      }
+      if (stderr) {
+        console.log(`stderr: ${stderr}`);
+        return;
+      }
+      console.log(`stdout: ${stdout}`);
     }
-    if (stderr) {
-      console.log(`stderr: ${stderr}`);
-      return;
-    }
-    console.log(`stdout: ${stdout}`);
-  });
+  );
   // Send result back to renderer
 });
