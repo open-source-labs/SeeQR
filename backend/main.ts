@@ -138,7 +138,6 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
 
   // console.log('dbname', db_name);
 
-
   // command strings 
   // const db_name: string = filePaths[0].slice(filePaths[0].lastIndexOf('\\') + 1, filePaths[0].lastIndexOf('.'));
   const createDB: string = `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE ${db_name}"`;
@@ -203,7 +202,7 @@ interface QueryType {
 ipcMain.on('execute-query', (event, data: QueryType) => {
   // ---------Refactor-------------------
   console.log('query sent from frontend', data.queryString);
-  //Checking to see if user wants to change db
+  // Checking to see if user wants to change db
   if (data.queryString[0] === '\\' && data.queryString[1] === 'c') {
     let dbName = data.queryString.slice(3);
     db.changeDB(dbName);
@@ -211,18 +210,19 @@ ipcMain.on('execute-query', (event, data: QueryType) => {
     db.getConnectionString();
     event.sender.send('return-execute-query', `Connected to database ${dbName}`);
   } else {
-    //If normal query
+    // If normal query
     db.query(data.queryString)
       .then(returnedData => {
-        //Getting data in row format for frontend
-        returnedData = returnedData.rows;
+        // Getting data in row format for frontend
+        returnedData = {
+          queryData: returnedData.rows,
+          queryLabel: data.queryLabel,
+          querySchema: data.queryCurrentSchema,
+        }
         // Send result back to renderer
         event.sender.send('return-execute-query', returnedData);
       })
   }
-
-
-
 });
 
 
