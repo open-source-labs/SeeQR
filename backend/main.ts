@@ -128,8 +128,9 @@ app.on('activate', () => {
 ipcMain.on('upload-file', (event, filePaths: string) => {
   console.log('file paths sent from renderer', filePaths);
 
+  
   // command strings 
-  const db_name: string = 'test';
+  const db_name : string = filePaths[0].slice(filePaths[0].lastIndexOf('\\') + 1, filePaths[0].lastIndexOf('.'));
   const createDB : string = `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE ${db_name}"`;
   const importFile : string = `docker cp ${filePaths} postgres-1:/data_dump`;
   const runSQL : string = `docker exec postgres-1 psql -U postgres -d ${db_name} -f /data_dump`;
@@ -162,6 +163,11 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
     if (extension === '.sql') runCmd = runSQL;
     else if (extension === '.tar') runCmd = runTAR;;
     addDB(runCmd, () => console.log(`Created Database: ${db_name}`));
+    // Redirects modal towards new imported database
+    db.changeDB(db_name)
+    console.log("getConnectionString")
+    db.getConnectionString();
+    console.log(`Connected to database ${db_name}`);
   }
 
   // Step 2 : Import database file from file path into docker container
