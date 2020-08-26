@@ -113,18 +113,27 @@ app.on('activate', () => {
     createWindow();
   }
 });
-
 /************************************************************
  *********************** IPC CHANNELS ***********************
  ************************************************************/
 
-const db_name: string = 'test';
 // Listen for files upload
+
+/* ---IMPORT DATABASE: CREATE AN INSTANCE OF DATABASE FROM A PRE-MADE .TAR OR .SQL FILE--- */
 ipcMain.on('upload-file', (event, filePaths: string) => {
   console.log('file paths sent from renderer', filePaths);
-  // Process
-  exec(
-    `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE ${db_name}"`,
+
+  // command strings 
+  const db_name: string = 'test';
+  const createDB : string = `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE ${db_name}"`;
+  const importFile : string = `docker cp ${filePaths} postgres-1:/data_dump`;
+  const runSQL : string = `docker exec postgres-1 psql -U postgres -d ${db_name} -f /data_dump`;
+  const runTAR : string = `docker exec postgres-1 pg_restore -U postgres -d ${db_name} /data_dump`;
+  const extension: string = filePaths[0].slice(filePaths[0].lastIndexOf('.'));
+
+  // CALLBACK FUNCTION : execute commands in the child process
+  const addDB = (str : string, nextStep : any) => {
+    exec(str,
     (error, stdout, stderr) => {
       if (error) {
         console.log(`error: ${error.message}`);
@@ -135,54 +144,30 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
         return;
       }
       console.log(`stdout: ${stdout}`);
-      exec(`docker cp ${filePaths} postgres-1:/data_dump`, (error, stdout, stderr) => {
-        if (error) {
-          console.log(`error: ${error.message}`);
-          return;
-        }
-        if (stderr) {
-          console.log(`stderr: ${stderr}`);
-          return;
-        }
-        console.log(`stdout: ${stdout}`);
-        const extension: string = filePaths[0].slice(filePaths[0].lastIndexOf('.'));
-        console.log(extension);
-        if (extension === '.sql') {
-          exec(
-            `docker exec postgres-1 psql -U postgres -d ${db_name} -f /data_dump`,
-            (error, stdout, stderr) => {
-              if (error) {
-                console.log(`error: ${error.message}`);
-                return;
-              }
-              if (stderr) {
-                console.log(`stderr: ${stderr}`);
-                return;
-              }
-              console.log(`stdout: ${stdout}`);
-            }
-          );
-        } else if (extension === '.tar') {
-          exec(
-            `docker exec postgres-1 pg_restore -U postgres -d ${db_name} /data_dump`,
-            (error, stdout, stderr) => {
-              if (error) {
-                console.log(`error: ${error.message}`);
-                return;
-              }
-              if (stderr) {
-                console.log(`stderr: ${stderr}`);
-                return;
-              }
-              console.log(`stdout: ${stdout}`);
-            }
-          );
-        }
-      });
-    }
-  );
-  // Send result back to renderer
+      if (nextStep) nextStep();
+    });
+  }
+
+  // SEQUENCE OF EXECUTING COMMANDS
+  // Steps are in reverse order because each step is a callback function that requires the following step to be defined.
+
+  // Step 3 : Given the file path extension, run the appropriate command in postgres to build the db
+  const step3 = () => {
+    let runCmd : string = '';
+    if (extension === '.sql') runCmd = runSQL;
+    else if (extension === '.tar') runCmd = runTAR;;
+    addDB(runCmd, () => console.log(`Created Database: ${db_name}`));
+  }
+
+  // Step 2 : Import database file from file path into docker container
+  const step2 = () => addDB(importFile, step3);
+
+  // Step 1 : Create empty db
+  if (extension === '.sql' || extension === '.tar') addDB(createDB, step2);
+  else console.log("INVAILD FILE TYPE: Please use .tar or .sql extensions.")
 });
+/* ---END OF IMPORT DATABASE FUNCTION--- */
+
 
 // Listen for user clicking skip button
 ipcMain.on('skip-file-upload', (event) => {});
