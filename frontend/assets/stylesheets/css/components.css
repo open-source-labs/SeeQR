@@ -83,3 +83,24 @@ input {
 input *:focus {
   outline: none;
 }
+
+#data-table {
+  overflow: auto;
+  height: 300px;
+}
+
+.query-data {
+  width: 1000px;
+}
+
+#codemirror {
+  padding: 15px 0;
+}
+
+#data-table::-webkit-scrollbar-track {
+  background: #c6d2d5;
+}
+
+#data-table::-webkit-scrollbar-thumb {
+  background-color: #444c50;
+}
