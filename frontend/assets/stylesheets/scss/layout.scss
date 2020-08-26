@@ -1,5 +1,49 @@
 @import './variables.scss';
 
+#splash-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 70vh;
+  overflow: hidden;
+  color: $primary-color-darkmode;
+  background-image: url('../../images/logo_color.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  .splash-prompt {
+    display: flex;
+    flex-direction: column;
+    margin-top: 600px;
+    text-align: center;
+  }
+  .splash-buttons {
+    display: flex;
+    flex-direction: row;
+    margin-top: 50px;
+    button {
+      border: 0.5px $border-darkmode solid;
+      background-color: $button-darkmode;
+      border-radius: 3px;
+      padding: 10px;
+      border: none;
+      font-size: 16px;
+      font-weight: bold;
+      color: $background-darkmode;
+      outline: none;
+      margin: 0 5px;
+    }
+    button:hover {
+      background-color: $mint-green;
+    }
+  }
+  img {
+    width: 300px;
+    height: auto;
+    margin-bottom: 30px;
+  }
+}
+
 #main-panel {
   display: flex;
   flex-direction: row;

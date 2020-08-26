@@ -19,15 +19,15 @@ export class Data extends Component<DataProps> {
     const { queries } = this.props;
     let { queryData } = queries[0];
     // Take off quotation marks
-    queryData = queryData.slice(1, queryData.length - 1)
+    queryData = queryData.slice(1, queryData.length - 1);
 
     return (
-      <div style={{ border: '1px solid purple', fontSize: '12px' }}>
-        <h2 id='results-title'>Data Table</h2>
-        <div>{queryData}</div>
-      </div >
+      <div id="data-panel">
+        <h3 id="results-title">Data Table</h3>
+        <div id="data-table">
+          <div className="query-data">{queryData}</div>
+        </div>
+      </div>
     );
   }
 }
-
-
