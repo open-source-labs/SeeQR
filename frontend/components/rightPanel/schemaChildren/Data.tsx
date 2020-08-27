@@ -17,10 +17,12 @@ export class Data extends Component<DataProps> {
 
   render() {
     const { queries } = this.props;
-    let { queryData } = queries[0];
+    // let { queryData } = queries[0];
 
     return (
       <div id="data-panel">
+        <br />
+        <br />
         <h3 id="results-title">Data Table</h3>
         <div id="data-table">
           <div className="query-data">insert data here</div>

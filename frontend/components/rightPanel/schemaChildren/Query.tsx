@@ -47,7 +47,7 @@ class Query extends Component<QueryProps, state> {
   state: state = {
     queryString: '',
     queryLabel: '',
-    currentSchema: '',
+    currentSchema: 'Schema A',
     show: false,
   };
 
@@ -71,13 +71,20 @@ class Query extends Component<QueryProps, state> {
   // Submits query to backend on 'execute-query' channel
   handleQuerySubmit(event: any) {
     event.preventDefault();
-    const queryAndSchema = {
-      queryString: this.state.queryString,
-      queryCurrentSchema: this.state.currentSchema,
-      queryLabel: this.state.queryLabel,
-    };
-    ipcRenderer.send('execute-query', queryAndSchema);
-    this.setState({ queryString: '' });
+
+    // if input fields for query label or query string are empty, then 
+    // send alert to input both fields
+    if (!this.state.queryLabel || !this.state.queryString) {
+      alert('Please enter a Label and a Query.')
+    } else {
+      const queryAndSchema = {
+        queryString: this.state.queryString,
+        queryCurrentSchema: this.state.currentSchema,
+        queryLabel: this.state.queryLabel,
+      };
+      ipcRenderer.send('execute-query', queryAndSchema);
+      this.setState({ queryString: '' });
+    }
   }
 
   // showModal = (event: any) => {
@@ -104,7 +111,7 @@ class Query extends Component<QueryProps, state> {
         </button> */}
         {/* <SchemaModal show={this.state.show} onClose={this.showModal} /> */}
         <form onSubmit={this.handleQuerySubmit}>
-          <label>Query Label: </label>
+          <label>Query Label:* </label>
           <input
             className="label-field"
             type="text"
@@ -113,7 +120,7 @@ class Query extends Component<QueryProps, state> {
           />
           <br />
           <br />
-          <label>Query:</label>
+          <label>Query:*</label>
           {/* <input type="select" onClick={this.handleQueryPrevious}/> */}
           <div id="codemirror">
             <CodeMirror
@@ -123,6 +130,10 @@ class Query extends Component<QueryProps, state> {
             />
           </div>
           <button>Submit</button>
+          <br />
+          <br />
+          <p>*required</p>
+
         </form>
       </div>
     );
