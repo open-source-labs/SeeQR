@@ -226,63 +226,20 @@ ipcMain.on('execute-query', (event, data: QueryType) => {
 
     db.query(queryString)
       .then(queryData => {
-        // Getting data in row format for frontend
-        // returnedData = {
-        //   queryString: data.queryString,
-        //   queryData: returnedData.rows,
-        //   queryLabel: data.queryLabel,
-        //   querySchema: data.queryCurrentSchema,
-        // }
-
         frontendData.queryData = queryData.rows;
-        // console.log('frontendData.queryData', frontendData.queryData);
-
-        console.log('queryString', queryString);
-
 
         db.query("EXPLAIN (FORMAT JSON, ANALYZE) " + queryString)
-          // db.query("EXPLAIN ANALYZE " + queryString)
           .then(queryStats => {
             // Getting data in row format for frontend
-            // queryStats = queryStats.rows;
-
-            // console.log('queryStats.rows[0]', queryStats.rows[0]);
             frontendData.queryStatistics = queryStats.rows;
 
             // Send result back to renderer
             event.sender.send('return-execute-query', frontendData);
           })
-
       })
-      .catch((error) => {
+      .catch((error: string) => {
         console.log("THE CATCH: ", error)
       })
-    // Explain analyze
-    // .then(db.query("EXPLAIN ANALYZE " + data.queryString)
-    //   .then(returnedData => {
-    //     // Getting data in row format for frontend
-    //     returnedData = returnedData.rows;
-    //     // Send result back to renderer
-    //     event.sender.send('return-execute-query', returnedData);
-    //   })
-    //   .catch((error) => {
-    //     console.log("THE CATCH: ", error)
-    //   }))
-
-
-    // // If normal query
-    // db.query(data.queryString)
-    //   .then(returnedData => {
-    //     // Getting data in row format for frontend
-    //     returnedData = {
-    //       queryString: data.queryString,
-    //       queryData: returnedData.rows,
-    //       queryLabel: data.queryLabel,
-    //       querySchema: data.queryCurrentSchema,
-    //     }
-    //     // Send result back to renderer
-    //     event.sender.send('return-execute-query', returnedData);
-    //   })
   }
 });
 

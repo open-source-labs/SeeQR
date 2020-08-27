@@ -632,7 +632,7 @@ class MainPanel extends Component<MainProps, MainState> {
     // Update state with new object (containing query data, query statistics, query schema
     // inside of state.queries array
     ipcRenderer.on('return-execute-query', (event: any, returnedData: any) => {
-      console.log('returnedData', returnedData);
+      // console.log('returnedData', returnedData);
 
       // destructure from returnedData
       const { queryString, queryData, queryStatistics, querySchema, queryLabel } = returnedData;
@@ -652,7 +652,7 @@ class MainPanel extends Component<MainProps, MainState> {
       queries.push(newQuery)
 
       this.setState({ queries })
-      console.log('state after receiving data: ', this.state);
+      // console.log('state after receiving data: ', this.state);
     });
 
     return (
