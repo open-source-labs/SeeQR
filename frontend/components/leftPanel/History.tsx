@@ -15,30 +15,32 @@ export class History extends Component<HistoryProps> {
     super(props);
   }
 
-  // renderTableHistory() {
-  //   return this.props.queries.map((query, index) => {
-  //     const { queryStatistics, querySchema, queryLabel } = query;
+  renderTableHistory() {
+    return this.props.queries.map((query, index) => {
+      const { queryStatistics, querySchema, queryLabel } = query;
+      console.log('query from History', query);
 
-  //     const { ['QUERY PLAN']: queryPlan } = queryStatistics['items'][0];
-  //     console.log('queryPlan', queryPlan);
 
-  //     const {
-  //       Plan,
-  //       ['Planning Time']: planningTime,
-  //       ['Execution Time']: executionTime,
-  //     } = queryPlan[0];
-  //     const { ['Actual Rows']: actualRows, ['Actual Total Time']: actualTotalTime } = Plan;
+      const { ['QUERY PLAN']: queryPlan } = queryStatistics[0];
+      console.log('queryPlan', queryPlan);
 
-  //     return (
-  //       <tr key={index}>
-  //         <td id="query-label">{queryLabel}</td>
-  //         <td id="schema-name">{querySchema}</td>
-  //         <td id="actual-rows">{actualRows}</td>
-  //         <td id="total-time">{actualTotalTime}</td>
-  //       </tr>
-  //     );
-  //   });
-  // }
+      const {
+        Plan,
+        ['Planning Time']: planningTime,
+        ['Execution Time']: executionTime,
+      } = queryPlan[0];
+      const { ['Actual Rows']: actualRows, ['Actual Total Time']: actualTotalTime } = Plan;
+
+      return (
+        <tr key={index}>
+          <td id="query-label">{queryLabel}</td>
+          <td id="schema-name">{querySchema}</td>
+          <td id="actual-rows">{actualRows}</td>
+          <td id="total-time">{actualTotalTime}</td>
+        </tr>
+      );
+    });
+  }
 
   render() {
     const { queries } = this.props;
@@ -55,7 +57,7 @@ export class History extends Component<HistoryProps> {
               <td>{'Total Rows'}</td>
               <td>{'Total Time'}</td>
             </tr>
-            {/* {this.renderTableHistory()} */}
+            {this.renderTableHistory()}
           </tbody>
         </table>
       </div>

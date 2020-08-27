@@ -12,7 +12,7 @@
     "start": "cross-env NODE_ENV=production electron --noDevServer .",
     "dev": "concurrently \"tsc && cross-env NODE_ENV=development webpack-dev-server --hot\" \"npm run docker\"",
     "docker": "cd database && docker-compose up -d",
-    "containerReset": "docker container stop postgres-1 && docker container prune && docker container ls -a"
+    "resetContainer": "docker container stop postgres-1 && docker container prune && docker container ls -a"
   },
   "repository": {
     "type": "git",

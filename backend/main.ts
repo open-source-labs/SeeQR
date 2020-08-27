@@ -28,9 +28,9 @@ if (process.env.NODE_ENV !== undefined && process.env.NODE_ENV === 'development'
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1800,
-    height: 1200,
-    minWidth: 1200,
-    minHeight: 1020,
+    height: 1400,
+    minWidth: 900,
+    minHeight: 720,
     title: 'SeeQR',
     show: false,
     webPreferences: { nodeIntegration: true, enableRemoteModule: true },
@@ -226,62 +226,24 @@ ipcMain.on('execute-query', (event, data: QueryType) => {
       queryStatistics: '',
     };
 
+    // Run select * from actors;
     db.query(queryString)
-      .then((queryData) => {
-        // Getting data in row format for frontend
-        // returnedData = {
-        //   queryString: data.queryString,
-        //   queryData: returnedData.rows,
-        //   queryLabel: data.queryLabel,
-        //   querySchema: data.queryCurrentSchema,
-        // }
-
+      .then(queryData => {
         frontendData.queryData = queryData.rows;
-        // console.log('frontendData.queryData', frontendData.queryData);
 
-        console.log('queryString', queryString);
-
-        db.query('EXPLAIN (FORMAT JSON, ANALYZE) ' + queryString)
-          // db.query("EXPLAIN ANALYZE " + queryString)
-          .then((queryStats) => {
+        // Run EXPLAIN (FORMAT JSON, ANALYZE)
+        db.query("EXPLAIN (FORMAT JSON, ANALYZE) " + queryString)
+          .then(queryStats => {
             // Getting data in row format for frontend
-            // queryStats = queryStats.rows;
-
-            // console.log('queryStats.rows[0]', queryStats.rows[0]);
             frontendData.queryStatistics = queryStats.rows;
 
             // Send result back to renderer
             event.sender.send('return-execute-query', frontendData);
-          });
+          })
       })
-      .catch((error) => {
-        console.log('THE CATCH: ', error);
-      });
-    // Explain analyze
-    // .then(db.query("EXPLAIN ANALYZE " + data.queryString)
-    //   .then(returnedData => {
-    //     // Getting data in row format for frontend
-    //     returnedData = returnedData.rows;
-    //     // Send result back to renderer
-    //     event.sender.send('return-execute-query', returnedData);
-    //   })
-    //   .catch((error) => {
-    //     console.log("THE CATCH: ", error)
-    //   }))
-
-    // // If normal query
-    // db.query(data.queryString)
-    //   .then(returnedData => {
-    //     // Getting data in row format for frontend
-    //     returnedData = {
-    //       queryString: data.queryString,
-    //       queryData: returnedData.rows,
-    //       queryLabel: data.queryLabel,
-    //       querySchema: data.queryCurrentSchema,
-    //     }
-    //     // Send result back to renderer
-    //     event.sender.send('return-execute-query', returnedData);
-    //   })
+      .catch((error: string) => {
+        console.log("THE CATCH: ", error)
+      })
   }
 });
 
