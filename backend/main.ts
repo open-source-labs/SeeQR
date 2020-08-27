@@ -5,8 +5,12 @@ import { app, BrowserWindow, ipcMain, Menu } from 'electron';
 import { join } from 'path';
 import { format } from 'url';
 import { Children } from 'react';
-const { exec } = require('child_process');
+const { exec } = require("child_process");
 const appMenu = require('./mainMenu');
+const db = require('./modal');
+
+
+
 /************************************************************
  ********* CREATE & CLOSE WINDOW UPON INITIALIZATION *********
  ************************************************************/
@@ -117,14 +121,22 @@ app.on('activate', () => {
  *********************** IPC CHANNELS ***********************
  ************************************************************/
 
+
 // Listen for files upload
 
 /* ---IMPORT DATABASE: CREATE AN INSTANCE OF DATABASE FROM A PRE-MADE .TAR OR .SQL FILE--- */
 ipcMain.on('upload-file', (event, filePaths: string) => {
   console.log('file paths sent from renderer', filePaths);
-
+  const isMac = process.platform === 'darwin';
+  let db_name: string;
+  if (isMac) {
+    db_name = filePaths[0].slice(filePaths[0].lastIndexOf('/') + 1, filePaths[0].lastIndexOf('.'));
+  } else {
+    db_name = filePaths[0].slice(filePaths[0].lastIndexOf('\\') + 1, filePaths[0].lastIndexOf('.'));
+  }
+  console.log('dbname', db_name);
   // command strings 
-  const db_name: string = 'test';
+  // const db_name: string = filePaths[0].slice(filePaths[0].lastIndexOf('\\') + 1, filePaths[0].lastIndexOf('.'));
   const createDB : string = `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE ${db_name}"`;
   const importFile : string = `docker cp ${filePaths} postgres-1:/data_dump`;
   const runSQL : string = `docker exec postgres-1 psql -U postgres -d ${db_name} -f /data_dump`;
@@ -157,6 +169,11 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
     if (extension === '.sql') runCmd = runSQL;
     else if (extension === '.tar') runCmd = runTAR;;
     addDB(runCmd, () => console.log(`Created Database: ${db_name}`));
+    // Redirects modal towards new imported database
+    db.changeDB(db_name)
+    console.log("getConnectionString")
+    db.getConnectionString();
+    console.log(`Connected to database ${db_name}`);
   }
 
   // Step 2 : Import database file from file path into docker container
@@ -180,46 +197,30 @@ interface QueryType {
 
 // Listen for queries being sent from renderer
 ipcMain.on('execute-query', (event, data: QueryType) => {
-  const responseObj: any = {};
-  exec(
-    `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -d test -c "EXPLAIN (FORMAT JSON, ANALYZE) ${data.queryString}"`,
-    (error, stdout, stderr) => {
-      if (error) {
-        console.log(`error: ${error.message}`);
-        return;
-      }
-      if (stderr) {
-        console.log(`stderr: ${stderr}`);
-        return;
-      }
-      console.log(`stdout-analyze: ${stdout}`);
-      stdout = stdout
-        .slice(stdout.indexOf('['), stdout.lastIndexOf(']') + 1)
-        .split('+')
-        .join('');
-      responseObj.analyze = stdout;
-      responseObj.queryLabel = data.queryLabel;
-      // event.sender.send('return-execute-query', stdout);
-      exec(
-        `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -d test -c "${data.queryString}"`,
-        (error, stdout, stderr) => {
-          if (error) {
-            console.log(`error: ${error.message}`);
-            return;
-          }
-          if (stderr) {
-            console.log(`stderr: ${stderr}`);
-            return;
-          }
-          responseObj.data = stdout;
-          console.log(`stdout-data: ${typeof stdout}`);
-          // stdout = stdout.slice(stdout.indexOf("["), stdout.lastIndexOf("]") + 1).split("+").join("");
-          event.sender.send('return-execute-query', responseObj);
-        }
-      );
-    }
-  );
+  // ---------Refactor-------------------
+  console.log('query sent from frontend', data.queryString);
+  //Checking to see if user wants to change db
+  if(data.queryString[0] === '\\' && data.queryString[1] === 'c'){
+    let dbName = data.queryString.slice(3);
+    db.changeDB(dbName);
+    console.log("getConnectionString")
+    db.getConnectionString();
+    event.sender.send('return-execute-query', `Connected to database ${dbName}`);
+  }else{
+    //If normal query
+    db.query(data.queryString)
+    .then(returnedData => {
+    //Getting data in row format for frontend
+      returnedData = returnedData.rows;
+    // Send result back to renderer
+      event.sender.send('return-execute-query', returnedData);
+    })
+  }
+
+  
+  
 });
+
 
 interface SchemaType {
   currentSchema: string;
