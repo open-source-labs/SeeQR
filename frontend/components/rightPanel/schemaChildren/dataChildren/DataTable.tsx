@@ -16,7 +16,7 @@ export class Table extends Component<TableProps> {
     super(props);
     this.getKeys = this.getKeys.bind(this);
     this.getHeader = this.getHeader.bind(this);
-    // this.getRowsData = this.getRowsData.bind(this);
+    this.getRowsData = this.getRowsData.bind(this);
   }
 
   getKeys() {
@@ -24,11 +24,16 @@ export class Table extends Component<TableProps> {
     // console.log('query json object', JSON.stringify({ queries }));
 
     // store queries as a JSON string
-    // const queryDataJSON = JSON.stringify({ queries })
+    // const queryDataJSON = JSON.stringify(queries[queries.length - 1].queryData)
+    // console.log('queryDataJSON', queryDataJSON[0]);
 
+    // return Object.keys(queryDataJSON[0]);
+
+    // const queryDataJSON = JSON.stringify({ queries })
     return Object.keys(queries[queries.length - 1].queryData[0]);
   }
 
+  // this works
   getHeader() {
     var keys = this.getKeys();
     return keys.map((key, index) => {
@@ -36,19 +41,20 @@ export class Table extends Component<TableProps> {
     })
   }
 
-  // getRowsData() {
-  //   var items = this.props.data;
-  //   var keys = this.getKeys();
-  //   return items.map((row, index) => {
-  //     return <tr key={index}><RenderRow key={index} data={row} keys={keys} /></tr>
-  //   })
-  // }
+  getRowsData() {
+    const { queries } = this.props;
+
+    var items = queries[queries.length - 1].queryData;
+    var keys = this.getKeys();
+    return items.map((row, index) => {
+      return <tr key={index}><RenderRow key={index} data={row} keys={keys} /></tr>
+    })
+  }
 
   render() {
 
     return (
       <div>
-        <h4>hiiiii from DataTable</h4>
         {/* {this.getKeys()} */}
         <table>
           <thead>
@@ -64,8 +70,21 @@ export class Table extends Component<TableProps> {
   }
 }
 
-// const RenderRow = (props) => {
-//   return props.keys.map((key, index) => {
-//     return <td key={props.data[key]}>{props.data[key]}</td>
-//   })
-// }
+type RenderRowProps = {
+  // queries: {
+  //   queryString: string;
+  //   queryData: string;
+  //   queryStatistics: any
+  //   querySchema: string;
+  // }[];
+  // queries: any;
+  data: any;
+  keys: any;
+  key: any;
+};
+
+const RenderRow = (props: RenderRowProps) => {
+  return props.keys.map((key, index) => {
+    return <td key={props.data[key]}>{props.data[key]}</td>
+  })
+}
