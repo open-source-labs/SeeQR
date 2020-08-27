@@ -196,12 +196,14 @@ interface QueryType {
   queryCurrentSchema: string;
   queryString: string;
   queryLabel: string;
+  queryData: string;
+  queryStatistics: string;
 }
 
 // Listen for queries being sent from renderer
 ipcMain.on('execute-query', (event, data: QueryType) => {
   // ---------Refactor-------------------
-  console.log('query sent from frontend', data.queryString);
+  console.log('query sent from frontend', data);
   // Checking to see if user wants to change db
   if (data.queryString[0] === '\\' && data.queryString[1] === 'c') {
     let dbName = data.queryString.slice(3);
@@ -210,18 +212,77 @@ ipcMain.on('execute-query', (event, data: QueryType) => {
     db.getConnectionString();
     event.sender.send('return-execute-query', `Connected to database ${dbName}`);
   } else {
-    // If normal query
-    db.query(data.queryString)
-      .then(returnedData => {
+    // destructure object from frontend
+    const { queryString, queryCurrentSchema, queryLabel } = data;
+
+    // initialize object to store all data to send to frontend
+    let frontendData = {
+      queryString,
+      queryCurrentSchema,
+      queryLabel,
+      queryData: '',
+      queryStatistics: '',
+    };
+
+    db.query(queryString)
+      .then(queryData => {
         // Getting data in row format for frontend
-        returnedData = {
-          queryData: returnedData.rows,
-          queryLabel: data.queryLabel,
-          querySchema: data.queryCurrentSchema,
-        }
-        // Send result back to renderer
-        event.sender.send('return-execute-query', returnedData);
+        // returnedData = {
+        //   queryString: data.queryString,
+        //   queryData: returnedData.rows,
+        //   queryLabel: data.queryLabel,
+        //   querySchema: data.queryCurrentSchema,
+        // }
+
+        frontendData.queryData = queryData.rows;
+        // console.log('frontendData.queryData', frontendData.queryData);
+
+        console.log('queryString', queryString);
+
+
+        db.query("EXPLAIN (FORMAT JSON, ANALYZE) " + queryString)
+          // db.query("EXPLAIN ANALYZE " + queryString)
+          .then(queryStats => {
+            // Getting data in row format for frontend
+            // queryStats = queryStats.rows;
+
+            // console.log('queryStats.rows[0]', queryStats.rows[0]);
+            frontendData.queryStatistics = queryStats.rows;
+
+            // Send result back to renderer
+            event.sender.send('return-execute-query', frontendData);
+          })
+
       })
+      .catch((error) => {
+        console.log("THE CATCH: ", error)
+      })
+    // Explain analyze
+    // .then(db.query("EXPLAIN ANALYZE " + data.queryString)
+    //   .then(returnedData => {
+    //     // Getting data in row format for frontend
+    //     returnedData = returnedData.rows;
+    //     // Send result back to renderer
+    //     event.sender.send('return-execute-query', returnedData);
+    //   })
+    //   .catch((error) => {
+    //     console.log("THE CATCH: ", error)
+    //   }))
+
+
+    // // If normal query
+    // db.query(data.queryString)
+    //   .then(returnedData => {
+    //     // Getting data in row format for frontend
+    //     returnedData = {
+    //       queryString: data.queryString,
+    //       queryData: returnedData.rows,
+    //       queryLabel: data.queryLabel,
+    //       querySchema: data.queryCurrentSchema,
+    //     }
+    //     // Send result back to renderer
+    //     event.sender.send('return-execute-query', returnedData);
+    //   })
   }
 });
 

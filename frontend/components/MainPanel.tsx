@@ -620,6 +620,7 @@ class MainPanel extends Component<MainProps, MainState> {
         queryLabel: 'get all from items',
       },
     ],
+    // currentSchema will change depending on which Schema Tab user selects
     currentSchema: 'schemaB',
   };
 
@@ -627,11 +628,31 @@ class MainPanel extends Component<MainProps, MainState> {
 
 
   render() {
+    // Listening for returnedData from executing Query
     // Update state with new object (containing query data, query statistics, query schema
     // inside of state.queries array
-    ipcRenderer.on('return-execute-query', (event: any, data: any) => {
-      console.log('data', data);
+    ipcRenderer.on('return-execute-query', (event: any, returnedData: any) => {
+      console.log('returnedData', returnedData);
 
+      // destructure from returnedData
+      const { queryString, queryData, queryStatistics, querySchema, queryLabel } = returnedData;
+
+      // create new query object with returnedData
+      const newQuery = {
+        queryString,
+        queryData,
+        queryStatistics,
+        querySchema,
+        queryLabel,
+      }
+
+      // create copy of current queries array
+      let queries = this.state.queries.slice();
+      // push new query object into copy of queries array
+      queries.push(newQuery)
+
+      this.setState({ queries })
+      console.log('state after receiving data: ', this.state);
     });
 
     return (
