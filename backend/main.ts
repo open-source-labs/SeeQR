@@ -224,10 +224,12 @@ ipcMain.on('execute-query', (event, data: QueryType) => {
       queryStatistics: '',
     };
 
+    // Run select * from actors;
     db.query(queryString)
       .then(queryData => {
         frontendData.queryData = queryData.rows;
 
+        // Run EXPLAIN (FORMAT JSON, ANALYZE)
         db.query("EXPLAIN (FORMAT JSON, ANALYZE) " + queryString)
           .then(queryStats => {
             // Getting data in row format for frontend

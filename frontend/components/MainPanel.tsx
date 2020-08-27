@@ -60,7 +60,7 @@ class MainPanel extends Component<MainProps, MainState> {
       queries.push(newQuery)
 
       this.setState({ queries })
-      // console.log('state after receiving data: ', this.state);
+      console.log('state after receiving data: ', this.state);
 
     });
 
