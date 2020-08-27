@@ -96,9 +96,9 @@ function createWindow() {
   //   splashWindow = null;
   //   mainWindow.show();
   // });
-  setTimeout(() => {
-    app.dock.bounce();
-  }, 5000);
+  // setTimeout(() => {
+  //   app.dock.bounce();
+  // }, 5000);
 }
 
 // Invoke createWindow to create browser windows after
@@ -228,22 +228,21 @@ ipcMain.on('execute-query', (event, data: QueryType) => {
 
     // Run select * from actors;
     db.query(queryString)
-      .then(queryData => {
+      .then((queryData) => {
         frontendData.queryData = queryData.rows;
 
         // Run EXPLAIN (FORMAT JSON, ANALYZE)
-        db.query("EXPLAIN (FORMAT JSON, ANALYZE) " + queryString)
-          .then(queryStats => {
-            // Getting data in row format for frontend
-            frontendData.queryStatistics = queryStats.rows;
+        db.query('EXPLAIN (FORMAT JSON, ANALYZE) ' + queryString).then((queryStats) => {
+          // Getting data in row format for frontend
+          frontendData.queryStatistics = queryStats.rows;
 
-            // Send result back to renderer
-            event.sender.send('return-execute-query', frontendData);
-          })
+          // Send result back to renderer
+          event.sender.send('return-execute-query', frontendData);
+        });
       })
       .catch((error: string) => {
-        console.log("THE CATCH: ", error)
-      })
+        console.log('THE CATCH: ', error);
+      });
   }
 });
 
