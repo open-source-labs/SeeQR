@@ -13,17 +13,16 @@ services:
           POSTGRES_PASSWORD: postgres
           POSTGRES_USER: postgres
           POSTGRES_DB: defaultDB
-        # volumes:
-        # - database-data
+        volumes:
+        - database-data
         depends_on:
         - bb
         container_name: postgres-1
         ports:
         - 5432:5432
-        # hostname: localhost
+        hostname: localhost
         networks:
         - default
 
 volumes:
   database-data: # named volumes can be managed easier using docker-compose
-

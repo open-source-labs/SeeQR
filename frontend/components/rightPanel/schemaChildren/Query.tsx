@@ -1,7 +1,10 @@
 import React, { Component, MouseEvent, ChangeEvent } from 'react';
 const { ipcRenderer } = window.require('electron');
 
+// Codemirror Styling
 require('codemirror/lib/codemirror.css');
+
+// Codemirror Languages
 require('codemirror/mode/javascript/javascript');
 require('codemirror/mode/sql/sql');
 
@@ -35,7 +38,7 @@ class Query extends Component<QueryProps, state> {
   constructor(props: QueryProps) {
     super(props);
     this.handleQuerySubmit = this.handleQuerySubmit.bind(this);
-    this.handleQueryEntry = this.handleQueryEntry.bind(this);
+    // this.handleQueryEntry = this.handleQueryEntry.bind(this);
     // this.showModal = this.showModal.bind(this);
     // this.handleQueryPrevious = this.handleQueryPrevious.bind(this);
     this.updateCode = this.updateCode.bind(this);
@@ -48,13 +51,24 @@ class Query extends Component<QueryProps, state> {
     show: false,
   };
 
-  handleQueryEntry(event: InputChangeEvent) {
-    this.setState({ queryString: event.target.value, currentSchema: event.target.name });
-  }
+  // Updates state.queryString as user inputs query string
+  // handleQueryEntry(event: InputChangeEvent) {
+  //   this.setState({ queryString: event.target.value, currentSchema: event.target.name });
+  // }
+
+  // Updates state.queryString as user inputs query label
   handleLabelEntry(event: any) {
     this.setState({ queryLabel: event.target.value });
   }
 
+  // Updates state.queryString as user inputs query string
+  updateCode(newQueryString: string) {
+    this.setState({
+      queryString: newQueryString,
+    });
+  }
+
+  // Submits query to backend on 'execute-query' channel
   handleQuerySubmit(event: any) {
     event.preventDefault();
     const queryAndSchema = {
@@ -70,13 +84,8 @@ class Query extends Component<QueryProps, state> {
   //   this.setState({ show: !this.state.show });
   // };
 
-  updateCode(newQueryString: string) {
-    this.setState({
-      queryString: newQueryString,
-    });
-  }
-
   render() {
+    // Codemirror module configuration options
     var options = {
       lineNumbers: true,
       mode: 'sql',

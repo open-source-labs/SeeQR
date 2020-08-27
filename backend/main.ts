@@ -138,8 +138,10 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
   } else {
     db_name = filePaths[0].slice(filePaths[0].lastIndexOf('\\') + 1, filePaths[0].lastIndexOf('.'));
   }
-  console.log('dbname', db_name);
-  // command strings
+
+  // console.log('dbname', db_name);
+
+  // command strings 
   // const db_name: string = filePaths[0].slice(filePaths[0].lastIndexOf('\\') + 1, filePaths[0].lastIndexOf('.'));
   const createDB: string = `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE ${db_name}"`;
   const importFile: string = `docker cp ${filePaths} postgres-1:/data_dump`;
@@ -149,19 +151,20 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
 
   // CALLBACK FUNCTION : execute commands in the child process
   const addDB = (str: string, nextStep: any) => {
-    exec(str, (error, stdout, stderr) => {
-      if (error) {
-        console.log(`error: ${error.message}`);
-        return;
-      }
-      if (stderr) {
-        console.log(`stderr: ${stderr}`);
-        return;
-      }
-      console.log(`stdout: ${stdout}`);
-      if (nextStep) nextStep();
-    });
-  };
+    exec(str,
+      (error, stdout, stderr) => {
+        if (error) {
+          console.log(`error: ${error.message}`);
+          return;
+        }
+        if (stderr) {
+          console.log(`stderr: ${stderr}`);
+          return;
+        }
+        console.log(`stdout: ${stdout}`);
+        if (nextStep) nextStep();
+      });
+  }
 
   // SEQUENCE OF EXECUTING COMMANDS
   // Steps are in reverse order because each step is a callback function that requires the following step to be defined.
@@ -189,19 +192,21 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
 /* ---END OF IMPORT DATABASE FUNCTION--- */
 
 // Listen for user clicking skip button
-ipcMain.on('skip-file-upload', (event) => {});
+ipcMain.on('skip-file-upload', (event) => { });
 
 interface QueryType {
   queryCurrentSchema: string;
   queryString: string;
   queryLabel: string;
+  queryData: string;
+  queryStatistics: string;
 }
 
 // Listen for queries being sent from renderer
 ipcMain.on('execute-query', (event, data: QueryType) => {
   // ---------Refactor-------------------
-  console.log('query sent from frontend', data.queryString);
-  //Checking to see if user wants to change db
+  console.log('query sent from frontend', data);
+  // Checking to see if user wants to change db
   if (data.queryString[0] === '\\' && data.queryString[1] === 'c') {
     let dbName = data.queryString.slice(3);
     db.changeDB(dbName);
@@ -209,16 +214,77 @@ ipcMain.on('execute-query', (event, data: QueryType) => {
     db.getConnectionString();
     event.sender.send('return-execute-query', `Connected to database ${dbName}`);
   } else {
-    //If normal query
-    db.query(data.queryString).then((returnedData) => {
-      //Getting data in row format for frontend
-      returnedData = returnedData.rows;
-      // Send result back to renderer
-      event.sender.send('return-execute-query', returnedData);
-    })
-    .catch ((error: any) => {
-      console.error("The Catch: ", error)
-    });
+    // destructure object from frontend
+    const { queryString, queryCurrentSchema, queryLabel } = data;
+
+    // initialize object to store all data to send to frontend
+    let frontendData = {
+      queryString,
+      queryCurrentSchema,
+      queryLabel,
+      queryData: '',
+      queryStatistics: '',
+    };
+
+    db.query(queryString)
+      .then(queryData => {
+        // Getting data in row format for frontend
+        // returnedData = {
+        //   queryString: data.queryString,
+        //   queryData: returnedData.rows,
+        //   queryLabel: data.queryLabel,
+        //   querySchema: data.queryCurrentSchema,
+        // }
+
+        frontendData.queryData = queryData.rows;
+        // console.log('frontendData.queryData', frontendData.queryData);
+
+        console.log('queryString', queryString);
+
+
+        db.query("EXPLAIN (FORMAT JSON, ANALYZE) " + queryString)
+          // db.query("EXPLAIN ANALYZE " + queryString)
+          .then(queryStats => {
+            // Getting data in row format for frontend
+            // queryStats = queryStats.rows;
+
+            // console.log('queryStats.rows[0]', queryStats.rows[0]);
+            frontendData.queryStatistics = queryStats.rows;
+
+            // Send result back to renderer
+            event.sender.send('return-execute-query', frontendData);
+          })
+
+      })
+      .catch((error) => {
+        console.log("THE CATCH: ", error)
+      })
+    // Explain analyze
+    // .then(db.query("EXPLAIN ANALYZE " + data.queryString)
+    //   .then(returnedData => {
+    //     // Getting data in row format for frontend
+    //     returnedData = returnedData.rows;
+    //     // Send result back to renderer
+    //     event.sender.send('return-execute-query', returnedData);
+    //   })
+    //   .catch((error) => {
+    //     console.log("THE CATCH: ", error)
+    //   }))
+
+
+    // // If normal query
+    // db.query(data.queryString)
+    //   .then(returnedData => {
+    //     // Getting data in row format for frontend
+    //     returnedData = {
+    //       queryString: data.queryString,
+    //       queryData: returnedData.rows,
+    //       queryLabel: data.queryLabel,
+    //       querySchema: data.queryCurrentSchema,
+    //     }
+    //     // Send result back to renderer
+    //     event.sender.send('return-execute-query', returnedData);
+    //   })
   }
 });
 
