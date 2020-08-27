@@ -127,7 +127,6 @@ app.on('activate', () => {
 /* ---IMPORT DATABASE: CREATE AN INSTANCE OF DATABASE FROM A PRE-MADE .TAR OR .SQL FILE--- */
 ipcMain.on('upload-file', (event, filePaths: string) => {
   console.log('file paths sent from renderer', filePaths);
-
   const isMac = process.platform === 'darwin';
   let db_name: string;
   if (isMac) {
