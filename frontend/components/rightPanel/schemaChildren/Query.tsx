@@ -83,7 +83,7 @@ class Query extends Component<QueryProps, state> {
         queryLabel: this.state.queryLabel,
       };
       ipcRenderer.send('execute-query', queryAndSchema);
-      this.setState({ queryString: '' });
+      // this.setState({ queryString: '' });
     }
   }
 
