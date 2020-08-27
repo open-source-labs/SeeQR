@@ -26,27 +26,35 @@ export class App extends Component<AppProps, state> {
   handleFileClick(event: ClickEvent) {
     // event.preventDefault();
     // alert('event triggered');
-    const options = {
-      filters: [{ name: 'All Files', extensions: ['*'] }],
-    };
+    // const options = {
+    //   filters: [{ name: 'Custom File Type', extensions: ['tar', 'sql'] }],
+    // };
     dialog
       .showOpenDialog(
         {
-          properties: ['openFile', 'multiSelections'],
+          properties: ['openFile'],
+          filters: [{ name: 'Custom File Type', extensions: ['tar', 'sql'] }],
+          message: 'Please upload .sql or .tar database file'
         },
-        (files: string) => {
-          if (files !== undefined) {
-            // handle files
-            console.log('file path undefined');
-          }
-        }
+        // (files: string) => {
+        //   if (files !== undefined) {
+        //     // handle files
+        //     console.log('cancelled');
+        //   }
+        // }
       )
       .then((result: object) => {
         // there is definitely a better way to reference the object key of filePaths
-        const filePathArr = Object.values(result)[1];
+        console.log('file uploaded', result);
+        // const ifCancelled = Object.keys(result)
+        // console.log(ifCancelled)
+        // console.log(result["canceled"])
+        const filePathArr = result["filePaths"];
         // send via channel to main process
-        ipcRenderer.send('upload-file', filePathArr);
-        this.setState({ openSplash: false });
+        if (!result["canceled"]){
+          ipcRenderer.send('upload-file', filePathArr);
+          this.setState({ openSplash: false });
+        }
       })
       .catch((err: object) => {
         console.log(err);
