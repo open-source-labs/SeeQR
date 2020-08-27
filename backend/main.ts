@@ -34,11 +34,11 @@ function createWindow() {
     title: 'SeeQR',
     show: false,
     webPreferences: { nodeIntegration: true, enableRemoteModule: true },
-    icon: path.join(__dirname, '../../frontend/assets/images/seeqr_dock.png')
+    icon: path.join(__dirname, '../../frontend/assets/images/seeqr_dock.png'),
   });
   if (process.platform === 'darwin') {
     app.dock.setIcon(path.join(__dirname, '../../frontend/assets/images/seeqr_dock.png'));
-}
+  }
   // Create splash window
   // splashWindow = new BrowserWindow({
   //   width: 1600,
@@ -97,7 +97,7 @@ function createWindow() {
   //   mainWindow.show();
   // });
   setTimeout(() => {
-      app.dock.bounce();
+    app.dock.bounce();
   }, 5000);
 }
 
@@ -141,7 +141,7 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
 
   // console.log('dbname', db_name);
 
-  // command strings 
+  // command strings
   // const db_name: string = filePaths[0].slice(filePaths[0].lastIndexOf('\\') + 1, filePaths[0].lastIndexOf('.'));
   const createDB: string = `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE ${db_name}"`;
   const importFile: string = `docker cp ${filePaths} postgres-1:/data_dump`;
@@ -151,20 +151,20 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
 
   // CALLBACK FUNCTION : execute commands in the child process
   const addDB = (str: string, nextStep: any) => {
-    exec(str,
-      (error, stdout, stderr) => {
-        if (error) {
-          console.log(`error: ${error.message}`);
-          return;
-        }
-        if (stderr) {
-          console.log(`stderr: ${stderr}`);
-          return;
-        }
-        console.log(`stdout: ${stdout}`);
-        if (nextStep) nextStep();
-      });
-  }
+    exec(str, (error, stdout, stderr) => {
+      if (error) {
+        console.log(`error: ${error.message}`);
+        return;
+      }
+      if (stderr) {
+        console.log(`stderr: ${stderr}`);
+        return;
+      }
+      // console.log(`stdout: ${stdout}`);
+      console.log(`${stdout}`);
+      if (nextStep) nextStep();
+    });
+  };
 
   // SEQUENCE OF EXECUTING COMMANDS
   // Steps are in reverse order because each step is a callback function that requires the following step to be defined.
@@ -177,8 +177,8 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
     addDB(runCmd, () => console.log(`Created Database: ${db_name}`));
     // Redirects modal towards new imported database
     db.changeDB(db_name);
-    console.log('getConnectionString');
     db.getConnectionString();
+    console.log('getConnectionString');
     console.log(`Connected to database ${db_name}`);
   };
 
@@ -192,7 +192,7 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
 /* ---END OF IMPORT DATABASE FUNCTION--- */
 
 // Listen for user clicking skip button
-ipcMain.on('skip-file-upload', (event) => { });
+ipcMain.on('skip-file-upload', (event) => {});
 
 interface QueryType {
   queryCurrentSchema: string;
@@ -227,7 +227,7 @@ ipcMain.on('execute-query', (event, data: QueryType) => {
     };
 
     db.query(queryString)
-      .then(queryData => {
+      .then((queryData) => {
         // Getting data in row format for frontend
         // returnedData = {
         //   queryString: data.queryString,
@@ -241,10 +241,9 @@ ipcMain.on('execute-query', (event, data: QueryType) => {
 
         console.log('queryString', queryString);
 
-
-        db.query("EXPLAIN (FORMAT JSON, ANALYZE) " + queryString)
+        db.query('EXPLAIN (FORMAT JSON, ANALYZE) ' + queryString)
           // db.query("EXPLAIN ANALYZE " + queryString)
-          .then(queryStats => {
+          .then((queryStats) => {
             // Getting data in row format for frontend
             // queryStats = queryStats.rows;
 
@@ -253,12 +252,11 @@ ipcMain.on('execute-query', (event, data: QueryType) => {
 
             // Send result back to renderer
             event.sender.send('return-execute-query', frontendData);
-          })
-
+          });
       })
       .catch((error) => {
-        console.log("THE CATCH: ", error)
-      })
+        console.log('THE CATCH: ', error);
+      });
     // Explain analyze
     // .then(db.query("EXPLAIN ANALYZE " + data.queryString)
     //   .then(returnedData => {
@@ -270,7 +268,6 @@ ipcMain.on('execute-query', (event, data: QueryType) => {
     //   .catch((error) => {
     //     console.log("THE CATCH: ", error)
     //   }))
-
 
     // // If normal query
     // db.query(data.queryString)

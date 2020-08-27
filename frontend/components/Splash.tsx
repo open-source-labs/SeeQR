@@ -20,7 +20,7 @@ export class Splash extends Component<SplashProps> {
       <div id="splash-page">
         <div className="splash-prompt">
           <h4>Welcome!</h4>
-          <h4>Import database?</h4>
+          <h4>Import database in .sql or .tar?</h4>
         </div>
         <div className="splash-buttons">
           <button onClick={this.props.handleSkipClick}>Skip</button>
