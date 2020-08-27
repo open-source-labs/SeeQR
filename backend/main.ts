@@ -30,7 +30,7 @@ if (process.env.NODE_ENV !== undefined && process.env.NODE_ENV === 'development'
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1800,
-    height: 1200,
+    height: 1400,
     minWidth: 900,
     minHeight: 720,
     title: 'SeeQR',
@@ -134,30 +134,32 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
   } else {
     db_name = filePaths[0].slice(filePaths[0].lastIndexOf('\\') + 1, filePaths[0].lastIndexOf('.'));
   }
-  console.log('dbname', db_name);
+
+  // console.log('dbname', db_name);
+
   // command strings 
   // const db_name: string = filePaths[0].slice(filePaths[0].lastIndexOf('\\') + 1, filePaths[0].lastIndexOf('.'));
-  const createDB : string = `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE ${db_name}"`;
-  const importFile : string = `docker cp ${filePaths} postgres-1:/data_dump`;
-  const runSQL : string = `docker exec postgres-1 psql -U postgres -d ${db_name} -f /data_dump`;
-  const runTAR : string = `docker exec postgres-1 pg_restore -U postgres -d ${db_name} /data_dump`;
+  const createDB: string = `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE ${db_name}"`;
+  const importFile: string = `docker cp ${filePaths} postgres-1:/data_dump`;
+  const runSQL: string = `docker exec postgres-1 psql -U postgres -d ${db_name} -f /data_dump`;
+  const runTAR: string = `docker exec postgres-1 pg_restore -U postgres -d ${db_name} /data_dump`;
   const extension: string = filePaths[0].slice(filePaths[0].lastIndexOf('.'));
 
   // CALLBACK FUNCTION : execute commands in the child process
-  const addDB = (str : string, nextStep : any) => {
+  const addDB = (str: string, nextStep: any) => {
     exec(str,
-    (error, stdout, stderr) => {
-      if (error) {
-        console.log(`error: ${error.message}`);
-        return;
-      }
-      if (stderr) {
-        console.log(`stderr: ${stderr}`);
-        return;
-      }
-      console.log(`stdout: ${stdout}`);
-      if (nextStep) nextStep();
-    });
+      (error, stdout, stderr) => {
+        if (error) {
+          console.log(`error: ${error.message}`);
+          return;
+        }
+        if (stderr) {
+          console.log(`stderr: ${stderr}`);
+          return;
+        }
+        console.log(`stdout: ${stdout}`);
+        if (nextStep) nextStep();
+      });
   }
 
   // SEQUENCE OF EXECUTING COMMANDS
@@ -165,7 +167,7 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
 
   // Step 3 : Given the file path extension, run the appropriate command in postgres to build the db
   const step3 = () => {
-    let runCmd : string = '';
+    let runCmd: string = '';
     if (extension === '.sql') runCmd = runSQL;
     else if (extension === '.tar') runCmd = runTAR;;
     addDB(runCmd, () => console.log(`Created Database: ${db_name}`));
@@ -187,38 +189,59 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
 
 
 // Listen for user clicking skip button
-ipcMain.on('skip-file-upload', (event) => {});
+ipcMain.on('skip-file-upload', (event) => { });
 
 interface QueryType {
   queryCurrentSchema: string;
   queryString: string;
   queryLabel: string;
+  queryData: string;
+  queryStatistics: string;
 }
 
 // Listen for queries being sent from renderer
 ipcMain.on('execute-query', (event, data: QueryType) => {
   // ---------Refactor-------------------
-  console.log('query sent from frontend', data.queryString);
-  //Checking to see if user wants to change db
-  if(data.queryString[0] === '\\' && data.queryString[1] === 'c'){
+  console.log('query sent from frontend', data);
+  // Checking to see if user wants to change db
+  if (data.queryString[0] === '\\' && data.queryString[1] === 'c') {
     let dbName = data.queryString.slice(3);
     db.changeDB(dbName);
     console.log("getConnectionString")
     db.getConnectionString();
     event.sender.send('return-execute-query', `Connected to database ${dbName}`);
-  }else{
-    //If normal query
-    db.query(data.queryString)
-    .then(returnedData => {
-    //Getting data in row format for frontend
-      returnedData = returnedData.rows;
-    // Send result back to renderer
-      event.sender.send('return-execute-query', returnedData);
-    })
-  }
+  } else {
+    // destructure object from frontend
+    const { queryString, queryCurrentSchema, queryLabel } = data;
 
-  
-  
+    // initialize object to store all data to send to frontend
+    let frontendData = {
+      queryString,
+      queryCurrentSchema,
+      queryLabel,
+      queryData: '',
+      queryStatistics: '',
+    };
+
+    // Run select * from actors;
+    db.query(queryString)
+      .then(queryData => {
+        frontendData.queryData = queryData.rows;
+
+        // Run EXPLAIN (FORMAT JSON, ANALYZE)
+        db.query("EXPLAIN (FORMAT JSON, ANALYZE) " + queryString)
+          .then(queryStats => {
+            // Getting data in row format for frontend
+            frontendData.queryStatistics = queryStats.rows;
+
+            // Send result back to renderer
+            event.sender.send('return-execute-query', frontendData);
+          })
+      })
+      .catch((error: string) => {
+        console.log("THE CATCH: ", error)
+      })
+  }
 });
 
 
