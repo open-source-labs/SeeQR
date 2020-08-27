@@ -30,7 +30,7 @@ if (process.env.NODE_ENV !== undefined && process.env.NODE_ENV === 'development'
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1800,
-    height: 1200,
+    height: 1400,
     minWidth: 900,
     minHeight: 720,
     title: 'SeeQR',

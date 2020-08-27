@@ -42,7 +42,7 @@ class MainPanel extends Component<MainProps, MainState> {
     ipcRenderer.on('return-execute-query', (event: any, returnedData: any) => {
       console.log('returnedData', returnedData);
 
-      // destructure from returnedData
+      // destructure from returnedData from backend
       const { queryString, queryData, queryStatistics, queryCurrentSchema, queryLabel } = returnedData;
 
       // create new query object with returnedData
@@ -60,7 +60,8 @@ class MainPanel extends Component<MainProps, MainState> {
       queries.push(newQuery)
 
       this.setState({ queries })
-      console.log('state after receiving data: ', this.state);
+      // console.log('state after receiving data: ', this.state);
+
     });
 
     return (
