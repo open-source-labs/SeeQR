@@ -1,6 +1,7 @@
 import React, { Component, MouseEvent, ChangeEvent } from 'react';
 const { ipcRenderer } = window.require('electron');
 const { dialog } = require('electron').remote;
+import SchemaModal from './SchemaModal';
 
 // Codemirror Styling
 require('codemirror/lib/codemirror.css');
@@ -40,7 +41,7 @@ class Query extends Component<QueryProps, state> {
     super(props);
     this.handleQuerySubmit = this.handleQuerySubmit.bind(this);
     // this.handleQueryEntry = this.handleQueryEntry.bind(this);
-    // this.showModal = this.showModal.bind(this);
+    this.showModal = this.showModal.bind(this);
     // this.handleQueryPrevious = this.handleQueryPrevious.bind(this);
     this.updateCode = this.updateCode.bind(this);
   }
@@ -89,9 +90,9 @@ class Query extends Component<QueryProps, state> {
     }
   }
 
-  // showModal = (event: any) => {
-  //   this.setState({ show: !this.state.show });
-  // };
+  showModal = (event: any) => {
+    this.setState({ show: !this.state.show });
+  };
 
   render() {
     // Codemirror module configuration options
@@ -104,14 +105,14 @@ class Query extends Component<QueryProps, state> {
     return (
       <div id="query-panel">
         <h3>Query</h3>
-        {/* <button
+        <button
           onClick={(e) => {
             this.showModal(e);
           }}
         >
           Edit Schema
-        </button> */}
-        {/* <SchemaModal show={this.state.show} onClose={this.showModal} /> */}
+        </button>
+        <SchemaModal show={this.state.show} onClose={this.showModal} />
         <form onSubmit={this.handleQuerySubmit}>
           <label>Query Label:* </label>
           <input
