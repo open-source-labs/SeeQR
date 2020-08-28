@@ -1,5 +1,6 @@
 import React, { Component, MouseEvent, ChangeEvent } from 'react';
 const { ipcRenderer } = window.require('electron');
+const { dialog } = require('electron').remote;
 
 // Codemirror Styling
 require('codemirror/lib/codemirror.css');
@@ -71,11 +72,12 @@ class Query extends Component<QueryProps, state> {
   // Submits query to backend on 'execute-query' channel
   handleQuerySubmit(event: any) {
     event.preventDefault();
-
-    // if input fields for query label or query string are empty, then 
+    const noInputAlert = dialog.showErrorBox('Please enter a Label and a Query.', '');
+    // if input fields for query label or query string are empty, then
     // send alert to input both fields
     if (!this.state.queryLabel || !this.state.queryString) {
-      alert('Please enter a Label and a Query.')
+      // alert('Please enter a Label and a Query.')
+      console.log(noInputAlert);
     } else {
       const queryAndSchema = {
         queryString: this.state.queryString,
@@ -133,7 +135,6 @@ class Query extends Component<QueryProps, state> {
           <br />
           <br />
           <p>*required</p>
-
         </form>
       </div>
     );
