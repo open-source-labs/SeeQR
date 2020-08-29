@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Compare } from './leftPanel/Compare';
+import  { Compare }  from './leftPanel/Compare';
 import History from './leftPanel/History';
 import { SchemaContainer } from './rightPanel/SchemaContainer';
 const { ipcRenderer } = window.require('electron');
@@ -71,7 +71,7 @@ class MainPanel extends Component<MainProps, MainState> {
       <div id="main-panel">
         <div id="main-left">
           <History queries={this.state.queries} currentSchema={this.state.currentSchema} />
-          <Compare />
+          <Compare queries={this.state.queries} currentSchema={this.state.currentSchema}/>
         </div>
         <SchemaContainer queries={this.state.queries} currentSchema={this.state.currentSchema} />
       </div>
