@@ -5,7 +5,8 @@
   height: 200px;
 }
 
-.label-field {
+.label-field,
+.schema-label {
   font-family: "PT Mono", monospace;
   color: #6cbba9;
   margin-left: 8px;
@@ -103,4 +104,9 @@ input *:focus {
 
 #data-table::-webkit-scrollbar-thumb {
   background-color: #444c50;
+}
+
+.input-schema-button {
+  width: 120px;
+  margin-bottom: 30px;
 }

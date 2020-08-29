@@ -140,7 +140,7 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
   }
 
   // console.log('dbname', db_name);
-
+  console.log('filePaths', filePaths);
   // command strings
   // const db_name: string = filePaths[0].slice(filePaths[0].lastIndexOf('\\') + 1, filePaths[0].lastIndexOf('.'));
   const createDB: string = `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE ${db_name}"`;

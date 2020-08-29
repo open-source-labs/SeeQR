@@ -18,6 +18,7 @@ class SchemaModal extends Component<SchemaModalProps, state> {
   constructor(props: SchemaModalProps) {
     super(props);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleSchemaFile = this.handleSchemaFile.bind(this);
     this.handleSchemaEntry = this.handleSchemaEntry.bind(this);
 
     // this.handleQueryPrevious = this.handleQueryPrevious.bind(this);
@@ -27,6 +28,11 @@ class SchemaModal extends Component<SchemaModalProps, state> {
   state: state = {
     schemaString: '',
   };
+
+  // Load schema file path
+  handleSchemaFile(event: any) {
+    this.setState({ schemaString: event.target.value });
+  }
 
   handleSchemaEntry(event: any) {
     this.setState({ schemaString: event.target.value });
@@ -40,7 +46,7 @@ class SchemaModal extends Component<SchemaModalProps, state> {
 
   onClose = (event: any) => {
     this.props.onClose && this.props.onClose(event);
-  }
+  };
 
   render() {
     if (!this.props.show) {
@@ -48,23 +54,30 @@ class SchemaModal extends Component<SchemaModalProps, state> {
     }
     return (
       <div className="modal" id="modal">
-        <h2>Modal Window</h2>
         <div className="content">{this.props.children}</div>
+        <h3>Load or input schema</h3>
         <form onSubmit={this.handleSubmit}>
+          <p>First...</p>
+          <input className="schema-label" type="text" placeholder="Input schema label..." />
+          <p>Then...</p>
+          <button onClick={this.handleSchemaFile}>Load Schema</button>
+          <p>Or...</p>
           <input
-            className="text-field"
+            className="schema-text-field"
             type="text"
-            placeholder="revise schema here..."
+            placeholder="Input Schema Here..."
             onChange={(e) => this.handleSchemaEntry(e)}
           />
           {/* <input type="select" onClick={this.handleQueryPrevious}/> */}
-          <button>submit</button>
+          <div id="modal-buttons">
+            <button>submit</button>
+            <div className="actions">
+              <button className="toggle-button" onClick={this.onClose}>
+                close
+              </button>
+            </div>
+          </div>
         </form>
-        <div className="actions">
-          <button className="toggle-button" onClick={this.onClose}>
-            close
-          </button>
-        </div>
       </div>
     );
   }
