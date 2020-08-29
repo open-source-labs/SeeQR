@@ -16,34 +16,31 @@ module.exports = {
         console.log("Current URI: ", PG_URI)
     },
     getLists: () => {
-        const listObj = {
-            tableList: [],
-            databaseList: []
-        };
-        console.log("List Obj in beginning", listObj)
-        // This query returns the names of all the tables in the database, so that the frontend can make a visual for the user
-        pool.query("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_name;")
-        .then((tables) => {
-            console.log("In first then statement")
-            let tableList: any = [];
-            for(let i = 0; i < tables.rows.length; ++i){
-            tableList.push(tables.rows[i].table_name);
-            }
-            listObj.tableList = tableList
-            console.log("listObj atm", listObj)
-
-
-            pool.query("SELECT datname FROM pg_database;")
-            .then((databases) => {
-              console.log("In second then statement")
-              let dbList: any = [];
-              for(let i = 0; i < databases.rows.length; ++i){
-                dbList.push(databases.rows[i].datname);
-              }
-              listObj.databaseList = dbList;
-              console.log("Listobj before return", listObj)
+        return new Promise(resolve => {
+            const listObj = {
+                tableList: [], // current database's tables
+                databaseList: []
+            };
+            // This query returns the names of all the tables in the database, so that the frontend can make a visual for the user
+            pool.query("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_name;")
+            .then((tables) => {
+                let tableList: any = [];
+                for(let i = 0; i < tables.rows.length; ++i){
+                tableList.push(tables.rows[i].table_name);
+                }
+                listObj.tableList = tableList
+    
+                pool.query("SELECT datname FROM pg_database;")
+                .then((databases) => {
+                  let dbList: any = [];
+                  for(let i = 0; i < databases.rows.length; ++i){
+                    dbList.push(databases.rows[i].datname);
+                  }
+                  listObj.databaseList = dbList;
+                  resolve(listObj);
+                })
             })
         })
-        return listObj;
+        
     }
 }

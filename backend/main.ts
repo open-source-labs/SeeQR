@@ -189,12 +189,17 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
     db.changeDB(db_name);
     console.log(`Connected to database ${db_name}`);
 
-    // Need a setTimeout because query would run before any data finishes getting uploaded to the database form the runTAR or runSQL commands
+    // Need a setTimeout because query would run before any data gets uploaded to the database from the runTAR or runSQL commands
     setTimeout( async () => {
-      let lists = await db.getLists();
-      console.log("LISTS", lists)
-      event.sender.send("some-channel", lists);
-    } , 2000)
+      let listObj;
+      listObj = await db.getLists();
+      console.log("Temp log until channel is made", listObj)
+      event.sender.send("some-tab-channel", listObj);
+    }, 1000)
+    
+     
+
+
   }
 
   // Step 1 : Create empty db
@@ -228,7 +233,7 @@ ipcMain.on('execute-query', (event, data: QueryType) => {
     queryLabel,
     queryData: '',
     queryStatistics: '',
-    tableList: []
+    lists: {}
   };
 
   // Run select * from actors;
@@ -242,18 +247,13 @@ ipcMain.on('execute-query', (event, data: QueryType) => {
         // Getting data in row format for frontend
         frontendData.queryStatistics = queryStats.rows;
 
-
-        // This query returns the names of all the tables in the database, so that the frontend can make a visual for the user
-        db.query("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_name;")
-        .then((tables) => {
-          let tableList: any = [];
-          for(let i = 0; i < tables.rows.length; ++i){
-            tableList.push(tables.rows[i].table_name);
-          }
-          frontendData.tableList = tableList;
-          // Send result back to renderer
+        async function getListAsync() {
+          let listObj;
+          listObj = await db.getLists();
+          frontendData.lists = listObj;
           event.sender.send('return-execute-query', frontendData);
-        })
+        }
+        getListAsync();
       });
     })
     .catch((error: string) => {
