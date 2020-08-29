@@ -139,6 +139,8 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
     db_name = filePaths[0].slice(filePaths[0].lastIndexOf('\\') + 1, filePaths[0].lastIndexOf('.'));
   }
 
+  
+
   // console.log('dbname', db_name);
 
   // command strings
@@ -175,15 +177,25 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
     if (extension === '.sql') runCmd = runSQL;
     else if (extension === '.tar') runCmd = runTAR;
     addDB(runCmd, () => console.log(`Created Database: ${db_name}`));
-    // Redirects modal towards new imported database
-    db.changeDB(db_name);
-    db.getConnectionString();
-    console.log('getConnectionString');
-    console.log(`Connected to database ${db_name}`);
+    redirectModal();  
   };
 
   // Step 2 : Import database file from file path into docker container
   const step2 = () => addDB(importFile, step3);
+
+  // Changes the pg URI to look to the newly created database and queries all the tables in that database and sends it to frontend.
+  const redirectModal = () => {
+    // Redirects modal towards new imported database
+    db.changeDB(db_name);
+    console.log(`Connected to database ${db_name}`);
+
+    // Need a setTimeout because query would run before any data finishes getting uploaded to the database form the runTAR or runSQL commands
+    setTimeout( async () => {
+      let lists = await db.getLists();
+      console.log("LISTS", lists)
+      event.sender.send("some-channel", lists);
+    } , 2000)
+  }
 
   // Step 1 : Create empty db
   if (extension === '.sql' || extension === '.tar') addDB(createDB, step2);
@@ -206,44 +218,47 @@ interface QueryType {
 ipcMain.on('execute-query', (event, data: QueryType) => {
   // ---------Refactor-------------------
   console.log('query sent from frontend', data);
-  // Checking to see if user wants to change db
-  if (data.queryString[0] === '\\' && data.queryString[1] === 'c') {
-    let dbName = data.queryString.slice(3);
-    db.changeDB(dbName);
-    console.log('getConnectionString');
-    db.getConnectionString();
-    event.sender.send('return-execute-query', `Connected to database ${dbName}`);
-  } else {
-    // destructure object from frontend
-    const { queryString, queryCurrentSchema, queryLabel } = data;
+  // destructure object from frontend
+  const { queryString, queryCurrentSchema, queryLabel } = data;
 
-    // initialize object to store all data to send to frontend
-    let frontendData = {
-      queryString,
-      queryCurrentSchema,
-      queryLabel,
-      queryData: '',
-      queryStatistics: '',
-    };
+  // initialize object to store all data to send to frontend
+  let frontendData = {
+    queryString,
+    queryCurrentSchema,
+    queryLabel,
+    queryData: '',
+    queryStatistics: '',
+    tableList: []
+  };
 
-    // Run select * from actors;
-    db.query(queryString)
-      .then((queryData) => {
-        frontendData.queryData = queryData.rows;
+  // Run select * from actors;
+  db.query(queryString)
+    .then((queryData) => {
+      frontendData.queryData = queryData.rows;
 
-        // Run EXPLAIN (FORMAT JSON, ANALYZE)
-        db.query('EXPLAIN (FORMAT JSON, ANALYZE) ' + queryString).then((queryStats) => {
-          // Getting data in row format for frontend
-          frontendData.queryStatistics = queryStats.rows;
+      // Run EXPLAIN (FORMAT JSON, ANALYZE)
+      db.query('EXPLAIN (FORMAT JSON, ANALYZE) ' + queryString)
+      .then((queryStats) => {
+        // Getting data in row format for frontend
+        frontendData.queryStatistics = queryStats.rows;
 
+
+        // This query returns the names of all the tables in the database, so that the frontend can make a visual for the user
+        db.query("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_name;")
+        .then((tables) => {
+          let tableList: any = [];
+          for(let i = 0; i < tables.rows.length; ++i){
+            tableList.push(tables.rows[i].table_name);
+          }
+          frontendData.tableList = tableList;
           // Send result back to renderer
           event.sender.send('return-execute-query', frontendData);
-        });
-      })
-      .catch((error: string) => {
-        console.log('THE CATCH: ', error);
+        })
       });
-  }
+    })
+    .catch((error: string) => {
+      console.log('THE CATCH: ', error);
+    });
 });
 
 interface SchemaType {

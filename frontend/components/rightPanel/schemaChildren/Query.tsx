@@ -73,11 +73,11 @@ class Query extends Component<QueryProps, state> {
   // Submits query to backend on 'execute-query' channel
   handleQuerySubmit(event: any) {
     event.preventDefault();
-    const noInputAlert = dialog.showErrorBox('Please enter a Label and a Query.', '');
     // if input fields for query label or query string are empty, then
     // send alert to input both fields
     if (!this.state.queryLabel || !this.state.queryString) {
       // alert('Please enter a Label and a Query.')
+      const noInputAlert = dialog.showErrorBox('Please enter a Label and a Query.', '');
       console.log(noInputAlert);
     } else {
       const queryAndSchema = {
