@@ -230,12 +230,19 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
   let db_name: string;
   db_name = data.schemaName;
   let filePath = data.schemaFilePath;
+  let schemaEntry = data.schemaEntry.slice(1, -1);
+
+  console.log('filePath', filePath);
   // command strings
   const createDB: string = `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE ${db_name}"`;
   const importFile: string = `docker cp ${filePath} postgres-1:/data_dump`;
   const runSQL: string = `docker exec postgres-1 psql -U postgres -d ${db_name} -f /data_dump`;
+  const runScript: string = `docker exec postgres-1 psql -U postgres -d ${db_name} -c "${schemaEntry}"`;
   const runTAR: string = `docker exec postgres-1 pg_restore -U postgres -d ${db_name} /data_dump`;
-  const extension: string = filePath.slice(filePath.lastIndexOf('.'));
+  let extension: string = '';
+  if (filePath.length > 0) {
+    extension = filePath[0].slice(filePath[0].lastIndexOf('.'));
+  }
 
   // CALLBACK FUNCTION : execute commands in the child process
   const addDB = (str: string, nextStep: any) => {
@@ -262,6 +269,7 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
     let runCmd: string = '';
     if (extension === '.sql') runCmd = runSQL;
     else if (extension === '.tar') runCmd = runTAR;
+    else runCmd = runScript;
     addDB(runCmd, () => console.log(`Created Database: ${db_name}`));
     // Redirects modal towards new imported database
     db.changeDB(db_name);
@@ -272,6 +280,12 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
   const step2 = () => addDB(importFile, step3);
 
   // Step 1 : Create empty db
-  if (extension === '.sql' || extension === '.tar') addDB(createDB, step2);
-  else console.log('INVAILD FILE TYPE: Please use .tar or .sql extensions.');
+  if (extension === '.sql' || extension === '.tar') {
+    console.log('extension is sql tar');
+    console.log('file path: ', filePath);
+    addDB(createDB, step2);
+  }
+  // if data is inputted as text
+  else addDB(createDB, step3);
+  // else console.log('INVAILD FILE TYPE: Please use .tar or .sql extensions.');
 });
