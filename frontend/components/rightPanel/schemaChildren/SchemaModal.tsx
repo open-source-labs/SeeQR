@@ -1,4 +1,5 @@
 import React, { Component, MouseEvent, ChangeEvent } from 'react';
+const { dialog } = require('electron').remote;
 // import PropTypes from "prop-types";
 const { ipcRenderer } = window.require('electron');
 
@@ -11,37 +12,66 @@ type SchemaModalProps = {
 };
 
 type state = {
-  schemaString: string;
+  schemaName: string;
+  schemaFilePath: string;
+  schemaEntry: string;
 };
 
 class SchemaModal extends Component<SchemaModalProps, state> {
   constructor(props: SchemaModalProps) {
     super(props);
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleSchemaFile = this.handleSchemaFile.bind(this);
+    this.handleSchemaSubmit = this.handleSchemaSubmit.bind(this);
+    this.handleSchemaFilePath = this.handleSchemaFilePath.bind(this);
     this.handleSchemaEntry = this.handleSchemaEntry.bind(this);
+    this.handleSchemaName = this.handleSchemaName.bind(this);
 
     // this.handleQueryPrevious = this.handleQueryPrevious.bind(this);
     // this.handleQuerySubmit = this.handleQuerySubmit.bind(this);
   }
 
   state: state = {
-    schemaString: '',
+    schemaName: '',
+    schemaFilePath: '',
+    schemaEntry: '',
   };
 
+  // Set schema name
+  handleSchemaName(event: any) {
+    this.setState({ schemaName: event.target.value });
+  }
+
   // Load schema file path
-  handleSchemaFile(event: any) {
-    this.setState({ schemaString: event.target.value });
+  handleSchemaFilePath(event: ClickEvent) {
+    dialog
+      .showOpenDialog({
+        properties: ['openFile'],
+        filters: [{ name: 'Custom File Type', extensions: ['tar', 'sql'] }],
+        message: 'Please upload .sql or .tar database file',
+      })
+      .then((result: object) => {
+        console.log('file uploaded', result);
+        const filePath = result['filePaths'][0];
+        this.setState({ schemaFilePath: filePath });
+      })
+      .catch((err: object) => {
+        console.log(err);
+      });
   }
 
   handleSchemaEntry(event: any) {
-    this.setState({ schemaString: event.target.value });
+    this.setState({ schemaEntry: event.target.value });
   }
 
-  handleSubmit(event: any) {
+  handleSchemaSubmit(event: any) {
     event.preventDefault();
-    console.log(this.state.schemaString);
-    ipcRenderer.send('edit-schema', this.state.schemaString);
+
+    const schemaObj = {
+      schemaName: this.state.schemaName,
+      schemaFilePath: this.state.schemaFilePath,
+      schemaEntry: this.state.schemaEntry,
+    };
+    ipcRenderer.send('input-schema', schemaObj);
+    console.log(`sending ${schemaObj} to main process`);
   }
 
   onClose = (event: any) => {
@@ -56,11 +86,18 @@ class SchemaModal extends Component<SchemaModalProps, state> {
       <div className="modal" id="modal">
         <div className="content">{this.props.children}</div>
         <h3>Load or input schema</h3>
-        <form onSubmit={this.handleSubmit}>
+        <form onSubmit={this.handleSchemaSubmit}>
           <p>First...</p>
-          <input className="schema-label" type="text" placeholder="Input schema label..." />
+          <input
+            className="schema-label"
+            type="text"
+            placeholder="Input schema label..."
+            onChange={(e) => this.handleSchemaName(e)}
+          />
           <p>Then...</p>
-          <button onClick={this.handleSchemaFile}>Load Schema</button>
+          <button onClick={this.handleSchemaFilePath}>Load Schema</button>
+          <p>{this.state.schemaFilePath}</p>
+          <br />
           <p>Or...</p>
           <input
             className="schema-text-field"

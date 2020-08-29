@@ -202,6 +202,7 @@ interface QueryType {
   queryStatistics: string;
 }
 
+
 // Listen for queries being sent from renderer
 ipcMain.on('execute-query', (event, data: QueryType) => {
   // ---------Refactor-------------------
@@ -245,28 +246,28 @@ ipcMain.on('execute-query', (event, data: QueryType) => {
       });
   }
 });
-
 interface SchemaType {
-  currentSchema: string;
-  schemaString: string;
+  schemaName: string;
+  schemaFilePath: string;
+  schemaEntry: string;
 }
 
 // Listen for schema edits sent from renderer
-ipcMain.on('edit-schema', (event, data: SchemaType) => {
-  console.log('schema string sent from frontend', data);
-  exec(
-    `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -d ${data.currentSchema} -c "${data.schemaString}"`,
-    (error, stdout, stderr) => {
-      if (error) {
-        console.log(`error: ${error.message}`);
-        return;
-      }
-      if (stderr) {
-        console.log(`stderr: ${stderr}`);
-        return;
-      }
-      console.log(`stdout: ${stdout}`);
-    }
-  );
+ipcMain.on('input-schema', (event, data: SchemaType) => {
+  console.log('schema object', data);
+  // exec(
+  //   `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -d ${data.currentSchema} -c "${data.schemaString}"`,
+  //   (error, stdout, stderr) => {
+  //     if (error) {
+  //       console.log(`error: ${error.message}`);
+  //       return;
+  //     }
+  //     if (stderr) {
+  //       console.log(`stderr: ${stderr}`);
+  //       return;
+  //     }
+  //     console.log(`stdout: ${stdout}`);
+  //   }
+  // );
   // Send result back to renderer
 });
