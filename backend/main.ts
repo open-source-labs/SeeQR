@@ -15,7 +15,6 @@ const path = require('path');
 // Keep a global reference of the window objects, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow: any;
-let splashWindow: any;
 
 let mainMenu = Menu.buildFromTemplate(require('./mainMenu'));
 // Keep a reference for dev mode
@@ -39,13 +38,6 @@ function createWindow() {
   if (process.platform === 'darwin') {
     app.dock.setIcon(path.join(__dirname, '../../frontend/assets/images/seeqr_dock.png'));
   }
-  // Create splash window
-  // splashWindow = new BrowserWindow({
-  //   width: 1600,
-  //   height: 1200,
-  //   webPreferences: { nodeIntegration: true, enableRemoteModule: true },
-  //   parent: mainWindow,
-  // });
 
   // Load index.html of the app
   let indexPath;
@@ -69,36 +61,17 @@ function createWindow() {
   }
 
   mainWindow.loadURL(indexPath);
-  // splashWindow.loadURL(indexPath);
 
   // Don't show until we are ready and loaded
-  // Once the main window is ready, it will remain hidden when splash is focused
   mainWindow.once('ready-to-show', () => {
     //ipcMain.send('open-splash', (event:any, {openSplash: boolean})=>{{openSplash: true}})
     mainWindow.show();
-    // if (splashWindow != null && splashWindow.isVisible()) {
-    //   mainWindow.hide();
-    //   // splashWindow.focus();
-    // }
   });
-  // When splash window is open and visible, it sits on top
-  // Main window is hidden
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
-    // De-reference the window object. Usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
     mainWindow = null;
   });
-  // when splash window is closed, main window is shown
-  // splashWindow.on('closed', () => {
-  //   splashWindow = null;
-  //   mainWindow.show();
-  // });
-  // setTimeout(() => {
-  //   app.dock.bounce();
-  // }, 5000);
 }
 
 // Invoke createWindow to create browser windows after
@@ -202,7 +175,6 @@ interface QueryType {
   queryStatistics: string;
 }
 
-
 // Listen for queries being sent from renderer
 ipcMain.on('execute-query', (event, data: QueryType) => {
   // ---------Refactor-------------------
@@ -254,20 +226,52 @@ interface SchemaType {
 
 // Listen for schema edits sent from renderer
 ipcMain.on('input-schema', (event, data: SchemaType) => {
-  console.log('schema object', data);
-  // exec(
-  //   `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -d ${data.currentSchema} -c "${data.schemaString}"`,
-  //   (error, stdout, stderr) => {
-  //     if (error) {
-  //       console.log(`error: ${error.message}`);
-  //       return;
-  //     }
-  //     if (stderr) {
-  //       console.log(`stderr: ${stderr}`);
-  //       return;
-  //     }
-  //     console.log(`stdout: ${stdout}`);
-  //   }
-  // );
-  // Send result back to renderer
+  console.log('schema object from frontend', data);
+  let db_name: string;
+  db_name = data.schemaName;
+  let filePath = data.schemaFilePath;
+  // command strings
+  const createDB: string = `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE ${db_name}"`;
+  const importFile: string = `docker cp ${filePath} postgres-1:/data_dump`;
+  const runSQL: string = `docker exec postgres-1 psql -U postgres -d ${db_name} -f /data_dump`;
+  const runTAR: string = `docker exec postgres-1 pg_restore -U postgres -d ${db_name} /data_dump`;
+  const extension: string = filePath.slice(filePath.lastIndexOf('.'));
+
+  // CALLBACK FUNCTION : execute commands in the child process
+  const addDB = (str: string, nextStep: any) => {
+    exec(str, (error, stdout, stderr) => {
+      if (error) {
+        console.log(`error: ${error.message}`);
+        return;
+      }
+      if (stderr) {
+        console.log(`stderr: ${stderr}`);
+        return;
+      }
+      // console.log(`stdout: ${stdout}`);
+      console.log(`${stdout}`);
+      if (nextStep) nextStep();
+    });
+  };
+
+  // SEQUENCE OF EXECUTING COMMANDS
+  // Steps are in reverse order because each step is a callback function that requires the following step to be defined.
+
+  // Step 3 : Given the file path extension, run the appropriate command in postgres to build the db
+  const step3 = () => {
+    let runCmd: string = '';
+    if (extension === '.sql') runCmd = runSQL;
+    else if (extension === '.tar') runCmd = runTAR;
+    addDB(runCmd, () => console.log(`Created Database: ${db_name}`));
+    // Redirects modal towards new imported database
+    db.changeDB(db_name);
+    console.log(`Connected to database ${db_name}`);
+  };
+
+  // Step 2 : Import database file from file path into docker container
+  const step2 = () => addDB(importFile, step3);
+
+  // Step 1 : Create empty db
+  if (extension === '.sql' || extension === '.tar') addDB(createDB, step2);
+  else console.log('INVAILD FILE TYPE: Please use .tar or .sql extensions.');
 });

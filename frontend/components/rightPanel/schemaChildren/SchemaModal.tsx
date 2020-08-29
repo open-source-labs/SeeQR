@@ -37,10 +37,16 @@ class SchemaModal extends Component<SchemaModalProps, state> {
 
   // Set schema name
   handleSchemaName(event: any) {
-    this.setState({ schemaName: event.target.value });
+    // convert input label name to lowercase only with no spacing for db naming convention
+    const schemaNameInput = event.target.value;
+    let dbSafeName = schemaNameInput.toLowerCase();
+    dbSafeName = dbSafeName.replace(/\s/g, '');
+    this.setState({ schemaName: dbSafeName });
   }
 
   // Load schema file path
+  // When file path is uploaded, query entry is cleared (change to replaced by script later)
+  // Add dialog box to warn user of this
   handleSchemaFilePath(event: ClickEvent) {
     dialog
       .showOpenDialog({
@@ -52,14 +58,18 @@ class SchemaModal extends Component<SchemaModalProps, state> {
         console.log('file uploaded', result);
         const filePath = result['filePaths'][0];
         this.setState({ schemaFilePath: filePath });
+        this.setState({ schemaEntry: '' });
       })
       .catch((err: object) => {
         console.log(err);
       });
   }
 
+  // when schema script is inserted, file path is cleared
+  // set dialog to warn user
   handleSchemaEntry(event: any) {
     this.setState({ schemaEntry: event.target.value });
+    this.setState({ schemaFilePath: '' });
   }
 
   handleSchemaSubmit(event: any) {
@@ -94,6 +104,8 @@ class SchemaModal extends Component<SchemaModalProps, state> {
             placeholder="Input schema label..."
             onChange={(e) => this.handleSchemaName(e)}
           />
+          <p>Schema label: {this.state.schemaName}</p>
+          <br />
           <p>Then...</p>
           <button onClick={this.handleSchemaFilePath}>Load Schema</button>
           <p>{this.state.schemaFilePath}</p>

@@ -330,7 +330,7 @@ input *:focus {
 
 .modal {
   width: 615px;
-  height: 640px;
+  height: 700px;
   background-color: #30353a;
   border: 0.5px solid #1a1a1a;
   -webkit-transition: 1.1s ease-out;
