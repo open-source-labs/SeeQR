@@ -64,6 +64,15 @@ table.scroll-box {
   line-height: 1.5em;
 }
 
+.compare-box {
+  border: 0.5px solid $border-darkmode;
+  background: white;
+  overflow: scroll;
+  padding: 5px;
+  font-size: $default-text;
+  line-height: 1.5em;
+}
+
 tbody {
   .top-row {
     border-bottom: 1px solid $border-darkmode;
@@ -109,7 +118,4 @@ input {
   background-color: $border-darkmode;
 }
 
-.input-schema-button {
-  width: 120px;
-  margin-bottom: 30px;
-}
+

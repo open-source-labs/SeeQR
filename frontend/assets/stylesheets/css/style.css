@@ -67,6 +67,15 @@ table.scroll-box {
   line-height: 1.5em;
 }
 
+.compare-box {
+  border: 0.5px solid #444c50;
+  background: none;
+  overflow: scroll;
+  padding: 5px;
+  font-size: 14px;
+  line-height: 1.5em;
+}
+
 tbody .top-row {
   border-bottom: 1px solid #444c50;
 }
@@ -115,6 +124,25 @@ input *:focus {
 .input-schema-button {
   width: 120px;
   margin-bottom: 30px;
+}
+
+#add-query-button {
+  width: 120px;
+  margin-bottom: 15px;
+  background-color: #596368;
+  border-radius: 3px;
+  padding: 5px;
+  border: none;
+  font-size: 14px;
+  outline: none;
+}
+
+#add-query-button:hover {
+  background-color: #c6d2d5;
+}
+
+#query-item {
+  background: black;
 }
 
 #splash-page {
@@ -232,9 +260,10 @@ input *:focus {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  -webkit-box-flex: 1;
-      -ms-flex-positive: 1;
-          flex-grow: 1;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
 }
 
 #main-right {
