@@ -426,3 +426,72 @@ h4 {
   font-weight: 100;
   font-size: 18px;
 }
+
+.compare-box {
+  border: 0.5px solid #444c50;
+  background: none;
+  overflow: scroll;
+  padding: 5px;
+  font-size: 14px;
+  line-height: 1.5em;
+}
+
+#compare-panel {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+}
+
+#add-query-button {
+  width: 120px;
+  margin-bottom: 15px;
+  background-color: #596368;
+  border-radius: 3px;
+  padding: 5px;
+  border: none;
+  font-size: 14px;
+  outline: none;
+}
+
+#add-query-button:hover {
+  background-color: #c6d2d5;
+}
+
+.delete-query-button {
+  width: 15px;
+  background-color: transparent;
+  font-size: 12px;
+  outline: none;
+  color: #c6d2d5;
+  -webkit-box-shadow: none;
+          box-shadow: none;
+  background-repeat: no-repeat;
+  border: none;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.delete-query-button:hover {
+  color: red;
+}
+
+.queryItem {
+  background-color: #30353a;
+  width: 100px;
+  color: #c6d2d5;
+  display: block;
+  -ms-flex-line-pack: center;
+      align-content: center;
+  padding: 10px;
+  text-decoration: none;
+  font-family: "PT Mono", monospace;
+}
+
+.queryItem:hover {
+  background-color: #c6d2d5;
+  color: #30353a;
+}
