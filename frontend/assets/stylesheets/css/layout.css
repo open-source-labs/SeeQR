@@ -2,21 +2,22 @@
 @import url("https://fonts.googleapis.com/css2?family=PT+Mono&display=swap");
 #splash-page {
   display: flex;
+  flex: 1;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 70vh;
-  overflow: hidden;
+  height: 100vh;
   color: #c6d2d5;
   background-image: url("../../images/logo_color.png");
   background-repeat: no-repeat;
-  background-position: center;
+  background-position-y: 25vh;
+  background-position-x: center;
 }
 
 #splash-page .splash-prompt {
   display: flex;
   flex-direction: column;
-  margin-top: 600px;
+  margin-top: 300px;
   text-align: center;
 }
 

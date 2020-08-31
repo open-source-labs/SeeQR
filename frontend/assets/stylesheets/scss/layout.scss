@@ -2,19 +2,21 @@
 
 #splash-page {
   display: flex;
+  flex: 1;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 70vh;
-  overflow: hidden;
+  height: 100vh;
+  // overflow: hidden;
   color: $primary-color-darkmode;
   background-image: url('../../images/logo_color.png');
   background-repeat: no-repeat;
-  background-position: center;
+  background-position-y: 25vh;
+  background-position-x: center;
   .splash-prompt {
     display: flex;
     flex-direction: column;
-    margin-top: 600px;
+    margin-top: 300px;
     text-align: center;
   }
   .splash-buttons {
