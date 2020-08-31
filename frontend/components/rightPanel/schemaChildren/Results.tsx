@@ -73,7 +73,7 @@ export class Results extends Component<ResultsProps> {
               <td>{'Loops'}</td>
               {/* <td>{'Notes'}</td> */}
             </tr>
-            {/* {this.renderTableData()} */}
+            {this.renderTableData()}
           </tbody>
         </table>
       </div>
