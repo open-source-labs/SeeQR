@@ -1,4 +1,4 @@
-import React, { Component, MouseEvent } from 'react';
+import React, { Component, MouseEvent, useState, useEffect } from 'react';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown';
 const { ipcRenderer } = window.require('electron');
@@ -14,23 +14,54 @@ type CompareProps = {
   currentSchema: string
 };
 
-
 export const Compare = (props: CompareProps) => {
+  let initial: any = {...props, compareList: [] };
+  const [ queryInfo, setCompare ] = useState(initial);
 
+  const renderCompare = () => {
+    return queryInfo.compareList.map((query, index) => {
+      const { queryStatistics, querySchema, queryLabel } = query;
+      const { ["QUERY PLAN"]: queryPlan } = queryStatistics[0];
+      const {
+        Plan,
+        ["Planning Time"]: planningTime,
+        ["Execution Time"]: executionTime,
+      } = queryPlan[0];
+      const {
+        ["Actual Rows"]: actualRows,
+        ["Actual Total Time"]: actualTotalTime,
+      } = Plan;
 
-
-  const showQueryList = () => {
-
+      return (
+        <tr key={index}>
+          <td id="query-label">{queryLabel}</td>
+          <td id="schema-name">{querySchema}</td>
+          <td id="actual-rows">{actualRows}</td>
+          <td id="total-time">{actualTotalTime}</td>
+        </tr>
+      );
+    });
   };
 
+  const addCompareQuery = (event) => {
+    let compareList = queryInfo.compareList;
+    props.queries.forEach((query) => {
+      if (query.queryLabel === event.target.text){
+        compareList.push(query);
+      }
+    });
+    setCompare({...queryInfo, compareList});
+  }
+
+  const dropDownList = () => {
+    return props.queries.map((query, index) => <Dropdown.Item id={`query-item${index}`} className="queryItem" onClick={addCompareQuery}>{query.queryLabel}</Dropdown.Item>);
+  };
 
   return (
     <div id="compare-panel">
       <h3>Compare</h3>
         <DropdownButton id="add-query-button" title="Add Query">
-        <Dropdown.Item className="query-item" href="#/action-1">Action</Dropdown.Item>
-        <Dropdown.Item className="query-item" href="#/action-2">Another action</Dropdown.Item>
-        <Dropdown.Item className="query-item" href="#/action-3">Something else</Dropdown.Item>
+          {dropDownList()}
         </DropdownButton>
         <table className="compare-box">
           <tbody>
@@ -40,6 +71,7 @@ export const Compare = (props: CompareProps) => {
               <td>{'Total Rows'}</td>
               <td>{'Total Time'}</td>
             </tr>
+            {renderCompare()}
           </tbody>
         </table>
     </div>

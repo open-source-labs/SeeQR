@@ -138,11 +138,22 @@ input *:focus {
 }
 
 #add-query-button:hover {
-  background-color: #c6d2d5;
+  background-color: #c6d2d5;  
 }
 
-#query-item {
-  background: black;
+.queryItem {
+  background-color: #30353a;
+  width: 120px;
+  color: #c6d2d5;
+  display: block;
+  align-content: center;
+  padding: 10px;
+  text-decoration: none;
+  font-family: "PT Mono", monospace;
+}
+
+.queryItem:hover {
+  text-decoration: underline;
 }
 
 #splash-page {
