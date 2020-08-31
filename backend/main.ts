@@ -238,7 +238,7 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
   let db_name: string;
   db_name = data.schemaName;
   let filePath = data.schemaFilePath;
-  let schemaEntry = data.schemaEntry.slice(1, -1);
+  let schemaEntry = data.schemaEntry.trim();
 
   console.log('filePath', filePath);
   // command strings
