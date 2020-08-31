@@ -138,12 +138,29 @@ input *:focus {
 }
 
 #add-query-button:hover {
-  background-color: #c6d2d5;  
+  background-color: #c6d2d5; 
+}
+
+.delete-query-button {
+  width: 15px;
+  background-color: transparent;
+  font-size: 12px;
+  outline: none;
+  color: #c6d2d5;
+  box-shadow: none;
+  background-repeat:no-repeat;
+  border: none;
+  cursor:pointer;
+  overflow: hidden;
+}
+
+.delete-query-button:hover {
+  color:rgb(255, 0, 0);
 }
 
 .queryItem {
   background-color: #30353a;
-  width: 120px;
+  width: 100px;
   color: #c6d2d5;
   display: block;
   align-content: center;
