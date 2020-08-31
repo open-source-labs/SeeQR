@@ -22,15 +22,6 @@ export class Table extends Component<TableProps> {
   // Returns list of headings that should be displayed @ top of table
   getKeys() {
     const { queries } = this.props;
-    // console.log('query json object', JSON.stringify({ queries }));
-
-    // store queries as a JSON string
-    // const queryDataJSON = JSON.stringify(queries[queries.length - 1].queryData)
-    // console.log('queryDataJSON', queryDataJSON[0]);
-
-    // return Object.keys(queryDataJSON[0]);
-
-    // const queryDataJSON = JSON.stringify({ queries })
 
     // All keys will be consistent across each object in queryData,
     // so we only need to list keys of first object in data returned
