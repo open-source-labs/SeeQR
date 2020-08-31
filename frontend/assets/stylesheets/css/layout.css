@@ -170,6 +170,7 @@
       -ms-flex-direction: column;
           flex-direction: column;
   height: 50%;
+  z-index: 1000;
 }
 
 #data-panel {

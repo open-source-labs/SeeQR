@@ -41,7 +41,7 @@ class SchemaModal extends Component<SchemaModalProps, state> {
     // convert input label name to lowercase only with no spacing for db naming convention
     const schemaNameInput = event.target.value;
     let dbSafeName = schemaNameInput.toLowerCase();
-    dbSafeName = dbSafeName.replace(/\s/g, '');
+    dbSafeName = dbSafeName.replace(/[^A-Z0-9]/gi, '');
     this.setState({ schemaName: dbSafeName });
   }
 

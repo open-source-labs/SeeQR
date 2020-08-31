@@ -112,8 +112,6 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
     db_name = filePaths[0].slice(filePaths[0].lastIndexOf('\\') + 1, filePaths[0].lastIndexOf('.'));
   }
 
-  
-
   // console.log('dbname', db_name);
   console.log('filePaths', filePaths);
   // command strings
@@ -150,7 +148,7 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
     if (extension === '.sql') runCmd = runSQL;
     else if (extension === '.tar') runCmd = runTAR;
     addDB(runCmd, () => console.log(`Created Database: ${db_name}`));
-    redirectModal();  
+    redirectModal();
   };
 
   // Step 2 : Import database file from file path into docker container
@@ -163,17 +161,13 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
     console.log(`Connected to database ${db_name}`);
 
     // Need a setTimeout because query would run before any data gets uploaded to the database from the runTAR or runSQL commands
-    setTimeout( async () => {
+    setTimeout(async () => {
       let listObj;
       listObj = await db.getLists();
-      console.log("Temp log until channel is made", listObj)
-      event.sender.send("some-tab-channel", listObj);
-    }, 1000)
-    
-     
-
-
-  }
+      console.log('Temp log until channel is made', listObj);
+      event.sender.send('db-lists', listObj);
+    }, 1000);
+  };
 
   // Step 1 : Create empty db
   if (extension === '.sql' || extension === '.tar') addDB(createDB, step2);
@@ -206,7 +200,7 @@ ipcMain.on('execute-query', (event, data: QueryType) => {
     queryLabel,
     queryData: '',
     queryStatistics: '',
-    lists: {}
+    lists: {},
   };
 
   // Run select * from actors;
@@ -215,8 +209,7 @@ ipcMain.on('execute-query', (event, data: QueryType) => {
       frontendData.queryData = queryData.rows;
 
       // Run EXPLAIN (FORMAT JSON, ANALYZE)
-      db.query('EXPLAIN (FORMAT JSON, ANALYZE) ' + queryString)
-      .then((queryStats) => {
+      db.query('EXPLAIN (FORMAT JSON, ANALYZE) ' + queryString).then((queryStats) => {
         // Getting data in row format for frontend
         frontendData.queryStatistics = queryStats.rows;
 
@@ -287,12 +280,25 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
     else runCmd = runScript;
     addDB(runCmd, () => console.log(`Created Database: ${db_name}`));
     // Redirects modal towards new imported database
-    db.changeDB(db_name);
-    console.log(`Connected to database ${db_name}`);
+    redirectModal();
   };
 
   // Step 2 : Import database file from file path into docker container
   const step2 = () => addDB(importFile, step3);
+
+  const redirectModal = () => {
+    // Redirects modal towards new imported database
+    db.changeDB(db_name);
+    console.log(`Connected to database ${db_name}`);
+
+    // Need a setTimeout because query would run before any data gets uploaded to the database from the runTAR or runSQL commands
+    setTimeout(async () => {
+      let listObj;
+      listObj = await db.getLists();
+      console.log('Temp log until channel is made', listObj);
+      event.sender.send('db-lists', listObj);
+    }, 1000);
+  };
 
   // Step 1 : Create empty db
   if (extension === '.sql' || extension === '.tar') {
