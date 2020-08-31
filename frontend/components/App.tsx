@@ -44,7 +44,6 @@ export class App extends Component<AppProps, state> {
         // }
       )
       .then((result: object) => {
-        // there is definitely a better way to reference the object key of filePaths
         console.log('file uploaded', result);
         // const ifCancelled = Object.keys(result)
         // console.log(ifCancelled)
