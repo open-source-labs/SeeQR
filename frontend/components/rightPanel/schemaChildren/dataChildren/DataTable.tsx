@@ -82,7 +82,7 @@ const RenderRow = (props: RenderRowProps) => {
   
   return keys.map((header, index) => {
     // turn all values in data object to string or number
-    // data[header] = JSON.stringify(data[header])
+    data[header] = JSON.stringify(data[header])
     return <td key={index}>{data[header]}</td>
   })
 }
