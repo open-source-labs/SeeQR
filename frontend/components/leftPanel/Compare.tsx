@@ -3,8 +3,6 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown';
 const { ipcRenderer } = window.require('electron');
 
-type ClickEvent = React.MouseEvent<HTMLElement>;
-
 type CompareProps = {
     queries: {
     queryLabel: string;
@@ -40,24 +38,53 @@ export const Compare = (props: CompareProps) => {
 
     const renderCompare = () => {
     return queryInfo.compareList.map((query, index) => {
-      const { queryStatistics, querySchema, queryLabel } = query;
-      const { ["QUERY PLAN"]: queryPlan } = queryStatistics[0];
+      // const { queryStatistics, querySchema, queryLabel } = query;
+      // const { ["QUERY PLAN"]: queryPlan } = queryStatistics[0];
+      // const {
+      //   Plan,
+      //   ["Planning Time"]: planningTime,
+      //   ["Execution Time"]: executionTime,
+      // } = queryPlan[0];
+      // const {
+      //   ["Actual Rows"]: actualRows,
+      //   ["Actual Total Time"]: actualTotalTime,
+      // } = Plan;
+
+      // return (
+      //   <tr key={index}>
+      //     <td id="query-label">{queryLabel}</td>
+      //     <td id="schema-name">{querySchema}</td>
+      //     <td id="actual-rows">{actualRows}</td>
+      //     <td id="total-time">{actualTotalTime}</td>
+      const { queryString, queryData, queryStatistics, querySchema, queryLabel } = query;
+      const { ['QUERY PLAN']: queryPlan } = queryStatistics[0];
       const {
         Plan,
-        ["Planning Time"]: planningTime,
-        ["Execution Time"]: executionTime,
+        ['Planning Time']: planningTime,
+        ['Execution Time']: executionTime,
       } = queryPlan[0];
       const {
-        ["Actual Rows"]: actualRows,
-        ["Actual Total Time"]: actualTotalTime,
+        ['Node Type']: scanType,
+        ['Actual Rows']: actualRows,
+        ['Actual Startup Time']: actualStartupTime,
+        ['Actual Total Time']: actualTotalTime,
+        ['Actual Loops']: loops,
       } = Plan;
+      const runtime = (planningTime + executionTime).toFixed(3);
 
       return (
         <tr key={index}>
-          <td id="query-label">{queryLabel}</td>
+          <td id='label'>{queryLabel}</td>
           <td id="schema-name">{querySchema}</td>
+          {/* <td id="query-string">{queryString}</td> */}
+          {/* <td id="scan-type">{scanType}</td> */}
           <td id="actual-rows">{actualRows}</td>
-          <td id="total-time">{actualTotalTime}</td>
+          <td id="runtime">{runtime}</td>
+          {/* <td id='planning-time'>{planningTime}</td>
+              <td id='execution-time'>{executionTime}</td>
+              <td id='time-fl'>{actualStartupTime}</td> */}
+              <td id='time-al'>{actualTotalTime}</td>
+          {/* <td id="loops">{loops}</td> */}
           <button id={queryLabel} className="delete-query-button" onClick={deleteCompareQuery}>X</button>
         </tr>
       );
@@ -76,7 +103,12 @@ export const Compare = (props: CompareProps) => {
               <td>{'Query Label'}</td>
               <td>{'Schema'}</td>
               <td>{'Total Rows'}</td>
+              {/* <td>{'Query'}</td> */}
+              {/* <td>{'Scan Type'}</td> */}
+              <td>{'Runtime (ms)'}</td>
               <td>{'Total Time'}</td>
+              {/* <td>{'Returned Rows'}</td> */}
+              {/* <td>{'Loops'}</td> */}
             </tr>
             {renderCompare()}
           </tbody>

@@ -170,7 +170,8 @@ input *:focus {
 }
 
 .queryItem:hover {
-  text-decoration: underline;
+  background-color:#c6d2d5;
+  color: #30353a;
 }
 
 #splash-page {
