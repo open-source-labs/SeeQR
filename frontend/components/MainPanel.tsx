@@ -34,8 +34,7 @@ class MainPanel extends Component<MainProps, MainState> {
     currentSchema: 'schemaB',
   };
 
-
-  render() {
+  componentDidMount() {
     // Listening for returnedData from executing Query
     // Update state with new object (containing query data, query statistics, query schema
     // inside of state.queries array
@@ -63,6 +62,10 @@ class MainPanel extends Component<MainProps, MainState> {
       console.log('state after receiving data: ', this.state);
 
     });
+
+  }
+
+  render() {
 
     return (
       <div id="main-panel">

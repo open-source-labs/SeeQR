@@ -29,7 +29,6 @@ export class Data extends Component<DataProps> {
 
         <h3 id="results-title">Data Table</h3>
         <div id="data-table">
-          <div className="query-data">insert data here</div>
           {queries.length === 0 ? null : <Table queries={queries} />}
         </div>
 
