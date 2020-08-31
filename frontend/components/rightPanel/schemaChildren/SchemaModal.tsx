@@ -1,5 +1,6 @@
 import React, { Component, MouseEvent, ChangeEvent } from 'react';
 const { dialog } = require('electron').remote;
+const fs = require('fs');
 // import PropTypes from "prop-types";
 const { ipcRenderer } = window.require('electron');
 
@@ -37,11 +38,18 @@ class SchemaModal extends Component<SchemaModalProps, state> {
 
   // Set schema name
   handleSchemaName(event: any) {
-    this.setState({ schemaName: event.target.value });
+    // convert input label name to lowercase only with no spacing for db naming convention
+    const schemaNameInput = event.target.value;
+    let dbSafeName = schemaNameInput.toLowerCase();
+    dbSafeName = dbSafeName.replace(/[^A-Z0-9]/gi, '');
+    this.setState({ schemaName: dbSafeName });
   }
 
   // Load schema file path
+  // When file path is uploaded, query entry is cleared (change to replaced by script later)
+  // Add dialog box to warn user of this
   handleSchemaFilePath(event: ClickEvent) {
+    event.preventDefault();
     dialog
       .showOpenDialog({
         properties: ['openFile'],
@@ -50,16 +58,28 @@ class SchemaModal extends Component<SchemaModalProps, state> {
       })
       .then((result: object) => {
         console.log('file uploaded', result);
-        const filePath = result['filePaths'][0];
+        const filePath = result['filePaths'];
         this.setState({ schemaFilePath: filePath });
+        this.setState({ schemaEntry: '' });
       })
       .catch((err: object) => {
         console.log(err);
       });
   }
 
+  // when schema script is inserted, file path is cleared
+  // set dialog to warn user
   handleSchemaEntry(event: any) {
+    // fs.writeFile(this.state.schemaName + '.sql', event.target.value, (err) => {
+    //   if(err){
+    //     console.log('error: ', err)
+    //   }
+    //   console.log('Successfully saved script as sql file')
+    // })
     this.setState({ schemaEntry: event.target.value });
+    this.setState({ schemaFilePath: '' });
+    console.log('schema entry: ', this.state.schemaEntry);
+    console.log('schema entry type: ', typeof this.state.schemaEntry);
   }
 
   handleSchemaSubmit(event: any) {
@@ -94,6 +114,8 @@ class SchemaModal extends Component<SchemaModalProps, state> {
             placeholder="Input schema label..."
             onChange={(e) => this.handleSchemaName(e)}
           />
+          <p>Schema label: {this.state.schemaName}</p>
+          <br />
           <p>Then...</p>
           <button onClick={this.handleSchemaFilePath}>Load Schema</button>
           <p>{this.state.schemaFilePath}</p>

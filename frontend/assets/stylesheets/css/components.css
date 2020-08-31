@@ -1,0 +1,112 @@
+@import url("https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=PT+Mono&display=swap");
+#query-window .text-field {
+  width: 100%;
+  height: 200px;
+}
+
+.label-field,
+.schema-label {
+  font-family: "PT Mono", monospace;
+  color: #6cbba9;
+  margin-left: 8px;
+}
+
+#splash-menu button {
+  border: 0.5px #444c50 solid;
+  background-color: #596368;
+  border-radius: 3px;
+  padding: 5px;
+  border: none;
+  font-size: 14px;
+  outline: none;
+}
+
+#splash-menu button:hover {
+  background-color: #c6d2d5;
+}
+
+#query-panel button {
+  border: 0.5px #444c50 solid;
+  background-color: #596368;
+  border-radius: 3px;
+  padding: 5px;
+  border: none;
+  font-size: 14px;
+  outline: none;
+}
+
+#query-panel button:hover {
+  background-color: #c6d2d5;
+}
+
+textarea {
+  min-height: 300px;
+  background-color: #444c50;
+  margin: 10px 0;
+  width: 90%;
+  padding: 8px;
+  outline: none;
+  border: none;
+  color: #6cbba9;
+  font-family: "PT Mono", monospace;
+}
+
+table.scroll-box {
+  border: 0.5px solid #444c50;
+  background: none;
+  overflow: scroll;
+  padding: 5px;
+  font-size: 14px;
+  line-height: 1.5em;
+}
+
+tbody .top-row {
+  border-bottom: 1px solid #444c50;
+}
+
+tbody .top-row td {
+  font-weight: bold;
+}
+
+input {
+  border-top-style: hidden;
+  border-right-style: hidden;
+  border-left-style: hidden;
+  border-bottom-style: groove;
+  background-color: #444c50;
+  border: none;
+  padding: 7px;
+  min-width: 240px;
+  outline: none;
+}
+
+input *:focus {
+  outline: none;
+}
+
+#data-table {
+  overflow: auto;
+  height: 300px;
+}
+
+.query-data {
+  width: 1000px;
+}
+
+#codemirror {
+  padding: 15px 0;
+}
+
+#data-table::-webkit-scrollbar-track {
+  background: #c6d2d5;
+}
+
+#data-table::-webkit-scrollbar-thumb {
+  background-color: #444c50;
+}
+
+.input-schema-button {
+  width: 120px;
+  margin-bottom: 30px;
+}

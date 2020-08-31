@@ -1,8 +1,7 @@
 @import './variables.scss';
-
 .modal {
   width: 615px;
-  height: 640px;
+  height: 700px;
   background-color: $background-modal-darkmode;
   border: 0.5px solid $primary-color-lightmode;
   transition: 1.1s ease-out;
@@ -47,38 +46,18 @@
 .modal .content {
   padding: 1rem;
 }
-
 .modal input {
   margin: 10px 0;
   display: block;
   color: $mint-green;
   font-family: $font-input;
 }
-
 .schema-text-field {
   height: 300px;
   width: 600px;
 }
-
 #modal-buttons {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-}
-
-.modal .actions {
-  border-top: 1px solid #ccc;
-  background: #eee;
-  padding: 0.5rem 1rem;
-}
-.modal .actions button {
-  border: 0;
-  background: #78f89f;
-  border-radius: 5px;
-  padding: 0.5rem 1rem;
-  font-size: 0.8rem;
-  line-height: 1;
-}
-#centered-toggle-button {
-  position: absolute;
 }
