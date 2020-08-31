@@ -19,7 +19,7 @@ export class Results extends Component<ResultsProps> {
     return this.props.queries.map((query, index) => {
       // destructure state from mainPanel, including destructuring object returned from Postgres
       const { queryString, queryData, queryStatistics, querySchema } = query;
-      const { ['QUERY PLAN']: queryPlan } = queryStatistics['items'];
+      const { ['QUERY PLAN']: queryPlan } = queryStatistics[0];
       const {
         Plan,
         ['Planning Time']: planningTime,
