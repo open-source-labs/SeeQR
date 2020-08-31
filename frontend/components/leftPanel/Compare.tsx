@@ -1,4 +1,4 @@
-import React, { Component, MouseEvent, useState, useEffect } from 'react';
+import React, { Component, MouseEvent, useState } from 'react';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown';
 const { ipcRenderer } = window.require('electron');
@@ -15,7 +15,6 @@ type CompareProps = {
 export const Compare = (props: CompareProps) => {
   let initial: any = {...props, compareList: [] };
   const [ queryInfo, setCompare ] = useState(initial);
-
   const addCompareQuery = (event) => {
     let compareList = queryInfo.compareList;
     props.queries.forEach((query) => {
