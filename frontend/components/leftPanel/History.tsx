@@ -45,7 +45,6 @@ export class History extends Component<HistoryProps> {
     return (
       <div id="history-panel">
         <h3>History</h3>
-        <div className="history-container">
         <table className="scroll-box">
           <tbody>
             <tr className="top-row">
@@ -57,7 +56,6 @@ export class History extends Component<HistoryProps> {
             {this.renderTableHistory()}
           </tbody>
         </table>
-        </div>
       </div>
     );
   }

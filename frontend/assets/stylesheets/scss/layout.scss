@@ -65,16 +65,9 @@
   background-color: $background-darkmode-darker;
 }
 #history-panel {
-  height: 350px;
+  height: 50%;
   display: flex;
   flex-direction: column;
-}
-
-.history-container{
-  display: flex;
-  flex-direction: column;
-  height: 300px;
-  overflow-y: auto;
 }
 
 #compare-panel {
@@ -106,7 +99,7 @@
 #query-panel {
   display: flex;
   flex-direction: column;
-  height: 500px;
+  height: 50%;
   z-index: 1000;
 }
 #data-panel {
@@ -126,11 +119,4 @@
   display: flex;
   flex-grow: 1;
   flex-direction: column;
-}
-
-.results-container{
-  display:flex;
-  flex-direction: column;
-  height: 350px;
-  overflow-y: auto;
 }

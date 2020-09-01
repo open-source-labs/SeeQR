@@ -92,7 +92,7 @@ input *:focus {
 }
 
 #data-table {
-  overflow-y: auto;
+  overflow: auto;
   height: 300px;
 }
 
@@ -104,27 +104,17 @@ input *:focus {
   padding: 15px 0;
 }
 
+#data-table::-webkit-scrollbar-track {
+  background: #c6d2d5;
+}
+
+#data-table::-webkit-scrollbar-thumb {
+  background-color: #444c50;
+}
+
 .input-schema-button {
   width: 120px;
   margin-bottom: 30px;
-}
-
-/* width */
-::-webkit-scrollbar {
-  width: 15px;
-}
-
-/* Track */
-::-webkit-scrollbar-track {
-  -webkit-box-shadow: inset 0px 0px 5px grey;
-          box-shadow: inset 0px 0px 5px grey;
-  border-radius: 10px;
-}
-
-/* Handle */
-::-webkit-scrollbar-thumb {
-  background: #c6d2d5;
-  border-radius: 15px;
 }
 
 #splash-page {
@@ -228,7 +218,7 @@ input *:focus {
 }
 
 #history-panel {
-  height: 350px;
+  height: 50%;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -236,18 +226,6 @@ input *:focus {
   -webkit-box-direction: normal;
       -ms-flex-direction: column;
           flex-direction: column;
-}
-
-.history-container {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: column;
-          flex-direction: column;
-  height: 300px;
-  overflow-y: auto;
 }
 
 #compare-panel {
@@ -308,7 +286,7 @@ input *:focus {
   -webkit-box-direction: normal;
       -ms-flex-direction: column;
           flex-direction: column;
-  height: 500px;
+  height: 50%;
   z-index: 1000;
 }
 
@@ -349,18 +327,6 @@ input *:focus {
   -webkit-box-direction: normal;
       -ms-flex-direction: column;
           flex-direction: column;
-}
-
-.results-container {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: column;
-          flex-direction: column;
-  height: 350px;
-  overflow-y: auto;
 }
 
 .modal {
@@ -461,6 +427,15 @@ h4 {
   font-size: 18px;
 }
 
+.compare-box {
+  border: 0.5px solid #444c50;
+  background: none;
+  overflow: scroll;
+  padding: 5px;
+  font-size: 14px;
+  line-height: 1.5em;
+}
+
 #compare-panel {
   display: -webkit-box;
   display: -ms-flexbox;
@@ -469,27 +444,6 @@ h4 {
   -webkit-box-direction: normal;
   -ms-flex-direction: column;
   flex-direction: column;
-  margin-top: 30px;
-}
-
-.compare-container {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-  -ms-flex-direction: column;
-  flex-direction: column;
-  overflow-y: auto;
-  height: 300px;
-}
-
-.compare-box {
-  border: 0.5px solid #444c50;
-  background: none;
-  padding: 5px;
-  font-size: 14px;
-  line-height: 1.5em;
 }
 
 #add-query-button {

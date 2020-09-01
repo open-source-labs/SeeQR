@@ -86,7 +86,7 @@ input *:focus {
 }
 
 #data-table {
-  overflow-y: auto;
+  overflow: auto;
   height: 300px;
 }
 
@@ -98,25 +98,15 @@ input *:focus {
   padding: 15px 0;
 }
 
+#data-table::-webkit-scrollbar-track {
+  background: #c6d2d5;
+}
+
+#data-table::-webkit-scrollbar-thumb {
+  background-color: #444c50;
+}
+
 .input-schema-button {
   width: 120px;
   margin-bottom: 30px;
-}
-
-/* width */
-::-webkit-scrollbar {
-  width: 15px;
-}
-
-/* Track */
-::-webkit-scrollbar-track {
-  -webkit-box-shadow: inset 0px 0px 5px grey;
-          box-shadow: inset 0px 0px 5px grey;
-  border-radius: 10px;
-}
-
-/* Handle */
-::-webkit-scrollbar-thumb {
-  background: #c6d2d5;
-  border-radius: 15px;
 }

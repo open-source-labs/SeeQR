@@ -29,6 +29,15 @@ h4 {
   font-size: 18px;
 }
 
+.compare-box {
+  border: 0.5px solid #444c50;
+  background: none;
+  overflow: scroll;
+  padding: 5px;
+  font-size: 14px;
+  line-height: 1.5em;
+}
+
 #compare-panel {
   display: -webkit-box;
   display: -ms-flexbox;
@@ -37,28 +46,8 @@ h4 {
   -webkit-box-direction: normal;
   -ms-flex-direction: column;
   flex-direction: column;
-  margin-top: 30px;
 }
 
-.compare-container{
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-  -ms-flex-direction: column;
-  flex-direction: column;
-  overflow-y: auto;
-  height: 300px;
-}
-
-.compare-box {
-  border: 0.5px solid #444c50;
-  background: none;
-  padding: 5px;
-  font-size: 14px;
-  line-height: 1.5em;
-}
 
 #add-query-button {
   width: 120px;
@@ -107,4 +96,3 @@ h4 {
   background-color:#c6d2d5;
   color: #30353a;
 }
-
