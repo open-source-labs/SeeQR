@@ -1,0 +1,243 @@
+[33mcommit 6b83cb376cef486b62be2275b701259dcf212ab4[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m, [m[1;31morigin/feature-css[m[33m, [m[1;32mfeature-css[m[33m)[m
+Author: Muhammad Trad <muhammad.trad@yahoo.com>
+Date:   Tue Sep 1 01:27:00 2020 -0700
+
+    add scrollbar heights
+
+[33mcommit 6d784f31f0bd136de9741bffd24049907a6ed989[m[33m ([m[1;31mupstream/master[m[33m)[m
+Merge: 7283c30 c557da8
+Author: Catherine Chiu <44789786+catherinechiu@users.noreply.github.com>
+Date:   Mon Aug 31 19:39:52 2020 -0700
+
+    Merge pull request #31 from oslabs-beta/staging
+    
+    Compare Table
+
+[33mcommit c557da8320ad660c6fc3f29e6c7d4268a4177c54[m
+Merge: 7b06e6c a96a79c
+Author: Frank Norton <66151971+FrankNorton32@users.noreply.github.com>
+Date:   Mon Aug 31 19:46:08 2020 -0400
+
+    Merge pull request #26 from muhammadtrad/feature
+    
+    Compare Table Feature & Results Fix
+
+[33mcommit a96a79ce063a340bd9764d9600db5f9da43ea3b9[m[33m ([m[1;31morigin/feature[m[33m, [m[1;32mfeature[m[33m)[m
+Merge: 29ea578 7283c30
+Author: Muhammad Trad <muhammad.trad@yahoo.com>
+Date:   Mon Aug 31 16:02:19 2020 -0700
+
+    merge latest master to feature
+
+[33mcommit 7283c304f647c9d2590dd214e2267ac0a2257c3a[m
+Merge: 199e3bd 7b06e6c
+Author: mstronck <59625624+mstronck@users.noreply.github.com>
+Date:   Mon Aug 31 15:34:54 2020 -0700
+
+    Merge pull request #30 from oslabs-beta/staging
+    
+    Enable schema modal, sending db file/sql data to backend, retrieving db/table list from backend
+
+[33mcommit 7b06e6c664a4117a49d8532724ddafe8a3c69d47[m
+Merge: 3308fc1 b431e12
+Author: Catherine Chiu <44789786+catherinechiu@users.noreply.github.com>
+Date:   Mon Aug 31 15:32:44 2020 -0700
+
+    Merge pull request #27 from serenackuo/backend-mercer
+    
+    Enable schema modal, sending db file/sql data to backend, retrieving db/table list from backend
+
+[33mcommit b431e1232ad0a92bafba3315c6137aa43bd2aa9d[m
+Author: serenackuo <hello@serenakuo.com>
+Date:   Mon Aug 31 18:30:32 2020 -0400
+
+    change slice to trim for sql data entry
+
+[33mcommit 119769dfc90fe672d57d7a49f0d2be2b0a8604ca[m[33m ([m[1;31mserena/backend-mercer[m[33m, [m[1;32mmercer-serena[m[33m)[m
+Merge: c708362 199e3bd
+Author: serenackuo <hello@serenakuo.com>
+Date:   Mon Aug 31 18:11:47 2020 -0400
+
+    resolve merge conflicts
+
+[33mcommit 199e3bd5aa32635409f4b155e871f7fd508b99d2[m[33m ([m[1;32mmercer-feature[m[33m)[m
+Merge: e6f1e6a 3308fc1
+Author: Catherine Chiu <44789786+catherinechiu@users.noreply.github.com>
+Date:   Mon Aug 31 14:55:04 2020 -0700
+
+    Merge pull request #29 from oslabs-beta/staging
+    
+    DataTable Component Renders Dynamically
+
+[33mcommit 3308fc18e36ebd8d5896cc1085870ad12ebaffb0[m
+Merge: de79a94 f838907
+Author: Catherine Chiu <44789786+catherinechiu@users.noreply.github.com>
+Date:   Mon Aug 31 14:51:50 2020 -0700
+
+    Merge pull request #28 from catherinechiu/dataTable
+    
+    DataTable Component Renders Dynamically
+
+[33mcommit f8389073f35df9ea70103f6a802048d3c4e19692[m
+Merge: cba5460 e6f1e6a
+Author: Catherine <cc2368@cornell.edu>
+Date:   Mon Aug 31 14:51:32 2020 -0700
+
+    settle merge conflicts in sass files
+
+[33mcommit cba54605e9984fd6b2628e007722c3c7b4ec7764[m
+Author: Catherine <cc2368@cornell.edu>
+Date:   Mon Aug 31 14:40:10 2020 -0700
+
+    remove console logs
+
+[33mcommit a6b848a6758d0c3d2a8c864ea81a17588ddf0428[m[33m ([m[1;31mcatherine/dataTable[m[33m)[m
+Author: Catherine <cc2368@cornell.edu>
+Date:   Mon Aug 31 14:18:20 2020 -0700
+
+    fix bug in RenderRow component in DataTable component
+
+[33mcommit 427c1ac7e5155350f83b6b5f4dbddddc5f7dea4b[m
+Author: Catherine <cc2368@cornell.edu>
+Date:   Mon Aug 31 14:04:05 2020 -0700
+
+    clean up comments
+
+[33mcommit 5c123a09cb77e82a1bcf229a7ab43bae964237d0[m
+Author: Catherine <cc2368@cornell.edu>
+Date:   Mon Aug 31 14:01:52 2020 -0700
+
+    remove side effects in DataTable component
+
+[33mcommit 7033f2b080967e0d85547119057152203d6c7ab4[m
+Author: Catherine <cc2368@cornell.edu>
+Date:   Mon Aug 31 13:58:01 2020 -0700
+
+    data table works
+
+[33mcommit c708362d92e93370c154b57b94b203e7ca54767a[m
+Author: serenackuo <hello@serenakuo.com>
+Date:   Mon Aug 31 15:38:22 2020 -0400
+
+    data and table lists sending to frontend
+
+[33mcommit 29ea5785440be0812ad0bac9b2d36eb38aae7943[m
+Author: Muhammad Trad <muhammad.trad@yahoo.com>
+Date:   Mon Aug 31 12:07:17 2020 -0700
+
+    fix results bug
+
+[33mcommit aa88acfc794e1e7030845673e0b2587754792e4d[m
+Author: Muhammad Trad <muhammad.trad@yahoo.com>
+Date:   Mon Aug 31 11:03:53 2020 -0700
+
+    clean compare component
+
+[33mcommit 9e62a6331075f39bf117ff4a912547617205764a[m
+Merge: 06d007c c777d31
+Author: serenackuo <hello@serenakuo.com>
+Date:   Mon Aug 31 13:58:23 2020 -0400
+
+    merged code with Mercer table and database list backend
+
+[33mcommit cbc5cacb8b006174681acaeb61445f93b56eb9b3[m
+Author: Muhammad Trad <muhammad.trad@yahoo.com>
+Date:   Sun Aug 30 22:06:31 2020 -0700
+
+    change compare table
+
+[33mcommit c24ab9b82709d918c684ac882f99f72a99f3217a[m
+Author: Muhammad Trad <muhammad.trad@yahoo.com>
+Date:   Sun Aug 30 21:27:38 2020 -0700
+
+    add compare query remove
+
+[33mcommit bfbf871a91d2182f706f9515457011391de855ed[m
+Author: Muhammad Trad <muhammad.trad@yahoo.com>
+Date:   Sun Aug 30 20:40:42 2020 -0700
+
+    dynamic queries in compare
+
+[33mcommit 234f0fd2f155d78b7d764815e770c49bd091015f[m
+Author: Muhammad Trad <muhammad.trad@yahoo.com>
+Date:   Sat Aug 29 20:59:09 2020 -0700
+
+    add-query dropdown
+
+[33mcommit c777d3103b7f448048593e560faea9ea6bb97d77[m
+Author: Mercer Stronck <stronck@chapman.edu>
+Date:   Sat Aug 29 16:04:21 2020 -0700
+
+    Finished gathering and sending lists to frontend
+
+[33mcommit 06d007cc1b06957d322adeb0eca314c0317a70be[m
+Author: serenackuo <hello@serenakuo.com>
+Date:   Sat Aug 29 18:01:38 2020 -0400
+
+    fully realize add schema by type or script still need error catching and user prompts
+
+[33mcommit 92e5d1adab0ad48a1eaf508cbbbb88550ae430f6[m
+Author: Muhammad Trad <muhammad.trad@yahoo.com>
+Date:   Sat Aug 29 14:48:35 2020 -0700
+
+    add compare props
+
+[33mcommit a18073ccc504b19992e03b9a31d58547e28241e5[m
+Author: Mercer Stronck <stronck@chapman.edu>
+Date:   Sat Aug 29 14:24:33 2020 -0700
+
+    Created table and database list. Not sending to frontend correctly though
+
+[33mcommit 2b63153e783e0b2a8047dcd8a2bfdbba80e3d779[m
+Author: serenackuo <hello@serenakuo.com>
+Date:   Sat Aug 29 15:01:41 2020 -0400
+
+    schema modal can submit file path to spin up new database in backend
+
+[33mcommit 6fdf965dac8e7a680ebc0a26044f99d374081661[m
+Merge: 4076fd7 4b6ae94
+Author: Muhammad Trad <muhammad.trad@yahoo.com>
+Date:   Sat Aug 29 11:40:56 2020 -0700
+
+    Merge branch 'dataTable' of https://github.com/catherinechiu/SeeQR into feature
+
+[33mcommit 4b6ae94a123710cac26e303b5a2d4ec31a44431a[m
+Author: Catherine <cc2368@cornell.edu>
+Date:   Sat Aug 29 11:40:34 2020 -0700
+
+    debugged exponential queries in History panel by moving listener to cDM in MainPanel
+
+[33mcommit 4076fd7f8e6bcd8b535df8b36e8090ab2210bd18[m[33m ([m[1;31mserena/backend[m[33m)[m
+Author: serenackuo <hello@serenakuo.com>
+Date:   Fri Aug 28 23:31:34 2020 -0400
+
+    schema modal updates nama, filepath, and schema string to send to main process
+
+[33mcommit 374000ff011d543adafbdb596f9a9fe8edb72926[m
+Author: serenackuo <hello@serenakuo.com>
+Date:   Fri Aug 28 21:52:05 2020 -0400
+
+    fix label input and reactivate schema modal for sending schema to backend, work-in-progress
+
+[33mcommit 5db584c5f2cbcb24265b81970fd0e48ae33f8689[m
+Author: serenackuo <hello@serenakuo.com>
+Date:   Fri Aug 28 18:40:24 2020 -0400
+
+    re-enable schema component for backend testing only
+
+[33mcommit 3da7530076dec0676a7ecb1e5526c910e9158467[m
+Author: serenackuo <hello@serenakuo.com>
+Date:   Fri Aug 28 18:22:27 2020 -0400
+
+    change alert window to dialog menu to address electron incompatibility
+
+[33mcommit e6f1e6abdbbf1ab3e7a82705679519fdc274c7f5[m
+Merge: bbaf8b3 de79a94
+Author: Muhammad Trad <muhammad.trad@yahoo.com>
+Date:   Thu Aug 27 20:07:58 2020 -0700
+
+    Merge pull request #25 from oslabs-beta/staging
+    
+    Dialog menu file extension verification, app icon, and splash page refactor
+
+[33

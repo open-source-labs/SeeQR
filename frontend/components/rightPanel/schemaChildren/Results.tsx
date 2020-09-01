@@ -1,14 +1,31 @@
 import React, { Component } from 'react';
-
+import { Line, defaults } from "react-chartjs-2";
 type ResultsProps = {
   // queries: {
-  //   queryString: string;
-  //   queryData: string;
-  //   queryStatistics: any
-  //   querySchema: string;
-  // }[];
-  queries: any;
-};
+    //   queryString: string;
+    //   queryData: string;
+    //   queryStatistics: any
+    //   querySchema: string;
+    // }[];
+    queries: any;
+  };
+  
+  defaults.global.defaultColor = 'rgba(247,247,247,247)';
+    const data = {
+    labels: ['Query1', 'Query2', 'Query3',
+            'Query4', 'Query5'],
+    datasets: [
+      {
+        label: 'Runtime',
+        fill: false,
+        lineTension: 0.5,
+        backgroundColor: 'rgba(75,192,192,1)',
+        borderColor: 'rgba(247,247,247,247)',
+        borderWidth: 2,
+        data: [.3, .5, .2, .35, .56]
+      }
+    ]
+  }
 
 export class Results extends Component<ResultsProps> {
   constructor(props: ResultsProps) {
@@ -78,6 +95,20 @@ export class Results extends Component<ResultsProps> {
           </tbody>
         </table>
         </div>
+        <Line
+          data={data}
+          options={{
+            title:{
+              display: true,
+              text:'Queries vs Runtime',
+              fontSize:20,
+            },
+            legend:{
+              display:true,
+              position:'right'
+            }
+          }}
+        />
       </div>
     );
   }

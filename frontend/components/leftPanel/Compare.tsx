@@ -14,6 +14,7 @@ type CompareProps = {
 
 export const Compare = (props: CompareProps) => {
   let initial: any = {...props, compareList: [] };
+
   const [ queryInfo, setCompare ] = useState(initial);
   const addCompareQuery = (event) => {
     let compareList = queryInfo.compareList;
