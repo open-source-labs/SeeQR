@@ -58,6 +58,7 @@ export class Results extends Component<ResultsProps> {
     return (
       <div id="results-panel">
         <h3>Results</h3>
+        <div className="results-container">
         <table id="results">
           <tbody>
             <tr className="top-row">
@@ -76,6 +77,7 @@ export class Results extends Component<ResultsProps> {
             {this.renderTableData()}
           </tbody>
         </table>
+        </div>
       </div>
     );
   }

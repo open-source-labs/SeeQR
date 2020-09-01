@@ -81,7 +81,7 @@ input {
   }
 }
 #data-table {
-  overflow: auto;
+  overflow-y: auto;
   height: 300px;
 }
 .query-data {
@@ -90,13 +90,25 @@ input {
 #codemirror {
   padding: 15px 0;
 }
-#data-table::-webkit-scrollbar-track {
-  background: $primary-color-darkmode;
-}
-#data-table::-webkit-scrollbar-thumb {
-  background-color: $border-darkmode;
-}
+
 .input-schema-button {
   width: 120px;
   margin-bottom: 30px;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 15px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  box-shadow: inset 0px 0px 5px grey;
+  border-radius: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: $primary-color-darkmode;
+  border-radius: 15px;
 }

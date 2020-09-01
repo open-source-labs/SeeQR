@@ -74,10 +74,11 @@ export const Compare = (props: CompareProps) => {
 
   return (
     <div id="compare-panel">
-      <h3>Compare</h3>
+      <h3>Comparisons</h3>
         <DropdownButton id="add-query-button" title="Add Query Data">
           {dropDownList()}
         </DropdownButton>
+        <div className="compare-container">
         <table className="compare-box">
           <tbody>
             <tr className="top-row">
@@ -94,6 +95,7 @@ export const Compare = (props: CompareProps) => {
             {renderCompare()}
           </tbody>
         </table>
+        </div>
     </div>
   );
 };
