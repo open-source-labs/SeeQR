@@ -24,7 +24,7 @@
   border-radius: 3px;
   padding: 5px;
   border: none;
-  font-size: 14px;
+  font-size: 1em;
   outline: none;
 }
 
@@ -38,7 +38,7 @@
   border-radius: 3px;
   padding: 5px;
   border: none;
-  font-size: 14px;
+  font-size: 0.8em;
   outline: none;
 }
 
@@ -63,7 +63,7 @@ table.scroll-box {
   background: none;
   overflow: scroll;
   padding: 5px;
-  font-size: 14px;
+  font-size: 1em;
   line-height: 1.5em;
 }
 
@@ -171,7 +171,7 @@ input *:focus {
   border-radius: 3px;
   padding: 10px;
   border: none;
-  font-size: 16px;
+  font-size: 1em;
   font-weight: bold;
   color: #2b2d35;
   outline: none;
@@ -410,7 +410,7 @@ body {
   background-color: #2b2d35;
   font-family: "PT Sans", sans-serif;
   font-weight: 100;
-  font-size: 14px;
+  font-size: 1em;
   line-height: 1/5;
   color: #c6d2d5;
   height: 100%;
@@ -432,7 +432,7 @@ h4 {
   background: none;
   overflow: scroll;
   padding: 5px;
-  font-size: 14px;
+  font-size: 1em;
   line-height: 1.5em;
 }
 
@@ -453,7 +453,7 @@ h4 {
   border-radius: 3px;
   padding: 5px;
   border: none;
-  font-size: 14px;
+  font-size: 0.8em;
   outline: none;
 }
 
@@ -464,7 +464,7 @@ h4 {
 .delete-query-button {
   width: 15px;
   background-color: transparent;
-  font-size: 12px;
+  font-size: 0.8em;
   outline: none;
   color: #c6d2d5;
   -webkit-box-shadow: none;
@@ -488,7 +488,7 @@ h4 {
       align-content: center;
   padding: 10px;
   text-decoration: none;
-  font-family: "PT Mono", monospace;
+  font-family: 'PT Mono', monospace;
 }
 
 .queryItem:hover {
