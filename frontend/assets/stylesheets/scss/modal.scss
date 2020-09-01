@@ -1,5 +1,4 @@
 @import './variables.scss';
-
 .modal {
   width: 615px;
   height: 700px;
@@ -47,19 +46,16 @@
 .modal .content {
   padding: 1rem;
 }
-
 .modal input {
   margin: 10px 0;
   display: block;
   color: $mint-green;
   font-family: $font-input;
 }
-
 .schema-text-field {
   height: 300px;
   width: 600px;
 }
-
 #modal-buttons {
   display: flex;
   flex-direction: row;
