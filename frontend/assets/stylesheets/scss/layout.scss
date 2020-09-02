@@ -65,7 +65,7 @@
   background-color: $background-darkmode-darker;
 }
 #history-panel {
-  height: 350px;
+  height: 250px;
   display: flex;
   flex-direction: column;
 }
@@ -73,7 +73,7 @@
 .history-container{
   display: flex;
   flex-direction: column;
-  height: 300px;
+  height: 250px;
   overflow-y: auto;
 }
 
@@ -131,6 +131,6 @@
 .results-container{
   display:flex;
   flex-direction: column;
-  height: 350px;
+  height: 300px;
   overflow-y: auto;
 }

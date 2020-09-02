@@ -37,7 +37,7 @@ h4 {
   -webkit-box-direction: normal;
   -ms-flex-direction: column;
   flex-direction: column;
-  margin-top: 30px;
+  margin-top: 2rem;
 }
 
 .compare-container{
@@ -49,7 +49,7 @@ h4 {
   -ms-flex-direction: column;
   flex-direction: column;
   overflow-y: auto;
-  height: 300px;
+  height: 200px;
 }
 
 .compare-box {
@@ -108,3 +108,12 @@ h4 {
   color: #30353a;
 }
 
+.line-chart{
+  margin-top: 2rem;
+}
+
+.bar-chart{
+  margin-top: 3rem;
+  height: 300px;
+  display: block;
+}

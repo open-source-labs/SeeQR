@@ -228,7 +228,7 @@ input *:focus {
 }
 
 #history-panel {
-  height: 350px;
+  height: 250px;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -246,7 +246,7 @@ input *:focus {
   -webkit-box-direction: normal;
       -ms-flex-direction: column;
           flex-direction: column;
-  height: 300px;
+  height: 250px;
   overflow-y: auto;
 }
 
@@ -359,7 +359,7 @@ input *:focus {
   -webkit-box-direction: normal;
       -ms-flex-direction: column;
           flex-direction: column;
-  height: 350px;
+  height: 300px;
   overflow-y: auto;
 }
 
@@ -469,7 +469,7 @@ h4 {
   -webkit-box-direction: normal;
   -ms-flex-direction: column;
   flex-direction: column;
-  margin-top: 30px;
+  margin-top: 2rem;
 }
 
 .compare-container {
@@ -481,7 +481,7 @@ h4 {
   -ms-flex-direction: column;
   flex-direction: column;
   overflow-y: auto;
-  height: 300px;
+  height: 200px;
 }
 
 .compare-box {
@@ -540,4 +540,14 @@ h4 {
 .queryItem:hover {
   background-color: #c6d2d5;
   color: #30353a;
+}
+
+.line-chart {
+  margin-top: 2rem;
+}
+
+.bar-chart {
+  margin-top: 3rem;
+  height: 300px;
+  display: block;
 }
