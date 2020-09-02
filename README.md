@@ -11,8 +11,6 @@
 
 [theSeeQR.io](http://www.theseeqr.io)
 
----
-
 <p><b>SeeQR: </b>A database analytic tool that compares the efficiency of different schemas and queries on a granular level to make better informed architectural decisions regarding SQL databases at various scales.</p>
 
 </div>
@@ -101,8 +99,6 @@ The outcome results from each query, both retrieved data and analytics, are stor
 
 ## Testing
 
----
-
 ## Core Team
 
 <table>
@@ -128,8 +124,6 @@ The outcome results from each query, both retrieved data and analytics, are stor
 <a href="https://github.com/muhammadtrad">Muhammad Trad</a>
 </td>
 </tr></table>
-
----
 
 ## Contribution and Configuration
 
