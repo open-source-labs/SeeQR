@@ -40,6 +40,19 @@
   background-color: #c6d2d5;
 }
 
+#main-right button {
+  border: 0.5px #444c50 solid;
+  background-color: #596368;
+  border-radius: 3px;
+  border: none;
+  font-size: 0.8em;
+  outline: none;
+}
+
+#main-right button:hover {
+  background-color: #6cbba9;
+}
+
 textarea {
   min-height: 300px;
   background-color: #444c50;
@@ -107,6 +120,17 @@ input *:focus {
 }
 
 .input-schema-button {
-  width: 120px;
+  padding: 10px;
+  width: 50px;
   margin-bottom: 30px;
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+.schema-roadmap ul {
+  list-style: none;
+}
+
+.schema-roadmap li {
+  display: inline;
 }

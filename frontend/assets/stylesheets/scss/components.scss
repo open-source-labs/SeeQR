@@ -39,6 +39,19 @@
     background-color: $primary-color-darkmode;
   }
 }
+#main-right {
+  button {
+    border: 0.5px $border-darkmode solid;
+    background-color: $button-darkmode;
+    border-radius: 3px;
+    border: none;
+    font-size: 0.8em;
+    outline: none;
+  }
+  button:hover {
+    background-color: $mint-green;
+  }
+}
 textarea {
   min-height: 300px;
   background-color: $border-darkmode;
@@ -97,6 +110,18 @@ input {
   background-color: $border-darkmode;
 }
 .input-schema-button {
-  width: 120px;
+  padding: 10px;
+  width: 50px;
   margin-bottom: 30px;
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+.schema-roadmap {
+  ul {
+    list-style: none;
+  }
+  li {
+    display: inline;
+  }
 }
