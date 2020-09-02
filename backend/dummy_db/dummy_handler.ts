@@ -1,5 +1,7 @@
-// import types from './dd_types.js';
 const faker = require('faker');
+
+// FAKER CONVERSION
+// Convert string from front end to a call to the Faker.js API
 const fakerLink = {
   'address.zipCode' : faker.address.zipCode,
   'address.zipCodeByState' : faker.address.zipCodeByState,
@@ -185,38 +187,46 @@ const fakerLink = {
   'vehicle.vin' : faker.vehicle.vin,
   'vehicle.color' : faker.vehicle.color,
 };
-// let test = fakerLink['helpers.slugify'];
-// console.log(test());
 
-const types = {
+// Create category types for non-faker (random) data types
+interface Types {
+  unique : object;
+  repeating : object;
+}
+const types : Types = {
   unique : {},
   repeating : {},
 };
 
-types.unique.str = (data, scale) => {
-  let chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  const unique = [];
-  const lockedIndexes = [];
+// Closure function that contains all functionality for creating unique strings
+types.unique.str = (data : object, scale : number) => {
+  let chars : string = '';
+  const unique : Array<string> = [];
+  const lockedIndexes : Array<number> = [];
   // if character types are 'true', append them to the character list
-  if (data.inclNum) chars += '0123456789';
+  if (data.inclAlphaLow) chars  += 'abcdefghijklmnopqrstuvwxyz';
+  if (data.inclAlphaUp) chars  += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  if (data.inclNum) chars  += '0123456789';
   if (data.inclSpaces) chars += ' ';
   if (data.inclSpecChar) chars += ',.?;:!@#$%^&*';
+  // if none were true or is only inclSpaces was true, a series of unique values will not be possible.
+    // if this is the case, set chars to include all letters - lower and upper
+  if (chars.length <= 1) chars  += 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
   // ensure that the minimum length can accommodate unique values to the length of the scale
-  let min = 1;
+  let min : number = 1;
   while (chars.length ** min < scale) min += 1;
   // create minimum unique keys in sequence for quick retrieval when creating record
   // stop once scale is reached
-  (buildUnique = (str = '') => {
+  (buildUnique = (str : string = '') => {
     if (str.length === min) {
       unique.push(str);
       return;
     }
-    for (const char of chars) {
+    for (let i : number = 0; i < chars.length; i += 1) {
       if (unique.length === scale) return;
-      buildUnique(str + char);
+      buildUnique(str + chars[i]);
     }
   })();
-  console.log('UNIQUE: ', unique)
   // handle INCLUDE values : values the user requires to exist
   // find the first chars up to the index of min (prefix) then search the unique array for that prefix.
   // if it exist, replace it with the full string.
@@ -225,9 +235,9 @@ types.unique.str = (data, scale) => {
   if (data.include > scale) console.log(`ERROR: Entries in 'Include' exceed the scale of the table, some values will not be represented.` )
   data.include.sort();
   for (let i = 0; i < data.include.length && i < scale; i += 1) {
-    let prefix = ''; 
-    for (let k = 0; k < min && k < data.include[i].length; k += 1) prefix += data.include[i][k];
-    let index = unique.indexOf(prefix);
+    let prefix : string = ''; 
+    for (let k : number = 0; k < min && k < data.include[i].length; k += 1) prefix += data.include[i][k];
+    let index : number = unique.indexOf(prefix);
     while (lockedIndexes.includes(index) || index === -1) {
       index = Math.floor(Math.random() * Math.floor(scale));
     }
@@ -237,10 +247,15 @@ types.unique.str = (data, scale) => {
   lockedIndexes.sort();
 
   // CLOSURE : function to be called on each record
+
   return function (i) {
-    let output = unique[i];
+    // initalize the output string with the unique prefix associated with that record (i)
+    let output : string = unique[i];
+    // if the value has already be set from INCLUDES, do not append random digits.
     if (lockedIndexes.includes(i)) return output;
-    const strLen = Math.round(Math.random() * (data.length[1] - data.length[0])) + data.length[0];
+    // create a random string length between the user specified min/max bounds.
+      // account for the space already taken by the prefix
+    const strLen : number = Math.round(Math.random() * (data.length[1] - data.length[0])) + data.length[0];
     for (let k = unique[i].length; k < strLen; k += 1) {
       output += chars[Math.floor(Math.random() * Math.floor(chars.length))]
     }
@@ -248,16 +263,88 @@ types.unique.str = (data, scale) => {
   };
 };
 
-types.unique.num = (data, scale) => {
+types.unique.num = (data : any, scale : number) => {
   return (index) => {if (data.serial) return index};
 };
 
-// types.repeating.loop.record = (data, index, vars) => {return 'loop'};
-// types.repeating.loop.variable = (data, scale) => {};
-// types.repeating.weighted.record = (data, index, vars) => {return 'weighted'};
-// types.repeating.loop.variable = (data, scale) => {};
-// types.repeating.counted.record = (data, index, vars) => {return 'counted'};
-// types.repeating.loop.variable = (data, scale) => {};
+// REPEATING DATA TYPE - STILL NEEDED
+// types.repeating.loop = (data : object, scale : number) => {};
+// types.repeating.weighted = (data : object, scale : number) => {};
+// types.repeating.counted = (data : object, scale : number) => {};
+
+/* ===================== END OF DATA TYPE FUNCTIONS ===================== */
+
+
+/* ==================== BEGIN RECORD CREATE FUNCTIONS =================== */
+
+// GENERATE 'INSERT INTO' QUERY STRING
+// populate all information into a single set of INSERT INTO querie
+// Arguments: form = DB generation form object submitted by user - from front end
+const createInsertQuery = (form : any) => {
+  let insertString : string = '';
+  insertString += `INSERT INTO "${form[i].schema}"."${form[i].table}"(${columnList(form[i].columns)}) VALUES ${valuesList(form[i].columns, form[i].scale)}; `;
+  return insertString;
+}
+
+
+// CREATE 'COLUMN' STRING FOR QUERY
+  // Called by createInsertQuery()
+// deconstruct and convert the column names to a single string
+// Arguments: column = form.columns
+const columnList = (columns : array) => {      
+  let list : string= '';
+  columns.forEach( (e : any , i : number) => {
+    list += e.name;
+    if (i < columns.length - 1) list += ', ';
+  } );
+  return list;
+}
+
+// CREATE ALL VALUES FOR ALL RECORDS AT SCALE
+  // Called by createInsertQuery()
+// Arguments: column = form.columns, scale = form.scale
+const valuesList = (columns : array, scale : number) => {
+  // create an array with each element as the necessary function to call that column's data type (first column = first element, etc)
+  // this will remove the need to run switch statements on each record as this happens at the table level.
+  const columnTypes = createRecordFunc(columns, scale);
+  // create variables that need to exist on the table level
+  let list : string = '';
+  // create the number of records equal to the scale of the table
+  for (let i : number = 0; i < scale; i += 1) {
+    // start each record as an empty string
+    let record : string = '';
+    // traverse each column and concat the results of calling the the data type function
+    columnTypes.forEach( (e : any, k : number) => {
+      // concat to the record the results of calling the function for the data type
+        // if the type is random, pass no arguments. If it is any other type, pass the index 
+      record += `${(e.random) ? e.func() : e.func(i)}`;
+      if (k < columns.length - 1) record += ', ';
+    })
+    list += `(${record})`
+    if (i < scale - 1) list += ', ';
+  }
+  return list;
+};
+
+// DEFINE TYPE FORMULAS FOR EACH COLUMN (prior to iterating)
+  // Called by valuesList()
+// Helper function: connect each column to its appropriate function prior to creating records to reduce redundant function calls.  
+// Arguments: column = form.columns, scale = form.scale
+const createRecordFunc = (columns, scale) => {
+  let output : array = [];
+  columns.forEach(e => {    
+    const {dataCategory, dataType} = e;
+    if (dataCategory === 'random') output.push({random : true, func : fakerLink[dataType]});
+    else if (dataCategory === 'repeating' || dataCategory === 'unique') output.push({random : false, func : types[dataCategory][dataType](e.data, scale)});
+    // ADD OTHER DATA TYPES HERE
+    else {
+      console.log(`ERROR: Column ${e.name} has an invalid data type. Table will still populate but this column will be empty.`)
+      output.push (() => {});
+    }
+  } );
+  return output;
+};
+
 
 const fromApp = [
   {
@@ -279,9 +366,11 @@ const fromApp = [
         dataType : 'str',
         data : {
           length : [10, 15],
-          inclNum : false,
-          inclSpaces : false,
-          inclSpecChar : false,
+          inclAlphaLow : true,
+          inclAlphaUp : true,
+          inclNum : true,
+          inclSpaces : true,
+          inclSpecChar : true,
           include : ["include", "these", "aReplace"],
         },
       },
@@ -303,103 +392,5 @@ const fromApp = [
   }
 ];
 
-// GENERATE 'INSERT INTO' QUERY STRING
-// populate all information into a single set of INSERT INTO queries
-// FORM (argument) = DB generation form object submitted by user - from front end
-const createInsertQuery = (form) => {
-  let insertString = '';
-  for (let i = 0; i < form.length; i += 1) {
-    insertString += `INSERT INTO "${form[i].schema}"."${form[i].table}"(${columnList(form[i].columns)}) VALUES ${valuesList(form[i].columns, form[i].scale)}; `;
-  }
-  return insertString;
-}
-
-
-// CREATE 'COLUMN' STRING FOR QUERY
-// deconstruct and convert the column names to a single string
-const columnList = (columns) => {      
-  let list = '';
-  columns.forEach( (e , i) => {
-    list += e.name;
-    if (i < columns.length - 1) list += ', ';
-  } );
-  return list;
-}
-
-
-// CREATE ALL VALUES FOR ALL RECORDS AT SCALE
-// Arguments: column = form.columns, scale = form.scale
-const valuesList = (columns, scale) => {
-  // create an array with each element as the necessary function to call that column's data type (first column = first element, etc)
-  // this will remove the need to run switch statements on each record as this happens at the table level.
-  const columnTypes = createRecordFunc(columns, scale);
-  // create variables that need to exist on the table level
-  let list = '';
-  // create the number of records equal to the scale of the table
-  for (let i = 0; i < scale; i += 1) {
-    // start each record as an empty string
-    let record = '';
-    // traverse each column and concat the results of calling the the data type function
-    columnTypes.forEach( (e, k) => {
-      // concat to the record the results of passing 
-      record += `${(e.random) ? e.func() : e.func(i)}`;
-      if (k < columns.length - 1) record += ', ';
-    })
-    list += `(${record})`
-    if (i < scale - 1) list += ', ';
-  }
-  return list;
-};
-
-
-// DEFINE TYPE FORMULAS FOR EACH COLUMN (prior to iterating)
-// Helper function: connect each column to its appropriate function prior to creating records to reduce redundant function calls.
-const createRecordFunc = (columns, scale) => {
-  let output = [];
-  columns.forEach(e => {    
-    const {dataCategory, dataType} = e;
-    if (dataCategory === 'random') output.push({random : true, func : fakerLink[dataType]});
-    else if (dataCategory === 'repeating' || dataCategory === 'unique') output.push({random : false, func : types[dataCategory][dataType](e.data, scale)});
-    // ADD OTHER DATA TYPES HERE
-    else {
-      console.log(`ERROR: Column ${e.name} has an invalid data type. Table will still populate but this column will be empty.`)
-      output.push (() => {});
-    }
-  } );
-  return output;
-};
 
 console.log(createInsertQuery(fromApp));
-
-
-
-/* 
-INSERT INTO 
-  "Manager"
-  (_id, mgr_firstname, mgr_lastname, hire_date, years_as_mgr, email, phone)
-VALUES 
-  (0001, 'Bobby', 'Bobberton', '2010-01-01', 3) ('thebob@bob.com', 555-555-5555, 0001), 
-  (0002, 'Carrie', 'Carry', '2010-01-03', 3, 'kerry@kerey.com', 555-555-5555);
-*/
-
-
-/*
-INSERT INTO 
-  "schema1"."table1"(username, phone_numbers) 
-VALUES 
-  (string, phone number), 
-  (string, phone number), 
-  (string, phone number), 
-  (string, phone number), 
-  (string, phone number); 
-
-INSERT INTO 
-  "schema1"."table2"(user_id, email, username, foreign_id) 
-VALUES 
-  (integer, email, $#<table|column|index>#$, $#<table|column|index>#$), 
-  (integer, email, string, $#<table|column|index>#$), 
-  (integer, email, string, $#<table|column|index>#$);
-*/
-
-
-// cross foreign 
