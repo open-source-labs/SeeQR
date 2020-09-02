@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import  { Compare }  from './leftPanel/Compare';
 import History from './leftPanel/History';
-import { SchemaContainer } from './rightPanel/SchemaContainer';
+// import { SchemaContainer } from './rightPanel/SchemaContainer';
+import{ Tabs } from './rightPanel/Tabs';
+
 const { ipcRenderer } = window.require('electron');
 type MainState = {
   // queries: {
@@ -15,14 +17,12 @@ type MainState = {
   // queryLabel: string;
   dbLists: any;
 };
+
 type MainProps = {};
-// interface MainState {
-//   queries: any;
-//   currentSchema: string;
-// }
 class MainPanel extends Component<MainProps, MainState> {
   constructor(props: MainProps) {
     super(props);
+    this.updateCurrentSchema = this.updateCurrentSchema.bind(this);
   }
   state: MainState = {
     queries: [],
@@ -58,18 +58,21 @@ class MainPanel extends Component<MainProps, MainState> {
       this.setState({dbLists: returnedLists})
       console.log("In MainPanel, lists:", returnedLists)
     })
+  }
 
+  updateCurrentSchema(event) {
+    this.setState({ currentSchema: event.target.label });
   }
 
   render() {
-
     return (
       <div id="main-panel">
         <div id="main-left">
           <History queries={this.state.queries} currentSchema={this.state.currentSchema} />
           <Compare queries={this.state.queries} currentSchema={this.state.currentSchema}/>
         </div>
-        <SchemaContainer queries={this.state.queries} currentSchema={this.state.currentSchema} />
+        <Tabs activeTab={this.state.currentSchema} tabList={this.state.dbLists} queries={this.state.queries} onClickTabItem={this.updateCurrentSchema}/>
+        {/* <SchemaContainer queries={this.state.queries} currentSchema={this.state.currentSchema} /> */}
       </div>
     );
   }

@@ -61,7 +61,7 @@ type ResultsProps = {
           label: 'Runtime',
           fill: false,
           lineTension: 0.5,
-          backgroundColor: 'rgba(75,192,192,1)',
+          backgroundColor: 'rgb(108, 187, 169)',
           borderColor: 'rgba(247,247,247,247)',
           borderWidth: 2,
           data: runtimeData(),
