@@ -278,12 +278,17 @@ types.unique.num = (data : any, scale : number) => {
 /* ==================== BEGIN RECORD CREATE FUNCTIONS =================== */
 
 // GENERATE 'INSERT INTO' QUERY STRING
-// populate all information into a single set of INSERT INTO querie
+// Populate an array of INSERT queries to add the data for the table to the database.
+  // An array is used to break the insert into smaller pieces if needed.
+  // Postgres limits insert queries to 100,000 entry values: 100,000 / # of columns = Max number of rows per query.
 // Arguments: form = DB generation form object submitted by user - from front end
 function createInsertQuery (form : any) : string {
-  return `INSERT INTO "${form.schema}"."${form.table}"(${columnList(form.columns)}) VALUES ${valuesList(form.columns, form.scale)}; `;
+  const values = valuesList(form.columns, form.scale);
+  const cols = columnList(form.columns);
+  const queryArray : any = [];
+  values.forEach(e => queryArray.push(`INSERT INTO "${form.schema}"."${form.table}"(${cols}) VALUES ${e}; `));
+  return queryArray;
 }
-
 
 // CREATE 'COLUMN' STRING FOR QUERY
   // Called by createInsertQuery()
@@ -302,10 +307,10 @@ const columnList = (columns : Array<object>) => {
   // Called by createInsertQuery()
 // Arguments: column = form.columns, scale = form.scale
 const valuesList = (columns : any, scale : number) => {
-  // create an array with each element as the necessary function to call that column's data type (first column = first element, etc)
-  // this will remove the need to run switch statements on each record as this happens at the table level.
   const columnTypes = createRecordFunc(columns, scale);
-  // create variables that need to exist on the table level
+  const valuesArray : any = [];
+  // determine maximum number of records Postgres will allow per insert query - with buffer
+  let maxRecords : number = 90000 / columns.length;
   let list : string = '';
   // create the number of records equal to the scale of the table
   for (let i : number = 0; i < scale; i += 1) {
@@ -319,10 +324,14 @@ const valuesList = (columns : any, scale : number) => {
       record += "" + ((typeof entry === 'string') ? `'${entry}'` : entry);
       if (k < columns.length - 1) record += ', ';
     })
-    list += `(${record})`
-    if (i < scale - 1) list += ', ';
+    list += `(${record})`;
+    if (i === maxRecords || i === scale - 1) {
+      valuesArray.push(list);
+      list = '';
+    } 
+    else list += ', ';
   }
-  return list;
+  return valuesArray;
 };
 
 // DEFINE TYPE FORMULAS FOR EACH COLUMN (prior to iterating)
