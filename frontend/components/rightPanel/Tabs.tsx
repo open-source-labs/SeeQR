@@ -26,7 +26,6 @@ export class Tabs extends Component<TabsProps> {
 
 
   const activeTabQueries = queries.filter((query) => query.querySchema === activeTab);
-
     return (
       <div className="tabs">
         <ol className="tab-list">

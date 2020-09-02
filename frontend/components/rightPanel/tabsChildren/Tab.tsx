@@ -22,7 +22,7 @@ export class Tab extends Component<TabProps> {
         }
 
         return (
-            <li className={className} onClick={() => onClickTabItem()}>
+            <li className={className} onClick={() => onClickTabItem(label)}>
                 {label}
             </li>
         );

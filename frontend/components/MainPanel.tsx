@@ -28,7 +28,9 @@ class MainPanel extends Component<MainProps, MainState> {
     queries: [],
     // currentSchema will change depending on which Schema Tab user selects
     currentSchema: 'schemaB',
-    dbLists: {}
+    dbLists: {
+      databaseList: ['default'],
+    }
   };
 
   componentDidMount() {
@@ -60,8 +62,8 @@ class MainPanel extends Component<MainProps, MainState> {
     })
   }
 
-  updateCurrentSchema(event) {
-    this.setState({ currentSchema: event.target.label });
+  updateCurrentSchema(tabName) {
+    this.setState({ currentSchema: tabName });
   }
 
   render() {
@@ -71,7 +73,7 @@ class MainPanel extends Component<MainProps, MainState> {
           <History queries={this.state.queries} currentSchema={this.state.currentSchema} />
           <Compare queries={this.state.queries} currentSchema={this.state.currentSchema}/>
         </div>
-        <Tabs activeTab={this.state.currentSchema} tabList={this.state.dbLists} queries={this.state.queries} onClickTabItem={this.updateCurrentSchema}/>
+        <Tabs activeTab={this.state.currentSchema} tabList={this.state.dbLists.databaseList} queries={this.state.queries} onClickTabItem={this.updateCurrentSchema}/>
         {/* <SchemaContainer queries={this.state.queries} currentSchema={this.state.currentSchema} /> */}
       </div>
     );
