@@ -320,7 +320,7 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
 const fromApp = {
   schema : 'public', //used to be schema1
   table : 'table1',
-  scale : 20,
+  scale : 1000,
   columns : [
     {
       name : '_id',
@@ -387,34 +387,25 @@ const fromApp = {
   const schemaStr : string = `CREATE TABLE "table1"(
                                   "_id" integer NOT NULL,
                                   "username" VARCHAR(255) NOT NULL,
-                                  "first_name" VARCHAR(255),
-                                  "company_name" VARCHAR(255),
+                                  "first_name" VARCHAR(255) NOT NULL,
+                                  "company_name" VARCHAR(255) NOT NULL,
                                   CONSTRAINT "tabl1_pk" PRIMARY KEY ("_id")
                            ) WITH (
                              OIDS=FALSE
                            );`
   const insertArray : Array<string> = createInsertQuery(paramsObj);
-  console.log(insertArray)
-  
+  console.log(insertArray);
 
-  for(let i = 0; i < insertArray.length; ++i){
-    let currentInsert = insertArray[i];
-    const dummyScript: string = `docker exec postgres-1 psql -U postgres -d ${db_name} -c "${currentInsert}"`;
-    db.query(schemaStr)
-    .then((returnedData) => {
-      console.log("In then")
-      addDB(dummyScript, () => console.log(`Dummied Database: ${db_name}`));
-    })
-    console.log("In loop")
-  }
-  // Need a setTimeout because query would run before any data gets uploaded to the database from the runTAR or runSQL commands
-    // setTimeout(async () => {
-    //   let listObj;
-    //   listObj = await db.getLists();
-    //   console.log('Temp log until channel is made', listObj);
-    //   //event.sender.send('db-lists', listObj);
-    // }, 1000);
-
+  db.query(schemaStr)
+  .then((returnedData) => {
+    console.log("In then for setup table1")
+    for(let i = 0; i < insertArray.length; ++i){
+      console.log(i)
+      let currentInsert = insertArray[i];
+      const dummyScript: string = `docker exec postgres-1 psql -U postgres -d ${db_name} -c "${currentInsert}"`;
+      addDB(dummyScript, () => console.log(`Dummied Database: ${db_name}`))
+    }
+  })
 })(fromApp);
 
 ipcMain.on('dummy_handler', (event, paramObj: any) => {});
