@@ -190,7 +190,7 @@ const fakerLink = {
 
 // Create category types for non-faker (random) data types
 interface Types {
-  unique : object;
+  unique : any;
   repeating : object;
 }
 const types : Types = {
@@ -199,7 +199,7 @@ const types : Types = {
 };
 
 // Closure function that contains all functionality for creating unique strings
-types.unique.str = (data : object, scale : number) => {
+types.unique.str = (data : any, scale : number) => {
   let chars : string = '';
   const unique : Array<string> = [];
   const lockedIndexes : Array<number> = [];
@@ -217,7 +217,7 @@ types.unique.str = (data : object, scale : number) => {
   while (chars.length ** min < scale) min += 1;
   // create minimum unique keys in sequence for quick retrieval when creating record
   // stop once scale is reached
-  (buildUnique = (str : string = '') => {
+  (function buildUnique (str : string) {
     if (str.length === min) {
       unique.push(str);
       return;
@@ -226,7 +226,7 @@ types.unique.str = (data : object, scale : number) => {
       if (unique.length === scale) return;
       buildUnique(str + chars[i]);
     }
-  })();
+  })('');
   // handle INCLUDE values : values the user requires to exist
   // find the first chars up to the index of min (prefix) then search the unique array for that prefix.
   // if it exist, replace it with the full string.
@@ -280,10 +280,8 @@ types.unique.num = (data : any, scale : number) => {
 // GENERATE 'INSERT INTO' QUERY STRING
 // populate all information into a single set of INSERT INTO querie
 // Arguments: form = DB generation form object submitted by user - from front end
-const createInsertQuery = (form : any) => {
-  let insertString : string = '';
-  insertString += `INSERT INTO "${form[i].schema}"."${form[i].table}"(${columnList(form[i].columns)}) VALUES ${valuesList(form[i].columns, form[i].scale)}; `;
-  return insertString;
+function createInsertQuery (form : any) : string {
+  return `INSERT INTO "${form.schema}"."${form.table}"(${columnList(form.columns)}) VALUES ${valuesList(form.columns, form.scale)}; `;
 }
 
 
@@ -291,8 +289,8 @@ const createInsertQuery = (form : any) => {
   // Called by createInsertQuery()
 // deconstruct and convert the column names to a single string
 // Arguments: column = form.columns
-const columnList = (columns : array) => {      
-  let list : string= '';
+const columnList = (columns : Array<object>) => {      
+  let list : string = '';
   columns.forEach( (e : any , i : number) => {
     list += e.name;
     if (i < columns.length - 1) list += ', ';
@@ -303,7 +301,7 @@ const columnList = (columns : array) => {
 // CREATE ALL VALUES FOR ALL RECORDS AT SCALE
   // Called by createInsertQuery()
 // Arguments: column = form.columns, scale = form.scale
-const valuesList = (columns : array, scale : number) => {
+const valuesList = (columns : any, scale : number) => {
   // create an array with each element as the necessary function to call that column's data type (first column = first element, etc)
   // this will remove the need to run switch statements on each record as this happens at the table level.
   const columnTypes = createRecordFunc(columns, scale);
@@ -330,8 +328,8 @@ const valuesList = (columns : array, scale : number) => {
   // Called by valuesList()
 // Helper function: connect each column to its appropriate function prior to creating records to reduce redundant function calls.  
 // Arguments: column = form.columns, scale = form.scale
-const createRecordFunc = (columns, scale) => {
-  let output : array = [];
+const createRecordFunc = (columns : any, scale : number) => {
+  let output : Array<object> = [];
   columns.forEach(e => {    
     const {dataCategory, dataType} = e;
     if (dataCategory === 'random') output.push({random : true, func : fakerLink[dataType]});
@@ -346,51 +344,49 @@ const createRecordFunc = (columns, scale) => {
 };
 
 
-const fromApp = [
-  {
-    schema : 'schema1',
-    table : 'table1',
-    scale : 80,
-    columns : [
-      {
-        name : '_id',
-        dataCategory : 'unique', // random, repeating, unique, combo, foreign
-        dataType : 'num', 
-        data : {
-          serial: true,
-        }
-      },
-      {
-        name : 'username',
-        dataCategory : 'unique', // random, repeating, unique, combo, foreign
-        dataType : 'str',
-        data : {
-          length : [10, 15],
-          inclAlphaLow : true,
-          inclAlphaUp : true,
-          inclNum : true,
-          inclSpaces : true,
-          inclSpecChar : true,
-          include : ["include", "these", "aReplace"],
-        },
-      },
-      {
-        name : 'first_name',
-        dataCategory : 'random', // random, repeating, unique, combo, foreign
-        dataType : 'name.firstName', 
-        data : {
-        }
-      },
-      {
-        name : 'company_name',
-        dataCategory : 'random',
-        dataType : 'company.companyName', 
-        data : {
-        }
+const fromApp = {
+  schema : 'schema1',
+  table : 'table1',
+  scale : 80,
+  columns : [
+    {
+      name : '_id',
+      dataCategory : 'unique', // random, repeating, unique, combo, foreign
+      dataType : 'num', 
+      data : {
+        serial: true,
       }
-    ]
-  }
-];
+    },
+    {
+      name : 'username',
+      dataCategory : 'unique', // random, repeating, unique, combo, foreign
+      dataType : 'str',
+      data : {
+        length : [10, 15],
+        inclAlphaLow : true,
+        inclAlphaUp : true,
+        inclNum : true,
+        inclSpaces : true,
+        inclSpecChar : true,
+        include : ["include", "these", "aReplace"],
+      },
+    },
+    {
+      name : 'first_name',
+      dataCategory : 'random', // random, repeating, unique, combo, foreign
+      dataType : 'name.firstName', 
+      data : {
+      }
+    },
+    {
+      name : 'company_name',
+      dataCategory : 'random',
+      dataType : 'company.companyName', 
+      data : {
+      }
+    }
+  ]
+};
 
 
 console.log(createInsertQuery(fromApp));
