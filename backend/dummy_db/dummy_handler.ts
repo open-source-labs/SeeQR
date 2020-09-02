@@ -315,7 +315,8 @@ const valuesList = (columns : any, scale : number) => {
     columnTypes.forEach( (e : any, k : number) => {
       // concat to the record the results of calling the function for the data type
         // if the type is random, pass no arguments. If it is any other type, pass the index 
-      record += `${(e.random) ? e.func() : e.func(i)}`;
+      let entry = (e.random) ? e.func().replace(`'`, `\\'`) : e.func(i);
+      record += "" + ((typeof entry === 'string') ? `'${entry}'` : entry);
       if (k < columns.length - 1) record += ', ';
     })
     list += `(${record})`
@@ -347,7 +348,7 @@ const createRecordFunc = (columns : any, scale : number) => {
 const fromApp = {
   schema : 'schema1',
   table : 'table1',
-  scale : 80,
+  scale : 5,
   columns : [
     {
       name : '_id',
