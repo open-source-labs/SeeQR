@@ -48,16 +48,16 @@ SeeQR is still in BETA. Additional features, extensions, and improvements will c
 4. Enjoy optimizing your schemas!
 
 Built With *Have built in links the pages
-Electron		https://www.electronjs.org/docs
-React			https://reactjs.org/
-React-Hooks		https://reactjs.org/docs/hooks-intro.html
-Typescript		https://www.typescriptlang.org/
-Docker			https://www.docker.com/get-started
-Docker-Compose 	https://docs.docker.com/compose/
-PostgreSQL		*link
-Chart.js		https://github.com/chartjs
-Faker.js		https://github.com/Marak/faker.js
-CodeMirror		https://codemirror.net/
+- [Electron](https://www.electronjs.org/docs)
+- [React](https://reactjs.org/)
+- [React-Hooks](https://reactjs.org/docs/hooks-intro.html)
+- [Typescript](https://www.typescriptlang.org/)
+- [Docker](https://www.docker.com/get-started)
+- [Docker-Compose](https://docs.docker.com/compose/)
+- [PostgreSQL](https://www.postgresql.org/)
+- [Chart.js](https://github.com/chartjs)
+- [Faker.js](https://github.com/Marak/faker.js)
+- [CodeMirror](https://codemirror.net/)
 
 Interface & Features [Pictures and Gifs everywhere in this section]
 Schema upload methods
