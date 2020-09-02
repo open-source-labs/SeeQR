@@ -1,13 +1,13 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Tab } from "./tabsChildren/Tab";
-import { SchemaContainer }  from "./SchemaContainer";
+import { SchemaContainer } from "./SchemaContainer";
 
 type TabsProps = {
-    activeTab: string,
-    tabList: string[],
-    queries: any,
-    onClickTabItem: any,
+  activeTab: string,
+  tabList: string[],
+  queries: any,
+  onClickTabItem: any,
 }
 
 export class Tabs extends Component<TabsProps> {
@@ -25,7 +25,11 @@ export class Tabs extends Component<TabsProps> {
     } = this.props;
 
 
-  const activeTabQueries = queries.filter((query) => query.querySchema === activeTab);
+    const activeTabQueries = queries.filter((query) => query.querySchema === activeTab);
+
+    console.log('tabList', tabList);
+
+
     return (
       <div className="tabs">
         <ol className="tab-list">
