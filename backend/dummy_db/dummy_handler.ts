@@ -310,7 +310,7 @@ const valuesList = (columns : any, scale : number) => {
   const columnTypes = createRecordFunc(columns, scale);
   const valuesArray : any = [];
   // determine maximum number of records Postgres will allow per insert query - with buffer
-  let maxRecords : number = 90000 / columns.length;
+  let maxRecords : number = 10; // columns.length;
   let list : string = '';
   // create the number of records equal to the scale of the table
   for (let i : number = 0; i < scale; i += 1) {
@@ -325,7 +325,7 @@ const valuesList = (columns : any, scale : number) => {
       if (k < columns.length - 1) record += ', ';
     })
     list += `(${record})`;
-    if (i === maxRecords || i === scale - 1) {
+    if (i % maxRecords === 0 || i === scale - 1) {
       valuesArray.push(list);
       list = '';
     } 
@@ -398,5 +398,5 @@ const fromApp = {
   ]
 };
 
-
-console.log(createInsertQuery(fromApp));
+module.exports = createInsertQuery;
+// console.log(createInsertQuery(fromApp));

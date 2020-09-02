@@ -9,6 +9,10 @@ const { exec } = require('child_process');
 const appMenu = require('./mainMenu');
 const db = require('./modal');
 const path = require('path');
+const createInsertQuery = require('./dummy_db/dummy_handler')
+
+
+
 /************************************************************
  ********* CREATE & CLOSE WINDOW UPON INITIALIZATION *********
  ************************************************************/
@@ -310,3 +314,108 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
   else addDB(createDB, step3);
   // else console.log('INVAILD FILE TYPE: Please use .tar or .sql extensions.');
 });
+
+
+// Temporary!!!
+const fromApp = {
+  schema : 'public', //used to be schema1
+  table : 'table1',
+  scale : 20,
+  columns : [
+    {
+      name : '_id',
+      dataCategory : 'unique', // random, repeating, unique, combo, foreign
+      dataType : 'num', 
+      data : {
+        serial: true,
+      }
+    },
+    {
+      name : 'username',
+      dataCategory : 'unique', // random, repeating, unique, combo, foreign
+      dataType : 'str',
+      data : {
+        length : [10, 15],
+        inclAlphaLow : true,
+        inclAlphaUp : true,
+        inclNum : true,
+        inclSpaces : true,
+        inclSpecChar : true,
+        include : ["include", "these", "aReplace"],
+      },
+    },
+    {
+      name : 'first_name',
+      dataCategory : 'random', // random, repeating, unique, combo, foreign
+      dataType : 'name.firstName', 
+      data : {
+      }
+    },
+    {
+      name : 'company_name',
+      dataCategory : 'random',
+      dataType : 'company.companyName', 
+      data : {
+      }
+    }
+  ]
+};
+
+
+// Generating Dummy Data from parameters sent from the frontend
+(function dummFunc(paramsObj) { //Yo seré pongo este codigo en el ipcMain hasta cuando frontend es listo
+   // Need addDB in this context
+   const addDB = (str: string, nextStep: any) => {
+    exec(str, (error, stdout, stderr) => {
+      if (error) {
+        console.log(`error: ${error.message}`);
+        return;
+      }
+      if (stderr) {
+        console.log(`stderr: ${stderr}`);
+        return;
+      }
+      // console.log(`stdout: ${stdout}`);
+      console.log(`${stdout}`);
+      if (nextStep) nextStep();
+    });
+  };
+
+
+
+  const db_name : string = 'defaultDB';
+  const schemaStr : string = `CREATE TABLE "table1"(
+                                  "_id" integer NOT NULL,
+                                  "username" VARCHAR(255) NOT NULL,
+                                  "first_name" VARCHAR(255),
+                                  "company_name" VARCHAR(255),
+                                  CONSTRAINT "tabl1_pk" PRIMARY KEY ("_id")
+                           ) WITH (
+                             OIDS=FALSE
+                           );`
+  const insertArray : Array<string> = createInsertQuery(paramsObj);
+  console.log(insertArray)
+  
+
+  for(let i = 0; i < insertArray.length; ++i){
+    let currentInsert = insertArray[i];
+    const dummyScript: string = `docker exec postgres-1 psql -U postgres -d ${db_name} -c "${currentInsert}"`;
+    db.query(schemaStr)
+    .then((returnedData) => {
+      console.log("In then")
+      addDB(dummyScript, () => console.log(`Dummied Database: ${db_name}`));
+    })
+    console.log("In loop")
+  }
+  // Need a setTimeout because query would run before any data gets uploaded to the database from the runTAR or runSQL commands
+    // setTimeout(async () => {
+    //   let listObj;
+    //   listObj = await db.getLists();
+    //   console.log('Temp log until channel is made', listObj);
+    //   //event.sender.send('db-lists', listObj);
+    // }, 1000);
+
+})(fromApp);
+
+ipcMain.on('dummy_handler', (event, paramObj: any) => {});
+
