@@ -19,10 +19,6 @@
           align-items: center;
   height: 100vh;
   color: #c6d2d5;
-  background-image: url("../../images/logo_color.png");
-  background-repeat: no-repeat;
-  background-position-y: 25vh;
-  background-position-x: center;
 }
 
 #splash-page .splash-prompt {
@@ -33,7 +29,7 @@
   -webkit-box-direction: normal;
       -ms-flex-direction: column;
           flex-direction: column;
-  margin-top: 300px;
+  margin-top: 30px;
   text-align: center;
 }
 
@@ -69,6 +65,12 @@
   width: 300px;
   height: auto;
   margin-bottom: 30px;
+}
+
+#splash-page .logo {
+  background-image: url("../../images/logo_color.png");
+  width: 360px;
+  height: 362px;
 }
 
 #main-panel {
