@@ -137,6 +137,9 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
       console.log(`${stdout}`);
       if (nextStep) nextStep();
     });
+
+    // Send schema name back to frontend, so frontend can load tab name 
+    event.sender.send('return-schema-name', db_name)
   };
 
   // SEQUENCE OF EXECUTING COMMANDS
@@ -147,28 +150,20 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
     let runCmd: string = '';
     if (extension === '.sql') runCmd = runSQL;
     else if (extension === '.tar') runCmd = runTAR;
-    addDB(runCmd, () => console.log(`Created Database: ${db_name}`));
-    redirectModal();
+    addDB(runCmd, redirectModal);
   };
-
   // Step 2 : Import database file from file path into docker container
   const step2 = () => addDB(importFile, step3);
-
   // Changes the pg URI to look to the newly created database and queries all the tables in that database and sends it to frontend.
-  const redirectModal = () => {
-    // Redirects modal towards new imported database
-    db.changeDB(db_name);
-    console.log(`Connected to database ${db_name}`);
-
-    // Need a setTimeout because query would run before any data gets uploaded to the database from the runTAR or runSQL commands
-    setTimeout(async () => {
-      let listObj;
-      listObj = await db.getLists();
-      console.log('Temp log until channel is made', listObj);
-      event.sender.send('db-lists', listObj);
-    }, 1000);
+  async function redirectModal() {
+    // Redirects modal towards new imported database, used before we added tabs. Not so much needed now
+    // db.changeDB(db_name);
+    // console.log(`Connected to database ${db_name}`);
+    let listObj;
+    listObj = await db.getLists();
+    console.log('Temp log until channel is made', listObj);
+    event.sender.send('db-lists', listObj);
   };
-
   // Step 1 : Create empty db
   if (extension === '.sql' || extension === '.tar') addDB(createDB, step2);
   else console.log('INVAILD FILE TYPE: Please use .tar or .sql extensions.');
@@ -176,7 +171,7 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
 /* ---END OF IMPORT DATABASE FUNCTION--- */
 
 // Listen for user clicking skip button
-ipcMain.on('skip-file-upload', (event) => {});
+ipcMain.on('skip-file-upload', (event) => { });
 
 interface QueryType {
   queryCurrentSchema: string;

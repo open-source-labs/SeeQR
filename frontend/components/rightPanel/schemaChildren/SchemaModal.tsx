@@ -136,14 +136,15 @@ class SchemaModal extends Component<SchemaModalProps, state> {
           <button onClick={this.handleSchemaFilePath}>Load Schema</button>
           {/* <button onClick={this.handleOnClick} type="button">Input Schema</button> */}
           <Link to="/SchemaInput"><button>Input Schema</button></Link>
+          {/* <button>Input Schema</button> */}
           <button className="toggle-button" onClick={this.onClose}>
             close
           </button>
           {/* <button onClick="window.location.href='/SchemaInput'">Input Schema</button> */}
 
           <Switch>
-            <Route path="/SchemaInput" exact component={SchemaInput} />
-            <Route path="/GenerateData" exact component={GenerateData} />
+            <Route exact path="/SchemaInput" render={(props:any) => <SchemaInput {...props}/>}/>
+            <Route exact path="/GenerateData" component={GenerateData} />
           </Switch>
         </Router>
       </div>

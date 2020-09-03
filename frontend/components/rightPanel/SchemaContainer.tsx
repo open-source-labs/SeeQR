@@ -40,15 +40,7 @@ export class SchemaContainer extends Component<SchemaContainerProps> {
   render() {
     return (
         <div id="main-right">
-          <button
-            className="input-schema-button"
-            onClick={(e) => {
-              this.showModal(e);
-            }}
-          >
-            +
-          </button>
-          <SchemaModal show={this.state.show} onClose={this.showModal} />
+        
           <div id="schema-tabs">{/* <div>Schema Tabs Here</div> */}</div>
 
           <div id="test-panels">
