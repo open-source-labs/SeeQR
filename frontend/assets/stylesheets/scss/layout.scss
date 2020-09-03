@@ -9,14 +9,10 @@
   height: 100vh;
   // overflow: hidden;
   color: $primary-color-darkmode;
-  background-image: url('../../images/logo_color.png');
-  background-repeat: no-repeat;
-  background-position-y: 25vh;
-  background-position-x: center;
   .splash-prompt {
     display: flex;
     flex-direction: column;
-    margin-top: 300px;
+    margin-top: 30px;
     text-align: center;
   }
   .splash-buttons {
@@ -43,6 +39,11 @@
     width: 300px;
     height: auto;
     margin-bottom: 30px;
+  }
+  .logo {
+    background-image: url('../../images/logo_color.png');
+    width: 360px;
+    height: 362px;
   }
 }
 
@@ -106,7 +107,7 @@
 #query-panel {
   display: flex;
   flex-direction: column;
-  height: 500px;
+  height: 50%;
   z-index: 1000;
 }
 #data-panel {

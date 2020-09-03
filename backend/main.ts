@@ -186,6 +186,12 @@ interface QueryType {
   queryStatistics: string;
 }
 
+//Listens for database changes sent from the renderer
+  ipcMain.on('change-db', (event, db_name) => {
+    db.changeDB(db_name);
+    event.sender.send('return-change-db', db_name);
+  });
+
 // Listen for queries being sent from renderer
 ipcMain.on('execute-query', (event, data: QueryType) => {
   // ---------Refactor-------------------
@@ -202,6 +208,7 @@ ipcMain.on('execute-query', (event, data: QueryType) => {
     queryStatistics: '',
     lists: {},
   };
+
 
   // Run select * from actors;
   db.query(queryString)
