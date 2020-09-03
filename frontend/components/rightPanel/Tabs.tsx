@@ -24,10 +24,9 @@ export class Tabs extends Component<TabsProps> {
       queries,
     } = this.props;
 
-    console.log("queries before ", queries);
     const activeTabQueries = queries.filter((query) => query.querySchema === currentSchema);
-    console.log('activeTabQueries', activeTabQueries);
-    console.log('tabList', tabList);
+
+    console.log('QUERIES IN TABS COMPONENT (AFTER FILTER)', queries);
 
 
     return (
@@ -45,9 +44,9 @@ export class Tabs extends Component<TabsProps> {
           })}
         </ol>
         <div className="tab-content">
-          {tabList.map((tab) => {
+          {tabList.map((tab, index) => {
             if (tab !== currentSchema) return undefined;
-            return <SchemaContainer queries={activeTabQueries} currentSchema={currentSchema} />;
+            return <SchemaContainer key={index} queries={activeTabQueries} currentSchema={currentSchema} />;
           })}
         </div>
       </div>
