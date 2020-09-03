@@ -5,11 +5,11 @@ import { SchemaContainer } from './SchemaContainer';
 import SchemaModal from './schemaChildren/SchemaModal';
 
 type TabsProps = {
-  activeTab: string;
-  tabList: string[];
-  queries: any;
-  onClickTabItem: any;
-};
+  currentSchema: string,
+  tabList: string[],
+  queries: any,
+  onClickTabItem: any,
+}
 
 type state = {
   show: boolean;
@@ -19,7 +19,6 @@ export class Tabs extends Component<TabsProps> {
     super(props);
     this.showModal = this.showModal.bind(this);
   }
-
   state: state = {
     show: false,
   };
@@ -28,22 +27,31 @@ export class Tabs extends Component<TabsProps> {
   };
 
   render() {
-    const { onClickTabItem, tabList, activeTab, queries } = this.props;
+    const {
+      onClickTabItem,
+      tabList,
+      currentSchema,
+      queries,
+    } = this.props;
 
-    const activeTabQueries = queries.filter((query) => query.querySchema === activeTab);
+    const activeTabQueries = queries.filter((query) => query.querySchema === currentSchema);
 
-    console.log('tabList', tabList);
+    console.log('QUERIES IN TABS COMPONENT (AFTER FILTER)', queries);
 
     return (
-      <div className="tabs">
+      <div className="tabs" id="main-right">
         <ol className="tab-list">
           {tabList.map((tab, index) => {
             return (
-              <Tab activeTab={activeTab} key={index} label={tab} onClickTabItem={onClickTabItem} />
+              <Tab
+                currentSchema={currentSchema}
+                key={index}
+                label={tab}
+                onClickTabItem={onClickTabItem}
+              />
             );
           })}
         </ol>
-        <div id="main-right">
           <button
             className="input-schema-button"
             onClick={(e) => {
@@ -53,14 +61,53 @@ export class Tabs extends Component<TabsProps> {
             +
           </button>
           <SchemaModal show={this.state.show} onClose={this.showModal} />
-          <div className="tab-content">
-            {tabList.map((tab) => {
-              if (tab !== activeTab) return undefined;
-              return <SchemaContainer queries={activeTabQueries} currentSchema={activeTab} />;
-            })}
-          </div>
+        <div className="tab-content">
+          {tabList.map((tab, index) => {
+            if (tab !== currentSchema) return undefined;
+            return <SchemaContainer key={index} queries={activeTabQueries} currentSchema={currentSchema} />;
+          })}
         </div>
       </div>
     );
   }
 }
+
+
+
+      // <div className="tabs" id="main-right">
+      //   <ol className="tab-list">
+      //     {tabList.map((tab, index) => {
+      //       return (
+      //         <Tab
+      //           currentSchema={currentSchema}
+      //           key={index}
+      //           label={tab}
+      //           onClickTabItem={onClickTabItem}
+      //         />
+      //       );
+      //     })}
+      //   </ol>
+      //     <button
+      //       className="input-schema-button"
+      //       onClick={(e) => {
+      //         this.showModal(e);
+      //       }}
+      //     >
+      //       +
+      //     </button>
+      //     <SchemaModal show={this.state.show} onClose={this.showModal} />
+      //   <div className="tab-content">
+      //     {tabList.map((tab, index) => {
+      //       if (tab !== currentSchema) return undefined;
+      //       return <SchemaContainer key={index} queries={activeTabQueries} currentSchema={currentSchema} />;
+      //     })}
+      //   </div>
+      // </div>
+
+
+  // state: state = {
+  //   show: false,
+  // };
+  // showModal = (event: any) => {
+  //   this.setState({ show: !this.state.show });
+  // };

@@ -68,7 +68,7 @@ textarea {
 table.scroll-box {
   border: 0.5px solid #444c50;
   background: none;
-  overflow: scroll;
+  overflow-y: scroll;
   padding: 5px;
   font-size: 1em;
   line-height: 1.5em;
@@ -99,7 +99,7 @@ input *:focus {
 }
 
 #data-table {
-  overflow-y: auto;
+  overflow: auto;
   height: 300px;
 }
 
@@ -109,6 +109,14 @@ input *:focus {
 
 #codemirror {
   padding: 15px 0;
+}
+
+#data-table::-webkit-scrollbar-track {
+  background: #c6d2d5;
+}
+
+#data-table::-webkit-scrollbar-thumb {
+  background-color: #444c50;
 }
 
 .input-schema-button {

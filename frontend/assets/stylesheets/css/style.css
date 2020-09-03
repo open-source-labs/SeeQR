@@ -74,7 +74,7 @@ textarea {
 table.scroll-box {
   border: 0.5px solid #444c50;
   background: none;
-  overflow: scroll;
+  overflow-y: scroll;
   padding: 5px;
   font-size: 1em;
   line-height: 1.5em;
@@ -105,7 +105,7 @@ input *:focus {
 }
 
 #data-table {
-  overflow-y: auto;
+  overflow: auto;
   height: 300px;
 }
 
@@ -115,6 +115,14 @@ input *:focus {
 
 #codemirror {
   padding: 15px 0;
+}
+
+#data-table::-webkit-scrollbar-track {
+  background: #c6d2d5;
+}
+
+#data-table::-webkit-scrollbar-thumb {
+  background-color: #444c50;
 }
 
 .input-schema-button {
@@ -166,10 +174,6 @@ input *:focus {
           align-items: center;
   height: 100vh;
   color: #c6d2d5;
-  background-image: url("../../images/logo_color.png");
-  background-repeat: no-repeat;
-  background-position-y: 25vh;
-  background-position-x: center;
 }
 
 #splash-page .splash-prompt {
@@ -180,7 +184,7 @@ input *:focus {
   -webkit-box-direction: normal;
       -ms-flex-direction: column;
           flex-direction: column;
-  margin-top: 300px;
+  margin-top: 30px;
   text-align: center;
 }
 
@@ -216,6 +220,12 @@ input *:focus {
   width: 300px;
   height: auto;
   margin-bottom: 30px;
+}
+
+#splash-page .logo {
+  background-image: url("../../images/logo_color.png");
+  width: 360px;
+  height: 362px;
 }
 
 #main-panel {
@@ -328,7 +338,7 @@ input *:focus {
   -webkit-box-direction: normal;
       -ms-flex-direction: column;
           flex-direction: column;
-  height: 500px;
+  height: 50%;
   z-index: 1000;
 }
 
@@ -514,14 +524,6 @@ h4 {
   height: 200px;
 }
 
-.compare-box {
-  border: 0.5px solid #444c50;
-  background: none;
-  padding: 5px;
-  font-size: 14px;
-  line-height: 1.5em;
-}
-
 #add-query-button {
   width: 120px;
   margin-bottom: 15px;
@@ -580,6 +582,34 @@ h4 {
   margin-top: 3rem;
   height: 300px;
   display: block;
+}
+
+.tab-list {
+  border-bottom: 2px solid #c6d2d5;
+  padding-left: 0;
+}
+
+.tab-list-item {
+  display: inline-block;
+  list-style: none;
+  margin-bottom: -1px;
+  padding: 0.5rem 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.tab-list-item:hover {
+  cursor: pointer;
+  background-color: #c6d2d5;
+  color: #6cbba9;
+}
+
+.tab-list-active {
+  background-color: #6cbba9;
+  border: solid #ccc;
+  border-width: 1px 1px 0 1px;
+  font-weight: 600;
+  color: #292a30;
 }
 
 .close-button {

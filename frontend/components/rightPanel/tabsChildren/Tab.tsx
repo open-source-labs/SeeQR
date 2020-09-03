@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 
 type TabProps = {
     onClickTabItem: any,
-    activeTab: string,
+    currentSchema: string,
     label: string,
 };
 export class Tab extends Component<TabProps> {
@@ -11,13 +11,13 @@ export class Tab extends Component<TabProps> {
     render() {
         const {
             onClickTabItem,
-            activeTab,
+            currentSchema,
             label,
         } = this.props;
 
         let className = "tab-list-item";
 
-        if (activeTab === label) {
+        if (currentSchema === label) {
             className += " tab-list-active";
         }
 
