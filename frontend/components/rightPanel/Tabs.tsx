@@ -58,7 +58,7 @@ export class Tabs extends Component<TabsProps> {
           <span>
 
             <button
-              className="input-schema-button"
+              id="input-schema-button"
               onClick={(e) => {
                 this.showModal(e);
               }}

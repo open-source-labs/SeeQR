@@ -116,7 +116,7 @@ class Query extends Component<QueryProps, state> {
           <br />
           <p>*required</p>
         </form>
-        <button onClick={this.handleGenerateData}>Generate Dummy Data</button>
+        <button id="generate-data-button" onClick={this.handleGenerateData}>Generate Dummy Data</button>
       </div>
     );
   }

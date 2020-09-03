@@ -51,7 +51,6 @@
   background-color: #596368;
   border-radius: 3px;
   border: none;
-  font-size: 0.8em;
   outline: none;
 }
 
@@ -123,18 +122,6 @@ input *:focus {
 
 #data-table::-webkit-scrollbar-thumb {
   background-color: #444c50;
-}
-
-.input-schema-button {
-  padding: 10px;
-  width: 50px;
-  margin-bottom: 30px;
-  font-size: 1.2em;
-  font-weight: bold;
-}
-
-.input-schema-button:hover {
-  color: #c6d2d5;
 }
 
 .input-schema {
@@ -483,17 +470,18 @@ h4 {
   padding: 0.5rem 0.75rem;
   font-weight: 500;
   letter-spacing: 0.5px;
+  cursor: pointer;
 }
 
 .tab-list-item:hover {
-  background-color: #c6d2d5;
-  color: #6cbba9;
+  color: #c6d2d5;
 }
 
 .tab-list-active {
   background-color: #6cbba9;
   border: solid #ccc;
   border-width: 1px 1px 0 1px;
+  border-radius: 15px 15px 0px 0px;
   font-weight: 600;
   color: #292a30;
 }
@@ -504,4 +492,24 @@ h4 {
   position: fixed;
   background-color: transparent;
   font-weight: bold;
+}
+
+#input-schema-button {
+  width: 50px;
+  margin-bottom: 5px;
+  font-size: 2em;
+  font-weight: bold;
+  margin-left: 5px;
+}
+
+#input-schema-button:hover {
+  color: #c6d2d5;
+}
+
+button:hover {
+  cursor: pointer;
+}
+
+#generate-data-button {
+  margin-top: 30px;
 }

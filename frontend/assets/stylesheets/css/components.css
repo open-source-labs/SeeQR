@@ -45,7 +45,6 @@
   background-color: #596368;
   border-radius: 3px;
   border: none;
-  font-size: 0.8em;
   outline: none;
 }
 
@@ -117,18 +116,6 @@ input *:focus {
 
 #data-table::-webkit-scrollbar-thumb {
   background-color: #444c50;
-}
-
-.input-schema-button {
-  padding: 10px;
-  width: 50px;
-  margin-bottom: 30px;
-  font-size: 1.2em;
-  font-weight: bold;
-}
-
-.input-schema-button:hover {
-  color: #c6d2d5;
 }
 
 .input-schema {
