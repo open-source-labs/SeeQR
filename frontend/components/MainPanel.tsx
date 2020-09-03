@@ -16,7 +16,6 @@ type MainState = {
   currentSchema: string;
   // queryLabel: string;
   dbLists: any;
-  helloworld: string;
 };
 
 type MainProps = {};
@@ -29,7 +28,6 @@ class MainPanel extends Component<MainProps, MainState> {
     queries: [],
     // currentSchema will change depending on which Schema Tab user selects
     currentSchema: 'defaultDB',
-    helloworld: '',
     dbLists: {
       databaseList: ['defaultDB'],
       tableList: [],
@@ -37,11 +35,6 @@ class MainPanel extends Component<MainProps, MainState> {
   };
 
   componentDidMount() {
-    // ipcRenderer.on('db-lists', (event: any, listObj: any) => {
-    //   console.log('db_name', db_name);
-    //   this.setState()
-    // })
-
     // Listening for returnedData from executing Query
     // Update state with new object (containing query data, query statistics, query schema
     // inside of state.queries array
@@ -84,8 +77,7 @@ class MainPanel extends Component<MainProps, MainState> {
           <History queries={this.state.queries} currentSchema={this.state.currentSchema} />
           <Compare queries={this.state.queries} currentSchema={this.state.currentSchema} />
         </div>
-        <Tabs activeTab={this.state.currentSchema} tabList={this.state.dbLists.databaseList} queries={this.state.queries} onClickTabItem={this.onClickTabItem} />
-        {/* <SchemaContainer queries={this.state.queries} currentSchema={this.state.currentSchema} /> */}
+        <Tabs currentSchema={this.state.currentSchema} tabList={this.state.dbLists.databaseList} queries={this.state.queries} onClickTabItem={this.onClickTabItem} />
       </div>
     );
   }

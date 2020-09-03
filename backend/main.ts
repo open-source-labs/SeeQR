@@ -299,7 +299,7 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
       listObj = await db.getLists();
       console.log('Temp log until channel is made', listObj);
       event.sender.send('db-lists', listObj);
-    }, 1000);
+    }, 0);
   };
 
   // Step 1 : Create empty db

@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Splash } from './Splash';
 import MainPanel from './MainPanel';
-// import '../assets/stylesheets/css/style.css';
 
 const { dialog } = require('electron').remote;
 const { ipcRenderer } = window.require('electron');
@@ -24,11 +23,6 @@ export class App extends Component<AppProps, state> {
   };
 
   handleFileClick(event: ClickEvent) {
-    // event.preventDefault();
-    // alert('event triggered');
-    // const options = {
-    //   filters: [{ name: 'Custom File Type', extensions: ['tar', 'sql'] }],
-    // };
     dialog
       .showOpenDialog(
         {
@@ -36,18 +30,8 @@ export class App extends Component<AppProps, state> {
           filters: [{ name: 'Custom File Type', extensions: ['tar', 'sql'] }],
           message: 'Please upload .sql or .tar database file'
         },
-        // (files: string) => {
-        //   if (files !== undefined) {
-        //     // handle files
-        //     console.log('cancelled');
-        //   }
-        // }
       )
       .then((result: object) => {
-        console.log('file uploaded', result);
-        // const ifCancelled = Object.keys(result)
-        // console.log(ifCancelled)
-        // console.log(result["canceled"])
         const filePathArr = result["filePaths"];
         // send via channel to main process
         if (!result["canceled"]){
@@ -66,9 +50,6 @@ export class App extends Component<AppProps, state> {
   }
 
   render() {
-    // ipcRenderer.on('open-splash', (event: any, splashState: object) => {
-    //   this.setState(splashState);
-    // });
     // listen for menu to invoke handleFileClick
     ipcRenderer.on('menu-upload-file', () => {
       this.handleFileClick;
@@ -88,5 +69,3 @@ export class App extends Component<AppProps, state> {
     );
   }
 }
-
-// export default App;

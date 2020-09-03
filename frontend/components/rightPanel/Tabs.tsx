@@ -4,7 +4,7 @@ import { Tab } from "./tabsChildren/Tab";
 import { SchemaContainer } from "./SchemaContainer";
 
 type TabsProps = {
-  activeTab: string,
+  currentSchema: string,
   tabList: string[],
   queries: any,
   onClickTabItem: any,
@@ -20,12 +20,12 @@ export class Tabs extends Component<TabsProps> {
     const {
       onClickTabItem,
       tabList,
-      activeTab,
+      currentSchema,
       queries,
     } = this.props;
 
     console.log("queries before ", queries);
-    const activeTabQueries = queries.filter((query) => query.querySchema === activeTab);
+    const activeTabQueries = queries.filter((query) => query.querySchema === currentSchema);
     console.log('activeTabQueries', activeTabQueries);
     console.log('tabList', tabList);
 
@@ -34,10 +34,9 @@ export class Tabs extends Component<TabsProps> {
       <div className="tabs">
         <ol className="tab-list">
           {tabList.map((tab, index) => {
-
             return (
               <Tab
-                activeTab={activeTab}
+                currentSchema={currentSchema}
                 key={index}
                 label={tab}
                 onClickTabItem={onClickTabItem}
@@ -47,8 +46,8 @@ export class Tabs extends Component<TabsProps> {
         </ol>
         <div className="tab-content">
           {tabList.map((tab) => {
-            if (tab !== activeTab) return undefined;
-            return <SchemaContainer queries={activeTabQueries} currentSchema={activeTab} />;
+            if (tab !== currentSchema) return undefined;
+            return <SchemaContainer queries={activeTabQueries} currentSchema={currentSchema} />;
           })}
         </div>
       </div>

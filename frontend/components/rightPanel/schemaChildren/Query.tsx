@@ -31,7 +31,6 @@ type QueryProps = { currentSchema: string };
 
 type state = {
   queryString: string;
-  currentSchema: string;
   queryLabel: string;
   show: boolean;
 };
@@ -49,7 +48,6 @@ class Query extends Component<QueryProps, state> {
   state: state = {
     queryString: '',
     queryLabel: '',
-    currentSchema: 'Schema A',
     show: false,
   };
 
@@ -77,13 +75,11 @@ class Query extends Component<QueryProps, state> {
     // if input fields for query label or query string are empty, then
     // send alert to input both fields
     if (!this.state.queryLabel || !this.state.queryString) {
-      // alert('Please enter a Label and a Query.')
       const noInputAlert = dialog.showErrorBox('Please enter a Label and a Query.', '');
-      console.log(noInputAlert);
     } else {
       const queryAndSchema = {
         queryString: this.state.queryString,
-        queryCurrentSchema: this.state.currentSchema,
+        queryCurrentSchema: this.props.currentSchema,
         queryLabel: this.state.queryLabel,
       };
       ipcRenderer.send('execute-query', queryAndSchema);
