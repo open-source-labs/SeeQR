@@ -24,7 +24,7 @@
   border-radius: 3px;
   padding: 5px;
   border: none;
-  font-size: 14px;
+  font-size: 1em;
   outline: none;
 }
 
@@ -38,12 +38,25 @@
   border-radius: 3px;
   padding: 5px;
   border: none;
-  font-size: 14px;
+  font-size: 0.8em;
   outline: none;
 }
 
 #query-panel button:hover {
   background-color: #c6d2d5;
+}
+
+#main-right button {
+  border: 0.5px #444c50 solid;
+  background-color: #596368;
+  border-radius: 3px;
+  border: none;
+  font-size: 0.8em;
+  outline: none;
+}
+
+#main-right button:hover {
+  background-color: #6cbba9;
 }
 
 textarea {
@@ -63,7 +76,7 @@ table.scroll-box {
   background: none;
   overflow: scroll;
   padding: 5px;
-  font-size: 14px;
+  font-size: 1em;
   line-height: 1.5em;
 }
 
@@ -113,8 +126,33 @@ input *:focus {
 }
 
 .input-schema-button {
-  width: 120px;
+  padding: 10px;
+  width: 50px;
   margin-bottom: 30px;
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+.input-schema {
+  display: block;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 15px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0px 0px 5px grey;
+          box-shadow: inset 0px 0px 5px grey;
+  border-radius: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #c6d2d5;
+  border-radius: 15px;
 }
 
 #splash-page {
@@ -171,7 +209,7 @@ input *:focus {
   border-radius: 3px;
   padding: 10px;
   border: none;
-  font-size: 16px;
+  font-size: 1em;
   font-weight: bold;
   color: #2b2d35;
   outline: none;
@@ -218,7 +256,7 @@ input *:focus {
 }
 
 #history-panel {
-  height: 50%;
+  height: 250px;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -226,6 +264,18 @@ input *:focus {
   -webkit-box-direction: normal;
       -ms-flex-direction: column;
           flex-direction: column;
+}
+
+.history-container {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  height: 250px;
+  overflow-y: auto;
 }
 
 #compare-panel {
@@ -329,6 +379,18 @@ input *:focus {
           flex-direction: column;
 }
 
+.results-container {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  height: 300px;
+  overflow-y: auto;
+}
+
 .modal {
   width: 615px;
   height: 700px;
@@ -344,7 +406,7 @@ input *:focus {
           transform: scale(1);
   opacity: 1;
   visibility: visible;
-  padding: 20px;
+  padding: 40px;
   z-index: 1010;
   position: fixed;
   top: 100px;
@@ -388,7 +450,7 @@ input *:focus {
   width: 600px;
 }
 
-#modal-buttons {
+.modal-buttons {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -396,9 +458,10 @@ input *:focus {
   -webkit-box-direction: normal;
       -ms-flex-direction: row;
           flex-direction: row;
-  -webkit-box-pack: justify;
-      -ms-flex-pack: justify;
-          justify-content: space-between;
+}
+
+.modal-buttons .input-button {
+  margin-left: 15px;
 }
 
 * {
@@ -410,7 +473,7 @@ body {
   background-color: #2b2d35;
   font-family: "PT Sans", sans-serif;
   font-weight: 100;
-  font-size: 14px;
+  font-size: 1em;
   line-height: 1/5;
   color: #c6d2d5;
   height: 100%;
@@ -432,7 +495,7 @@ h4 {
   background: none;
   overflow: scroll;
   padding: 5px;
-  font-size: 14px;
+  font-size: 1em;
   line-height: 1.5em;
 }
 
@@ -444,6 +507,19 @@ h4 {
   -webkit-box-direction: normal;
   -ms-flex-direction: column;
   flex-direction: column;
+  margin-top: 2rem;
+}
+
+.compare-container {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  overflow-y: auto;
+  height: 200px;
 }
 
 #add-query-button {
@@ -453,7 +529,7 @@ h4 {
   border-radius: 3px;
   padding: 5px;
   border: none;
-  font-size: 14px;
+  font-size: 0.8em;
   outline: none;
 }
 
@@ -464,7 +540,7 @@ h4 {
 .delete-query-button {
   width: 15px;
   background-color: transparent;
-  font-size: 12px;
+  font-size: 0.8em;
   outline: none;
   color: #c6d2d5;
   -webkit-box-shadow: none;
@@ -488,10 +564,28 @@ h4 {
       align-content: center;
   padding: 10px;
   text-decoration: none;
-  font-family: "PT Mono", monospace;
+  font-family: 'PT Mono', monospace;
 }
 
 .queryItem:hover {
   background-color: #c6d2d5;
   color: #30353a;
+}
+
+.line-chart {
+  margin-top: 2rem;
+}
+
+.bar-chart {
+  margin-top: 3rem;
+  height: 300px;
+  display: block;
+}
+
+.close-button {
+  top: 20px;
+  right: 30px;
+  position: fixed;
+  background-color: transparent;
+  font-weight: bold;
 }

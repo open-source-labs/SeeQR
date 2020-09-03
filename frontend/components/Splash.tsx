@@ -18,7 +18,6 @@ export class Splash extends Component<SplashProps> {
 
   render() {
     const imgPath = '../../frontend/assets/images/logo_color.png';
-    console.log(imgPath);
     return (
       <div id="splash-page">
         {/* <img src={imgPath} /> */}
