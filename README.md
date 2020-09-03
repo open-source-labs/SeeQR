@@ -31,7 +31,6 @@
 - [Application Architecture and Logic](#application-architecture-and-logic)
 - [Testing](#testing)
 - [Core Team](#core-team)
-- [Contribution and Configuration](#Contribution-and-Configuration)
 
 ## Beta Phase
 
@@ -39,10 +38,29 @@ SeeQR is still in BETA. Additional features, extensions, and improvements will c
 
 ## Getting Started
 
-1. Go to [SeeQR Website](https://www.theseeqr.io) and download Electron app.
-2. Download, install, and run docker desktop.
-3. Launch SeeQR.
-4. Enjoy optimizing your schemas!
+To get started on contributing to this project:
+
+1. Download and Install [Docker Desktop](https://www.docker.com/get-started)
+2. Fork or clone this repository
+3. Npm install
+   1. Run `npm install` for application-specific dependencies.
+   2. Run global install for: `'cross-env'`, `'webpack'`, `'webpack-dev-server'`, `'electron'`, and `'typescript'`.
+4. Enable sass compiling to css directory
+
+```json
+"liveSassCompile.settings.formats": [
+        {
+          "format": "expanded",
+          // "extensionName": ".css",
+          "savePath": "/frontend/assets/stylesheets/css"
+        }
+      ],
+"liveSassCompile.settings.generateMap": false,
+```
+
+5. To run application during development
+   1. `npm run dev` to launch Electron application window and webpack-dev-server.
+   2. `npm run resetContainer` to reset the container and clear pre-existing SeeQR databases. If error “can’t find postgres-1” is encountered, it is simply an indication that the container is already pruned.
 
 ## Built With
 
@@ -58,29 +76,77 @@ SeeQR is still in BETA. Additional features, extensions, and improvements will c
 - [CodeMirror](https://codemirror.net/)
 
 ## Interface & Features
+<div align="center">
+<img src="./frontend/assets/images/splash_screencap.png"/><br /><br /><img src="./frontend/assets/images/wholeinterface.png"/><p>The whole interface in a nutshell</p>
+</div>
 
 - Schema
   - Upon application launch, upload `.sql` or `.tar` file when prompted by splash page, or hit cancel.
   - The uploaded `.sql` or `.tar` file becomes the active database.
   - To input new schemas, toggle the “Input Schema” button. Upload a .sql or .tar file or directly input schema code. Remember to provide the schema with a unique label, as it will be assigned to the name property of the newly spun up database connected to the schema.
+
 - Query input
+
   - The center panel is where the query input text field is located, utilizing CodeMirror for SQL styling.
   - Provide a unique and concise label for the query as its shorthand identifier in later comparisons against other queries.
   - Toggle the submit button in the bottom left to send the query to the selected database.
+  <br /><br />
+<div align="center">
+<img src="./frontend/assets/images/query1.png" width=300/> <br /><br />
+<img src="./frontend/assets/images/query2.png" width=300/>
+</div>
+<br /><br />
+
 - Data
+
   - The data table displays data returned by the inputted query.
+<div align="center">
+<img src="./frontend/assets/images/data.png" width=300/><br /><br />
+</div>
+
+- Input Schema and Tabs
+  - New schemas can be uploaded into the application by clicking the "+" button above the main panel in the form of a ```.sql``` or a ```.tar``` file, or the schema script itself.
+  - Newly uploaded schemas are displayed as tabs, which can be activated to run tests against during application session. These schemas (and the databases they're connected to) persist beyond the application session.
+  <div align="center">
+<img src="./frontend/assets/images/schemamodal1.png" width=300/>
+<img src="./frontend/assets/images/schemamodal2.png" width=300/>
+</div>
+
 - History
+
   - The history table shows the latest queries the user submitted irrespective of the database.
   - The history table also displays the total rows returned by the query and the total query execution time.
+<div align="center">
+<img src="./frontend/assets/images/history.png" width=300/>
+</div>
+
 - Results
+
   - The results table displays the scan type, runtime, and the amount of loops the query had to perform in addition to the analytics data available on the history table.
   - The results table is schema-specific, showing only query results from the active schema.
+<div align="center">
+<img src="./frontend/assets/images/results.png" width=300/>
+</div> 
+
 - Compare
+
   - The comparison table is flexible to the user’s preferences.
   - The user selects which queries they want to compare side by side from the ‘Add Query Data’ drop down.
   - They can add and remove queries as they see fit.
-- Dummy data generation
+
+<div align="center">
+<img src="./frontend/assets/images/comparisons.png" width=300/>
+</div>
+
 - Visualized Analytics
+
+  - Upon each query execution, query runtime displays under the "Query Label vs Query Runtime" graph. Graph automatically interpolates as results enumerate.
+  - User may toggle on specific query analytics results with the Comparisons panel to compare query performances.
+
+<div align="center">
+<img src="./frontend/assets/images/queryruntime1.png" width=300/>
+<img src="./frontend/assets/images/queryruntime2.png" width=300/>
+</div>
 
 ## Application Architecture and Logic
 
@@ -95,8 +161,6 @@ While it is feasible for a database to house multiple schemas, SeeQR’s default
 
 <b>Session-based Result Caching</b><br/>
 The outcome results from each query, both retrieved data and analytics, are stored in the application’s state, which can be viewed and compared in table and visualizer formats. Note that these results’ persistence is session-based and will be cleared upon quitting the application.
-
-## Testing
 
 ## Core Team
 
@@ -123,31 +187,3 @@ The outcome results from each query, both retrieved data and analytics, are stor
 <a href="https://github.com/muhammadtrad">Muhammad Trad</a>
 </td>
 </tr></table>
-
-## Contribution and Configuration
-
-SeeQR welcomes contribution and iteration.
-
-To get started on contributing to this project:
-
-1. Download and Install [Docker Desktop](https://www.docker.com/get-started)
-2. Fork or clone this repository
-3. Npm install
-   1. Run `npm install` for application-specific dependencies.
-   2. Run global install for: `'cross-env'`, `'webpack'`, `'webpack-dev-server'`, `'electron'`, and `'typescript'`.
-4. Enable sass compiling to css directory
-
-```json
-"liveSassCompile.settings.formats": [
-        {
-          "format": "expanded",
-          // "extensionName": ".css",
-          "savePath": "/frontend/assets/stylesheets/css"
-        }
-      ],
-"liveSassCompile.settings.generateMap": false,
-```
-
-5. To run application during development
-   1. `npm run dev` to launch Electron application window and webpack-dev-server.
-   2. `npm run resetContainer` to reset the container and clear pre-existing SeeQR databases. If error “can’t find postgres-1” is encountered, it is simply an indication that the container is already pruned.
