@@ -44,6 +44,8 @@ class SchemaInput extends Component<SchemaInputProps, state> {
     this.setState({
       schemaEntry: event,
     });
+    console.log('SCHEMA ENTRY', typeof this.state.schemaEntry);
+
   }
 
   handleSchemaSubmit(event: any) {

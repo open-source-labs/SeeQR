@@ -96,7 +96,7 @@ export const Compare = (props: CompareProps) => {
   return (
     <div id="compare-panel">
       <h3>Comparisons</h3>
-      <DropdownButton id="add-query-button" title="Add Query Data &#8964;">
+      <DropdownButton id="add-query-button" title="Add Query Data &#9207;">
         {dropDownList()}
       </DropdownButton>
       <div className="compare-container">

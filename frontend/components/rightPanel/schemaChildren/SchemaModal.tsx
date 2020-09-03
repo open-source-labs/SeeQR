@@ -81,12 +81,6 @@ class SchemaModal extends Component<SchemaModalProps, state> {
   // when schema script is inserted, file path is cleared
   // set dialog to warn user
   handleSchemaEntry(event: any) {
-    // fs.writeFile(this.state.schemaName + '.sql', event.target.value, (err) => {
-    //   if(err){
-    //     console.log('error: ', err)
-    //   }
-    //   console.log('Successfully saved script as sql file')
-    // })
     this.setState({ schemaEntry: event.target.value });
     this.setState({ schemaFilePath: '' });
     console.log('schema entry: ', this.state.schemaEntry);
@@ -113,11 +107,6 @@ class SchemaModal extends Component<SchemaModalProps, state> {
     if (!this.props.show) {
       return null;
     }
-    // if (this.state.redirect) {
-    //   return <Redirect push to="/SchemaInput"/>
-    // }
-
-
 
     return (
       <div className="modal" id="modal">
