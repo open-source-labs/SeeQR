@@ -136,6 +136,7 @@ class SchemaModal extends Component<SchemaModalProps, state> {
           <button onClick={this.handleSchemaFilePath}>Load Schema</button>
           {/* <button onClick={this.handleOnClick} type="button">Input Schema</button> */}
           <Link to="/SchemaInput"><button>Input Schema</button></Link>
+          <Link to="/GenerateData"><button>GenerateData</button></Link>
           {/* <button>Input Schema</button> */}
           <button className="toggle-button" onClick={this.onClose}>
             close
