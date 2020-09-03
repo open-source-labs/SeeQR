@@ -1,16 +1,19 @@
 @import './variables.scss';
+
 #query-window {
   .text-field {
     width: 100%;
     height: 200px;
   }
 }
+
 .label-field,
 .schema-label {
   font-family: $font-input;
   color: $mint-green;
   margin-left: 8px;
 }
+
 #splash-menu {
   button {
     border: 0.5px $border-darkmode solid;
@@ -25,6 +28,7 @@
     background-color: $primary-color-darkmode;
   }
 }
+
 #query-panel {
   button {
     border: 0.5px $border-darkmode solid;
@@ -39,6 +43,7 @@
     background-color: $primary-color-darkmode;
   }
 }
+
 textarea {
   min-height: 300px;
   background-color: $border-darkmode;
@@ -50,6 +55,7 @@ textarea {
   color: $mint-green;
   font-family: $font-input;
 }
+
 table.scroll-box {
   border: 0.5px solid $border-darkmode;
   background: none;
@@ -58,6 +64,7 @@ table.scroll-box {
   font-size: $default-text;
   line-height: 1.5em;
 }
+
 tbody {
   .top-row {
     border-bottom: 1px solid $border-darkmode;
@@ -66,6 +73,7 @@ tbody {
     }
   }
 }
+
 input {
   border-top-style: hidden;
   border-right-style: hidden;
@@ -80,13 +88,16 @@ input {
     outline: none;
   }
 }
+
 #data-table {
   overflow-y: auto;
   height: 300px;
 }
+
 .query-data {
   width: 1000px;
 }
+
 #codemirror {
   padding: 15px 0;
 }

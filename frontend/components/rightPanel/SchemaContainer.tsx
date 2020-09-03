@@ -15,7 +15,7 @@ export class SchemaContainer extends Component<SchemaContainerProps> {
 
   render() {
     return (
-      <div id="main-right">
+      <div id="schema-container">
         <div id="test-panels">
           <div id="schema-left">
             <Query currentSchema={this.props.currentSchema} />

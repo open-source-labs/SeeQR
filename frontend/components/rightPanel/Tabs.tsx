@@ -30,7 +30,7 @@ export class Tabs extends Component<TabsProps> {
 
 
     return (
-      <div className="tabs">
+      <div className="tabs" id="main-right">
         <ol className="tab-list">
           {tabList.map((tab, index) => {
             return (
