@@ -7,7 +7,6 @@ import SchemaInput from './SchemaInput';
 import GenerateData from './GenerateData';
 
 type ClickEvent = React.MouseEvent<HTMLElement>;
-type InputChangeEvent = React.ChangeEvent<HTMLInputElement>;
 
 type SchemaModalProps = {
   show: boolean;
@@ -118,6 +117,8 @@ class SchemaModal extends Component<SchemaModalProps, state> {
     //   return <Redirect push to="/SchemaInput"/>
     // }
 
+
+
     return (
       <div className="modal" id="modal">
         <Router>
@@ -163,7 +164,7 @@ class SchemaModal extends Component<SchemaModalProps, state> {
 // };
 export default SchemaModal;
 
-/* 
+/*
 <Route exact path="/" component={SchemaModal}/>
             <Route exact path="/SchemaInput" render={(props:any) => <SchemaInput {...props}/>}/>
             <Route exact path="/GenerateData" component={GenerateData} />
@@ -199,5 +200,5 @@ export default SchemaModal;
                 </button>
               </div>
             </div>
-          </form> 
+          </form>
           <Route exact path="/SchemaInput" render={(props:any) => <SchemaInput {...props}/>}/>*/
