@@ -15,7 +15,7 @@
           transform: scale(1);
   opacity: 1;
   visibility: visible;
-  padding: 20px;
+  padding: 40px;
   z-index: 1010;
   position: fixed;
   top: 100px;
@@ -59,7 +59,7 @@
   width: 600px;
 }
 
-#modal-buttons {
+.modal-buttons {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -67,7 +67,8 @@
   -webkit-box-direction: normal;
       -ms-flex-direction: row;
           flex-direction: row;
-  -webkit-box-pack: justify;
-      -ms-flex-pack: justify;
-          justify-content: space-between;
+}
+
+.modal-buttons .input-button {
+  margin-left: 15px;
 }

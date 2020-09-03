@@ -119,12 +119,8 @@ input *:focus {
   font-weight: bold;
 }
 
-.schema-roadmap ul {
-  list-style: none;
-}
-
-.schema-roadmap li {
-  display: inline;
+.input-schema {
+  display: block;
 }
 
 /* width */

@@ -125,3 +125,11 @@ h4 {
   height: 300px;
   display: block;
 }
+
+.close-button {
+  top: 20px;
+  right: 30px;
+  position: fixed;
+  background-color: transparent;
+  font-weight: bold;
+}

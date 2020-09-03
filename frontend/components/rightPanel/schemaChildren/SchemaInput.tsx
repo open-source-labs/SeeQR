@@ -7,12 +7,11 @@ type ClickEvent = React.MouseEvent<HTMLElement>;
 
 type SchemaInputProps = {
   onClose: any;
+  schemaName: string;
 };
 
 type state = {
-  schemaName: string;
   schemaEntry: string;
-  schemaFilePath: '';
 };
 
 class SchemaInput extends Component<SchemaInputProps, state> {
@@ -22,22 +21,20 @@ class SchemaInput extends Component<SchemaInputProps, state> {
     this.handleSchemaEntry = this.handleSchemaEntry.bind(this);
   }
   state: state = {
-    schemaName: '',
-    schemaFilePath: '',
+    
     schemaEntry: '',
   };
   handleSchemaEntry(event: any) {
     this.setState({ schemaEntry: event.target.value });
-    this.setState({ schemaFilePath: '' });
     console.log('schema entry: ', this.state.schemaEntry);
-    console.log('schema entry type: ', typeof this.state.schemaEntry);
+    //console.log('schema entry type: ', typeof this.state.schemaEntry);
   }
   handleSchemaSubmit(event: any) {
     event.preventDefault();
 
     const schemaObj = {
-      schemaName: this.state.schemaName,
-      schemaFilePath: this.state.schemaFilePath,
+      schemaName: this.props.schemaName,
+      schemaFilePath: '',
       schemaEntry: this.state.schemaEntry,
     };
     ipcRenderer.send('input-schema', schemaObj);
@@ -48,23 +45,19 @@ class SchemaInput extends Component<SchemaInputProps, state> {
   };
 
   render() {
+    console.log('state', this.state);
     return (
-      <div>
+      <div className="input-schema">
         <form onSubmit={this.handleSchemaSubmit}>
+          {/* <p>Schema label: {this.props.schemaName}</p> */}
+          <br />
           <input
             className="schema-text-field"
             type="text"
             placeholder="Input Schema Here..."
             onChange={(e) => this.handleSchemaEntry(e)}
-            />
-          <div id="modal-buttons">
-            <button>submit</button>
-            <div className="actions">
-              <button className="toggle-button" onClick={this.onClose}>
-                close
-              </button>
-            </div>
-          </div>
+          />
+          <button>submit</button>
         </form>
       </div>
     );

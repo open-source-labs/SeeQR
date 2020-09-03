@@ -110,10 +110,6 @@ class SchemaModal extends Component<SchemaModalProps, state> {
     this.props.onClose && this.props.onClose(event);
   };
 
-  handleOnClick = () => {
-    this.setState({redirect: true})
-  }
-
   render() {
     if (!this.props.show) {
       return null;
@@ -133,17 +129,26 @@ class SchemaModal extends Component<SchemaModalProps, state> {
             placeholder="Input schema label..."
             onChange={(e) => this.handleSchemaName(e)}
           />
-          <button onClick={this.handleSchemaFilePath}>Load Schema</button>
-          {/* <button onClick={this.handleOnClick} type="button">Input Schema</button> */}
-          <Link to="/SchemaInput"><button>Input Schema</button></Link>
-          {/* <button>Input Schema</button> */}
-          <button className="toggle-button" onClick={this.onClose}>
-            close
+          <div className="modal-buttons">
+            <button onClick={this.handleSchemaFilePath}>Load Schema</button>
+            {/* <button onClick={this.handleOnClick} type="button">Input Schema</button> */}
+            <Link to="/SchemaInput">
+              <button className="input-button">Input Schema</button>
+            </Link>
+          </div>
+
+          <button className="close-button" onClick={this.onClose}>
+            X
           </button>
           {/* <button onClick="window.location.href='/SchemaInput'">Input Schema</button> */}
 
           <Switch>
-            <Route exact path="/SchemaInput" render={(props:any) => <SchemaInput {...props}/>}/>
+            <Route exact path="/" component={SchemaModal} />
+            <Route
+              exact
+              path="/SchemaInput"
+              render={(props: any) => <SchemaInput {...props} schemaName={this.state.schemaName} />}
+            />
             <Route exact path="/GenerateData" component={GenerateData} />
           </Switch>
         </Router>
@@ -158,7 +163,11 @@ class SchemaModal extends Component<SchemaModalProps, state> {
 // };
 export default SchemaModal;
 
-/* <div className="content">{this.props.children}</div>
+/* 
+<Route exact path="/" component={SchemaModal}/>
+            <Route exact path="/SchemaInput" render={(props:any) => <SchemaInput {...props}/>}/>
+            <Route exact path="/GenerateData" component={GenerateData} />
+<div className="content">{this.props.children}</div>
           <h3>Load or input schema</h3>
           <form onSubmit={this.handleSchemaSubmit}>
             <p>First...</p>
@@ -190,4 +199,5 @@ export default SchemaModal;
                 </button>
               </div>
             </div>
-          </form> */
+          </form> 
+          <Route exact path="/SchemaInput" render={(props:any) => <SchemaInput {...props}/>}/>*/
