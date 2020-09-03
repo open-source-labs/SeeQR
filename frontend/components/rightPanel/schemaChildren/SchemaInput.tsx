@@ -77,7 +77,6 @@ class SchemaInput extends Component<SchemaInputProps, state> {
           <br />
           <div id="codemirror">
             <CodeMirror
-              value={"Input Schema Here..."}
               onChange={(e) => { this.updateCode(e) }}
               options={options}
             />

@@ -78,10 +78,6 @@ class Query extends Component<QueryProps, state> {
     }
   }
 
-  // showModal = (event: any) => {
-  //   this.setState({ show: !this.state.show });
-  // };
-
   handleGenerateData(event: any) {
     ipcRenderer.send('generate-data')
   }
@@ -111,7 +107,6 @@ class Query extends Component<QueryProps, state> {
           {/* <input type="select" onClick={this.handleQueryPrevious}/> */}
           <div id="codemirror">
             <CodeMirror
-              // value={}
               onChange={this.updateCode}
               options={options}
             />
