@@ -36,7 +36,7 @@ export const Compare = (props: CompareProps) => {
   }
 
   const dropDownList = () => {
-    return props.queries.map((query, index) => <Dropdown.Item key={index} id={`query-item${index}`} className="queryItem" onClick={addCompareQuery}>{query.queryLabel}</Dropdown.Item>);
+    return props.queries.map((query, index) => <Dropdown.Item key={index} className="queryItem" onClick={addCompareQuery}>{query.queryLabel}</Dropdown.Item>);
   };
 
   const renderCompare = () => {
