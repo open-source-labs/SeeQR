@@ -151,26 +151,22 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
     let runCmd: string = '';
     if (extension === '.sql') runCmd = runSQL;
     else if (extension === '.tar') runCmd = runTAR;
-    addDB(runCmd, () => console.log(`Created Database: ${db_name}`));
-    redirectModal();
+    addDB(runCmd, redirectModal);
   };
 
   // Step 2 : Import database file from file path into docker container
   const step2 = () => addDB(importFile, step3);
 
   // Changes the pg URI to look to the newly created database and queries all the tables in that database and sends it to frontend.
-  const redirectModal = () => {
-    // Redirects modal towards new imported database
-    db.changeDB(db_name);
-    console.log(`Connected to database ${db_name}`);
+  async function redirectModal() {
+    // Redirects modal towards new imported database, used before we added tabs. Not so much needed now
+    // db.changeDB(db_name);
+    // console.log(`Connected to database ${db_name}`);
 
-    // Need a setTimeout because query would run before any data gets uploaded to the database from the runTAR or runSQL commands
-    setTimeout(async () => {
-      let listObj;
-      listObj = await db.getLists();
-      console.log('Temp log until channel is made', listObj);
-      event.sender.send('db-lists', listObj);
-    }, 1000);
+    let listObj;
+    listObj = await db.getLists();
+    console.log('Temp log until channel is made', listObj);
+    event.sender.send('db-lists', listObj);
   };
 
   // Step 1 : Create empty db
@@ -220,7 +216,9 @@ ipcMain.on('execute-query', (event, data: QueryType) => {
         async function getListAsync() {
           let listObj;
           listObj = await db.getLists();
+          console.log("Should be my lists", listObj)
           frontendData.lists = listObj;
+          event.sender.send('db-lists', listObj)
           event.sender.send('return-execute-query', frontendData);
         }
         getListAsync();
@@ -243,6 +241,7 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
   db_name = data.schemaName;
   let filePath = data.schemaFilePath;
   let schemaEntry = data.schemaEntry.trim();
+  console.log("schema entry", schemaEntry)
 
   console.log('filePath', filePath);
   // command strings
@@ -281,28 +280,38 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
     let runCmd: string = '';
     if (extension === '.sql') runCmd = runSQL;
     else if (extension === '.tar') runCmd = runTAR;
-    else runCmd = runScript;
-    addDB(runCmd, () => console.log(`Created Database: ${db_name}`));
-    // Redirects modal towards new imported database
-    redirectModal();
+    addDB(runCmd, redirectModal);
   };
 
   // Step 2 : Import database file from file path into docker container
   const step2 = () => addDB(importFile, step3);
 
-  const redirectModal = () => {
-    // Redirects modal towards new imported database
+   // Changes the pg URI to look to the newly created database and queries all the tables in that database and sends it to frontend.
+   async function redirectModal() {
+    // Redirects modal towards new imported database, used before we added tabs. Not so much needed now
     db.changeDB(db_name);
     console.log(`Connected to database ${db_name}`);
 
-    // Need a setTimeout because query would run before any data gets uploaded to the database from the runTAR or runSQL commands
-    setTimeout(async () => {
-      let listObj;
-      listObj = await db.getLists();
-      console.log('Temp log until channel is made', listObj);
-      event.sender.send('db-lists', listObj);
-    }, 1000);
+    let listObj;
+    listObj = await db.getLists();
+    console.log('Temp log until channel is made', listObj);
+    event.sender.send('db-lists', listObj);
   };
+
+
+  // const redirectModal = () => {
+  //   // Redirects modal towards new imported database
+  //   db.changeDB(db_name);
+  //   console.log(`Connected to database ${db_name}`);
+
+  //   // Need a setTimeout because query would run before any data gets uploaded to the database from the runTAR or runSQL commands
+  //   setTimeout(async () => {
+  //     let listObj;
+  //     listObj = await db.getLists();
+  //     console.log('Temp log until channel is made', listObj);
+  //     event.sender.send('db-lists', listObj);
+  //   }, 1000);
+  // };
 
   // Step 1 : Create empty db
   if (extension === '.sql' || extension === '.tar') {
@@ -320,7 +329,7 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
 const fromApp = {
   schema : 'public', //used to be schema1
   table : 'table1',
-  scale : 1000,
+  scale : 20,
   columns : [
     {
       name : '_id',
