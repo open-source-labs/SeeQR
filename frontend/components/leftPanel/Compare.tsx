@@ -80,7 +80,6 @@ export const Compare = (props: CompareProps) => {
   const labelData = () => compareList.map((query) => query.queryLabel);
   const runtimeData = () => compareList.map(
     (query) => query.queryStatistics[0]["QUERY PLAN"][0]["Execution Time"] + query.queryStatistics[0]["QUERY PLAN"][0]["Planning Time"]);
-  console.log('labelData', labelData());
   const data = {
     labels: labelData(),
     datasets: [
