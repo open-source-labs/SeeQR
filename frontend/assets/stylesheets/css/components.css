@@ -18,7 +18,7 @@
   border-radius: 3px;
   padding: 5px;
   border: none;
-  font-size: 14px;
+  font-size: 1em;
   outline: none;
 }
 
@@ -32,12 +32,25 @@
   border-radius: 3px;
   padding: 5px;
   border: none;
-  font-size: 14px;
+  font-size: 0.8em;
   outline: none;
 }
 
 #query-panel button:hover {
   background-color: #c6d2d5;
+}
+
+#main-right button {
+  border: 0.5px #444c50 solid;
+  background-color: #596368;
+  border-radius: 3px;
+  border: none;
+  font-size: 0.8em;
+  outline: none;
+}
+
+#main-right button:hover {
+  background-color: #6cbba9;
 }
 
 textarea {
@@ -57,7 +70,7 @@ table.scroll-box {
   background: none;
   overflow: scroll;
   padding: 5px;
-  font-size: 14px;
+  font-size: 1em;
   line-height: 1.5em;
 }
 
@@ -86,7 +99,7 @@ input *:focus {
 }
 
 #data-table {
-  overflow: auto;
+  overflow-y: auto;
   height: 300px;
 }
 
@@ -98,15 +111,32 @@ input *:focus {
   padding: 15px 0;
 }
 
-#data-table::-webkit-scrollbar-track {
-  background: #c6d2d5;
-}
-
-#data-table::-webkit-scrollbar-thumb {
-  background-color: #444c50;
-}
-
 .input-schema-button {
-  width: 120px;
+  padding: 10px;
+  width: 50px;
   margin-bottom: 30px;
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+.input-schema {
+  display: block;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 15px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0px 0px 5px grey;
+          box-shadow: inset 0px 0px 5px grey;
+  border-radius: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #c6d2d5;
+  border-radius: 15px;
 }

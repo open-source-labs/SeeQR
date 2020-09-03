@@ -2,6 +2,9 @@ import React, { Component, MouseEvent, useState } from 'react';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown';
 const { ipcRenderer } = window.require('electron');
+import { Bar, defaults } from "react-chartjs-2";
+
+defaults.global.defaultFontColor = 'rgb(198,210,213)';
 
 type CompareProps = {
     queries: {
@@ -14,6 +17,7 @@ type CompareProps = {
 
 export const Compare = (props: CompareProps) => {
   let initial: any = {...props, compareList: [] };
+
   const [ queryInfo, setCompare ] = useState(initial);
   const addCompareQuery = (event) => {
     let compareList = queryInfo.compareList;
@@ -72,12 +76,31 @@ export const Compare = (props: CompareProps) => {
     });
   };
 
+    const { compareList } = queryInfo;
+    const labelData = () => compareList.map((query) => query.queryLabel);
+    const runtimeData = () => compareList.map(
+      (query) => query.queryStatistics[0]["QUERY PLAN"][0]["Execution Time"] + query.queryStatistics[0]["QUERY PLAN"][0]["Planning Time"]);
+    console.log('labelData', labelData());
+    const data = {
+      labels: labelData(),
+      datasets: [
+        {
+          label: 'Runtime',
+          backgroundColor: 'rgb(108, 187, 169)',
+          borderColor: 'rgba(247,247,247,247)',
+          borderWidth: 2,
+          data: runtimeData(),
+        }
+      ]
+    };
+
   return (
     <div id="compare-panel">
-      <h3>Compare</h3>
+      <h3>Comparisons</h3>
         <DropdownButton id="add-query-button" title="Add Query Data">
           {dropDownList()}
         </DropdownButton>
+        <div className="compare-container">
         <table className="compare-box">
           <tbody>
             <tr className="top-row">
@@ -94,6 +117,23 @@ export const Compare = (props: CompareProps) => {
             {renderCompare()}
           </tbody>
         </table>
+        </div>
+      <div className="bar-chart">
+        <Bar
+          data={data}
+          options={{
+            title:{
+              display:true,
+              text:'QUERY LABEL VS RUNTIME (ms)',
+              fontSize:16
+            },
+            legend:{
+              display:false,
+              position:'right'
+            }
+          }}
+        />
+      </div>
     </div>
   );
 };

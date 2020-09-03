@@ -10,7 +10,7 @@
   transform: scale(1);
   opacity: 1;
   visibility: visible;
-  padding: 20px;
+  padding: 40px;
   z-index: 1010;
   position: fixed;
   top: 100px;
@@ -56,8 +56,10 @@
   height: 300px;
   width: 600px;
 }
-#modal-buttons {
+.modal-buttons {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  .input-button {
+    margin-left: 15px;
+  }
 }
