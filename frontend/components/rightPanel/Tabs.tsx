@@ -24,9 +24,9 @@ export class Tabs extends Component<TabsProps> {
       queries,
     } = this.props;
 
-
+    console.log("queries before ", queries);
     const activeTabQueries = queries.filter((query) => query.querySchema === activeTab);
-
+    console.log('activeTabQueries', activeTabQueries);
     console.log('tabList', tabList);
 
 

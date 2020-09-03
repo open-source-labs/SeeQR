@@ -60,6 +60,7 @@ class Query extends Component<QueryProps, state> {
 
   // Updates state.queryString as user inputs query label
   handleLabelEntry(event: any) {
+    console.log("these are the event target", event.target);
     this.setState({ queryLabel: event.target.value });
   }
 
