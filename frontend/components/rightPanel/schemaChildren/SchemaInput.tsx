@@ -50,7 +50,7 @@ class SchemaInput extends Component<SchemaInputProps, state> {
   render() {
     return (
       <div>
-        <form>
+        <form onSubmit={this.handleSchemaSubmit}>
           <input
             className="schema-text-field"
             type="text"
