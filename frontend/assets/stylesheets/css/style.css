@@ -133,6 +133,10 @@ input *:focus {
   font-weight: bold;
 }
 
+.input-schema-button:hover {
+  color: #c6d2d5;
+}
+
 .input-schema {
   display: block;
 }
@@ -482,7 +486,6 @@ h4 {
 }
 
 .tab-list-item:hover {
-  cursor: pointer;
   background-color: #c6d2d5;
   color: #6cbba9;
 }

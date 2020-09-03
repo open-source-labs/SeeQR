@@ -119,7 +119,8 @@ h4 {
   display: block;
 }
 
-.tab-list {  border-bottom: 2px solid #c6d2d5;
+.tab-list {  
+  border-bottom: 2px solid #c6d2d5;
   // padding-left: 0 30 0 0;
   margin-right: 10px;
   display: flex;
@@ -132,15 +133,14 @@ h4 {
   margin-bottom: -1px;
   padding: 0.5rem 0.75rem;
   font-weight: 500;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.5px; 
 }
 
-.tab-list-item:hover{
-  cursor: pointer;
-  background-color: $primary-color-darkmode;
-  color:rgb(108, 187, 169);
-}
-
+.tab-list-item:hover {
+ background-color: #c6d2d5; 
+  color:rgb(108, 187, 169); 
+} 
+ 
 .tab-list-active {
   background-color:rgb(108, 187, 169);
   border: solid #ccc;

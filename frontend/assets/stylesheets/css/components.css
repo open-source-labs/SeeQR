@@ -127,6 +127,10 @@ input *:focus {
   font-weight: bold;
 }
 
+.input-schema-button:hover {
+  color: #c6d2d5;
+}
+
 .input-schema {
   display: block;
 }

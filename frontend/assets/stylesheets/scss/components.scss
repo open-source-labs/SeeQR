@@ -113,12 +113,15 @@ input {
 #codemirror {
   padding: 15px 0;
 }
+
 #data-table::-webkit-scrollbar-track {
   background: $primary-color-darkmode;
 }
+
 #data-table::-webkit-scrollbar-thumb {
   background-color: $border-darkmode;
 }
+
 .input-schema-button {
   padding: 10px;
   width: 50px;
@@ -126,6 +129,11 @@ input {
   font-size: 1.2em;
   font-weight: bold;
 }
+
+.input-schema-button:hover {
+    // background-color: #c6d2d5; 
+     color:#c6d2d5;
+   } 
 
 .input-schema {
   display:block;
