@@ -102,7 +102,7 @@ The outcome results from each query, both retrieved data and analytics, are stor
 
 <table>
 <tr>
-<td>
+<td align="center">
 <img src="./frontend/assets/images/catherinechiu.png"/><br/>
 <a href="https://github.com/catherinechiu">Catherine Chiu</a>
 </td>
