@@ -105,7 +105,7 @@ class Query extends Component<QueryProps, state> {
           <br />
           <label>Query:*</label>
           {/* <input type="select" onClick={this.handleQueryPrevious}/> */}
-          <div id="codemirror">
+          <div className="codemirror">
             <CodeMirror
               onChange={this.updateCode}
               options={options}

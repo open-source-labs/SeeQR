@@ -75,7 +75,7 @@ class SchemaInput extends Component<SchemaInputProps, state> {
         <form onSubmit={this.handleSchemaSubmit}>
           {/* <p>Schema label: {this.props.schemaName}</p> */}
           <br />
-          <div id="codemirror">
+          <div className="codemirror">
             <CodeMirror
               onChange={(e) => { this.updateCode(e) }}
               options={options}
