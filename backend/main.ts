@@ -280,6 +280,7 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
     let runCmd: string = '';
     if (extension === '.sql') runCmd = runSQL;
     else if (extension === '.tar') runCmd = runTAR;
+    else runCmd = runScript;
     addDB(runCmd, redirectModal);
   };
 
