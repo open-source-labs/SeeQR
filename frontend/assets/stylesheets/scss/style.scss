@@ -115,13 +115,15 @@ h4 {
 
 .bar-chart {
   margin-top: 3rem;
-  height: 300px;
+  height: 300px; 
   display: block;
 }
 
 .tab-list {  border-bottom: 2px solid #c6d2d5;
-  padding-left: 0;
-
+  // padding-left: 0 30 0 0;
+  margin-right: 10px;
+  display: flex;
+  // justify-content: space-between;
 }
 
 .tab-list-item {

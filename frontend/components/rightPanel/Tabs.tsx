@@ -41,26 +41,33 @@ export class Tabs extends Component<TabsProps> {
     return (
       <div className="tabs" id="main-right">
         <ol className="tab-list">
-          {tabList.map((tab, index) => {
-            return (
-              <Tab
-                currentSchema={currentSchema}
-                key={index}
-                label={tab}
-                onClickTabItem={onClickTabItem}
-              />
-            );
-          })}
-        </ol>
-          <button
-            className="input-schema-button"
-            onClick={(e) => {
-              this.showModal(e);
-            }}
-          >
-            +
+          <span>
+            {tabList.map((tab, index) => {
+              return (
+                <Tab
+                  currentSchema={currentSchema}
+                  key={index}
+                  label={tab}
+                  onClickTabItem={onClickTabItem}
+                />
+              );
+            })}
+          </span>
+
+
+          <span>
+
+            <button
+              className="input-schema-button"
+              onClick={(e) => {
+                this.showModal(e);
+              }}
+            >
+              +
           </button>
-          <SchemaModal show={this.state.show} onClose={this.showModal} />
+          </span>
+        </ol>
+        <SchemaModal show={this.state.show} onClose={this.showModal} />
         <div className="tab-content">
           {tabList.map((tab, index) => {
             if (tab !== currentSchema) return undefined;
