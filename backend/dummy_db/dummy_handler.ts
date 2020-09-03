@@ -325,7 +325,7 @@ const valuesList = (columns : any, scale : number) => {
       if (k < columns.length - 1) record += ', ';
     })
     list += `(${record})`;
-    if (i % maxRecords === 0 || i === scale - 1) {
+    if (i && i % maxRecords === 0 || i === scale - 1) {
       valuesArray.push(list);
       list = '';
     } 
