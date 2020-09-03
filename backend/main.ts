@@ -328,7 +328,7 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
 const fromApp = {
   schema : 'public', //used to be schema1
   table : 'table1',
-  scale : 20,
+  scale : 40,
   columns : [
     {
       name : '_id',
@@ -355,14 +355,14 @@ const fromApp = {
     {
       name : 'first_name',
       dataCategory : 'random', // random, repeating, unique, combo, foreign
-      dataType : 'name.firstName', 
+      dataType : 'Name - firstName', 
       data : {
       }
     },
     {
       name : 'company_name',
       dataCategory : 'random',
-      dataType : 'company.companyName', 
+      dataType : 'Company - companyName', 
       data : {
       }
     }
