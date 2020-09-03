@@ -27,7 +27,6 @@ module.exports = {
           "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_name;"
         )
         .then((tables) => {
-          console.log("Should be table1", tables.rows)
           let tableList: any = [];
           for (let i = 0; i < tables.rows.length; ++i) {
             tableList.push(tables.rows[i].table_name);
@@ -36,7 +35,6 @@ module.exports = {
 
           pool.query('SELECT datname FROM pg_database;').then((databases) => {
             let dbList: any = [];
-            console.log("Should be defaultDB", databases.rows)
             for (let i = 0; i < databases.rows.length; ++i) {
               let curName = databases.rows[i].datname;
               if (curName !== 'postgres' && curName !== 'template0' && curName !== 'template1')

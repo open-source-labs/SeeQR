@@ -289,12 +289,11 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
    // Changes the pg URI to look to the newly created database and queries all the tables in that database and sends it to frontend.
    async function redirectModal() {
     // Redirects modal towards new imported database, used before we added tabs. Not so much needed now
-    db.changeDB(db_name);
-    console.log(`Connected to database ${db_name}`);
+    // db.changeDB(db_name);
+    // console.log(`Connected to database ${db_name}`);
 
     let listObj;
     listObj = await db.getLists();
-    console.log('Temp log until channel is made', listObj);
     event.sender.send('db-lists', listObj);
   };
 
