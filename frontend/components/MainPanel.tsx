@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
-import  { Compare }  from './leftPanel/Compare';
+import { Compare } from './leftPanel/Compare';
 import History from './leftPanel/History';
-import { SchemaContainer } from './rightPanel/SchemaContainer';
+// import { SchemaContainer } from './rightPanel/SchemaContainer';
+import { Tabs } from './rightPanel/Tabs';
+
 const { ipcRenderer } = window.require('electron');
 type MainState = {
   // queries: {
@@ -15,23 +17,29 @@ type MainState = {
   // queryLabel: string;
   dbLists: any;
 };
+
 type MainProps = {};
-// interface MainState {
-//   queries: any;
-//   currentSchema: string;
-// }
 class MainPanel extends Component<MainProps, MainState> {
   constructor(props: MainProps) {
     super(props);
+    this.updateCurrentSchema = this.updateCurrentSchema.bind(this);
   }
   state: MainState = {
     queries: [],
     // currentSchema will change depending on which Schema Tab user selects
-    currentSchema: 'schemaB',
-    dbLists: {}
+    currentSchema: 'defaultDB',
+    dbLists: {
+      databaseList: [],
+      tableList: [],
+    }
   };
 
   componentDidMount() {
+    // ipcRenderer.on('db-lists', (event: any, listObj: any) => {
+    //   console.log('db_name', db_name);
+    //   this.setState()
+    // })
+
     // Listening for returnedData from executing Query
     // Update state with new object (containing query data, query statistics, query schema
     // inside of state.queries array
@@ -55,21 +63,29 @@ class MainPanel extends Component<MainProps, MainState> {
       console.log('state after receiving data: ', this.state);
     });
     ipcRenderer.on('db-lists', (event: any, returnedLists: any) => {
-      this.setState({dbLists: returnedLists})
-      console.log("In MainPanel, lists:", returnedLists)
-    })
+      // let newList = returnedLists.databaseList.slice(1);
+      // console.log('newList', newList);
 
+      // this.setState({ dbLists: newList })
+      console.log('returnedLists', returnedLists);
+
+      this.setState({ dbLists: returnedLists })
+    })
+  }
+
+  updateCurrentSchema(tabName) {
+    this.setState({ currentSchema: tabName });
   }
 
   render() {
-
     return (
       <div id="main-panel">
         <div id="main-left">
           <History queries={this.state.queries} currentSchema={this.state.currentSchema} />
-          <Compare queries={this.state.queries} currentSchema={this.state.currentSchema}/>
+          <Compare queries={this.state.queries} currentSchema={this.state.currentSchema} />
         </div>
-        <SchemaContainer queries={this.state.queries} currentSchema={this.state.currentSchema} />
+        <Tabs activeTab={this.state.currentSchema} tabList={this.state.dbLists.databaseList} queries={this.state.queries} onClickTabItem={this.updateCurrentSchema} />
+        {/* <SchemaContainer queries={this.state.queries} currentSchema={this.state.currentSchema} /> */}
       </div>
     );
   }

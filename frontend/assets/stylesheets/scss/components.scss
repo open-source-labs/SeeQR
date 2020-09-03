@@ -18,7 +18,7 @@
     border-radius: 3px;
     padding: 5px;
     border: none;
-    font-size: $default-text;
+    font-size: 1em;
     outline: none;
   }
   button:hover {
@@ -32,11 +32,24 @@
     border-radius: 3px;
     padding: 5px;
     border: none;
-    font-size: $default-text;
+    font-size: 0.8em;
     outline: none;
   }
   button:hover {
     background-color: $primary-color-darkmode;
+  }
+}
+#main-right {
+  button {
+    border: 0.5px $border-darkmode solid;
+    background-color: $button-darkmode;
+    border-radius: 3px;
+    border: none;
+    font-size: 0.8em;
+    outline: none;
+  }
+  button:hover {
+    background-color: $mint-green;
   }
 }
 textarea {
@@ -81,7 +94,7 @@ input {
   }
 }
 #data-table {
-  overflow: auto;
+  overflow-y: auto;
   height: 300px;
 }
 .query-data {
@@ -90,13 +103,37 @@ input {
 #codemirror {
   padding: 15px 0;
 }
-#data-table::-webkit-scrollbar-track {
-  background: $primary-color-darkmode;
-}
-#data-table::-webkit-scrollbar-thumb {
-  background-color: $border-darkmode;
-}
+
 .input-schema-button {
-  width: 120px;
+  padding: 10px;
+  width: 50px;
   margin-bottom: 30px;
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+.schema-roadmap {
+  ul {
+    list-style: none;
+  }
+  li {
+    display: inline;
+  }
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 15px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  box-shadow: inset 0px 0px 5px grey;
+  border-radius: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: $primary-color-darkmode;
+  border-radius: 15px;
 }
