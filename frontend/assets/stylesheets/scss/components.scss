@@ -21,7 +21,7 @@
     border-radius: 3px;
     padding: 5px;
     border: none;
-    font-size: $default-text;
+    font-size: 1em;
     outline: none;
   }
   button:hover {
@@ -36,14 +36,26 @@
     border-radius: 3px;
     padding: 5px;
     border: none;
-    font-size: $default-text;
+    font-size: 0.8em;
     outline: none;
   }
   button:hover {
     background-color: $primary-color-darkmode;
   }
 }
-
+#main-right {
+  button {
+    border: 0.5px $border-darkmode solid;
+    background-color: $button-darkmode;
+    border-radius: 3px;
+    border: none;
+    font-size: 0.8em;
+    outline: none;
+  }
+  button:hover {
+    background-color: $mint-green;
+  }
+}
 textarea {
   min-height: 300px;
   background-color: $border-darkmode;
@@ -59,7 +71,7 @@ textarea {
 table.scroll-box {
   border: 0.5px solid $border-darkmode;
   background: none;
-  overflow: scroll;
+  overflow-y: scroll;
   padding: 5px;
   font-size: $default-text;
   line-height: 1.5em;
@@ -90,7 +102,7 @@ input {
 }
 
 #data-table {
-  overflow-y: auto;
+  overflow: auto;
   height: 300px;
 }
 
@@ -101,10 +113,22 @@ input {
 #codemirror {
   padding: 15px 0;
 }
-
+#data-table::-webkit-scrollbar-track {
+  background: $primary-color-darkmode;
+}
+#data-table::-webkit-scrollbar-thumb {
+  background-color: $border-darkmode;
+}
 .input-schema-button {
-  width: 120px;
+  padding: 10px;
+  width: 50px;
   margin-bottom: 30px;
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+.input-schema {
+  display:block;
 }
 
 /* width */

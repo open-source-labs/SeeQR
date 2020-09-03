@@ -29,6 +29,14 @@ h4 {
   font-size: 18px;
 }
 
+.compare-box {
+  border: 0.5px solid #444c50;
+  background: none;
+  overflow: scroll;
+  padding: 5px;
+  font-size: 1em;
+  line-height: 1.5em;
+}
 #compare-panel {
   display: -webkit-box;
   display: -ms-flexbox;
@@ -40,7 +48,7 @@ h4 {
   margin-top: 2rem;
 }
 
-.compare-container{
+.compare-container {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -52,13 +60,6 @@ h4 {
   height: 200px;
 }
 
-.compare-box {
-  border: 0.5px solid #444c50;
-  background: none;
-  padding: 5px;
-  font-size: 14px;
-  line-height: 1.5em;
-}
 
 #add-query-button {
   width: 120px;
@@ -67,29 +68,29 @@ h4 {
   border-radius: 3px;
   padding: 5px;
   border: none;
-  font-size: 14px;
+  font-size: 0.8em;
   outline: none;
 }
 
 #add-query-button:hover {
-  background-color: #c6d2d5; 
+  background-color: #c6d2d5;
 }
 
 .delete-query-button {
   width: 15px;
   background-color: transparent;
-  font-size: 12px;
+  font-size: 0.8em;
   outline: none;
   color: #c6d2d5;
   box-shadow: none;
-  background-repeat:no-repeat;
+  background-repeat: no-repeat;
   border: none;
-  cursor:pointer;
+  cursor: pointer;
   overflow: hidden;
 }
 
 .delete-query-button:hover {
-  color:rgb(255, 0, 0);
+  color: rgb(255, 0, 0);
 }
 
 .queryItem {
@@ -100,19 +101,19 @@ h4 {
   align-content: center;
   padding: 10px;
   text-decoration: none;
-  font-family: "PT Mono", monospace;
+  font-family: 'PT Mono', monospace;
 }
 
 .queryItem:hover {
-  background-color:#c6d2d5;
+  background-color: #c6d2d5;
   color: #30353a;
 }
 
-.line-chart{
+.line-chart {
   margin-top: 2rem;
 }
 
-.bar-chart{
+.bar-chart {
   margin-top: 3rem;
   height: 300px;
   display: block;
@@ -144,4 +145,11 @@ h4 {
   border-width: 1px 1px 0 1px;
   font-weight: 600;
   color: $background-darkmode-darker;
+}
+.close-button {
+  top: 20px;
+  right: 30px;
+  position: fixed;
+  background-color: transparent;
+  font-weight: bold;
 }

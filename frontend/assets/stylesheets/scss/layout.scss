@@ -29,7 +29,7 @@
       border-radius: 3px;
       padding: 10px;
       border: none;
-      font-size: 16px;
+      font-size: 1em;
       font-weight: bold;
       color: $background-darkmode;
       outline: none;
@@ -106,7 +106,7 @@
 #query-panel {
   display: flex;
   flex-direction: column;
-  height: 500px;
+  height: 50%;
   z-index: 1000;
 }
 #data-panel {
