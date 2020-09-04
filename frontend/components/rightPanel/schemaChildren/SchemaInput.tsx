@@ -40,12 +40,11 @@ class SchemaInput extends Component<SchemaInputProps, state> {
   };
 
   // Updates state.queryString as user inputs query string
-  updateCode(event: any) {
+  updateCode(event: string) {
     this.setState({
       schemaEntry: event,
     });
     console.log('SCHEMA ENTRY', typeof this.state.schemaEntry);
-
   }
 
   handleSchemaSubmit(event: any) {
@@ -79,7 +78,7 @@ class SchemaInput extends Component<SchemaInputProps, state> {
           <br />
           <div className="codemirror">
             <CodeMirror
-              onChange={(e) => { this.updateCode(e) }}
+              onChange={(e) => this.updateCode(e)}
               options={options}
             />
           </div>
