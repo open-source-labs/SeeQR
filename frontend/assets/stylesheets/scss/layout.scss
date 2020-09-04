@@ -9,14 +9,10 @@
   height: 100vh;
   // overflow: hidden;
   color: $primary-color-darkmode;
-  background-image: url('../../images/logo_color.png');
-  background-repeat: no-repeat;
-  background-position-y: 25vh;
-  background-position-x: center;
   .splash-prompt {
     display: flex;
     flex-direction: column;
-    margin-top: 300px;
+    margin-top: 30px;
     text-align: center;
   }
   .splash-buttons {
@@ -29,7 +25,7 @@
       border-radius: 3px;
       padding: 10px;
       border: none;
-      font-size: 16px;
+      font-size: 1em;
       font-weight: bold;
       color: $background-darkmode;
       outline: none;
@@ -43,6 +39,11 @@
     width: 300px;
     height: auto;
     margin-bottom: 30px;
+  }
+  .logo {
+    background-image: url('../../images/logo_color.png');
+    width: 360px;
+    height: 362px;
   }
 }
 
@@ -65,9 +66,16 @@
   background-color: $background-darkmode-darker;
 }
 #history-panel {
-  height: 50%;
+  height: 250px;
   display: flex;
   flex-direction: column;
+}
+
+.history-container{
+  display: flex;
+  flex-direction: column;
+  height: 250px;
+  overflow-y: auto;
 }
 
 #compare-panel {
@@ -119,4 +127,11 @@
   display: flex;
   flex-grow: 1;
   flex-direction: column;
+}
+
+.results-container{
+  display:flex;
+  flex-direction: column;
+  height: 300px;
+  overflow-y: auto;
 }

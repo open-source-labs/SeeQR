@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
-import  { Compare }  from './leftPanel/Compare';
+import { Compare } from './leftPanel/Compare';
 import History from './leftPanel/History';
-import { SchemaContainer } from './rightPanel/SchemaContainer';
+// import { SchemaContainer } from './rightPanel/SchemaContainer';
+import { Tabs } from './rightPanel/Tabs';
+
 const { ipcRenderer } = window.require('electron');
 type MainState = {
   // queries: {
@@ -15,20 +17,21 @@ type MainState = {
   // queryLabel: string;
   dbLists: any;
 };
+
 type MainProps = {};
-// interface MainState {
-//   queries: any;
-//   currentSchema: string;
-// }
 class MainPanel extends Component<MainProps, MainState> {
   constructor(props: MainProps) {
     super(props);
+    this.onClickTabItem = this.onClickTabItem.bind(this);
   }
   state: MainState = {
     queries: [],
     // currentSchema will change depending on which Schema Tab user selects
-    currentSchema: 'schemaB',
-    dbLists: {}
+    currentSchema: 'defaultDB',
+    dbLists: {
+      databaseList: ['defaultDB'],
+      tableList: [],
+    }
   };
 
   componentDidMount() {
@@ -52,24 +55,29 @@ class MainPanel extends Component<MainProps, MainState> {
       // push new query object into copy of queries array
       queries.push(newQuery)
       this.setState({ queries })
-      console.log('state after receiving data: ', this.state);
     });
-    ipcRenderer.on('db-lists', (event: any, returnedLists: any) => {
-      this.setState({dbLists: returnedLists})
-      console.log("In MainPanel, lists:", returnedLists)
-    })
 
+    ipcRenderer.on('db-lists', (event: any, returnedLists: any) => {
+      this.setState({ dbLists: returnedLists })
+      console.log('DB LIST CHECK !', this.state.dbLists);
+    })
+  }
+
+  onClickTabItem(tabName) {
+    ipcRenderer.send('change-db', tabName);
+    ipcRenderer.on('return-change-db', (event: any, db_name: string) => {
+      this.setState({ currentSchema: tabName });
+    });
   }
 
   render() {
-
     return (
       <div id="main-panel">
         <div id="main-left">
           <History queries={this.state.queries} currentSchema={this.state.currentSchema} />
-          <Compare queries={this.state.queries} currentSchema={this.state.currentSchema}/>
+          <Compare queries={this.state.queries} currentSchema={this.state.currentSchema} />
         </div>
-        <SchemaContainer queries={this.state.queries} currentSchema={this.state.currentSchema} />
+        <Tabs currentSchema={this.state.currentSchema} tabList={this.state.dbLists.databaseList} queries={this.state.queries} onClickTabItem={this.onClickTabItem} />
       </div>
     );
   }

@@ -2,9 +2,12 @@ import React, { Component, MouseEvent, useState } from 'react';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown';
 const { ipcRenderer } = window.require('electron');
+import { Bar, defaults } from "react-chartjs-2";
+
+defaults.global.defaultFontColor = 'rgb(198,210,213)';
 
 type CompareProps = {
-    queries: {
+  queries: {
     queryLabel: string;
     queryStatistics: any;
     querySchema: string;
@@ -13,29 +16,30 @@ type CompareProps = {
 };
 
 export const Compare = (props: CompareProps) => {
-  let initial: any = {...props, compareList: [] };
-  const [ queryInfo, setCompare ] = useState(initial);
+  let initial: any = { ...props, compareList: [] };
+
+  const [queryInfo, setCompare] = useState(initial);
   const addCompareQuery = (event) => {
     let compareList = queryInfo.compareList;
     props.queries.forEach((query) => {
-      if (query.queryLabel === event.target.text){
+      if (query.queryLabel === event.target.text) {
         compareList.push(query);
       }
     });
-    setCompare({...queryInfo, compareList});
+    setCompare({ ...queryInfo, compareList });
   }
 
   const deleteCompareQuery = (event) => {
     let compareList: any = queryInfo.compareList.filter(
       (query) => query.queryLabel !== event.target.id);
-      setCompare({...queryInfo, compareList});
-    }
+    setCompare({ ...queryInfo, compareList });
+  }
 
-    const dropDownList = () => {
-      return props.queries.map((query, index) => <Dropdown.Item id={`query-item${index}`} className="queryItem" onClick={addCompareQuery}>{query.queryLabel}</Dropdown.Item>);
-    };
+  const dropDownList = () => {
+    return props.queries.map((query, index) => <Dropdown.Item key={index} className="queryItem" onClick={addCompareQuery}>{query.queryLabel}</Dropdown.Item>);
+  };
 
-    const renderCompare = () => {
+  const renderCompare = () => {
     return queryInfo.compareList.map((query, index) => {
       const { queryString, queryData, queryStatistics, querySchema, queryLabel } = query;
       const { ['QUERY PLAN']: queryPlan } = queryStatistics[0];
@@ -64,7 +68,7 @@ export const Compare = (props: CompareProps) => {
           {/* <td id='planning-time'>{planningTime}</td>
               <td id='execution-time'>{executionTime}</td>
               <td id='time-fl'>{actualStartupTime}</td> */}
-              <td id='time-al'>{actualTotalTime}</td>
+          <td id='time-al'>{actualTotalTime}</td>
           {/* <td id="loops">{loops}</td> */}
           <button id={queryLabel} className="delete-query-button" onClick={deleteCompareQuery}>X</button>
         </tr>
@@ -72,12 +76,30 @@ export const Compare = (props: CompareProps) => {
     });
   };
 
+  const { compareList } = queryInfo;
+  const labelData = () => compareList.map((query) => query.queryLabel);
+  const runtimeData = () => compareList.map(
+    (query) => query.queryStatistics[0]["QUERY PLAN"][0]["Execution Time"] + query.queryStatistics[0]["QUERY PLAN"][0]["Planning Time"]);
+  const data = {
+    labels: labelData(),
+    datasets: [
+      {
+        label: 'Runtime',
+        backgroundColor: 'rgb(108, 187, 169)',
+        borderColor: 'rgba(247,247,247,247)',
+        borderWidth: 2,
+        data: runtimeData(),
+      }
+    ]
+  };
+
   return (
     <div id="compare-panel">
-      <h3>Compare</h3>
-        <DropdownButton id="add-query-button" title="Add Query Data">
-          {dropDownList()}
-        </DropdownButton>
+      <h3>Comparisons</h3>
+      <DropdownButton id="add-query-button" title="Add Query Data &#9207;">
+        {dropDownList()}
+      </DropdownButton>
+      <div className="compare-container">
         <table className="compare-box">
           <tbody>
             <tr className="top-row">
@@ -94,6 +116,23 @@ export const Compare = (props: CompareProps) => {
             {renderCompare()}
           </tbody>
         </table>
+      </div>
+      <div className="bar-chart">
+        <Bar
+          data={data}
+          options={{
+            title: {
+              display: true,
+              text: 'QUERY LABEL VS RUNTIME (ms)',
+              fontSize: 16
+            },
+            legend: {
+              display: false,
+              position: 'right'
+            }
+          }}
+        />
+      </div>
     </div>
   );
 };

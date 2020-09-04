@@ -1,16 +1,19 @@
 @import './variables.scss';
+
 #query-window {
   .text-field {
     width: 100%;
     height: 200px;
   }
 }
+
 .label-field,
 .schema-label {
   font-family: $font-input;
   color: $mint-green;
   margin-left: 8px;
 }
+
 #splash-menu {
   button {
     border: 0.5px $border-darkmode solid;
@@ -18,13 +21,14 @@
     border-radius: 3px;
     padding: 5px;
     border: none;
-    font-size: $default-text;
+    font-size: 1em;
     outline: none;
   }
   button:hover {
     background-color: $primary-color-darkmode;
   }
 }
+
 #query-panel {
   button {
     border: 0.5px $border-darkmode solid;
@@ -32,11 +36,24 @@
     border-radius: 3px;
     padding: 5px;
     border: none;
-    font-size: $default-text;
+    font-size: 0.8em;
     outline: none;
   }
   button:hover {
     background-color: $primary-color-darkmode;
+  }
+}
+#main-right {
+  button {
+    border: 0.5px $border-darkmode solid;
+    background-color: $button-darkmode;
+    border-radius: 3px;
+    border: none;
+    // font-size: 0.8em;
+    outline: none;
+  }
+  button:hover {
+    background-color: $mint-green;
   }
 }
 textarea {
@@ -50,14 +67,16 @@ textarea {
   color: $mint-green;
   font-family: $font-input;
 }
+
 table.scroll-box {
   border: 0.5px solid $border-darkmode;
   background: none;
-  overflow: scroll;
+  overflow-y: scroll;
   padding: 5px;
   font-size: $default-text;
   line-height: 1.5em;
 }
+
 tbody {
   .top-row {
     border-bottom: 1px solid $border-darkmode;
@@ -66,6 +85,7 @@ tbody {
     }
   }
 }
+
 input {
   border-top-style: hidden;
   border-right-style: hidden;
@@ -80,23 +100,47 @@ input {
     outline: none;
   }
 }
+
 #data-table {
   overflow: auto;
   height: 300px;
 }
+
 .query-data {
   width: 1000px;
 }
+
 #codemirror {
   padding: 15px 0;
 }
+
 #data-table::-webkit-scrollbar-track {
   background: $primary-color-darkmode;
 }
+
 #data-table::-webkit-scrollbar-thumb {
   background-color: $border-darkmode;
 }
-.input-schema-button {
-  width: 120px;
-  margin-bottom: 30px;
+
+
+
+.input-schema {
+  display:block;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 15px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  box-shadow: inset 0px 0px 5px grey;
+  border-radius: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: $primary-color-darkmode;
+  border-radius: 15px;
 }

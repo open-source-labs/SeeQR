@@ -17,11 +17,9 @@ export class Splash extends Component<SplashProps> {
   }
 
   render() {
-    const imgPath = '../../frontend/assets/images/logo_color.png';
-    console.log(imgPath);
     return (
       <div id="splash-page">
-        {/* <img src={imgPath} /> */}
+        <div className="logo"></div>
         <div className="splash-prompt">
           <h4>Welcome!</h4>
           <h4>Import database in .sql or .tar?</h4>

@@ -24,14 +24,10 @@ var CodeMirror = require('react-codemirror');
  *********************** TYPESCRIPT: TYPES ***********************
  ************************************************************/
 
-type ClickEvent = React.MouseEvent<HTMLElement>; // assign type ClickEvent to handleQuerySubmit & debug
-type InputChangeEvent = React.ChangeEvent<HTMLInputElement>;
-
 type QueryProps = { currentSchema: string };
 
 type state = {
   queryString: string;
-  currentSchema: string;
   queryLabel: string;
   show: boolean;
 };
@@ -41,7 +37,7 @@ class Query extends Component<QueryProps, state> {
     super(props);
     this.handleQuerySubmit = this.handleQuerySubmit.bind(this);
     // this.handleQueryEntry = this.handleQueryEntry.bind(this);
-    this.showModal = this.showModal.bind(this);
+    // this.showModal = this.showModal.bind(this);
     // this.handleQueryPrevious = this.handleQueryPrevious.bind(this);
     this.updateCode = this.updateCode.bind(this);
   }
@@ -49,14 +45,8 @@ class Query extends Component<QueryProps, state> {
   state: state = {
     queryString: '',
     queryLabel: '',
-    currentSchema: 'Schema A',
     show: false,
   };
-
-  // Updates state.queryString as user inputs query string
-  // handleQueryEntry(event: InputChangeEvent) {
-  //   this.setState({ queryString: event.target.value, currentSchema: event.target.name });
-  // }
 
   // Updates state.queryString as user inputs query label
   handleLabelEntry(event: any) {
@@ -76,13 +66,11 @@ class Query extends Component<QueryProps, state> {
     // if input fields for query label or query string are empty, then
     // send alert to input both fields
     if (!this.state.queryLabel || !this.state.queryString) {
-      // alert('Please enter a Label and a Query.')
       const noInputAlert = dialog.showErrorBox('Please enter a Label and a Query.', '');
-      console.log(noInputAlert);
     } else {
       const queryAndSchema = {
         queryString: this.state.queryString,
-        queryCurrentSchema: this.state.currentSchema,
+        queryCurrentSchema: this.props.currentSchema,
         queryLabel: this.state.queryLabel,
       };
       ipcRenderer.send('execute-query', queryAndSchema);
@@ -90,9 +78,9 @@ class Query extends Component<QueryProps, state> {
     }
   }
 
-  showModal = (event: any) => {
-    this.setState({ show: !this.state.show });
-  };
+  handleGenerateData(event: any) {
+    ipcRenderer.send('generate-data')
+  }
 
   render() {
     // Codemirror module configuration options
@@ -105,15 +93,6 @@ class Query extends Component<QueryProps, state> {
     return (
       <div id="query-panel">
         <h3>Query</h3>
-        <button
-          className="input-schema-button"
-          onClick={(e) => {
-            this.showModal(e);
-          }}
-        >
-          Input Schema
-        </button>
-        <SchemaModal show={this.state.show} onClose={this.showModal} />
         <form onSubmit={this.handleQuerySubmit}>
           <label>Query Label:* </label>
           <input
@@ -126,9 +105,8 @@ class Query extends Component<QueryProps, state> {
           <br />
           <label>Query:*</label>
           {/* <input type="select" onClick={this.handleQueryPrevious}/> */}
-          <div id="codemirror">
+          <div className="codemirror">
             <CodeMirror
-              value={this.state.queryString}
               onChange={this.updateCode}
               options={options}
             />
@@ -138,6 +116,7 @@ class Query extends Component<QueryProps, state> {
           <br />
           <p>*required</p>
         </form>
+        <button id="generate-data-button" onClick={this.handleGenerateData}>Generate Dummy Data</button>
       </div>
     );
   }

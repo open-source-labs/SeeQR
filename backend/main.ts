@@ -9,6 +9,10 @@ const { exec } = require('child_process');
 const appMenu = require('./mainMenu');
 const db = require('./modal');
 const path = require('path');
+const createInsertQuery = require('./dummy_db/dummy_handler')
+
+
+
 /************************************************************
  ********* CREATE & CLOSE WINDOW UPON INITIALIZATION *********
  ************************************************************/
@@ -28,8 +32,8 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1800,
     height: 1400,
-    minWidth: 900,
-    minHeight: 720,
+    minWidth: 1500,
+    minHeight: 1000,
     title: 'SeeQR',
     show: false,
     webPreferences: { nodeIntegration: true, enableRemoteModule: true },
@@ -137,6 +141,9 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
       console.log(`${stdout}`);
       if (nextStep) nextStep();
     });
+
+    // Send schema name back to frontend, so frontend can load tab name 
+    event.sender.send('return-schema-name', db_name)
   };
 
   // SEQUENCE OF EXECUTING COMMANDS
@@ -147,28 +154,21 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
     let runCmd: string = '';
     if (extension === '.sql') runCmd = runSQL;
     else if (extension === '.tar') runCmd = runTAR;
-    addDB(runCmd, () => console.log(`Created Database: ${db_name}`));
-    redirectModal();
+    addDB(runCmd, redirectModal);
   };
-
   // Step 2 : Import database file from file path into docker container
   const step2 = () => addDB(importFile, step3);
-
   // Changes the pg URI to look to the newly created database and queries all the tables in that database and sends it to frontend.
-  const redirectModal = () => {
-    // Redirects modal towards new imported database
-    db.changeDB(db_name);
-    console.log(`Connected to database ${db_name}`);
+  async function redirectModal() {
+    // Redirects modal towards new imported database, used before we added tabs. Not so much needed now
+    // db.changeDB(db_name);
+    // console.log(`Connected to database ${db_name}`);
 
-    // Need a setTimeout because query would run before any data gets uploaded to the database from the runTAR or runSQL commands
-    setTimeout(async () => {
-      let listObj;
-      listObj = await db.getLists();
-      console.log('Temp log until channel is made', listObj);
-      event.sender.send('db-lists', listObj);
-    }, 1000);
+    let listObj;
+    listObj = await db.getLists();
+    console.log('Temp log until channel is made', listObj);
+    event.sender.send('db-lists', listObj);
   };
-
   // Step 1 : Create empty db
   if (extension === '.sql' || extension === '.tar') addDB(createDB, step2);
   else console.log('INVAILD FILE TYPE: Please use .tar or .sql extensions.');
@@ -176,7 +176,7 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
 /* ---END OF IMPORT DATABASE FUNCTION--- */
 
 // Listen for user clicking skip button
-ipcMain.on('skip-file-upload', (event) => {});
+ipcMain.on('skip-file-upload', (event) => { });
 
 interface QueryType {
   queryCurrentSchema: string;
@@ -185,6 +185,12 @@ interface QueryType {
   queryData: string;
   queryStatistics: string;
 }
+
+//Listens for database changes sent from the renderer
+ipcMain.on('change-db', (event, db_name) => {
+  db.changeDB(db_name);
+  event.sender.send('return-change-db', db_name);
+});
 
 // Listen for queries being sent from renderer
 ipcMain.on('execute-query', (event, data: QueryType) => {
@@ -203,6 +209,7 @@ ipcMain.on('execute-query', (event, data: QueryType) => {
     lists: {},
   };
 
+
   // Run select * from actors;
   db.query(queryString)
     .then((queryData) => {
@@ -216,7 +223,9 @@ ipcMain.on('execute-query', (event, data: QueryType) => {
         async function getListAsync() {
           let listObj;
           listObj = await db.getLists();
+          console.log("Should be my lists", listObj)
           frontendData.lists = listObj;
+          event.sender.send('db-lists', listObj)
           event.sender.send('return-execute-query', frontendData);
         }
         getListAsync();
@@ -239,6 +248,7 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
   db_name = data.schemaName;
   let filePath = data.schemaFilePath;
   let schemaEntry = data.schemaEntry.trim();
+  console.log("schema entry", schemaEntry)
 
   console.log('filePath', filePath);
   // command strings
@@ -278,27 +288,37 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
     if (extension === '.sql') runCmd = runSQL;
     else if (extension === '.tar') runCmd = runTAR;
     else runCmd = runScript;
-    addDB(runCmd, () => console.log(`Created Database: ${db_name}`));
-    // Redirects modal towards new imported database
-    redirectModal();
+    addDB(runCmd, redirectModal);
   };
 
   // Step 2 : Import database file from file path into docker container
   const step2 = () => addDB(importFile, step3);
 
-  const redirectModal = () => {
-    // Redirects modal towards new imported database
-    db.changeDB(db_name);
-    console.log(`Connected to database ${db_name}`);
+  // Changes the pg URI to look to the newly created database and queries all the tables in that database and sends it to frontend.
+  async function redirectModal() {
+    // Redirects modal towards new imported database, used before we added tabs. Not so much needed now
+    // db.changeDB(db_name);
+    // console.log(`Connected to database ${db_name}`);
 
-    // Need a setTimeout because query would run before any data gets uploaded to the database from the runTAR or runSQL commands
-    setTimeout(async () => {
-      let listObj;
-      listObj = await db.getLists();
-      console.log('Temp log until channel is made', listObj);
-      event.sender.send('db-lists', listObj);
-    }, 1000);
+    let listObj;
+    listObj = await db.getLists();
+    event.sender.send('db-lists', listObj);
   };
+
+
+  // const redirectModal = () => {
+  //   // Redirects modal towards new imported database
+  //   db.changeDB(db_name);
+  //   console.log(`Connected to database ${db_name}`);
+
+  //   // Need a setTimeout because query would run before any data gets uploaded to the database from the runTAR or runSQL commands
+  //   setTimeout(async () => {
+  //     let listObj;
+  //     listObj = await db.getLists();
+  //     console.log('Temp log until channel is made', listObj);
+  //     event.sender.send('db-lists', listObj);
+  //   }, 1000);
+  // };
 
   // Step 1 : Create empty db
   if (extension === '.sql' || extension === '.tar') {
@@ -309,4 +329,93 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
   // if data is inputted as text
   else addDB(createDB, step3);
   // else console.log('INVAILD FILE TYPE: Please use .tar or .sql extensions.');
+});
+
+
+// Temporary Hardcode not ideal
+const fromApp = {
+  schema: 'public', //used to be schema1
+  table: 'table1',
+  scale: 40,
+  columns: [
+    {
+      name: '_id',
+      dataCategory: 'unique', // random, repeating, unique, combo, foreign
+      dataType: 'num',
+      data: {
+        serial: true,
+      }
+    },
+    {
+      name: 'username',
+      dataCategory: 'unique', // random, repeating, unique, combo, foreign
+      dataType: 'str',
+      data: {
+        length: [10, 15],
+        inclAlphaLow: true,
+        inclAlphaUp: true,
+        inclNum: true,
+        inclSpaces: true,
+        inclSpecChar: true,
+        include: ["include", "these", "aReplace"],
+      },
+    },
+    {
+      name: 'first_name',
+      dataCategory: 'random', // random, repeating, unique, combo, foreign
+      dataType: 'Name - firstName',
+      data: {
+      }
+    },
+    {
+      name: 'company_name',
+      dataCategory: 'random',
+      dataType: 'Company - companyName',
+      data: {
+      }
+    }
+  ]
+};
+
+ipcMain.on('generate-data', (event, paramObj: any) => {
+  // Generating Dummy Data from parameters sent from the frontend
+  (function dummyFunc(paramsObj) {
+    // Need addDB in this context
+    const addDB = (str: string, nextStep: any) => {
+      exec(str, (error, stdout, stderr) => {
+        if (error) {
+          console.log(`error: ${error.message}`);
+          return;
+        }
+        if (stderr) {
+          console.log(`stderr: ${stderr}`);
+          return;
+        }
+        // console.log(`stdout: ${stdout}`);
+        console.log(`${stdout}`);
+        if (nextStep) nextStep();
+      });
+    };
+    const db_name: string = 'defaultDB';
+    const schemaStr: string = `CREATE TABLE "table1"(
+                                  "_id" integer NOT NULL,
+                                  "username" VARCHAR(255) NOT NULL,
+                                  "first_name" VARCHAR(255) NOT NULL,
+                                  "company_name" VARCHAR(255) NOT NULL,
+                                  CONSTRAINT "tabl1_pk" PRIMARY KEY ("_id")
+                            ) WITH (
+                              OIDS=FALSE
+                            );`
+    const insertArray: Array<string> = createInsertQuery(paramsObj);
+    console.log(insertArray);
+    db.query(schemaStr)
+      .then((returnedData) => {
+        for (let i = 0; i < insertArray.length; ++i) {
+          console.log(i)
+          let currentInsert = insertArray[i];
+          const dummyScript: string = `docker exec postgres-1 psql -U postgres -d ${db_name} -c "${currentInsert}"`;
+          addDB(dummyScript, () => console.log(`Dummied Database: ${db_name}`))
+        }
+      })
+  })(fromApp);
 });
