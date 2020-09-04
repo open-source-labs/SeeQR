@@ -7,7 +7,6 @@ import SchemaInput from './SchemaInput';
 import GenerateData from './GenerateData';
 
 type ClickEvent = React.MouseEvent<HTMLElement>;
-type InputChangeEvent = React.ChangeEvent<HTMLInputElement>;
 
 type SchemaModalProps = {
   show: boolean;
@@ -82,12 +81,6 @@ class SchemaModal extends Component<SchemaModalProps, state> {
   // when schema script is inserted, file path is cleared
   // set dialog to warn user
   handleSchemaEntry(event: any) {
-    // fs.writeFile(this.state.schemaName + '.sql', event.target.value, (err) => {
-    //   if(err){
-    //     console.log('error: ', err)
-    //   }
-    //   console.log('Successfully saved script as sql file')
-    // })
     this.setState({ schemaEntry: event.target.value });
     this.setState({ schemaFilePath: '' });
     console.log('schema entry: ', this.state.schemaEntry);
@@ -114,9 +107,6 @@ class SchemaModal extends Component<SchemaModalProps, state> {
     if (!this.props.show) {
       return null;
     }
-    // if (this.state.redirect) {
-    //   return <Redirect push to="/SchemaInput"/>
-    // }
 
     return (
       <div className="modal" id="modal">
@@ -163,7 +153,7 @@ class SchemaModal extends Component<SchemaModalProps, state> {
 // };
 export default SchemaModal;
 
-/* 
+/*
 <Route exact path="/" component={SchemaModal}/>
             <Route exact path="/SchemaInput" render={(props:any) => <SchemaInput {...props}/>}/>
             <Route exact path="/GenerateData" component={GenerateData} />
@@ -199,5 +189,5 @@ export default SchemaModal;
                 </button>
               </div>
             </div>
-          </form> 
+          </form>
           <Route exact path="/SchemaInput" render={(props:any) => <SchemaInput {...props}/>}/>*/

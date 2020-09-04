@@ -45,7 +45,6 @@
   background-color: #596368;
   border-radius: 3px;
   border: none;
-  font-size: 0.8em;
   outline: none;
 }
 
@@ -119,14 +118,6 @@ input *:focus {
   background-color: #444c50;
 }
 
-.input-schema-button {
-  padding: 10px;
-  width: 50px;
-  margin-bottom: 30px;
-  font-size: 1.2em;
-  font-weight: bold;
-}
-
 .input-schema {
   display: block;
 }
@@ -138,8 +129,7 @@ input *:focus {
 
 /* Track */
 ::-webkit-scrollbar-track {
-  -webkit-box-shadow: inset 0px 0px 5px grey;
-          box-shadow: inset 0px 0px 5px grey;
+  box-shadow: inset 0px 0px 5px grey;
   border-radius: 10px;
 }
 

@@ -24,9 +24,6 @@ var CodeMirror = require('react-codemirror');
  *********************** TYPESCRIPT: TYPES ***********************
  ************************************************************/
 
-type ClickEvent = React.MouseEvent<HTMLElement>; // assign type ClickEvent to handleQuerySubmit & debug
-type InputChangeEvent = React.ChangeEvent<HTMLInputElement>;
-
 type QueryProps = { currentSchema: string };
 
 type state = {
@@ -50,11 +47,6 @@ class Query extends Component<QueryProps, state> {
     queryLabel: '',
     show: false,
   };
-
-  // Updates state.queryString as user inputs query string
-  // handleQueryEntry(event: InputChangeEvent) {
-  //   this.setState({ queryString: event.target.value, currentSchema: event.target.name });
-  // }
 
   // Updates state.queryString as user inputs query label
   handleLabelEntry(event: any) {
@@ -86,9 +78,9 @@ class Query extends Component<QueryProps, state> {
     }
   }
 
-  // showModal = (event: any) => {
-  //   this.setState({ show: !this.state.show });
-  // };
+  handleGenerateData(event: any) {
+    ipcRenderer.send('generate-data')
+  }
 
   render() {
     // Codemirror module configuration options
@@ -113,9 +105,8 @@ class Query extends Component<QueryProps, state> {
           <br />
           <label>Query:*</label>
           {/* <input type="select" onClick={this.handleQueryPrevious}/> */}
-          <div id="codemirror">
+          <div className="codemirror">
             <CodeMirror
-              value={this.state.queryString}
               onChange={this.updateCode}
               options={options}
             />
@@ -125,6 +116,7 @@ class Query extends Component<QueryProps, state> {
           <br />
           <p>*required</p>
         </form>
+        <button id="generate-data-button" onClick={this.handleGenerateData}>Generate Dummy Data</button>
       </div>
     );
   }
