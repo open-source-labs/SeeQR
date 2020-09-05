@@ -43,7 +43,7 @@ export class Table extends Component<TableProps> {
 
     var items = queries[queries.length - 1].queryData;
     // console.log('items', items); // [ {}, {}, {} ]
-    
+
     var keys = this.getKeys(); // actor_id, firstName, lastName, lastUpdated
     return items.map((row, index) => {
       return <tr key={index}><RenderRow key={index} data={row} keys={keys} /></tr>
@@ -77,12 +77,9 @@ type RenderRowProps = {
 // Returns each cell within table
 const RenderRow = (props: RenderRowProps) => {
   const { data, keys } = props;
-  // console.log('data', data);
-  
-  
   return keys.map((header, index) => {
     // turn all values in data object to string or number
-    data[header] = JSON.stringify(data[header])
+    data[header] = data[header].toString()
     return <td key={index}>{data[header]}</td>
   })
 }

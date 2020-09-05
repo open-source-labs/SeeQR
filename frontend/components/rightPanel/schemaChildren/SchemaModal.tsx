@@ -147,47 +147,4 @@ class SchemaModal extends Component<SchemaModalProps, state> {
   }
 }
 
-// SchemaModal.propTypes = {
-//   onClose: PropTypes.func.isRequired,
-//   show: PropTypes.bool.isRequired
-// };
 export default SchemaModal;
-
-/*
-<Route exact path="/" component={SchemaModal}/>
-            <Route exact path="/SchemaInput" render={(props:any) => <SchemaInput {...props}/>}/>
-            <Route exact path="/GenerateData" component={GenerateData} />
-<div className="content">{this.props.children}</div>
-          <h3>Load or input schema</h3>
-          <form onSubmit={this.handleSchemaSubmit}>
-            <p>First...</p>
-            <input
-              className="schema-label"
-              type="text"
-              placeholder="Input schema label..."
-              onChange={(e) => this.handleSchemaName(e)}
-            />
-            <p>Schema label: {this.state.schemaName}</p>
-            <br />
-            <p>Then...</p>
-            <button onClick={this.handleSchemaFilePath}>Load Schema</button>
-            <p>{this.state.schemaFilePath}</p>
-            <br />
-            <p>Or...</p>
-            <input
-              className="schema-text-field"
-              type="text"
-              placeholder="Input Schema Here..."
-              onChange={(e) => this.handleSchemaEntry(e)}
-            />
-            /* <input type="select" onClick={this.handleQueryPrevious}/> */
-/*<div id="modal-buttons">
-              <button>submit</button>
-              <div className="actions">
-                <button className="toggle-button" onClick={this.onClose}>
-                  close
-                </button>
-              </div>
-            </div>
-          </form>
-          <Route exact path="/SchemaInput" render={(props:any) => <SchemaInput {...props}/>}/>*/

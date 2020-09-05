@@ -39,7 +39,7 @@ class MainPanel extends Component<MainProps, MainState> {
     // Update state with new object (containing query data, query statistics, query schema
     // inside of state.queries array
     ipcRenderer.on('return-execute-query', (event: any, returnedData: any) => {
-      console.log('returnedData', returnedData);
+      console.log('RETURNED DATA IN MAIN PANEL', returnedData);
       // destructure from returnedData from backend
       const { queryString, queryData, queryStatistics, queryCurrentSchema, queryLabel } = returnedData;
       // create new query object with returnedData

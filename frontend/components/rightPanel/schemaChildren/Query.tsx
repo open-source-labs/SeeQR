@@ -78,9 +78,9 @@ class Query extends Component<QueryProps, state> {
     }
   }
 
-  handleGenerateData(event: any) {
-    ipcRenderer.send('generate-data')
-  }
+  // handleGenerateData(event: any) {
+  //   ipcRenderer.send('generate-data')
+  // }
 
   render() {
     // Codemirror module configuration options
@@ -116,7 +116,7 @@ class Query extends Component<QueryProps, state> {
           <br />
           <p>*required</p>
         </form>
-        <button id="generate-data-button" onClick={this.handleGenerateData}>Generate Dummy Data</button>
+        {/* <button id="generate-data-button" onClick={this.handleGenerateData}>Generate Dummy Data</button> */}
       </div>
     );
   }
