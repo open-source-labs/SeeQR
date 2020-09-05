@@ -35,10 +35,7 @@ class MainPanel extends Component<MainProps, MainState> {
   };
 
   componentDidMount() {
-    console.log('this.state.dbLists.databaList', this.state.dbLists.databaseList);
-
     ipcRenderer.send('return-db-list');
-    console.log('databaslise AFTER ipcRenderer.send', this.state.dbLists.databaseList);
 
     // Listening for returnedData from executing Query
     // Update state with new object (containing query data, query statistics, query schema

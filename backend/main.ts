@@ -4,7 +4,6 @@
 import { app, BrowserWindow, ipcMain, Menu } from 'electron';
 import { join } from 'path';
 import { format } from 'url';
-import { Children } from 'react';
 const { exec } = require('child_process');
 const appMenu = require('./mainMenu');
 const db = require('./modal');
@@ -14,12 +13,18 @@ const path = require('path');
 // Global variable
 let listObj;
 
+//
+const sendLists = () => {
+  db.getLists().then(data => {
+    mainWindow.webContents.send('db-lists', data)
+  })
+}
+
 // // For iteration groups. FYI you can also do it like this if you want to flex.
 // ipcMain.on('return-db-list', (event, args) => {
 //   (async function theFlex() {
-//     let listObj2 = await db.getLists()
-//     console.log('listObj2', listObj2);
-//     event.sender.send('db-lists', listObj2);
+//     listObj = await db.getLists()
+//     event.sender.send('db-lists', listObj);
 //   })();
 // });
 
@@ -69,7 +74,9 @@ function createWindow() {
       slashes: true,
     });
     mainWindow.webContents.openDevTools();
-    // splashWindow.webContents.openDevTools();
+
+    sendLists();
+
     Menu.setApplicationMenu(mainMenu);
   } else {
     // In production mode, load the bundled version of index.html inside the dist folder.
@@ -78,13 +85,17 @@ function createWindow() {
       pathname: join(__dirname, '../dist', 'index.html'),
       slashes: true,
     });
+
+    // db.getLists().then(data => {
+    //   mainWindow.webContents.send('db-lists', data)
+    // })
+    sendLists();
   }
 
   mainWindow.loadURL(indexPath);
 
   // Don't show until we are ready and loaded
-  mainWindow.once('ready-to-show', () => {
-    //ipcMain.send('open-splash', (event:any, {openSplash: boolean})=>{{openSplash: true}})
+  mainWindow.once('ready-to-show', (event) => {
     mainWindow.show();
   });
 
