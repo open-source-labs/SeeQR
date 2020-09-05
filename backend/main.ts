@@ -11,6 +11,22 @@ const db = require('./modal');
 const path = require('path');
 // const createInsertQuery = require('./dummy_db/dummy_handler')
 
+// Global variable
+let listObj;
+
+// // For iteration groups. FYI you can also do it like this if you want to flex.
+// ipcMain.on('return-db-list', (event, args) => {
+//   (async function theFlex() {
+//     let listObj2 = await db.getLists()
+//     console.log('listObj2', listObj2);
+//     event.sender.send('db-lists', listObj2);
+//   })();
+// });
+
+// OR you can flex like this. Choose your flex.
+ipcMain.on('return-db-list', (event, args) => {
+  db.getLists().then(data => event.sender.send('db-lists', data));
+});
 
 
 /************************************************************
@@ -163,7 +179,7 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
     // db.changeDB(db_name);
     // console.log(`Connected to database ${db_name}`);
 
-    let listObj;
+    // let listObj;
     listObj = await db.getLists();
     console.log('Temp log until channel is made', listObj);
     event.sender.send('db-lists', listObj);
@@ -220,7 +236,7 @@ ipcMain.on('execute-query', (event, data: QueryType) => {
         frontendData.queryStatistics = queryStats.rows;
 
         async function getListAsync() {
-          let listObj;
+          // let listObj;
           listObj = await db.getLists();
           frontendData.lists = listObj;
           event.sender.send('db-lists', listObj)
@@ -244,7 +260,9 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
   let db_name: string;
   db_name = data.schemaName;
   let filePath = data.schemaFilePath;
-  let schemaEntry = data.schemaEntry.trim();
+  // Using RegEx to remove line breaks to ensure data.schemaEntry is being run as one large string
+  // so that schemaEntry string will work for Windows computers.
+  let schemaEntry = data.schemaEntry.replace(/[\n\r]/g, "").trim();
 
   console.log('filePath', filePath);
   // command strings
@@ -296,7 +314,7 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
     // db.changeDB(db_name);
     // console.log(`Connected to database ${db_name}`);
 
-    let listObj;
+    // let listObj;
     listObj = await db.getLists();
     event.sender.send('db-lists', listObj);
   };

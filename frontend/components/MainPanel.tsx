@@ -35,6 +35,11 @@ class MainPanel extends Component<MainProps, MainState> {
   };
 
   componentDidMount() {
+    console.log('this.state.dbLists.databaList', this.state.dbLists.databaseList);
+
+    ipcRenderer.send('return-db-list');
+    console.log('databaslise AFTER ipcRenderer.send', this.state.dbLists.databaseList);
+
     // Listening for returnedData from executing Query
     // Update state with new object (containing query data, query statistics, query schema
     // inside of state.queries array
@@ -59,17 +64,11 @@ class MainPanel extends Component<MainProps, MainState> {
 
     ipcRenderer.on('db-lists', (event: any, returnedLists: any) => {
       this.setState({ dbLists: returnedLists })
-      console.log('DB LIST CHECK !', this.state.dbLists);
-      console.log('HERE', this.state.dbLists.databaseList[this.state.dbLists.databaseList.length - 1]);
-
       this.onClickTabItem(this.state.dbLists.databaseList[this.state.dbLists.databaseList.length - 1])
-      // this.onClickTabItem(this.state.dbLists.returnedLists[this.state.dbLists.returnedLists.length - 1])
     })
   }
 
   onClickTabItem(tabName) {
-    console.log('INSIDE ONCLICK TAB ITEM');
-
     ipcRenderer.send('change-db', tabName);
     ipcRenderer.on('return-change-db', (event: any, db_name: string) => {
       this.setState({ currentSchema: tabName });
@@ -88,4 +87,5 @@ class MainPanel extends Component<MainProps, MainState> {
     );
   }
 }
+
 export default MainPanel;
