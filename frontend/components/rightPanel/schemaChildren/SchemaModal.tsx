@@ -39,6 +39,16 @@ class SchemaModal extends Component<SchemaModalProps, state> {
     redirect: false,
   };
 
+  componentDidMount() {
+    // After schema is successfully sent to backend, backend spins up new database with inputted schemaName.
+    // It will send the frontend an updated dbLists that is an updated list of all the tabs (which is the same
+    // thing as all the databases). We open a channel to listen for it here inside of componendDidMount, then
+    // we invoke onClose to close schemaModal ONLY after we are sure that backend has created that channel.
+    ipcRenderer.on('db-lists', (event: any, returnedLists: any) => {
+      this.onClose(event);
+    })
+  }
+
   // Set schema name
   handleSchemaName(event: any) {
     // convert input label name to lowercase only with no spacing for db naming convention
@@ -130,7 +140,6 @@ class SchemaModal extends Component<SchemaModalProps, state> {
           <button className="close-button" onClick={this.onClose}>
             X
           </button>
-          {/* <button onClick="window.location.href='/SchemaInput'">Input Schema</button> */}
 
           <Switch>
             <Route exact path="/" component={SchemaModal} />
