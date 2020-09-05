@@ -72,7 +72,7 @@ function createWindow() {
   // Don't show until we are ready and loaded
   mainWindow.once('ready-to-show', (event) => {
     mainWindow.show();
-    const runDocker: string = `cd database && docker-compose up -d`;
+    const runDocker: string = `docker-compose up -d`;
     exec(runDocker, (error, stdout, stderr) => {
       if (error) {
         console.log(`error: ${error.message}`);
