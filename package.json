@@ -5,7 +5,7 @@
   "main": "./tscToJS/backend/main",
   "scripts": {
     "build": "tsc && webpack",
-    "docker": "cd database && docker-compose up -d",
+    "docker": "docker-compose up -d",
     "start": "concurrently \" cross-env NODE_ENV=production electron --noDevServer . \" \"npm run docker\"",
     "resetContainer": "docker container stop postgres-1 && docker container prune && docker container ls -a",
     "dev": "concurrently \"tsc && cross-env NODE_ENV=development webpack-dev-server --hot\" \"npm run docker\"",
@@ -49,6 +49,7 @@
     "babel-minify-webpack-plugin": "^0.3.1",
     "csp-html-webpack-plugin": "^4.0.0",
     "css-loader": "^3.5.3",
+    "electron": "^9.0.0",
     "electron-devtools-installer": "^3.0.0",
     "electron-packager": "^14.2.1",
     "file-loader": "^6.0.0",
