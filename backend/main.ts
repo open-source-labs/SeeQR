@@ -13,22 +13,6 @@ const path = require('path');
 // Global variable
 let listObj;
 
-//
-const sendLists = () => {
-  db.getLists().then(data => {
-    mainWindow.webContents.send('db-lists', data)
-  })
-}
-
-// // For iteration groups. FYI you can also do it like this if you want to flex.
-// ipcMain.on('return-db-list', (event, args) => {
-//   (async function theFlex() {
-//     listObj = await db.getLists()
-//     event.sender.send('db-lists', listObj);
-//   })();
-// });
-
-// OR you can flex like this. Choose your flex.
 ipcMain.on('return-db-list', (event, args) => {
   db.getLists().then(data => event.sender.send('db-lists', data));
 });
@@ -74,9 +58,6 @@ function createWindow() {
       slashes: true,
     });
     mainWindow.webContents.openDevTools();
-
-    sendLists();
-
     Menu.setApplicationMenu(mainMenu);
   } else {
     // In production mode, load the bundled version of index.html inside the dist folder.
@@ -85,11 +66,6 @@ function createWindow() {
       pathname: join(__dirname, '../dist', 'index.html'),
       slashes: true,
     });
-
-    // db.getLists().then(data => {
-    //   mainWindow.webContents.send('db-lists', data)
-    // })
-    sendLists();
   }
 
   mainWindow.loadURL(indexPath);
