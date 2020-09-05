@@ -4,15 +4,11 @@
   "description": "SeeQR",
   "main": "./build/backend/main",
   "scripts": {
-    "prod0": "cross-env NODE_ENV=production webpack --mode production --config webpack.build.config.js && electron --noDevServer .",
-    "build0": "cross-env NODE_ENV=production webpack --config webpack.build.config.js --mode production",
-    "start0": "cross-env NODE_ENV=development webpack-dev-server --hot --config=./webpack.dev.config.js --mode development --exec 'electron .'",
-    "dev0": "cross-env NODE_ENV=development webpack-dev-server --config ./webpack.dev.config.js",
     "build": "tsc && webpack",
-    "start": "cross-env NODE_ENV=production electron --noDevServer .",
-    "dev": "concurrently \"tsc && cross-env NODE_ENV=development webpack-dev-server --hot\" \"npm run docker\"",
     "docker": "cd database && docker-compose up -d",
-    "resetContainer": "docker container stop postgres-1 && docker container prune && docker container ls -a"
+    "start": "concurrently \" cross-env NODE_ENV=production electron --noDevServer . \" \"npm run docker\"",
+    "resetContainer": "docker container stop postgres-1 && docker container prune && docker container ls -a",
+    "dev": "concurrently \"tsc && cross-env NODE_ENV=development webpack-dev-server --hot\" \"npm run docker\""
   },
   "repository": {
     "type": "git",

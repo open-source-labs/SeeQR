@@ -63,7 +63,7 @@ function createWindow() {
     // In production mode, load the bundled version of index.html inside the dist folder.
     indexPath = format({
       protocol: 'file:',
-      pathname: join(__dirname, '../dist', 'index.html'),
+      pathname: join(__dirname, '../../dist', 'index.html'),
       slashes: true,
     });
   }
