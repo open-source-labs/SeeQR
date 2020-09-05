@@ -8,7 +8,8 @@
     "docker": "cd database && docker-compose up -d",
     "start": "concurrently \" cross-env NODE_ENV=production electron --noDevServer . \" \"npm run docker\"",
     "resetContainer": "docker container stop postgres-1 && docker container prune && docker container ls -a",
-    "dev": "concurrently \"tsc && cross-env NODE_ENV=development webpack-dev-server --hot\" \"npm run docker\""
+    "dev": "concurrently \"tsc && cross-env NODE_ENV=development webpack-dev-server --hot\" \"npm run docker\"",
+    "new": "cross-env NODE_ENV=production electron --noDevServer ."
   },
   "repository": {
     "type": "git",
@@ -31,7 +32,10 @@
     "react-bootstrap": "^1.3.0",
     "react-chartjs-2": "^2.10.0",
     "react-dom": "^16.13.1",
-    "react-router-dom": "^5.2.0"
+    "react-router-dom": "^5.2.0",
+    "cross-env": "^7.0.2",
+    "sass": "^1.26.10",
+    "react-codemirror": "^1.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.10.5",
@@ -43,7 +47,6 @@
     "@types/react-router-dom": "^5.1.5",
     "babel-loader": "^8.1.0",
     "babel-minify-webpack-plugin": "^0.3.1",
-    "cross-env": "^7.0.2",
     "csp-html-webpack-plugin": "^4.0.0",
     "css-loader": "^3.5.3",
     "electron-devtools-installer": "^3.0.0",
@@ -54,9 +57,7 @@
     "mini-css-extract-plugin": "^0.9.0",
     "nodemon": "^2.0.4",
     "postcss-loader": "^3.0.0",
-    "react-codemirror": "^1.0.0",
     "react-router-dom": "^5.2.0",
-    "sass": "^1.26.10",
     "sass-loader": "^9.0.2",
     "source-map-loader": "^1.0.1",
     "style-loader": "^1.2.1",

@@ -5,10 +5,9 @@ import { app, BrowserWindow, ipcMain, Menu } from 'electron';
 import { join } from 'path';
 import { format } from 'url';
 const { exec } = require('child_process');
-const appMenu = require('./mainMenu');
+const appMenu = require('./mainMenu'); // use appMenu to add options in top menu bar of app
 const db = require('./modal');
 const path = require('path');
-// const createInsertQuery = require('./dummy_db/dummy_handler')
 
 // Global variable
 let listObj;
@@ -73,6 +72,18 @@ function createWindow() {
   // Don't show until we are ready and loaded
   mainWindow.once('ready-to-show', (event) => {
     mainWindow.show();
+    const runDocker: string = `cd database && docker-compose up -d`;
+    exec(runDocker, (error, stdout, stderr) => {
+      if (error) {
+        console.log(`error: ${error.message}`);
+        return;
+      }
+      if (stderr) {
+        console.log(`stderr: ${stderr}`);
+        return;
+      }
+      console.log(`${stdout}`);
+    })
   });
 
   // Emitted when the window is closed.
@@ -106,11 +117,10 @@ app.on('activate', () => {
  *********************** IPC CHANNELS ***********************
  ************************************************************/
 
-// Listen for files upload
 
 /* ---IMPORT DATABASE: CREATE AN INSTANCE OF DATABASE FROM A PRE-MADE .TAR OR .SQL FILE--- */
+// Listen for file upload
 ipcMain.on('upload-file', (event, filePaths: string) => {
-  console.log('file paths sent from renderer', filePaths);
   const isMac = process.platform === 'darwin';
   let db_name: string;
   if (isMac) {
@@ -119,9 +129,7 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
     db_name = filePaths[0].slice(filePaths[0].lastIndexOf('\\') + 1, filePaths[0].lastIndexOf('.'));
   }
 
-  console.log('filePaths', filePaths);
-  // command strings
-  // const db_name: string = filePaths[0].slice(filePaths[0].lastIndexOf('\\') + 1, filePaths[0].lastIndexOf('.'));
+  // command strings to be executed in child process
   const createDB: string = `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE ${db_name}"`;
   const importFile: string = `docker cp ${filePaths} postgres-1:/data_dump`;
   const runSQL: string = `docker exec postgres-1 psql -U postgres -d ${db_name} -f /data_dump`;
@@ -139,7 +147,6 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
         console.log(`stderr: ${stderr}`);
         return;
       }
-      // console.log(`stdout: ${stdout}`);
       console.log(`${stdout}`);
       if (nextStep) nextStep();
     });
@@ -162,18 +169,12 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
   const step2 = () => addDB(importFile, step3);
   // Changes the pg URI to look to the newly created database and queries all the tables in that database and sends it to frontend.
   async function redirectModal() {
-    // Redirects modal towards new imported database, used before we added tabs. Not so much needed now
-    // db.changeDB(db_name);
-    // console.log(`Connected to database ${db_name}`);
-
-    // let listObj;
     listObj = await db.getLists();
-    console.log('Temp log until channel is made', listObj);
     event.sender.send('db-lists', listObj);
   };
   // Step 1 : Create empty db
   if (extension === '.sql' || extension === '.tar') addDB(createDB, step2);
-  else console.log('INVAILD FILE TYPE: Please use .tar or .sql extensions.');
+  else console.log('INVALID FILE TYPE: Please use .tar or .sql extensions.');
 });
 /* ---END OF IMPORT DATABASE FUNCTION--- */
 
@@ -196,8 +197,6 @@ ipcMain.on('change-db', (event, db_name) => {
 
 // Listen for queries being sent from renderer
 ipcMain.on('execute-query', (event, data: QueryType) => {
-  // ---------Refactor-------------------
-  console.log('query sent from frontend', data);
   // destructure object from frontend
   const { queryString, queryCurrentSchema, queryLabel } = data;
 
@@ -233,7 +232,7 @@ ipcMain.on('execute-query', (event, data: QueryType) => {
       });
     })
     .catch((error: string) => {
-      console.log('THE CATCH: ', error);
+      console.log('ERROR in execute-query channel in main.ts', error);
     });
 });
 interface SchemaType {
@@ -251,7 +250,6 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
   // so that schemaEntry string will work for Windows computers.
   let schemaEntry = data.schemaEntry.replace(/[\n\r]/g, "").trim();
 
-  console.log('filePath', filePath);
   // command strings
   const createDB: string = `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE ${db_name}"`;
   const importFile: string = `docker cp ${filePath} postgres-1:/data_dump`;
@@ -282,6 +280,7 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
 
   // SEQUENCE OF EXECUTING COMMANDS
   // Steps are in reverse order because each step is a callback function that requires the following step to be defined.
+  // ^refactor this so it's readable and module. move it to global scope or another file
 
   // Step 3 : Given the file path extension, run the appropriate command in postgres to build the db
   const step3 = () => {
@@ -297,126 +296,14 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
 
   // Changes the pg URI to look to the newly created database and queries all the tables in that database and sends it to frontend.
   async function redirectModal() {
-    // Redirects modal towards new imported database, used before we added tabs. Not so much needed now
-    // db.changeDB(db_name);
-    // console.log(`Connected to database ${db_name}`);
-
-    // let listObj;
     listObj = await db.getLists();
     event.sender.send('db-lists', listObj);
   };
 
-
-  // const redirectModal = () => {
-  //   // Redirects modal towards new imported database
-  //   db.changeDB(db_name);
-  //   console.log(`Connected to database ${db_name}`);
-
-  //   // Need a setTimeout because query would run before any data gets uploaded to the database from the runTAR or runSQL commands
-  //   setTimeout(async () => {
-  //     let listObj;
-  //     listObj = await db.getLists();
-  //     console.log('Temp log until channel is made', listObj);
-  //     event.sender.send('db-lists', listObj);
-  //   }, 1000);
-  // };
-
   // Step 1 : Create empty db
   if (extension === '.sql' || extension === '.tar') {
-    console.log('extension is sql tar');
-    console.log('file path: ', filePath);
     addDB(createDB, step2);
   }
   // if data is inputted as text
   else addDB(createDB, step3);
-  // else console.log('INVAILD FILE TYPE: Please use .tar or .sql extensions.');
 });
-
-
-// // Temporary Hardcode not ideal
-// const fromApp = {
-//   schema: 'public', //used to be schema1
-//   table: 'table1',
-//   scale: 40,
-//   columns: [
-//     {
-//       name: '_id',
-//       dataCategory: 'unique', // random, repeating, unique, combo, foreign
-//       dataType: 'num',
-//       data: {
-//         serial: true,
-//       }
-//     },
-//     {
-//       name: 'username',
-//       dataCategory: 'unique', // random, repeating, unique, combo, foreign
-//       dataType: 'str',
-//       data: {
-//         length: [10, 15],
-//         inclAlphaLow: true,
-//         inclAlphaUp: true,
-//         inclNum: true,
-//         inclSpaces: true,
-//         inclSpecChar: true,
-//         include: ["include", "these", "aReplace"],
-//       },
-//     },
-//     {
-//       name: 'first_name',
-//       dataCategory: 'random', // random, repeating, unique, combo, foreign
-//       dataType: 'Name - firstName',
-//       data: {
-//       }
-//     },
-//     {
-//       name: 'company_name',
-//       dataCategory: 'random',
-//       dataType: 'Company - companyName',
-//       data: {
-//       }
-//     }
-//   ]
-// };
-
-// ipcMain.on('generate-data', (event, paramObj: any) => {
-//   // Generating Dummy Data from parameters sent from the frontend
-//   (function dummyFunc(paramsObj) {
-//     // Need addDB in this context
-//     const addDB = (str: string, nextStep: any) => {
-//       exec(str, (error, stdout, stderr) => {
-//         if (error) {
-//           console.log(`error: ${error.message}`);
-//           return;
-//         }
-//         if (stderr) {
-//           console.log(`stderr: ${stderr}`);
-//           return;
-//         }
-//         // console.log(`stdout: ${stdout}`);
-//         console.log(`${stdout}`);
-//         if (nextStep) nextStep();
-//       });
-//     };
-//     const db_name: string = 'defaultDB';
-//     const schemaStr: string = `CREATE TABLE "table1"(
-//                                   "_id" integer NOT NULL,
-//                                   "username" VARCHAR(255) NOT NULL,
-//                                   "first_name" VARCHAR(255) NOT NULL,
-//                                   "company_name" VARCHAR(255) NOT NULL,
-//                                   CONSTRAINT "tabl1_pk" PRIMARY KEY ("_id")
-//                             ) WITH (
-//                               OIDS=FALSE
-//                             );`
-//     const insertArray: Array<string> = createInsertQuery(paramsObj);
-//     console.log(insertArray);
-//     db.query(schemaStr)
-//       .then((returnedData) => {
-//         for (let i = 0; i < insertArray.length; ++i) {
-//           console.log(i)
-//           let currentInsert = insertArray[i];
-//           const dummyScript: string = `docker exec postgres-1 psql -U postgres -d ${db_name} -c "${currentInsert}"`;
-//           addDB(dummyScript, () => console.log(`Dummied Database: ${db_name}`))
-//         }
-//       })
-//   })(fromApp);
-// });
