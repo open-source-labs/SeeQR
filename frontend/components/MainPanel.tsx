@@ -60,10 +60,16 @@ class MainPanel extends Component<MainProps, MainState> {
     ipcRenderer.on('db-lists', (event: any, returnedLists: any) => {
       this.setState({ dbLists: returnedLists })
       console.log('DB LIST CHECK !', this.state.dbLists);
+      console.log('HERE', this.state.dbLists.databaseList[this.state.dbLists.databaseList.length - 1]);
+
+      this.onClickTabItem(this.state.dbLists.databaseList[this.state.dbLists.databaseList.length - 1])
+      // this.onClickTabItem(this.state.dbLists.returnedLists[this.state.dbLists.returnedLists.length - 1])
     })
   }
 
   onClickTabItem(tabName) {
+    console.log('INSIDE ONCLICK TAB ITEM');
+
     ipcRenderer.send('change-db', tabName);
     ipcRenderer.on('return-change-db', (event: any, db_name: string) => {
       this.setState({ currentSchema: tabName });
