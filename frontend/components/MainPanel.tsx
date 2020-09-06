@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Compare } from './leftPanel/Compare';
 import History from './leftPanel/History';
-// import { SchemaContainer } from './rightPanel/SchemaContainer';
 import { Tabs } from './rightPanel/Tabs';
 
 const { ipcRenderer } = window.require('electron');
@@ -14,8 +13,7 @@ type MainState = {
   // }[];
   queries: any;
   currentSchema: string;
-  // queryLabel: string;
-  dbLists: any;
+  lists: any;
 };
 
 type MainProps = {};
@@ -28,7 +26,7 @@ class MainPanel extends Component<MainProps, MainState> {
     queries: [],
     // currentSchema will change depending on which Schema Tab user selects
     currentSchema: 'defaultDB',
-    dbLists: {
+    lists: {
       databaseList: ['defaultDB'],
       tableList: [],
     }
@@ -41,7 +39,6 @@ class MainPanel extends Component<MainProps, MainState> {
     // Update state with new object (containing query data, query statistics, query schema
     // inside of state.queries array
     ipcRenderer.on('return-execute-query', (event: any, returnedData: any) => {
-      console.log('RETURNED DATA IN MAIN PANEL', returnedData);
       // destructure from returnedData from backend
       const { queryString, queryData, queryStatistics, queryCurrentSchema, queryLabel } = returnedData;
       // create new query object with returnedData
@@ -60,8 +57,8 @@ class MainPanel extends Component<MainProps, MainState> {
     });
 
     ipcRenderer.on('db-lists', (event: any, returnedLists: any) => {
-      this.setState({ dbLists: returnedLists })
-      this.onClickTabItem(this.state.dbLists.databaseList[this.state.dbLists.databaseList.length - 1])
+      this.setState({ lists: returnedLists })
+      this.onClickTabItem(this.state.lists.databaseList[this.state.lists.databaseList.length - 1])
     })
   }
 
@@ -79,7 +76,7 @@ class MainPanel extends Component<MainProps, MainState> {
           <History queries={this.state.queries} currentSchema={this.state.currentSchema} />
           <Compare queries={this.state.queries} currentSchema={this.state.currentSchema} />
         </div>
-        <Tabs currentSchema={this.state.currentSchema} tabList={this.state.dbLists.databaseList} queries={this.state.queries} onClickTabItem={this.onClickTabItem} />
+        <Tabs currentSchema={this.state.currentSchema} tabList={this.state.lists.databaseList} queries={this.state.queries} onClickTabItem={this.onClickTabItem} />
       </div>
     );
   }

@@ -20,7 +20,7 @@ class GenerateData extends Component<GenerateDataProps, state> {
   }
   state: state = {
   };
-  
+
   handleFormSubmit(event: any) {
     event.preventDefault();
     // pass down any state from the form
@@ -28,14 +28,13 @@ class GenerateData extends Component<GenerateDataProps, state> {
     };
     // on submit button click, sends form obj to backend
     ipcRenderer.send('form-input', formObj);
-    console.log(`sending ${formObj} to main process`);
   }
   // close modal function
   onClose = (event: any) => {
     this.props.onClose && this.props.onClose(event);
   };
-// input all form input fields under "form" and link to event handlers to save to state
-// bind all functions for field entries on the form
+  // input all form input fields under "form" and link to event handlers to save to state
+  // bind all functions for field entries on the form
   render() {
     return (
       <div>

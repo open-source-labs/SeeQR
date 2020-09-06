@@ -30,7 +30,7 @@ export class Tabs extends Component<TabsProps> {
 
   componentDidMount() {
     // After schema is successfully sent to backend, backend spins up new database with inputted schemaName.
-    // It will send the frontend an updated dbLists that is an updated list of all the tabs (which is the same
+    // It will send the frontend an updated variable 'lists' that is an array of updated lists of all the tabs (which is the same
     // thing as all the databases). We open a channel to listen for it here inside of componendDidMount, then
     // we invoke onClose to close schemaModal ONLY after we are sure that backend has created that channel.
     ipcRenderer.on('db-lists', (event: any, returnedLists: any) => {

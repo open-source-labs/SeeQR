@@ -17,7 +17,7 @@
   },
   "keywords": [],
   "author": "Team SeeQR",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "@skidding/react-codemirror": "^1.0.2",
     "autoprefixer": "^9.8.5",

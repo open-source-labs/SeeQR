@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
 
 type TableProps = {
-  // queries: {
-  //   queryString: string;
-  //   queryData: string;
-  //   queryStatistics: any
-  //   querySchema: string;
-  // }[];
-  queries: any;
+  queries: {
+    queryString: string;
+    queryData: {}[];
+    queryStatistics: any
+    querySchema: string;
+    queryLabel: string;
+  }[];
+  // queries: any;
 };
-
 export class Table extends Component<TableProps> {
 
   constructor(props) {
@@ -42,8 +42,6 @@ export class Table extends Component<TableProps> {
     const { queries } = this.props;
 
     var items = queries[queries.length - 1].queryData;
-    // console.log('items', items); // [ {}, {}, {} ]
-
     var keys = this.getKeys(); // actor_id, firstName, lastName, lastUpdated
     return items.map((row, index) => {
       return <tr key={index}><RenderRow key={index} data={row} keys={keys} /></tr>

@@ -62,7 +62,6 @@ class SchemaModal extends Component<SchemaModalProps, state> {
         message: 'Please upload .sql or .tar database file',
       })
       .then((result: object) => {
-        console.log('file uploaded', result);
         const filePath = result['filePaths'];
         this.setState({ schemaFilePath: filePath });
         const schemaObj = {
@@ -71,7 +70,6 @@ class SchemaModal extends Component<SchemaModalProps, state> {
           schemaEntry: '',
         };
         ipcRenderer.send('input-schema', schemaObj);
-        console.log(`sending ${schemaObj} to main process`);
         this.props.showModal(event);
       })
       .catch((err: object) => {
@@ -95,7 +93,6 @@ class SchemaModal extends Component<SchemaModalProps, state> {
       schemaEntry: this.state.schemaEntry,
     };
     ipcRenderer.send('input-schema', schemaObj);
-    console.log(`sending ${schemaObj} to main process`);
   }
 
   render() {

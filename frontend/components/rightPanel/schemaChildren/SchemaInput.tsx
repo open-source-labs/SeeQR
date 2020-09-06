@@ -55,7 +55,6 @@ class SchemaInput extends Component<SchemaInputProps, state> {
       schemaEntry: this.state.schemaEntry,
     };
     ipcRenderer.send('input-schema', schemaObj);
-    console.log(`sending ${schemaObj} to main process`);
   }
 
   onClose = (event: any) => {
