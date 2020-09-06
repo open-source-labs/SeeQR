@@ -88,6 +88,22 @@ function createWindow() {
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
+    // Stop and remove postgres-1 and busybox-1 Docker containers upon window exit.
+    const pruneContainers: string = 'docker rm -f postgres-1 busybox-1';
+    const executeQuery = (str) => {
+      exec(str, (error, stdout, stderr) => {
+        if (error) {
+          console.log(`error: ${error.message}`);
+          return;
+        }
+        if (stderr) {
+          console.log(`stderr: ${stderr}`);
+          return;
+        }
+        console.log(`${stdout}`);
+      })
+    };
+    executeQuery(pruneContainers);
     mainWindow = null;
   });
 }
