@@ -13,37 +13,37 @@ type SchemaContainerProps = {
 
 type state = {
   currentSchema: string;
-  show: boolean;
+  // show: boolean;
 };
 
 export class SchemaContainer extends Component<SchemaContainerProps> {
   constructor(props: SchemaContainerProps) {
     super(props);
-    this.showModal = this.showModal.bind(this);
+    // this.showModal = this.showModal.bind(this);
   }
 
   state: state = {
     currentSchema: '',
-    show: false,
+    // show: false,
   };
 
-  showModal = (event: any) => {
-    this.setState({ show: !this.state.show });
-  };
+  // showModal = (event: any) => {
+  //   this.setState({ show: !this.state.show });
+  // };
 
   render() {
     return (
-        <div id="main-right">
-          <div id="test-panels">
-            <div id="schema-left">
-              <Query currentSchema={this.props.currentSchema} />
-              <Data queries={this.props.queries} />
-            </div>
-            <div id="schema-right">
-              <Results queries={this.props.queries} />
-            </div>
+      <div id="main-right">
+        <div id="test-panels">
+          <div id="schema-left">
+            <Query currentSchema={this.props.currentSchema} />
+            <Data queries={this.props.queries} />
+          </div>
+          <div id="schema-right">
+            <Results queries={this.props.queries} />
           </div>
         </div>
+      </div>
     );
   }
 }

@@ -44,7 +44,6 @@ class SchemaInput extends Component<SchemaInputProps, state> {
     this.setState({
       schemaEntry: event,
     });
-    console.log('SCHEMA ENTRY', typeof this.state.schemaEntry);
   }
 
   handleSchemaSubmit(event: any) {
@@ -74,7 +73,6 @@ class SchemaInput extends Component<SchemaInputProps, state> {
     return (
       <div className="input-schema">
         <form onSubmit={this.handleSchemaSubmit}>
-          {/* <p>Schema label: {this.props.schemaName}</p> */}
           <br />
           <div className="codemirror">
             <CodeMirror

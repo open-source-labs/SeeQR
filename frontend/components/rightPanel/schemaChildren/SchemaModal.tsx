@@ -10,6 +10,7 @@ type ClickEvent = React.MouseEvent<HTMLElement>;
 
 type SchemaModalProps = {
   show: boolean;
+  showModal: any;
   onClose: any;
 };
 
@@ -39,15 +40,6 @@ class SchemaModal extends Component<SchemaModalProps, state> {
     redirect: false,
   };
 
-  componentDidMount() {
-    // After schema is successfully sent to backend, backend spins up new database with inputted schemaName.
-    // It will send the frontend an updated dbLists that is an updated list of all the tabs (which is the same
-    // thing as all the databases). We open a channel to listen for it here inside of componendDidMount, then
-    // we invoke onClose to close schemaModal ONLY after we are sure that backend has created that channel.
-    ipcRenderer.on('db-lists', (event: any, returnedLists: any) => {
-      this.onClose(event);
-    })
-  }
 
   // Set schema name
   handleSchemaName(event: any) {
@@ -80,8 +72,7 @@ class SchemaModal extends Component<SchemaModalProps, state> {
         };
         ipcRenderer.send('input-schema', schemaObj);
         console.log(`sending ${schemaObj} to main process`);
-        this.onClose(event);
-        // this.setState({ schemaEntry: '' });
+        this.props.showModal(event);
       })
       .catch((err: object) => {
         console.log(err);
@@ -93,8 +84,6 @@ class SchemaModal extends Component<SchemaModalProps, state> {
   handleSchemaEntry(event: any) {
     this.setState({ schemaEntry: event.target.value });
     this.setState({ schemaFilePath: '' });
-    console.log('schema entry: ', this.state.schemaEntry);
-    console.log('schema entry type: ', typeof this.state.schemaEntry);
   }
 
   handleSchemaSubmit(event: any) {
@@ -109,12 +98,8 @@ class SchemaModal extends Component<SchemaModalProps, state> {
     console.log(`sending ${schemaObj} to main process`);
   }
 
-  onClose = (event: any) => {
-    this.props.onClose && this.props.onClose(event);
-  };
-
   render() {
-    if (!this.props.show) {
+    if (this.props.show === false) {
       return null;
     }
 
@@ -131,13 +116,12 @@ class SchemaModal extends Component<SchemaModalProps, state> {
           />
           <div className="modal-buttons">
             <button onClick={this.handleSchemaFilePath}>Load Schema</button>
-            {/* <button onClick={this.handleOnClick} type="button">Input Schema</button> */}
             <Link to="/SchemaInput">
               <button className="input-button">Input Schema</button>
             </Link>
           </div>
 
-          <button className="close-button" onClick={this.onClose}>
+          <button className="close-button" onClick={this.props.onClose}>
             X
           </button>
 
