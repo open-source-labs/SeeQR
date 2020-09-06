@@ -1,8 +1,5 @@
-import React, { Component, MouseEvent, ChangeEvent } from 'react';
-import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
+import React, { Component } from 'react';
 const { ipcRenderer } = window.require('electron');
-
-type ClickEvent = React.MouseEvent<HTMLElement>;
 
 // onClose property responds to onClose function
 type GenerateDataProps = {
