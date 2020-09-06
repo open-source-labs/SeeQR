@@ -7,9 +7,8 @@
     "build": "tsc && webpack",
     "docker": "docker-compose up -d",
     "start": "cross-env NODE_ENV=production electron --noDevServer .",
-    "startOG": "concurrently \" cross-env NODE_ENV=production electron --noDevServer . \" \"npm run docker\"",
     "resetContainer": "docker container stop postgres-1 && docker container prune && docker container ls -a",
-    "dev": "concurrently \"tsc && cross-env NODE_ENV=development webpack-dev-server --hot\" \"npm run docker\"",
+    "dev": "tsc && cross-env NODE_ENV=development webpack-dev-server --hot",
     "new": "cross-env NODE_ENV=production electron --noDevServer ."
   },
   "repository": {
