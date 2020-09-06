@@ -3,13 +3,13 @@ import React, { Component } from 'react';
 import { Table } from './dataChildren/DataTable';
 
 type DataProps = {
-  // queries: {
-  //   queryString: string;
-  //   queryData: string;
-  //   queryStatistics: any
-  //   querySchema: string;
-  // }[];
-  queries: any;
+  queries: {
+    queryString: string;
+    queryData: {}[];
+    queryStatistics: any
+    querySchema: string;
+    queryLabel: string;
+  }[];
 };
 
 export class Data extends Component<DataProps> {

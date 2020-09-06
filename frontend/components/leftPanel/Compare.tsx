@@ -13,7 +13,6 @@ type CompareProps = {
     querySchema: string;
     queryLabel: string;
   }[];
-  // queries: any;
   currentSchema: string
 };
 

@@ -8,7 +8,6 @@ type TableProps = {
     querySchema: string;
     queryLabel: string;
   }[];
-  // queries: any;
 };
 export class Table extends Component<TableProps> {
 

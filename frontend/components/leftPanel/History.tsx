@@ -8,7 +8,6 @@ type HistoryProps = {
     querySchema: string;
     queryLabel: string;
   }[];
-  // queries: any;
   currentSchema: string;
 };
 
