@@ -8,6 +8,10 @@ const { exec } = require('child_process');
 const appMenu = require('./mainMenu'); // use appMenu to add options in top menu bar of app
 const db = require('./modal');
 const path = require('path');
+const fixPath = require('fix-path');
+
+fixPath();
+console.log('PROCESS.ENV.PATH', process.env.PATH);
 
 // Global variable
 let listObj;
