@@ -67,6 +67,8 @@ export class Results extends Component<ResultsProps> {
         }
       ]
     }
+
+    // To display additional analytics, comment back in JSX elements in the return statement below.
     return (
       <div id="results-panel">
         <h3>Results</h3>

@@ -1,7 +1,6 @@
-import React, { Component, MouseEvent, useState } from 'react';
+import React, { useState } from 'react';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown';
-const { ipcRenderer } = window.require('electron');
 import { Bar, defaults } from "react-chartjs-2";
 
 defaults.global.defaultFontColor = 'rgb(198,210,213)';
@@ -57,6 +56,7 @@ export const Compare = (props: CompareProps) => {
       } = Plan;
       const runtime = (planningTime + executionTime).toFixed(3);
 
+      // To display additional analytics, comment back in JSX elements in the return statement below.
       return (
         <tr key={index}>
           <td id='label'>{queryLabel}</td>
