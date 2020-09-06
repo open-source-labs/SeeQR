@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { Tab } from './tabsChildren/Tab';
 import { SchemaContainer } from './SchemaContainer';
 import SchemaModal from './schemaChildren/SchemaModal';
+import { Tab } from './tabsChildren/Tab';
+
 const { ipcRenderer } = window.require('electron');
 
 type TabsProps = {
