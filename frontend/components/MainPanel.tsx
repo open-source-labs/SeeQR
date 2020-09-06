@@ -13,7 +13,6 @@ type MainState = {
     querySchema: string;
     queryLabel: string;
   }[];
-  // queries: any;
   currentSchema: string;
   lists: any;
 };

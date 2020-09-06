@@ -1,4 +1,5 @@
-import React, { Component, MouseEvent, ChangeEvent } from 'react';
+import React, { Component } from 'react';
+
 const { ipcRenderer } = window.require('electron');
 const { dialog } = require('electron').remote;
 

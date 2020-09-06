@@ -7,7 +7,6 @@ type SplashProps = {
   openSplash: boolean;
   handleFileClick: any;
   handleSkipClick: any;
-  //files: string[];
 };
 
 export class Splash extends Component<SplashProps> {

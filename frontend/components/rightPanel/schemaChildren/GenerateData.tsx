@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+
 const { ipcRenderer } = window.require('electron');
 
 type GenerateDataProps = {
