@@ -2,7 +2,7 @@
   "name": "SeeQR",
   "version": "1.0.0",
   "description": "SeeQR",
-  "main": "./tscToJS/backend/main",
+  "main": "./tsCompiled/backend/main",
   "scripts": {
     "build": "tsc && webpack",
     "docker": "docker-compose up -d",

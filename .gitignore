@@ -1,7 +1,7 @@
 /node_modules
 /.vscode
 /dist
-/tscToJS
+/tsCompiled
 */.DS_Store
 .DS_Store
 dvdrental.tar

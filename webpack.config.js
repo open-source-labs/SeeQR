@@ -74,7 +74,7 @@ module.exports = {
   },
   target: "electron-renderer",
   devServer: {
-    contentBase: path.resolve(__dirname, "/tscToJS/frontend"),
+    contentBase: path.resolve(__dirname, "/tsCompiled/frontend"),
     host: "localhost",
     port: "8080",
     hot: true,
