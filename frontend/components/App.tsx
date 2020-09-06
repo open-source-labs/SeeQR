@@ -10,6 +10,7 @@ type ClickEvent = React.MouseEvent<HTMLElement>;
 type state = {
   openSplash: boolean;
 };
+
 type AppProps = {};
 
 export class App extends Component<AppProps, state> {
@@ -18,6 +19,7 @@ export class App extends Component<AppProps, state> {
     this.handleFileClick = this.handleFileClick.bind(this);
     this.handleSkipClick = this.handleSkipClick.bind(this);
   }
+
   state: state = {
     openSplash: true,
   };
@@ -34,7 +36,7 @@ export class App extends Component<AppProps, state> {
       .then((result: object) => {
         const filePathArr = result["filePaths"];
         // send via channel to main process
-        if (!result["canceled"]){
+        if (!result["canceled"]) {
           ipcRenderer.send('upload-file', filePathArr);
           this.setState({ openSplash: false });
         }
@@ -54,6 +56,7 @@ export class App extends Component<AppProps, state> {
     ipcRenderer.on('menu-upload-file', () => {
       this.handleFileClick;
     });
+
     return (
       <div>
         {this.state.openSplash ? (
@@ -63,8 +66,8 @@ export class App extends Component<AppProps, state> {
             handleSkipClick={this.handleSkipClick}
           />
         ) : (
-          <MainPanel />
-        )}
+            <MainPanel />
+          )}
       </div>
     );
   }

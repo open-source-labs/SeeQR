@@ -4,14 +4,16 @@ import History from './leftPanel/History';
 import { Tabs } from './rightPanel/Tabs';
 
 const { ipcRenderer } = window.require('electron');
+
 type MainState = {
-  // queries: {
-  //   queryString: string;
-  //   queryData: string;
-  //   queryStatistics: any
-  //   querySchema: string;
-  // }[];
-  queries: any;
+  queries: {
+    queryString: string;
+    queryData: {}[];
+    queryStatistics: any
+    querySchema: string;
+    queryLabel: string;
+  }[];
+  // queries: any;
   currentSchema: string;
   lists: any;
 };
