@@ -1,5 +1,4 @@
-import React, { Component, MouseEvent, ChangeEvent } from 'react';
-import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
+import React, { Component } from 'react';
 const { ipcRenderer } = window.require('electron');
 import GenerateData from './GenerateData';
 

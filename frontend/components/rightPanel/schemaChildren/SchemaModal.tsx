@@ -1,7 +1,6 @@
-import React, { Component, MouseEvent, ChangeEvent } from 'react';
-import { Redirect, BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
+import React, { Component } from 'react';
+import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 const { dialog } = require('electron').remote;
-const fs = require('fs');
 const { ipcRenderer } = window.require('electron');
 import SchemaInput from './SchemaInput';
 import GenerateData from './GenerateData';
@@ -77,8 +76,7 @@ class SchemaModal extends Component<SchemaModalProps, state> {
       });
   }
 
-  // when schema script is inserted, file path is cleared
-  // set dialog to warn user
+  // When schema script is inserted, file path is cleared set dialog to warn user.
   handleSchemaEntry(event: any) {
     this.setState({ schemaEntry: event.target.value });
     this.setState({ schemaFilePath: '' });
