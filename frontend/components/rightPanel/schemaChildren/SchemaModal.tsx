@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
-const { dialog } = require('electron').remote;
-const { ipcRenderer } = window.require('electron');
 import SchemaInput from './SchemaInput';
 import GenerateData from './GenerateData';
+
+const { dialog } = require('electron').remote;
+const { ipcRenderer } = window.require('electron');
 
 type ClickEvent = React.MouseEvent<HTMLElement>;
 

@@ -1,7 +1,4 @@
 import React, { Component, MouseEvent } from 'react';
-const path = require('path');
-// const { dialog } = require('electron').remote;
-// const { ipcRenderer } = window.require('electron');
 
 type SplashProps = {
   openSplash: boolean;

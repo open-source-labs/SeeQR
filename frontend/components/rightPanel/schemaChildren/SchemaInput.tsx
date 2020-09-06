@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-const { ipcRenderer } = window.require('electron');
 import GenerateData from './GenerateData';
+
+const { ipcRenderer } = window.require('electron');
 
 // Codemirror Styling
 require('codemirror/lib/codemirror.css');
