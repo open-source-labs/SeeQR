@@ -10,8 +10,8 @@ const db = require('./modal');
 const path = require('path');
 const fixPath = require('fix-path');
 
+// Ensures path is correct for MacOS within inherited shell when packaging electron app.
 fixPath();
-console.log('PROCESS.ENV.PATH', process.env.PATH);
 
 // Global variable
 let listObj;
@@ -112,9 +112,8 @@ function createWindow() {
   });
 }
 
-// Invoke createWindow to create browser windows after
-// Electron has been initialized.Some APIs can only be used
-// after this event occurs.
+// Invoke createWindow to create browser windows after Electron has been initialized.
+// Some APIs can only be used after this event occurs.
 app.on('ready', createWindow);
 
 // Quit when all windows are closed.

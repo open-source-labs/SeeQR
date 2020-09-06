@@ -66,7 +66,7 @@ class Query extends Component<QueryProps, state> {
     // if input fields for query label or query string are empty, then
     // send alert to input both fields
     if (!this.state.queryLabel || !this.state.queryString) {
-      const noInputAlert = dialog.showErrorBox('Please enter a Label and a Query.', '');
+      dialog.showErrorBox('Please enter a Label and a Query.', '');
     } else {
       const queryAndSchema = {
         queryString: this.state.queryString,
@@ -74,7 +74,6 @@ class Query extends Component<QueryProps, state> {
         queryLabel: this.state.queryLabel,
       };
       ipcRenderer.send('execute-query', queryAndSchema);
-      // this.setState({ queryString: '' });
     }
   }
 
