@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import PropTypes from "prop-types";
 
 type TabProps = {
     onClickTabItem: any,
@@ -16,7 +15,6 @@ export class Tab extends Component<TabProps> {
         } = this.props;
 
         let className = "tab-list-item";
-
         if (currentSchema === label) {
             className += " tab-list-active";
         }

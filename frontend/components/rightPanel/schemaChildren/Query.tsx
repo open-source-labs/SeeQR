@@ -1,7 +1,6 @@
 import React, { Component, MouseEvent, ChangeEvent } from 'react';
 const { ipcRenderer } = window.require('electron');
 const { dialog } = require('electron').remote;
-import SchemaModal from './SchemaModal';
 
 // Codemirror Styling
 require('codemirror/lib/codemirror.css');
