@@ -36,8 +36,10 @@ class Query extends Component<QueryProps, state> {
   constructor(props: QueryProps) {
     super(props);
     this.handleQuerySubmit = this.handleQuerySubmit.bind(this);
-    // this.handleQueryPrevious = this.handleQueryPrevious.bind(this);
     this.updateCode = this.updateCode.bind(this);
+    // this.showModal = this.showModal.bind(this);
+    // this.handleQueryPrevious = this.handleQueryPrevious.bind(this);
+    // this.handleGenerateData = this.handleGenerateData.bind(this);
   }
 
   state: state = {
