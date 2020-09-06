@@ -1,12 +1,14 @@
-import React, { Component, MouseEvent } from 'react';
-const { ipcRenderer } = window.require('electron');
+import React, { Component } from 'react';
 
 type HistoryProps = {
   queries: {
-    queryLabel: string;
-    queryStatistics: any;
+    queryString: string;
+    queryData: {}[];
+    queryStatistics: any
     querySchema: string;
+    queryLabel: string;
   }[];
+  // queries: any;
   currentSchema: string;
 };
 
@@ -46,17 +48,17 @@ export class History extends Component<HistoryProps> {
       <div id="history-panel">
         <h3>History</h3>
         <div className="history-container">
-        <table className="scroll-box">
-          <tbody>
-            <tr className="top-row">
-              <td>{'Query Label'}</td>
-              <td>{'Schema'}</td>
-              <td>{'Total Rows'}</td>
-              <td>{'Total Time'}</td>
-            </tr>
-            {this.renderTableHistory()}
-          </tbody>
-        </table>
+          <table className="scroll-box">
+            <tbody>
+              <tr className="top-row">
+                <td>{'Query Label'}</td>
+                <td>{'Schema'}</td>
+                <td>{'Total Rows'}</td>
+                <td>{'Total Time'}</td>
+              </tr>
+              {this.renderTableHistory()}
+            </tbody>
+          </table>
         </div>
       </div>
     );

@@ -2,7 +2,13 @@ import React, { Component } from 'react';
 import { Line, defaults } from "react-chartjs-2";
 
 type ResultsProps = {
-  queries: any;
+  queries: {
+    queryString: string;
+    queryData: {}[];
+    queryStatistics: any
+    querySchema: string;
+    queryLabel: string;
+  }[];
 };
 
 defaults.global.defaultFontColor = 'rgb(198,210,213)';

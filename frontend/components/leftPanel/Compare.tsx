@@ -7,10 +7,13 @@ defaults.global.defaultFontColor = 'rgb(198,210,213)';
 
 type CompareProps = {
   queries: {
-    queryLabel: string;
-    queryStatistics: any;
+    queryString: string;
+    queryData: {}[];
+    queryStatistics: any
     querySchema: string;
+    queryLabel: string;
   }[];
+  // queries: any;
   currentSchema: string
 };
 
@@ -70,7 +73,7 @@ export const Compare = (props: CompareProps) => {
               <td id='time-fl'>{actualStartupTime}</td> */}
           <td id='time-al'>{actualTotalTime}</td>
           {/* <td id="loops">{loops}</td> */}
-          <button id={queryLabel} className="delete-query-button" onClick={deleteCompareQuery}>X</button>
+          <td><button id={queryLabel} className="delete-query-button" onClick={deleteCompareQuery}>X</button></td>
         </tr>
       );
     });
