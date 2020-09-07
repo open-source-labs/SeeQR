@@ -4,10 +4,10 @@ import GenerateData from './GenerateData';
 const { ipcRenderer } = window.require('electron');
 
 // Codemirror configuration
-require('codemirror/lib/codemirror.css'); // Styline
-require('codemirror/mode/sql/sql'); // Language (Syntax Highlighting)
-require('codemirror/theme/lesser-dark.css'); // Theme
-let CodeMirror = require('react-codemirror'); // Component
+import 'codemirror/lib/codemirror.css'; // Styline
+import 'codemirror/mode/sql/sql'; // Language (Syntax Highlighting)
+import 'codemirror/theme/lesser-dark.css'; // Theme
+import CodeMirror from 'react-codemirror';
 
 type SchemaInputProps = {
   onClose: any;
