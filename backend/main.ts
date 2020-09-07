@@ -1,10 +1,11 @@
+// Import parts of electron to use
 import { app, BrowserWindow, ipcMain, Menu } from 'electron';
 import { join } from 'path';
 import { format } from 'url';
 
 const { exec } = require('child_process');
 const appMenu = require('./mainMenu'); // use appMenu to add options in top menu bar of app
-const db = require('./dbCommands'); // methods to communicate with postgres database
+const db = require('./commands'); // methods to communicate with postgres database
 const path = require('path');
 const fixPath = require('fix-path');
 
@@ -18,18 +19,18 @@ const fixPath = require('fix-path');
 /************************************************************
  ****************** CREATE & CLOSE WINDOW ******************
  ************************************************************/
-// Keep a global reference of the window objects. If not, the window will
+// Keep a global reference of the window objects, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow: any;
 
 let mainMenu = Menu.buildFromTemplate(require('./mainMenu'));
-// Toggle dev mode
+// Keep a reference for dev mode
 let dev = false;
 if (process.env.NODE_ENV !== undefined && process.env.NODE_ENV === 'development') {
   dev = true;
 }
 
-// Create browser window.
+// Create browser window
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1800,
@@ -68,7 +69,7 @@ function createWindow() {
 
   mainWindow.loadURL(indexPath);
 
-  // Don't show until windows are ready and loaded
+  // Don't show until we are ready and loaded
   mainWindow.once('ready-to-show', (event) => {
     mainWindow.show();
     const runDocker: string = `docker-compose up -d`;
@@ -108,6 +109,7 @@ function createWindow() {
 }
 
 // Invoke createWindow to create browser windows after Electron has been initialized.
+// Some APIs can only be used after this event occurs.
 app.on('ready', createWindow);
 
 // Quit when all windows are closed.
@@ -119,8 +121,9 @@ app.on('window-all-closed', () => {
   }
 });
 
-// On macOS it's common to re-create a window in the app when the dock icon is clicked and there are no other windows open.
 app.on('activate', () => {
+  // On macOS it's common to re-create a window in the app when the
+  // dock icon is clicked and there are no other windows open.
   if (mainWindow === null) {
     createWindow();
   }
@@ -141,9 +144,9 @@ ipcMain.on('return-db-list', (event, args) => {
 ipcMain.on('skip-file-upload', (event) => { });
 
 // Listen for database changes sent from the renderer upon changing tabs.
-ipcMain.on('change-db', (event, db_name) => {
-  db.changeDB(db_name);
-  event.sender.send('return-change-db', db_name);
+ipcMain.on('change-db', (event, dbName) => {
+  db.changeDB(dbName);
+  event.sender.send('return-change-db', dbName);
 });
 
 interface QueryType {
@@ -157,26 +160,45 @@ interface QueryType {
 interface SchemaType {
   schemaName: string;
   schemaFilePath: string;
-  schemaString: string;
-  db_name: string;
+  schemaEntry: string;
 }
 
+// // Generate CLI commands to be executed in child process
+// const createDBFunc = (dbName) => {
+//   return `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE ${dbName}"`
+// }
+
+// const importFileFunc = (file) => {
+//   return `docker cp ${file} postgres-1:/data_dump`;
+// }
+
+// const runSQLFunc = (file) => {
+//   return `docker exec postgres-1 psql -U postgres -d ${file} -f /data_dump`;
+// }
+
+// const runTARFunc = (file) => {
+//   return `docker exec postgres-1 pg_restore -U postgres -d ${file} /data_dump`;
+// }
+
 /* ---IMPORT DATABASE: CREATE AN INSTANCE OF DATABASE FROM A PRE-MADE .TAR OR .SQL FILE--- */
-// Listen for file upload.
+// Listen for file upload
 ipcMain.on('upload-file', (event, filePaths: string) => {
-  const isMac = process.platform === 'darwin';
-  let db_name: string;
-  if (isMac) {
-    db_name = filePaths[0].slice(filePaths[0].lastIndexOf('/') + 1, filePaths[0].lastIndexOf('.'));
+  let dbName: string;
+  if (process.platform === 'darwin') {
+    dbName = filePaths[0].slice(filePaths[0].lastIndexOf('/') + 1, filePaths[0].lastIndexOf('.'));
   } else {
-    db_name = filePaths[0].slice(filePaths[0].lastIndexOf('\\') + 1, filePaths[0].lastIndexOf('.'));
+    dbName = filePaths[0].slice(filePaths[0].lastIndexOf('\\') + 1, filePaths[0].lastIndexOf('.'));
   }
 
   // command strings to be executed in child process
-  const createDB: string = `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE ${db_name}"`;
+  const createDB: string = `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE ${dbName}"`;
   const importFile: string = `docker cp ${filePaths} postgres-1:/data_dump`;
-  const runSQL: string = `docker exec postgres-1 psql -U postgres -d ${db_name} -f /data_dump`;
-  const runTAR: string = `docker exec postgres-1 pg_restore -U postgres -d ${db_name} /data_dump`;
+  const runSQL: string = `docker exec postgres-1 psql -U postgres -d ${dbName} -f /data_dump`;
+  const runTAR: string = `docker exec postgres-1 pg_restore -U postgres -d ${dbName} /data_dump`;
+
+
+
+
   const extension: string = filePaths[0].slice(filePaths[0].lastIndexOf('.'));
 
   // CALLBACK FUNCTION : execute commands in the child process
@@ -195,7 +217,7 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
     });
 
     // Send schema name back to frontend, so frontend can load tab name 
-    event.sender.send('return-schema-name', db_name)
+    event.sender.send('return-schema-name', dbName)
   };
 
   // SEQUENCE OF EXECUTING COMMANDS
@@ -208,7 +230,6 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
     else if (extension === '.tar') runCmd = runTAR;
     addDB(runCmd, redirectModal);
   };
-
   // Step 2 : Import database file from file path into docker container
   const step2 = () => addDB(importFile, step3);
   // Changes the pg URI to look to the newly created database and queries all the tables in that database and sends it to frontend.
@@ -216,33 +237,27 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
     listObj = await db.getLists();
     event.sender.send('db-lists', listObj);
   };
-
   // Step 1 : Create empty db
   if (extension === '.sql' || extension === '.tar') addDB(createDB, step2);
   else console.log('INVALID FILE TYPE: Please use .tar or .sql extensions.');
 });
 
-// Listen for new schema (from SchemaModal and SchemaInut) sent from renderer.
+// Listen for schema edits sent from renderer
 ipcMain.on('input-schema', (event, data: SchemaType) => {
-  console.log('INPUTTED SCHEMA', data);
-
-  let db_name;
-  db_name = data.schemaName;
+  let dbName: string;
+  dbName = data.schemaName;
   let filePath = data.schemaFilePath;
-
-  // Use RegEx to remove line breaks to ensure data.schemaString is being run as one large string
-  // so that schemaString string will work for Windows computers. Line breaks are escaped differently
-  // in Windows vs Macs.
-  let schemaString = data.schemaString.replace(/[\n\r]/g, "").trim();
+  // Using RegEx to remove line breaks to ensure data.schemaEntry is being run as one large string
+  // so that schemaEntry string will work for Windows computers.
+  let schemaEntry = data.schemaEntry.replace(/[\n\r]/g, "").trim();
 
   // command strings
-  const createDB: string = `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE ${db_name}"`;
+  const createDB: string = `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE ${dbName}"`;
   const importFile: string = `docker cp ${filePath} postgres-1:/data_dump`;
-  const runSQL: string = `docker exec postgres-1 psql -U postgres -d ${db_name} -f /data_dump`;
-  const runScript: string = `docker exec postgres-1 psql -U postgres -d ${db_name} -c "${schemaString}"`;
-  const runTAR: string = `docker exec postgres-1 pg_restore -U postgres -d ${db_name} /data_dump`;
+  const runSQL: string = `docker exec postgres-1 psql -U postgres -d ${dbName} -f /data_dump`;
+  const runScript: string = `docker exec postgres-1 psql -U postgres -d ${dbName} -c "${schemaEntry}"`;
+  const runTAR: string = `docker exec postgres-1 pg_restore -U postgres -d ${dbName} /data_dump`;
   let extension: string = '';
-
   if (filePath.length > 0) {
     extension = filePath[0].slice(filePath[0].lastIndexOf('.'));
   }
@@ -258,6 +273,7 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
         console.log(`stderr: ${stderr}`);
         return;
       }
+      // console.log(`stdout: ${stdout}`);
       console.log(`${stdout}`);
       if (nextStep) nextStep();
     });
@@ -276,7 +292,6 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
     addDB(runCmd, redirectModal);
   };
 
-
   // Step 2 : Import database file from file path into docker container
   const step2 = () => addDB(importFile, step3);
 
@@ -286,7 +301,6 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
     event.sender.send('db-lists', listObj);
   };
 
-
   // Step 1 : Create empty db
   if (extension === '.sql' || extension === '.tar') {
     addDB(createDB, step2);
@@ -295,7 +309,7 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
   else addDB(createDB, step3);
 });
 
-// Listen for queries being sent from renderer.
+// Listen for queries being sent from renderer
 ipcMain.on('execute-query', (event, data: QueryType) => {
   // destructure object from frontend
   const { queryString, queryCurrentSchema, queryLabel } = data;
@@ -310,11 +324,15 @@ ipcMain.on('execute-query', (event, data: QueryType) => {
     lists: {},
   };
 
+
+  // Run select * from actors;
   db.query(queryString)
     .then((queryData) => {
       frontendData.queryData = queryData.rows;
 
+      // Run EXPLAIN (FORMAT JSON, ANALYZE)
       db.query('EXPLAIN (FORMAT JSON, ANALYZE) ' + queryString).then((queryStats) => {
+        // Getting data in row format for frontend
         frontendData.queryStatistics = queryStats.rows;
 
         async function getListAsync() {
