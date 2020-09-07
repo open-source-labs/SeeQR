@@ -214,22 +214,6 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
 
   const extension: string = filePaths[0].slice(filePaths[0].lastIndexOf('.'));
 
-  // CALLBACK FUNCTION : execute commands in the child process
-  // const addDB = (str: string, nextStep: any) => {
-  //   exec(str, (error, stdout, stderr) => {
-  //     if (error) {
-  //       console.log(`error: ${error.message}`);
-  //       return;
-  //     }
-  //     if (stderr) {
-  //       console.log(`stderr: ${stderr}`);
-  //       return;
-  //     }
-  //     console.log(`${stdout}`);
-  //     if (nextStep) nextStep();
-  //   });
-  // };
-
   // Send schema name back to frontend, so frontend can load tab name 
   // this was inside execute function. ensure this is being called at the right time after schema is uplaoded
   event.sender.send('return-schema-name', dbName)
@@ -275,23 +259,6 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
   if (filePath.length > 0) {
     extension = filePath[0].slice(filePath[0].lastIndexOf('.'));
   }
-
-  // CALLBACK FUNCTION : execute commands in the child process
-  // const addDB = (str: string, nextStep: any) => {
-  //   exec(str, (error, stdout, stderr) => {
-  //     if (error) {
-  //       console.log(`error: ${error.message}`);
-  //       return;
-  //     }
-  //     if (stderr) {
-  //       console.log(`stderr: ${stderr}`);
-  //       return;
-  //     }
-  //     // console.log(`stdout: ${stdout}`);
-  //     console.log(`${stdout}`);
-  //     if (nextStep) nextStep();
-  //   });
-  // };
 
   // SEQUENCE OF EXECUTING COMMANDS
   // Steps are in reverse order because each step is a callback function that requires the following step to be defined.
