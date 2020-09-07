@@ -2,6 +2,7 @@
 import { app, BrowserWindow, ipcMain, Menu } from 'electron';
 import { join } from 'path';
 import { format } from 'url';
+import { createBrotliDecompress } from 'zlib';
 
 const { exec } = require('child_process');
 const appMenu = require('./mainMenu'); // use appMenu to add options in top menu bar of app
@@ -163,22 +164,22 @@ interface SchemaType {
   schemaEntry: string;
 }
 
-// // Generate CLI commands to be executed in child process
-// const createDBFunc = (dbName) => {
-//   return `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE ${dbName}"`
-// }
+// Generate CLI commands to be executed in child process
+const createDBFunc = (name) => {
+  return `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE ${name}"`
+}
 
-// const importFileFunc = (file) => {
-//   return `docker cp ${file} postgres-1:/data_dump`;
-// }
+const importFileFunc = (file) => {
+  return `docker cp ${file} postgres-1:/data_dump`;
+}
 
-// const runSQLFunc = (file) => {
-//   return `docker exec postgres-1 psql -U postgres -d ${file} -f /data_dump`;
-// }
+const runSQLFunc = (file) => {
+  return `docker exec postgres-1 psql -U postgres -d ${file} -f /data_dump`;
+}
 
-// const runTARFunc = (file) => {
-//   return `docker exec postgres-1 pg_restore -U postgres -d ${file} /data_dump`;
-// }
+const runTARFunc = (file) => {
+  return `docker exec postgres-1 pg_restore -U postgres -d ${file} /data_dump`;
+}
 
 /* ---IMPORT DATABASE: CREATE AN INSTANCE OF DATABASE FROM A PRE-MADE .TAR OR .SQL FILE--- */
 // Listen for file upload
@@ -191,10 +192,15 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
   }
 
   // command strings to be executed in child process
-  const createDB: string = `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE ${dbName}"`;
-  const importFile: string = `docker cp ${filePaths} postgres-1:/data_dump`;
-  const runSQL: string = `docker exec postgres-1 psql -U postgres -d ${dbName} -f /data_dump`;
-  const runTAR: string = `docker exec postgres-1 pg_restore -U postgres -d ${dbName} /data_dump`;
+  // const createDB: string = `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE ${dbName}"`;
+  // const importFile: string = `docker cp ${filePaths} postgres-1:/data_dump`;
+  // const runSQL: string = `docker exec postgres-1 psql -U postgres -d ${dbName} -f /data_dump`;
+  // const runTAR: string = `docker exec postgres-1 pg_restore -U postgres -d ${dbName} /data_dump`;
+
+  const createDB: string = createDBFunc(dbName);
+  const importFile: string = importFileFunc(filePaths);
+  const runSQL: string = runSQLFunc(dbName);
+  const runTAR: string = runTARFunc(dbName);
 
 
 
