@@ -181,6 +181,22 @@ const runTARFunc = (file) => {
   return `docker exec postgres-1 pg_restore -U postgres -d ${file} /data_dump`;
 }
 
+// CALLBACK FUNCTION : execute commands in the child process
+const execute = (str: string, nextStep: any) => {
+  exec(str, (error, stdout, stderr) => {
+    if (error) {
+      console.log(`error: ${error.message}`);
+      return;
+    }
+    if (stderr) {
+      console.log(`stderr: ${stderr}`);
+      return;
+    }
+    console.log(`${stdout}`);
+    if (nextStep) nextStep();
+  });
+};
+
 /* ---IMPORT DATABASE: CREATE AN INSTANCE OF DATABASE FROM A PRE-MADE .TAR OR .SQL FILE--- */
 // Listen for file upload
 ipcMain.on('upload-file', (event, filePaths: string) => {
@@ -199,23 +215,24 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
   const extension: string = filePaths[0].slice(filePaths[0].lastIndexOf('.'));
 
   // CALLBACK FUNCTION : execute commands in the child process
-  const addDB = (str: string, nextStep: any) => {
-    exec(str, (error, stdout, stderr) => {
-      if (error) {
-        console.log(`error: ${error.message}`);
-        return;
-      }
-      if (stderr) {
-        console.log(`stderr: ${stderr}`);
-        return;
-      }
-      console.log(`${stdout}`);
-      if (nextStep) nextStep();
-    });
+  // const addDB = (str: string, nextStep: any) => {
+  //   exec(str, (error, stdout, stderr) => {
+  //     if (error) {
+  //       console.log(`error: ${error.message}`);
+  //       return;
+  //     }
+  //     if (stderr) {
+  //       console.log(`stderr: ${stderr}`);
+  //       return;
+  //     }
+  //     console.log(`${stdout}`);
+  //     if (nextStep) nextStep();
+  //   });
+  // };
 
-    // Send schema name back to frontend, so frontend can load tab name 
-    event.sender.send('return-schema-name', dbName)
-  };
+  // Send schema name back to frontend, so frontend can load tab name 
+  // this was inside execute function. ensure this is being called at the right time after schema is uplaoded
+  event.sender.send('return-schema-name', dbName)
 
   // SEQUENCE OF EXECUTING COMMANDS
   // Steps are in reverse order because each step is a callback function that requires the following step to be defined.
@@ -225,17 +242,17 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
     let runCmd: string = '';
     if (extension === '.sql') runCmd = runSQL;
     else if (extension === '.tar') runCmd = runTAR;
-    addDB(runCmd, redirectModal);
+    execute(runCmd, redirectModal);
   };
   // Step 2 : Import database file from file path into docker container
-  const step2 = () => addDB(importFile, step3);
+  const step2 = () => execute(importFile, step3);
   // Changes the pg URI to look to the newly created database and queries all the tables in that database and sends it to frontend.
   async function redirectModal() {
     listObj = await db.getLists();
     event.sender.send('db-lists', listObj);
   };
   // Step 1 : Create empty db
-  if (extension === '.sql' || extension === '.tar') addDB(createDB, step2);
+  if (extension === '.sql' || extension === '.tar') execute(createDB, step2);
   else console.log('INVALID FILE TYPE: Please use .tar or .sql extensions.');
 });
 
@@ -260,21 +277,21 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
   }
 
   // CALLBACK FUNCTION : execute commands in the child process
-  const addDB = (str: string, nextStep: any) => {
-    exec(str, (error, stdout, stderr) => {
-      if (error) {
-        console.log(`error: ${error.message}`);
-        return;
-      }
-      if (stderr) {
-        console.log(`stderr: ${stderr}`);
-        return;
-      }
-      // console.log(`stdout: ${stdout}`);
-      console.log(`${stdout}`);
-      if (nextStep) nextStep();
-    });
-  };
+  // const addDB = (str: string, nextStep: any) => {
+  //   exec(str, (error, stdout, stderr) => {
+  //     if (error) {
+  //       console.log(`error: ${error.message}`);
+  //       return;
+  //     }
+  //     if (stderr) {
+  //       console.log(`stderr: ${stderr}`);
+  //       return;
+  //     }
+  //     // console.log(`stdout: ${stdout}`);
+  //     console.log(`${stdout}`);
+  //     if (nextStep) nextStep();
+  //   });
+  // };
 
   // SEQUENCE OF EXECUTING COMMANDS
   // Steps are in reverse order because each step is a callback function that requires the following step to be defined.
@@ -286,11 +303,11 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
     if (extension === '.sql') runCmd = runSQL;
     else if (extension === '.tar') runCmd = runTAR;
     else runCmd = runScript;
-    addDB(runCmd, redirectModal);
+    execute(runCmd, redirectModal);
   };
 
   // Step 2 : Import database file from file path into docker container
-  const step2 = () => addDB(importFile, step3);
+  const step2 = () => execute(importFile, step3);
 
   // Changes the pg URI to look to the newly created database and queries all the tables in that database and sends it to frontend.
   async function redirectModal() {
@@ -300,10 +317,10 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
 
   // Step 1 : Create empty db
   if (extension === '.sql' || extension === '.tar') {
-    addDB(createDB, step2);
+    execute(createDB, step2);
   }
   // if data is inputted as text
-  else addDB(createDB, step3);
+  else execute(createDB, step3);
 });
 
 // Listen for queries being sent from renderer
