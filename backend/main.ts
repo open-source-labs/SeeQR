@@ -2,7 +2,6 @@
 import { app, BrowserWindow, ipcMain, Menu } from 'electron';
 import { join } from 'path';
 import { format } from 'url';
-import { createBrotliDecompress } from 'zlib';
 
 const { exec } = require('child_process');
 const appMenu = require('./mainMenu'); // use appMenu to add options in top menu bar of app
