@@ -4,7 +4,7 @@ import { format } from 'url';
 
 const { exec } = require('child_process');
 const appMenu = require('./mainMenu'); // use appMenu to add options in top menu bar of app
-const db = require('./modal');
+const db = require('./modal'); // methods to communicate with postgres database
 const path = require('path');
 const fixPath = require('fix-path');
 
@@ -136,6 +136,26 @@ ipcMain.on('return-db-list', (event, args) => {
 // Listen for skip button on Splash page.
 ipcMain.on('skip-file-upload', (event) => { });
 
+// Listen for database changes sent from the renderer upon changing tabs.
+ipcMain.on('change-db', (event, db_name) => {
+  db.changeDB(db_name);
+  event.sender.send('return-change-db', db_name);
+});
+
+interface QueryType {
+  queryCurrentSchema: string;
+  queryString: string;
+  queryLabel: string;
+  queryData: string;
+  queryStatistics: string;
+}
+
+interface SchemaType {
+  schemaName: string;
+  schemaFilePath: string;
+  schemaEntry: string;
+}
+
 /* ---IMPORT DATABASE: CREATE AN INSTANCE OF DATABASE FROM A PRE-MADE .TAR OR .SQL FILE--- */
 // Listen for file upload.
 ipcMain.on('upload-file', (event, filePaths: string) => {
@@ -195,68 +215,7 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
   else console.log('INVALID FILE TYPE: Please use .tar or .sql extensions.');
 });
 
-// Listen for database changes sent from the renderer upon changing tabs.
-ipcMain.on('change-db', (event, db_name) => {
-  db.changeDB(db_name);
-  event.sender.send('return-change-db', db_name);
-});
-
-interface QueryType {
-  queryCurrentSchema: string;
-  queryString: string;
-  queryLabel: string;
-  queryData: string;
-  queryStatistics: string;
-}
-
-// Listen for queries being sent from renderer.
-ipcMain.on('execute-query', (event, data: QueryType) => {
-  // destructure object from frontend
-  const { queryString, queryCurrentSchema, queryLabel } = data;
-
-  // initialize object to store all data to send to frontend
-  let frontendData = {
-    queryString,
-    queryCurrentSchema,
-    queryLabel,
-    queryData: '',
-    queryStatistics: '',
-    lists: {},
-  };
-
-
-  // Run select * from actors;
-  db.query(queryString)
-    .then((queryData) => {
-      frontendData.queryData = queryData.rows;
-
-      // Run EXPLAIN (FORMAT JSON, ANALYZE)
-      db.query('EXPLAIN (FORMAT JSON, ANALYZE) ' + queryString).then((queryStats) => {
-        // Getting data in row format for frontend
-        frontendData.queryStatistics = queryStats.rows;
-
-        async function getListAsync() {
-          // let listObj;
-          listObj = await db.getLists();
-          frontendData.lists = listObj;
-          event.sender.send('db-lists', listObj)
-          event.sender.send('return-execute-query', frontendData);
-        }
-        getListAsync();
-      });
-    })
-    .catch((error: string) => {
-      console.log('ERROR in execute-query channel in main.ts', error);
-    });
-});
-
-interface SchemaType {
-  schemaName: string;
-  schemaFilePath: string;
-  schemaEntry: string;
-}
-
-// Listen for schema edits sent from renderer
+// Listen for new schema (from SchemaModal and SchemaInut) sent from renderer.
 ipcMain.on('input-schema', (event, data: SchemaType) => {
   let db_name: string;
   db_name = data.schemaName;
@@ -321,4 +280,41 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
   }
   // if data is inputted as text
   else addDB(createDB, step3);
+});
+
+// Listen for queries being sent from renderer.
+ipcMain.on('execute-query', (event, data: QueryType) => {
+  // destructure object from frontend
+  const { queryString, queryCurrentSchema, queryLabel } = data;
+
+  // initialize object to store all data to send to frontend
+  let frontendData = {
+    queryString,
+    queryCurrentSchema,
+    queryLabel,
+    queryData: '',
+    queryStatistics: '',
+    lists: {},
+  };
+
+  db.query(queryString)
+    .then((queryData) => {
+      frontendData.queryData = queryData.rows;
+
+      db.query('EXPLAIN (FORMAT JSON, ANALYZE) ' + queryString).then((queryStats) => {
+        frontendData.queryStatistics = queryStats.rows;
+
+        async function getListAsync() {
+          // let listObj;
+          listObj = await db.getLists();
+          frontendData.lists = listObj;
+          event.sender.send('db-lists', listObj)
+          event.sender.send('return-execute-query', frontendData);
+        }
+        getListAsync();
+      });
+    })
+    .catch((error: string) => {
+      console.log('ERROR in execute-query channel in main.ts', error);
+    });
 });

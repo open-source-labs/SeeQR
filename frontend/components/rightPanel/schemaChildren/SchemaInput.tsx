@@ -15,23 +15,24 @@ type SchemaInputProps = {
 };
 
 type state = {
-  schemaEntry: string;
+  schemaString: string;
 };
 
 class SchemaInput extends Component<SchemaInputProps, state> {
   constructor(props: SchemaInputProps) {
     super(props);
     this.handleSchemaSubmit = this.handleSchemaSubmit.bind(this);
-    this.updateCode = this.updateCode.bind(this);
+    this.handleSchemaChange = this.handleSchemaChange.bind(this);
   }
+
   state: state = {
-    schemaEntry: '',
+    schemaString: '',
   };
 
-  // Updates state.queryString as user inputs query string
-  updateCode(event: string) {
+  // Updates state.schemaString as user inputs query string
+  handleSchemaChange(event: string) {
     this.setState({
-      schemaEntry: event,
+      schemaString: event,
     });
   }
 
@@ -41,8 +42,9 @@ class SchemaInput extends Component<SchemaInputProps, state> {
     const schemaObj = {
       schemaName: this.props.schemaName,
       schemaFilePath: '',
-      schemaEntry: this.state.schemaEntry,
+      schemaString: this.state.schemaString,
     };
+
     ipcRenderer.send('input-schema', schemaObj);
   }
 
@@ -64,7 +66,7 @@ class SchemaInput extends Component<SchemaInputProps, state> {
           <br />
           <div className="codemirror">
             <CodeMirror
-              onChange={(e) => this.updateCode(e)}
+              onChange={(e) => this.handleSchemaChange(e)}
               options={options}
             />
           </div>
