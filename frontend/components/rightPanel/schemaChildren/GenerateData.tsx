@@ -1,7 +1,9 @@
 import React, { Component, MouseEvent, ChangeEvent } from 'react';
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 const { ipcRenderer } = window.require('electron');
-import typeOptions from './typeOptions'
+// import GenerateDataColumn from './GenerateDataColumn';
+
+// import typeOptions from './typeOptions'
 
 type ClickEvent = React.MouseEvent<HTMLElement>;
 
@@ -10,23 +12,32 @@ type GenerateDataProps = {
   onClose: any;
 };
 
+type column = {
+  name : string,  
+  dataCategory : string,
+  dataType : string,
+  data : any,
+}
+
 type state = {
   tables : Array<string>,
   currentTable : any,
   scale : any,
-  columns : any,
+  columns : Array<column>,
 };
-
 
 
 class GenerateData extends Component<GenerateDataProps, state> {
   constructor(props: GenerateDataProps) {
     super(props);
-    // bind form submission function
+
+    // this.handleAddColumn = this.handleAddColumn.bind(this);
+    // this.handleRemoveColumn = this.handleRemoveColumn.bind(this);
+    this.componentChangeState = this.componentChangeState.bind(this);
     this.handleFormSubmit = this.handleFormSubmit.bind(this);
   }
   state: state = {
-    tables : ['table1', 'table2'],
+    tables : [],
     currentTable : '',
     scale : 0,
     columns : [
@@ -37,24 +48,35 @@ class GenerateData extends Component<GenerateDataProps, state> {
         data : {},
       }
     ],
+    
   };
-  
-  handleAddColumn (event: any) {
-    const {columns} = this.state.columns;
-    const newCol = {  
-      name : '',  
-      dataCategory : '',
-      dataType : '',
-      data : {},
-    }
-    columns.push(newCol)
-    this.setState({ columns })
-  }
 
-  handleRemoveColumn (event: any) {
-    const {columns} = this.state.columns;
-    columns.pop();
-    this.setState({ columns });
+  // ipcRenderer.on('db-lists', (event: any, returnedLists: any) => {
+  //     this.setState({ dbLists: returnedLists.tableList })
+  //   });
+
+  // handleAddColumn () {
+  //   const {columns} = this.state.columns;
+  //   const newCol = {  
+  //     name : '',  
+  //     dataCategory : '',
+  //     dataType : '',
+  //     data : {},
+  //   };
+  //   columns.push(newCol);
+  //   this.setState({ columns });
+  // }
+
+  // handleRemoveColumn () {
+  //   const {columns} = this.state.columns;
+  //   columns.pop();
+  //   this.setState({ columns });
+  // }
+
+  componentChangeState (i : number, property : string, value : any) {
+    const { columns } = this.state;
+    columns[i][property] = value;
+    this.setState( { columns });
   }
 
   handleFormSubmit (event: any) {
@@ -91,57 +113,35 @@ class GenerateData extends Component<GenerateDataProps, state> {
   onClose = (event: any) => {
     this.props.onClose && this.props.onClose(event);
   };
-// input all form input fields under "form" and link to event handlers to save to state
-// bind all functions for field entries on the form
+  // input all form input fields under "form" and link to event handlers to save to state
+  // bind all functions for field entries on the form
+
+
   render() {
-    let columnTypes : string = '';
-    this.state.columns.forEach((column, i) => {
-      let renderString : string = ''
-      
-      renderString += `<div>Column Name:</div><input type="text" name="${column}" onChange={(e)=>{this.setState({ ${column}.name : e})}}/>`;
-
-      renderString += `<div>Data Type:</div><select>{typeOptions.dropdown.map((elem) => <option key={elem} onChange={(e)=>{this.setState({ ${column} : e} )}}>{elem}</option>)}</select>`;
-          
-      if (column.dataCategory.length > 0) {
-        renderString += `<select>{typeOptions[${column.dataCategory}].dropdown.map((elem) => <option key="elem" onChange={(e) => {typeOptions[${column.dataCategory}].add(e, ${i})}}>{elem}</option>)}</select>`;
-      };
-
-      if (typeOptions[column.dataCategory][column.dataType].length) {
-        let output = ''
-          typeOptions[column.dataCategory][column.dataType].forEach((el, k)=> {
-            let localResult = '';
-            if (el.display) {
-              localResult = `${el.option}<input type="${el.type}" name={"option${k}"} onChange={(e)=>{${el.add}(e)}}/>`
-            } else { 
-              el.add(k);
-            }
-            output += localResult;
-          })
-          renderString += output;
-        }
-    columnTypes += renderString;  
+    const columns : any = [];
+    this.state.columns.forEach( (e : any, i : number) => {
+      columns.push(`<div><GenerateDataColumn key=${i} columnID=${i} columnObj=${e} updateState={this.componentChangeState}/></div>`);
     })
+    
 
     return (
       <div>
         <form onSubmit={this.handleFormSubmit}>
           <div id="modal-buttons">
             Generate data on empty tables.
-
-            Table:
-            <select>
-              {this.state.tables.map((elem) => <option key={elem} onChange={(e)=>{this.setState({currentTable : e})}}>{elem}</option>)}
-            </select>
             
-            Scale:
-            <input type="number" name="scale" onChange={(e)=>{this.setState({scale : e})}}/>
+              Table:
+              <select>
+                {this.state.tables.map((elem) => <option key={elem} onChange={(e)=>{this.setState({currentTable : e})}}>{elem}</option>)}
+              </select>
+              Scale:
+              <input type="number" name="scale" min="1" defaultValue="# of records" onChange={(e)=>{this.setState({scale : e})}}/>
+            
+            <div>{columns}</div>
 
             
-            <div>{columnTypes}</div>
-
-
-            <input type="button" onClick={this.handleAddColumn(e)}>+</input>
-            <input type="button" onClick={this.handleRemoveColumn(e)}>-</input>
+            {/* <input type="button" onClick={e => this.handleAddColumn()}>+</input>
+            <input type="button" onClick={e => this.handleRemoveColumn()}>-</input> */}
             <div className="actions">
               <button className="toggle-button" onClick={this.onClose}>
                 close
@@ -151,7 +151,7 @@ class GenerateData extends Component<GenerateDataProps, state> {
         </form>
       </div>
     );
-  }
-}
+  };
+};
 
 export default GenerateData;
