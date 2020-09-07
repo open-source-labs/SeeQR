@@ -134,7 +134,7 @@ app.on('activate', () => {
  *********************** IPC CHANNELS ***********************
  ************************************************************/
 
-// Global variable
+// Global variable to store list of databases and tables to provide to frontend upon refreshing view.
 let listObj;
 
 ipcMain.on('return-db-list', (event, args) => {
@@ -164,7 +164,7 @@ interface SchemaType {
   schemaEntry: string;
 }
 
-// Generate CLI commands to be executed in child process
+// Generate CLI commands to be executed in child process.
 const createDBFunc = (name) => {
   return `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE ${name}"`
 }
@@ -181,7 +181,7 @@ const runTARFunc = (file) => {
   return `docker exec postgres-1 pg_restore -U postgres -d ${file} /data_dump`;
 }
 
-// CALLBACK FUNCTION : execute commands in the child process
+// Function to execute commands in the child process.
 const execute = (str: string, nextStep: any) => {
   exec(str, (error, stdout, stderr) => {
     if (error) {
@@ -196,6 +196,21 @@ const execute = (str: string, nextStep: any) => {
     if (nextStep) nextStep();
   });
 };
+
+// // Function to execute commands in the child process.
+// const execute = (str: string) => {
+//   exec(str, (error, stdout, stderr) => {
+//     if (error) {
+//       console.log(`error: ${error.message}`);
+//       return;
+//     }
+//     if (stderr) {
+//       console.log(`stderr: ${stderr}`);
+//       return;
+//     }
+//     console.log(`${stdout}`);
+//   });
+// };
 
 /* ---IMPORT DATABASE: CREATE AN INSTANCE OF DATABASE FROM A PRE-MADE .TAR OR .SQL FILE--- */
 // Listen for file upload
@@ -214,27 +229,28 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
 
   const extension: string = filePaths[0].slice(filePaths[0].lastIndexOf('.'));
 
-  // Send schema name back to frontend, so frontend can load tab name 
-  // this was inside execute function. ensure this is being called at the right time after schema is uplaoded
-  event.sender.send('return-schema-name', dbName)
-
   // SEQUENCE OF EXECUTING COMMANDS
   // Steps are in reverse order because each step is a callback function that requires the following step to be defined.
 
-  // Step 3 : Given the file path extension, run the appropriate command in postgres to build the db
+  // Changes the pg URI the newly created database, queries new database, then sends list of tables and list of databases to frontend.
+  async function sendLists() {
+    listObj = await db.getLists();
+    event.sender.send('db-lists', listObj);
+    // Send schema name back to frontend, so frontend can load tab name.
+    event.sender.send('return-schema-name', dbName)
+  };
+
+  // Step 3 : Given the file path extension, run the appropriate command in postgres to populate db.
   const step3 = () => {
     let runCmd: string = '';
     if (extension === '.sql') runCmd = runSQL;
     else if (extension === '.tar') runCmd = runTAR;
-    execute(runCmd, redirectModal);
+    execute(runCmd, sendLists);
   };
+
   // Step 2 : Import database file from file path into docker container
   const step2 = () => execute(importFile, step3);
-  // Changes the pg URI to look to the newly created database and queries all the tables in that database and sends it to frontend.
-  async function redirectModal() {
-    listObj = await db.getLists();
-    event.sender.send('db-lists', listObj);
-  };
+
   // Step 1 : Create empty db
   if (extension === '.sql' || extension === '.tar') execute(createDB, step2);
   else console.log('INVALID FILE TYPE: Please use .tar or .sql extensions.');
@@ -242,27 +258,33 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
 
 // Listen for schema edits sent from renderer
 ipcMain.on('input-schema', (event, data: SchemaType) => {
-  let dbName: string;
-  dbName = data.schemaName;
-  let filePath = data.schemaFilePath;
+  const { schemaName: dbName, schemaFilePath: filePath, schemaEntry } = data;
+
   // Using RegEx to remove line breaks to ensure data.schemaEntry is being run as one large string
   // so that schemaEntry string will work for Windows computers.
-  let schemaEntry = data.schemaEntry.replace(/[\n\r]/g, "").trim();
+  let trimSchemaEntry = schemaEntry.replace(/[\n\r]/g, "").trim();
 
   const createDB: string = createDBFunc(dbName);
   const importFile: string = importFileFunc(filePath);
   const runSQL: string = runSQLFunc(dbName);
   const runTAR: string = runTARFunc(dbName);
 
-  const runScript: string = `docker exec postgres-1 psql -U postgres -d ${dbName} -c "${schemaEntry}"`;
+  const runScript: string = `docker exec postgres-1 psql -U postgres -d ${dbName} -c "${trimSchemaEntry}"`;
   let extension: string = '';
   if (filePath.length > 0) {
     extension = filePath[0].slice(filePath[0].lastIndexOf('.'));
   }
 
+
   // SEQUENCE OF EXECUTING COMMANDS
   // Steps are in reverse order because each step is a callback function that requires the following step to be defined.
   // ^refactor this so it's readable and module. move it to global scope or another file
+
+  // Changes the pg URI to look to the newly created database and queries all the tables in that database and sends it to frontend.
+  async function getLists() {
+    listObj = await db.getLists();
+    event.sender.send('db-lists', listObj);
+  };
 
   // Step 3 : Given the file path extension, run the appropriate command in postgres to build the db
   const step3 = () => {
@@ -270,22 +292,14 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
     if (extension === '.sql') runCmd = runSQL;
     else if (extension === '.tar') runCmd = runTAR;
     else runCmd = runScript;
-    execute(runCmd, redirectModal);
+    execute(runCmd, getLists);
   };
 
   // Step 2 : Import database file from file path into docker container
   const step2 = () => execute(importFile, step3);
 
-  // Changes the pg URI to look to the newly created database and queries all the tables in that database and sends it to frontend.
-  async function redirectModal() {
-    listObj = await db.getLists();
-    event.sender.send('db-lists', listObj);
-  };
-
   // Step 1 : Create empty db
-  if (extension === '.sql' || extension === '.tar') {
-    execute(createDB, step2);
-  }
+  if (extension === '.sql' || extension === '.tar') execute(createDB, step2);
   // if data is inputted as text
   else execute(createDB, step3);
 });
@@ -317,7 +331,6 @@ ipcMain.on('execute-query', (event, data: QueryType) => {
         frontendData.queryStatistics = queryStats.rows;
 
         async function getListAsync() {
-          // let listObj;
           listObj = await db.getLists();
           frontendData.lists = listObj;
           event.sender.send('db-lists', listObj)
