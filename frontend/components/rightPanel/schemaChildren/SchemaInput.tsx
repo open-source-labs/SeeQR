@@ -3,22 +3,11 @@ import GenerateData from './GenerateData';
 
 const { ipcRenderer } = window.require('electron');
 
-// Codemirror Styling
-require('codemirror/lib/codemirror.css');
-
-// Codemirror Languages
-require('codemirror/mode/javascript/javascript');
-require('codemirror/mode/sql/sql');
-
-// Codemirror Themes
-require('codemirror/mode/markdown/markdown');
-require('codemirror/theme/monokai.css');
-require('codemirror/theme/midnight.css');
-require('codemirror/theme/lesser-dark.css');
-require('codemirror/theme/solarized.css');
-
-// Codemirror Component
-var CodeMirror = require('react-codemirror');
+// Codemirror configuration
+require('codemirror/lib/codemirror.css'); // Styline
+require('codemirror/mode/sql/sql'); // Language (Syntax Highlighting)
+require('codemirror/theme/lesser-dark.css'); // Theme
+let CodeMirror = require('react-codemirror'); // Component
 
 type SchemaInputProps = {
   onClose: any;

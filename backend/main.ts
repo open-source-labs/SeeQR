@@ -1,41 +1,31 @@
-// main.js is the entry point to the main process (the node process)
-
-// Import parts of electron to use
 import { app, BrowserWindow, ipcMain, Menu } from 'electron';
 import { join } from 'path';
 import { format } from 'url';
+
 const { exec } = require('child_process');
 const appMenu = require('./mainMenu'); // use appMenu to add options in top menu bar of app
 const db = require('./modal');
 const path = require('path');
 const fixPath = require('fix-path');
 
-// Ensures path is correct for MacOS within inherited shell when packaging electron app.
-fixPath();
-
-// Global variable
-let listObj;
-
-ipcMain.on('return-db-list', (event, args) => {
-  db.getLists().then(data => event.sender.send('db-lists', data));
-});
-
+// Uncomment to package electron app. Ensures path is correct for MacOS within inherited shell.
+// fixPath();
 
 /************************************************************
- ********* CREATE & CLOSE WINDOW UPON INITIALIZATION *********
+ ****************** CREATE & CLOSE WINDOW ******************
  ************************************************************/
-// Keep a global reference of the window objects, if you don't, the window will
+// Keep a global reference of the window objects. If not, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow: any;
 
 let mainMenu = Menu.buildFromTemplate(require('./mainMenu'));
-// Keep a reference for dev mode
+// Toggle dev mode
 let dev = false;
 if (process.env.NODE_ENV !== undefined && process.env.NODE_ENV === 'development') {
   dev = true;
 }
 
-// Create browser window
+// Create browser window.
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1800,
@@ -47,6 +37,7 @@ function createWindow() {
     webPreferences: { nodeIntegration: true, enableRemoteModule: true },
     icon: path.join(__dirname, '../../frontend/assets/images/seeqr_dock.png'),
   });
+
   if (process.platform === 'darwin') {
     app.dock.setIcon(path.join(__dirname, '../../frontend/assets/images/seeqr_dock.png'));
   }
@@ -73,7 +64,7 @@ function createWindow() {
 
   mainWindow.loadURL(indexPath);
 
-  // Don't show until we are ready and loaded
+  // Don't show until windows are ready and loaded
   mainWindow.once('ready-to-show', (event) => {
     mainWindow.show();
     const runDocker: string = `docker-compose up -d`;
@@ -113,7 +104,6 @@ function createWindow() {
 }
 
 // Invoke createWindow to create browser windows after Electron has been initialized.
-// Some APIs can only be used after this event occurs.
 app.on('ready', createWindow);
 
 // Quit when all windows are closed.
@@ -125,20 +115,29 @@ app.on('window-all-closed', () => {
   }
 });
 
+// On macOS it's common to re-create a window in the app when the dock icon is clicked and there are no other windows open.
 app.on('activate', () => {
-  // On macOS it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
   if (mainWindow === null) {
     createWindow();
   }
 });
+
 /************************************************************
  *********************** IPC CHANNELS ***********************
  ************************************************************/
 
+// Global variable
+let listObj;
+
+ipcMain.on('return-db-list', (event, args) => {
+  db.getLists().then(data => event.sender.send('db-lists', data));
+});
+
+// Listen for skip button on Splash page.
+ipcMain.on('skip-file-upload', (event) => { });
 
 /* ---IMPORT DATABASE: CREATE AN INSTANCE OF DATABASE FROM A PRE-MADE .TAR OR .SQL FILE--- */
-// Listen for file upload
+// Listen for file upload.
 ipcMain.on('upload-file', (event, filePaths: string) => {
   const isMac = process.platform === 'darwin';
   let db_name: string;
@@ -195,10 +194,12 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
   if (extension === '.sql' || extension === '.tar') addDB(createDB, step2);
   else console.log('INVALID FILE TYPE: Please use .tar or .sql extensions.');
 });
-/* ---END OF IMPORT DATABASE FUNCTION--- */
 
-// Listen for user clicking skip button
-ipcMain.on('skip-file-upload', (event) => { });
+// Listen for database changes sent from the renderer upon changing tabs.
+ipcMain.on('change-db', (event, db_name) => {
+  db.changeDB(db_name);
+  event.sender.send('return-change-db', db_name);
+});
 
 interface QueryType {
   queryCurrentSchema: string;
@@ -208,13 +209,7 @@ interface QueryType {
   queryStatistics: string;
 }
 
-//Listens for database changes sent from the renderer
-ipcMain.on('change-db', (event, db_name) => {
-  db.changeDB(db_name);
-  event.sender.send('return-change-db', db_name);
-});
-
-// Listen for queries being sent from renderer
+// Listen for queries being sent from renderer.
 ipcMain.on('execute-query', (event, data: QueryType) => {
   // destructure object from frontend
   const { queryString, queryCurrentSchema, queryLabel } = data;
@@ -254,6 +249,7 @@ ipcMain.on('execute-query', (event, data: QueryType) => {
       console.log('ERROR in execute-query channel in main.ts', error);
     });
 });
+
 interface SchemaType {
   schemaName: string;
   schemaFilePath: string;

@@ -43,7 +43,7 @@ class SchemaModal extends Component<SchemaModalProps, state> {
 
   // Set schema name
   handleSchemaName(event: any) {
-    // convert input label name to lowercase only with no spacing for db naming convention
+    // convert input label name to lowercase only with no spacing to comply with db naming convention.
     const schemaNameInput = event.target.value;
     let dbSafeName = schemaNameInput.toLowerCase();
     dbSafeName = dbSafeName.replace(/[^A-Z0-9]/gi, '');
@@ -51,8 +51,7 @@ class SchemaModal extends Component<SchemaModalProps, state> {
   }
 
   // Load schema file path
-  // When file path is uploaded, query entry is cleared (change to replaced by script later)
-  // Add dialog box to warn user of this
+  // When file path is uploaded, query entry is cleared.
   handleSchemaFilePath(event: ClickEvent) {
     event.preventDefault();
     dialog
@@ -73,14 +72,14 @@ class SchemaModal extends Component<SchemaModalProps, state> {
         this.props.showModal(event);
       })
       .catch((err: object) => {
-        console.log(err);
+        console.log('Error in handleSchemaFilePath method of SchemaModal.tsx.', err);
       });
   }
 
   // When schema script is inserted, file path is cleared set dialog to warn user.
   handleSchemaEntry(event: any) {
-    this.setState({ schemaEntry: event.target.value });
-    this.setState({ schemaFilePath: '' });
+    this.setState({ schemaEntry: event.target.value, schemaFilePath: '' });
+    // this.setState({ schemaFilePath: '' });
   }
 
   handleSchemaSubmit(event: any) {
@@ -91,6 +90,7 @@ class SchemaModal extends Component<SchemaModalProps, state> {
       schemaFilePath: this.state.schemaFilePath,
       schemaEntry: this.state.schemaEntry,
     };
+
     ipcRenderer.send('input-schema', schemaObj);
   }
 
