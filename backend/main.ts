@@ -8,6 +8,10 @@ const db = require('./modal'); // methods to communicate with postgres database
 const path = require('path');
 const fixPath = require('fix-path');
 
+/************************************************************
+ *********** PACKAGE ELECTRON APP FOR DEPLOYMENT ***********
+ ************************************************************/
+
 // Uncomment to package electron app. Ensures path is correct for MacOS within inherited shell.
 // fixPath();
 
@@ -203,6 +207,7 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
     else if (extension === '.tar') runCmd = runTAR;
     addDB(runCmd, redirectModal);
   };
+
   // Step 2 : Import database file from file path into docker container
   const step2 = () => addDB(importFile, step3);
   // Changes the pg URI to look to the newly created database and queries all the tables in that database and sends it to frontend.
@@ -210,6 +215,7 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
     listObj = await db.getLists();
     event.sender.send('db-lists', listObj);
   };
+
   // Step 1 : Create empty db
   if (extension === '.sql' || extension === '.tar') addDB(createDB, step2);
   else console.log('INVALID FILE TYPE: Please use .tar or .sql extensions.');
@@ -220,8 +226,10 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
   let db_name: string;
   db_name = data.schemaName;
   let filePath = data.schemaFilePath;
-  // Using RegEx to remove line breaks to ensure data.schemaEntry is being run as one large string
-  // so that schemaEntry string will work for Windows computers.
+
+  // Use RegEx to remove line breaks to ensure data.schemaEntry is being run as one large string
+  // so that schemaEntry string will work for Windows computers. Line breaks are escaped differently
+  // in Windows vs Macs.
   let schemaEntry = data.schemaEntry.replace(/[\n\r]/g, "").trim();
 
   // command strings
@@ -231,6 +239,7 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
   const runScript: string = `docker exec postgres-1 psql -U postgres -d ${db_name} -c "${schemaEntry}"`;
   const runTAR: string = `docker exec postgres-1 pg_restore -U postgres -d ${db_name} /data_dump`;
   let extension: string = '';
+
   if (filePath.length > 0) {
     extension = filePath[0].slice(filePath[0].lastIndexOf('.'));
   }
@@ -246,7 +255,6 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
         console.log(`stderr: ${stderr}`);
         return;
       }
-      // console.log(`stdout: ${stdout}`);
       console.log(`${stdout}`);
       if (nextStep) nextStep();
     });
@@ -265,6 +273,7 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
     addDB(runCmd, redirectModal);
   };
 
+
   // Step 2 : Import database file from file path into docker container
   const step2 = () => addDB(importFile, step3);
 
@@ -273,6 +282,7 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
     listObj = await db.getLists();
     event.sender.send('db-lists', listObj);
   };
+
 
   // Step 1 : Create empty db
   if (extension === '.sql' || extension === '.tar') {
