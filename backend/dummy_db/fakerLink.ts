@@ -1,3 +1,5 @@
+const faker = require('faker');
+
 export const fakerLink = {
   'Address - zipCode' : faker.address.zipCode,
   'Address - zipCodeByState' : faker.address.zipCodeByState,

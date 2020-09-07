@@ -4,7 +4,7 @@ const fakerLink = require('./../../../../backend/dummy_db/fakerLink');
 export const typeOptions : any = {
     dropdown : ['unique', 'random'],
     unique : {
-      dropdown : ['string', 'number'],
+      dropdown : ['str', 'num'],
       // add : (val, i) => {
       //     const {columns} = this.state;
       //     if (val === 'sting') {columns[i].dataType = 'str'};

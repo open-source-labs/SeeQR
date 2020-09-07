@@ -1,7 +1,7 @@
 import React, { Component, MouseEvent, ChangeEvent } from 'react';
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 const { ipcRenderer } = window.require('electron');
-// import GenerateDataColumn from './GenerateDataColumn';
+import GenerateDataColumn from './GenerateDataColumn';
 
 // import typeOptions from './typeOptions'
 
@@ -13,22 +13,22 @@ type GenerateDataProps = {
 };
 
 type column = {
-  name : string,  
-  dataCategory : string,
-  dataType : string,
-  data : any,
+  // name : string,  
+  // dataCategory : string,
+  // dataType : string,
+  // data : any,
 }
 
 type state = {
-  tables : Array<string>,
-  currentTable : any,
-  scale : any,
-  columns : Array<column>,
+  // tables : Array<string>,
+  // currentTable : any,
+  // scale : any,
+  // columns : Array<column>,
 };
 
 
-class GenerateData extends Component<GenerateDataProps, state> {
-  constructor(props: GenerateDataProps) {
+class GenerateData extends Component/*<GenerateDataProps, state>*/ {
+  constructor(props: any) {
     super(props);
 
     // this.handleAddColumn = this.handleAddColumn.bind(this);
@@ -36,8 +36,8 @@ class GenerateData extends Component<GenerateDataProps, state> {
     this.componentChangeState = this.componentChangeState.bind(this);
     this.handleFormSubmit = this.handleFormSubmit.bind(this);
   }
-  state: state = {
-    tables : [],
+  state: any = {
+    tables : ['TABLE', 'tables', 'tAbElZ'],
     currentTable : '',
     scale : 0,
     columns : [
@@ -73,9 +73,9 @@ class GenerateData extends Component<GenerateDataProps, state> {
   //   this.setState({ columns });
   // }
 
-  componentChangeState (i : number, property : string, value : any) {
+  componentChangeState (i : number, value : any, property : any, subProperty : any) {
     const { columns } = this.state;
-    columns[i][property] = value;
+    (!subProperty) ? columns[i][property] = value : columns[i][property][subProperty];
     this.setState( { columns });
   }
 
@@ -122,22 +122,25 @@ class GenerateData extends Component<GenerateDataProps, state> {
     this.state.columns.forEach( (e : any, i : number) => {
       columns.push(`<div><GenerateDataColumn key=${i} columnID=${i} columnObj=${e} updateState={this.componentChangeState}/></div>`);
     })
-    
 
     return (
       <div>
         <form onSubmit={this.handleFormSubmit}>
           <div id="modal-buttons">
-            Generate data on empty tables.
-            
+            <div>Generate data on empty tables.</div>    
+            <div>
               Table:
               <select>
                 {this.state.tables.map((elem) => <option key={elem} onChange={(e)=>{this.setState({currentTable : e})}}>{elem}</option>)}
               </select>
+            </div>
+            <br />
+            <div>
               Scale:
               <input type="number" name="scale" min="1" defaultValue="# of records" onChange={(e)=>{this.setState({scale : e})}}/>
-            
+            </div>
             <div>{columns}</div>
+            <div><GenerateDataColumn key="0" columnObj={this.state.columns[0]} updateState={this.componentChangeState}/></div>
 
             
             {/* <input type="button" onClick={e => this.handleAddColumn()}>+</input>
