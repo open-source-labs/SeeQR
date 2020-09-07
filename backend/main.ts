@@ -6,15 +6,15 @@ import { createBrotliDecompress } from 'zlib';
 
 const { exec } = require('child_process');
 const appMenu = require('./mainMenu'); // use appMenu to add options in top menu bar of app
-const db = require('./commands'); // methods to communicate with postgres database
+const db = require('./models');
 const path = require('path');
-const fixPath = require('fix-path');
 
 /************************************************************
  *********** PACKAGE ELECTRON APP FOR DEPLOYMENT ***********
  ************************************************************/
 
 // Uncomment to package electron app. Ensures path is correct for MacOS within inherited shell.
+// const fixPath = require('fix-path');
 // fixPath();
 
 /************************************************************
@@ -150,20 +150,6 @@ ipcMain.on('change-db', (event, dbName) => {
   event.sender.send('return-change-db', dbName);
 });
 
-interface QueryType {
-  queryCurrentSchema: string;
-  queryString: string;
-  queryLabel: string;
-  queryData: string;
-  queryStatistics: string;
-}
-
-interface SchemaType {
-  schemaName: string;
-  schemaFilePath: string;
-  schemaEntry: string;
-}
-
 // Generate CLI commands to be executed in child process.
 const createDBFunc = (name) => {
   return `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE ${name}"`
@@ -196,21 +182,6 @@ const execute = (str: string, nextStep: any) => {
     if (nextStep) nextStep();
   });
 };
-
-// // Function to execute commands in the child process.
-// const execute = (str: string) => {
-//   exec(str, (error, stdout, stderr) => {
-//     if (error) {
-//       console.log(`error: ${error.message}`);
-//       return;
-//     }
-//     if (stderr) {
-//       console.log(`stderr: ${stderr}`);
-//       return;
-//     }
-//     console.log(`${stdout}`);
-//   });
-// };
 
 /* ---IMPORT DATABASE: CREATE AN INSTANCE OF DATABASE FROM A PRE-MADE .TAR OR .SQL FILE--- */
 // Listen for file upload
@@ -256,6 +227,12 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
   else console.log('INVALID FILE TYPE: Please use .tar or .sql extensions.');
 });
 
+interface SchemaType {
+  schemaName: string;
+  schemaFilePath: string;
+  schemaEntry: string;
+}
+
 // Listen for schema edits sent from renderer
 ipcMain.on('input-schema', (event, data: SchemaType) => {
   const { schemaName: dbName, schemaFilePath: filePath, schemaEntry } = data;
@@ -275,10 +252,8 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
     extension = filePath[0].slice(filePath[0].lastIndexOf('.'));
   }
 
-
   // SEQUENCE OF EXECUTING COMMANDS
   // Steps are in reverse order because each step is a callback function that requires the following step to be defined.
-  // ^refactor this so it's readable and module. move it to global scope or another file
 
   // Changes the pg URI to look to the newly created database and queries all the tables in that database and sends it to frontend.
   async function getLists() {
@@ -303,6 +278,14 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
   // if data is inputted as text
   else execute(createDB, step3);
 });
+
+interface QueryType {
+  queryCurrentSchema: string;
+  queryString: string;
+  queryLabel: string;
+  queryData: string;
+  queryStatistics: string;
+}
 
 // Listen for queries being sent from renderer
 ipcMain.on('execute-query', (event, data: QueryType) => {
@@ -330,13 +313,12 @@ ipcMain.on('execute-query', (event, data: QueryType) => {
         // Getting data in row format for frontend
         frontendData.queryStatistics = queryStats.rows;
 
-        async function getListAsync() {
+        (async function getListAsync() {
           listObj = await db.getLists();
           frontendData.lists = listObj;
           event.sender.send('db-lists', listObj)
           event.sender.send('return-execute-query', frontendData);
-        }
-        getListAsync();
+        })();
       });
     })
     .catch((error: string) => {
