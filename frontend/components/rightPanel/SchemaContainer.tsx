@@ -7,12 +7,6 @@ const { dialog } = require('electron').remote;
 import SchemaModal from './schemaChildren/SchemaModal';
 
 type SchemaContainerProps = {
-  // queries: {
-  //   queryString: string;
-  //   queryData: object[];
-  //   queryStatistics: any;
-  //   querySchema: string;
-  // }[];
   queries: any;
   currentSchema: string;
 };
@@ -40,9 +34,6 @@ export class SchemaContainer extends Component<SchemaContainerProps> {
   render() {
     return (
         <div id="main-right">
-        
-          <div id="schema-tabs">{/* <div>Schema Tabs Here</div> */}</div>
-
           <div id="test-panels">
             <div id="schema-left">
               <Query currentSchema={this.props.currentSchema} />

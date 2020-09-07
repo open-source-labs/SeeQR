@@ -60,13 +60,6 @@ h4 {
   height: 200px;
 }
 
-.compare-box {
-  border: 0.5px solid #444c50;
-  background: none;
-  padding: 5px;
-  font-size: 14px;
-  line-height: 1.5em;
-}
 
 #add-query-button {
   width: 120px;
@@ -122,6 +115,67 @@ h4 {
 
 .bar-chart {
   margin-top: 3rem;
-  height: 300px;
-  display: block;
+  height: 300px;  
+  display: block; 
+}
+ 
+.tab-list {  
+  border-bottom: 2px solid #c6d2d5;
+  // padding-left: 0 30 0 0;
+  margin-right: 10px;
+  display: flex;
+  // justify-content: space-between;
+}
+
+.tab-list-item {
+  display: inline-block;
+  list-style: none;
+  margin-bottom: -1px;
+  padding: 0.5rem 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;  
+  cursor: pointer;
+}
+
+.tab-list-item:hover{
+  // background-color: #c6d2d5; 
+   color:#c6d2d5;
+ } 
+  
+.tab-list-active {
+  background-color:rgb(108, 187, 169);
+  border: solid #ccc;
+  border-width: 1px 1px 0 1px;
+  border-radius: 15px 15px 0px 0px;
+  font-weight: 600;
+  color: $background-darkmode-darker;
+}
+.close-button {
+  top: 20px;
+  right: 30px;
+  position: fixed;
+  background-color: transparent;
+  font-weight: bold;
+}
+
+#input-schema-button {
+  // padding: px;
+  width: 50px;
+  margin-bottom: 5px;
+  font-size: 2em;
+  font-weight: bold;
+  margin-left: 5px;
+}
+
+#input-schema-button:hover {
+  // background-color: #c6d2d5; 
+  color:#c6d2d5;
+} 
+ 
+button:hover {
+  cursor: pointer;
+}
+
+#generate-data-button {
+  margin-top: 30px;
 }

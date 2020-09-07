@@ -186,6 +186,12 @@ interface QueryType {
   queryStatistics: string;
 }
 
+//Listens for database changes sent from the renderer
+ipcMain.on('change-db', (event, db_name) => {
+  db.changeDB(db_name);
+  event.sender.send('return-change-db', db_name);
+});
+
 // Listen for queries being sent from renderer
 ipcMain.on('execute-query', (event, data: QueryType) => {
   // ---------Refactor-------------------
@@ -202,6 +208,7 @@ ipcMain.on('execute-query', (event, data: QueryType) => {
     queryStatistics: '',
     lists: {},
   };
+
 
   // Run select * from actors;
   db.query(queryString)
@@ -280,14 +287,15 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
     let runCmd: string = '';
     if (extension === '.sql') runCmd = runSQL;
     else if (extension === '.tar') runCmd = runTAR;
+    else runCmd = runScript;
     addDB(runCmd, redirectModal);
   };
 
   // Step 2 : Import database file from file path into docker container
   const step2 = () => addDB(importFile, step3);
 
-   // Changes the pg URI to look to the newly created database and queries all the tables in that database and sends it to frontend.
-   async function redirectModal() {
+  // Changes the pg URI to look to the newly created database and queries all the tables in that database and sends it to frontend.
+  async function redirectModal() {
     // Redirects modal towards new imported database, used before we added tabs. Not so much needed now
     // db.changeDB(db_name);
     // console.log(`Connected to database ${db_name}`);
@@ -324,97 +332,90 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
 });
 
 
-// Temporary!!!
+// Temporary Hardcode not ideal
 const fromApp = {
-  schema : 'public', //used to be schema1
-  table : 'table1',
-  scale : 1000,
-  columns : [
+  schema: 'public', //used to be schema1
+  table: 'table1',
+  scale: 40,
+  columns: [
     {
-      name : '_id',
-      dataCategory : 'unique', // random, repeating, unique, combo, foreign
-      dataType : 'num', 
-      data : {
+      name: '_id',
+      dataCategory: 'unique', // random, repeating, unique, combo, foreign
+      dataType: 'num',
+      data: {
         serial: true,
       }
     },
     {
-      name : 'username',
-      dataCategory : 'unique', // random, repeating, unique, combo, foreign
-      dataType : 'str',
-      data : {
-        length : [10, 15],
-        inclAlphaLow : true,
-        inclAlphaUp : true,
-        inclNum : true,
-        inclSpaces : true,
-        inclSpecChar : true,
-        include : ["include", "these", "aReplace"],
+      name: 'username',
+      dataCategory: 'unique', // random, repeating, unique, combo, foreign
+      dataType: 'str',
+      data: {
+        length: [10, 15],
+        inclAlphaLow: true,
+        inclAlphaUp: true,
+        inclNum: true,
+        inclSpaces: true,
+        inclSpecChar: true,
+        include: ["include", "these", "aReplace"],
       },
     },
     {
-      name : 'first_name',
-      dataCategory : 'random', // random, repeating, unique, combo, foreign
-      dataType : 'Name - firstName', 
-      data : {
+      name: 'first_name',
+      dataCategory: 'random', // random, repeating, unique, combo, foreign
+      dataType: 'Name - firstName',
+      data: {
       }
     },
     {
-      name : 'company_name',
-      dataCategory : 'random',
-      dataType : 'Company - companyName', 
-      data : {
+      name: 'company_name',
+      dataCategory: 'random',
+      dataType: 'Company - companyName',
+      data: {
       }
     }
   ]
 };
 
-
-// Generating Dummy Data from parameters sent from the frontend
-(function dummFunc(paramsObj) { //Yo seré pongo este codigo en el ipcMain hasta cuando frontend es listo
-   // Need addDB in this context
-   const addDB = (str: string, nextStep: any) => {
-    exec(str, (error, stdout, stderr) => {
-      if (error) {
-        console.log(`error: ${error.message}`);
-        return;
-      }
-      if (stderr) {
-        console.log(`stderr: ${stderr}`);
-        return;
-      }
-      // console.log(`stdout: ${stdout}`);
-      console.log(`${stdout}`);
-      if (nextStep) nextStep();
-    });
-  };
-
-
-
-  const db_name : string = 'defaultDB';
-  const schemaStr : string = `CREATE TABLE "table1"(
+ipcMain.on('generate-data', (event, paramObj: any) => {
+  // Generating Dummy Data from parameters sent from the frontend
+  (function dummyFunc(paramsObj) {
+    // Need addDB in this context
+    const addDB = (str: string, nextStep: any) => {
+      exec(str, (error, stdout, stderr) => {
+        if (error) {
+          console.log(`error: ${error.message}`);
+          return;
+        }
+        if (stderr) {
+          console.log(`stderr: ${stderr}`);
+          return;
+        }
+        // console.log(`stdout: ${stdout}`);
+        console.log(`${stdout}`);
+        if (nextStep) nextStep();
+      });
+    };
+    const db_name: string = 'defaultDB';
+    const schemaStr: string = `CREATE TABLE "table1"(
                                   "_id" integer NOT NULL,
                                   "username" VARCHAR(255) NOT NULL,
                                   "first_name" VARCHAR(255) NOT NULL,
                                   "company_name" VARCHAR(255) NOT NULL,
                                   CONSTRAINT "tabl1_pk" PRIMARY KEY ("_id")
-                           ) WITH (
-                             OIDS=FALSE
-                           );`
-  const insertArray : Array<string> = createInsertQuery(paramsObj);
-  console.log(insertArray);
-
-  db.query(schemaStr)
-  .then((returnedData) => {
-    console.log("In then for setup table1")
-    for(let i = 0; i < insertArray.length; ++i){
-      console.log(i)
-      let currentInsert = insertArray[i];
-      const dummyScript: string = `docker exec postgres-1 psql -U postgres -d ${db_name} -c "${currentInsert}"`;
-      addDB(dummyScript, () => console.log(`Dummied Database: ${db_name}`))
-    }
-  })
-})(fromApp);
-
-ipcMain.on('dummy_handler', (event, paramObj: any) => {});
-
+                            ) WITH (
+                              OIDS=FALSE
+                            );`
+    const insertArray: Array<string> = createInsertQuery(paramsObj);
+    console.log(insertArray);
+    db.query(schemaStr)
+      .then((returnedData) => {
+        for (let i = 0; i < insertArray.length; ++i) {
+          console.log(i)
+          let currentInsert = insertArray[i];
+          const dummyScript: string = `docker exec postgres-1 psql -U postgres -d ${db_name} -c "${currentInsert}"`;
+          addDB(dummyScript, () => console.log(`Dummied Database: ${db_name}`))
+        }
+      })
+  })(fromApp);
+});

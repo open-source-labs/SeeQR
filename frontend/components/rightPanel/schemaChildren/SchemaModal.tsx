@@ -7,7 +7,6 @@ import SchemaInput from './SchemaInput';
 import GenerateData from './GenerateData';
 
 type ClickEvent = React.MouseEvent<HTMLElement>;
-type InputChangeEvent = React.ChangeEvent<HTMLInputElement>;
 
 type SchemaModalProps = {
   show: boolean;
@@ -82,12 +81,6 @@ class SchemaModal extends Component<SchemaModalProps, state> {
   // when schema script is inserted, file path is cleared
   // set dialog to warn user
   handleSchemaEntry(event: any) {
-    // fs.writeFile(this.state.schemaName + '.sql', event.target.value, (err) => {
-    //   if(err){
-    //     console.log('error: ', err)
-    //   }
-    //   console.log('Successfully saved script as sql file')
-    // })
     this.setState({ schemaEntry: event.target.value });
     this.setState({ schemaFilePath: '' });
     console.log('schema entry: ', this.state.schemaEntry);
@@ -110,17 +103,10 @@ class SchemaModal extends Component<SchemaModalProps, state> {
     this.props.onClose && this.props.onClose(event);
   };
 
-  handleOnClick = () => {
-    this.setState({redirect: true})
-  }
-
   render() {
     if (!this.props.show) {
       return null;
     }
-    // if (this.state.redirect) {
-    //   return <Redirect push to="/SchemaInput"/>
-    // }
 
     return (
       <div className="modal" id="modal">
@@ -144,7 +130,12 @@ class SchemaModal extends Component<SchemaModalProps, state> {
           {/* <button onClick="window.location.href='/SchemaInput'">Input Schema</button> */}
 
           <Switch>
-            <Route exact path="/SchemaInput" render={(props:any) => <SchemaInput {...props}/>}/>
+            <Route exact path="/" component={SchemaModal} />
+            <Route
+              exact
+              path="/SchemaInput"
+              render={(props: any) => <SchemaInput {...props} schemaName={this.state.schemaName} />}
+            />
             <Route exact path="/GenerateData" component={GenerateData} />
           </Switch>
         </Router>
@@ -159,7 +150,11 @@ class SchemaModal extends Component<SchemaModalProps, state> {
 // };
 export default SchemaModal;
 
-/* <div className="content">{this.props.children}</div>
+/*
+<Route exact path="/" component={SchemaModal}/>
+            <Route exact path="/SchemaInput" render={(props:any) => <SchemaInput {...props}/>}/>
+            <Route exact path="/GenerateData" component={GenerateData} />
+<div className="content">{this.props.children}</div>
           <h3>Load or input schema</h3>
           <form onSubmit={this.handleSchemaSubmit}>
             <p>First...</p>
@@ -191,4 +186,5 @@ export default SchemaModal;
                 </button>
               </div>
             </div>
-          </form> */
+          </form>
+          <Route exact path="/SchemaInput" render={(props:any) => <SchemaInput {...props}/>}/>*/
