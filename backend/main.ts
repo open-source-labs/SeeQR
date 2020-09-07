@@ -183,27 +183,25 @@ const execute = (str: string, nextStep: any) => {
   });
 };
 
-/* ---IMPORT DATABASE: CREATE AN INSTANCE OF DATABASE FROM A PRE-MADE .TAR OR .SQL FILE--- */
-// Listen for file upload
-ipcMain.on('upload-file', (event, filePaths: string) => {
+// Listen for file upload. Create an instance of database from pre-made .tar or .sql file.
+ipcMain.on('upload-file', (event, filePath: string) => {
   let dbName: string;
   if (process.platform === 'darwin') {
-    dbName = filePaths[0].slice(filePaths[0].lastIndexOf('/') + 1, filePaths[0].lastIndexOf('.'));
+    dbName = filePath[0].slice(filePath[0].lastIndexOf('/') + 1, filePath[0].lastIndexOf('.'));
   } else {
-    dbName = filePaths[0].slice(filePaths[0].lastIndexOf('\\') + 1, filePaths[0].lastIndexOf('.'));
+    dbName = filePath[0].slice(filePath[0].lastIndexOf('\\') + 1, filePath[0].lastIndexOf('.'));
   }
 
   const createDB: string = createDBFunc(dbName);
-  const importFile: string = importFileFunc(filePaths);
+  const importFile: string = importFileFunc(filePath);
   const runSQL: string = runSQLFunc(dbName);
   const runTAR: string = runTARFunc(dbName);
-
-  const extension: string = filePaths[0].slice(filePaths[0].lastIndexOf('.'));
+  const extension: string = filePath[0].slice(filePath[0].lastIndexOf('.'));
 
   // SEQUENCE OF EXECUTING COMMANDS
   // Steps are in reverse order because each step is a callback function that requires the following step to be defined.
 
-  // Changes the pg URI the newly created database, queries new database, then sends list of tables and list of databases to frontend.
+  // Step 4: Changes the pg URI the newly created database, queries new database, then sends list of tables and list of databases to frontend.
   async function sendLists() {
     listObj = await db.getLists();
     event.sender.send('db-lists', listObj);
@@ -233,7 +231,7 @@ interface SchemaType {
   schemaEntry: string;
 }
 
-// Listen for schema edits sent from renderer
+// Listen for schema edits (via file upload OR via CodeMirror inout) from schemaModal. Create an instance of database from pre-made .tar or .sql file.
 ipcMain.on('input-schema', (event, data: SchemaType) => {
   const { schemaName: dbName, schemaFilePath: filePath, schemaEntry } = data;
 
@@ -255,8 +253,8 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
   // SEQUENCE OF EXECUTING COMMANDS
   // Steps are in reverse order because each step is a callback function that requires the following step to be defined.
 
-  // Changes the pg URI to look to the newly created database and queries all the tables in that database and sends it to frontend.
-  async function getLists() {
+  // Step 4: Changes the pg URI to look to the newly created database and queries all the tables in that database and sends it to frontend.
+  async function sendLists() {
     listObj = await db.getLists();
     event.sender.send('db-lists', listObj);
   };
@@ -267,7 +265,7 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
     if (extension === '.sql') runCmd = runSQL;
     else if (extension === '.tar') runCmd = runTAR;
     else runCmd = runScript;
-    execute(runCmd, getLists);
+    execute(runCmd, sendLists);
   };
 
   // Step 2 : Import database file from file path into docker container
@@ -310,7 +308,6 @@ ipcMain.on('execute-query', (event, data: QueryType) => {
 
       // Run EXPLAIN (FORMAT JSON, ANALYZE)
       db.query('EXPLAIN (FORMAT JSON, ANALYZE) ' + queryString).then((queryStats) => {
-        // Getting data in row format for frontend
         frontendData.queryStatistics = queryStats.rows;
 
         (async function getListAsync() {
