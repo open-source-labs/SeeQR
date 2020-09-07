@@ -130,7 +130,7 @@ app.on('activate', () => {
  *********************** IPC CHANNELS ***********************
  ************************************************************/
 
-// Global variable
+// Global variable to store list of databases and tables to provide to frontend upon refreshing view.
 let listObj;
 
 ipcMain.on('return-db-list', (event, args) => {
