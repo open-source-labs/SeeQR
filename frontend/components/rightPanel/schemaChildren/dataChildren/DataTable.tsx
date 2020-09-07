@@ -42,7 +42,10 @@ export class Table extends Component<TableProps> {
 
     var items = queries[queries.length - 1].queryData;
     var keys = this.getKeys(); // actor_id, firstName, lastName, lastUpdated
+    console.log('keys', keys);
+
     return items.map((row, index) => {
+      console.log('data', row);
       return <tr key={index}><RenderRow key={index} data={row} keys={keys} /></tr>
     })
   }
@@ -75,8 +78,10 @@ type RenderRowProps = {
 const RenderRow = (props: RenderRowProps) => {
   const { data, keys } = props;
   return keys.map((header, index) => {
+    // if the value of a row is undefined, then go to next iteration
+    if (data[header] == undefined) return;
     // turn all values in data object to string or number
-    data[header] = data[header].toString()
+    data[header] = data[header].toString();
     return <td key={index}>{data[header]}</td>
   })
 }

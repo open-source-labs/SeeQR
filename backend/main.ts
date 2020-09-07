@@ -4,7 +4,7 @@ import { format } from 'url';
 
 const { exec } = require('child_process');
 const appMenu = require('./mainMenu'); // use appMenu to add options in top menu bar of app
-const db = require('./modal'); // methods to communicate with postgres database
+const db = require('./dbCommands'); // methods to communicate with postgres database
 const path = require('path');
 const fixPath = require('fix-path');
 
@@ -157,7 +157,8 @@ interface QueryType {
 interface SchemaType {
   schemaName: string;
   schemaFilePath: string;
-  schemaEntry: string;
+  schemaString: string;
+  db_name: string;
 }
 
 /* ---IMPORT DATABASE: CREATE AN INSTANCE OF DATABASE FROM A PRE-MADE .TAR OR .SQL FILE--- */
@@ -223,20 +224,22 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
 
 // Listen for new schema (from SchemaModal and SchemaInut) sent from renderer.
 ipcMain.on('input-schema', (event, data: SchemaType) => {
-  let db_name: string;
+  console.log('INPUTTED SCHEMA', data);
+
+  let db_name;
   db_name = data.schemaName;
   let filePath = data.schemaFilePath;
 
-  // Use RegEx to remove line breaks to ensure data.schemaEntry is being run as one large string
-  // so that schemaEntry string will work for Windows computers. Line breaks are escaped differently
+  // Use RegEx to remove line breaks to ensure data.schemaString is being run as one large string
+  // so that schemaString string will work for Windows computers. Line breaks are escaped differently
   // in Windows vs Macs.
-  let schemaEntry = data.schemaEntry.replace(/[\n\r]/g, "").trim();
+  let schemaString = data.schemaString.replace(/[\n\r]/g, "").trim();
 
   // command strings
   const createDB: string = `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE ${db_name}"`;
   const importFile: string = `docker cp ${filePath} postgres-1:/data_dump`;
   const runSQL: string = `docker exec postgres-1 psql -U postgres -d ${db_name} -f /data_dump`;
-  const runScript: string = `docker exec postgres-1 psql -U postgres -d ${db_name} -c "${schemaEntry}"`;
+  const runScript: string = `docker exec postgres-1 psql -U postgres -d ${db_name} -c "${schemaString}"`;
   const runTAR: string = `docker exec postgres-1 pg_restore -U postgres -d ${db_name} /data_dump`;
   let extension: string = '';
 
