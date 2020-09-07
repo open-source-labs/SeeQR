@@ -15,7 +15,7 @@ type SchemaInputProps = {
 };
 
 type state = {
-  schemaString: string;
+  schemaEntry: string;
 };
 
 class SchemaInput extends Component<SchemaInputProps, state> {
@@ -26,13 +26,13 @@ class SchemaInput extends Component<SchemaInputProps, state> {
   }
 
   state: state = {
-    schemaString: '',
+    schemaEntry: '',
   };
 
-  // Updates state.schemaString as user inputs query string
+  // Updates state.schemaEntry as user inputs query string
   handleSchemaChange(event: string) {
     this.setState({
-      schemaString: event,
+      schemaEntry: event,
     });
   }
 
@@ -42,7 +42,7 @@ class SchemaInput extends Component<SchemaInputProps, state> {
     const schemaObj = {
       schemaName: this.props.schemaName,
       schemaFilePath: '',
-      schemaString: this.state.schemaString,
+      schemaEntry: this.state.schemaEntry,
     };
 
     ipcRenderer.send('input-schema', schemaObj);

@@ -3,22 +3,11 @@ import React, { Component } from 'react';
 const { ipcRenderer } = window.require('electron');
 const { dialog } = require('electron').remote;
 
-// Codemirror Styling
-require('codemirror/lib/codemirror.css');
-
-// Codemirror Languages
-require('codemirror/mode/javascript/javascript');
-require('codemirror/mode/sql/sql');
-
-// Codemirror Themes
-require('codemirror/mode/markdown/markdown');
-require('codemirror/theme/monokai.css');
-require('codemirror/theme/midnight.css');
-require('codemirror/theme/lesser-dark.css');
-require('codemirror/theme/solarized.css');
-
-// Codemirror Component
-var CodeMirror = require('react-codemirror');
+// Codemirror configuration
+import 'codemirror/lib/codemirror.css'; // Styline
+import 'codemirror/mode/sql/sql'; // Language (Syntax Highlighting)
+import 'codemirror/theme/lesser-dark.css'; // Theme
+import CodeMirror from 'react-codemirror';
 
 /************************************************************
  *********************** TYPESCRIPT: TYPES ***********************
@@ -37,7 +26,6 @@ class Query extends Component<QueryProps, state> {
     super(props);
     this.handleQuerySubmit = this.handleQuerySubmit.bind(this);
     this.updateCode = this.updateCode.bind(this);
-    // this.showModal = this.showModal.bind(this);
     // this.handleQueryPrevious = this.handleQueryPrevious.bind(this);
     // this.handleGenerateData = this.handleGenerateData.bind(this);
   }

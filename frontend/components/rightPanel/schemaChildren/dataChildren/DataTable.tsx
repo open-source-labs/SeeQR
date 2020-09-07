@@ -42,10 +42,8 @@ export class Table extends Component<TableProps> {
 
     var items = queries[queries.length - 1].queryData;
     var keys = this.getKeys(); // actor_id, firstName, lastName, lastUpdated
-    console.log('keys', keys);
 
     return items.map((row, index) => {
-      console.log('data', row);
       return <tr key={index}><RenderRow key={index} data={row} keys={keys} /></tr>
     })
   }
