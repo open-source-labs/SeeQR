@@ -191,19 +191,10 @@ ipcMain.on('upload-file', (event, filePaths: string) => {
     dbName = filePaths[0].slice(filePaths[0].lastIndexOf('\\') + 1, filePaths[0].lastIndexOf('.'));
   }
 
-  // command strings to be executed in child process
-  // const createDB: string = `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE ${dbName}"`;
-  // const importFile: string = `docker cp ${filePaths} postgres-1:/data_dump`;
-  // const runSQL: string = `docker exec postgres-1 psql -U postgres -d ${dbName} -f /data_dump`;
-  // const runTAR: string = `docker exec postgres-1 pg_restore -U postgres -d ${dbName} /data_dump`;
-
   const createDB: string = createDBFunc(dbName);
   const importFile: string = importFileFunc(filePaths);
   const runSQL: string = runSQLFunc(dbName);
   const runTAR: string = runTARFunc(dbName);
-
-
-
 
   const extension: string = filePaths[0].slice(filePaths[0].lastIndexOf('.'));
 
@@ -257,12 +248,12 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
   // so that schemaEntry string will work for Windows computers.
   let schemaEntry = data.schemaEntry.replace(/[\n\r]/g, "").trim();
 
-  // command strings
-  const createDB: string = `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE ${dbName}"`;
-  const importFile: string = `docker cp ${filePath} postgres-1:/data_dump`;
-  const runSQL: string = `docker exec postgres-1 psql -U postgres -d ${dbName} -f /data_dump`;
+  const createDB: string = createDBFunc(dbName);
+  const importFile: string = importFileFunc(filePath);
+  const runSQL: string = runSQLFunc(dbName);
+  const runTAR: string = runTARFunc(dbName);
+
   const runScript: string = `docker exec postgres-1 psql -U postgres -d ${dbName} -c "${schemaEntry}"`;
-  const runTAR: string = `docker exec postgres-1 pg_restore -U postgres -d ${dbName} /data_dump`;
   let extension: string = '';
   if (filePath.length > 0) {
     extension = filePath[0].slice(filePath[0].lastIndexOf('.'));
