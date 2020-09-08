@@ -10,82 +10,57 @@ export const typeOptions : any = {
           display : true,
           option : 'Minimum Length',
           type : 'text',
-          // add : (val, i) => {
-          //   const {columns} = this.state;
-          //   columns[i].data.length[0] = val;
-          //   this.setState({ columns });
-          // },
+          location : 'minLen',
+          format : "false",
         },
         {
           display : true,
           option : 'Maximum Length',
           type : 'text',
-          // add : (val, i) => {
-          //   const {columns} = this.state;
-          //   columns[i].data.length[1] = val;
-          //   this.setState({ columns });
-          // },   
+          location : 'maxLen',
+          format : "false",
         },
         {
           display : true,
           option : 'Include lower case letters',
           type : 'checkbox',
-          // add : (val, i) => {
-          //   const {columns} = this.state;
-          //   columns[i].data.inclAlphaLow = val;
-          //   this.setState({ columns });
-          // },
+          location : 'inclAlphaLow',
+          format : "false",
         },
         {
           display : true,
           option : 'Include upper case letters',
           type : 'checkbox',
-          // add : (val, i) => {
-          //   const {columns} = this.state;
-          //   columns[i].data.inclAlphaUp = val;
-          //   this.setState({ columns });
-          // },
+          location : 'inclAlphaUp',
+          format : "false",
         },      
         {
           display : true,
           option : 'Include numbers',
           type : 'checkbox',
-          // add : (val, i) => {
-          //   const {columns} = this.state;
-          //   columns[i].data.inclNum = val;
-          //   this.setState({ columns });
-          // },
+          location : 'inclNum',
+          format : "false",
         },      
         {
           display : true,
           option : 'Include spaces',
           type : 'checkbox',
-          // add : (val, i) => {
-          //   const {columns} = this.state;
-          //   columns[i].data.inclSpaces = val;
-          //   this.setState({ columns });
-          // },
+          location : 'inclSpaces',
+          format : "false",
         },      
         {
           display : true,
           option : 'Include special characters',
           type : 'checkbox',
-          location : "specChar"
-          // add : (val, i) => {
-          //   const {columns} = this.state;
-          //   columns[i].data.specChar= val;
-          //   this.setState({ columns });
-          // },
+          location : "specChar",
+          format : "false",
         },
         {
           display : true,
           option : 'Include these values (separate by commas)',
           type : 'text',
-          // add : (val, i) => {
-          //   const {columns} = this.state;
-          //   columns[i].data.include = val;
-          //   this.setState({ columns });
-          // },
+          location : 'include',
+          format : "array",
         },
       ],
       num : [
@@ -94,23 +69,13 @@ export const typeOptions : any = {
           option : 'Serial',
           type : 'checkbox',
           location : "serial",
+          format : "false",
           value : true,
-          // add : (val, i) => {
-          //   const {columns} = this.state;
-          //   columns[i].data.serial = val;
-          //   this.setState({ columns });
-          //   return;
-          // }
         },
       ],
     },
     random : {
-      // add : (val, i) => {
-      //   const {columns} = this.state;
-      //   columns[i].dataType = val;
-      //   columns[i].data = {};
-      //   this.setState({ columns });
-      // },
-      dropdown : Object.keys(fakerLink.fakeLink),
+      dropdown : Object.keys(fakerLink.fakerLink),
+      message : 'For a sample of each random data type, please visit the Faker.js demo.'
     },
   };

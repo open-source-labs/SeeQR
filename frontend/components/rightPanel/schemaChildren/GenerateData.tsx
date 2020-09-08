@@ -31,8 +31,8 @@ class GenerateData extends Component<GenerateDataProps, state> {
   constructor(props: GenerateDataProps) {
     super(props);
 
-    // this.handleAddColumn = this.handleAddColumn.bind(this);
-    // this.handleRemoveColumn = this.handleRemoveColumn.bind(this);
+    this.handleAddColumn = this.handleAddColumn.bind(this);
+    this.handleRemoveColumn = this.handleRemoveColumn.bind(this);
     this.componentChangeState = this.componentChangeState.bind(this);
     this.handleFormSubmit = this.handleFormSubmit.bind(this);
   }
@@ -73,9 +73,11 @@ class GenerateData extends Component<GenerateDataProps, state> {
     this.setState({ columns });
   }
 
-  componentChangeState (i : number, value : any, property : any, subProperty : any) {
+  componentChangeState (i : number, value : any, property : any, subProperty : any, format : string) {
     const { columns } = this.state;
-    (!subProperty) ? columns[i][property] = value : columns[i][property][subProperty];
+    let val;
+    (format === "array") ? val = value.split(',') : val = value;
+    (!subProperty) ? columns[i][property] = val : columns[i][property][subProperty];
     this.setState( { columns });
   }
 
@@ -83,18 +85,13 @@ class GenerateData extends Component<GenerateDataProps, state> {
     event.preventDefault();
     // pass down any state from the form
     const formObj = {
-      schema : 'public',
       table : this.state.currentTable,
       scale : this.state.scale,
       columns : this.state.columns,
     };
     // on submit button click, sends form obj to backend
     ipcRenderer.send('form-input', formObj);
-    console.log(`sending ${formObj} to main process`);
-    // const newTables : Array<string> = [];
-    // this.state.tables.forEach(e => {
-    //   if (e !== this.state.currentTable) newTables.push(e)
-    // });
+    console.log(`sending ${formObj.table} dataGen info to main process`);
     this.setState({ 
       // tables : newTables,  
       currentTable : '',
@@ -120,7 +117,7 @@ class GenerateData extends Component<GenerateDataProps, state> {
   render() {
     const columns : any = [];
     this.state.columns.forEach( (e : any, i : number) => {
-      columns.push(<div><GenerateDataColumn key={i} columnObj={e} updateState={this.componentChangeState}/></div>);
+      columns.push(<div><GenerateDataColumn key={'column' + i} columnIndex={i} columnObj={e} updateState={this.componentChangeState}/></div>);
     })
 
     return (
@@ -134,17 +131,13 @@ class GenerateData extends Component<GenerateDataProps, state> {
                 {this.state.tables.map((elem) => <option key={elem} className="DGI-tableName" onChange={(e)=>{this.setState({currentTable : e})}}>{elem}</option>)}
               </select>
             </div>
-            <br />
             <div>
               Scale:
               <input type="number" className="DGI-scale" name="scale" min="1" defaultValue="# of records" onChange={(e)=>{this.setState({scale : e})}}/>
             </div>
-            <div>{columns}</div>
-            {/* <div><GenerateDataColumn key="0" columnObj={this.state.columns[0]} updateState={this.componentChangeState}/></div> */}
-
-            
-            {/* <input type="button" onClick={e => this.handleAddColumn()}>+</input>
-            <input type="button" onClick={e => this.handleRemoveColumn()}>-</input> */}
+            <div>{columns}</div>            
+            <input type="button" onClick={e => this.handleAddColumn()}>+</input>
+            <input type="button" onClick={e => this.handleRemoveColumn()}>-</input>
             <div className="actions">
               <button className="toggle-button" onClick={this.onClose}>
                 close

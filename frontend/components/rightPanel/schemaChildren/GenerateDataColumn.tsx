@@ -13,22 +13,19 @@ type column = {
 }
 
 type Props = {
-  key : number,
+  key : string,
+  columnIndex : number,
   columnObj : column,
   updateState : any,
 };
 
-type GenerateDataColumnState = {
-  empty : any,
-};
+type GenerateDataColumnState = {};
 
 class GenerateDataColumn extends Component<Props, GenerateDataColumnState> {
   constructor(props: Props) {
     super(props);
   }
-  state: GenerateDataColumnState = {
-    empty : '',
-  };
+  state: GenerateDataColumnState = {};
 
   render() {
     return (
@@ -40,58 +37,56 @@ class GenerateDataColumn extends Component<Props, GenerateDataColumnState> {
         <div>
           Data Type:
           <select className="DGI-dataType">
-              {typeOptions.dropdown((elem) => {<option key={elem} onChange={(e)=>{this.props.updateState(this.props.key, e, 'dataCategory')}}>{elem}</option>})}
+              {typeOptions.dropdown((elem) => {<option key={elem} onChange={(e)=>{this.props.updateState(this.props.key, e, 'dataCategory', false, false)}}>{elem}</option>})}
           </select>
-          <DataType key={this.props.key} columnObj={this.props.columnObj} updateState={this.props.updateState} />
+          <DataType key={this.props.key + 'datatype' + this.props.columnIndex} columnIndex={this.props.columnIndex} columnObj={this.props.columnObj} updateState={this.props.updateState} />
         </div>
-        <DataOptions key={this.props.key} columnObj={this.props.columnObj} updateState={this.props.updateState} />
+        <DataOptions key={this.props.key + 'dataoptions' + this.props.columnIndex} columnIndex={this.props.columnIndex} columnObj={this.props.columnObj} updateState={this.props.updateState} />
       </div>
     );
   };
 };
 
 // type DataTypeProps = {};
-type DataTypeState = {
-  empty : any,
-};
+type DataTypeState = {};
 class DataType extends Component<Props, DataTypeState> {
   constructor(props: Props) {
     super(props);
   }
-  state: DataTypeState = {
-    empty : '',
-  };
+  state: DataTypeState = {};
 
   render() {
+    let message;
+    if (typeOptions[this.props.columnObj.dataCategory].message) {
+      message = <div className="DGI-message">{typeOptions[this.props.columnObj.dataCategory].message}</div>
+    }
     return (
       <div>
         <select className="DGI-dataType">
-          {typeOptions[this.props.columnObj.dataCategory].dropdown((elem) => {<option key={elem} onChange={(e)=>{this.props.updateState(this.props.key, e, 'dataType')}}>{elem}</option>})}
+          {typeOptions[this.props.columnObj.dataCategory].dropdown((elem) => {<option key={elem} onChange={(e)=>{this.props.updateState(this.props.key, e, 'dataType', false, false)}}>{elem}</option>})}
         </select>
+        { message }
       </div>
+      
     );
   };
 };
 
 // type DataOptionsProps = {};
-type DataOptionsState = {
-  empty : any,
-};
+type DataOptionsState = {};
 
 class DataOptions extends Component<Props, DataOptionsState> {
   constructor(props: Props) {
     super(props);
   }
-  state: DataOptionsState = {
-    empty : '',
-  };
+  state: DataOptionsState = {};
 
   render() { 
     let dataOptions : Array<any> = [];
       typeOptions[this.props.columnObj.dataCategory][this.props.columnObj.dataType].forEach( option => {
-        if (!option.display) this.props.updateState(this.props.key, option.value, 'data', option.location);
+        if (!option.display) this.props.updateState(this.props.key, option.value, 'data', option.location, option.format);
         else {
-          dataOptions.push(<div>{option.option}: <input type={option.type} onChange={(e)=>{this.props.updateState(this.props.key, e, option.location)}}/></div>)
+          dataOptions.push(<div>{option.option}: <input type={option.type} onChange={(e)=>{this.props.updateState(this.props.key, e, 'data', option.location, option.format)}}/></div>)
         }
       })
     return (

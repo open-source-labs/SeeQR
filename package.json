@@ -23,6 +23,7 @@
   "license": "ISC",
   "dependencies": {
     "@skidding/react-codemirror": "^1.0.2",
+    "@types/react-router-dom": "^5.1.5",
     "autoprefixer": "^9.8.5",
     "chart.js": "^2.9.3",
     "codemirror": "^5.57.0",
