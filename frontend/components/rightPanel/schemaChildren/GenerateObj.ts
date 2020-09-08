@@ -5,12 +5,6 @@ export const typeOptions : any = {
     dropdown : ['unique', 'random'],
     unique : {
       dropdown : ['str', 'num'],
-      // add : (val, i) => {
-      //     const {columns} = this.state;
-      //     if (val === 'sting') {columns[i].dataType = 'str'};
-      //     // else if (val === 'number') columns[i].dataType = 'num';
-      //     this.setState({ columns });
-      //   },
       str : [
         {
           display : true,
@@ -76,6 +70,7 @@ export const typeOptions : any = {
           display : true,
           option : 'Include special characters',
           type : 'checkbox',
+          location : "specChar"
           // add : (val, i) => {
           //   const {columns} = this.state;
           //   columns[i].data.specChar= val;
@@ -98,6 +93,8 @@ export const typeOptions : any = {
           display : false,
           option : 'Serial',
           type : 'checkbox',
+          location : "serial",
+          value : true,
           // add : (val, i) => {
           //   const {columns} = this.state;
           //   columns[i].data.serial = val;

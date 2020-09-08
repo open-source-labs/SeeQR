@@ -351,7 +351,8 @@ const fromApp = {
       dataCategory: 'unique', // random, repeating, unique, combo, foreign
       dataType: 'str',
       data: {
-        length: [10, 15],
+        minLen: 10, 
+        maxLen: 15,
         inclAlphaLow: true,
         inclAlphaUp: true,
         inclNum: true,

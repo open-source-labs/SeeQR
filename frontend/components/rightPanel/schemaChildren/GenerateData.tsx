@@ -13,22 +13,22 @@ type GenerateDataProps = {
 };
 
 type column = {
-  // name : string,  
-  // dataCategory : string,
-  // dataType : string,
-  // data : any,
+  name : string,  
+  dataCategory : string,
+  dataType : string,
+  data : any,
 }
 
 type state = {
-  // tables : Array<string>,
-  // currentTable : any,
-  // scale : any,
-  // columns : Array<column>,
+  tables : Array<string>,
+  currentTable : any,
+  scale : any,
+  columns : Array<column>,
 };
 
 
-class GenerateData extends Component/*<GenerateDataProps, state>*/ {
-  constructor(props: any) {
+class GenerateData extends Component<GenerateDataProps, state> {
+  constructor(props: GenerateDataProps) {
     super(props);
 
     // this.handleAddColumn = this.handleAddColumn.bind(this);
@@ -55,23 +55,23 @@ class GenerateData extends Component/*<GenerateDataProps, state>*/ {
   //     this.setState({ dbLists: returnedLists.tableList })
   //   });
 
-  // handleAddColumn () {
-  //   const {columns} = this.state.columns;
-  //   const newCol = {  
-  //     name : '',  
-  //     dataCategory : '',
-  //     dataType : '',
-  //     data : {},
-  //   };
-  //   columns.push(newCol);
-  //   this.setState({ columns });
-  // }
+  handleAddColumn () {
+    const {columns} = this.state.columns;
+    const newCol = {  
+      name : '',  
+      dataCategory : '',
+      dataType : '',
+      data : {},
+    };
+    columns.push(newCol);
+    this.setState({ columns });
+  }
 
-  // handleRemoveColumn () {
-  //   const {columns} = this.state.columns;
-  //   columns.pop();
-  //   this.setState({ columns });
-  // }
+  handleRemoveColumn () {
+    const {columns} = this.state.columns;
+    columns.pop();
+    this.setState({ columns });
+  }
 
   componentChangeState (i : number, value : any, property : any, subProperty : any) {
     const { columns } = this.state;
@@ -120,7 +120,7 @@ class GenerateData extends Component/*<GenerateDataProps, state>*/ {
   render() {
     const columns : any = [];
     this.state.columns.forEach( (e : any, i : number) => {
-      columns.push(`<div><GenerateDataColumn key=${i} columnID=${i} columnObj=${e} updateState={this.componentChangeState}/></div>`);
+      columns.push(<div><GenerateDataColumn key={i} columnObj={e} updateState={this.componentChangeState}/></div>);
     })
 
     return (
@@ -131,16 +131,16 @@ class GenerateData extends Component/*<GenerateDataProps, state>*/ {
             <div>
               Table:
               <select>
-                {this.state.tables.map((elem) => <option key={elem} onChange={(e)=>{this.setState({currentTable : e})}}>{elem}</option>)}
+                {this.state.tables.map((elem) => <option key={elem} className="DGI-tableName" onChange={(e)=>{this.setState({currentTable : e})}}>{elem}</option>)}
               </select>
             </div>
             <br />
             <div>
               Scale:
-              <input type="number" name="scale" min="1" defaultValue="# of records" onChange={(e)=>{this.setState({scale : e})}}/>
+              <input type="number" className="DGI-scale" name="scale" min="1" defaultValue="# of records" onChange={(e)=>{this.setState({scale : e})}}/>
             </div>
             <div>{columns}</div>
-            <div><GenerateDataColumn key="0" columnObj={this.state.columns[0]} updateState={this.componentChangeState}/></div>
+            {/* <div><GenerateDataColumn key="0" columnObj={this.state.columns[0]} updateState={this.componentChangeState}/></div> */}
 
             
             {/* <input type="button" onClick={e => this.handleAddColumn()}>+</input>

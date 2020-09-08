@@ -6,27 +6,28 @@ const typeOptions = require('./GenerateObj');
 type ClickEvent = React.MouseEvent<HTMLElement>;
 
 type column = {
-  // name : string,  
-  // dataCategory : string,
-  // dataType : string,
-  // data : any,
+  name : string,  
+  dataCategory : string,
+  dataType : string,
+  data : any,
 }
 
 type Props = {
-  // key : string,
-  // columnObj : column,
-  // updateState : any,
+  key : number,
+  columnObj : column,
+  updateState : any,
 };
 
 type GenerateDataColumnState = {
-
+  empty : any,
 };
 
-class GenerateDataColumn extends Component/*<Props, GenerateDataColumnState>*/ {
-  constructor(props: any) {
+class GenerateDataColumn extends Component<Props, GenerateDataColumnState> {
+  constructor(props: Props) {
     super(props);
   }
-  state: any = {
+  state: GenerateDataColumnState = {
+    empty : '',
   };
 
   render() {
@@ -34,11 +35,11 @@ class GenerateDataColumn extends Component/*<Props, GenerateDataColumnState>*/ {
       <div>
         <div>
           Column Name: 
-          <input type="text" className="columnName"/>
+          <input type="text" className="DGI-columnName"/>
         </div>
         <div>
           Data Type:
-          <select>
+          <select className="DGI-dataType">
               {typeOptions.dropdown((elem) => {<option key={elem} onChange={(e)=>{this.props.updateState(this.props.key, e, 'dataCategory')}}>{elem}</option>})}
           </select>
           <DataType key={this.props.key} columnObj={this.props.columnObj} updateState={this.props.updateState} />
@@ -50,67 +51,52 @@ class GenerateDataColumn extends Component/*<Props, GenerateDataColumnState>*/ {
 };
 
 // type DataTypeProps = {};
-// type DataTypeState = {};
-
-
-/*
-  props
-  key=${i} 
-  columnID=${i} 
-  columnObj = {    
-        name : '',  
-        dataCategory : '',
-        dataType : '',
-        data : {},
-      } 
-  updateState = (i : number, property : string, value : any) {
-        const { columns } = this.state;
-        columns[i][property] = value;
-        this.setState( { columns });
-      }
-*/
-class DataType extends Component/*<Props, DataTypeState>*/ {
-  constructor(props: any) {
+type DataTypeState = {
+  empty : any,
+};
+class DataType extends Component<Props, DataTypeState> {
+  constructor(props: Props) {
     super(props);
   }
-  state: any = {
-
+  state: DataTypeState = {
+    empty : '',
   };
 
   render() {
     return (
       <div>
-        {typeOptions[this.props.columnObj.dataCategory].dropdown((elem) => {<option key={elem} onChange={(e)=>{this.props.updateState(this.props.key, e, 'dataType')}}>{elem}</option>})}
+        <select className="DGI-dataType">
+          {typeOptions[this.props.columnObj.dataCategory].dropdown((elem) => {<option key={elem} onChange={(e)=>{this.props.updateState(this.props.key, e, 'dataType')}}>{elem}</option>})}
+        </select>
       </div>
     );
   };
 };
 
-type DataOptionsProps = {};
-type DataOptionsState = {};
+// type DataOptionsProps = {};
+type DataOptionsState = {
+  empty : any,
+};
 
-class DataOptions extends Component/*<Props, DataOptionsState>*/ {
-  constructor(props: any) {
+class DataOptions extends Component<Props, DataOptionsState> {
+  constructor(props: Props) {
     super(props);
   }
-  state: any = {
-
+  state: DataOptionsState = {
+    empty : '',
   };
 
- 
-
   render() { 
-    let dataOptions = [];
-      typeOptions[this.props.columnObj.dataCategory][this.props.columnObj.dataType].forEach( e => {
-        if (!e.display) this.props.updateState(this.props.key, e.value, 'data', e.location);
+    let dataOptions : Array<any> = [];
+      typeOptions[this.props.columnObj.dataCategory][this.props.columnObj.dataType].forEach( option => {
+        if (!option.display) this.props.updateState(this.props.key, option.value, 'data', option.location);
         else {
-          dataOptions.push(`<div>`)
+          dataOptions.push(<div>{option.option}: <input type={option.type} onChange={(e)=>{this.props.updateState(this.props.key, e, option.location)}}/></div>)
         }
-      
-    })
+      })
     return (
       <div>
-
+        { dataOptions }
       </div>
     );
   };
