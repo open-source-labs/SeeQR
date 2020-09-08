@@ -19,6 +19,9 @@ type Props = {
   updateState : any,
 };
 
+
+/*===================== COLUMN COMPONENT =====================*/
+
 type GenerateDataColumnState = {};
 
 class GenerateDataColumn extends Component<Props, GenerateDataColumnState> {
@@ -47,7 +50,8 @@ class GenerateDataColumn extends Component<Props, GenerateDataColumnState> {
   };
 };
 
-// type DataTypeProps = {};
+
+/*===================== DATATYPE SUB COMPONENT =====================*/
 type DataTypeState = {};
 class DataType extends Component<Props, DataTypeState> {
   constructor(props: Props) {
@@ -72,7 +76,7 @@ class DataType extends Component<Props, DataTypeState> {
   };
 };
 
-// type DataOptionsProps = {};
+/*===================== DATAOPTIONS SUB COMPONENT =====================*/
 type DataOptionsState = {};
 
 class DataOptions extends Component<Props, DataOptionsState> {
