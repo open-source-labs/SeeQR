@@ -165,11 +165,11 @@ The outcome results from each query, both retrieved data and analytics, are stor
 <table>
 <tr>
 <td align="center">
-<img src="./frontend/assets/images/catherinechiu.png"/><br/>
+<img src="./frontend/assets/images/catherinechiu.png" href="https://github.com/catherinechiu"/><br/>
 <a href="https://github.com/catherinechiu">Catherine Chiu</a>
 </td>
 <td align="center">
-<img src="./frontend/assets/images/serenakuo.png"/><br/>
+<img src="./frontend/assets/images/serenakuo.png" href="https://github.com/serenackuo"/><br/>
 <a href="https://github.com/serenackuo">Serena Kuo</a>
 </td>
 <td align="center">
@@ -177,11 +177,11 @@ The outcome results from each query, both retrieved data and analytics, are stor
 <a href="https://github.com/FrankNorton32">Frank Norton</a>
 </td>
 <td align="center">
-<img src="./frontend/assets/images/mercerstronck.png"/><br/>
+<img src="./frontend/assets/images/mercerstronck.png" href="https://github.com/mercerstronck"/><br/>
 <a href="https://github.com/mercerstronck">Mercer Stronck</a>
 </td>
 <td align="center">
-<img src="./frontend/assets/images/muhammadtrad.png"/><br/>
+<img src="./frontend/assets/images/muhammadtrad.png" href="https://github.com/muhammadtrad"/><br/>
 <a href="https://github.com/muhammadtrad">Muhammad Trad</a>
 </td>
 </tr></table>

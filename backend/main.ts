@@ -2,10 +2,11 @@
 import { app, BrowserWindow, ipcMain, Menu } from 'electron';
 import { join } from 'path';
 import { format } from 'url';
+import './api' // all channels live in here
 
+const db = require('./models');
 const { exec } = require('child_process');
 const appMenu = require('./mainMenu'); // use appMenu to add options in top menu bar of app
-const db = require('./models');
 const path = require('path');
 
 /************************************************************
@@ -139,6 +140,8 @@ let listObj;
 ipcMain.on('return-db-list', (event, args) => {
   db.getLists().then(data => event.sender.send('db-lists', data));
 });
+
+// ipcMain.on('')
 
 // Listen for skip button on Splash page.
 ipcMain.on('skip-file-upload', (event) => { });
@@ -321,3 +324,6 @@ ipcMain.on('execute-query', (event, data: QueryType) => {
       console.log('ERROR in execute-query channel in main.ts', error);
     });
 });
+
+const hi = api.sayHello();
+console.log('FROM API FILE', hi);
