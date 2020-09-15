@@ -4,7 +4,6 @@ import { join } from 'path';
 import { format } from 'url';
 import './channels' // all channels live here
 
-const db = require('./models');
 const { exec } = require('child_process');
 const appMenu = require('./mainMenu'); // use appMenu to add options in top menu bar of app
 const path = require('path');
