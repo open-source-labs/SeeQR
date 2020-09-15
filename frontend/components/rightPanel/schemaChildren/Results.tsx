@@ -2,7 +2,13 @@ import React, { Component } from 'react';
 import { Line, defaults } from "react-chartjs-2";
 
 type ResultsProps = {
-  queries: any;
+  queries: {
+    queryString: string;
+    queryData: {}[];
+    queryStatistics: any
+    querySchema: string;
+    queryLabel: string;
+  }[];
 };
 
 defaults.global.defaultFontColor = 'rgb(198,210,213)';
@@ -67,6 +73,8 @@ export class Results extends Component<ResultsProps> {
         }
       ]
     }
+
+    // To display additional analytics, comment back in JSX elements in the return statement below.
     return (
       <div id="results-panel">
         <h3>Results</h3>

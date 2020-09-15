@@ -1,24 +1,13 @@
-import React, { Component, MouseEvent, ChangeEvent } from 'react';
+import React, { Component } from 'react';
+
 const { ipcRenderer } = window.require('electron');
 const { dialog } = require('electron').remote;
-import SchemaModal from './SchemaModal';
 
-// Codemirror Styling
-require('codemirror/lib/codemirror.css');
-
-// Codemirror Languages
-require('codemirror/mode/javascript/javascript');
-require('codemirror/mode/sql/sql');
-
-// Codemirror Themes
-require('codemirror/mode/markdown/markdown');
-require('codemirror/theme/monokai.css');
-require('codemirror/theme/midnight.css');
-require('codemirror/theme/lesser-dark.css');
-require('codemirror/theme/solarized.css');
-
-// Codemirror Component
-var CodeMirror = require('react-codemirror');
+// Codemirror configuration
+import 'codemirror/lib/codemirror.css'; // Styline
+import 'codemirror/mode/sql/sql'; // Language (Syntax Highlighting)
+import 'codemirror/theme/lesser-dark.css'; // Theme
+import CodeMirror from 'react-codemirror';
 
 /************************************************************
  *********************** TYPESCRIPT: TYPES ***********************
@@ -36,10 +25,9 @@ class Query extends Component<QueryProps, state> {
   constructor(props: QueryProps) {
     super(props);
     this.handleQuerySubmit = this.handleQuerySubmit.bind(this);
-    // this.handleQueryEntry = this.handleQueryEntry.bind(this);
-    // this.showModal = this.showModal.bind(this);
-    // this.handleQueryPrevious = this.handleQueryPrevious.bind(this);
     this.updateCode = this.updateCode.bind(this);
+    // this.handleQueryPrevious = this.handleQueryPrevious.bind(this);
+    // this.handleGenerateData = this.handleGenerateData.bind(this);
   }
 
   state: state = {
@@ -66,7 +54,7 @@ class Query extends Component<QueryProps, state> {
     // if input fields for query label or query string are empty, then
     // send alert to input both fields
     if (!this.state.queryLabel || !this.state.queryString) {
-      const noInputAlert = dialog.showErrorBox('Please enter a Label and a Query.', '');
+      dialog.showErrorBox('Please enter a Label and a Query.', '');
     } else {
       const queryAndSchema = {
         queryString: this.state.queryString,
@@ -74,13 +62,12 @@ class Query extends Component<QueryProps, state> {
         queryLabel: this.state.queryLabel,
       };
       ipcRenderer.send('execute-query', queryAndSchema);
-      // this.setState({ queryString: '' });
     }
   }
 
-  handleGenerateData(event: any) {
-    ipcRenderer.send('generate-data')
-  }
+  // handleGenerateData(event: any) {
+  //   ipcRenderer.send('generate-data')
+  // }
 
   render() {
     // Codemirror module configuration options
@@ -116,7 +103,7 @@ class Query extends Component<QueryProps, state> {
           <br />
           <p>*required</p>
         </form>
-        <button id="generate-data-button" onClick={this.handleGenerateData}>Generate Dummy Data</button>
+        {/* <button id="generate-data-button" onClick={this.handleGenerateData}>Generate Dummy Data</button> */}
       </div>
     );
   }

@@ -1,8 +1,8 @@
 /node_modules
 /.vscode
 /dist
-/build
+/tsCompiled
+*/.DS_Store
 .DS_Store
 dvdrental.tar
 package-lock.json
-frontend/assets/.DS_Store

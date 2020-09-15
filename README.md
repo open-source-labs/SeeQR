@@ -107,8 +107,7 @@ To get started on contributing to this project:
   - New schemas can be uploaded into the application by clicking the "+" button above the main panel in the form of a ```.sql``` or a ```.tar``` file, or the schema script itself.
   - Newly uploaded schemas are displayed as tabs, which can be activated to run tests against during application session. These schemas (and the databases they're connected to) persist beyond the application session.
 <div align="center">
-  <img src="./frontend/assets/images/schemamodal1.png" width=300/>
-  <img src="./frontend/assets/images/schemamodal2.png" width=300/>
+  <img src="./frontend/assets/images/schemamodal.png" width=300/>
 </div>
 
 - History
@@ -166,11 +165,11 @@ The outcome results from each query, both retrieved data and analytics, are stor
 <table>
 <tr>
 <td align="center">
-<img src="./frontend/assets/images/catherinechiu.png"/><br/>
+<img src="./frontend/assets/images/catherinechiu.png" href="https://github.com/catherinechiu"/><br/>
 <a href="https://github.com/catherinechiu">Catherine Chiu</a>
 </td>
 <td align="center">
-<img src="./frontend/assets/images/serenakuo.png"/><br/>
+<img src="./frontend/assets/images/serenakuo.png" href="https://github.com/serenackuo"/><br/>
 <a href="https://github.com/serenackuo">Serena Kuo</a>
 </td>
 <td align="center">
@@ -178,11 +177,11 @@ The outcome results from each query, both retrieved data and analytics, are stor
 <a href="https://github.com/FrankNorton32">Frank Norton</a>
 </td>
 <td align="center">
-<img src="./frontend/assets/images/mercerstronck.png"/><br/>
+<img src="./frontend/assets/images/mercerstronck.png" href="https://github.com/mercerstronck"/><br/>
 <a href="https://github.com/mercerstronck">Mercer Stronck</a>
 </td>
 <td align="center">
-<img src="./frontend/assets/images/muhammadtrad.png"/><br/>
+<img src="./frontend/assets/images/muhammadtrad.png" href="https://github.com/muhammadtrad"/><br/>
 <a href="https://github.com/muhammadtrad">Muhammad Trad</a>
 </td>
 </tr></table>
