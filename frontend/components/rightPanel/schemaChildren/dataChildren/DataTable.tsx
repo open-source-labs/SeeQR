@@ -1,15 +1,14 @@
 import React, { Component } from 'react';
 
 type TableProps = {
-  // queries: {
-  //   queryString: string;
-  //   queryData: string;
-  //   queryStatistics: any
-  //   querySchema: string;
-  // }[];
-  queries: any;
+  queries: {
+    queryString: string;
+    queryData: {}[];
+    queryStatistics: any
+    querySchema: string;
+    queryLabel: string;
+  }[];
 };
-
 export class Table extends Component<TableProps> {
 
   constructor(props) {
@@ -42,9 +41,8 @@ export class Table extends Component<TableProps> {
     const { queries } = this.props;
 
     var items = queries[queries.length - 1].queryData;
-    // console.log('items', items); // [ {}, {}, {} ]
-    
     var keys = this.getKeys(); // actor_id, firstName, lastName, lastUpdated
+
     return items.map((row, index) => {
       return <tr key={index}><RenderRow key={index} data={row} keys={keys} /></tr>
     })
@@ -77,12 +75,11 @@ type RenderRowProps = {
 // Returns each cell within table
 const RenderRow = (props: RenderRowProps) => {
   const { data, keys } = props;
-  // console.log('data', data);
-  
-  
   return keys.map((header, index) => {
+    // if the value of a row is undefined, then go to next iteration
+    if (data[header] == undefined) return;
     // turn all values in data object to string or number
-    data[header] = JSON.stringify(data[header])
+    data[header] = data[header].toString();
     return <td key={index}>{data[header]}</td>
   })
 }

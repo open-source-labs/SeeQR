@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
-import { Tab } from './tabsChildren/Tab';
 import { SchemaContainer } from './SchemaContainer';
 import SchemaModal from './schemaChildren/SchemaModal';
+import { Tab } from './tabsChildren/Tab';
+
+const { ipcRenderer } = window.require('electron');
 
 type TabsProps = {
   currentSchema: string,
@@ -21,8 +23,24 @@ export class Tabs extends Component<TabsProps> {
   state: state = {
     show: false,
   };
+
   showModal = (event: any) => {
-    this.setState({ show: !this.state.show });
+    this.setState({ show: true });
+  };
+
+
+  componentDidMount() {
+    // After schema is successfully sent to backend, backend spins up new database with inputted schemaName.
+    // It will send the frontend an updated variable 'lists' that is an array of updated lists of all the tabs (which is the same
+    // thing as all the databases). We open a channel to listen for it here inside of componendDidMount, then
+    // we invoke onClose to close schemaModal ONLY after we are sure that backend has created that channel.
+    ipcRenderer.on('db-lists', (event: any, returnedLists: any) => {
+      this.onClose(event);
+    })
+  }
+
+  onClose = (event: any) => {
+    this.setState({ show: false })
   };
 
   render() {
@@ -61,7 +79,7 @@ export class Tabs extends Component<TabsProps> {
           </button>
           </span>
         </ol>
-        <SchemaModal show={this.state.show} onClose={this.showModal} />
+        <SchemaModal show={this.state.show} showModal={this.showModal} onClose={this.onClose} />
         <div className="tab-content">
           {tabList.map((tab, index) => {
             if (tab !== currentSchema) return undefined;

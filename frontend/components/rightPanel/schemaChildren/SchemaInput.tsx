@@ -1,24 +1,13 @@
-import React, { Component, MouseEvent, ChangeEvent } from 'react';
-import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
-const { ipcRenderer } = window.require('electron');
+import React, { Component } from 'react';
 import GenerateData from './GenerateData';
 
-// Codemirror Styling
-require('codemirror/lib/codemirror.css');
+const { ipcRenderer } = window.require('electron');
 
-// Codemirror Languages
-require('codemirror/mode/javascript/javascript');
-require('codemirror/mode/sql/sql');
-
-// Codemirror Themes
-require('codemirror/mode/markdown/markdown');
-require('codemirror/theme/monokai.css');
-require('codemirror/theme/midnight.css');
-require('codemirror/theme/lesser-dark.css');
-require('codemirror/theme/solarized.css');
-
-// Codemirror Component
-var CodeMirror = require('react-codemirror');
+// Codemirror configuration
+import 'codemirror/lib/codemirror.css'; // Styline
+import 'codemirror/mode/sql/sql'; // Language (Syntax Highlighting)
+import 'codemirror/theme/lesser-dark.css'; // Theme
+import CodeMirror from 'react-codemirror';
 
 type SchemaInputProps = {
   onClose: any;
@@ -33,19 +22,18 @@ class SchemaInput extends Component<SchemaInputProps, state> {
   constructor(props: SchemaInputProps) {
     super(props);
     this.handleSchemaSubmit = this.handleSchemaSubmit.bind(this);
-    this.updateCode = this.updateCode.bind(this);
+    this.handleSchemaChange = this.handleSchemaChange.bind(this);
   }
+
   state: state = {
     schemaEntry: '',
   };
 
-  // Updates state.queryString as user inputs query string
-  updateCode(event: any) {
+  // Updates state.schemaEntry as user inputs query string
+  handleSchemaChange(event: string) {
     this.setState({
       schemaEntry: event,
     });
-    console.log('SCHEMA ENTRY', typeof this.state.schemaEntry);
-
   }
 
   handleSchemaSubmit(event: any) {
@@ -56,8 +44,8 @@ class SchemaInput extends Component<SchemaInputProps, state> {
       schemaFilePath: '',
       schemaEntry: this.state.schemaEntry,
     };
+
     ipcRenderer.send('input-schema', schemaObj);
-    console.log(`sending ${schemaObj} to main process`);
   }
 
   onClose = (event: any) => {
@@ -75,11 +63,10 @@ class SchemaInput extends Component<SchemaInputProps, state> {
     return (
       <div className="input-schema">
         <form onSubmit={this.handleSchemaSubmit}>
-          {/* <p>Schema label: {this.props.schemaName}</p> */}
           <br />
           <div className="codemirror">
             <CodeMirror
-              onChange={(e) => { this.updateCode(e) }}
+              onChange={(e) => this.handleSchemaChange(e)}
               options={options}
             />
           </div>

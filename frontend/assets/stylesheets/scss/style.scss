@@ -135,6 +135,10 @@ h4 {
   font-weight: 500;
   letter-spacing: 0.5px;  
   cursor: pointer;
+
+  border: solid #ccc;
+  border-width: 1px 1px 0 1px;
+  border-radius: 15px 15px 0px 0px;
 }
 
 .tab-list-item:hover{
@@ -147,7 +151,7 @@ h4 {
   border: solid #ccc;
   border-width: 1px 1px 0 1px;
   border-radius: 15px 15px 0px 0px;
-  font-weight: 600;
+  font-weight: 500;
   color: $background-darkmode-darker;
 }
 .close-button {
@@ -176,6 +180,6 @@ button:hover {
   cursor: pointer;
 }
 
-#generate-data-button {
-  margin-top: 30px;
-}
+// #generate-data-button {
+//   margin-top: 30px;
+// }

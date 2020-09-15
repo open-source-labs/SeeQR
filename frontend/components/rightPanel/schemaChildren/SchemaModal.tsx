@@ -1,15 +1,16 @@
-import React, { Component, MouseEvent, ChangeEvent } from 'react';
-import { Redirect, BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
-const { dialog } = require('electron').remote;
-const fs = require('fs');
-const { ipcRenderer } = window.require('electron');
+import React, { Component } from 'react';
+import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import SchemaInput from './SchemaInput';
 import GenerateData from './GenerateData';
+
+const { dialog } = require('electron').remote;
+const { ipcRenderer } = window.require('electron');
 
 type ClickEvent = React.MouseEvent<HTMLElement>;
 
 type SchemaModalProps = {
   show: boolean;
+  showModal: any;
   onClose: any;
 };
 
@@ -39,9 +40,10 @@ class SchemaModal extends Component<SchemaModalProps, state> {
     redirect: false,
   };
 
+
   // Set schema name
   handleSchemaName(event: any) {
-    // convert input label name to lowercase only with no spacing for db naming convention
+    // convert input label name to lowercase only with no spacing to comply with db naming convention.
     const schemaNameInput = event.target.value;
     let dbSafeName = schemaNameInput.toLowerCase();
     dbSafeName = dbSafeName.replace(/[^A-Z0-9]/gi, '');
@@ -49,8 +51,7 @@ class SchemaModal extends Component<SchemaModalProps, state> {
   }
 
   // Load schema file path
-  // When file path is uploaded, query entry is cleared (change to replaced by script later)
-  // Add dialog box to warn user of this
+  // When file path is uploaded, query entry is cleared.
   handleSchemaFilePath(event: ClickEvent) {
     event.preventDefault();
     dialog
@@ -60,7 +61,6 @@ class SchemaModal extends Component<SchemaModalProps, state> {
         message: 'Please upload .sql or .tar database file',
       })
       .then((result: object) => {
-        console.log('file uploaded', result);
         const filePath = result['filePaths'];
         this.setState({ schemaFilePath: filePath });
         const schemaObj = {
@@ -69,22 +69,17 @@ class SchemaModal extends Component<SchemaModalProps, state> {
           schemaEntry: '',
         };
         ipcRenderer.send('input-schema', schemaObj);
-        console.log(`sending ${schemaObj} to main process`);
-        this.onClose(event);
-        // this.setState({ schemaEntry: '' });
+        this.props.showModal(event);
       })
       .catch((err: object) => {
-        console.log(err);
+        console.log('Error in handleSchemaFilePath method of SchemaModal.tsx.', err);
       });
   }
 
-  // when schema script is inserted, file path is cleared
-  // set dialog to warn user
+  // When schema script is inserted, file path is cleared set dialog to warn user.
   handleSchemaEntry(event: any) {
-    this.setState({ schemaEntry: event.target.value });
-    this.setState({ schemaFilePath: '' });
-    console.log('schema entry: ', this.state.schemaEntry);
-    console.log('schema entry type: ', typeof this.state.schemaEntry);
+    this.setState({ schemaEntry: event.target.value, schemaFilePath: '' });
+    // this.setState({ schemaFilePath: '' });
   }
 
   handleSchemaSubmit(event: any) {
@@ -95,16 +90,12 @@ class SchemaModal extends Component<SchemaModalProps, state> {
       schemaFilePath: this.state.schemaFilePath,
       schemaEntry: this.state.schemaEntry,
     };
+
     ipcRenderer.send('input-schema', schemaObj);
-    console.log(`sending ${schemaObj} to main process`);
   }
 
-  onClose = (event: any) => {
-    this.props.onClose && this.props.onClose(event);
-  };
-
   render() {
-    if (!this.props.show) {
+    if (this.props.show === false) {
       return null;
     }
 
@@ -121,16 +112,14 @@ class SchemaModal extends Component<SchemaModalProps, state> {
           />
           <div className="modal-buttons">
             <button onClick={this.handleSchemaFilePath}>Load Schema</button>
-            {/* <button onClick={this.handleOnClick} type="button">Input Schema</button> */}
             <Link to="/SchemaInput">
               <button className="input-button">Input Schema</button>
             </Link>
           </div>
 
-          <button className="close-button" onClick={this.onClose}>
+          <button className="close-button" onClick={this.props.onClose}>
             X
           </button>
-          {/* <button onClick="window.location.href='/SchemaInput'">Input Schema</button> */}
 
           <Switch>
             <Route exact path="/" component={SchemaModal} />
@@ -147,47 +136,4 @@ class SchemaModal extends Component<SchemaModalProps, state> {
   }
 }
 
-// SchemaModal.propTypes = {
-//   onClose: PropTypes.func.isRequired,
-//   show: PropTypes.bool.isRequired
-// };
 export default SchemaModal;
-
-/*
-<Route exact path="/" component={SchemaModal}/>
-            <Route exact path="/SchemaInput" render={(props:any) => <SchemaInput {...props}/>}/>
-            <Route exact path="/GenerateData" component={GenerateData} />
-<div className="content">{this.props.children}</div>
-          <h3>Load or input schema</h3>
-          <form onSubmit={this.handleSchemaSubmit}>
-            <p>First...</p>
-            <input
-              className="schema-label"
-              type="text"
-              placeholder="Input schema label..."
-              onChange={(e) => this.handleSchemaName(e)}
-            />
-            <p>Schema label: {this.state.schemaName}</p>
-            <br />
-            <p>Then...</p>
-            <button onClick={this.handleSchemaFilePath}>Load Schema</button>
-            <p>{this.state.schemaFilePath}</p>
-            <br />
-            <p>Or...</p>
-            <input
-              className="schema-text-field"
-              type="text"
-              placeholder="Input Schema Here..."
-              onChange={(e) => this.handleSchemaEntry(e)}
-            />
-            /* <input type="select" onClick={this.handleQueryPrevious}/> */
-/*<div id="modal-buttons">
-              <button>submit</button>
-              <div className="actions">
-                <button className="toggle-button" onClick={this.onClose}>
-                  close
-                </button>
-              </div>
-            </div>
-          </form>
-          <Route exact path="/SchemaInput" render={(props:any) => <SchemaInput {...props}/>}/>*/

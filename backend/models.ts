@@ -1,7 +1,7 @@
 const { Pool } = require('pg');
 
-// postgres://username:password@hostname:port/databasename
-//Defaults
+// Initialize to a default db.
+// URI Format: postgres://username:password@hostname:port/databasename
 let PG_URI: string = 'postgres://postgres:postgres@localhost:5432/defaultDB';
 let pool: any = new Pool({ connectionString: PG_URI });
 

@@ -1,13 +1,9 @@
 import React, { Component, MouseEvent } from 'react';
-const path = require('path');
-// const { dialog } = require('electron').remote;
-// const { ipcRenderer } = window.require('electron');
 
 type SplashProps = {
   openSplash: boolean;
   handleFileClick: any;
   handleSkipClick: any;
-  //files: string[];
 };
 
 export class Splash extends Component<SplashProps> {
