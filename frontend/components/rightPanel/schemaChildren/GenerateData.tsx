@@ -46,6 +46,12 @@ class GenerateData extends Component<GenerateDataProps, state> {
         dataCategory : '',
         dataType : '',
         data : {},
+      },
+      {    
+        name : '',  
+        dataCategory : '',
+        dataType : '',
+        data : {},
       }
     ],
     
@@ -110,14 +116,11 @@ class GenerateData extends Component<GenerateDataProps, state> {
   onClose = (event: any) => {
     this.props.onClose && this.props.onClose(event);
   };
-  // input all form input fields under "form" and link to event handlers to save to state
-  // bind all functions for field entries on the form
-
 
   render() {
     const columns : any = [];
     this.state.columns.forEach( (e : any, i : number) => {
-      columns.push(<div><GenerateDataColumn key={'column' + i} columnIndex={i} columnObj={e} updateState={this.componentChangeState}/></div>);
+      columns.push(<GenerateDataColumn key={`column${i}`} columnIndex={i} columnObj={e} updateState={this.componentChangeState}/>);
     })
 
     return (
@@ -135,9 +138,9 @@ class GenerateData extends Component<GenerateDataProps, state> {
               Scale:
               <input type="number" className="DGI-scale" name="scale" min="1" defaultValue="# of records" onChange={(e)=>{this.setState({scale : e})}}/>
             </div>
-            <div>{columns}</div>            
-            <input type="button" onClick={e => this.handleAddColumn()}>+</input>
-            <input type="button" onClick={e => this.handleRemoveColumn()}>-</input>
+            <div>{columns}</div>
+            {/* <input type="button" onClick={e => this.handleAddColumn()}>+</input>
+            <input type="button" onClick={e => this.handleRemoveColumn()}>-</input> */}
             <div className="actions">
               <button className="toggle-button" onClick={this.onClose}>
                 close

@@ -81,5 +81,3 @@ types.unique.num = (data : any, scale : number) => {
 // types.repeating.loop = (data : object, scale : number) => {};
 // types.repeating.weighted = (data : object, scale : number) => {};
 // types.repeating.counted = (data : object, scale : number) => {};
-
-/* ===================== END OF DATA TYPE FUNCTIONS ===================== */
