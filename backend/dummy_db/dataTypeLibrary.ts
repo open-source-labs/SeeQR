@@ -57,7 +57,6 @@ types.unique.str = (data : any, scale : number) => {
   lockedIndexes.sort();
 
   // CLOSURE : function to be called on each record
-
   return function (i) {
     // initalize the output string with the unique prefix associated with that record (i)
     let output : string = unique[i];
@@ -76,6 +75,9 @@ types.unique.str = (data : any, scale : number) => {
 types.unique.num = (data : any, scale : number) => {
   return (index) => {if (data.serial) return index};
 };
+
+
+
 
 // REPEATING DATA TYPE - STILL NEEDED
 // types.repeating.loop = (data : object, scale : number) => {};
