@@ -35,8 +35,8 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1800,
     height: 1400,
-    minWidth: 1500,
-    minHeight: 1000,
+    minWidth: 900,
+    minHeight: 720,
     title: 'SeeQR',
     show: false,
     webPreferences: { nodeIntegration: true, enableRemoteModule: true },
