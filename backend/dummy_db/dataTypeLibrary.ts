@@ -57,6 +57,7 @@ types.unique.str = (data : any, scale : number) => {
   lockedIndexes.sort();
 
   // CLOSURE : function to be called on each record
+
   return function (i) {
     // initalize the output string with the unique prefix associated with that record (i)
     let output : string = unique[i];
