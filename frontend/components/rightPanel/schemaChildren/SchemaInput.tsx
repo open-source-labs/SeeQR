@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import GenerateData from './GenerateData';
+// import GenerateData from './GenerateData';
 
 const { ipcRenderer } = window.require('electron');
 
