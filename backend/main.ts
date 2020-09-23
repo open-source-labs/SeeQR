@@ -7,6 +7,7 @@ import './channels' // all channels live here
 const { exec } = require('child_process');
 const appMenu = require('./mainMenu'); // use appMenu to add options in top menu bar of app
 const path = require('path');
+const createInsertQuery = require('./dummy_db/dataGenHandler');
 
 /************************************************************
  *********** PACKAGE ELECTRON APP FOR DEPLOYMENT ***********
@@ -35,8 +36,8 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1800,
     height: 1400,
-    minWidth: 1500,
-    minHeight: 1000,
+    minWidth: 900,
+    minHeight: 720,
     title: 'SeeQR',
     show: false,
     webPreferences: { nodeIntegration: true, enableRemoteModule: true },
@@ -128,3 +129,4 @@ app.on('activate', () => {
     createWindow();
   }
 });
+

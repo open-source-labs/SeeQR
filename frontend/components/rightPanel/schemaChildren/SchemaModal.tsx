@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import SchemaInput from './SchemaInput';
-import GenerateData from './GenerateData';
+// import GenerateData from './GenerateData';
 
 const { dialog } = require('electron').remote;
 const { ipcRenderer } = window.require('electron');
@@ -128,7 +128,6 @@ class SchemaModal extends Component<SchemaModalProps, state> {
               path="/SchemaInput"
               render={(props: any) => <SchemaInput {...props} schemaName={this.state.schemaName} />}
             />
-            <Route exact path="/GenerateData" component={GenerateData} />
           </Switch>
         </Router>
       </div>
