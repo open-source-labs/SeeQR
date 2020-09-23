@@ -1,5 +1,5 @@
 const faker = require('faker');
-const fakerLink = require('./../../../../backend/dummy_db/fakerLink');
+const fakerLink = require('./fakerLink');
 
 export const typeOptions : any = {
     dropdown : ['Select one', 'unique', 'random'],
