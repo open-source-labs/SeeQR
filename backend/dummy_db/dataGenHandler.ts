@@ -1,19 +1,24 @@
 const faker = require('faker');
-const fakerLink = require('./fakerLink');
-const types = require('./dataTypeLibrary');
+const {fakerLink} = require('./fakerLink');
+const {types} = require('./dataTypeLibrary');
+
+/* --- MAIN FUNCTION --- */
 
 // GENERATE 'INSERT INTO' QUERY STRING
 // Populate an array of INSERT queries to add the data for the table to the database.
   // An array is used to break the insert into smaller pieces if needed.
   // Postgres limits insert queries to 100,000 entry values: 100,000 / # of columns = Max number of rows per query.
 // Arguments: form = DB generation form object submitted by user - from front end
-function createInsertQuery (form : any) : string {
+export const createInsertQuery = (form : any) : string => {
   const values = valuesList(form.columns, form.scale);
   const cols = columnList(form.columns);
   const queryArray : any = [];
   values.forEach(e => queryArray.push(`INSERT INTO "${form.table}"(${cols}) VALUES ${e}; `));
   return queryArray;
 }
+
+
+/* --- CALLBACK FUNCTIONS --- */
 
 // CREATE 'COLUMN' STRING FOR QUERY
   // Called by createInsertQuery()
@@ -35,7 +40,7 @@ const valuesList = (columns : any, scale : number) => {
   const columnTypes = createRecordFunc(columns, scale);
   const valuesArray : any = [];
   // determine maximum number of records Postgres will allow per insert query - with buffer
-  let maxRecords : number = 20; // columns.length;
+  let maxRecords : number = 10; // columns.length;
   let list : string = '';
   // create the number of records equal to the scale of the table
   for (let i : number = 0; i < scale; i += 1) {
@@ -77,9 +82,6 @@ const createRecordFunc = (columns : any, scale : number) => {
   } );
   return output;
 };
-
-
-module.exports = createInsertQuery;
 
 /* UNCOMMENT BELOW FOR TESTING OBJECT AND FUNCTION */
 // const fromApp = {
