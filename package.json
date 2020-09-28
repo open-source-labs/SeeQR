@@ -74,5 +74,12 @@
   "bugs": {
     "url": "https://github.com/oslabs-beta/SeeQR/issues"
   },
-  "homepage": "https://github.com/oslabs-beta/SeeQR"
+  "homepage": "https://github.com/oslabs-beta/SeeQR",
+  "liveSassCompile.settings.formats": [
+    {
+      "format": "expanded",
+      "savePath": "/frontend/assets/stylesheets/css"
+    }
+  ],
+"liveSassCompile.settings.generateMap": false
 }
