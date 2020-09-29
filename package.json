@@ -3,13 +3,17 @@
   "version": "1.0.0",
   "description": "SeeQR",
   "main": "./tsCompiled/backend/main",
+  "babel": {
+    "presets": ["@babel/preset-env", "@babel/preset-react"]
+  },
   "scripts": {
     "build": "tsc && webpack",
     "docker": "docker-compose up -d",
     "start": "cross-env NODE_ENV=production electron --noDevServer .",
     "resetContainer": "docker container stop postgres-1 && docker container prune && docker container ls -a",
     "dev": "tsc && cross-env NODE_ENV=development webpack-dev-server --hot",
-    "new": "cross-env NODE_ENV=production electron --noDevServer ."
+    "new": "cross-env NODE_ENV=production electron --noDevServer .",
+    "test": "jest --verbose"
   },
   "repository": {
     "type": "git",
@@ -42,6 +46,9 @@
     "@babel/core": "^7.10.5",
     "@babel/preset-env": "^7.10.4",
     "@babel/preset-react": "^7.10.4",
+    "@types/enzyme": "^3.10.7",
+    "@types/enzyme-adapter-react-16": "^1.0.6",
+    "@types/jest": "^26.0.14",
     "@types/node": "^14.6.0",
     "@types/react": "^16.9.46",
     "@types/react-dom": "^16.9.8",
@@ -53,9 +60,12 @@
     "electron": "^9.3.1",
     "electron-devtools-installer": "^3.0.0",
     "electron-packager": "^14.2.1",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.5",
     "file-loader": "^6.0.0",
     "html-webpack-plugin": "^4.3.0",
     "image-webpack-loader": "^6.0.0",
+    "jest": "^26.4.2",
     "mini-css-extract-plugin": "^0.9.0",
     "nodemon": "^2.0.4",
     "postcss-loader": "^3.0.0",
@@ -63,6 +73,7 @@
     "sass-loader": "^9.0.2",
     "source-map-loader": "^1.0.1",
     "style-loader": "^1.2.1",
+    "ts-jest": "^26.4.0",
     "ts-loader": "^8.0.2",
     "ts-node": "^8.10.2",
     "typescript": "^3.9.7",
@@ -74,6 +85,22 @@
     "url": "https://github.com/oslabs-beta/SeeQR/issues"
   },
   "homepage": "https://github.com/oslabs-beta/SeeQR",
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest",
+      "^.+\\.jsx?$": "babel-jest"
+    },
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
+    "setupFilesAfterEnv": ["<rootDir>/__tests__/setupTests.js"]
+  },
   "liveSassCompile.settings.formats": [
     {
       "format": "expanded",
