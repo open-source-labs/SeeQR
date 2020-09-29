@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "SeeQR",
   "main": "./tsCompiled/backend/main",
+  "babel": {
+    "presets": ["@babel/preset-env", "@babel/preset-react"]
+  },
   "scripts": {
     "build": "tsc && webpack",
     "docker": "docker-compose up -d",
@@ -85,7 +88,8 @@
   "homepage": "https://github.com/oslabs-beta/SeeQR",
   "jest": {
     "transform": {
-      "^.+\\.tsx?$": "ts-jest"
+      "^.+\\.tsx?$": "ts-jest",
+      "^.+\\.jsx?$": "babel-jest"
     },
     "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
     "moduleFileExtensions": [
@@ -96,7 +100,7 @@
       "json",
       "node"
     ],
-    "setupFilesAfterEnv": ["<rootDir>/__tests__/setupTests.ts"]
+    "setupFilesAfterEnv": ["<rootDir>/__tests__/setupTests.js"]
   },
   "liveSassCompile.settings.formats": [
     {
