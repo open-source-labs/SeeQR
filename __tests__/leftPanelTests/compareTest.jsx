@@ -17,7 +17,7 @@ describe ("Comparison feature tests", () => {
   beforeAll(() => {
     wrapper = shallow(<Compare {...props}/>)
   })
-
+  
   it('Should render a div', () => {
     expect(wrapper.type()).toEqual('div');
   })
