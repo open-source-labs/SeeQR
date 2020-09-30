@@ -4,7 +4,10 @@
   "description": "SeeQR",
   "main": "./tsCompiled/backend/main",
   "babel": {
-    "presets": ["@babel/preset-env", "@babel/preset-react"]
+    "presets": [
+      "@babel/preset-env",
+      "@babel/preset-react"
+    ]
   },
   "scripts": {
     "build": "tsc && webpack",
@@ -100,7 +103,9 @@
       "json",
       "node"
     ],
-    "setupFilesAfterEnv": ["<rootDir>/__tests__/setupTests.js"]
+    "setupFilesAfterEnv": [
+      "<rootDir>/__tests__/setupTests.js"
+    ]
   },
   "liveSassCompile.settings.formats": [
     {

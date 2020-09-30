@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as renderer from "react-test-renderer";
-import { Compare } from "../frontend/components//leftPanel/Compare";
+import { Compare } from "../frontend/components/leftPanel/Compare";
 import { shallow } from "enzyme";
 import { stringify } from "querystring";
 
@@ -31,9 +31,5 @@ describe ("Comparison feature tests", () => {
     expect(wrapper.containsMatchingElement(
       <td>{'Query Label'}</td>)).toBeTruthy();
   })
-
-
-
-
 
 })
