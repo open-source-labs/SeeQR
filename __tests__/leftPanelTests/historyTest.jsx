@@ -1,10 +1,10 @@
 import * as React from "react";
 import * as renderer from "react-test-renderer";
-import { Compare } from "../frontend/components//leftPanel/Compare";
+import { History } from "../../frontend/components/leftPanel/History";
 import { shallow } from "enzyme";
 import { stringify } from "querystring";
 
-describe ("Comparison feature tests", () => {
+describe ("History feature tests", () => {
   // wrapper will be assigned the evaluation of the shallow render
   let wrapper;
 
@@ -15,16 +15,16 @@ describe ("Comparison feature tests", () => {
   }
   // shallow render the component before running tests
   beforeAll(() => {
-    wrapper = shallow(<Compare {...props}/>)
+    wrapper = shallow(<History {...props}/>)
   })
 
   it('Should render a div', () => {
     expect(wrapper.type()).toEqual('div');
   })
 
-  it('Should render h3 tag', () => {
+  it('Should render correct h3 element', () => {
     expect(wrapper.containsMatchingElement(
-    <h3>Comparisons</h3>)).toBeTruthy();
+    <h3>History</h3>)).toBeTruthy();
   })
 
   it('Should render query label', () => {
