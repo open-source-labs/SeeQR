@@ -34,7 +34,7 @@ class Query extends Component<QueryProps, state> {
   }
 
   state: state = {
-    queryString: 'testString',
+    queryString: '',
     queryLabel: '',
     show: false,
     trackQuery: false
