@@ -81,16 +81,23 @@ class Query extends Component<QueryProps, state> {
       <div id="query-panel">
         <h3>Query</h3>
         <form onSubmit={this.handleQuerySubmit}>
-          <label>Query Label:* </label>
-          <input
-            className="label-field"
-            type="text"
-            placeholder="enter label for query"
-            onChange={(e) => this.handleLabelEntry(e)}
-          />
+          <div className="query-label">
+            <div id="chart-option">
+              <span>track on chart:</span>
+              <input id="track" type="checkbox"></input>
+            </div>
+              <div id="label-option">
+                <label>label: </label>
+                <input
+                  className="label-field"
+                  type="text"
+                  placeholder="enter label to track"
+                  onChange={(e) => this.handleLabelEntry(e)}
+                />
+              </div>
+          </div>
           <br />
-          <br />
-          <label>Query:*</label>
+          <label>Query:</label>
           {/* <input type="select" onClick={this.handleQueryPrevious}/> */}
           <div className="codemirror">
             <CodeMirror
@@ -101,7 +108,6 @@ class Query extends Component<QueryProps, state> {
           <button>Submit</button>
           <br />
           <br />
-          <p>*required</p>
         </form>
         {/* <button id="generate-data-button" onClick={this.handleGenerateData}>Generate Dummy Data</button> */}
       </div>
