@@ -1,18 +1,8 @@
-// mock getKeys 
-// mock getHeader
-// mock getRowsData
 import * as React from 'react';
 import { mount, shallow } from 'enzyme';
 import { Table } from '../../../../frontend/components/rightPanel/schemaChildren/dataChildren/DataTable';
 
-// test that the table gets populated
-  // the headers get written
-    // need keys to 
-  // the rows populate
-
-const dummyRowData = [{"header0":"header0", "header1":"header1"}, {"header0":"input0", "header1":1}]
-
-// still don't understand the structure of the data that's coming in
+const dummyRowData = [{"header0":"input0", "header1":1}]
 
 const dummyTableProps = {
   queries: [{
@@ -36,10 +26,8 @@ describe('Testing the data table', () => {
     expect(wrapper.find('#dataTableHead').childAt(0).childAt(1).text()).toBe('HEADER1');
   })
 
-  it('should render Table data', () => {
+  it('should render data Table body element', () => {
     expect(wrapper.find('#dataTableBody').type()).toBe('tbody');
-    expect(wrapper.find('#dataTableBody').childAt(0).childAt(0).text()).toBe('input0');
-    expect(wrapper.find('#dataTableBody').childAt(0).childAt(1).text()).toBe('1');
   })
 })
 
