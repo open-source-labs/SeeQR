@@ -60,17 +60,29 @@ class Query extends Component<QueryProps, state> {
   // Submits query to backend on 'execute-query' channel
   handleQuerySubmit(event: any) {
     event.preventDefault();
-    // if input fields for query label or query string are empty, then
-    // send alert to input both fields
-    if (!this.state.queryLabel || !this.state.queryString) {
-      dialog.showErrorBox('Please enter a Label and a Query.', '');
-    } else {
+    // if query string is empty, show error
+    if (!this.state.queryString) {
+      dialog.showErrorBox('Please enter a Query.', '');
+    } 
+    if (!this.state.trackQuery) {
+      //functionality to send query but not return stats and track
       const queryAndSchema = {
         queryString: this.state.queryString,
         queryCurrentSchema: this.props.currentSchema,
         queryLabel: this.state.queryLabel,
       };
-      ipcRenderer.send('execute-query', queryAndSchema);
+      ipcRenderer.send('execute-query-untracked', queryAndSchema);
+    }
+    if (this.state.trackQuery && !this.state.queryLabel) {
+      dialog.showErrorBox('Please enter a label for the Query.', '');
+    }
+    else if (this.state.trackQuery) {
+      const queryAndSchema = {
+        queryString: this.state.queryString,
+        queryCurrentSchema: this.props.currentSchema,
+        queryLabel: this.state.queryLabel,
+      };
+      ipcRenderer.send('execute-query-tracked', queryAndSchema);
     }
   }
 

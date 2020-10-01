@@ -159,8 +159,16 @@ interface QueryType {
   queryStatistics: string;
 }
 
+ipcMain.on('execute-query-untracked', (event, data: QueryType) => {
+  console.log('execute query untracked');
+  // destructure object from frontend
+  const { queryString, queryCurrentSchema, queryLabel } = data;
+  // run query on db
+  
+});
+
 // Listen for queries being sent from renderer
-ipcMain.on('execute-query', (event, data: QueryType) => {
+ipcMain.on('execute-query-tracked', (event, data: QueryType) => {
   // destructure object from frontend
   const { queryString, queryCurrentSchema, queryLabel } = data;
 
