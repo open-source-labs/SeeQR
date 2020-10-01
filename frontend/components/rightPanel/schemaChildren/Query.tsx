@@ -19,6 +19,8 @@ type state = {
   queryString: string;
   queryLabel: string;
   show: boolean;
+  //if true, will add query results to the bar chart
+  trackQuery: boolean;
 };
 
 class Query extends Component<QueryProps, state> {
@@ -26,6 +28,7 @@ class Query extends Component<QueryProps, state> {
     super(props);
     this.handleQuerySubmit = this.handleQuerySubmit.bind(this);
     this.updateCode = this.updateCode.bind(this);
+    this.handleTrackQuery = this.handleTrackQuery.bind(this);
     // this.handleQueryPrevious = this.handleQueryPrevious.bind(this);
     // this.handleGenerateData = this.handleGenerateData.bind(this);
   }
@@ -34,11 +37,17 @@ class Query extends Component<QueryProps, state> {
     queryString: '',
     queryLabel: '',
     show: false,
+    trackQuery: false
   };
 
   // Updates state.queryString as user inputs query label
   handleLabelEntry(event: any) {
     this.setState({ queryLabel: event.target.value });
+  }
+
+  // Updates state.trackQuery as user checks or unchecks box
+  handleTrackQuery(event: any) {
+    this.setState({ trackQuery: event.target.checked });
   }
 
   // Updates state.queryString as user inputs query string
@@ -84,7 +93,12 @@ class Query extends Component<QueryProps, state> {
           <div className="query-label">
             <div id="chart-option">
               <span>track on chart:</span>
-              <input id="track" type="checkbox"></input>
+              <input 
+                id="track" 
+                type="checkbox"
+                defaultChecked={this.state.trackQuery}
+                onChange={this.handleTrackQuery}
+                ></input>
             </div>
               <div id="label-option">
                 <label>label: </label>
