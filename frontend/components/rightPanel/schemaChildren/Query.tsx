@@ -34,7 +34,7 @@ class Query extends Component<QueryProps, state> {
   }
 
   state: state = {
-    queryString: '',
+    queryString: 'testString',
     queryLabel: '',
     show: false,
     trackQuery: false
@@ -72,17 +72,22 @@ class Query extends Component<QueryProps, state> {
         queryLabel: this.state.queryLabel,
       };
       ipcRenderer.send('execute-query-untracked', queryAndSchema);
+      //reset frontend inputs to display as empty and unchecked
+      this.setState({ queryLabel: '', trackQuery: false, queryString: '' });
     }
     if (this.state.trackQuery && !this.state.queryLabel) {
       dialog.showErrorBox('Please enter a label for the Query.', '');
     }
     else if (this.state.trackQuery) {
+      // send query and return stats from explain/analyze
       const queryAndSchema = {
         queryString: this.state.queryString,
         queryCurrentSchema: this.props.currentSchema,
         queryLabel: this.state.queryLabel,
       };
       ipcRenderer.send('execute-query-tracked', queryAndSchema);
+      //reset frontend inputs to display as empty and unchecked
+      this.setState({ queryLabel: '', trackQuery: false, queryString: '' });
     }
   }
 
@@ -108,7 +113,7 @@ class Query extends Component<QueryProps, state> {
               <input 
                 id="track" 
                 type="checkbox"
-                defaultChecked={this.state.trackQuery}
+                checked={this.state.trackQuery}
                 onChange={this.handleTrackQuery}
                 ></input>
             </div>
@@ -118,6 +123,7 @@ class Query extends Component<QueryProps, state> {
                   className="label-field"
                   type="text"
                   placeholder="enter label to track"
+                  value={this.state.queryLabel}
                   onChange={(e) => this.handleLabelEntry(e)}
                 />
               </div>
@@ -129,6 +135,7 @@ class Query extends Component<QueryProps, state> {
             <CodeMirror
               onChange={this.updateCode}
               options={options}
+              value={this.state.queryString}
             />
           </div>
           <button>Submit</button>
