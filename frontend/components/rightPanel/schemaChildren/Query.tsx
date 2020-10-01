@@ -7,7 +7,7 @@ const { dialog } = require('electron').remote;
 import 'codemirror/lib/codemirror.css'; // Styline
 import 'codemirror/mode/sql/sql'; // Language (Syntax Highlighting)
 import 'codemirror/theme/lesser-dark.css'; // Theme
-import CodeMirror from 'react-codemirror';
+import CodeMirror from '@skidding/react-codemirror';
 
 /************************************************************
  *********************** TYPESCRIPT: TYPES ***********************
