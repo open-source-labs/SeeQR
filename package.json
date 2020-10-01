@@ -105,12 +105,5 @@
     "setupFilesAfterEnv": [
       "<rootDir>/__tests__/setupTests.js"
     ]
-  },
-  "liveSassCompile.settings.formats": [
-    {
-      "format": "expanded",
-      "savePath": "/frontend/assets/stylesheets/css"
-    }
-  ],
-  "liveSassCompile.settings.generateMap": false
+  }
 }
