@@ -1,5 +1,4 @@
 /node_modules
-/.vscode
 /dist
 /tsCompiled
 */.DS_Store

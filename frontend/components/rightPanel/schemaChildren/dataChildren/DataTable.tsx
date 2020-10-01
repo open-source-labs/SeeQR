@@ -53,10 +53,10 @@ export class Table extends Component<TableProps> {
     return (
       <div>
         <table>
-          <thead>
+          <thead id="dataTableHead">
             <tr>{this.getHeader()}</tr>
           </thead>
-          <tbody>
+          <tbody id="dataTableBody">
             {this.getRowsData()}
           </tbody>
         </table>
