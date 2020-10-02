@@ -17,10 +17,15 @@ type CompareProps = {
 };
 
 export const Compare = (props: CompareProps) => {
-  // initial state
-  let initial: any = { ...props, compareList: [] }; 
 
+  // -------------------------------------------------------------------------------------------------------------
+  // ------------------------------------ logic for the setting state --------------------------------------------
+  // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+
+  // declaring initial state
+  let initial: any = { ...props, compareList: [] }; 
   const [queryInfo, setCompare] = useState(initial);
+
   const addCompareQuery = (event) => {
     // compare list is a dropdown menu on the front-end
     let compareList = queryInfo.compareList;
@@ -36,6 +41,10 @@ export const Compare = (props: CompareProps) => {
     // reset state to account for the change in queries being tracked
     setCompare({ ...queryInfo, compareList });
   }
+
+  // -------------------------------------------------------------------------------------------------------------
+  // ------------------------------------ logic for the compare query table --------------------------------------
+  // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
   const deleteCompareQuery = (event) => {
     // reset comparelist so that the query that is chosen is not included any more
@@ -88,46 +97,71 @@ export const Compare = (props: CompareProps) => {
     });
   };
 
+  // -------------------------------------------------------------------------------------------------------------
+  // ------------------------------------ logic for the compare query graph --------------------------------------
+  // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+
   const { compareList } = queryInfo;
   
   // first we create an object with all of the comparelist data organized in a way that enables us to render our graph easily
-  const compareDataObject = () => {
-    const catchObject = {};
-
-    for (const query of compareList){
-      const { queryLabel, querySchema, queryStatistics } = query;
-      if (!catchObject[queryLabel]){
-        catchObject[queryLabel] = {
-          [querySchema.toString()] : queryStatistics[0]["QUERY PLAN"][0]["Execution Time"] + queryStatistics[0]["QUERY PLAN"][0]["Planning Time"]
-        }
-      } else {
-        catchObject[queryLabel][querySchema.toString()] = queryStatistics[0]["QUERY PLAN"][0]["Execution Time"] + queryStatistics[0]["QUERY PLAN"][0]["Planning Time"]
+  const compareDataObject: any = {};
+  // then we populate that object
+  for (const query of compareList){
+    const { queryLabel, querySchema, queryStatistics } = query;
+    if (!compareDataObject[querySchema]){
+      compareDataObject[querySchema] = {
+        [queryLabel.toString()] : queryStatistics[0]["QUERY PLAN"][0]["Execution Time"] + queryStatistics[0]["QUERY PLAN"][0]["Planning Time"]
       }
-    };
-    
-    return catchObject;
+    } else {
+      compareDataObject[querySchema][queryLabel.toString()] = queryStatistics[0]["QUERY PLAN"][0]["Execution Time"] + queryStatistics[0]["QUERY PLAN"][0]["Planning Time"]
+    }
+  };
+
+  // then we generate a labelData array to store all unique query labels
+  const labelDataArray: any = [];
+  for (const schema in compareDataObject){
+    for (const label in compareDataObject[schema]) {
+      if (!labelDataArray.includes(label)){
+        labelDataArray.push(label);
+      } 
+    }
   }
 
+  // then we generate an array of data for each schema, storing data for each unique query according to the schema
+  const runTimeDataArray: any = [];
+  for (const schema in compareDataObject){
+    const schemaArray: any = [];
+    for(const label of labelDataArray){
+      schemaArray.push(compareDataObject[schema][label] ? compareDataObject[schema][label] : 0)
+    }
+    runTimeDataArray.push({[schema]: schemaArray});
+  }
 
-  // pull the label and runtime data to render the query on the graph
-  // labelData is an array of all the unique query labels
-  const labelData = () => compareList.map((query) => query.queryLabel);
-  // runtimeData is an array of data points where the index of the query data matches the index of the label it corresponds to in the labelData array
-  // there is a unique array of runtime data for each unique schema
-  const runtimeData = () => compareList.map(
-    (query) => query.queryStatistics[0]["QUERY PLAN"][0]["Execution Time"] + query.queryStatistics[0]["QUERY PLAN"][0]["Planning Time"]);
+  const generateRandomColor = () => {
+    return `rgb(${Math.floor(Math.random()*255)},${Math.floor(Math.random()*255)},${Math.floor(Math.random()*255)})`
+  }
+  
+  // then we generate datasets for each schema for the bar chart
+  const generateDatasets = () => runTimeDataArray.map((schemaDataObject) => {
+    const schemaLabel: any = Object.keys(schemaDataObject)[0];
+    return {
+      label: `${schemaLabel}`,
+      backgroundColor: generateRandomColor(),
+      borderColor: generateRandomColor(),
+      borderWidth: 1,
+      data: schemaDataObject[schemaLabel]
+    }
+  })
+
+  //then we combine the label array and the data arrays for each schema into a data object to pass to our bar graph
   const data = {
-    labels: labelData(),
-    datasets: [
-      {
-        label: 'Runtime',
-        backgroundColor: 'rgb(108, 187, 169)',
-        borderColor: 'rgba(247,247,247,247)',
-        borderWidth: 2,
-        data: runtimeData(),
-      }
-    ]
-  };
+    labels: labelDataArray,
+    datasets: generateDatasets()
+  }
+
+  // -------------------------------------------------------------------------------------------------------------
+  // ------------------------------------ rendering the elements -------------------------------------------------
+  // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
   return (
     <div id="compare-panel">
@@ -163,7 +197,7 @@ export const Compare = (props: CompareProps) => {
               fontSize: 16
             },
             legend: {
-              display: false,
+              display: true,
               position: 'right'
             }
           }}
