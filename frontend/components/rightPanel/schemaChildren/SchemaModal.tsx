@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
+import { Dropdown } from 'react-bootstrap';
+import DropdownButton from 'react-bootstrap/DropdownButton';
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import SchemaInput from './SchemaInput';
+import DropdownToggle from 'react-bootstrap/esm/DropdownToggle';
+import DropdownMenu from 'react-bootstrap/esm/DropdownMenu';
 // import GenerateData from './GenerateData';
 
 const { dialog } = require('electron').remote;
@@ -19,6 +23,7 @@ type state = {
   schemaFilePath: string;
   schemaEntry: string;
   redirect: boolean;
+  copy: boolean
 };
 
 class SchemaModal extends Component<SchemaModalProps, state> {
@@ -38,6 +43,7 @@ class SchemaModal extends Component<SchemaModalProps, state> {
     schemaFilePath: '',
     schemaEntry: '',
     redirect: false,
+    copy: false
   };
 
 
@@ -94,6 +100,10 @@ class SchemaModal extends Component<SchemaModalProps, state> {
     ipcRenderer.send('input-schema', schemaObj);
   }
 
+  handleInstanceName(event: any) {
+    // this.setState()
+  }
+
   render() {
     if (this.props.show === false) {
       return null;
@@ -112,11 +122,29 @@ class SchemaModal extends Component<SchemaModalProps, state> {
           />
           <div className="modal-buttons">
             <button onClick={this.handleSchemaFilePath}>Load Schema</button>
-            <Link to="/SchemaInput">
+            {/* <Link to="/SchemaInput">
               <button className="input-button">Input Schema</button>
-            </Link>
+            </Link> */}
           </div>
-
+          <h3>Copy Existing Instance</h3>
+          <div>
+          <p>Schema Name (auto-formatted): {this.state.schemaName}</p>
+          <input
+            className="schema-label"
+            type="text"
+            placeholder="Input schema label..."
+            onChange={(e) => this.handleSchemaName(e)}
+          />
+            <Dropdown onChange={(e) => this.handleInstanceName(e)}>
+              <Dropdown.Toggle>Instance</Dropdown.Toggle>
+              <Dropdown.Menu>
+                <Dropdown.Item>hi</Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+              <input type="radio" name="Data" value="With" /> With Data
+              <input type="radio" name="Data" value="Without" /> Without Data
+            <button className="modal-buttons" onClick={this.handleSchemaFilePath}>Make Copy</button>
+          </div>
           <button className="close-button" onClick={this.props.onClose}>
             X
           </button>
