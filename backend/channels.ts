@@ -159,8 +159,19 @@ interface QueryType {
   queryStatistics: string;
 }
 
+ipcMain.on('execute-query-untracked', (event, data: QueryType) => {
+  console.log('execute query untracked');
+  // destructure object from frontend
+  const { queryString, queryCurrentSchema, queryLabel } = data;
+  // run query on db
+  db.query(queryString)
+    .catch((error: string) => {
+      console.log('ERROR in execute-query-untracked channel in main.ts', error);
+    });
+});
+
 // Listen for queries being sent from renderer
-ipcMain.on('execute-query', (event, data: QueryType) => {
+ipcMain.on('execute-query-tracked', (event, data: QueryType) => {
   // destructure object from frontend
   const { queryString, queryCurrentSchema, queryLabel } = data;
 
@@ -192,7 +203,7 @@ ipcMain.on('execute-query', (event, data: QueryType) => {
       });
     })
     .catch((error: string) => {
-      console.log('ERROR in execute-query channel in main.ts', error);
+      console.log('ERROR in execute-query-tracked channel in main.ts', error);
     });
 });
 
