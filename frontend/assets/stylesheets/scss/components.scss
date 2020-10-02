@@ -94,11 +94,36 @@ input {
   background-color: $border-darkmode;
   border: none;
   padding: 7px;
-  min-width: 240px;
+  min-width: 20em;
   outline: none;
   *:focus {
     outline: none;
   }
+}
+
+#label-option {
+  min-width: 60%;
+}
+
+.query-label {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+#track {
+  min-width: 10px;
+  margin-left: 0.5rem;
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+#chart-option {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
 }
 
 #data-table {
