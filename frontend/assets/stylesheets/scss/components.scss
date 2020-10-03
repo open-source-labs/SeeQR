@@ -101,6 +101,46 @@ input {
   }
 }
 
+.dummy-data-select {
+  display: flex;
+  flex-direction: row;
+  padding: 1rem;
+  align-items: center;
+}
+
+#dummy-rows-input {
+  min-width: 10em;
+  margin-left: 1.5em;
+  margin-right: 1.5em;
+}
+
+.dummy-data-table-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.dummy-data-table {
+  border: 1px solid $border-darkmode;
+  th, tr {
+    padding: 0.5rem;
+    border-bottom: 1px solid $border-darkmode;
+  }
+}
+
+.dummy-table-row {
+  td {
+    padding: 0.5rem;
+    text-align: center;
+  }
+}
+
+#generate-dummy-data {
+  padding: 0.2rem;
+  margin: 0.5rem;
+}
+
 #label-option {
   min-width: 60%;
 }
