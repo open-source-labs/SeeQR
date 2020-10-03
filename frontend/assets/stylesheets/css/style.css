@@ -103,6 +103,61 @@ input *:focus {
   outline: none;
 }
 
+.dummy-data-select {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  padding: 1rem;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+#dummy-rows-input {
+  min-width: 10em;
+  margin-left: 1.5em;
+  margin-right: 1.5em;
+}
+
+.dummy-data-table-container {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+.dummy-data-table {
+  border: 1px solid #444c50;
+}
+
+.dummy-data-table th, .dummy-data-table tr {
+  padding: 0.5rem;
+  border-bottom: 1px solid #444c50;
+}
+
+.dummy-table-row td {
+  padding: 0.5rem;
+  text-align: center;
+}
+
+#generate-dummy-data {
+  padding: 0.2rem;
+  margin: 0.5rem;
+}
+
 #label-option {
   min-width: 60%;
 }
