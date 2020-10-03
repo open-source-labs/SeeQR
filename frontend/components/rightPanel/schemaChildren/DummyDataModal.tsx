@@ -14,6 +14,7 @@ type DummyDataModalProps = {
 };
 
 type state = {
+  //currentSchema will need to be moved to state once the modal is rendered by the correct parent component
   currentSchema: string,
   currentTable: string,
   tableNames: string[],
@@ -57,6 +58,9 @@ class DummyDataModal extends Component<DummyDataModalProps, state> {
     //if no number is entered
     if (!this.state.rowNumber) {
       dialog.showErrorBox('Please enter a number of rows.', '');
+    }
+    if (this.state.currentTable === 'select table') {
+      dialog.showErrorBox('Please select a table.', '');
     }
     //reset input fields and update nested object in state
     else {
@@ -125,7 +129,12 @@ class DummyDataModal extends Component<DummyDataModalProps, state> {
   }
 
   submitDummyData = (event: any) => {
-    console.log(this.state.dataInfo);
+    const dataObj = {
+      //schemaName will eventually come from props, not state
+      schemaName: this.state.currentSchema,
+      dummyData: this.state.dataInfo
+    }
+    console.log(dataObj);
   }
 
   render() {
