@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
+import { Dropdown, ButtonToolbar } from 'react-bootstrap';
+import DropdownButton from 'react-bootstrap/DropdownButton';
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import SchemaInput from './SchemaInput';
+import DropdownToggle from 'react-bootstrap/esm/DropdownToggle';
+import DropdownMenu from 'react-bootstrap/esm/DropdownMenu';
 // import GenerateData from './GenerateData';
 
 const { dialog } = require('electron').remote;
@@ -9,6 +13,7 @@ const { ipcRenderer } = window.require('electron');
 type ClickEvent = React.MouseEvent<HTMLElement>;
 
 type SchemaModalProps = {
+  tabList: string[];
   show: boolean;
   showModal: any;
   onClose: any;
@@ -19,6 +24,8 @@ type state = {
   schemaFilePath: string;
   schemaEntry: string;
   redirect: boolean;
+  currentDB: string;
+  copy: boolean
 };
 
 class SchemaModal extends Component<SchemaModalProps, state> {
@@ -28,6 +35,9 @@ class SchemaModal extends Component<SchemaModalProps, state> {
     this.handleSchemaFilePath = this.handleSchemaFilePath.bind(this);
     this.handleSchemaEntry = this.handleSchemaEntry.bind(this);
     this.handleSchemaName = this.handleSchemaName.bind(this);
+    this.selectHandler = this.selectHandler.bind(this);
+    this.handleCopyData = this.handleCopyData.bind(this);
+    this.dropDownList = this.dropDownList.bind(this);
 
     // this.handleQueryPrevious = this.handleQueryPrevious.bind(this);
     // this.handleQuerySubmit = this.handleQuerySubmit.bind(this);
@@ -38,6 +48,8 @@ class SchemaModal extends Component<SchemaModalProps, state> {
     schemaFilePath: '',
     schemaEntry: '',
     redirect: false,
+    currentDB: 'Select Instance',
+    copy: false
   };
 
 
@@ -94,6 +106,21 @@ class SchemaModal extends Component<SchemaModalProps, state> {
     ipcRenderer.send('input-schema', schemaObj);
   }
 
+  selectHandler = (eventKey, e: React.SyntheticEvent<unknown>) => {   
+    this.setState({currentDB: eventKey });
+   }
+
+  handleCopyData(event: any) {
+    console.log(this.state.copy);
+    if(!this.state.copy) this.setState({ copy: true });
+    else this.setState({ copy: false });
+  }
+
+  dropDownList = () => {
+    console.log('in dropdown function');
+    return this.props.tabList.map((db, index) => <Dropdown.Item key={index} eventKey={db} className="queryItem" >{db}</Dropdown.Item>);
+  };
+
   render() {
     if (this.props.show === false) {
       return null;
@@ -112,11 +139,30 @@ class SchemaModal extends Component<SchemaModalProps, state> {
           />
           <div className="modal-buttons">
             <button onClick={this.handleSchemaFilePath}>Load Schema</button>
-            <Link to="/SchemaInput">
+            {/* <Link to="/SchemaInput">
               <button className="input-button">Input Schema</button>
-            </Link>
+            </Link> */}
           </div>
-
+          <h3>Copy Existing Instance</h3>
+          <div>
+          <p>Schema Name (auto-formatted): {this.state.schemaName}</p>
+          <input
+            className="schema-label"
+            type="text"
+            placeholder="Input schema label..."
+            onChange={(e) => this.handleSchemaName(e)}
+          />
+          <Dropdown onSelect={this.selectHandler}>
+            <Dropdown.Toggle>
+              {this.state.currentDB}
+            </Dropdown.Toggle> 
+              <Dropdown.Menu>
+                {this.dropDownList()}
+              </Dropdown.Menu>
+          </Dropdown>
+              <input type="checkbox" name="Data" onClick={this.handleCopyData}/> With Data
+            <button className="modal-buttons" onClick={this.handleSchemaFilePath}>Make Copy</button>
+          </div>
           <button className="close-button" onClick={this.props.onClose}>
             X
           </button>
@@ -136,3 +182,7 @@ class SchemaModal extends Component<SchemaModalProps, state> {
 }
 
 export default SchemaModal;
+
+{/* <DropdownButton id="add-query-button" title="Select Instance &#9207;">
+            {this.dropDownList()}
+          </DropdownButton> */}
