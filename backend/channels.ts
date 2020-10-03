@@ -1,5 +1,5 @@
 // Import parts of electron to use
-import { ipcMain, ipcRenderer } from 'electron';
+import { ipcMain } from 'electron';
 import { create } from 'domain';
 
 const { exec } = require('child_process');
@@ -72,22 +72,26 @@ ipcMain.on('copy-db', (event, data: CopyType) => {
   db.changeDB(dbCopyName);
   // now that our DB has been changed to the one we wish to copy, we need to either make an exact copy or a hollow copy using pg_dump OR pg_dump -s followed by pg_restore
 
-  //Exact copy
-  if(copy) {
-    console.log('in copy if statement');
-    execute(`docker exec postgres-1 pg_dump -U postgres ${dbCopyName} > ${schemaName}.sql`, () => console.log('hiiiii'));
-  }
-  // Hollow copy
-  else execute(`docker exec postgres-1 pg_dump -s -U postgres ${dbCopyName} > ${schemaName}.sql`, null);
-
   // Create schema object to send to 'input-schema' channel
   const schemaObj = {
     schemaName: schemaName,
-    schemaFilePath: `${schemaName}.sql`,
+    schemaFilePath: `../${schemaName}.sql`,
     schemaEntry: '',
   };
 
-  event.sender.send('input-schema', schemaObj);
+  const step = () => {
+    console.log('sup homies');
+    event.sender.send('input-schema', schemaObj);
+  }
+
+  //Exact copy
+  if(copy) {
+    console.log('in copy if statement');
+    execute(`docker exec postgres-1 pg_dump -U postgres ${dbCopyName} > ${schemaName}.sql`, step);
+  }
+  // Hollow copy
+  else execute(`docker exec postgres-1 pg_dump -s -U postgres ${dbCopyName} > ${schemaName}.sql`, step);
+
 });
 
 
@@ -114,7 +118,7 @@ ipcMain.on('upload-file', (event, filePath: string) => {
     listObj = await db.getLists();
     event.sender.send('db-lists', listObj);
     // Send schema name back to frontend, so frontend can load tab name.
-    event.sender.send('return-schema-name', dbName)
+    event.sender.send('return-schema-name', dbName);
   };
 
   // Step 3 : Given the file path extension, run the appropriate command in postgres to populate db.
