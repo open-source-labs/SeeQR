@@ -9,7 +9,7 @@ type TabsProps = {
   currentSchema: string,
   tabList: string[],
   queries: any,
-  onClickTabItem: any,
+  onClickTabItem: any
 }
 
 type state = {
@@ -21,7 +21,7 @@ export class Tabs extends Component<TabsProps> {
     this.showModal = this.showModal.bind(this);
   }
   state: state = {
-    show: false,
+    show: false
   };
 
   showModal = (event: any) => {
@@ -79,7 +79,7 @@ export class Tabs extends Component<TabsProps> {
           </button>
           </span>
         </ol>
-        <SchemaModal show={this.state.show} showModal={this.showModal} onClose={this.onClose} />
+        <SchemaModal tabList={tabList} show={this.state.show} showModal={this.showModal} onClose={this.onClose} />
         <div className="tab-content">
           {tabList.map((tab, index) => {
             if (tab !== currentSchema) return undefined;
