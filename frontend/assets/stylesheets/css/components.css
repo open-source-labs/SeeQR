@@ -133,8 +133,23 @@ input *:focus {
           justify-content: center;
 }
 
-.dummy-data-table th, tr {
-  padding: 1rem;
+.dummy-data-table {
+  border: 1px solid #444c50;
+}
+
+.dummy-data-table th, .dummy-data-table tr {
+  padding: 0.5rem;
+  border-bottom: 1px solid #444c50;
+}
+
+.dummy-table-row td {
+  padding: 0.5rem;
+  text-align: center;
+}
+
+#generate-dummy-data {
+  padding: 0.2rem;
+  margin: 0.5rem;
 }
 
 #label-option {

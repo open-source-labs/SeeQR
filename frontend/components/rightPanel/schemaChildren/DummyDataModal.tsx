@@ -18,6 +18,7 @@ type state = {
   currentTable: string,
   tableNames: string[],
   dataInfo: {},
+  rowNumber: string
 }
 
 class DummyDataModal extends Component<DummyDataModalProps, state> {
@@ -26,36 +27,105 @@ class DummyDataModal extends Component<DummyDataModalProps, state> {
     super(props);
     this.dropDownList = this.dropDownList.bind(this);
     this.selectHandler = this.selectHandler.bind(this);
+    this.addToTable = this.addToTable.bind(this);
+    this.changeRowNumber = this.changeRowNumber.bind(this);
+    this.deleteRow = this.deleteRow.bind(this);
+    this.submitDummyData = this.submitDummyData.bind(this);
   }
   //hard coded in for testing purposes
   state: state = {
     currentSchema: 'testSchema',
     currentTable: 'select table',
-    tableNames: ['customers', 'locations', 'suppliers'],
-    dataInfo: {customers: 200, locations: 20}
+    tableNames: ['customers', 'locations', 'suppliers', 'all'],
+    dataInfo: {},
+    rowNumber: ''
   }
 
+  //handler to change the dropdown display to the selected table name
   selectHandler = (eventKey, e: React.SyntheticEvent<unknown>) => {
     this.setState({currentTable: eventKey});
   };
 
+  //function to generate the dropdown optiosn from the table names in state
   dropDownList = () => {
     return this.state.tableNames.map((tableName, index) => <Dropdown.Item key={index} className="queryItem" eventKey={tableName}>{tableName}</Dropdown.Item>)
   };
+
+  //submit listener to add table name and rows to the dataInfo object in state
+  addToTable = (event: any) => {
+    event.preventDefault();
+    //if no number is entered
+    if (!this.state.rowNumber) {
+      dialog.showErrorBox('Please enter a number of rows.', '');
+    }
+    //reset input fields and update nested object in state
+    else {
+      let table = this.state.currentTable;
+      let number = Number(this.state.rowNumber);
+        if (table !== 'all') {
+          this.setState(prevState => ({
+            ...prevState,
+            currentTable: 'select table',
+            rowNumber: '',
+            dataInfo: {
+              ...prevState.dataInfo,
+              [table]: number
+            }
+          }))
+        }
+        else {
+          const dataInfo = {};
+          this.state.tableNames.forEach(table => {
+            if (table !== 'all') {
+              dataInfo[table] = number;
+            }
+          })
+          this.setState(prevState => ({
+            ...prevState,
+            currentTable: 'select table',
+            rowNumber: '',
+            dataInfo
+          }))
+        }
+      }
+  }
+
+  //onclick listener to delete row from table
+  deleteRow = (event: any) => {
+    let name = event.target.id;
+    this.setState(prevState => ({
+      ...prevState,
+      dataInfo: {
+        ...prevState.dataInfo,
+        [name]: undefined
+      }
+    }))
+  }
+
+  //onchange listener to update the rowNumber string in state
+  changeRowNumber = (event: any) => {
+    this.setState({ rowNumber: event.target.value })
+  }
 
   createRow = () => {
     //once state updates on click, render the table row from the object
     const newRows: JSX.Element[] = [];
       for (let key in this.state.dataInfo) {
-        newRows.push(
-          <tr>
-            <td>{key}</td>
-            <td>{this.state.dataInfo[key]}</td>
-            <td><button>x</button></td>
-          </tr>
-        )
+        if (this.state.dataInfo[key]) {
+          newRows.push(
+            <tr className="dummy-table-row" key={key}>
+              <td>{key}</td>
+              <td>{this.state.dataInfo[key]}</td>
+              <td><button id={key} onClick={this.deleteRow}>x</button></td>
+            </tr>
+          )
+        }
       }
     return newRows;
+  }
+
+  submitDummyData = (event: any) => {
+    console.log(this.state.dataInfo);
   }
 
   render() {
@@ -77,9 +147,12 @@ class DummyDataModal extends Component<DummyDataModalProps, state> {
                 {this.dropDownList()};
               </Dropdown.Menu>
             </Dropdown>
-            <input id="dummy-rows-input" type="text" placeholder="number of rows...">
+            <input id="dummy-rows-input" type="text" placeholder="number of rows..."
+            value={this.state.rowNumber}
+            onChange={this.changeRowNumber}>
             </input>
-            <button id="dummy-rows-button">
+            <button id="dummy-rows-button"
+                    onClick={this.addToTable}>
               add to table
             </button>
           </div>
@@ -94,6 +167,9 @@ class DummyDataModal extends Component<DummyDataModalProps, state> {
                 {this.createRow()}
               </tbody>
             </table>
+          </div>
+          <div id="generate-dummy-data">
+            <button onClick={this.submitDummyData}>Generate Dummy Data</button>
           </div>
       </div>
     )
