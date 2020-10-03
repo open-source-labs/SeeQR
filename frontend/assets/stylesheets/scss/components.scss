@@ -114,6 +114,17 @@ input {
   margin-right: 1.5em;
 }
 
+.dummy-data-table-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.dummy-data-table th, tr {
+  padding: 1rem;
+}
+
 #label-option {
   min-width: 60%;
 }

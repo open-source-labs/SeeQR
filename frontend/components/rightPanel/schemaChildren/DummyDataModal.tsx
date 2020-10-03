@@ -17,7 +17,7 @@ type state = {
   currentSchema: string,
   currentTable: string,
   tableNames: string[],
-  dataInfo: object
+  dataInfo: {},
 }
 
 class DummyDataModal extends Component<DummyDataModalProps, state> {
@@ -32,16 +32,31 @@ class DummyDataModal extends Component<DummyDataModalProps, state> {
     currentSchema: 'testSchema',
     currentTable: 'select table',
     tableNames: ['customers', 'locations', 'suppliers'],
-    dataInfo: {}
+    dataInfo: {customers: 200, locations: 20}
   }
 
   selectHandler = (eventKey, e: React.SyntheticEvent<unknown>) => {
-    this.setState({currentTable: eventKey });
+    this.setState({currentTable: eventKey});
   };
 
   dropDownList = () => {
     return this.state.tableNames.map((tableName, index) => <Dropdown.Item key={index} className="queryItem" eventKey={tableName}>{tableName}</Dropdown.Item>)
   };
+
+  createRow = () => {
+    //once state updates on click, render the table row from the object
+    const newRows: JSX.Element[] = [];
+      for (let key in this.state.dataInfo) {
+        newRows.push(
+          <tr>
+            <td>{key}</td>
+            <td>{this.state.dataInfo[key]}</td>
+            <td><button>x</button></td>
+          </tr>
+        )
+      }
+    return newRows;
+  }
 
   render() {
 
@@ -67,6 +82,18 @@ class DummyDataModal extends Component<DummyDataModalProps, state> {
             <button id="dummy-rows-button">
               add to table
             </button>
+          </div>
+          <div className="dummy-data-table-container">
+            <table className="dummy-data-table">
+              <tbody>
+                <tr className="top-row">
+                  <th>table</th>
+                  <th># of rows</th>
+                  <th>delete</th>
+                </tr>
+                {this.createRow()}
+              </tbody>
+            </table>
           </div>
       </div>
     )
