@@ -101,6 +101,19 @@ input {
   }
 }
 
+.dummy-data-select {
+  display: flex;
+  flex-direction: row;
+  padding: 1rem;
+  align-items: center;
+}
+
+#dummy-rows-input {
+  min-width: 10em;
+  margin-left: 1.5em;
+  margin-right: 1.5em;
+}
+
 #label-option {
   min-width: 60%;
 }

@@ -103,6 +103,26 @@ input *:focus {
   outline: none;
 }
 
+.dummy-data-select {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  padding: 1rem;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+#dummy-rows-input {
+  min-width: 10em;
+  margin-left: 1.5em;
+  margin-right: 1.5em;
+}
+
 #label-option {
   min-width: 60%;
 }

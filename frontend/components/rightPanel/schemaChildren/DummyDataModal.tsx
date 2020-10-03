@@ -25,7 +25,7 @@ class DummyDataModal extends Component<DummyDataModalProps, state> {
   constructor(props: DummyDataModalProps) {
     super(props);
     this.dropDownList = this.dropDownList.bind(this);
-    this.handleSelect = this.handleSelect.bind(this);
+    this.selectHandler = this.selectHandler.bind(this);
   }
   //hard coded in for testing purposes
   state: state = {
@@ -35,13 +35,12 @@ class DummyDataModal extends Component<DummyDataModalProps, state> {
     dataInfo: {}
   }
 
-  //not working properly
-  handleSelect = (event) => {
-    console.log(event)
-  }
+  selectHandler = (eventKey, e: React.SyntheticEvent<unknown>) => {
+    this.setState({currentTable: eventKey });
+  };
 
   dropDownList = () => {
-    return this.state.tableNames.map((tableName, index) => <Dropdown.Item key={index} className="queryItem" value={tableName}>{tableName}</Dropdown.Item>)
+    return this.state.tableNames.map((tableName, index) => <Dropdown.Item key={index} className="queryItem" eventKey={tableName}>{tableName}</Dropdown.Item>)
   };
 
   render() {
@@ -53,15 +52,22 @@ class DummyDataModal extends Component<DummyDataModalProps, state> {
     return (
       <div className="dummy-data-modal">
         <h3>Generate Dummy Data</h3>
-        <p>select table</p>
-        <Dropdown onSelect={this.handleSelect}>
-          <Dropdown.Toggle>
-            {this.state.currentTable}
-          </Dropdown.Toggle>
-          <Dropdown.Menu>
-            {this.dropDownList()};
-          </Dropdown.Menu>
-        </Dropdown>
+        <p>Select table and number of rows:</p>
+          <div className="dummy-data-select">
+            <Dropdown onSelect={this.selectHandler}>
+              <Dropdown.Toggle>
+                {this.state.currentTable}
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                {this.dropDownList()};
+              </Dropdown.Menu>
+            </Dropdown>
+            <input id="dummy-rows-input" type="text" placeholder="number of rows...">
+            </input>
+            <button id="dummy-rows-button">
+              add to table
+            </button>
+          </div>
       </div>
     )
   }
