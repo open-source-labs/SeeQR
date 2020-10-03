@@ -13,10 +13,7 @@ const { ipcRenderer } = window.require('electron');
 type ClickEvent = React.MouseEvent<HTMLElement>;
 
 type SchemaModalProps = {
-  tabList: {
-    id: number;
-    name: string;
-  }[];
+  tabList: string[];
   show: boolean;
   showModal: any;
   onClose: any;
@@ -27,8 +24,7 @@ type state = {
   schemaFilePath: string;
   schemaEntry: string;
   redirect: boolean;
-  selectedId: number;
-  instance: any;
+  currentDB: string;
   copy: boolean
 };
 
@@ -39,7 +35,7 @@ class SchemaModal extends Component<SchemaModalProps, state> {
     this.handleSchemaFilePath = this.handleSchemaFilePath.bind(this);
     this.handleSchemaEntry = this.handleSchemaEntry.bind(this);
     this.handleSchemaName = this.handleSchemaName.bind(this);
-    this.handleInstanceName = this.handleInstanceName.bind(this);
+    this.selectHandler = this.selectHandler.bind(this);
     this.handleCopyData = this.handleCopyData.bind(this);
     this.dropDownList = this.dropDownList.bind(this);
 
@@ -52,8 +48,7 @@ class SchemaModal extends Component<SchemaModalProps, state> {
     schemaFilePath: '',
     schemaEntry: '',
     redirect: false,
-    selectedId: 0,
-    instance: '',
+    currentDB: 'Select Instance',
     copy: false
   };
 
@@ -111,9 +106,9 @@ class SchemaModal extends Component<SchemaModalProps, state> {
     ipcRenderer.send('input-schema', schemaObj);
   }
 
-  handleInstanceName() {
-    this.setState({ instance: event?.target });
-  }
+  selectHandler = (eventKey, e: React.SyntheticEvent<unknown>) => {   
+    this.setState({currentDB: eventKey });
+   }
 
   handleCopyData(event: any) {
     console.log(this.state.copy);
@@ -123,17 +118,13 @@ class SchemaModal extends Component<SchemaModalProps, state> {
 
   dropDownList = () => {
     console.log('in dropdown function');
-    return this.props.tabList.map((db) => <Dropdown.Item key={db.id} className="queryItem" >{db.name}</Dropdown.Item>);
+    return this.props.tabList.map((db, index) => <Dropdown.Item key={index} eventKey={db} className="queryItem" >{db}</Dropdown.Item>);
   };
 
   render() {
     if (this.props.show === false) {
       return null;
     }
-
-    console.log(this.props.tabList);
-
-    let selectedDB: any = this.props.tabList.find(db => db.id === this.state.selectedId)
 
     return (
       <div className="modal" id="modal">
@@ -161,10 +152,9 @@ class SchemaModal extends Component<SchemaModalProps, state> {
             placeholder="Input schema label..."
             onChange={(e) => this.handleSchemaName(e)}
           />
-          <p>Select Instance</p>
-          <Dropdown onSelect={this.handleInstanceName}>
+          <Dropdown onSelect={this.selectHandler}>
             <Dropdown.Toggle>
-              {this.state.instance}
+              {this.state.currentDB}
             </Dropdown.Toggle> 
               <Dropdown.Menu>
                 {this.dropDownList()}

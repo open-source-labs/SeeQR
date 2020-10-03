@@ -79,9 +79,7 @@ export class Tabs extends Component<TabsProps> {
           </button>
           </span>
         </ol>
-        <SchemaModal tabList={tabList.map((db, index) => {
-          return {name: db, id: index}
-        })} show={this.state.show} showModal={this.showModal} onClose={this.onClose} />
+        <SchemaModal tabList={tabList} show={this.state.show} showModal={this.showModal} onClose={this.onClose} />
         <div className="tab-content">
           {tabList.map((tab, index) => {
             if (tab !== currentSchema) return undefined;
