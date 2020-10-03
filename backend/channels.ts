@@ -1,5 +1,6 @@
 // Import parts of electron to use
-import { ipcMain } from 'electron';
+import { ipcMain, ipcRenderer } from 'electron';
+import { create } from 'domain';
 
 const { exec } = require('child_process');
 const db = require('./models');
@@ -57,6 +58,39 @@ const execute = (str: string, nextStep: any) => {
   });
 };
 
+// Listen for and handle database copying events
+interface CopyType {
+  schemaName: string;
+  dbCopyName: string;
+  copy: boolean;
+}
+
+ipcMain.on('copy-db', (event, data: CopyType) => {
+  console.log('in copy channel');
+  const { schemaName, dbCopyName, copy } = data;
+  // first, we need to change the current DB instance to that of the one we need to copy, so we'll head to the changeDB function in the models file
+  db.changeDB(dbCopyName);
+  // now that our DB has been changed to the one we wish to copy, we need to either make an exact copy or a hollow copy using pg_dump OR pg_dump -s followed by pg_restore
+
+  //Exact copy
+  if(copy) {
+    console.log('in copy if statement');
+    execute(`docker exec postgres-1 pg_dump -U postgres ${dbCopyName} > ${schemaName}.sql`, () => console.log('hiiiii'));
+  }
+  // Hollow copy
+  else execute(`docker exec postgres-1 pg_dump -s -U postgres ${dbCopyName} > ${schemaName}.sql`, null);
+
+  // Create schema object to send to 'input-schema' channel
+  const schemaObj = {
+    schemaName: schemaName,
+    schemaFilePath: `${schemaName}.sql`,
+    schemaEntry: '',
+  };
+
+  event.sender.send('input-schema', schemaObj);
+});
+
+
 // Listen for file upload. Create an instance of database from pre-made .tar or .sql file.
 ipcMain.on('upload-file', (event, filePath: string) => {
   let dbName: string;
@@ -107,6 +141,7 @@ interface SchemaType {
 
 // Listen for schema edits (via file upload OR via CodeMirror inout) from schemaModal. Create an instance of database from pre-made .tar or .sql file.
 ipcMain.on('input-schema', (event, data: SchemaType) => {
+  console.log('in iput-schema channel');
   const { schemaName: dbName, schemaFilePath: filePath, schemaEntry } = data;
 
   // Using RegEx to remove line breaks to ensure data.schemaEntry is being run as one large string
