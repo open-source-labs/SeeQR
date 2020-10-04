@@ -133,7 +133,7 @@ class SchemaModal extends Component<SchemaModalProps, state> {
     // Create schema object to send to 'input-schema' channel
     const schemaObj2 = {
     schemaName: schemaObj.schemaName,
-    schemaFilePath: path.join(__dirname, `../../../../${schemaObj.schemaName}`),
+    schemaFilePath: [`/Users/samuelafrakes/SeeQR/backend/${schemaObj.schemaName}.sql`],
     schemaEntry: '',
   };
 

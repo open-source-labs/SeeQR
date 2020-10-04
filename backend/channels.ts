@@ -73,17 +73,16 @@ ipcMain.on('copy-db', (event, data: CopyType) => {
   // now that our DB has been changed to the one we wish to copy, we need to either make an exact copy or a hollow copy using pg_dump OR pg_dump -s followed by pg_restore
 
   const step = () => {
-    console.log('sup homies');
     event.sender.send('copy-started');
   }
 
   //Exact copy
   if(copy) {
     console.log('in copy if statement');
-    execute(`docker exec postgres-1 pg_dump -U postgres ${dbCopyName} > ${schemaName}.sql`, step);
+    execute(`docker exec postgres-1 pg_dump -U postgres ${dbCopyName} > backend/${schemaName}.sql`, step);
   }
   // Hollow copy
-  else execute(`docker exec postgres-1 pg_dump -s -U postgres ${dbCopyName} > ${schemaName}.sql`, step);
+  else execute(`docker exec postgres-1 pg_dump -s -U postgres ${dbCopyName} > backend/${schemaName}.sql`, step);
 
 });
 
@@ -140,7 +139,7 @@ interface SchemaType {
 ipcMain.on('input-schema', (event, data: SchemaType) => {
   console.log('in iput-schema channel');
   const { schemaName: dbName, schemaFilePath: filePath, schemaEntry } = data;
-
+  console.log(filePath);
   // Using RegEx to remove line breaks to ensure data.schemaEntry is being run as one large string
   // so that schemaEntry string will work for Windows computers.
   let trimSchemaEntry = schemaEntry.replace(/[\n\r]/g, "").trim();
