@@ -9,6 +9,7 @@ import DropdownMenu from 'react-bootstrap/esm/DropdownMenu';
 
 const { dialog } = require('electron').remote;
 const { ipcRenderer } = window.require('electron');
+const path = require('path');
 
 type ClickEvent = React.MouseEvent<HTMLElement>;
 
@@ -128,8 +129,20 @@ class SchemaModal extends Component<SchemaModalProps, state> {
       dbCopyName: this.state.dbCopyName,
       copy: this.state.copy
     }
+
+    // Create schema object to send to 'input-schema' channel
+    const schemaObj2 = {
+    schemaName: schemaObj.schemaName,
+    schemaFilePath: path.join(__dirname, `../../../../${schemaObj.schemaName}`),
+    schemaEntry: '',
+  };
+
     console.log(schemaObj);
     ipcRenderer.send('copy-db', schemaObj);
+    ipcRenderer.on('copy-started', (event: any) => {
+      ipcRenderer.send('input-schema', schemaObj2);
+    });
+
     this.props.showModal(event);
   }
 

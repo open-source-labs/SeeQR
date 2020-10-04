@@ -72,16 +72,9 @@ ipcMain.on('copy-db', (event, data: CopyType) => {
   db.changeDB(dbCopyName);
   // now that our DB has been changed to the one we wish to copy, we need to either make an exact copy or a hollow copy using pg_dump OR pg_dump -s followed by pg_restore
 
-  // Create schema object to send to 'input-schema' channel
-  const schemaObj = {
-    schemaName: schemaName,
-    schemaFilePath: `../${schemaName}.sql`,
-    schemaEntry: '',
-  };
-
   const step = () => {
     console.log('sup homies');
-    event.sender.send('input-schema', schemaObj);
+    event.sender.send('copy-started');
   }
 
   //Exact copy
