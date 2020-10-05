@@ -59,40 +59,6 @@ const execute = (str: string, nextStep: any) => {
   });
 };
 
-// Listen for and handle database copying events
-interface CopyType {
-  schemaName: string;
-  dbCopyName: string;
-  copy: boolean;
-}
-
-ipcMain.on('copy-db', (event, data: CopyType) => {
-  console.log('in copy channel');
-  const { schemaName, dbCopyName, copy } = data;
-  // first, we need to change the current DB instance to that of the one we need to copy, so we'll head to the changeDB function in the models file
-  db.changeDB(dbCopyName);
-  // now that our DB has been changed to the one we wish to copy, we need to either make an exact copy or a hollow copy using pg_dump OR pg_dump -s followed by pg_restore
-
-  // create file path that will point to our newly created local .sql file
-  const formattedFilePath: string = path.join(__dirname, `./${schemaName}`)
-
-  const step = () => {
-    event.sender.send('copy-started');
-   }
-
-  //Exact copy
-  if(copy) {
-    console.log('in copy if statement');
-    execute(`docker exec postgres-1 pg_dump -U postgres ${dbCopyName} > backend/${schemaName}.sql`, step);
-  }
-  // Hollow copy
-  else execute(`docker exec postgres-1 pg_dump -s -U postgres ${dbCopyName} > backend/${schemaName}.sql`, step);
-
-
-
-});
-
-
 // Listen for file upload. Create an instance of database from pre-made .tar or .sql file.
 ipcMain.on('upload-file', (event, filePath: string) => {
   let dbName: string;
@@ -144,6 +110,8 @@ interface SchemaType {
 }
 
 // Listen for schema edits (via file upload OR via CodeMirror inout) from schemaModal. Create an instance of database from pre-made .tar or .sql file.
+// AND
+// Listen for and handle DB copying events
 ipcMain.on('input-schema', (event, data: SchemaType) => {
 
   const { schemaName: dbName, schemaEntry, dbCopyName, copy } = data;
