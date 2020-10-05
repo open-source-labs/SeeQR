@@ -234,4 +234,11 @@ ipcMain.on('execute-query-tracked', (event, data: QueryType) => {
     });
 });
 
+ipcMain.on('schema-layout', (event: any) => {
+  let schemaLayout;
+  db.getSchemaLayout()
+  .then((result) => schemaLayout = result)
+  .then(() => console.log(schemaLayout))
+})
+
 module.exports;
