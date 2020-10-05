@@ -83,6 +83,8 @@ class SchemaModal extends Component<SchemaModalProps, state> {
           schemaEntry: '',
         };
         ipcRenderer.send('input-schema', schemaObj);
+        this.setState({ dbCopyName: 'Select Instance'});
+        this.setState({ schemaName: ''});
         this.props.showModal(event);
       })
       .catch((err: object) => {
@@ -133,7 +135,8 @@ class SchemaModal extends Component<SchemaModalProps, state> {
     }
 
     ipcRenderer.send('input-schema', schemaObj);
-
+    this.setState({ dbCopyName: 'Select Instance'});
+    this.setState({ schemaName: ''});
     this.props.showModal(event);
   }
 
@@ -185,8 +188,13 @@ class SchemaModal extends Component<SchemaModalProps, state> {
             <input id="copy-data-checkbox" type="checkbox" name="Data" onClick={this.handleCopyData}></input>
           </div>
           <button id="copy-button" className="modal-buttons" onClick={this.handleCopyFilePath}>Make Copy</button>
-          <button className="close-button" onClick={this.props.onClose}>
-            X
+          <button className="close-button"
+            onClick={ () => {
+              this.props.onClose();
+              this.setState({ dbCopyName: 'Select Instance'});
+              this.setState({ schemaName: ''});
+            }}>
+          X
           </button>
 
           <Switch>
