@@ -1,8 +1,10 @@
 // Import parts of electron to use
 import { ipcMain } from 'electron';
+import { create } from 'domain';
 
 const { exec } = require('child_process');
 const db = require('./models');
+const path = require('path');
 
 /************************************************************
  *********************** IPC CHANNELS ***********************
@@ -80,7 +82,7 @@ ipcMain.on('upload-file', (event, filePath: string) => {
     listObj = await db.getLists();
     event.sender.send('db-lists', listObj);
     // Send schema name back to frontend, so frontend can load tab name.
-    event.sender.send('return-schema-name', dbName)
+    event.sender.send('return-schema-name', dbName);
   };
 
   // Step 3 : Given the file path extension, run the appropriate command in postgres to populate db.
@@ -101,13 +103,38 @@ ipcMain.on('upload-file', (event, filePath: string) => {
 
 interface SchemaType {
   schemaName: string;
-  schemaFilePath: string;
+  schemaFilePath: string[];
   schemaEntry: string;
+  dbCopyName: string;
+  copy: boolean;
 }
 
 // Listen for schema edits (via file upload OR via CodeMirror inout) from schemaModal. Create an instance of database from pre-made .tar or .sql file.
+// AND
+// Listen for and handle DB copying events
 ipcMain.on('input-schema', (event, data: SchemaType) => {
-  const { schemaName: dbName, schemaFilePath: filePath, schemaEntry } = data;
+
+  const { schemaName: dbName, schemaEntry, dbCopyName, copy } = data;
+  let { schemaFilePath: filePath } = data;
+
+  if (copy !== undefined) {
+  // first, we need to change the current DB instance to that of the one we need to copy, so we'll head to the changeDB function in the models file
+  db.changeDB(dbCopyName);
+  // now that our DB has been changed to the one we wish to copy, we need to either make an exact copy or a hollow copy using pg_dump OR pg_dump -s followed by pg_restore
+
+  // reset file path such that it points to our newly created local .sql file
+  filePath = [path.join(__dirname, `./${dbName}.sql`)];
+
+  //Exact copy
+  if(copy) {
+    console.log('in copy if statement');
+    execute(`docker exec postgres-1 pg_dump -U postgres ${dbCopyName} > tsCompiled/backend/${dbName}.sql`, null);
+  }
+  // Hollow copy
+  else execute(`docker exec postgres-1 pg_dump -s -U postgres ${dbCopyName} > tsCompiled/backend/${dbName}.sql`, null)
+  }
+
+  console.log(dbName, schemaEntry, dbCopyName, copy, filePath);
 
   // Using RegEx to remove line breaks to ensure data.schemaEntry is being run as one large string
   // so that schemaEntry string will work for Windows computers.
