@@ -145,40 +145,46 @@ class SchemaModal extends Component<SchemaModalProps, state> {
     return (
       <div className="modal" id="modal">
         <Router>
-          <h3>Load schema</h3>
-          <p>Schema Name (auto-formatted): {this.state.schemaName}</p>
+        <h3>Enter New Schema Name</h3>
+        <p>(AUTO-FORMATTED): {this.state.schemaName}</p>
           <input
             className="schema-label"
             type="text"
             placeholder="Input schema label..."
             onChange={(e) => this.handleSchemaName(e)}
           />
-          <div className="modal-buttons">
-            <button onClick={this.handleSchemaFilePath}>Load Schema</button>
-            {/* <Link to="/SchemaInput">
-              <button className="input-button">Input Schema</button>
-            </Link> */}
+          <br />
+          <hr id="horizontal"></hr>
+          <br />
+          <div className="load-schema">
+            <h3>Load schema:</h3>
+            <div className="modal-buttons">
+              <button id="load-button" onClick={this.handleSchemaFilePath}>Select File</button>
+              {/* <Link to="/SchemaInput">
+                <button className="input-button">Input Schema</button>
+              </Link> */}
+            </div>
           </div>
-          <h3>Copy Existing Instance</h3>
-          <div>
-          <p>Schema Name (auto-formatted): {this.state.schemaName}</p>
-          <input
-            className="schema-label"
-            type="text"
-            placeholder="Input schema label..."
-            onChange={(e) => this.handleSchemaName(e)}
-          />
-          <Dropdown onSelect={this.selectHandler}>
-            <Dropdown.Toggle>
-              {this.state.dbCopyName}
-            </Dropdown.Toggle> 
-              <Dropdown.Menu>
-                {this.dropDownList()}
-              </Dropdown.Menu>
-          </Dropdown>
-              <input type="checkbox" name="Data" onClick={this.handleCopyData}/> With Data
-            <button className="modal-buttons" onClick={this.handleCopyFilePath}>Make Copy</button>
+          <br />
+          <div className="separator">OR</div>
+          <br />
+          <div className="copy-instance">
+            <h3>Copy Schema: </h3>
+            <Dropdown id="select-dropdown" onSelect={this.selectHandler}>
+              <Dropdown.Toggle>
+                {this.state.dbCopyName}
+              </Dropdown.Toggle> 
+                <Dropdown.Menu>
+                  {this.dropDownList()}
+                </Dropdown.Menu>
+            </Dropdown>
           </div>
+            
+          <div className="data-checkbox">
+            <p>With Data</p>
+            <input id="copy-data-checkbox" type="checkbox" name="Data" onClick={this.handleCopyData}></input>
+          </div>
+          <button id="copy-button" className="modal-buttons" onClick={this.handleCopyFilePath}>Make Copy</button>
           <button className="close-button" onClick={this.props.onClose}>
             X
           </button>
