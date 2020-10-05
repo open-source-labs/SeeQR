@@ -19,7 +19,7 @@ type CompareProps = {
 export const Compare = (props: CompareProps) => {
 
   // -------------------------------------------------------------------------------------------------------------
-  // ------------------------------------ logic for the setting state --------------------------------------------
+  // ------------------------------------ logic for setting state --------------------------------------------
   // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
   // declaring initial state

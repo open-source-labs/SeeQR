@@ -1,0 +1,78 @@
+1. get foreign key join table
+    SELECT
+      tc.table_name AS primary_table_name, 
+      ccu.table_name AS foreign_table_name,
+      ccu.column_name AS foreign_column_name 
+    FROM 
+      information_schema.table_constraints AS tc 
+    JOIN information_schema.key_column_usage AS kcu
+      ON tc.constraint_name = kcu.constraint_name
+      AND tc.table_schema = kcu.table_schema
+    JOIN information_schema.constraint_column_usage AS ccu
+      ON ccu.constraint_name = tc.constraint_name
+      AND ccu.table_schema = tc.table_schema
+    WHERE tc.constraint_type = 'FOREIGN KEY';  
+2. create a foreign key object, e.g.:
+    const FK = {
+        // people:
+        foreignTable_1: {
+            // species: 10,000 (sent from the dummyData modal)
+            primaryTable: numOfRows,
+            // foreignKeyColumns:
+            foreignKeyColumns: {
+                // species_id: true
+                foreignKeyColumnName_1: true,
+                foreignKeyColumnName_2: true
+            }
+        }
+    }
+3. generate new .sql file
+4. get schema layout 
+    const schemaLayout: any = {
+        // tableNames: ['Johnny Bravo', 'Teen Titans', ...]
+        tableNames: [],
+        tables: {
+            // tableName: [columnNames array]
+        }
+    };
+5. iterate over tables in hollow schema (Options: 1. run sql query to get list of tables; 2. use 'getList' function defined in models.ts)
+    6. create dummyData object, e.g.:
+        const DD = {
+            // people
+            table_1: {
+                // columnArray: ["_id", "name", "homeworld_id", ...]
+                columnArray: [],
+                // [[1,2,3,4,...],["luke", "leia", "jabaDaHut", ...], ...]
+                tableMatrix: [[],[]]
+            }
+        }
+    7. for each table, make a column array, "columnArray" and save to dummyDataObject (Options: 1. run sql query to get column names)
+    8. generate table data and save as tableMatrix (transpose of table) to dummyDataObject (importing in dataObj from state, created in dummyData process)
+        iterate over "column array"
+            declare capture array
+            generate n entries for column where n is equal to the number of rows asked for in dataObj (using faker)
+            push these entries to capture array
+            push capture array to matrix
+
+            note: this ^ only works for single-column primary and foreign key constraints (no composite keys)
+    9. use helper function to write insert statements to a string (importing in dataObj from state, created in dummyData process), e.g.:
+        function generateInsertQueries (tableName, tableMatrix, columnArray) {
+            let dumpString = '';
+            let catchValuesForQuery = [];
+            let query = '';
+            iterate from j = 0 while j < tableMatrix[0].length
+                catchValuesForQuery = [];
+                iterate from i = 0 while i < tableMatrix.length (= columnArray.length)
+                    push tableMatrix[i][j] entry into catchValuesForQuery array
+                query = "INSERT INTO {tableName} ({...columnArray}) VALUES ({...catchValuesForQuery});"
+                dumpString += query;
+            return query;
+        }
+    10. write query string to the .sql file
+11. (after finished looping over tables in hollow schema) iterate over table names to run postgres command to write inserts from created sql files
+    "psql -U <your_username> -d <dbname> -f <schemaName/tableName>.sql"
+12. delete files afterword
+    
+
+
+

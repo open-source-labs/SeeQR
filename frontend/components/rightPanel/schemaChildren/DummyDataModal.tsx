@@ -135,6 +135,7 @@ class DummyDataModal extends Component<DummyDataModalProps, state> {
       dummyData: this.state.dataInfo
     }
     console.log(dataObj);
+    ipcRenderer.send('schema-layout', null);
   }
 
   render() {
