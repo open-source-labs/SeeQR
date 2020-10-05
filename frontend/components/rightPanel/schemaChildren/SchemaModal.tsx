@@ -9,6 +9,7 @@ import DropdownMenu from 'react-bootstrap/esm/DropdownMenu';
 
 const { dialog } = require('electron').remote;
 const { ipcRenderer } = window.require('electron');
+const path = require('path');
 
 type ClickEvent = React.MouseEvent<HTMLElement>;
 
@@ -24,7 +25,7 @@ type state = {
   schemaFilePath: string;
   schemaEntry: string;
   redirect: boolean;
-  currentDB: string;
+  dbCopyName: string;
   copy: boolean
 };
 
@@ -38,6 +39,7 @@ class SchemaModal extends Component<SchemaModalProps, state> {
     this.selectHandler = this.selectHandler.bind(this);
     this.handleCopyData = this.handleCopyData.bind(this);
     this.dropDownList = this.dropDownList.bind(this);
+    this.handleCopyFilePath = this.handleCopyFilePath.bind(this);
 
     // this.handleQueryPrevious = this.handleQueryPrevious.bind(this);
     // this.handleQuerySubmit = this.handleQuerySubmit.bind(this);
@@ -48,7 +50,7 @@ class SchemaModal extends Component<SchemaModalProps, state> {
     schemaFilePath: '',
     schemaEntry: '',
     redirect: false,
-    currentDB: 'Select Instance',
+    dbCopyName: 'Select Instance',
     copy: false
   };
 
@@ -107,19 +109,33 @@ class SchemaModal extends Component<SchemaModalProps, state> {
   }
 
   selectHandler = (eventKey, e: React.SyntheticEvent<unknown>) => {   
-    this.setState({currentDB: eventKey });
+    this.setState({ dbCopyName: eventKey });
    }
 
   handleCopyData(event: any) {
-    console.log(this.state.copy);
     if(!this.state.copy) this.setState({ copy: true });
     else this.setState({ copy: false });
   }
 
   dropDownList = () => {
-    console.log('in dropdown function');
     return this.props.tabList.map((db, index) => <Dropdown.Item key={index} eventKey={db} className="queryItem" >{db}</Dropdown.Item>);
   };
+
+  handleCopyFilePath(event: any) {
+    event.preventDefault();
+
+    const schemaObj = {
+      schemaName: this.state.schemaName,
+      schemaFilePath: '',
+      schemaEntry: '',
+      dbCopyName: this.state.dbCopyName,
+      copy: this.state.copy
+    }
+
+    ipcRenderer.send('input-schema', schemaObj);
+
+    this.props.showModal(event);
+  }
 
   render() {
     if (this.props.show === false) {
@@ -129,7 +145,7 @@ class SchemaModal extends Component<SchemaModalProps, state> {
     return (
       <div className="modal" id="modal">
         <Router>
-          <h3>Load or input schema</h3>
+          <h3>Load schema</h3>
           <p>Schema Name (auto-formatted): {this.state.schemaName}</p>
           <input
             className="schema-label"
@@ -154,14 +170,14 @@ class SchemaModal extends Component<SchemaModalProps, state> {
           />
           <Dropdown onSelect={this.selectHandler}>
             <Dropdown.Toggle>
-              {this.state.currentDB}
+              {this.state.dbCopyName}
             </Dropdown.Toggle> 
               <Dropdown.Menu>
                 {this.dropDownList()}
               </Dropdown.Menu>
           </Dropdown>
               <input type="checkbox" name="Data" onClick={this.handleCopyData}/> With Data
-            <button className="modal-buttons" onClick={this.handleSchemaFilePath}>Make Copy</button>
+            <button className="modal-buttons" onClick={this.handleCopyFilePath}>Make Copy</button>
           </div>
           <button className="close-button" onClick={this.props.onClose}>
             X
