@@ -126,22 +126,13 @@ class SchemaModal extends Component<SchemaModalProps, state> {
 
     const schemaObj = {
       schemaName: this.state.schemaName,
+      schemaFilePath: '',
+      schemaEntry: '',
       dbCopyName: this.state.dbCopyName,
       copy: this.state.copy
     }
 
-    // Create schema object to send to 'input-schema' channel
-    const schemaObj2 = {
-    schemaName: schemaObj.schemaName,
-    schemaFilePath: [`/Users/samuelafrakes/SeeQR/backend/${schemaObj.schemaName}.sql`],
-    schemaEntry: '',
-  };
-
-    console.log(schemaObj);
-    ipcRenderer.send('copy-db', schemaObj);
-    ipcRenderer.on('copy-started', (event: any) => {
-      ipcRenderer.send('input-schema', schemaObj2);
-    });
+    ipcRenderer.send('input-schema', schemaObj);
 
     this.props.showModal(event);
   }

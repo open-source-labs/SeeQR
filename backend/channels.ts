@@ -4,6 +4,7 @@ import { create } from 'domain';
 
 const { exec } = require('child_process');
 const db = require('./models');
+const path = require('path');
 
 /************************************************************
  *********************** IPC CHANNELS ***********************
@@ -72,9 +73,12 @@ ipcMain.on('copy-db', (event, data: CopyType) => {
   db.changeDB(dbCopyName);
   // now that our DB has been changed to the one we wish to copy, we need to either make an exact copy or a hollow copy using pg_dump OR pg_dump -s followed by pg_restore
 
+  // create file path that will point to our newly created local .sql file
+  const formattedFilePath: string = path.join(__dirname, `./${schemaName}`)
+
   const step = () => {
     event.sender.send('copy-started');
-  }
+   }
 
   //Exact copy
   if(copy) {
@@ -83,6 +87,8 @@ ipcMain.on('copy-db', (event, data: CopyType) => {
   }
   // Hollow copy
   else execute(`docker exec postgres-1 pg_dump -s -U postgres ${dbCopyName} > backend/${schemaName}.sql`, step);
+
+
 
 });
 
@@ -131,15 +137,37 @@ ipcMain.on('upload-file', (event, filePath: string) => {
 
 interface SchemaType {
   schemaName: string;
-  schemaFilePath: string;
+  schemaFilePath: string[];
   schemaEntry: string;
+  dbCopyName: string;
+  copy: boolean;
 }
 
 // Listen for schema edits (via file upload OR via CodeMirror inout) from schemaModal. Create an instance of database from pre-made .tar or .sql file.
 ipcMain.on('input-schema', (event, data: SchemaType) => {
-  console.log('in iput-schema channel');
-  const { schemaName: dbName, schemaFilePath: filePath, schemaEntry } = data;
-  console.log(filePath);
+
+  const { schemaName: dbName, schemaEntry, dbCopyName, copy } = data;
+  let { schemaFilePath: filePath } = data;
+
+  if (copy !== undefined) {
+  // first, we need to change the current DB instance to that of the one we need to copy, so we'll head to the changeDB function in the models file
+  db.changeDB(dbCopyName);
+  // now that our DB has been changed to the one we wish to copy, we need to either make an exact copy or a hollow copy using pg_dump OR pg_dump -s followed by pg_restore
+
+  // reset file path such that it points to our newly created local .sql file
+  filePath = [path.join(__dirname, `./${dbName}.sql`)];
+
+  //Exact copy
+  if(copy) {
+    console.log('in copy if statement');
+    execute(`docker exec postgres-1 pg_dump -U postgres ${dbCopyName} > tsCompiled/backend/${dbName}.sql`, null);
+  }
+  // Hollow copy
+  else execute(`docker exec postgres-1 pg_dump -s -U postgres ${dbCopyName} > tsCompiled/backend/${dbName}.sql`, null)
+  }
+
+  console.log(dbName, schemaEntry, dbCopyName, copy, filePath);
+
   // Using RegEx to remove line breaks to ensure data.schemaEntry is being run as one large string
   // so that schemaEntry string will work for Windows computers.
   let trimSchemaEntry = schemaEntry.replace(/[\n\r]/g, "").trim();
