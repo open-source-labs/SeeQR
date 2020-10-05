@@ -11,13 +11,13 @@ type DummyDataModalProps = {
     show: boolean;
     showModal: any;
     onClose: any;
+    currentSchema: string;
+    tableList: string[];
 };
 
 type state = {
   //currentSchema will need to be moved to state once the modal is rendered by the correct parent component
-  currentSchema: string,
   currentTable: string,
-  tableNames: string[],
   dataInfo: {},
   rowNumber: string
 }
@@ -33,11 +33,14 @@ class DummyDataModal extends Component<DummyDataModalProps, state> {
     this.deleteRow = this.deleteRow.bind(this);
     this.submitDummyData = this.submitDummyData.bind(this);
   }
+//state.lists.tableList
+//state.currentSchema
+
   //hard coded in for testing purposes
   state: state = {
-    currentSchema: 'testSchema',
+    // currentSchema: 'testSchema',
     currentTable: 'select table',
-    tableNames: ['customers', 'locations', 'suppliers', 'all'],
+    // tableNames: ['customers', 'locations', 'suppliers', 'all'],
     dataInfo: {},
     rowNumber: ''
   }
@@ -49,7 +52,7 @@ class DummyDataModal extends Component<DummyDataModalProps, state> {
 
   //function to generate the dropdown optiosn from the table names in state
   dropDownList = () => {
-    return this.state.tableNames.map((tableName, index) => <Dropdown.Item key={index} className="queryItem" eventKey={tableName}>{tableName}</Dropdown.Item>)
+    return this.props.tableList.map((tableName, index) => <Dropdown.Item key={index} className="queryItem" eventKey={tableName}>{tableName}</Dropdown.Item>)
   };
 
   //submit listener to add table name and rows to the dataInfo object in state
@@ -79,7 +82,7 @@ class DummyDataModal extends Component<DummyDataModalProps, state> {
         }
         else {
           const dataInfo = {};
-          this.state.tableNames.forEach(table => {
+          this.props.tableList.forEach(table => {
             if (table !== 'all') {
               dataInfo[table] = number;
             }
@@ -131,7 +134,7 @@ class DummyDataModal extends Component<DummyDataModalProps, state> {
   submitDummyData = (event: any) => {
     const dataObj = {
       //schemaName will eventually come from props, not state
-      schemaName: this.state.currentSchema,
+      schemaName: this.props.currentSchema,
       dummyData: this.state.dataInfo
     }
     console.log(dataObj);

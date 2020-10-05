@@ -15,7 +15,10 @@ import CodeMirror from '@skidding/react-codemirror';
  *********************** TYPESCRIPT: TYPES ***********************
  ************************************************************/
 
-type QueryProps = { currentSchema: string };
+type QueryProps = { 
+  currentSchema: string;
+  tableList: string[]; 
+};
 
 type state = {
   queryString: string;
@@ -108,7 +111,7 @@ class Query extends Component<QueryProps, state> {
     return (
       <div id="query-panel">
         <div id="delete-me">
-          <DummyDataModal show={true} showModal={true} onClose={null}/>
+          <DummyDataModal show={true} showModal={true} onClose={null} tableList={this.props.tableList} currentSchema={this.props.currentSchema}/>
         </div>
         <h3>Query</h3>
         <form onSubmit={this.handleQuerySubmit}>
