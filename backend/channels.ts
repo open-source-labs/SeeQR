@@ -1,6 +1,7 @@
 // Import parts of electron to use
 import { ipcMain } from 'electron';
 import { create } from 'domain';
+import generateDummyDataQueries from './newDummyD/dummyDataMain';
 
 const { exec } = require('child_process');
 const db = require('./models');
@@ -234,13 +235,25 @@ ipcMain.on('execute-query-tracked', (event, data: QueryType) => {
     });
 });
 
-ipcMain.on('schema-layout', (event: any) => {
+interface dummyDataRequest {
+  schemaName: string;
+  dummyData: {};
+}
+
+ipcMain.on('schema-layout', (event: any, data: dummyDataRequest) => {
   let schemaLayout;
+  let dummyDataRequest = data;
   db.getSchemaLayout()
-  .then((result) => schemaLayout = result)
-  .catch((error: string) => {
-    console.log('ERROR in schema-layout channel in main.ts', error);
-  });
+  .then((result) => {
+    schemaLayout = result;
+  })
+  .then(() => {
+    let testData = generateDummyDataQueries(schemaLayout, dummyDataRequest);
+    console.log(testData);
+  })
 })
+
+//ipcMain.on 'generate-dummy-data'
+  //passes schemaLayout, dummyDataRequest to dummyDataMain
 
 module.exports;

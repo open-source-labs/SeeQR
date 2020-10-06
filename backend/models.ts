@@ -5,16 +5,42 @@ const { Pool } = require('pg');
 let PG_URI: string = 'postgres://postgres:postgres@localhost:5432/defaultDB';
 let pool: any = new Pool({ connectionString: PG_URI });
 
+const getColumnObjects = (tableName: string) => {
+  const queryString = "SELECT column_name, data_type, character_maximum_length FROM information_schema.columns WHERE table_name = $1;";
+  const value = [tableName];
+  return new Promise ((resolve) => {
+    pool
+      .query(queryString, value)
+      .then((result) => {
+        const columnInfoArray: any = [];
+        for (let i = 0; i < result.rows.length; i++) {
+          const columnObj: any = {
+            columnName: result.rows[i].column_name,
+            dataInfo: {
+              data_type: result.rows[i].data_type,
+              character_maxiumum_length: result.rows[i].character_maxiumum_length
+            }
+          }
+          columnInfoArray.push(columnObj)
+        }
+        resolve(columnInfoArray);
+      })
+  })
+}
+
 module.exports = {
+
   query: (text, params, callback) => {
     console.log('Executed query: ', text);
     return pool.query(text, params, callback);
   },
+
   changeDB: (dbName: string) => {
     PG_URI = 'postgres://postgres:postgres@localhost:5432/' + dbName;
     pool = new Pool({ connectionString: PG_URI });
     console.log('Current URI: ', PG_URI);
   },
+
   getLists: () => {
     return new Promise((resolve) => {
       const listObj = {
@@ -46,6 +72,7 @@ module.exports = {
         });
     });
   },
+
   getSchemaLayout: () => {
     // initialize a new promise; we resolve this promise at the end of the last async function within the promise
     return new Promise((resolve) => {
@@ -65,26 +92,21 @@ module.exports = {
           for (let i = 0; i < tables.rows.length; ++i) {
             schemaLayout.tableNames.push(tables.rows[i].table_name);
           }
+          const promiseArray: any = [];
+          for (let tableName of schemaLayout.tableNames) {
+            promiseArray.push(getColumnObjects(tableName))
+          }
+          Promise.all(promiseArray)
+            .then((columnInfo) => {
+              for (let i = 0; i < columnInfo.length; i++) {
+                schemaLayout.tables[schemaLayout.tableNames[i]] = columnInfo[i];
+              }
+              resolve(schemaLayout);
+            })
         })
-        // then we iterate over the tableNames we just got and run a query on each to get an array of column names
-        .then(() => {
-          for (const tableName of schemaLayout.tableNames){
-            // This query returns the names of all the columns in the specified table
-            const queryString = "SELECT column_name FROM information_schema.columns WHERE table_name = $1;";
-            const value = [tableName];
-            pool
-              .query(queryString, value)
-              .then((result) => {
-                schemaLayout.tables[tableName] = [];
-                for (let i = 0; i < result.rows.length; ++i) {
-                  schemaLayout.tables[tableName].push(result.rows[i].column_name);
-                }
-              });
-          }
-          // we resolve schemaLayout so that we know we have a resolved promise for whatever invoked getSchemaLayout
-          resolve(schemaLayout);
-          }
-        )
+        .catch(() => {
+          console.log('error in models.ts')
+        })
     });
   }
-};
+}
