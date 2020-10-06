@@ -84,7 +84,7 @@ module.exports = {
           // we resolve schemaLayout so that we know we have a resolved promise for whatever invoked getSchemaLayout
           resolve(schemaLayout);
           }
-      )
+        )
     });
   }
 };
