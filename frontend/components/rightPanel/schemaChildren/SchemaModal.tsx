@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Dropdown, ButtonToolbar } from 'react-bootstrap';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
-import SchemaInput from './SchemaInput';
 import DropdownToggle from 'react-bootstrap/esm/DropdownToggle';
 import DropdownMenu from 'react-bootstrap/esm/DropdownMenu';
 // import GenerateData from './GenerateData';
@@ -147,7 +146,6 @@ class SchemaModal extends Component<SchemaModalProps, state> {
 
     return (
       <div className="modal" id="modal">
-        <Router>
         <h3>Enter New Schema Name</h3>
         <p>(AUTO-FORMATTED): {this.state.schemaName}</p>
           <input
@@ -163,9 +161,6 @@ class SchemaModal extends Component<SchemaModalProps, state> {
             <h3>Load schema:</h3>
             <div className="modal-buttons">
               <button id="load-button" onClick={this.handleSchemaFilePath}>Select File</button>
-              {/* <Link to="/SchemaInput">
-                <button className="input-button">Input Schema</button>
-              </Link> */}
             </div>
           </div>
           <br />
@@ -196,16 +191,6 @@ class SchemaModal extends Component<SchemaModalProps, state> {
             }}>
           X
           </button>
-
-          <Switch>
-            <Route exact path="/" component={SchemaModal} />
-            <Route
-              exact
-              path="/SchemaInput"
-              render={(props: any) => <SchemaInput {...props} schemaName={this.state.schemaName} />}
-            />
-          </Switch>
-        </Router>
       </div>
     );
   }
