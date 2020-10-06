@@ -26,8 +26,7 @@
             }
         }
     }
-3. generate new .sql file
-4. get schema layout 
+3. get schema layout 
     const schemaLayout: any = {
         // tableNames: ['Johnny Bravo', 'Teen Titans', ...]
         tableNames: [],
@@ -35,7 +34,8 @@
             // tableName: [columnNames array]
         }
     };
-5. iterate over tables in hollow schema (Options: 1. run sql query to get list of tables; 2. use 'getList' function defined in models.ts)
+4. iterate over tables in hollow schema (Options: 1. run sql query to get list of tables; 2. use 'getList' function defined in models.ts)
+    5. generate new .sql file
     6. create dummyData object, e.g.:
         const DD = {
             // people

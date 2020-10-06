@@ -16,7 +16,6 @@ type DummyDataModalProps = {
 };
 
 type state = {
-  //currentSchema will need to be moved to state once the modal is rendered by the correct parent component
   currentTable: string,
   dataInfo: {},
   rowNumber: string
@@ -132,13 +131,12 @@ class DummyDataModal extends Component<DummyDataModalProps, state> {
   }
 
   submitDummyData = (event: any) => {
-    const dataObj = {
+    const dummyDataRequest = {
       //schemaName will eventually come from props, not state
       schemaName: this.props.currentSchema,
       dummyData: this.state.dataInfo
     }
-    console.log(dataObj);
-    ipcRenderer.send('schema-layout', null);
+    ipcRenderer.send('schema-layout', dummyDataRequest);
   }
 
   render() {
