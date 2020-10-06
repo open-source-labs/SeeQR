@@ -73,9 +73,9 @@ const generatePrimayKey = () => {
 //     'character_maximum_length': null
 //   }
 
-const generateDataByType = (dataType) => {
+const generateDataByType = (columnObj) => {
   //faker.js method to generate data by type
-  switch (dataType.data_type) {
+  switch (columnObj.dataInfo.data_type) {
     case 'smallint':
       return faker.random.number({min: -(2**15), max: (2**15 - 1)});
     case 'integer':
@@ -83,8 +83,8 @@ const generateDataByType = (dataType) => {
     case 'bigint':
       return faker.random.number({min: -(2**63), max: (2**63 - 1)});
     case 'character varying':
-      if (dataType.character_maximum_length) {
-        return faker.lorem.character(Math.floor(Math.random() * dataType.character_maximum_length));
+      if (columnObj.dataInfo.character_maximum_length) {
+        return faker.lorem.character(Math.floor(Math.random() * columnObj.dataInfo.character_maximum_length));
       }
       else return faker.lorem.word();
     default:
@@ -101,6 +101,7 @@ const writeSQLFile = () => {
 //maps table names from schemaLayout to sql files
 const generateDummyDataQueries = (schemaLayout, dummyDataRequest) => {
   //iterate over schemaLayout.tableNames array
+  console.log(schemaLayout);
   return schemaLayout.tableNames.map(tableName => {
     const tableMatrix: any = [];
     //if matching key exists in dummyDataRequest.dummyData
@@ -113,7 +114,7 @@ const generateDummyDataQueries = (schemaLayout, dummyDataRequest) => {
         //while i < reqeusted number of tables
         while (columnData.length < dummyDataRequest.dummyData[tableName]) {
           //generate an entry
-          let entry = generateDataByType({'data_type':'character varying'});
+          let entry = generateDataByType(schemaLayout.tables[tableName][i]);
           //push into columnData
           columnData.push(entry);
         };

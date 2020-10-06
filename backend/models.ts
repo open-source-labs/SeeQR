@@ -70,14 +70,15 @@ module.exports = {
         .then(() => {
           for (const tableName of schemaLayout.tableNames){
             // This query returns the names of all the columns, data type, and max character length in the specified table
-            const queryString = "SELECT column_name, data_type, character_maxiumum_length FROM information_schema.columns WHERE table_name = $1;";
+            const queryString = "SELECT column_name, data_type, character_maximum_length FROM information_schema.columns WHERE table_name = $1;";
             const value = [tableName];
             pool
               .query(queryString, value)
               .then((result) => {
+                console.log(result.rows);
                 schemaLayout.tables[tableName] = [];
                 for (let i = 0; i < result.rows.length; i++) {
-                  let columnObj = {
+                  const columnObj = {
                     columnName: result.rows[i].column_name,
                     dataInfo: {
                       data_type: result.rows[i].data_type,
@@ -86,15 +87,15 @@ module.exports = {
                   }
                   schemaLayout.tables[tableName].push(columnObj);
                 }
-
-              })
-              // // we resolve schemaLayout so that we know we have a resolved promise for whatever invoked getSchemaLayout
-              .then(() => {
-                resolve(schemaLayout);
               })
             }
-          }
-      )
+          })
+          .then(() => {
+            resolve(schemaLayout);
+          })
+          .catch(() => {
+            console.log('error in models.ts')
+          })
     });
   }
 };
