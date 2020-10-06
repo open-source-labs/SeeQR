@@ -9,7 +9,8 @@ type TabsProps = {
   currentSchema: string,
   tabList: string[],
   queries: any,
-  onClickTabItem: any
+  onClickTabItem: any,
+  tableList: string[]
 }
 
 type state = {
@@ -83,7 +84,7 @@ export class Tabs extends Component<TabsProps> {
         <div className="tab-content">
           {tabList.map((tab, index) => {
             if (tab !== currentSchema) return undefined;
-            return <SchemaContainer key={index} queries={activeTabQueries} currentSchema={currentSchema} />;
+            return <SchemaContainer key={index} queries={activeTabQueries} currentSchema={currentSchema} tableList={this.props.tableList} />;
           })}
         </div>
       </div>

@@ -77,7 +77,7 @@ class MainPanel extends Component<MainProps, MainState> {
           <History queries={this.state.queries} currentSchema={this.state.currentSchema} />
           <Compare queries={this.state.queries} currentSchema={this.state.currentSchema} />
         </div>
-        <Tabs currentSchema={this.state.currentSchema} tabList={this.state.lists.databaseList} queries={this.state.queries} onClickTabItem={this.onClickTabItem} />
+        <Tabs currentSchema={this.state.currentSchema} tabList={this.state.lists.databaseList} queries={this.state.queries} onClickTabItem={this.onClickTabItem} tableList={this.state.lists.tableList} />
       </div>
     );
   }
