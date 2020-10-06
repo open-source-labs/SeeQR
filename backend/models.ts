@@ -76,12 +76,13 @@ module.exports = {
               .query(queryString, value)
               .then((result) => {
                 schemaLayout.tables[tableName] = [];
-                for (let i = 0; i < result.rows.length; ++i) {
+                for (let i = 0; i < result.rows.length; i++) {
                   schemaLayout.tables[tableName].push(result.rows[i].column_name);
                 }
               });
           }
           // we resolve schemaLayout so that we know we have a resolved promise for whatever invoked getSchemaLayout
+          console.log(schemaLayout.tables);
           resolve(schemaLayout);
           }
       )
