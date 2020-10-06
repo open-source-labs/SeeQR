@@ -246,14 +246,12 @@ ipcMain.on('schema-layout', (event: any, data: dummyDataRequest) => {
   db.getSchemaLayout()
   .then((result) => {
     schemaLayout = result;
-    console.log(schemaLayout.tables);
+    // console.log(schemaLayout.tables);
   })
-  // .then(() => {
-  //   let testData = generateDummyDataQueries(schemaLayout, dummyDataRequest);
-  //   // testData.forEach(array => {
-  //   //   console.log(array);
-  //   // })
-  // })
+  .then(() => {
+    let testData = generateDummyDataQueries(schemaLayout, dummyDataRequest);
+    console.log(testData);
+  })
 })
 
 //ipcMain.on 'generate-dummy-data'

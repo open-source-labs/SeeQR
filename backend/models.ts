@@ -79,11 +79,13 @@ module.exports = {
                 for (let i = 0; i < result.rows.length; i++) {
                   schemaLayout.tables[tableName].push(result.rows[i].column_name);
                 }
-              });
-          }
-          // we resolve schemaLayout so that we know we have a resolved promise for whatever invoked getSchemaLayout
-          console.log(schemaLayout.tables);
-          resolve(schemaLayout);
+
+              })
+              // // we resolve schemaLayout so that we know we have a resolved promise for whatever invoked getSchemaLayout
+              .then(() => {
+                resolve(schemaLayout);
+              })
+            }
           }
       )
     });

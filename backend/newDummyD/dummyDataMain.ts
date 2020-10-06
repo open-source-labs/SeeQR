@@ -76,12 +76,10 @@ const generateDummyDataQueries = (schemaLayout, dummyDataRequest) => {
     const tableMatrix: any = [];
     //if matching key exists in dummyDataRequest.dummyData
     if (dummyDataRequest.dummyData[tableName]) {
-      console.log('on line 79');
       //generate sql file with table name
       //declare empty columnData array for tableMatrix
       let columnData: any = [];
       //iterate over columnArray (schemaLayout.tableLayout[tableName])
-      console.log(schemaLayout.tables);
       for (let i = 0; i < schemaLayout.tables[tableName].length; i++) {
         //while i < reqeusted number of tables
         while (columnData.length < dummyDataRequest.dummyData[tableName]) {
@@ -91,8 +89,7 @@ const generateDummyDataQueries = (schemaLayout, dummyDataRequest) => {
           columnData.push(entry);
         };
         //push columnData array into tableMatrix
-        if (columnData.length) console.log(columnData);
-        tableMatrix.push('dummy data: ', columnData);
+        tableMatrix.push(columnData);
         //reset columnData array for next column
         columnData = [];
       };
