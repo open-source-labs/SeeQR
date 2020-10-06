@@ -1,11 +1,6 @@
 //this file maps table names from the schemaLayout object to individual sql files for DD generation
 
-import { ipcRenderer } from "electron";
-import { write } from "fs/promises";
-// import { execute } from '../channels';
-// import  channels  from '../channels';
-import execute from '../channels';
-const { exec } = require('child_process');
+import faker from "faker";
 
 // 3. get schema layout 
 //     const schemaLayout: any = {
@@ -66,8 +61,37 @@ type dummyDataRequest = {
 //created in function
 // type dummyDataObject = {};
 
-const generateDataByType = (dataType) => {
+//this function generates unique values for a column
+const generatePrimayKey = () => {
+
+}
+
+// this function generates non-unique data for a column
+//   dataType should be an object
+//   ex: {
+//     'data_type': 'integer';
+//     'character_maximum_length': null
+//   }
+
+const generateDataByType = (columnObj) => {
   //faker.js method to generate data by type
+  switch (columnObj.dataInfo.data_type) {
+    case 'smallint':
+      return faker.random.number({min: -(2**15), max: (2**15 - 1)});
+    case 'integer':
+      return faker.random.number({min: -(2**31), max: (2**31 - 1)});
+    case 'bigint':
+      return faker.random.number({min: -(2**63), max: (2**63 - 1)});
+    case 'character varying':
+      if (columnObj.dataInfo.character_maximum_length) {
+        return faker.lorem.character(Math.floor(Math.random() * columnObj.dataInfo.character_maximum_length));
+      }
+      else return faker.lorem.word();
+    case 'date':
+      return faker.date.past();
+    default:
+      console.log('error')
+  }
 };
 
 
@@ -112,34 +136,32 @@ const writeSQLFile = () => {
 
 //maps table names from schemaLayout to sql files
 const generateDummyDataQueries = (schemaLayout, dummyDataRequest) => {
-  // iterate over schemaLayout.tableNames array
-  // return schemaLayout.tableNames.map(tableName => {
-  //   const tableMatrix: any = [];
-  //   //if matching key exists in dummyDataRequest.dummyData
-  //   if (dummyDataRequest.dummyData[tableName]) {
-  //     //generate sql file with table name
-  //     //declare empty columnData array for tableMatrix
-  //     let columnData: any = [];
-  //     //iterate over columnArray (schemaLayout.tableLayout[tableName])
-  //     for (let i = 0; i < schemaLayout.tables[tableName].length; i++) {
-  //       //while i < reqeusted number of tables
-  //       while (columnData.length < dummyDataRequest.dummyData[tableName]) {
-  //         //generate an entry
-  //         let entry = "test";
-  //         //push into columnData
-  //         columnData.push(entry);
-  //       };
-  //       //push columnData array into tableMatrix
-  //       tableMatrix.push(columnData);
-  //       //reset columnData array for next column
-  //       columnData = [];
-  //     };
-  //   //write all entries in tableMatrix to sql file
-  //     writeSQLFile();
-  //   };
-  //   return tableMatrix;
-  // });
-  writeSQLFile();
+  //iterate over schemaLayout.tableNames array
+  return schemaLayout.tableNames.map(tableName => {
+    const tableMatrix: any = [];
+    //if matching key exists in dummyDataRequest.dummyData
+    if (dummyDataRequest.dummyData[tableName]) {
+      //generate sql file with table name
+      //declare empty columnData array for tableMatrix
+      let columnData: any = [];
+      //iterate over columnArray (schemaLayout.tableLayout[tableName])
+      for (let i = 0; i < schemaLayout.tables[tableName].length; i++) {
+        //while i < reqeusted number of tables
+        while (columnData.length < dummyDataRequest.dummyData[tableName]) {
+          //generate an entry
+          let entry = generateDataByType(schemaLayout.tables[tableName][i]);
+          //push into columnData
+          columnData.push(entry);
+        };
+        //push columnData array into tableMatrix
+        tableMatrix.push(columnData);
+        //reset columnData array for next column
+        columnData = [];
+      };
+    //write all entries in tableMatrix to sql file
+    };
+    return tableMatrix;
+  });
 };
 
 export default generateDummyDataQueries;

@@ -246,7 +246,6 @@ ipcMain.on('schema-layout', (event: any, data: dummyDataRequest) => {
   db.getSchemaLayout()
   .then((result) => {
     schemaLayout = result;
-    // console.log(schemaLayout.tables);
   })
   .then(() => {
     //let testData = generateDummyDataQueries(schemaLayout, dummyDataRequest);
