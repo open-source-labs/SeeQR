@@ -1,5 +1,7 @@
 //this file maps table names from the schemaLayout object to individual sql files for DD generation
 
+import faker from "faker";
+
 // 3. get schema layout 
 //     const schemaLayout: any = {
 //         // tableNames: ['Johnny Bravo', 'Teen Titans', ...]
@@ -59,8 +61,37 @@ type dummyDataRequest = {
 //created in function
 // type dummyDataObject = {};
 
-const generateDataByType = (dataType) => {
+//this function generates unique values for a column
+const generatePrimayKey = () => {
+
+}
+
+// this function generates non-unique data for a column
+//   dataType should be an object
+//   ex: {
+//     'data_type': 'integer';
+//     'character_maximum_length': null
+//   }
+
+const generateDataByType = (columnObj) => {
   //faker.js method to generate data by type
+  switch (columnObj.dataInfo.data_type) {
+    case 'smallint':
+      return faker.random.number({min: -(2**15), max: (2**15 - 1)});
+    case 'integer':
+      return faker.random.number({min: -(2**31), max: (2**31 - 1)});
+    case 'bigint':
+      return faker.random.number({min: -(2**63), max: (2**63 - 1)});
+    case 'character varying':
+      if (columnObj.dataInfo.character_maximum_length) {
+        return faker.lorem.character(Math.floor(Math.random() * columnObj.dataInfo.character_maximum_length));
+      }
+      else return faker.lorem.word();
+    case 'date':
+      return faker.date.past();
+    default:
+      console.log('error')
+  }
 };
 
 const writeSQLFile = () => {
@@ -84,7 +115,7 @@ const generateDummyDataQueries = (schemaLayout, dummyDataRequest) => {
         //while i < reqeusted number of tables
         while (columnData.length < dummyDataRequest.dummyData[tableName]) {
           //generate an entry
-          let entry = "test";
+          let entry = generateDataByType(schemaLayout.tables[tableName][i]);
           //push into columnData
           columnData.push(entry);
         };
