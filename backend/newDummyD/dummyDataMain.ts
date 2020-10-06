@@ -87,6 +87,8 @@ const generateDataByType = (columnObj) => {
         return faker.lorem.character(Math.floor(Math.random() * columnObj.dataInfo.character_maximum_length));
       }
       else return faker.lorem.word();
+    case 'date':
+      return faker.date.past();
     default:
       console.log('error')
   }
@@ -101,7 +103,6 @@ const writeSQLFile = () => {
 //maps table names from schemaLayout to sql files
 const generateDummyDataQueries = (schemaLayout, dummyDataRequest) => {
   //iterate over schemaLayout.tableNames array
-  console.log(schemaLayout);
   return schemaLayout.tableNames.map(tableName => {
     const tableMatrix: any = [];
     //if matching key exists in dummyDataRequest.dummyData
