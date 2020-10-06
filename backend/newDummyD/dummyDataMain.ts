@@ -1,5 +1,12 @@
 //this file maps table names from the schemaLayout object to individual sql files for DD generation
 
+import { ipcRenderer } from "electron";
+import { write } from "fs/promises";
+// import { execute } from '../channels';
+// import  channels  from '../channels';
+import execute from '../channels';
+const { exec } = require('child_process');
+
 // 3. get schema layout 
 //     const schemaLayout: any = {
 //         // tableNames: ['Johnny Bravo', 'Teen Titans', ...]
@@ -63,40 +70,76 @@ const generateDataByType = (dataType) => {
   //faker.js method to generate data by type
 };
 
+
+
 const writeSQLFile = () => {
-  //iterates over each 
-    //generates string INSERT INTO statement
-    //writes to SQL file
+  const tableMatrix: any = [[1,2],['casey','justin']];
+  const tableName: string = 'testTable';
+  const columnArray: string[] = ['id','name']
+
+     //transpose tableMatrix
+    //tableMatrix: [[1,2,3,4,...],["luke", "leia", "jabaDaHut", ...], ...]
+    const table: any = [];
+    let row: any  = [];
+    for(let i = 0; i < tableMatrix[0].length; i++) {
+      for(let j = 0; j < tableMatrix.length; j++) {
+          row.push(tableMatrix[j][i]); 
+      }
+      //join each subarray (which correspond to rows in our table) with a comma
+      const rowString = row.join(',');
+      table.push[rowString]; //'1, luke, etc'
+      row = [];
+    }
+    //join tableMatrix with a line break
+    //save to string
+    const tableDataString: string = table.join('\n');
+    //`docker cp ${file} postgres-1:/data_dump`;
+    const columnString: string = columnArray.join(',');
+
+    const csvString: string = columnString + tableDataString;
+    
+    const writeString: string = `echo ${csvString} > postgres-1:/${tableName}.csv`
+
+    // create table csv file to volume
+    // write column names to csv file by calling execute
+    execute(writeString, null);
+
+    //run postgres COPY table_name FROM 'filepath/path/postgres-data.csv' (absolute path) DELIMTERE ',' CSV HEADER; (for each table)
+
+    //delete .csv files from volume
+
 };
 
 //maps table names from schemaLayout to sql files
 const generateDummyDataQueries = (schemaLayout, dummyDataRequest) => {
-  //iterate over schemaLayout.tableNames array
-  return schemaLayout.tableNames.map(tableName => {
-    const tableMatrix: any = [];
-    //if matching key exists in dummyDataRequest.dummyData
-    if (dummyDataRequest.dummyData[tableName]) {
-      //generate sql file with table name
-      //declare empty columnData array for tableMatrix
-      let columnData: any = [];
-      //iterate over columnArray (schemaLayout.tableLayout[tableName])
-      for (let i = 0; i < schemaLayout.tables[tableName].length; i++) {
-        //while i < reqeusted number of tables
-        while (columnData.length < dummyDataRequest.dummyData[tableName]) {
-          //generate an entry
-          let entry = "test";
-          //push into columnData
-          columnData.push(entry);
-        };
-        //push columnData array into tableMatrix
-        tableMatrix.push(columnData);
-        //reset columnData array for next column
-        columnData = [];
-      };
-    //write all entries in tableMatrix to sql file
-    };
-    return tableMatrix;
-  });
+  // iterate over schemaLayout.tableNames array
+  // return schemaLayout.tableNames.map(tableName => {
+  //   const tableMatrix: any = [];
+  //   //if matching key exists in dummyDataRequest.dummyData
+  //   if (dummyDataRequest.dummyData[tableName]) {
+  //     //generate sql file with table name
+  //     //declare empty columnData array for tableMatrix
+  //     let columnData: any = [];
+  //     //iterate over columnArray (schemaLayout.tableLayout[tableName])
+  //     for (let i = 0; i < schemaLayout.tables[tableName].length; i++) {
+  //       //while i < reqeusted number of tables
+  //       while (columnData.length < dummyDataRequest.dummyData[tableName]) {
+  //         //generate an entry
+  //         let entry = "test";
+  //         //push into columnData
+  //         columnData.push(entry);
+  //       };
+  //       //push columnData array into tableMatrix
+  //       tableMatrix.push(columnData);
+  //       //reset columnData array for next column
+  //       columnData = [];
+  //     };
+  //   //write all entries in tableMatrix to sql file
+  //     writeSQLFile();
+  //   };
+  //   return tableMatrix;
+  // });
+  writeSQLFile();
 };
 
 export default generateDummyDataQueries;

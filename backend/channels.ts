@@ -249,12 +249,14 @@ ipcMain.on('schema-layout', (event: any, data: dummyDataRequest) => {
     // console.log(schemaLayout.tables);
   })
   .then(() => {
-    let testData = generateDummyDataQueries(schemaLayout, dummyDataRequest);
-    console.log(testData);
+    //let testData = generateDummyDataQueries(schemaLayout, dummyDataRequest);
+    generateDummyDataQueries(schemaLayout, dummyDataRequest);
+    //console.log(testData);
   })
 })
 
 //ipcMain.on 'generate-dummy-data'
   //passes schemaLayout, dummyDataRequest to dummyDataMain
 
-module.exports;
+export default execute;
+// module.exports;
