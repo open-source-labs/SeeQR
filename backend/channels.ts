@@ -238,7 +238,9 @@ ipcMain.on('schema-layout', (event: any) => {
   let schemaLayout;
   db.getSchemaLayout()
   .then((result) => schemaLayout = result)
-  .then(() => console.log(schemaLayout))
+  .catch((error: string) => {
+    console.log('ERROR in schema-layout channel in main.ts', error);
+  });
 })
 
 module.exports;
