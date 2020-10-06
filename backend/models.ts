@@ -69,15 +69,22 @@ module.exports = {
         // then we iterate over the tableNames we just got and run a query on each to get an array of column names
         .then(() => {
           for (const tableName of schemaLayout.tableNames){
-            // This query returns the names of all the columns in the specified table
-            const queryString = "SELECT column_name FROM information_schema.columns WHERE table_name = $1;";
+            // This query returns the names of all the columns, data type, and max character length in the specified table
+            const queryString = "SELECT column_name, data_type, character_maxiumum_length FROM information_schema.columns WHERE table_name = $1;";
             const value = [tableName];
             pool
               .query(queryString, value)
               .then((result) => {
                 schemaLayout.tables[tableName] = [];
                 for (let i = 0; i < result.rows.length; i++) {
-                  schemaLayout.tables[tableName].push(result.rows[i].column_name);
+                  let columnObj = {
+                    columnName: result.rows[i].column_name,
+                    dataInfo: {
+                      data_type: result.rows[i].data_type,
+                      character_maxiumum_length: result.rows[i].character_maxiumum_length
+                    }
+                  }
+                  schemaLayout.tables[tableName].push(columnObj);
                 }
 
               })
