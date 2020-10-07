@@ -58,7 +58,13 @@ class MainPanel extends Component<MainProps, MainState> {
     });
 
     ipcRenderer.on('db-lists', (event: any, returnedLists: any) => {
-      this.setState({ lists: returnedLists })
+      this.setState(prevState => ({
+        ...prevState,
+        lists: {
+          databaseList: returnedLists.databaseList,
+          tableList: returnedLists.tableList
+        }
+      }))
       this.onClickTabItem(this.state.lists.databaseList[this.state.lists.databaseList.length - 1])
     })
   }
@@ -71,6 +77,7 @@ class MainPanel extends Component<MainProps, MainState> {
   }
 
   render() {
+    console.log('Main Panel: ', this.state.lists);
     return (
       <div id="main-panel">
         <div id="main-left">

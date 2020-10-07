@@ -24,7 +24,6 @@ ipcMain.on('skip-file-upload', (event) => { });
 // Listen for database changes sent from the renderer upon changing tabs.
 ipcMain.on('change-db', (event, dbName) => {
   db.changeDB(dbName);
-  event.sender.send('return-change-db', dbName);
 });
 
 // Generate CLI commands to be executed in child process.
@@ -78,26 +77,37 @@ ipcMain.on('upload-file', (event, filePath: string) => {
   // SEQUENCE OF EXECUTING COMMANDS
   // Steps are in reverse order because each step is a callback function that requires the following step to be defined.
 
-  // Step 4: Changes the pg URI the newly created database, queries new database, then sends list of tables and list of databases to frontend.
+  // Step 5: Changes the pg URI the newly created database, queries new database, then sends list of tables and list of databases to frontend.
   async function sendLists() {
     listObj = await db.getLists();
+    console.log('channels: ', listObj);
     event.sender.send('db-lists', listObj);
     // Send schema name back to frontend, so frontend can load tab name.
     event.sender.send('return-schema-name', dbName);
   };
 
-  // Step 3 : Given the file path extension, run the appropriate command in postgres to populate db.
-  const step3 = () => {
+  const test = () => {
+    setTimeout(sendLists, 10000)
+  }
+
+  // Step 4: Given the file path extension, run the appropriate command in postgres to populate db.
+  const step4 = () => {
     let runCmd: string = '';
     if (extension === '.sql') runCmd = runSQL;
     else if (extension === '.tar') runCmd = runTAR;
     execute(runCmd, sendLists);
   };
 
-  // Step 2 : Import database file from file path into docker container
-  const step2 = () => execute(importFile, step3);
+  // Step 3: Import database file from file path into docker container
+  const step3 = () => execute(importFile, step4);
 
-  // Step 1 : Create empty db
+  // Step 2: Change curent URI to match newly created DB
+  const step2 = () => {
+    db.changeDB(dbName);
+    return step3();
+  }
+
+  // Step 1: Create empty db
   if (extension === '.sql' || extension === '.tar') execute(createDB, step2);
   else console.log('INVALID FILE TYPE: Please use .tar or .sql extensions.');
 });
