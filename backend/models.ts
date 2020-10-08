@@ -70,6 +70,7 @@ module.exports = {
     PG_URI = 'postgres://postgres:postgres@localhost:5432/' + dbName;
     pool = new Pool({ connectionString: PG_URI });
     console.log('Current URI: ', PG_URI);
+    return dbName;
   },
 
   getLists: () => {

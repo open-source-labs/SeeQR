@@ -65,15 +65,12 @@ class MainPanel extends Component<MainProps, MainState> {
           tableList: returnedLists.tableList
         }
       }))
-      this.onClickTabItem(this.state.lists.databaseList[this.state.lists.databaseList.length - 1])
     })
   }
 
   onClickTabItem(tabName) {
     ipcRenderer.send('change-db', tabName);
-    ipcRenderer.on('return-change-db', (event: any, db_name: string) => {
-      this.setState({ currentSchema: tabName });
-    });
+    this.setState({ currentSchema: tabName });
   }
 
   render() {
