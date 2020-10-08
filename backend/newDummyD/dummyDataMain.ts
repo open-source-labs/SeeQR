@@ -94,7 +94,7 @@ const generateDataByType = (columnObj) => {
   }
 };
 
-const writeSQLFile = () => {
+const writeCSVFile = () => {
   //iterates over each 
     //generates string INSERT INTO statement
     //writes to SQL file
@@ -124,10 +124,11 @@ const generateDummyDataQueries = (schemaLayout, dummyDataRequest) => {
         //reset columnData array for next column
         columnData = [];
       };
-    //write all entries in tableMatrix to sql file
+    //write all entries in tableMatrix to CSV file
     };
     return tableMatrix;
   });
+  
 };
 
 export default generateDummyDataQueries;
