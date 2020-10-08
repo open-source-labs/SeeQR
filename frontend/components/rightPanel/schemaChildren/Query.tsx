@@ -101,9 +101,6 @@ class Query extends Component<QueryProps, state> {
   // }
 
   render() {
-
-    console.log('Query: ', this.props.tableList);
-
     // Codemirror module configuration options
     var options = {
       lineNumbers: true,
@@ -153,7 +150,6 @@ class Query extends Component<QueryProps, state> {
           <br />
           <br />
         </form>
-        {/* <button id="generate-data-button" onClick={this.handleGenerateData}>Generate Dummy Data</button> */}
       </div>
     );
   }

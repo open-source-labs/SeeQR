@@ -45,9 +45,6 @@ export class Tabs extends Component<TabsProps> {
   };
 
   render() {
-
-    console.log('Tabs: ', this.props.tableList);
-
     const {
       onClickTabItem,
       tabList,
