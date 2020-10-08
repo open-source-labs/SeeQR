@@ -283,20 +283,25 @@ ipcMain.on('generate-dummy-data', (event: any, data: dummyDataRequest) => {
         // extract tableName from tableObject
         let tableName: string = tableObject.tableName;
         // write filepath to created .csv files
-        let compiledPath: string = path.join(__dirname, `./${tableName}.csv`);
+        let compiledPath: any = [path.join(__dirname, `./${tableName}.csv`)];
+        
+        execute(importFileFunc(compiledPath), null);
 
+        console.log('after first execute');
         if (process.platform === 'win32'){
           compiledPath = compiledPath.replace(/\\/g,`/`);
         }
   
-        let queryString: string = `COPY ${tableName} FROM '${compiledPath}' WITH CSV;`;
+        let queryString: string = `COPY ${tableName} FROM '/data_dump' WITH CSV HEADER;`;
         // let values: string[] = [tableName, compiledPath];
-  
+        
+        execute(`docker exec postgres-1 psql -U postgres -d ${data.schemaName} -c "${queryString}" `, null);
+
         // db.query(queryString)
         //   .catch((error: string) => {
         //     console.log('ERROR in dummy-generation channel in channels.ts', error);
         //   });
-        execute(`docker exec postgres-1 psql -U postgres -c "${queryString}"`, null)
+        // execute(`docker exec postgres-1 psql -U postgres -c "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_name;"`, null)
       }
     })
   })
