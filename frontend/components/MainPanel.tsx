@@ -58,19 +58,24 @@ class MainPanel extends Component<MainProps, MainState> {
     });
 
     ipcRenderer.on('db-lists', (event: any, returnedLists: any) => {
-      this.setState({ lists: returnedLists })
-      this.onClickTabItem(this.state.lists.databaseList[this.state.lists.databaseList.length - 1])
+      this.setState(prevState => ({
+        ...prevState,
+        lists: {
+          databaseList: returnedLists.databaseList,
+          tableList: returnedLists.tableList
+        }
+      }))
     })
   }
 
   onClickTabItem(tabName) {
     ipcRenderer.send('change-db', tabName);
-    ipcRenderer.on('return-change-db', (event: any, db_name: string) => {
-      this.setState({ currentSchema: tabName });
-    });
+    ipcRenderer.send('return-db-list');
+    this.setState({ currentSchema: tabName });
   }
 
   render() {
+    console.log('Main Panel: ', this.state.lists);
     return (
       <div id="main-panel">
         <div id="main-left">
