@@ -23,6 +23,9 @@ export class SchemaContainer extends Component<SchemaContainerProps> {
   };
 
   render() {
+
+    console.log('Schema Container: ', this.props.tableList);
+
     return (
       <div id="main-right">
         <div id="test-panels">
