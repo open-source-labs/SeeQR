@@ -145,7 +145,7 @@ class DummyDataModal extends Component<DummyDataModalProps, state> {
       schemaName: this.props.currentSchema,
       dummyData: this.state.dataInfo
     }
-    ipcRenderer.send('schema-layout', dummyDataRequest);
+    ipcRenderer.send('generate-dummy-data', dummyDataRequest);
   }
 
   render() {

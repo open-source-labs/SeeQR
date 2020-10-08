@@ -90,7 +90,9 @@ function createWindow() {
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
     // Stop and remove postgres-1 and busybox-1 Docker containers upon window exit.
+    const stopContainers: string = 'docker stop postgres-1 busybox-1';
     const pruneContainers: string = 'docker rm -f postgres-1 busybox-1';
+    // const pruneVolumes: string = 'docker volume prune -f'; //this will force remove ALL volumes in docker. Might not want to run it
     const executeQuery = (str) => {
       exec(str, (error, stdout, stderr) => {
         if (error) {
@@ -104,10 +106,13 @@ function createWindow() {
         console.log(`${stdout}`);
       })
     };
+    executeQuery(stopContainers);
     executeQuery(pruneContainers);
+    // executeQuery(pruneVolumes);
     mainWindow = null;
   });
 }
+
 
 // Invoke createWindow to create browser windows after Electron has been initialized.
 // Some APIs can only be used after this event occurs.

@@ -101,81 +101,90 @@ const generateDataByType = (columnObj) => {
 
 
 
-const writeCSVFile = (tableMatrix, tableName, columnArray) => {
+module.exports = {
 
-  const table: any = [];
-  let row: any  = [];
-  for(let i = 0; i < tableMatrix[0].length; i++) {
-    for(let j = 0; j < tableMatrix.length; j++) {
-        row.push(tableMatrix[j][i]); 
+  writeCSVFile: (tableMatrix, tableName, columnArray) => {
+    const table: any = [];
+    let row: any  = [];
+    for(let i = 0; i < tableMatrix[0].length; i++) {
+      for(let j = 0; j < tableMatrix.length; j++) {
+          row.push(tableMatrix[j][i]); 
+      }
+      //join each subarray (which correspond to rows in our table) with a comma
+      const rowString = row.join(',');
+      table.push(rowString); //'1, luke, etc'
+      row = [];
     }
-    //join each subarray (which correspond to rows in our table) with a comma
-    const rowString = row.join(',');
-    table.push(rowString); //'1, luke, etc'
-    row = [];
-  }
-  //join tableMatrix with a line break
-  const tableDataString: string = table.join('\n');
+    //join tableMatrix with a line break
+    const tableDataString: string = table.join('\n');
 
-  const columnString: string = columnArray.join(',');
+    const columnString: string = columnArray.join(',');
 
-  const csvString: string = columnString.concat('\n').concat(tableDataString);
-  // build file path
-  const compiledPath = path.join(__dirname, `../${tableName}.csv`);
-  //write csv file
-  fs.writeFile(compiledPath, csvString, (err) => {
-    if (err) throw err;
-    console.log('FILE SAVED');
-  });
+    const csvString: string = columnString.concat('\n').concat(tableDataString);
+    // build file path
+    const compiledPath = path.join(__dirname, `../${tableName}.csv`);
+    //write csv file
+    return new Promise((resolve, reject) => {
+      fs.writeFile(compiledPath, csvString, (err: any) => {
+        if (err) throw err;
+        resolve(console.log('FILE SAVED'));
+        // reject(console.log('Error Saving File'))
+      });
+    })
+  },
 
-  //run postgres COPY table_name FROM 'filepath/path/postgres-data.csv' (absolute path) DELIMTERE ',' CSV HEADER; (for each table)
-  // execute(`docker exec postgres-1 pg_dump -U postgres ${dbCopyName} > tsCompiled/backend/${dbName}.sql`, null);
-  // execute(`docker exec postgres-1 COPY ${tableName} FROM ${compiledPath} DELIMITER ',' CSV HEADER;`, null);
-
-};
-
-//maps table names from schemaLayout to sql files
-const generateDummyDataQueries = (schemaLayout, dummyDataRequest) => {
-  //iterate over schemaLayout.tableNames array
-  const arrayOfTableMatrices: any = schemaLayout.tableNames.map(tableName => {
-    const tableMatrix: any = [];
-    //if matching key exists in dummyDataRequest.dummyData
-    if (dummyDataRequest.dummyData[tableName]) {
-      //declare empty columnData array for tableMatrix
-      let columnData: any = [];
-      //iterate over columnArray (schemaLayout.tableLayout[tableName])
-      for (let i = 0; i < schemaLayout.tables[tableName].length; i++) {
-        //while i < reqeusted number of tables
-        while (columnData.length < dummyDataRequest.dummyData[tableName]) {
-          //generate an entry
-          let entry = generateDataByType(schemaLayout.tables[tableName][i]);
-          //push into columnData
-          columnData.push(entry);
+  //maps table names from schemaLayout to sql files
+  generateDummyData: (schemaLayout, dummyDataRequest) => {
+    const returnArray: any = [];
+    //iterate over schemaLayout.tableNames array
+    for (const tableName of schemaLayout.tableNames) {
+      const tableMatrix: any = [];
+      //if matching key exists in dummyDataRequest.dummyData
+      if (dummyDataRequest.dummyData[tableName]) {
+        //declare empty columnData array for tableMatrix
+        let columnData: any = [];
+        //iterate over columnArray (schemaLayout.tableLayout[tableName])
+        for (let i = 0; i < schemaLayout.tables[tableName].length; i++) {
+          //while i < reqeusted number of tables
+          while (columnData.length < dummyDataRequest.dummyData[tableName]) {
+            //generate an entry
+            let entry = generateDataByType(schemaLayout.tables[tableName][i]);
+            //push into columnData
+            columnData.push(entry);
+          };
+          //push columnData array into tableMatrix
+          tableMatrix.push(columnData);
+          //reset columnData array for next column
+          columnData = [];
         };
-        //push columnData array into tableMatrix
-        tableMatrix.push(columnData);
-        //reset columnData array for next column
-        columnData = [];
+        // only push something to the array if data was asked for for the specific table
+        returnArray.push({tableName, data: tableMatrix});
       };
     };
-    return tableMatrix;
-  });
-    
-  //iterate through arrayOfTableMatrices to write individual .csv files
-  for(let i = 0; i < arrayOfTableMatrices.length; i++) {
-    // pulling tableName out of schemaLayout
-    let tableName = schemaLayout.tableNames[i];
-    //mapping column headers from getColumnObjects in models.ts to columnNames
-    let columnArray = schemaLayout.tables[tableName].map(columnObj => columnObj.columnName)
-    //write all entries in tableMatrix to csv file
-    writeCSVFile(arrayOfTableMatrices[i], tableName, columnArray);
+    // then return the returnArray
+    return returnArray;
   }
+}
 
-};
-
-export default generateDummyDataQueries;
-
+// export default generateDummyDataQueries;
 
 
 
+    
+  
 
+  // //iterate through tables for which data was requested to copy data to tables
+  // for(let i = 0; i < arrayOfTableMatrices.length; i++) {
+  //   // pulling tableName out of schemaLayout
+  //   let tableName = schemaLayout.tableNames[i];
+  //   // if data was requested for that table, then copy the csv file data to the table
+  //   if (dummyDataRequest.dummyData[tableName]){
+  //     await copyCSVToTable (tableName);
+  //   }
+  // }
+
+// //this function copies data to a table from an epynomous .csv file
+// const copyCSVToTable = (tableName) => {
+//   const compiledPath = path.join(__dirname, `../${tableName}.csv`);
+//   execute(`docker exec postgres-1 COPY ${tableName} FROM ${compiledPath} DELIMITER ',' CSV HEADER;`, null);
+// }
