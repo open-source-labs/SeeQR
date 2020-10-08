@@ -31,11 +31,11 @@
         // tableNames: ['Johnny Bravo', 'Teen Titans', ...]
         tableNames: [],
         tables: {
-            // tableName: [columnNames array]
+            // table name: [columnNames array]
         }
     };
 4. iterate over tables in hollow schema (Options: 1. run sql query to get list of tables; 2. use 'getList' function defined in models.ts)
-    5. generate new .sql file
+   5. (Was moved to inside step 9)
     6. create dummyData object, e.g.:
         const DD = {
             // people
@@ -56,8 +56,48 @@
 
             note: this ^ only works for single-column primary and foreign key constraints (no composite keys)
     9. use helper function to write insert statements to a string (importing in dataObj from state, created in dummyData process), e.g.:
-        function generateInsertQueries (tableName, tableMatrix, columnArray) {
-            let dumpString = '';
+        function generateInsertQueries(tableName, tableMatrix, columnArray) {
+            //transpose tableMatrix
+
+            //join each subarray (which correspond to rows in our table) with a comma
+
+            //join tableMatrix with a line break
+
+            //save to string
+            
+            //generate .csv file
+
+            //write string to file
+
+            //run postgres COPY table_name FROM 'filepath/path/postgres-data.csv' (absolute path) DELIMTERE ',' CSV HEADER;
+
+            //delete local csv file
+
+            //tableMatrix: [[1,2,3,],[]]
+            name // [[1,2,3,4,...],["luke", "leia", "jabaDaHut", ...], ...]
+            //tableName: people
+            //tableMatrix: [[1,2,3,4,...],["luke", "leia", "jabaDaHut", ...], ...]
+            //columnArray: ["_id", "name", "homeworld_id", ...]
+
+            
+            //want a string separated by commas, ends with /n, concatenated with other rows
+             5. generate new .csv file
+        }
+
+
+
+    10. write query string to the .sql file
+11. (after finished looping over tables in hollow schema) iterate over table names to run postgres command to write inserts from created sql files
+    "psql -U <your_username> -d <dbname> -f <schemaName/tableName>.sql"
+12. delete files afterword
+    
+
+
+9 (previous).
+
+function generateInsertQueries (tableName, tableMatrix, columnArray) {
+
+let dumpString = '';
             let catchValuesForQuery = [];
             let query = '';
             iterate from j = 0 while j < tableMatrix[0].length
@@ -67,12 +107,5 @@
                 query = "INSERT INTO {tableName} ({...columnArray}) VALUES ({...catchValuesForQuery});"
                 dumpString += query;
             return query;
-        }
-    10. write query string to the .sql file
-11. (after finished looping over tables in hollow schema) iterate over table names to run postgres command to write inserts from created sql files
-    "psql -U <your_username> -d <dbname> -f <schemaName/tableName>.sql"
-12. delete files afterword
-    
-
-
+}
 
