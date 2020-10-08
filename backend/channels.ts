@@ -1,8 +1,8 @@
 // Import parts of electron to use
 import { ipcMain } from 'electron';
 import { create } from 'domain';
-import generateDummyDataQueries from './newDummyD/dummyDataMain';
 
+const { generateDummyData, writeCSVFile } = require('./newDummyD/dummyDataMain');
 const { exec } = require('child_process');
 const db = require('./models');
 const path = require('path');
@@ -252,22 +252,56 @@ interface dummyDataRequest {
   dummyData: {};
 }
 
-ipcMain.on('schema-layout', (event: any, data: dummyDataRequest) => {
+ipcMain.on('generate-dummy-data', (event: any, data: dummyDataRequest) => {
   let schemaLayout;
   let dummyDataRequest = data;
+  let tableMatricesArray;
   db.getSchemaLayout()
   .then((result) => {
     schemaLayout = result;
   })
   .then(() => {
-    //let testData = generateDummyDataQueries(schemaLayout, dummyDataRequest);
-    generateDummyDataQueries(schemaLayout, dummyDataRequest);
-    //console.log(testData);
+    // generate the dummy data and save it into matrices associated with table names
+    tableMatricesArray = generateDummyData(schemaLayout, dummyDataRequest);
   })
-})
+  .then(() => {
+    let csvPromiseArray: any = [];
+    //iterate through tableMatricesArray to write individual .csv files
+    for (const tableObject of tableMatricesArray) {
+      // extract tableName from tableObject
+      let tableName: string = tableObject.tableName;
+      //mapping column headers from getColumnObjects in models.ts to columnNames
+      let columnArray: string[] = schemaLayout.tables[tableName].map(columnObj => columnObj.columnName)
+      //write all entries in tableMatrix to csv file
+      csvPromiseArray.push(writeCSVFile(tableObject.data, tableName, columnArray));
+    }
+    Promise.all(csvPromiseArray)
+    .then(() => {
+      // let copyFilePromiseArray: any = [];
+      //iterate through tableMatricesArray to copy individual .csv files to the respective tables
+      for (const tableObject of tableMatricesArray) {
+        // extract tableName from tableObject
+        let tableName: string = tableObject.tableName;
+        // write filepath to created .csv files
+        let compiledPath: string = path.join(__dirname, `./${tableName}.csv`);
 
-//ipcMain.on 'generate-dummy-data'
-  //passes schemaLayout, dummyDataRequest to dummyDataMain
+        if (process.platform === 'win32'){
+          compiledPath = compiledPath.replace(/\\/g,`/`);
+        }
+  
+        let queryString: string = `COPY ${tableName} FROM '${compiledPath}' WITH CSV;`;
+        // let values: string[] = [tableName, compiledPath];
+  
+        // db.query(queryString)
+        //   .catch((error: string) => {
+        //     console.log('ERROR in dummy-generation channel in channels.ts', error);
+        //   });
+        execute(`docker exec postgres-1 psql -U postgres -c "${queryString}"`, null)
+      }
+    })
+  })
+  
+})
 
 export default execute;
 // module.exports;
