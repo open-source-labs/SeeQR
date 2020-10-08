@@ -1,6 +1,11 @@
 //this file maps table names from the schemaLayout object to individual sql files for DD generation
 
 import faker from "faker";
+import execute from '../channels';
+import fs from 'fs';
+import { table } from "console";
+const path = require('path');
+const { exec } = require('child_process');
 
 // 3. get schema layout 
 //     const schemaLayout: any = {
@@ -96,52 +101,46 @@ const generateDataByType = (columnObj) => {
 
 
 
-const writeSQLFile = () => {
-  const tableMatrix: any = [[1,2],['casey','justin']];
-  const tableName: string = 'testTable';
-  const columnArray: string[] = ['id','name']
+const writeCSVFile = (tableMatrix, tableName, columnArray) => {
 
-     //transpose tableMatrix
-    //tableMatrix: [[1,2,3,4,...],["luke", "leia", "jabaDaHut", ...], ...]
-    const table: any = [];
-    let row: any  = [];
-    for(let i = 0; i < tableMatrix[0].length; i++) {
-      for(let j = 0; j < tableMatrix.length; j++) {
-          row.push(tableMatrix[j][i]); 
-      }
-      //join each subarray (which correspond to rows in our table) with a comma
-      const rowString = row.join(',');
-      table.push[rowString]; //'1, luke, etc'
-      row = [];
+  const table: any = [];
+  let row: any  = [];
+  for(let i = 0; i < tableMatrix[0].length; i++) {
+    for(let j = 0; j < tableMatrix.length; j++) {
+        row.push(tableMatrix[j][i]); 
     }
-    //join tableMatrix with a line break
-    //save to string
-    const tableDataString: string = table.join('\n');
-    //`docker cp ${file} postgres-1:/data_dump`;
-    const columnString: string = columnArray.join(',');
+    //join each subarray (which correspond to rows in our table) with a comma
+    const rowString = row.join(',');
+    table.push(rowString); //'1, luke, etc'
+    row = [];
+  }
+  //join tableMatrix with a line break
+  const tableDataString: string = table.join('\n');
 
-    const csvString: string = columnString + tableDataString;
-    
-    const writeString: string = `echo ${csvString} > postgres-1:/${tableName}.csv`
+  const columnString: string = columnArray.join(',');
 
-    // create table csv file to volume
-    // write column names to csv file by calling execute
-    execute(writeString, null);
+  const csvString: string = columnString.concat('\n').concat(tableDataString);
+  // build file path
+  const compiledPath = path.join(__dirname, `../${tableName}.csv`);
+  //write csv file
+  fs.writeFile(compiledPath, csvString, (err) => {
+    if (err) throw err;
+    console.log('FILE SAVED');
+  });
 
-    //run postgres COPY table_name FROM 'filepath/path/postgres-data.csv' (absolute path) DELIMTERE ',' CSV HEADER; (for each table)
-
-    //delete .csv files from volume
+  //run postgres COPY table_name FROM 'filepath/path/postgres-data.csv' (absolute path) DELIMTERE ',' CSV HEADER; (for each table)
+  // execute(`docker exec postgres-1 pg_dump -U postgres ${dbCopyName} > tsCompiled/backend/${dbName}.sql`, null);
+  // execute(`docker exec postgres-1 COPY ${tableName} FROM ${compiledPath} DELIMITER ',' CSV HEADER;`, null);
 
 };
 
 //maps table names from schemaLayout to sql files
 const generateDummyDataQueries = (schemaLayout, dummyDataRequest) => {
   //iterate over schemaLayout.tableNames array
-  return schemaLayout.tableNames.map(tableName => {
+  const arrayOfTableMatrices: any = schemaLayout.tableNames.map(tableName => {
     const tableMatrix: any = [];
     //if matching key exists in dummyDataRequest.dummyData
     if (dummyDataRequest.dummyData[tableName]) {
-      //generate sql file with table name
       //declare empty columnData array for tableMatrix
       let columnData: any = [];
       //iterate over columnArray (schemaLayout.tableLayout[tableName])
@@ -158,10 +157,25 @@ const generateDummyDataQueries = (schemaLayout, dummyDataRequest) => {
         //reset columnData array for next column
         columnData = [];
       };
-    //write all entries in tableMatrix to sql file
     };
     return tableMatrix;
   });
+    
+  //iterate through arrayOfTableMatrices to write individual .csv files
+  for(let i = 0; i < arrayOfTableMatrices.length; i++) {
+    // pulling tableName out of schemaLayout
+    let tableName = schemaLayout.tableNames[i];
+    //mapping column headers from getColumnObjects in models.ts to columnNames
+    let columnArray = schemaLayout.tables[tableName].map(columnObj => columnObj.columnName)
+    //write all entries in tableMatrix to csv file
+    writeCSVFile(arrayOfTableMatrices[i], tableName, columnArray);
+  }
+
 };
 
 export default generateDummyDataQueries;
+
+
+
+
+
