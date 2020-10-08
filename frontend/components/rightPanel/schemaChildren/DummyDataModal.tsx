@@ -51,7 +51,16 @@ class DummyDataModal extends Component<DummyDataModalProps, state> {
 
   //function to generate the dropdown optiosn from the table names in state
   dropDownList = () => {
-    return this.props.tableList.map((tableName, index) => <Dropdown.Item key={index} className="queryItem" eventKey={tableName}>{tableName}</Dropdown.Item>)
+    const result: any = [];
+    let tableName;
+    if (this.props.tableList.length > 0) {
+      for (let i = 0; i <= this.props.tableList.length; i++) {
+        if(this.props.tableList[i]) tableName = this.props.tableList[i];
+        else tableName = 'all';
+        result.push(<Dropdown.Item key={i} className="queryItem" eventKey={tableName}>{tableName}</Dropdown.Item>);
+      }
+    }
+    return result;
   };
 
   //submit listener to add table name and rows to the dataInfo object in state
@@ -156,7 +165,7 @@ class DummyDataModal extends Component<DummyDataModalProps, state> {
               <Dropdown.Toggle>
                 {this.state.currentTable}
               </Dropdown.Toggle>
-              <Dropdown.Menu>
+              <Dropdown.Menu className="DD-Dropdown">
                 {this.dropDownList()}
               </Dropdown.Menu>
             </Dropdown>
