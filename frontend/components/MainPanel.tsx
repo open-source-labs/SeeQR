@@ -70,6 +70,7 @@ class MainPanel extends Component<MainProps, MainState> {
 
   onClickTabItem(tabName) {
     ipcRenderer.send('change-db', tabName);
+    ipcRenderer.send('return-db-list');
     this.setState({ currentSchema: tabName });
   }
 

@@ -157,7 +157,7 @@ class DummyDataModal extends Component<DummyDataModalProps, state> {
                 {this.state.currentTable}
               </Dropdown.Toggle>
               <Dropdown.Menu>
-                {this.dropDownList()};
+                {this.dropDownList()}
               </Dropdown.Menu>
             </Dropdown>
             <input id="dummy-rows-input" type="text" placeholder="number of rows..."
