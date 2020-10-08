@@ -101,6 +101,9 @@ class Query extends Component<QueryProps, state> {
   // }
 
   render() {
+
+    console.log('Query: ', this.props.tableList);
+
     // Codemirror module configuration options
     var options = {
       lineNumbers: true,
