@@ -1,8 +1,8 @@
 // Import parts of electron to use
 import { ipcMain } from 'electron';
 import { create } from 'domain';
-import generateDummyDataQueries from './newDummyD/dummyDataMain';
 
+const { generateDummyData, writeCSVFile } = require('./newDummyD/dummyDataMain');
 const { exec } = require('child_process');
 const db = require('./models');
 const path = require('path');
@@ -23,8 +23,7 @@ ipcMain.on('skip-file-upload', (event) => { });
 
 // Listen for database changes sent from the renderer upon changing tabs.
 ipcMain.on('change-db', (event, dbName) => {
-  db.changeDB(dbName);
-  event.sender.send('return-change-db', dbName);
+  db.changeDB(dbName)
 });
 
 // Generate CLI commands to be executed in child process.
@@ -78,26 +77,33 @@ ipcMain.on('upload-file', (event, filePath: string) => {
   // SEQUENCE OF EXECUTING COMMANDS
   // Steps are in reverse order because each step is a callback function that requires the following step to be defined.
 
-  // Step 4: Changes the pg URI the newly created database, queries new database, then sends list of tables and list of databases to frontend.
+  // Step 5: Changes the pg URI the newly created database, queries new database, then sends list of tables and list of databases to frontend.
   async function sendLists() {
     listObj = await db.getLists();
+    console.log('channels: ', listObj);
     event.sender.send('db-lists', listObj);
     // Send schema name back to frontend, so frontend can load tab name.
     event.sender.send('return-schema-name', dbName);
   };
 
-  // Step 3 : Given the file path extension, run the appropriate command in postgres to populate db.
-  const step3 = () => {
+  // Step 4: Given the file path extension, run the appropriate command in postgres to populate db.
+  const step4 = () => {
     let runCmd: string = '';
     if (extension === '.sql') runCmd = runSQL;
     else if (extension === '.tar') runCmd = runTAR;
     execute(runCmd, sendLists);
   };
 
-  // Step 2 : Import database file from file path into docker container
-  const step2 = () => execute(importFile, step3);
+  // Step 3: Import database file from file path into docker container
+  const step3 = () => execute(importFile, step4);
 
-  // Step 1 : Create empty db
+  // Step 2: Change curent URI to match newly created DB
+  const step2 = () => {
+    db.changeDB(dbName);
+    return step3();
+  }
+
+  // Step 1: Create empty db
   if (extension === '.sql' || extension === '.tar') execute(createDB, step2);
   else console.log('INVALID FILE TYPE: Please use .tar or .sql extensions.');
 });
@@ -155,14 +161,14 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
   // SEQUENCE OF EXECUTING COMMANDS
   // Steps are in reverse order because each step is a callback function that requires the following step to be defined.
 
-  // Step 4: Changes the pg URI to look to the newly created database and queries all the tables in that database and sends it to frontend.
+  // Step 5: Changes the pg URI to look to the newly created database and queries all the tables in that database and sends it to frontend.
   async function sendLists() {
     listObj = await db.getLists();
     event.sender.send('db-lists', listObj);
   };
 
-  // Step 3 : Given the file path extension, run the appropriate command in postgres to build the db
-  const step3 = () => {
+  // Step 4: Given the file path extension, run the appropriate command in postgres to build the db
+  const step4 = () => {
     let runCmd: string = '';
     if (extension === '.sql') runCmd = runSQL;
     else if (extension === '.tar') runCmd = runTAR;
@@ -170,8 +176,14 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
     execute(runCmd, sendLists);
   };
 
-  // Step 2 : Import database file from file path into docker container
-  const step2 = () => execute(importFile, step3);
+  // Step 3: Import database file from file path into docker container
+  const step3 = () => execute(importFile, step4);
+
+  // Step 2: Change curent URI to match newly created DB
+  const step2 = () => {
+    db.changeDB(dbName);
+    return step3();
+  }
 
   // Step 1 : Create empty db
   if (extension === '.sql' || extension === '.tar') execute(createDB, step2);
@@ -240,20 +252,56 @@ interface dummyDataRequest {
   dummyData: {};
 }
 
-ipcMain.on('schema-layout', (event: any, data: dummyDataRequest) => {
+ipcMain.on('generate-dummy-data', (event: any, data: dummyDataRequest) => {
   let schemaLayout;
   let dummyDataRequest = data;
+  let tableMatricesArray;
   db.getSchemaLayout()
   .then((result) => {
     schemaLayout = result;
   })
   .then(() => {
-    let testData = generateDummyDataQueries(schemaLayout, dummyDataRequest);
-    console.log(testData);
+    // generate the dummy data and save it into matrices associated with table names
+    tableMatricesArray = generateDummyData(schemaLayout, dummyDataRequest);
   })
+  .then(() => {
+    let csvPromiseArray: any = [];
+    //iterate through tableMatricesArray to write individual .csv files
+    for (const tableObject of tableMatricesArray) {
+      // extract tableName from tableObject
+      let tableName: string = tableObject.tableName;
+      //mapping column headers from getColumnObjects in models.ts to columnNames
+      let columnArray: string[] = schemaLayout.tables[tableName].map(columnObj => columnObj.columnName)
+      //write all entries in tableMatrix to csv file
+      csvPromiseArray.push(writeCSVFile(tableObject.data, tableName, columnArray));
+    }
+    Promise.all(csvPromiseArray)
+    .then(() => {
+      // let copyFilePromiseArray: any = [];
+      //iterate through tableMatricesArray to copy individual .csv files to the respective tables
+      for (const tableObject of tableMatricesArray) {
+        // extract tableName from tableObject
+        let tableName: string = tableObject.tableName;
+        // write filepath to created .csv files
+        let compiledPath: string = path.join(__dirname, `./${tableName}.csv`);
+
+        if (process.platform === 'win32'){
+          compiledPath = compiledPath.replace(/\\/g,`/`);
+        }
+  
+        let queryString: string = `COPY ${tableName} FROM '${compiledPath}' WITH CSV;`;
+        // let values: string[] = [tableName, compiledPath];
+  
+        // db.query(queryString)
+        //   .catch((error: string) => {
+        //     console.log('ERROR in dummy-generation channel in channels.ts', error);
+        //   });
+        execute(`docker exec postgres-1 psql -U postgres -c "${queryString}"`, null)
+      }
+    })
+  })
+  
 })
 
-//ipcMain.on 'generate-dummy-data'
-  //passes schemaLayout, dummyDataRequest to dummyDataMain
-
-module.exports;
+export default execute;
+// module.exports;

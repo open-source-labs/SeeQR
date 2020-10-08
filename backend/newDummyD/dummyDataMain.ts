@@ -1,6 +1,11 @@
 //this file maps table names from the schemaLayout object to individual sql files for DD generation
 
 import faker from "faker";
+import execute from '../channels';
+import fs from 'fs';
+import { table } from "console";
+const path = require('path');
+const { exec } = require('child_process');
 
 // 3. get schema layout 
 //     const schemaLayout: any = {
@@ -94,41 +99,92 @@ const generateDataByType = (columnObj) => {
   }
 };
 
-const writeCSVFile = () => {
-  //iterates over each 
-    //generates string INSERT INTO statement
-    //writes to SQL file
-};
 
-//maps table names from schemaLayout to sql files
-const generateDummyDataQueries = (schemaLayout, dummyDataRequest) => {
-  //iterate over schemaLayout.tableNames array
-  return schemaLayout.tableNames.map(tableName => {
-    const tableMatrix: any = [];
-    //if matching key exists in dummyDataRequest.dummyData
-    if (dummyDataRequest.dummyData[tableName]) {
-      //generate sql file with table name
-      //declare empty columnData array for tableMatrix
-      let columnData: any = [];
-      //iterate over columnArray (schemaLayout.tableLayout[tableName])
-      for (let i = 0; i < schemaLayout.tables[tableName].length; i++) {
-        //while i < reqeusted number of tables
-        while (columnData.length < dummyDataRequest.dummyData[tableName]) {
-          //generate an entry
-          let entry = generateDataByType(schemaLayout.tables[tableName][i]);
-          //push into columnData
-          columnData.push(entry);
+
+module.exports = {
+
+  writeCSVFile: (tableMatrix, tableName, columnArray) => {
+    const table: any = [];
+    let row: any  = [];
+    for(let i = 0; i < tableMatrix[0].length; i++) {
+      for(let j = 0; j < tableMatrix.length; j++) {
+          row.push(tableMatrix[j][i]); 
+      }
+      //join each subarray (which correspond to rows in our table) with a comma
+      const rowString = row.join(',');
+      table.push(rowString); //'1, luke, etc'
+      row = [];
+    }
+    //join tableMatrix with a line break
+    const tableDataString: string = table.join('\n');
+
+    const columnString: string = columnArray.join(',');
+
+    const csvString: string = columnString.concat('\n').concat(tableDataString);
+    // build file path
+    const compiledPath = path.join(__dirname, `../${tableName}.csv`);
+    //write csv file
+    return new Promise((resolve, reject) => {
+      fs.writeFile(compiledPath, csvString, (err: any) => {
+        if (err) throw err;
+        resolve(console.log('FILE SAVED'));
+        // reject(console.log('Error Saving File'))
+      });
+    })
+  },
+
+  //maps table names from schemaLayout to sql files
+  generateDummyData: (schemaLayout, dummyDataRequest) => {
+    const returnArray: any = [];
+    //iterate over schemaLayout.tableNames array
+    for (const tableName of schemaLayout.tableNames) {
+      const tableMatrix: any = [];
+      //if matching key exists in dummyDataRequest.dummyData
+      if (dummyDataRequest.dummyData[tableName]) {
+        //declare empty columnData array for tableMatrix
+        let columnData: any = [];
+        //iterate over columnArray (schemaLayout.tableLayout[tableName])
+        for (let i = 0; i < schemaLayout.tables[tableName].length; i++) {
+          //while i < reqeusted number of tables
+          while (columnData.length < dummyDataRequest.dummyData[tableName]) {
+            //generate an entry
+            let entry = generateDataByType(schemaLayout.tables[tableName][i]);
+            //push into columnData
+            columnData.push(entry);
+          };
+          //push columnData array into tableMatrix
+          tableMatrix.push(columnData);
+          //reset columnData array for next column
+          columnData = [];
         };
-        //push columnData array into tableMatrix
-        tableMatrix.push(columnData);
-        //reset columnData array for next column
-        columnData = [];
+        // only push something to the array if data was asked for for the specific table
+        returnArray.push({tableName, data: tableMatrix});
       };
-    //write all entries in tableMatrix to CSV file
     };
-    return tableMatrix;
-  });
-  
-};
+    // then return the returnArray
+    return returnArray;
+  }
+}
 
-export default generateDummyDataQueries;
+// export default generateDummyDataQueries;
+
+
+
+    
+  
+
+  // //iterate through tables for which data was requested to copy data to tables
+  // for(let i = 0; i < arrayOfTableMatrices.length; i++) {
+  //   // pulling tableName out of schemaLayout
+  //   let tableName = schemaLayout.tableNames[i];
+  //   // if data was requested for that table, then copy the csv file data to the table
+  //   if (dummyDataRequest.dummyData[tableName]){
+  //     await copyCSVToTable (tableName);
+  //   }
+  // }
+
+// //this function copies data to a table from an epynomous .csv file
+// const copyCSVToTable = (tableName) => {
+//   const compiledPath = path.join(__dirname, `../${tableName}.csv`);
+//   execute(`docker exec postgres-1 COPY ${tableName} FROM ${compiledPath} DELIMITER ',' CSV HEADER;`, null);
+// }
