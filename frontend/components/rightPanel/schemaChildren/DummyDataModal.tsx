@@ -149,9 +149,6 @@ class DummyDataModal extends Component<DummyDataModalProps, state> {
   }
 
   render() {
-
-    console.log('DD Mddal: ', this.props.tableList);
-
     if (this.props.show === false) {
       return null;
     }

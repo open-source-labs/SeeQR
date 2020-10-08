@@ -23,19 +23,20 @@ export class SchemaContainer extends Component<SchemaContainerProps> {
   };
 
   render() {
-
-    console.log('Schema Container: ', this.props.tableList);
-
     return (
       <div id="main-right">
         <div id="test-panels">
           <div id="schema-left">
-            <Query currentSchema={this.props.currentSchema} tableList={this.props.tableList} />
-            <Data queries={this.props.queries} />
+            <div>
+              <Query currentSchema={this.props.currentSchema} tableList={this.props.tableList} />
+            </div>
+            <div>
+              <Data queries={this.props.queries} />
+            </div>
           </div>
-          <div id="schema-right">
-            <Results queries={this.props.queries} />
-          </div>
+         {/*<div id="schema-right">
+              <Results queries={this.props.queries} />
+            </div>*/}
         </div>
       </div>
     );
