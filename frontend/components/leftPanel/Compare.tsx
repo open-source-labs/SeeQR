@@ -101,62 +101,69 @@ export const Compare = (props: CompareProps) => {
   // ------------------------------------ logic for the compare query graph --------------------------------------
   // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
-  const { compareList } = queryInfo;
-  
-  // first we create an object with all of the comparelist data organized in a way that enables us to render our graph easily
-  const compareDataObject: any = {};
-  // then we populate that object
-  for (const query of compareList){
-    const { queryLabel, querySchema, queryStatistics } = query;
-    if (!compareDataObject[querySchema]){
-      compareDataObject[querySchema] = {
-        [queryLabel.toString()] : queryStatistics[0]["QUERY PLAN"][0]["Execution Time"] + queryStatistics[0]["QUERY PLAN"][0]["Planning Time"]
+  const generateDatasets = () => {
+    const { compareList } = queryInfo;
+
+    // first we create an object with all of the comparelist data organized in a way that enables us to render our graph easily
+    const compareDataObject: any = {};
+    // then we populate that object
+    for (const query of compareList){
+      const { queryLabel, querySchema, queryStatistics } = query;
+      if (!compareDataObject[querySchema]){
+        compareDataObject[querySchema] = {
+          [queryLabel.toString()] : queryStatistics[0]["QUERY PLAN"][0]["Execution Time"] + queryStatistics[0]["QUERY PLAN"][0]["Planning Time"]
+        }
+      } else {
+        compareDataObject[querySchema][queryLabel.toString()] = queryStatistics[0]["QUERY PLAN"][0]["Execution Time"] + queryStatistics[0]["QUERY PLAN"][0]["Planning Time"]
       }
-    } else {
-      compareDataObject[querySchema][queryLabel.toString()] = queryStatistics[0]["QUERY PLAN"][0]["Execution Time"] + queryStatistics[0]["QUERY PLAN"][0]["Planning Time"]
-    }
-  };
+    };
 
-  // then we generate a labelData array to store all unique query labels
-  const labelDataArray: any = [];
-  for (const schema in compareDataObject){
-    for (const label in compareDataObject[schema]) {
-      if (!labelDataArray.includes(label)){
-        labelDataArray.push(label);
-      } 
+    // then we generate a labelData array to store all unique query labels
+    const labelDataArray: any = [];
+    for (const schema in compareDataObject){
+      for (const label in compareDataObject[schema]) {
+        if (!labelDataArray.includes(label)){
+          labelDataArray.push(label);
+        } 
+      }
     }
-  }
 
-  // then we generate an array of data for each schema, storing data for each unique query according to the schema
-  const runTimeDataArray: any = [];
-  for (const schema in compareDataObject){
-    const schemaArray: any = [];
-    for(const label of labelDataArray){
-      schemaArray.push(compareDataObject[schema][label] ? compareDataObject[schema][label] : 0)
+    
+    // then we generate an array of data for each schema, storing data for each unique query according to the schema
+    const runTimeDataArray: any = [];
+    for (const schema in compareDataObject){
+      const schemaArray: any = [];
+      for(const label of labelDataArray){
+        schemaArray.push(compareDataObject[schema][label] ? compareDataObject[schema][label] : 0)
+      }
+      runTimeDataArray.push({[schema]: schemaArray});
     }
-    runTimeDataArray.push({[schema]: schemaArray});
-  }
 
-  const generateRandomColor = () => {
-    return `rgb(${Math.floor(Math.random()*255)},${Math.floor(Math.random()*255)},${Math.floor(Math.random()*255)})`
-  }
-  
-  // then we generate datasets for each schema for the bar chart
-  const generateDatasets = () => runTimeDataArray.map((schemaDataObject) => {
-    const schemaLabel: any = Object.keys(schemaDataObject)[0];
+    // creating a list of possible colors for the graph
+    const schemaColors = {
+      nextColor: 0,
+      colorList: ['#006C67', '#F194B4', '#FFB100', '#FFEBC6', '#A4036F', '#048BA8', '#16DB93', '#EFEA5A', '#F29E4C']
+    }
+
+    // then we generate datasets for each schema for the bar chart
+    const datasets = runTimeDataArray.map((schemaDataObject) => {
+      const schemaLabel: any = Object.keys(schemaDataObject)[0];
+      const color = schemaColors.colorList[schemaColors.nextColor % schemaColors.colorList.length];
+      schemaColors.nextColor += 1;
+      return {
+        label: `${schemaLabel}`,
+        backgroundColor: color,
+        borderColor: color,
+        borderWidth: 1,
+        data: schemaDataObject[schemaLabel]
+      }
+    })
+
+    //then we combine the label array and the data arrays for each schema into a data object to pass to our bar graph
     return {
-      label: `${schemaLabel}`,
-      backgroundColor: generateRandomColor(),
-      borderColor: generateRandomColor(),
-      borderWidth: 1,
-      data: schemaDataObject[schemaLabel]
+      labels: labelDataArray,
+      datasets: datasets
     }
-  })
-
-  //then we combine the label array and the data arrays for each schema into a data object to pass to our bar graph
-  const data = {
-    labels: labelDataArray,
-    datasets: generateDatasets()
   }
 
   // -------------------------------------------------------------------------------------------------------------
@@ -189,7 +196,7 @@ export const Compare = (props: CompareProps) => {
       </div>
       <div className="bar-chart">
         <Bar
-          data={data}
+          data={generateDatasets()}
           options={{
             title: {
               display: true,
