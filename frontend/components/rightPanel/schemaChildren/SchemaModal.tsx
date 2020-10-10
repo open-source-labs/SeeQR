@@ -76,9 +76,11 @@ class SchemaModal extends Component<SchemaModalProps, state> {
           schemaFilePath: this.state.schemaFilePath,
           schemaEntry: '',
         };
-        ipcRenderer.send('input-schema', schemaObj);
+        if (!result['canceled']) {
+          ipcRenderer.send('input-schema', schemaObj);
+          this.setState({ schemaName: ''});
+        }
         this.setState({ dbCopyName: 'Select Instance'});
-        this.setState({ schemaName: ''});
         this.props.showModal(event);
       })
       .catch((err: object) => {
