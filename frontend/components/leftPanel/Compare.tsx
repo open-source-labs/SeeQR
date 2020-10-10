@@ -206,7 +206,8 @@ export const Compare = (props: CompareProps) => {
             legend: {
               display: true,
               position: 'right'
-            }
+            },
+            maintainAspectRatio: false
           }}
         />
       </div>

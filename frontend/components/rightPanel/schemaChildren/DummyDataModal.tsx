@@ -32,14 +32,9 @@ class DummyDataModal extends Component<DummyDataModalProps, state> {
     this.deleteRow = this.deleteRow.bind(this);
     this.submitDummyData = this.submitDummyData.bind(this);
   }
-//state.lists.tableList
-//state.currentSchema
 
-  //hard coded in for testing purposes
   state: state = {
-    // currentSchema: 'testSchema',
     currentTable: 'select table',
-    // tableNames: ['customers', 'locations', 'suppliers', 'all'],
     dataInfo: {},
     rowNumber: ''
   }
@@ -140,18 +135,17 @@ class DummyDataModal extends Component<DummyDataModalProps, state> {
   }
 
   submitDummyData = (event: any) => {
+    //creates a dummyDataRequest object with schema name and table name/rows
     const dummyDataRequest = {
-      //schemaName will eventually come from props, not state
       schemaName: this.props.currentSchema,
       dummyData: this.state.dataInfo
     }
     ipcRenderer.send('generate-dummy-data', dummyDataRequest);
+    //reset state to clear the dummy data modal's table
+    this.setState({dataInfo: {}});
   }
 
   render() {
-
-    console.log('DD Mddal: ', this.props.tableList);
-
     if (this.props.show === false) {
       return null;
     }

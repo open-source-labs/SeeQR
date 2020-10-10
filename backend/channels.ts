@@ -1,5 +1,5 @@
 // Import parts of electron to use
-import { ipcMain } from 'electron';
+import { dialog, ipcMain } from 'electron';
 import { create } from 'domain';
 
 const { generateDummyData, writeCSVFile } = require('./newDummyD/dummyDataMain');
@@ -47,15 +47,21 @@ const runTARFunc = (file) => {
 const execute = (str: string, nextStep: any) => {
   exec(str, (error, stdout, stderr) => {
     if (error) {
+      //this shows the console error in an error message on the frontend
+      dialog.showErrorBox(`${error.message}`, '');
       console.log(`error: ${error.message}`);
       return;
     }
     if (stderr) {
+      //this shows the console error in an error message on the frontend
+      dialog.showErrorBox(`${stderr}`, '');
       console.log(`stderr: ${stderr}`);
       return;
     }
     console.log(`${stdout}`);
     if (nextStep) nextStep();
+    //this shows the console error in an error message on the frontend
+    else dialog.showErrorBox('Success', '');
   });
 };
 

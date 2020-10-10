@@ -21,10 +21,6 @@ export class Data extends Component<DataProps> {
 
     return (
       <div id="data-panel">
-        <br />
-        <br />
-        <br />
-        <br />
         <h3 id="results-title">Data Table</h3>
         <div id="data-table">
           {queries.length === 0 ? null : <Table queries={queries} />}
