@@ -90,6 +90,8 @@ ipcMain.on('upload-file', (event, filePath: string) => {
     event.sender.send('db-lists', listObj);
     // Send schema name back to frontend, so frontend can load tab name.
     event.sender.send('return-schema-name', dbName);
+    // tell the front end to switch tabs to the newly created database
+    event.sender.send('switch-to-new', null);
   };
 
   // Step 4: Given the file path extension, run the appropriate command in postgres to populate db.
@@ -171,6 +173,8 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
   async function sendLists() {
     listObj = await db.getLists();
     event.sender.send('db-lists', listObj);
+    // tell the front end to switch tabs to the newly created database
+    event.sender.send('switch-to-new', null);
   };
 
   // Step 4: Given the file path extension, run the appropriate command in postgres to build the db
