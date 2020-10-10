@@ -82,24 +82,36 @@ const generateDataByType = (columnObj) => {
   //faker.js method to generate data by type
   switch (columnObj.dataInfo.data_type) {
     case 'smallint':
-      return faker.random.number({min: -(2**15), max: (2**15 - 1)});
+      return faker.random.number({min: -32768, max: 32767});
     case 'integer':
-      return faker.random.number({min: -(2**31), max: (2**31 - 1)});
+      return faker.random.number({min: -2147483648, max: 2147483647});
     case 'bigint':
-      return faker.random.number({min: -(2**63), max: (2**63 - 1)});
+      return faker.random.number({min: -9223372036854775808, max: 9223372036854775807});
     case 'character varying':
       if (columnObj.dataInfo.character_maximum_length) {
         return faker.lorem.character(Math.floor(Math.random() * columnObj.dataInfo.character_maximum_length));
       }
       else return faker.lorem.word();
     case 'date':
-      return faker.date.past();
+      let result: string = '';
+      let year: string = getRandomInt(1500, 2020).toString();
+      let month: string = getRandomInt(1, 13).toString();
+      if (month.length === 1) month = '0' + month;
+      let day: string = getRandomInt(1, 29).toString();
+      if (day.length === 1) day = '0' + day;
+      result += year + '-' + month + '-' + day;
+      return result;
     default:
       console.log('error')
   }
 };
 
-
+//helper function to generate random numbers that will ultimately represent a random date
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
+}
 
 module.exports = {
 
@@ -166,12 +178,7 @@ module.exports = {
   }
 }
 
-// export default generateDummyDataQueries;
-
-
-
-    
-  
+// export default generateDummyDataQueries
 
   // //iterate through tables for which data was requested to copy data to tables
   // for(let i = 0; i < arrayOfTableMatrices.length; i++) {
