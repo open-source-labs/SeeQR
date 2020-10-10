@@ -1,14 +1,9 @@
 import React, { Component } from 'react';
-import { Dropdown, ButtonToolbar } from 'react-bootstrap';
-import DropdownButton from 'react-bootstrap/DropdownButton';
-import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
-import DropdownToggle from 'react-bootstrap/esm/DropdownToggle';
-import DropdownMenu from 'react-bootstrap/esm/DropdownMenu';
+import { Dropdown } from 'react-bootstrap';
 // import GenerateData from './GenerateData';
 
 const { dialog } = require('electron').remote;
 const { ipcRenderer } = window.require('electron');
-const path = require('path');
 
 type ClickEvent = React.MouseEvent<HTMLElement>;
 
