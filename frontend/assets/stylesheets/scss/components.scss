@@ -30,6 +30,7 @@
 }
 
 #query-panel {
+  max-width: 90%;
   button {
     border: 0.5px $border-darkmode solid;
     background-color: $button-darkmode;
@@ -168,15 +169,29 @@ input {
 
 #data-table {
   overflow: auto;
-  height: 300px;
+  height: 25em;
+  max-width: 90%;
 }
 
 .query-data {
   width: 1000px;
 }
 
+.codemirror {
+  max-width: 90%;
+}
+
+.CodeMirror-scroll {
+  overflow-x: scroll;
+}
+
+.ReactCodeMirror {
+  max-width: 90%;
+}
+
 #codemirror {
   padding: 15px 0;
+  max-width: 30rem;
 }
 
 #data-table::-webkit-scrollbar-track {
