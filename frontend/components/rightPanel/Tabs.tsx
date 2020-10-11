@@ -36,6 +36,7 @@ export class Tabs extends Component<TabsProps> {
     // thing as all the databases). We open a channel to listen for it here inside of componendDidMount, then
     // we invoke onClose to close schemaModal ONLY after we are sure that backend has created that channel.
     ipcRenderer.on('db-lists', (event: any, returnedLists: any) => {
+      this.setState({currentSchema: returnedLists})
       this.onClose(event);
     })
   }
