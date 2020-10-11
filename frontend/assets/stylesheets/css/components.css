@@ -26,6 +26,10 @@
   background-color: #c6d2d5;
 }
 
+#query-panel {
+  max-width: 90%;
+}
+
 #query-panel button {
   border: 0.5px #444c50 solid;
   background-color: #596368;
@@ -196,15 +200,29 @@ input *:focus {
 
 #data-table {
   overflow: auto;
-  height: 300px;
+  height: 25em;
+  max-width: 90%;
 }
 
 .query-data {
   width: 1000px;
 }
 
+.codemirror {
+  max-width: 90%;
+}
+
+.CodeMirror-scroll {
+  overflow-x: scroll;
+}
+
+.ReactCodeMirror {
+  max-width: 90%;
+}
+
 #codemirror {
   padding: 15px 0;
+  max-width: 30rem;
 }
 
 #data-table::-webkit-scrollbar-track {
