@@ -65,7 +65,12 @@ class MainPanel extends Component<MainProps, MainState> {
           tableList: returnedLists.tableList
         }
       }))
-    })
+    });
+
+    ipcRenderer.on('switch-to-new', (event: any) => {
+      const newSchemaIndex = this.state.lists.databaseList.length - 1;
+      this.setState({currentSchema: this.state.lists.databaseList[newSchemaIndex]});
+    });
   }
 
   onClickTabItem(tabName) {
