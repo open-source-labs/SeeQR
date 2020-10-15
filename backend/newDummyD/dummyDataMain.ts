@@ -157,7 +157,7 @@ module.exports = {
         let columnData: any = [];
         //iterate over columnArray (schemaLayout.tableLayout[tableName])
         for (let i = 0; i < schemaLayout.tables[tableName].length; i++) {
-          //while i < reqeusted number of tables
+          //while i < reqeusted number of rows
           while (columnData.length < dummyDataRequest.dummyData[tableName]) {
             //generate an entry
             let entry = generateDataByType(schemaLayout.tables[tableName][i]);
