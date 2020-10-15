@@ -314,7 +314,7 @@ ipcMain.on('generate-dummy-data', (event: any, data: dummyDataRequest) => {
         //   compiledPath = compiledPath.replace(/\\/g,`/`);
         // }
   
-        let queryString: string = `COPY ${tableName} FROM '${tableName}' WITH CSV HEADER;`;
+        let queryString: string = `COPY ${tableName} FROM '/${tableName}' WITH CSV HEADER;`;
         // let values: string[] = [tableName, compiledPath];
         
         execute(`docker exec postgres-1 psql -U postgres -d ${data.schemaName} -c "${queryString}" `, null);

@@ -1,5 +1,3 @@
-//this file maps table names from the schemaLayout object to individual sql files for DD generation
-
 import faker from "faker";
 import execute from '../channels';
 import fs from 'fs';
