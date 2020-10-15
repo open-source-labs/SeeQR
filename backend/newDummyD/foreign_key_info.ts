@@ -1,14 +1,51 @@
-const getForeignKeyQueryString: string = `
-  SELECT
-    tc.table_name AS primary_table_name, 
-    ccu.table_name AS foreign_table_name,
-    ccu.column_name AS foreign_column_name 
-  FROM 
-    information_schema.table_constraints AS tc 
-  JOIN information_schema.key_column_usage AS kcu
-    ON tc.constraint_name = kcu.constraint_name
-    AND tc.table_schema = kcu.table_schema
-  JOIN information_schema.constraint_column_usage AS ccu
-    ON ccu.constraint_name = tc.constraint_name
-    AND ccu.table_schema = tc.table_schema
-  WHERE tc.constraint_type = 'FOREIGN KEY';`  
+// This query lists each table that has a foreign key, the name of the table that key points to, and the name of the column at which the foreign key constraint resides
+const getForeignKeyQueryString: string = 
+`select kcu.table_name as foreign_table,
+       rel_kcu.table_name as primary_table,
+       kcu.column_name as fk_column
+from information_schema.table_constraints tco
+join information_schema.key_column_usage kcu
+          on tco.constraint_name = kcu.constraint_name
+join information_schema.referential_constraints rco
+          on tco.constraint_name = rco.constraint_name
+join information_schema.key_column_usage rel_kcu
+          on rco.unique_constraint_name = rel_kcu.constraint_name
+where tco.constraint_type = 'FOREIGN KEY'
+order by kcu.table_schema,
+         kcu.table_name,
+         kcu.ordinal_position;`
+
+
+// This query lists each table and the column name at which there is a primary key
+const getPrimaryKeys: string = 
+`select kcu.table_name as table_name,
+kcu.column_name as pk_column
+from information_schema.key_column_usage as kcu
+join information_schema.table_constraints as tco
+   on tco.constraint_name = kcu.constraint_name
+where tco.constraint_type = 'PRIMARY KEY'
+order by kcu.table_name;`
+
+// structure of the key object for generating key compliant data
+// const KeyObject = {
+//   // people:
+//   Table_1: {
+//       primaryKeyColumns: {
+//           // id: true
+//           _id: true
+//       }
+//       foreignKeyColumns: {
+//           // species_id: n where n is the number of rows asked for in the primary table the key points to
+//           foreignKeyColumnName_1: numOfRows,
+//           foreignKeyColumnName_2: numOfRows
+//       }
+//   }
+//   .
+//   .
+//   .
+// }
+
+// 1. function definition to run these queries and build the KeyObject
+// 2. iterate over all tables and drop primary key columns, replacing with integer primary key columns
+// 3. integrate key data generation into dummy data generator function 
+//      (i.e. if the column name is a primary key column, ...)
