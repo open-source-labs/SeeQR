@@ -5,6 +5,8 @@ const { Pool } = require('pg');
 let PG_URI: string = 'postgres://postgres:postgres@localhost:5432/defaultDB';
 let pool: any = new Pool({ connectionString: PG_URI });
 
+//helper function that creates the column objects, which are saved to the schemaLayout object
+//this function returns a promise to be resolved with Promise.all syntax
 const getColumnObjects = (tableName: string) => {
   const queryString = "SELECT column_name, data_type, character_maximum_length FROM information_schema.columns WHERE table_name = $1;";
   const value = [tableName];
@@ -95,7 +97,7 @@ module.exports = {
       const schemaLayout: any = {
         tableNames: [],
         tables: {
-          // tableName: [columnNames array]
+          // tableName: [columnObj array]
         }
       };
       pool
@@ -112,8 +114,10 @@ module.exports = {
           for (let tableName of schemaLayout.tableNames) {
             promiseArray.push(getColumnObjects(tableName))
           }
+          //we resolve all of the promises for the data info, and are returned an array of column data objects
           Promise.all(promiseArray)
             .then((columnInfo) => {
+              //here, we create a key for each table name and assign the array of column objects to the corresponding table name
               for (let i = 0; i < columnInfo.length; i++) {
                 schemaLayout.tables[schemaLayout.tableNames[i]] = columnInfo[i];
               }
