@@ -35,6 +35,11 @@ const importFileFunc = (file) => {
   return `docker cp ${file} postgres-1:/data_dump`;
 }
 
+//this command imports CSV file to dummy data volume
+const importCSV = (file) => {
+  return `docker cp ${file} dummy-data:/csv_files`;
+}
+
 const runSQLFunc = (file) => {
   return `docker exec postgres-1 psql -U postgres -d ${file} -f /data_dump`;
 }
@@ -141,12 +146,17 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
   filePath = [path.join(__dirname, `./${dbName}.sql`)];
 
   //Exact copy
+  // if(copy) {
+  //   console.log('in copy if statement');
+  //   execute(`docker exec postgres-1 pg_dump -U postgres ${dbCopyName} > tsCompiled/backend/${dbName}.sql`, null);
+  // }
+
   if(copy) {
     console.log('in copy if statement');
-    execute(`docker exec postgres-1 pg_dump -U postgres ${dbCopyName} > tsCompiled/backend/${dbName}.sql`, null);
+    execute(`docker exec postgres-1 pg_dump -U postgres ${dbCopyName} -f /data_dump`, null);
   }
   // Hollow copy
-  else execute(`docker exec postgres-1 pg_dump -s -U postgres ${dbCopyName} > tsCompiled/backend/${dbName}.sql`, null)
+  else execute(`docker exec postgres-1 pg_dump -s -U postgres ${dbCopyName} -f /data_dump`, null)
   }
 
   console.log(dbName, schemaEntry, dbCopyName, copy, filePath);
@@ -192,7 +202,8 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
   // Step 2: Change curent URI to match newly created DB
   const step2 = () => {
     db.changeDB(dbName);
-    return step3();
+    if (copy) return step4();
+    else return step3();
   }
 
   // Step 1 : Create empty db
@@ -293,16 +304,17 @@ ipcMain.on('generate-dummy-data', (event: any, data: dummyDataRequest) => {
         // extract tableName from tableObject
         let tableName: string = tableObject.tableName;
         // write filepath to created .csv files
-        let compiledPath: any = [path.join(__dirname, `./${tableName}.csv`)];
+        //let compiledPath: any = [path.join(__dirname, `./${tableName}.csv`)];
         
-        execute(importFileFunc(compiledPath), null);
+        // execute(importFileFunc(compiledPath), null);
+        //execute(importCSV(compiledPath), null);
 
         console.log('after first execute');
-        if (process.platform === 'win32'){
-          compiledPath = compiledPath.replace(/\\/g,`/`);
-        }
+        // if (process.platform === 'win32'){
+        //   compiledPath = compiledPath.replace(/\\/g,`/`);
+        // }
   
-        let queryString: string = `COPY ${tableName} FROM '/data_dump' WITH CSV HEADER;`;
+        let queryString: string = `COPY ${tableName} FROM '/${tableName}' WITH CSV HEADER;`;
         // let values: string[] = [tableName, compiledPath];
         
         execute(`docker exec postgres-1 psql -U postgres -d ${data.schemaName} -c "${queryString}" `, null);

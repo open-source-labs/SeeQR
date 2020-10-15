@@ -134,14 +134,20 @@ module.exports = {
 
     const csvString: string = columnString.concat('\n').concat(tableDataString);
     // build file path
+
     const compiledPath = path.join(__dirname, `../${tableName}.csv`);
+
+    
     //write csv file
     return new Promise((resolve, reject) => {
-      fs.writeFile(compiledPath, csvString, (err: any) => {
-        if (err) throw err;
-        resolve(console.log('FILE SAVED'));
-        // reject(console.log('Error Saving File'))
-      });
+      execute(`docker exec postgres-1 touch /database-data/${tableName}`, console.log('touch command'));
+      execute(`docker exec postgres-1 echo "${csvString}" >> /database-data/${tableName}`, console.log('wrote to file'));
+      resolve(console.log('CSV created in container'));
+      // fs.writeFile(compiledPath, csvString, (err: any) => {
+      //   if (err) throw err;
+      //   resolve(console.log('FILE SAVED'));
+      //   // reject(console.log('Error Saving File'))
+      // });
     })
   },
 
