@@ -35,6 +35,11 @@ const importFileFunc = (file) => {
   return `docker cp ${file} postgres-1:/data_dump`;
 }
 
+//this command imports CSV file to dummy data volume
+const importCSV = (file) => {
+  return `docker cp ${file} dummy-data:/csv_files`;
+}
+
 const runSQLFunc = (file) => {
   return `docker exec postgres-1 psql -U postgres -d ${file} -f /data_dump`;
 }
@@ -140,13 +145,13 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
   // reset file path such that it points to our newly created local .sql file
   filePath = [path.join(__dirname, `./${dbName}.sql`)];
 
-  //Exact copy
+  // this generates a pg_dump file from the specified db and saves it to a location in the container
   if(copy) {
     console.log('in copy if statement');
-    execute(`docker exec postgres-1 pg_dump -U postgres ${dbCopyName} > tsCompiled/backend/${dbName}.sql`, null);
+    execute(`docker exec postgres-1 pg_dump -U postgres ${dbCopyName} -f /data_dump`, null);
   }
   // Hollow copy
-  else execute(`docker exec postgres-1 pg_dump -s -U postgres ${dbCopyName} > tsCompiled/backend/${dbName}.sql`, null)
+  else execute(`docker exec postgres-1 pg_dump -s -U postgres ${dbCopyName} -f /data_dump`, null)
   }
 
   console.log(dbName, schemaEntry, dbCopyName, copy, filePath);
@@ -192,7 +197,8 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
   // Step 2: Change curent URI to match newly created DB
   const step2 = () => {
     db.changeDB(dbName);
-    return step3();
+    if (copy) return step4();
+    else return step3();
   }
 
   // Step 1 : Create empty db
@@ -287,31 +293,14 @@ ipcMain.on('generate-dummy-data', (event: any, data: dummyDataRequest) => {
     }
     Promise.all(csvPromiseArray)
     .then(() => {
-      // let copyFilePromiseArray: any = [];
       //iterate through tableMatricesArray to copy individual .csv files to the respective tables
       for (const tableObject of tableMatricesArray) {
         // extract tableName from tableObject
         let tableName: string = tableObject.tableName;
-        // write filepath to created .csv files
-        let compiledPath: any = [path.join(__dirname, `./${tableName}.csv`)];
-        
-        execute(importFileFunc(compiledPath), null);
-
-        console.log('after first execute');
-        if (process.platform === 'win32'){
-          compiledPath = compiledPath.replace(/\\/g,`/`);
-        }
-  
-        let queryString: string = `COPY ${tableName} FROM '/data_dump' WITH CSV HEADER;`;
-        // let values: string[] = [tableName, compiledPath];
-        
+        // generate a query for each table, copying from the file generated previously
+        let queryString: string = `COPY ${tableName} FROM '/${tableName}' WITH CSV HEADER;`;
+        // run the query in the container using a docker command
         execute(`docker exec postgres-1 psql -U postgres -d ${data.schemaName} -c "${queryString}" `, null);
-
-        // db.query(queryString)
-        //   .catch((error: string) => {
-        //     console.log('ERROR in dummy-generation channel in channels.ts', error);
-        //   });
-        // execute(`docker exec postgres-1 psql -U postgres -c "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_name;"`, null)
       }
     })
   })
@@ -319,4 +308,3 @@ ipcMain.on('generate-dummy-data', (event: any, data: dummyDataRequest) => {
 })
 
 export default execute;
-// module.exports;
