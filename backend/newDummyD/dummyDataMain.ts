@@ -93,9 +93,9 @@ module.exports = {
     }
 
     else {
-      const tableDataString: string = table.join('^ \n');
+      const tableDataString: string = table.join('^\n');
       const columnString: string = columnArray.join(',');
-      csvString = columnString.concat('^ \n').concat(tableDataString);
+      csvString = columnString.concat('^\n').concat(tableDataString);
     }
 
     //this returns a new promise to channels.ts, where it is put into an array and resolved after all promises have been created
@@ -120,6 +120,9 @@ module.exports = {
         //iterate over columnArray (schemaLayout.tableLayout[tableName])
         for (let i = 0; i < schemaLayout.tables[tableName].length; i++) {
           //while i < reqeusted number of rows
+          // if this is a PK column do something different
+          // if this is a FK column do something different
+          // else vvvvv
           while (columnData.length < dummyDataRequest.dummyData[tableName]) {
             //generate an entry
             let entry = generateDataByType(schemaLayout.tables[tableName][i]);
