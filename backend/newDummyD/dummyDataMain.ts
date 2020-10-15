@@ -84,10 +84,19 @@ module.exports = {
       row = [];
     }
 
-    //join tableMatrix with a line break
-    const tableDataString: string = table.join('\n');
-    const columnString: string = columnArray.join(',');
-    const csvString: string = columnString.concat('\n').concat(tableDataString);
+    let csvString: string;
+    //join tableMatrix with a line break (different on mac and windows because of line breaks in the bash CLI)
+    if (process.platform === 'darwin') {
+      const tableDataString: string = table.join('\n');
+      const columnString: string = columnArray.join(',');
+      csvString = columnString.concat('\n').concat(tableDataString);
+    }
+
+    else {
+      const tableDataString: string = table.join('^ \n');
+      const columnString: string = columnArray.join(',');
+      csvString = columnString.concat('^ \n').concat(tableDataString);
+    }
 
     //this returns a new promise to channels.ts, where it is put into an array and resolved after all promises have been created
     return new Promise((resolve, reject) => {
