@@ -128,11 +128,11 @@ module.exports = {
       row = [];
     }
     //join tableMatrix with a line break
-    const tableDataString: string = table.join('\\\\n');
+    const tableDataString: string = table.join('\n');
 
     const columnString: string = columnArray.join(',');
 
-    const csvString: string = columnString.concat('\\\\n').concat(tableDataString);
+    const csvString: string = columnString.concat('\n').concat(tableDataString);
     // build file path
 
     const compiledPath = path.join(__dirname, `../${tableName}.csv`);
