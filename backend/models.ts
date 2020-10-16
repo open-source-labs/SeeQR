@@ -94,6 +94,7 @@ module.exports = {
 
     
   createKeyObject: (dummyDataRequest) => {
+    console.log(dummyDataRequest);
     return new Promise ((resolve) => {
       // initialize the keyObject we eventually want to return out
       const keyObject: any  = {};
@@ -127,7 +128,7 @@ module.exports = {
                 // if the table is not yet initialized within the keyObject, then initialize it
                 if (!keyObject[table]) keyObject[table] = {primaryKeyColumns: {}, foreignKeyColumns: {}};
                 // then set the value at the fk column name to the number of rows asked for in the primary table to which it points
-                keyObject[table].foreignKeyColumns[fkColumn] = dummyDataRequest.dummydata[primaryTable];
+                keyObject[table].foreignKeyColumns[fkColumn] = dummyDataRequest.dummyData[primaryTable];
               }
               resolve(keyObject);
             })
