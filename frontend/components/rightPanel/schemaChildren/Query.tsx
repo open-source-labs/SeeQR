@@ -33,10 +33,7 @@ class Query extends Component<QueryProps, state> {
     super(props);
     this.handleQuerySubmit = this.handleQuerySubmit.bind(this);
     this.updateCode = this.updateCode.bind(this);
-    this.handleTrackQuery = this.handleTrackQuery.bind(this);
-    // this.handleQueryPrevious = this.handleQueryPrevious.bind(this);
-    // this.handleGenerateData = this.handleGenerateData.bind(this);
- 
+    this.handleTrackQuery = this.handleTrackQuery.bind(this); 
   }
 
   state: state = {
@@ -48,8 +45,8 @@ class Query extends Component<QueryProps, state> {
 
   componentDidMount() {
     ipcRenderer.on('query-error', (event: any, message: string) => {
-      console.log('Inside error listener: ');
-      dialog.showErrorBox('Error', message);
+      console.log('Query error: ');
+      // dialog.showErrorBox('Error', message);
 
     })
   }
@@ -105,21 +102,6 @@ class Query extends Component<QueryProps, state> {
     }
   }
 
-  // handleGenerateData(event: any) {
-  //   ipcRenderer.send('generate-data')
-  // }
-
-  // Show failure/success message
-  // showFailure = (status) => {
-  //   if(status) { return 'inline'}
-  //   else { return 'none' }
-  // }
-
-  // showSuccess = (status) => {
-  //   if(status) { return 'inline'}
-  //   else { return 'none' }
-  // }
-
   render() {
     // Codemirror module configuration options
     var options = {
@@ -167,8 +149,6 @@ class Query extends Component<QueryProps, state> {
             />
           </div>
           <button>Submit</button>
-          <p id='query-failed' >Query Failed!</p>
-          <p id='query-successful' >Query Successful!</p>
           <br />
           <br />
         </form>

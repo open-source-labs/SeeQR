@@ -19,17 +19,19 @@
     display: flex;
     flex-direction: row;
     margin-top: 50px;
+    justify-content: space-around;
     button {
       border: 0.5px $border-darkmode solid;
       background-color: $button-darkmode;
       border-radius: 3px;
-      padding: 10px;
+      padding: 10px 25px 10px 25px;
       border: none;
       font-size: 1em;
       font-weight: bold;
       color: $background-darkmode;
       outline: none;
-      margin: 0 5px;
+      // margin: 0 5px;
+      margin-top: 10px;
     }
     button:hover {
       background-color: $mint-green;
@@ -45,6 +47,20 @@
     width: 360px;
     height: 362px;
   }
+}
+
+#custom-schema {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 25px;
+}
+
+#import-schema {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 25px;
 }
 
 #main-panel {
