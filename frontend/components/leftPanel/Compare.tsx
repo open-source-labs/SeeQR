@@ -55,7 +55,7 @@ export const Compare = (props: CompareProps) => {
 
   const dropDownList = () => {
     // for each query on the query list, make a dropdown item in the menu
-    return props.queries.map((query, index) => <Dropdown.Item key={index} className="queryItem" onClick={addCompareQuery}>{query.queryLabel}</Dropdown.Item>);
+    return props.queries.map((query, index) => <Dropdown.Item key={index} className="queryItem" onClick={addCompareQuery}>{query.queryLabel} ({query.querySchema})</Dropdown.Item>);
   };
 
   const renderCompare = () => {

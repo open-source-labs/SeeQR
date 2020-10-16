@@ -221,8 +221,15 @@ ipcMain.on('execute-query-untracked', (event, data: QueryType) => {
   const { queryString, queryCurrentSchema, queryLabel } = data;
   // run query on db
   db.query(queryString)
+    .then(() => {
+      (async function getListAsync() {
+        listObj = await db.getLists();
+        event.sender.send('db-lists', listObj)
+      })();
+    })
     .catch((error: string) => {
       console.log('ERROR in execute-query-untracked channel in main.ts', error);
+      event.sender.send('query-error', 'Error executing query.');
     });
 });
 

@@ -161,7 +161,7 @@ class DummyDataModal extends Component<DummyDataModalProps, state> {
               </Dropdown.Toggle>
               <Dropdown.Menu className="DD-Dropdown">
                 {this.dropDownList()}
-              </Dropdown.Menu>
+              </Dropdown.Menu> 
             </Dropdown>
             <input id="dummy-rows-input" type="text" placeholder="number of rows..."
             value={this.state.rowNumber}

@@ -33,9 +33,7 @@ class Query extends Component<QueryProps, state> {
     super(props);
     this.handleQuerySubmit = this.handleQuerySubmit.bind(this);
     this.updateCode = this.updateCode.bind(this);
-    this.handleTrackQuery = this.handleTrackQuery.bind(this);
-    // this.handleQueryPrevious = this.handleQueryPrevious.bind(this);
-    // this.handleGenerateData = this.handleGenerateData.bind(this);
+    this.handleTrackQuery = this.handleTrackQuery.bind(this); 
   }
 
   state: state = {
@@ -44,6 +42,14 @@ class Query extends Component<QueryProps, state> {
     show: false,
     trackQuery: false
   };
+
+  componentDidMount() {
+    ipcRenderer.on('query-error', (event: any, message: string) => {
+      console.log('Query error: ');
+      // dialog.showErrorBox('Error', message);
+
+    })
+  }
 
   // Updates state.queryString as user inputs query label
   handleLabelEntry(event: any) {
@@ -95,10 +101,6 @@ class Query extends Component<QueryProps, state> {
       this.setState({ queryLabel: '', trackQuery: false, queryString: '' });
     }
   }
-
-  // handleGenerateData(event: any) {
-  //   ipcRenderer.send('generate-data')
-  // }
 
   render() {
     // Codemirror module configuration options

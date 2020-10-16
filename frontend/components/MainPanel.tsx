@@ -1,3 +1,4 @@
+import { dialog } from 'electron';
 import React, { Component } from 'react';
 import { Compare } from './leftPanel/Compare';
 import History from './leftPanel/History';
@@ -35,7 +36,7 @@ class MainPanel extends Component<MainProps, MainState> {
 
   componentDidMount() {
     ipcRenderer.send('return-db-list');
-
+    
     // Listening for returnedData from executing Query
     // Update state with new object (containing query data, query statistics, query schema
     // inside of state.queries array
