@@ -259,5 +259,5 @@ input *:focus {
   max-height: 15rem;
   min-height: 10rem;
   min-width: 8rem;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
