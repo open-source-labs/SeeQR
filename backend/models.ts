@@ -135,6 +135,49 @@ module.exports = {
     })
   },
 
+  dropKeyColumns: (keyObject) => {
+    // initialize promise array
+    let promiseArray: any = [];
+    
+    // define helper function to generate and run query
+    const generateAndRunDropQuery = (table) => {
+      let queryString = `ALTER TABLE $1`;
+      let values = [table]
+      let count = 2;
+
+      for (const pkc in table.primaryKeyColumns){
+        queryString += ` DROP COLUMN $${count}`;
+        values.push(pkc);
+        count += 1;
+      }
+      for (const fkc in table.foreignKeyColumns){
+        queryString += ` DROP COLUMN $${count}`
+        values.push(fkc);
+        count += 1;
+      }
+      queryString += ';'
+
+      return new Promise((resolve) => {
+        pool
+          .query(queryString, values)
+          .then(() => resolve())
+      })
+    }
+    // iterate over tables, running drop queries, and pushing a new promise to promise array
+    for (const table in keyObject){
+      promiseArray.push(generateAndRunDropQuery(table));
+    }
+
+    return promiseArray;
+
+    // move on to add columns
+
+  },
+
+  addNewColumns: () => {
+
+  },
+
   getSchemaLayout: () => {
     // initialize a new promise; we resolve this promise at the end of the last async function within the promise
     return new Promise((resolve) => {
@@ -172,5 +215,9 @@ module.exports = {
           console.log('error in models.ts')
         })
     });
+  },
+
+  addKeyConstrains: () => {
+
   }
 }
