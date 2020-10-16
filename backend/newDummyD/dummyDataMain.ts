@@ -113,6 +113,7 @@ module.exports = {
   //maps table names from schemaLayout to sql files
   generateDummyData: (schemaLayout, dummyDataRequest, keyObject) => {
     const returnArray: any = [];
+
     //iterate over schemaLayout.tableNames array
     for (const tableName of schemaLayout.tableNames) {
       const tableMatrix: any = [];
@@ -120,44 +121,48 @@ module.exports = {
       if (dummyDataRequest.dummyData[tableName]) {
         //declare empty columnData array for tableMatrix
         let columnData: any = [];
+        //declare an entry variable to carpture the entry we will push to column data
         let entry: any;
-        //iterate over columnArray (schemaLayout.tableLayout[tableName])
-        for (let i = 0; i < schemaLayout.tables[tableName].length; i++) {
-          // declare a variable i (to be used in while loops below), set equal to zero
-          let i: number = 1;
-          // if this is a PK column, add numbers into column 1 to n (ordered)
-          if (keyObject.schemaLayout.tables[tableName].primaryKeyColumns[schemaLayout.tables[i]]) {
+
+        //iterate over columnArray (i.e. an array of the column names for the table)
+        let columnArray: string[] = schemaLayout.tables[tableName].map(columnObj => columnObj.columnName)
+        for (let i = 0; i < columnArray.length; i++) {
+          // declare a variable j (to be used in while loops below), set equal to zero
+          let j: number = 0;
+          // if this is a PK column, add numbers into column 0 to n-1 (ordered)
+          if (keyObject[tableName].primaryKeyColumns[columnArray[i]]) {
             //while i < reqeusted number of rows
-            while (i <= dummyDataRequest.dummyData[tableName]) {
-              //generate an entry
-              entry = i;
+            while (j < dummyDataRequest.dummyData[tableName]) {
               //push into columnData
-              columnData.push(entry);
-              // increment i
-              i++;
+              columnData.push(j);
+              // increment j
+              j += 1;
             } 
           }
 
-          // if this is a FK column, add random number between 1 and n into column (unordered)
-          else if (keyObject.schemaLayout.tables[tableName].primaryKeyColumns[schemaLayout.tables[i]]) {
-            //while i < reqeusted number of rows
-            while (columnData.length < dummyDataRequest.dummyData[tableName]) {
+          // if this is a FK column, add random number between 0 and n-1 (inclusive) into column (unordered)
+          else if (keyObject[tableName].foreignKeyColumns[columnArray[i]]) {
+            //while j < reqeusted number of rows
+            while (j < dummyDataRequest.dummyData[tableName]) {
               //generate an entry
-              entry = Math.floor(Math.random() * (dummyDataRequest.dummyData[tableName] - 1) + 1);
+              entry = Math.floor(Math.random() * (dummyDataRequest.dummyData[tableName]));
               //push into columnData
               columnData.push(entry);
+              j += 1;
             }
           }
           
           // otherwise, we'll just add data by the type to which the column is constrained
           else {
-            while (columnData.length < dummyDataRequest.dummyData[tableName]) {
+            while (j < dummyDataRequest.dummyData[tableName]) {
               //generate an entry
               entry = generateDataByType(schemaLayout.tables[tableName][i]);
               //push into columnData
               columnData.push(entry);
+              j += 1;
             };
           }
+
           //push columnData array into tableMatrix
           tableMatrix.push(columnData);
           //reset columnData array for next column

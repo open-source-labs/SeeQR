@@ -128,8 +128,8 @@ module.exports = {
                 if (!keyObject[table]) keyObject[table] = {primaryKeyColumns: {}, foreignKeyColumns: {}};
                 // then set the value at the fk column name to the number of rows asked for in the primary table to which it points
                 keyObject[table].foreignKeyColumns[fkColumn] = dummyDataRequest.dummydata[primaryTable];
-                }
-                resolve(keyObject);
+              }
+              resolve(keyObject);
             })
         })
     })
