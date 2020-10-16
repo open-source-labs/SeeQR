@@ -272,13 +272,17 @@ ipcMain.on('generate-dummy-data', (event: any, data: dummyDataRequest) => {
   let schemaLayout;
   let dummyDataRequest = data;
   let tableMatricesArray;
+  let keyObject;
   db.getSchemaLayout()
   .then((result) => {
     schemaLayout = result;
   })
   .then(() => {
+    keyObject = db.createKeyObject(dummyDataRequest)
+  })
+  .then(() => {
     // generate the dummy data and save it into matrices associated with table names
-    tableMatricesArray = generateDummyData(schemaLayout, dummyDataRequest);
+    tableMatricesArray = generateDummyData(schemaLayout, dummyDataRequest, keyObject);
   })
   .then(() => {
     let csvPromiseArray: any = [];

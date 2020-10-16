@@ -1,4 +1,5 @@
 const { Pool } = require('pg');
+const { getPrimaryKeys, getForeignKeys } = require('./newDummyD/foreign_key_info')
 
 // Initialize to a default db.
 // URI Format: postgres://username:password@hostname:port/databasename
@@ -90,6 +91,49 @@ module.exports = {
         })
       })
     },
+
+    
+  createKeyObject: (dummyDataRequest) => {
+    return new Promise ((resolve) => {
+      // initialize the keyObject we eventually want to return out
+      const keyObject: any  = {};
+      pool
+        .query(getPrimaryKeys, null)
+        .then((result) => {
+          let table;
+          let pkColumn
+          // iterate over the primary key table, adding info to our keyObject
+          for (let i = 0; i < result.rows.length; i++) {
+            table = result.rows[i].table_name;
+            pkColumn = result.rows[i].pk_column;
+            // if the table is not yet initialized within the keyObject, then initialize it
+            if (!keyObject[table]) keyObject[table] = {primaryKeyColumns: {}, foreignKeyColumns: {}};
+            // then just set the value at the pk column name to true for later checking
+            keyObject[table].primaryKeyColumns[pkColumn] = true;
+            }
+          })
+        .then(() => {
+          pool
+            .query(getForeignKeys, null)
+            .then((result) => {
+              let table;
+              let primaryTable;
+              let fkColumn;
+              // iterate over the foreign key table, adding info to our keyObject
+              for (let i = 0; i < result.rows.length; i++) {
+                table = result.rows[i].foreign_table;
+                primaryTable = result.rows[i].primary_table
+                fkColumn = result.rows[i].fk_column;
+                // if the table is not yet initialized within the keyObject, then initialize it
+                if (!keyObject[table]) keyObject[table] = {primaryKeyColumns: {}, foreignKeyColumns: {}};
+                // then set the value at the fk column name to the number of rows asked for in the primary table to which it points
+                keyObject[table].foreignKeyColumns[fkColumn] = dummyDataRequest.dummydata[primaryTable];
+                }
+                resolve(keyObject);
+            })
+        })
+    })
+  },
 
   getSchemaLayout: () => {
     // initialize a new promise; we resolve this promise at the end of the last async function within the promise
