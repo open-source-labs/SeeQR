@@ -116,13 +116,17 @@ input {
 }
 
 .dummy-data-table-container {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
+  // display: flex;
+  // flex-direction: row;
+  // align-items: center;
+  // justify-content: center;
+  height: 10rem;
+  overflow-y: auto;
 }
 
 .dummy-data-table {
+  margin-left: auto;
+  margin-right: auto;
   border: 1px solid $border-darkmode;
   th, tr {
     padding: 0.5rem;
@@ -186,7 +190,7 @@ input {
 }
 
 .ReactCodeMirror {
-  max-width: 90%;
+  max-width: 50rem;
 }
 
 #codemirror {
