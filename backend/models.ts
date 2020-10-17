@@ -158,11 +158,11 @@ module.exports = {
       queryString += ';'
       console.log('Final Query String: ', queryString);
       
-      return pool.query(queryString);
+      return Promise.resolve(pool.query(queryString));
     }
     
     // iterate over tables, running drop queries, and pushing a new promise to promise array
-    for (const table in keyObject){
+    for (const table in keyObject) {
       await generateAndRunDropQuery(table);
     }
 
@@ -191,7 +191,7 @@ module.exports = {
       queryString += ';'
       console.log('final queryString: ', queryString);
 
-      return pool.query(queryString);
+      return Promise.resolve(pool.query(queryString));
 
     }
     
