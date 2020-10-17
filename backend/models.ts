@@ -136,47 +136,71 @@ module.exports = {
     })
   },
 
-  dropKeyColumns: (keyObject) => {
-    // initialize promise array
-    let promiseArray: any = [];
-    
+  dropKeyColumns: async (keyObject: any) => {
     // define helper function to generate and run query
-    const generateAndRunDropQuery = (table) => {
-      let queryString = `ALTER TABLE $1`;
-      let values = [table]
-      let count = 2;
+    const generateAndRunDropQuery = (table: string) => {
+      let queryString = `ALTER TABLE ${table}`;
+      // let values: any = [table]
+      let count: number = 2;
 
-      for (const pkc in table.primaryKeyColumns){
-        queryString += ` DROP COLUMN $${count}`;
-        values.push(pkc);
+      for (const pkc in keyObject[table].primaryKeyColumns){
+        if (count > 2) queryString += ',';
+        queryString += ` DROP COLUMN ${pkc} CASCADE`;
+        // values.push(pkc);
         count += 1;
       }
-      for (const fkc in table.foreignKeyColumns){
-        queryString += ` DROP COLUMN $${count}`
-        values.push(fkc);
+      for (const fkc in keyObject[table].foreignKeyColumns){
+        if (count > 2) queryString += ',';
+        queryString += ` DROP COLUMN ${fkc}`
+        // values.push(fkc);
         count += 1;
       }
       queryString += ';'
-
-      return new Promise((resolve) => {
-        pool
-          .query(queryString, values)
-          .then(() => resolve())
-      })
+      console.log('Final Query String: ', queryString);
+      
+      return pool.query(queryString);
     }
+    
     // iterate over tables, running drop queries, and pushing a new promise to promise array
     for (const table in keyObject){
-      promiseArray.push(generateAndRunDropQuery(table));
+      await generateAndRunDropQuery(table);
     }
 
-    return promiseArray;
-
-    // move on to add columns
-
+    return;
   },
 
-  addNewColumns: () => {
+  addNewKeyColumns: async (keyObject: any) => {  
+    // define helper function to generate and run query
+    const generateAndRunAddQuery = (table: string) => {
+      let queryString = `ALTER TABLE ${table}`;
+      // let values: any = [table]
+      let count: number = 2;
 
+      for (const pkc in keyObject[table].primaryKeyColumns){
+        if (count > 2) queryString += ',';
+        queryString += ` ADD COLUMN ${pkc} INT`;
+        // values.push(pkc);
+        count += 1;
+      }
+      for (const fkc in keyObject[table].foreignKeyColumns){
+        if (count > 2) queryString += ',';
+        queryString += ` ADD COLUMN ${fkc} INT`
+        // values.push(fkc);
+        count += 1;
+      }
+      queryString += ';'
+      console.log('final queryString: ', queryString);
+
+      return pool.query(queryString);
+
+    }
+    
+    // iterate over tables, running drop queries, and pushing a new promise to promise array
+    for (const table in keyObject){
+      await generateAndRunAddQuery(table);
+    }
+
+    return;
   },
 
   getSchemaLayout: () => {
