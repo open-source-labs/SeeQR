@@ -94,13 +94,13 @@ module.exports = {
 
     
   createKeyObject: (dummyDataRequest) => {
-    console.log(dummyDataRequest);
-    return new Promise ((resolve) => {
+    return new Promise((resolve) => {
       // initialize the keyObject we eventually want to return out
       const keyObject: any  = {};
       pool
         .query(getPrimaryKeys, null)
         .then((result) => {
+          console.log("Result from get pk's: ", result)
           let table;
           let pkColumn
           // iterate over the primary key table, adding info to our keyObject
@@ -111,12 +111,13 @@ module.exports = {
             if (!keyObject[table]) keyObject[table] = {primaryKeyColumns: {}, foreignKeyColumns: {}};
             // then just set the value at the pk column name to true for later checking
             keyObject[table].primaryKeyColumns[pkColumn] = true;
-            }
+          }
           })
         .then(() => {
           pool
             .query(getForeignKeys, null)
             .then((result) => {
+              console.log("Result from get fk's: ", result)
               let table;
               let primaryTable;
               let fkColumn;
@@ -130,6 +131,7 @@ module.exports = {
                 // then set the value at the fk column name to the number of rows asked for in the primary table to which it points
                 keyObject[table].foreignKeyColumns[fkColumn] = dummyDataRequest.dummyData[primaryTable];
               }
+              console.log("Final keyObject from getKeyObject: ", keyObject)
               resolve(keyObject);
             })
         })

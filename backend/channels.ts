@@ -275,59 +275,52 @@ interface dummyDataRequest {
   dummyData: {};
 }
 
-ipcMain.on('generate-dummy-data', async (event: any, data: dummyDataRequest) => {
-  let schemaLayout;
-  let dummyDataRequest = data;
-  let tableMatricesArray;
-  let keyObject;
+ipcMain.on('generate-dummy-data', (event: any, data: dummyDataRequest) => {
+  let schemaLayout: any;
+  let dummyDataRequest: dummyDataRequest = data;
+  let tableMatricesArray: any;
+  let keyObject: any = "Unresolved";
 
-  await db.getSchemaLayout()
-    .then((result) => {
-      schemaLayout = result;
-    })
-  
-  await db.createKeyObject(dummyDataRequest)
+  db.createKeyObject(dummyDataRequest)
     .then((result) => {
       // set keyObject equal to the result of this query
       keyObject = result;
-    })
-  
-  await db.dropKeyColumns(keyObject)
-    // .then((result) => console.log('Dropped key columns.' , result));
-
-  await db.addNewKeyColumns(keyObject)
-    // .then((result) => console.log('Added new key columns.', result));
-
-  await db.getSchemaLayout()
-  .then((result) => {
-    schemaLayout = result;
-  })
-
-  // generate the dummy data and save it into matrices associated with table names
-  tableMatricesArray = await generateDummyData(schemaLayout, dummyDataRequest, keyObject);
-    
-  let csvPromiseArray: any = [];
-  //iterate through tableMatricesArray to write individual .csv files
-  for (const tableObject of tableMatricesArray) {
-    // extract tableName from tableObject
-    let tableName: string = tableObject.tableName;
-    //mapping column headers from getColumnObjects in models.ts to columnNames
-    let columnArray: string[] = schemaLayout.tables[tableName].map(columnObj => columnObj.columnName)
-    //write all entries in tableMatrix to csv file
-    csvPromiseArray.push(writeCSVFile(tableObject.data, tableName, columnArray));
-  }
-      
-  Promise.all(csvPromiseArray)
-    .then(() => {
-      //iterate through tableMatricesArray to copy individual .csv files to the respective tables
-      for (const tableObject of tableMatricesArray) {
-        // extract tableName from tableObject
-        let tableName: string = tableObject.tableName;
-        // generate a query for each table, copying from the file generated previously
-        let queryString: string = `COPY ${tableName} FROM '/${tableName}' WITH CSV HEADER;`;
-        // run the query in the container using a docker command
-        execute(`docker exec postgres-1 psql -U postgres -d ${data.schemaName} -c "${queryString}" `, null);
-      }
+      console.log("keyObject: ", keyObject)
+      db.dropKeyColumns(keyObject)
+        .then(() => {
+          db.addNewKeyColumns(keyObject)
+            .then(() => {
+              db.getSchemaLayout()
+                .then((result) => {
+                  schemaLayout = result;
+                  // generate the dummy data and save it into matrices associated with table names
+                  tableMatricesArray = generateDummyData(schemaLayout, dummyDataRequest, keyObject);
+                  let csvPromiseArray: any = [];
+                  //iterate through tableMatricesArray to write individual .csv files
+                  for (const tableObject of tableMatricesArray) {
+                    // extract tableName from tableObject
+                    let tableName: string = tableObject.tableName;
+                    //mapping column headers from getColumnObjects in models.ts to columnNames
+                    let columnArray: string[] = schemaLayout.tables[tableName].map(columnObj => columnObj.columnName)
+                    //write all entries in tableMatrix to csv file
+                    csvPromiseArray.push(writeCSVFile(tableObject.data, tableName, columnArray));
+                  }
+                      
+                  Promise.all(csvPromiseArray)
+                    .then(() => {
+                      //iterate through tableMatricesArray to copy individual .csv files to the respective tables
+                      for (const tableObject of tableMatricesArray) {
+                        // extract tableName from tableObject
+                        let tableName: string = tableObject.tableName;
+                        // generate a query for each table, copying from the file generated previously
+                        let queryString: string = `COPY ${tableName} FROM '/${tableName}' WITH CSV HEADER;`;
+                        // run the query in the container using a docker command
+                        execute(`docker exec postgres-1 psql -U postgres -d ${data.schemaName} -c "${queryString}" `, null);
+                      }
+                    })
+                });
+            });
+        });
     })
 })
 

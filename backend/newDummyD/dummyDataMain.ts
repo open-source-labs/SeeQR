@@ -112,7 +112,6 @@ module.exports = {
 
   //maps table names from schemaLayout to sql files
   generateDummyData: (schemaLayout, dummyDataRequest, keyObject) => {
-    console.log('schemaLayout: ', schemaLayout);
     const returnArray: any = [];
   
     //iterate over schemaLayout.tableNames array
