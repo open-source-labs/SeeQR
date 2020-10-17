@@ -112,6 +112,7 @@ module.exports = {
 
   //maps table names from schemaLayout to sql files
   generateDummyData: (schemaLayout, dummyDataRequest, keyObject) => {
+    console.log('schemaLayout: ', schemaLayout);
     const returnArray: any = [];
   
     //iterate over schemaLayout.tableNames array
@@ -121,7 +122,7 @@ module.exports = {
       if (dummyDataRequest.dummyData[tableName]) {
         //declare empty columnData array for tableMatrix
         let columnData: any = [];
-        //declare an entry variable to carpture the entry we will push to column data
+        //declare an entry variable to capture the entry we will push to column data
         let entry: any;
 
         //iterate over columnArray (i.e. an array of the column names for the table)

@@ -66,7 +66,7 @@ const execute = (str: string, nextStep: any) => {
     console.log(`${stdout}`);
     if (nextStep) nextStep();
     //this shows the console error in an error message on the frontend
-    else dialog.showErrorBox('Success', '');
+    // else dialog.showErrorBox('Success', '');
   });
 };
 
@@ -297,6 +297,11 @@ ipcMain.on('generate-dummy-data', async (event: any, data: dummyDataRequest) => 
 
   await db.addNewKeyColumns(keyObject)
     // .then((result) => console.log('Added new key columns.', result));
+
+  await db.getSchemaLayout()
+  .then((result) => {
+    schemaLayout = result;
+  })
 
   // generate the dummy data and save it into matrices associated with table names
   tableMatricesArray = await generateDummyData(schemaLayout, dummyDataRequest, keyObject);
