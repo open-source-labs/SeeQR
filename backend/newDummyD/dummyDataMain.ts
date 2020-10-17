@@ -103,8 +103,8 @@ module.exports = {
     //this returns a new promise to channels.ts, where it is put into an array and resolved after all promises have been created
     return new Promise((resolve, reject) => {
       let echoString = `echo "${csvString}" > ${tableName}`;
-      console.log(echoString)
-      execute(`docker exec postgres-1 bash -c "echo '${csvString}' > ${tableName}"`, resolve(console.log('CSV created in container')));
+      // console.log(echoString)
+      execute(`docker exec postgres-1 bash -c "echo '${csvString}' > ${tableName}"`, execute(`docker exec postgres-1 bash -c "cat /${tableName}"`, resolve(console.log('CSV created in container'))));
     })
   },
 
