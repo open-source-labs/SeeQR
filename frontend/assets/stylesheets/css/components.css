@@ -122,22 +122,13 @@ input *:focus {
 }
 
 .dummy-data-table-container {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: row;
-          flex-direction: row;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
+  height: 10rem;
+  overflow-y: auto;
 }
 
 .dummy-data-table {
+  margin-left: auto;
+  margin-right: auto;
   border: 1px solid #444c50;
 }
 
@@ -217,7 +208,7 @@ input *:focus {
 }
 
 .ReactCodeMirror {
-  max-width: 90%;
+  max-width: 50rem;
 }
 
 #codemirror {
