@@ -73,6 +73,9 @@ function createWindow() {
   // Don't show until we are ready and loaded
   mainWindow.once('ready-to-show', (event) => {
     mainWindow.show();
+    // uncomment code below before running production build and packaging
+    // const yamlPath = join(__dirname, '../../docker-compose.yml')
+    // const runDocker: string = `docker-compose -f '${yamlPath}' up -d`;
     const runDocker: string = `docker-compose up -d`;
     exec(runDocker, (error, stdout, stderr) => {
       if (error) {
