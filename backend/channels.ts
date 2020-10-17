@@ -65,8 +65,6 @@ const execute = (str: string, nextStep: any) => {
     }
     console.log(`${stdout}`);
     if (nextStep) nextStep();
-    //this shows the console error in an error message on the frontend
-    else dialog.showErrorBox('Success', '');
   });
 };
 
