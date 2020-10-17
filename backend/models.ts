@@ -136,6 +136,73 @@ module.exports = {
     })
   },
 
+  dropKeyColumns: async (keyObject: any) => {
+    // define helper function to generate and run query
+    const generateAndRunDropQuery = (table: string) => {
+      let queryString = `ALTER TABLE ${table}`;
+      // let values: any = [table]
+      let count: number = 2;
+
+      for (const pkc in keyObject[table].primaryKeyColumns){
+        if (count > 2) queryString += ',';
+        queryString += ` DROP COLUMN ${pkc} CASCADE`;
+        // values.push(pkc);
+        count += 1;
+      }
+      for (const fkc in keyObject[table].foreignKeyColumns){
+        if (count > 2) queryString += ',';
+        queryString += ` DROP COLUMN ${fkc}`
+        // values.push(fkc);
+        count += 1;
+      }
+      queryString += ';'
+      console.log('Final Query String: ', queryString);
+      
+      return pool.query(queryString);
+    }
+    
+    // iterate over tables, running drop queries, and pushing a new promise to promise array
+    for (const table in keyObject){
+      await generateAndRunDropQuery(table);
+    }
+
+    return;
+  },
+
+  addNewKeyColumns: async (keyObject: any) => {  
+    // define helper function to generate and run query
+    const generateAndRunAddQuery = (table: string) => {
+      let queryString = `ALTER TABLE ${table}`;
+      // let values: any = [table]
+      let count: number = 2;
+
+      for (const pkc in keyObject[table].primaryKeyColumns){
+        if (count > 2) queryString += ',';
+        queryString += ` ADD COLUMN ${pkc} INT`;
+        // values.push(pkc);
+        count += 1;
+      }
+      for (const fkc in keyObject[table].foreignKeyColumns){
+        if (count > 2) queryString += ',';
+        queryString += ` ADD COLUMN ${fkc} INT`
+        // values.push(fkc);
+        count += 1;
+      }
+      queryString += ';'
+      console.log('final queryString: ', queryString);
+
+      return pool.query(queryString);
+
+    }
+    
+    // iterate over tables, running drop queries, and pushing a new promise to promise array
+    for (const table in keyObject){
+      await generateAndRunAddQuery(table);
+    }
+
+    return;
+  },
+
   getSchemaLayout: () => {
     // initialize a new promise; we resolve this promise at the end of the last async function within the promise
     return new Promise((resolve) => {
@@ -173,5 +240,9 @@ module.exports = {
           console.log('error in models.ts')
         })
     });
+  },
+
+  addKeyConstrains: () => {
+
   }
 }

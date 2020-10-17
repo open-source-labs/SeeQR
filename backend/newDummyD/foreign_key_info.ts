@@ -19,14 +19,20 @@ module.exports= {
   // This query lists each table and the column name at which there is a primary key
   getPrimaryKeys:
     `select kcu.table_name as table_name,
-    kcu.column_name as pk_column
+      kcu.column_name as pk_column
     from information_schema.key_column_usage as kcu
     join information_schema.table_constraints as tco
       on tco.constraint_name = kcu.constraint_name
     where tco.constraint_type = 'PRIMARY KEY'
     order by kcu.table_name;`,
 
+  dropKeyColumns:
+  `ALTER TABLE table_name 
+  DROP COLUMN column_name;`,
+
 }
+
+
 
 // structure of the key object for generating key compliant data
 // const KeyObject = {
@@ -48,6 +54,6 @@ module.exports= {
 // }
 
 // 1. function definition to run these queries and build the KeyObject
-// 2. iterate over all tables and drop primary key columns, replacing with integer primary key columns
+// 2. iterate over all tables and drop key columns, replacing with integer key columns
 // 3. integrate key data generation into dummy data generator function 
 //      (i.e. if the column name is a primary key column, ...)
