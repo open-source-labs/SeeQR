@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Data } from './schemaChildren/Data';
-import { Results } from './schemaChildren/Results';
 import Query from './schemaChildren/Query';
 
 type SchemaContainerProps = {
@@ -34,9 +33,6 @@ export class SchemaContainer extends Component<SchemaContainerProps> {
               <Data queries={this.props.queries} />
             </div>
           </div>
-         {/*<div id="schema-right">
-              <Results queries={this.props.queries} />
-            </div>*/}
         </div>
       </div>
     );

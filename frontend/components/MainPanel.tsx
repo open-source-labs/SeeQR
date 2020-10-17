@@ -81,7 +81,6 @@ class MainPanel extends Component<MainProps, MainState> {
   }
 
   render() {
-    console.log('Main Panel: ', this.state.lists);
     return (
       <div id="main-panel">
         <div id="main-left">
