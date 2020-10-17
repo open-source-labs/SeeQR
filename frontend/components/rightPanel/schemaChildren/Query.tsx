@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 //delete before pull request
-import DummyDataModal from './DummyDataModal';
+import DummyDataPanel from './DummyDataPanel';
 
 const { ipcRenderer } = window.require('electron');
 const { dialog } = require('electron').remote;
@@ -113,7 +113,7 @@ class Query extends Component<QueryProps, state> {
     return (
       <div id="query-panel">
         <div id="delete-me">
-          <DummyDataModal show={true} showModal={true} onClose={null} tableList={this.props.tableList} currentSchema={this.props.currentSchema}/>
+          <DummyDataPanel tableList={this.props.tableList} currentSchema={this.props.currentSchema}/>
         </div>
         <h3>Query</h3>
         <form onSubmit={this.handleQuerySubmit}>

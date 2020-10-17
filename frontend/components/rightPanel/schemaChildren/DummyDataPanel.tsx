@@ -7,10 +7,7 @@ const { ipcRenderer } = window.require('electron');
 
 type ClickEvent = React.MouseEvent<HTMLElement>;
 
-type DummyDataModalProps = {
-    show: boolean;
-    showModal: any;
-    onClose: any;
+type DummyDataPanelProps = {
     currentSchema: string;
     tableList: string[];
 };
@@ -21,9 +18,9 @@ type state = {
   rowNumber: string
 }
 
-class DummyDataModal extends Component<DummyDataModalProps, state> {
+class DummyDataPanel extends Component<DummyDataPanelProps, state> {
 
-  constructor(props: DummyDataModalProps) {
+  constructor(props: DummyDataPanelProps) {
     super(props);
     this.dropDownList = this.dropDownList.bind(this);
     this.selectHandler = this.selectHandler.bind(this);
@@ -141,17 +138,14 @@ class DummyDataModal extends Component<DummyDataModalProps, state> {
       dummyData: this.state.dataInfo
     }
     ipcRenderer.send('generate-dummy-data', dummyDataRequest);
-    //reset state to clear the dummy data modal's table
+    //reset state to clear the dummy data panel's table
     this.setState({dataInfo: {}});
   }
 
   render() {
-    if (this.props.show === false) {
-      return null;
-    }
 
     return (
-      <div className="dummy-data-modal">
+      <div className="dummy-data-panel">
         <h3>Generate Dummy Data</h3>
         <p>Select table and number of rows:</p>
           <div className="dummy-data-select">
@@ -192,4 +186,4 @@ class DummyDataModal extends Component<DummyDataModalProps, state> {
   }
 }
 
-export default DummyDataModal;
+export default DummyDataPanel;
