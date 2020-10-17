@@ -68,6 +68,25 @@ const execute = (str: string, nextStep: any) => {
   });
 };
 
+// const dummyDataExecute = (str: string, nextStep: any) => {
+//   exec(str, (error, stdout, stderr) => {
+//     if (error) {
+//       //this shows the console error in an error message on the frontend
+//       dialog.showErrorBox(`${error.message}`, '');
+//       console.log(`error: ${error.message}`);
+//       return;
+//     }
+//     if (stderr) {
+//       //this shows the console error in an error message on the frontend
+//       dialog.showErrorBox(`${stderr}`, '');
+//       console.log(`stderr: ${stderr}`);
+//       return;
+//     }
+//     if (stdout === 'OK' && nextStep) nextStep();
+//     else console.log('not okay')
+//   })
+// };
+
 // Listen for file upload. Create an instance of database from pre-made .tar or .sql file.
 ipcMain.on('upload-file', (event, filePath: string) => {
   let dbName: string;
@@ -135,39 +154,41 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
   const { schemaName: dbName, schemaEntry, dbCopyName, copy } = data;
   let { schemaFilePath: filePath } = data;
 
-  if (copy !== undefined) {
-  // first, we need to change the current DB instance to that of the one we need to copy, so we'll head to the changeDB function in the models file
-  db.changeDB(dbCopyName);
-  // now that our DB has been changed to the one we wish to copy, we need to either make an exact copy or a hollow copy using pg_dump OR pg_dump -s followed by pg_restore
-
-  // reset file path such that it points to our newly created local .sql file
-  filePath = [path.join(__dirname, `./${dbName}.sql`)];
-
-  // this generates a pg_dump file from the specified db and saves it to a location in the container
-  if(copy) {
-    console.log('in copy if statement');
-    execute(`docker exec postgres-1 pg_dump -U postgres ${dbCopyName} -f /data_dump`, null);
-  }
-  // Hollow copy
-  else execute(`docker exec postgres-1 pg_dump -s -U postgres ${dbCopyName} -f /data_dump`, null)
-  }
-
-  console.log(dbName, schemaEntry, dbCopyName, copy, filePath);
-
   // Using RegEx to remove line breaks to ensure data.schemaEntry is being run as one large string
   // so that schemaEntry string will work for Windows computers.
-  let trimSchemaEntry = schemaEntry.replace(/[\n\r]/g, "").trim();
+  // let trimSchemaEntry = schemaEntry.replace(/[\n\r]/g, "").trim();
 
   const createDB: string = createDBFunc(dbName);
   const importFile: string = importFileFunc(filePath);
   const runSQL: string = runSQLFunc(dbName);
   const runTAR: string = runTARFunc(dbName);
 
-  const runScript: string = `docker exec postgres-1 psql -U postgres -d ${dbName} -c "${trimSchemaEntry}"`;
+  // const runScript: string = `docker exec postgres-1 psql -U postgres -d ${dbName} -c "${trimSchemaEntry}"`;
   let extension: string = '';
   if (filePath.length > 0) {
     extension = filePath[0].slice(filePath[0].lastIndexOf('.'));
   }
+  else extension = '.sql';
+
+  if (copy !== undefined) {
+    // first, we need to change the current DB instance to that of the one we need to copy, so we'll head to the changeDB function in the models file
+    db.changeDB(dbCopyName);
+    // now that our DB has been changed to the one we wish to copy, we need to either make an exact copy or a hollow copy using pg_dump OR pg_dump -s followed by pg_restore
+
+    // reset file path such that it points to our newly created local .sql file
+    // filePath = [path.join(__dirname, `./${dbName}.sql`)];
+
+    // this generates a pg_dump file from the specified db and saves it to a location in the container
+    if(copy) {
+      console.log('in copy if statement');
+      execute(`docker exec postgres-1 pg_dump -U postgres ${dbCopyName} -f /data_dump`, null);
+    }
+    // Hollow copy
+    else execute(`docker exec postgres-1 pg_dump -s -U postgres ${dbCopyName} -f /data_dump`, null);
+  }
+
+  console.log(dbName, schemaEntry, dbCopyName, copy, filePath);
+
 
   // SEQUENCE OF EXECUTING COMMANDS
   // Steps are in reverse order because each step is a callback function that requires the following step to be defined.
@@ -185,7 +206,7 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
     let runCmd: string = '';
     if (extension === '.sql') runCmd = runSQL;
     else if (extension === '.tar') runCmd = runTAR;
-    else runCmd = runScript;
+    // else runCmd = runScript;
     execute(runCmd, sendLists);
   };
 
@@ -195,14 +216,12 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
   // Step 2: Change curent URI to match newly created DB
   const step2 = () => {
     db.changeDB(dbName);
-    if (copy) return step4();
+    if (copy !== undefined) return step4();
     else return step3();
   }
 
   // Step 1 : Create empty db
-  if (extension === '.sql' || extension === '.tar') execute(createDB, step2);
-  // if data is inputted as text
-  else execute(createDB, step3);
+  execute(createDB, step2);
 });
 
 interface QueryType {
@@ -274,42 +293,52 @@ interface dummyDataRequest {
 }
 
 ipcMain.on('generate-dummy-data', (event: any, data: dummyDataRequest) => {
-  let schemaLayout;
-  let dummyDataRequest = data;
-  let tableMatricesArray;
-  db.getSchemaLayout()
-  .then((result) => {
-    schemaLayout = result;
-  })
-  .then(() => {
-    // generate the dummy data and save it into matrices associated with table names
-    tableMatricesArray = generateDummyData(schemaLayout, dummyDataRequest);
-  })
-  .then(() => {
-    let csvPromiseArray: any = [];
-    //iterate through tableMatricesArray to write individual .csv files
-    for (const tableObject of tableMatricesArray) {
-      // extract tableName from tableObject
-      let tableName: string = tableObject.tableName;
-      //mapping column headers from getColumnObjects in models.ts to columnNames
-      let columnArray: string[] = schemaLayout.tables[tableName].map(columnObj => columnObj.columnName)
-      //write all entries in tableMatrix to csv file
-      csvPromiseArray.push(writeCSVFile(tableObject.data, tableName, columnArray));
-    }
-    Promise.all(csvPromiseArray)
-    .then(() => {
-      //iterate through tableMatricesArray to copy individual .csv files to the respective tables
-      for (const tableObject of tableMatricesArray) {
-        // extract tableName from tableObject
-        let tableName: string = tableObject.tableName;
-        // generate a query for each table, copying from the file generated previously
-        let queryString: string = `COPY ${tableName} FROM '/${tableName}' WITH CSV HEADER;`;
-        // run the query in the container using a docker command
-        execute(`docker exec postgres-1 psql -U postgres -d ${data.schemaName} -c "${queryString}" `, null);
-      }
+  let schemaLayout: any;
+  let dummyDataRequest: dummyDataRequest = data;
+  let tableMatricesArray: any;
+  let keyObject: any = "Unresolved";
+
+  db.createKeyObject(dummyDataRequest)
+    .then((result) => {
+      // set keyObject equal to the result of this query
+      keyObject = result;
+      console.log("keyObject: ", keyObject)
+      db.dropKeyColumns(keyObject)
+        .then(() => {
+          db.addNewKeyColumns(keyObject)
+            .then(() => {
+              db.getSchemaLayout()
+                .then((result) => {
+                  schemaLayout = result;
+                  // generate the dummy data and save it into matrices associated with table names
+                  tableMatricesArray = generateDummyData(schemaLayout, dummyDataRequest, keyObject);
+                  let csvPromiseArray: any = [];
+                  //iterate through tableMatricesArray to write individual .csv files
+                  for (const tableObject of tableMatricesArray) {
+                    // extract tableName from tableObject
+                    let tableName: string = tableObject.tableName;
+                    //mapping column headers from getColumnObjects in models.ts to columnNames
+                    let columnArray: string[] = schemaLayout.tables[tableName].map(columnObj => columnObj.columnName)
+                    //write all entries in tableMatrix to csv file
+                    csvPromiseArray.push(writeCSVFile(tableObject.data, tableName, columnArray));
+                  }
+                      
+                  Promise.all(csvPromiseArray)
+                    .then(() => {
+                      //iterate through tableMatricesArray to copy individual .csv files to the respective tables
+                      for (const tableObject of tableMatricesArray) {
+                        // extract tableName from tableObject
+                        let tableName: string = tableObject.tableName;
+                        // generate a query for each table, copying from the file generated previously
+                        let queryString: string = `COPY ${tableName} FROM '/${tableName}' WITH CSV HEADER;`;
+                        // run the query in the container using a docker command
+                        execute(`docker exec postgres-1 psql -U postgres -d ${data.schemaName} -c "${queryString}" `, null);
+                      }
+                    })
+                });
+            });
+        });
     })
-  })
-  
 })
 
 export default execute;
