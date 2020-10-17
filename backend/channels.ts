@@ -68,6 +68,25 @@ const execute = (str: string, nextStep: any) => {
   });
 };
 
+const dummyDataExecute = (str: string, nextStep: any) => {
+  exec(str, (error, stdout, stderr) => {
+    if (error) {
+      //this shows the console error in an error message on the frontend
+      dialog.showErrorBox(`${error.message}`, '');
+      console.log(`error: ${error.message}`);
+      return;
+    }
+    if (stderr) {
+      //this shows the console error in an error message on the frontend
+      dialog.showErrorBox(`${stderr}`, '');
+      console.log(`stderr: ${stderr}`);
+      return;
+    }
+    if (stdout === 'OK' && nextStep) nextStep();
+    else console.log('not okay')
+  })
+};
+
 // Listen for file upload. Create an instance of database from pre-made .tar or .sql file.
 ipcMain.on('upload-file', (event, filePath: string) => {
   let dbName: string;

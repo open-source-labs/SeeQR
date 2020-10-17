@@ -1,5 +1,5 @@
 import faker from "faker";
-import execute from '../channels';
+import execute from "../channels";
 
 /////////////////////////////////////////////////////////////////////
 /*   THIS FILE CONTAINS THE ALGORITHMS THAT GENERATE DUMMY DATA    */
@@ -104,7 +104,7 @@ module.exports = {
     return new Promise((resolve, reject) => {
       let echoString = `echo "${csvString}" > ${tableName}`;
       // console.log(echoString)
-      execute(`docker exec postgres-1 bash -c "echo '${csvString}' > ${tableName}"`, execute(`docker exec postgres-1 bash -c "cat /${tableName}"`, resolve(console.log('CSV created in container'))));
+      execute(`docker exec postgres-1 bash -c "echo '${csvString}' > ${tableName}"`, resolve(console.log('CSV created in container')));
     })
   },
 
