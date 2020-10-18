@@ -73,7 +73,9 @@ const getRandomInt = (min, max) => {
 
 module.exports = {
 
-  writeCSVFile: (tableMatrix, tableName, columnArray) => {
+  writeCSVFile: (tableMatrix, tableName, columnArray, schemaName) => {
+    let check: boolean = false;
+    console.log('in CSV file');
     const table: any = [];
     let row: any  = [];
     for(let i = 0; i < tableMatrix[0].length; i++) {
@@ -99,18 +101,25 @@ module.exports = {
       const columnString: string = columnArray.join(',');
       csvString = columnString.concat('^\n').concat(tableDataString);
     }
+    
+    const step2 = () => {
+      let queryString: string = `COPY ${tableName} FROM '/${tableName}' WITH CSV HEADER;`;
+      // run the query in the container using a docker command
+      execute(`docker exec postgres-1 psql -U postgres -d ${schemaName} -c "${queryString}" `, null);
+    }
 
     //this returns a new promise to channels.ts, where it is put into an array and resolved after all promises have been created
-    return new Promise((resolve, reject) => {
-      let echoString = `echo "${csvString}" > ${tableName}`;
-      // console.log(echoString)
-      execute(`docker exec postgres-1 bash -c "echo '${csvString}' > ${tableName}"`, resolve(console.log('CSV created in container')));
-    })
+    let echoString = `echo "${csvString}" > ${tableName}`;
+    // console.log(echoString)
+
+    execute(`docker exec postgres-1 bash -c "echo '${csvString}' > ${tableName}"`, step2);
+
   },
 
 
   //maps table names from schemaLayout to sql files
   generateDummyData: (schemaLayout, dummyDataRequest, keyObject) => {
+    console.log('in DD gen func');
     const returnArray: any = [];
   
     //iterate over schemaLayout.tableNames array
