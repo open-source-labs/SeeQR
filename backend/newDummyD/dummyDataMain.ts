@@ -104,11 +104,12 @@ module.exports = {
     }
     
     // Step 3 - this step adds back the PK constraints that we took off prior to copying the dummy data into the DB (using the db that is imported from models.ts)
-    const step3 = (keyObject) => {
-      db.addPrimaryKeyConstraints(keyObject)
+    const step3 = () => {
+      db.addPrimaryKeyConstraints(keyObject, tableName)
         .then(() => {
-          db.addForeignKeyConstraints(keyObject);
+          db.addForeignKeyConstraints(keyObject, tableName)
         })
+        .then(() => console.log('CONSTRAINTS ADDED BACK'))
         .catch((err) => console.log(err));
     } 
 

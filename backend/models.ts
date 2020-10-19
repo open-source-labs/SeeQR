@@ -100,7 +100,6 @@ module.exports = {
       pool
         .query(getPrimaryKeys, null)
         .then((result) => {
-          // console.log("Result from get pk's: ", result)
           let table;
           let pkColumn
           // iterate over the primary key table, adding info to our keyObject
@@ -117,7 +116,6 @@ module.exports = {
           pool
             .query(getForeignKeys, null)
             .then((result) => {
-              // console.log("Result from get fk's: ", result)
               let table;
               let primaryTable;
               let fkColumn;
@@ -129,9 +127,8 @@ module.exports = {
                 // if the table is not yet initialized within the keyObject, then initialize it
                 if (!keyObject[table]) keyObject[table] = {primaryKeyColumns: {}, foreignKeyColumns: {}};
                 // then set the value at the fk column name to the number of rows asked for in the primary table to which it points
-                keyObject[table].foreignKeyColumns[fkColumn] = dummyDataRequest.dummyData[primaryTable];
+                keyObject[table].foreignKeyColumns[fkColumn] = primaryTable;
               }
-              console.log("Final keyObject from getKeyObject: ", keyObject)
               resolve(keyObject);
             })
         })
@@ -244,12 +241,53 @@ module.exports = {
     });
   },
 
-  addPrimaryKeyConstrains: () => {
-    // iterate over table's keyObject property, add primary keys first
+  addPrimaryKeyConstraints: async (keyObject, tableName) => {
+    // iterate over table's keyObject property, add primary key constraints
+    if (Object.keys(keyObject[tableName].primaryKeyColumns).length) {
+      console.log('Final keyObject: ', keyObject);
+      let queryString: string = `ALTER TABLE ${tableName} `;
+      let count: number = 0;
 
+      for (const pk in keyObject[tableName].primaryKeyColumns) {
+        if (count > 0) queryString += `, `;
+        queryString += `ADD CONSTRAINT "${tableName}_pk${count}" PRIMARY KEY ("${pk}")`;
+        count += 1;
+      }
+      
+      queryString += `;`;
+
+      console.log('ADD PK: ', queryString);
+
+      await pool.query(queryString);
+    }
+
+    return;
   },
 
-  addForeignKeyConstraints: () => {
-    
+  addForeignKeyConstraints: async (keyObject, tableName) => {
+    // iterate over table's keyObject property, add foreign key constraints
+    console.log(keyObject[tableName].foreignKeyColumns);
+    if (Object.keys(keyObject[tableName].foreignKeyColumns).length) {  
+      let queryString: string = `ALTER TABLE ${tableName} `;
+      let count: number = 0;
+
+      for (const fk in keyObject[tableName].foreignKeyColumns) {
+        let primaryTable: string = keyObject[tableName].foreignKeyColumns[fk];
+        console.log('PRIMARY TABLE: ', primaryTable);
+        let primaryKey: any = Object.keys(keyObject[primaryTable].primaryKeyColumns)[0];
+        console.log('PRIMARY KEY: ', primaryKey);
+        if (count > 0) queryString += `, `;
+        queryString += `ADD CONSTRAINT "${tableName}_fk${count}" FOREIGN KEY ("${fk}") REFERENCES ${primaryTable}("${primaryKey}")`;
+        count += 1;
+      }
+      
+      queryString += `;`;
+
+      console.log('ADD FK: ', queryString);
+
+      await pool.query(queryString);
+    }
+
+    return;
   }
 }
