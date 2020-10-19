@@ -90,20 +90,6 @@ module.exports = {
       table.push(rowString); //'1, luke, etc'
       row = [];
     }
-
-    let csvString: string;
-    //join tableMatrix with a line break (different on mac and windows because of line breaks in the bash CLI)
-    if (process.platform === 'darwin') {
-      const tableDataString: string = table.join('\n');
-      const columnString: string = columnArray.join(',');
-      csvString = columnString.concat('\n').concat(tableDataString);
-    }
-
-    else {
-      const tableDataString: string = table.join('^\n');
-      const columnString: string = columnArray.join(',');
-      csvString = columnString.concat('^\n').concat(tableDataString);
-    }
     
     // Step 3 - this step adds back the PK constraints that we took off prior to copying the dummy data into the DB (using the db that is imported from models.ts)
     const step3 = () => {
@@ -132,9 +118,21 @@ module.exports = {
       execute(`docker exec postgres-1 psql -U postgres -d ${schemaName} -c "${queryString}" `, step3);
     }
 
-    // Step 1 - this writes a csv file to the postgres-1 file system, which contains all of the dummy data that will be copied into its corresponding postgres DB
-    execute(`docker exec postgres-1 bash -c "echo '${csvString}' > ${tableName}".csv`, step2);
-
+    let csvString: string;
+    //join tableMatrix with a line break (different on mac and windows because of line breaks in the bash CLI)
+    if (process.platform === 'win32') {
+      const tableDataString: string = table.join(`' >> ${tableName}.csv; echo '`);
+      const columnString: string = columnArray.join(',');
+      csvString = columnString.concat(`' > ${tableName}.csv; echo '`).concat(tableDataString);
+      execute(`docker exec postgres-1 bash -c "echo '${csvString}' >> ${tableName}.csv"`, step2);
+    }
+    else {
+      const tableDataString: string = table.join('\n');
+      const columnString: string = columnArray.join(',');
+      csvString = columnString.concat('\n').concat(tableDataString);
+      // Step 1 - this writes a csv file to the postgres-1 file system, which contains all of the dummy data that will be copied into its corresponding postgres DB
+      execute(`docker exec postgres-1 bash -c "echo '${csvString}' > ${tableName}".csv`, step2);
+    }
   },
 
 
