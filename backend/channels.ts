@@ -250,22 +250,32 @@ ipcMain.on('execute-query-tracked', (event, data: QueryType) => {
   db.query(queryString)
     .then((queryData) => {
       frontendData.queryData = queryData.rows;
-
+      if (!queryString.includes('CREATE') && !queryString.includes('create') && !queryString.includes('Create')) {
       // Run EXPLAIN (FORMAT JSON, ANALYZE)
-      db.query('EXPLAIN (FORMAT JSON, ANALYZE) ' + queryString).then((queryStats) => {
-        frontendData.queryStatistics = queryStats.rows;
+      db.query('EXPLAIN (FORMAT JSON, ANALYZE) ' + queryString)
+        .then((queryStats) => {
+          frontendData.queryStatistics = queryStats.rows;
 
-        (async function getListAsync() {
-          listObj = await db.getLists();
-          frontendData.lists = listObj;
-          event.sender.send('db-lists', listObj)
-          event.sender.send('return-execute-query', frontendData);
-        })();
-      });
+          (async function getListAsync() {
+            listObj = await db.getLists();
+            frontendData.lists = listObj;
+            event.sender.send('db-lists', listObj)
+            event.sender.send('return-execute-query', frontendData);
+          })();
+      })
+    } else {
+      // Handling for tracking a create table query, can't run explain/analyze on create statements
+      (async function getListAsync() {
+        listObj = await db.getLists();
+        frontendData.lists = listObj;
+        event.sender.send('db-lists', listObj)
+      })();
+    }
     })
     .catch((error: string) => {
       console.log('ERROR in execute-query-tracked channel in main.ts', error);
     });
+    
 });
 
 interface dummyDataRequest {
