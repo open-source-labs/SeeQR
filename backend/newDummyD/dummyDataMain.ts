@@ -103,7 +103,7 @@ module.exports = {
     }
     
     const step2 = () => {
-      let queryString: string = `COPY ${tableName} FROM '/${tableName}' WITH CSV HEADER;`;
+      let queryString: string = `COPY ${tableName} FROM '/${tableName}.csv' WITH CSV HEADER;`;
       // run the query in the container using a docker command
       execute(`docker exec postgres-1 psql -U postgres -d ${schemaName} -c "${queryString}" `, null);
     }
@@ -112,7 +112,7 @@ module.exports = {
     let echoString = `echo "${csvString}" > ${tableName}`;
     // console.log(echoString)
 
-    execute(`docker exec postgres-1 bash -c "echo '${csvString}' > ${tableName}"`, step2);
+    execute(`docker exec postgres-1 bash -c "echo '${csvString}' > ${tableName}".csv`, step2);
 
   },
 
