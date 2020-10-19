@@ -87,20 +87,6 @@ module.exports = {
       table.push(rowString); //'1, luke, etc'
       row = [];
     }
-
-    let csvString: string;
-    //join tableMatrix with a line break (different on mac and windows because of line breaks in the bash CLI)
-    if (process.platform === 'darwin') {
-      const tableDataString: string = table.join('\n');
-      const columnString: string = columnArray.join(',');
-      csvString = columnString.concat('\n').concat(tableDataString);
-    }
-
-    else {
-      const tableDataString: string = table.join('^\n');
-      const columnString: string = columnArray.join(',');
-      csvString = columnString.concat('^\n').concat(tableDataString);
-    }
     
     const step2 = () => {
       let queryString: string = `COPY ${tableName} FROM '/${tableName}.csv' WITH CSV HEADER;`;
@@ -108,11 +94,23 @@ module.exports = {
       execute(`docker exec postgres-1 psql -U postgres -d ${schemaName} -c "${queryString}" `, null);
     }
 
-    //this returns a new promise to channels.ts, where it is put into an array and resolved after all promises have been created
-    let echoString = `echo "${csvString}" > ${tableName}`;
-    // console.log(echoString)
+    let csvString: string;
+    //join tableMatrix with a line break (different on mac and windows because of line breaks in the bash CLI)
+    if (process.platform === 'win32') {
+      const tableDataString: string = table.join(`' >> ${tableName}.csv; echo '`);
+      const columnString: string = columnArray.join(',');
+      csvString = columnString.concat(`' > ${tableName}.csv; echo '`).concat(tableDataString);
+      console.log(csvString)
+      execute(`docker exec postgres-1 bash -c "echo '${csvString}' >> ${tableName}.csv"`, step2);
+    }
+    else {
+      const tableDataString: string = table.join('\n');
+      const columnString: string = columnArray.join(',');
+      csvString = columnString.concat('\n').concat(tableDataString);
+      execute(`docker exec postgres-1 bash -c "echo '${csvString}' > ${tableName}.csv"`, step2);
+    }
 
-    execute(`docker exec postgres-1 bash -c "echo '${csvString}' > ${tableName}".csv`, step2);
+    
 
   },
 
