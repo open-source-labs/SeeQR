@@ -100,7 +100,7 @@ module.exports = {
       pool
         .query(getPrimaryKeys, null)
         .then((result) => {
-          console.log("Result from get pk's: ", result)
+          // console.log("Result from get pk's: ", result)
           let table;
           let pkColumn
           // iterate over the primary key table, adding info to our keyObject
@@ -117,7 +117,7 @@ module.exports = {
           pool
             .query(getForeignKeys, null)
             .then((result) => {
-              console.log("Result from get fk's: ", result)
+              // console.log("Result from get fk's: ", result)
               let table;
               let primaryTable;
               let fkColumn;
@@ -158,7 +158,7 @@ module.exports = {
         count += 1;
       }
       queryString += ';'
-      console.log('Final Query String: ', queryString);
+      // console.log('Final Query String: ', queryString);
       
       return Promise.resolve(pool.query(queryString));
     }
@@ -191,7 +191,7 @@ module.exports = {
         count += 1;
       }
       queryString += ';'
-      console.log('final queryString: ', queryString);
+      // console.log('final queryString: ', queryString);
 
       return Promise.resolve(pool.query(queryString));
 
