@@ -283,7 +283,6 @@ ipcMain.on('generate-dummy-data', (event: any, data: dummyDataRequest) => {
     .then((result) => {
       // set keyObject equal to the result of this query
       keyObject = result;
-      console.log("keyObject: ", keyObject)
       db.dropKeyColumns(keyObject)
         .then(() => {
           db.addNewKeyColumns(keyObject)
@@ -300,7 +299,7 @@ ipcMain.on('generate-dummy-data', (event: any, data: dummyDataRequest) => {
                     //mapping column headers from getColumnObjects in models.ts to columnNames
                     let columnArray: string[] = schemaLayout.tables[tableName].map(columnObj => columnObj.columnName)
                     //write all entries in tableMatrix to csv file
-                    writeCSVFile(tableObject.data, tableName, columnArray, dummyDataRequest.schemaName);
+                    writeCSVFile(tableObject.data, tableName, columnArray, dummyDataRequest.schemaName, keyObject);
                   }
                 });
             });

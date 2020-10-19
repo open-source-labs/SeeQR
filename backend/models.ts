@@ -244,7 +244,12 @@ module.exports = {
     });
   },
 
-  addKeyConstrains: () => {
+  addPrimaryKeyConstrains: () => {
+    // iterate over table's keyObject property, add primary keys first
 
+  },
+
+  addForeignKeyConstraints: () => {
+    
   }
 }

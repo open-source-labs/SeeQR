@@ -1,5 +1,6 @@
 import faker from "faker";
 import execute from "../channels";
+const db = require('../models');
 
 /////////////////////////////////////////////////////////////////////
 /*   THIS FILE CONTAINS THE ALGORITHMS THAT GENERATE DUMMY DATA    */
@@ -73,7 +74,7 @@ const getRandomInt = (min, max) => {
 
 module.exports = {
 
-  writeCSVFile: (tableMatrix, tableName, columnArray, schemaName) => {
+  writeCSVFile: (tableMatrix, tableName, columnArray, schemaName, keyObject) => {
     let check: boolean = false;
     console.log('in CSV file');
     const table: any = [];
@@ -102,16 +103,23 @@ module.exports = {
       csvString = columnString.concat('^\n').concat(tableDataString);
     }
     
+    // Step 3 - this step adds back the PK constraints that we took off prior to copying the dummy data into the DB (using the db that is imported from models.ts)
+    const step3 = (keyObject) => {
+      db.addPrimaryKeyConstraints(keyObject)
+        .then(() => {
+          db.addForeignKeyConstraints(keyObject);
+        })
+        .catch((err) => console.log(err));
+    } 
+
+    // Step 2 - using the postgres COPY command, this step copies the contents of the csv file in the container file system into the appropriate postgres DB
     const step2 = () => {
       let queryString: string = `COPY ${tableName} FROM '/${tableName}.csv' WITH CSV HEADER;`;
       // run the query in the container using a docker command
-      execute(`docker exec postgres-1 psql -U postgres -d ${schemaName} -c "${queryString}" `, null);
+      execute(`docker exec postgres-1 psql -U postgres -d ${schemaName} -c "${queryString}" `, step3);
     }
 
-    //this returns a new promise to channels.ts, where it is put into an array and resolved after all promises have been created
-    let echoString = `echo "${csvString}" > ${tableName}`;
-    // console.log(echoString)
-
+    // Step 1 - this writes a csv file to the postgres-1 file system, which contains all of the dummy data that will be copied into its corresponding postgres DB
     execute(`docker exec postgres-1 bash -c "echo '${csvString}' > ${tableName}".csv`, step2);
 
   },
