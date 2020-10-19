@@ -176,3 +176,22 @@ The outcome results from each query, both retrieved data and analytics, are stor
 <a href="https://github.com/muhammadtrad">Muhammad Trad</a>
 </td>
 </tr></table>
+
+<table align="center">
+<td align="center">
+<img src="./frontend/assets/images/justinduryagri.png" href="https://github.com/justinD-A" width=180/><br/>
+<a href="https://github.com/justinD-A">Justin Dury-Agri</a>
+</td>
+<td align="center">
+<img src="./frontend/assets/images/caseyescovedo.png" href="https://github.com/caseyescovedo" width=180/><br/>
+<a href="https://github.com/caseyescovedo">Casey Escovedo</a>
+</td>
+<td align="center">
+<img src="./frontend/assets/images/samfrakes.png" href="https://github.com/frakes413" width=180/><br/>
+<a href="https://github.com/frakes413">Sam Frakes</a>
+</td>
+<td align="center">
+<img src="./frontend/assets/images/caseywalker.png" href="https://github.com/cwalker3011" width=180/><br/>
+<a href="https://github.com/cwalker3011">Casey Walker</a>
+</td>
+</table>
