@@ -250,22 +250,32 @@ ipcMain.on('execute-query-tracked', (event, data: QueryType) => {
   db.query(queryString)
     .then((queryData) => {
       frontendData.queryData = queryData.rows;
-
+      if (!queryString.includes('CREATE') && !queryString.includes('create') && !queryString.includes('Create')) {
       // Run EXPLAIN (FORMAT JSON, ANALYZE)
-      db.query('EXPLAIN (FORMAT JSON, ANALYZE) ' + queryString).then((queryStats) => {
-        frontendData.queryStatistics = queryStats.rows;
+      db.query('EXPLAIN (FORMAT JSON, ANALYZE) ' + queryString)
+        .then((queryStats) => {
+          frontendData.queryStatistics = queryStats.rows;
 
-        (async function getListAsync() {
-          listObj = await db.getLists();
-          frontendData.lists = listObj;
-          event.sender.send('db-lists', listObj)
-          event.sender.send('return-execute-query', frontendData);
-        })();
-      });
+          (async function getListAsync() {
+            listObj = await db.getLists();
+            frontendData.lists = listObj;
+            event.sender.send('db-lists', listObj)
+            event.sender.send('return-execute-query', frontendData);
+          })();
+      })
+    } else {
+      // Handling for tracking a create table query, can't run explain/analyze on create statements
+      (async function getListAsync() {
+        listObj = await db.getLists();
+        frontendData.lists = listObj;
+        event.sender.send('db-lists', listObj)
+      })();
+    }
     })
     .catch((error: string) => {
       console.log('ERROR in execute-query-tracked channel in main.ts', error);
     });
+    
 });
 
 interface dummyDataRequest {
@@ -278,12 +288,12 @@ ipcMain.on('generate-dummy-data', (event: any, data: dummyDataRequest) => {
   let dummyDataRequest: dummyDataRequest = data;
   let tableMatricesArray: any;
   let keyObject: any = "Unresolved";
+  let tableCountInRequest: number = Object.keys(dummyDataRequest.dummyData).length;
 
   db.createKeyObject(dummyDataRequest)
     .then((result) => {
       // set keyObject equal to the result of this query
       keyObject = result;
-      console.log("keyObject: ", keyObject)
       db.dropKeyColumns(keyObject)
         .then(() => {
           db.addNewKeyColumns(keyObject)
@@ -300,16 +310,12 @@ ipcMain.on('generate-dummy-data', (event: any, data: dummyDataRequest) => {
                     //mapping column headers from getColumnObjects in models.ts to columnNames
                     let columnArray: string[] = schemaLayout.tables[tableName].map(columnObj => columnObj.columnName)
                     //write all entries in tableMatrix to csv file
-                    writeCSVFile(tableObject.data, tableName, columnArray, dummyDataRequest.schemaName);
+                    writeCSVFile(tableObject.data, tableName, columnArray, dummyDataRequest.schemaName, keyObject, tableCountInRequest, dummyDataRequest);
                   }
                 });
             });
         });
     })  
-})
-
-ipcMain.on('after', () => {
-  console.log('YES');
 })
 
 export default execute;

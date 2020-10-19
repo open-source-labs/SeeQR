@@ -1,5 +1,6 @@
 import faker from "faker";
 import execute from "../channels";
+const db = require('../models');
 
 /////////////////////////////////////////////////////////////////////
 /*   THIS FILE CONTAINS THE ALGORITHMS THAT GENERATE DUMMY DATA    */
@@ -71,9 +72,11 @@ const getRandomInt = (min, max) => {
   return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
 }
 
+let count: number = 0;
+
 module.exports = {
 
-  writeCSVFile: (tableMatrix, tableName, columnArray, schemaName) => {
+  writeCSVFile: (tableMatrix, tableName, columnArray, schemaName, keyObject, tableCount, dummyDataRequest) => {
     let check: boolean = false;
     console.log('in CSV file');
     const table: any = [];
@@ -88,10 +91,31 @@ module.exports = {
       row = [];
     }
     
+    // Step 3 - this step adds back the PK constraints that we took off prior to copying the dummy data into the DB (using the db that is imported from models.ts)
+    const step3 = () => {
+      count += 1;
+      let checkLast: number = tableCount - count;
+      console.log('CHECK LAST: ', checkLast);
+      if (checkLast === 0) {
+        db.addPrimaryKeyConstraints(keyObject, dummyDataRequest)
+          .then(() => {
+            db.addForeignKeyConstraints(keyObject, dummyDataRequest)
+            .then(() => {
+              console.log('CONSTRAINTS ADDED BACK');
+              count = 0;
+            })
+            .catch((err) => console.log(err));
+          })
+          .catch((err) => console.log(err));
+      }
+      else return;
+    } 
+
+    // Step 2 - using the postgres COPY command, this step copies the contents of the csv file in the container file system into the appropriate postgres DB
     const step2 = () => {
       let queryString: string = `COPY ${tableName} FROM '/${tableName}.csv' WITH CSV HEADER;`;
       // run the query in the container using a docker command
-      execute(`docker exec postgres-1 psql -U postgres -d ${schemaName} -c "${queryString}" `, null);
+      execute(`docker exec postgres-1 psql -U postgres -d ${schemaName} -c "${queryString}" `, step3);
     }
 
     let csvString: string;
@@ -100,18 +124,15 @@ module.exports = {
       const tableDataString: string = table.join(`' >> ${tableName}.csv; echo '`);
       const columnString: string = columnArray.join(',');
       csvString = columnString.concat(`' > ${tableName}.csv; echo '`).concat(tableDataString);
-      console.log(csvString)
       execute(`docker exec postgres-1 bash -c "echo '${csvString}' >> ${tableName}.csv"`, step2);
     }
     else {
       const tableDataString: string = table.join('\n');
       const columnString: string = columnArray.join(',');
       csvString = columnString.concat('\n').concat(tableDataString);
-      execute(`docker exec postgres-1 bash -c "echo '${csvString}' > ${tableName}.csv"`, step2);
+      // Step 1 - this writes a csv file to the postgres-1 file system, which contains all of the dummy data that will be copied into its corresponding postgres DB
+      execute(`docker exec postgres-1 bash -c "echo '${csvString}' > ${tableName}".csv`, step2);
     }
-
-    
-
   },
 
 

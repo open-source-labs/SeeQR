@@ -38,7 +38,9 @@ class DummyDataPanel extends Component<DummyDataPanelProps, state> {
 
   //handler to change the dropdown display to the selected table name
   selectHandler = (eventKey, e: React.SyntheticEvent<unknown>) => {
-    this.setState({currentTable: eventKey});
+    if (eventKey !== 'none') {
+      this.setState({currentTable: eventKey});
+    }
   };
 
   //function to generate the dropdown optiosn from the table names in state
@@ -51,6 +53,8 @@ class DummyDataPanel extends Component<DummyDataPanelProps, state> {
         else tableName = 'all';
         result.push(<Dropdown.Item key={i} className="queryItem" eventKey={tableName}>{tableName}</Dropdown.Item>);
       }
+    } else {
+      result.push(<Dropdown.Item key='key' className="queryItem" eventKey='none'>No tables available!</Dropdown.Item>);
     }
     return result;
   };
