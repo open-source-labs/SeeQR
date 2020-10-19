@@ -72,9 +72,11 @@ const getRandomInt = (min, max) => {
   return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
 }
 
+let count: number = 0;
+
 module.exports = {
 
-  writeCSVFile: (tableMatrix, tableName, columnArray, schemaName, keyObject) => {
+  writeCSVFile: (tableMatrix, tableName, columnArray, schemaName, keyObject, tableCount, dummyDataRequest) => {
     let check: boolean = false;
     console.log('in CSV file');
     const table: any = [];
@@ -105,12 +107,22 @@ module.exports = {
     
     // Step 3 - this step adds back the PK constraints that we took off prior to copying the dummy data into the DB (using the db that is imported from models.ts)
     const step3 = () => {
-      db.addPrimaryKeyConstraints(keyObject, tableName)
-        .then(() => {
-          db.addForeignKeyConstraints(keyObject, tableName)
-        })
-        .then(() => console.log('CONSTRAINTS ADDED BACK'))
-        .catch((err) => console.log(err));
+      count += 1;
+      let checkLast: number = tableCount - count;
+      console.log('CHECK LAST: ', checkLast);
+      if (checkLast === 0) {
+        db.addPrimaryKeyConstraints(keyObject, dummyDataRequest)
+          .then(() => {
+            db.addForeignKeyConstraints(keyObject, dummyDataRequest)
+            .then(() => {
+              console.log('CONSTRAINTS ADDED BACK');
+              count = 0;
+            })
+            .catch((err) => console.log(err));
+          })
+          .catch((err) => console.log(err));
+      }
+      else return;
     } 
 
     // Step 2 - using the postgres COPY command, this step copies the contents of the csv file in the container file system into the appropriate postgres DB

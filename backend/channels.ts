@@ -288,6 +288,7 @@ ipcMain.on('generate-dummy-data', (event: any, data: dummyDataRequest) => {
   let dummyDataRequest: dummyDataRequest = data;
   let tableMatricesArray: any;
   let keyObject: any = "Unresolved";
+  let tableCountInRequest: number = Object.keys(dummyDataRequest.dummyData).length;
 
   db.createKeyObject(dummyDataRequest)
     .then((result) => {
@@ -309,16 +310,12 @@ ipcMain.on('generate-dummy-data', (event: any, data: dummyDataRequest) => {
                     //mapping column headers from getColumnObjects in models.ts to columnNames
                     let columnArray: string[] = schemaLayout.tables[tableName].map(columnObj => columnObj.columnName)
                     //write all entries in tableMatrix to csv file
-                    writeCSVFile(tableObject.data, tableName, columnArray, dummyDataRequest.schemaName, keyObject);
+                    writeCSVFile(tableObject.data, tableName, columnArray, dummyDataRequest.schemaName, keyObject, tableCountInRequest, dummyDataRequest);
                   }
                 });
             });
         });
     })  
-})
-
-ipcMain.on('after', () => {
-  console.log('YES');
 })
 
 export default execute;
