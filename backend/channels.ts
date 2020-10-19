@@ -63,29 +63,10 @@ const execute = (str: string, nextStep: any) => {
       console.log(`stderr: ${stderr}`);
       return;
     }
-    console.log(`${stdout}`);
+    console.log('exec func', `${stdout}`);
     if (nextStep) nextStep();
   });
 };
-
-// const dummyDataExecute = (str: string, nextStep: any) => {
-//   exec(str, (error, stdout, stderr) => {
-//     if (error) {
-//       //this shows the console error in an error message on the frontend
-//       dialog.showErrorBox(`${error.message}`, '');
-//       console.log(`error: ${error.message}`);
-//       return;
-//     }
-//     if (stderr) {
-//       //this shows the console error in an error message on the frontend
-//       dialog.showErrorBox(`${stderr}`, '');
-//       console.log(`stderr: ${stderr}`);
-//       return;
-//     }
-//     if (stdout === 'OK' && nextStep) nextStep();
-//     else console.log('not okay')
-//   })
-// };
 
 // Listen for file upload. Create an instance of database from pre-made .tar or .sql file.
 ipcMain.on('upload-file', (event, filePath: string) => {
@@ -312,7 +293,6 @@ ipcMain.on('generate-dummy-data', (event: any, data: dummyDataRequest) => {
                   schemaLayout = result;
                   // generate the dummy data and save it into matrices associated with table names
                   tableMatricesArray = generateDummyData(schemaLayout, dummyDataRequest, keyObject);
-                  let csvPromiseArray: any = [];
                   //iterate through tableMatricesArray to write individual .csv files
                   for (const tableObject of tableMatricesArray) {
                     // extract tableName from tableObject
@@ -320,25 +300,16 @@ ipcMain.on('generate-dummy-data', (event: any, data: dummyDataRequest) => {
                     //mapping column headers from getColumnObjects in models.ts to columnNames
                     let columnArray: string[] = schemaLayout.tables[tableName].map(columnObj => columnObj.columnName)
                     //write all entries in tableMatrix to csv file
-                    csvPromiseArray.push(writeCSVFile(tableObject.data, tableName, columnArray));
+                    writeCSVFile(tableObject.data, tableName, columnArray, dummyDataRequest.schemaName);
                   }
-                      
-                  Promise.all(csvPromiseArray)
-                    .then(() => {
-                      //iterate through tableMatricesArray to copy individual .csv files to the respective tables
-                      for (const tableObject of tableMatricesArray) {
-                        // extract tableName from tableObject
-                        let tableName: string = tableObject.tableName;
-                        // generate a query for each table, copying from the file generated previously
-                        let queryString: string = `COPY ${tableName} FROM '/${tableName}' WITH CSV HEADER;`;
-                        // run the query in the container using a docker command
-                        execute(`docker exec postgres-1 psql -U postgres -d ${data.schemaName} -c "${queryString}" `, null);
-                      }
-                    })
                 });
             });
         });
-    })
+    })  
+})
+
+ipcMain.on('after', () => {
+  console.log('YES');
 })
 
 export default execute;
