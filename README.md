@@ -45,18 +45,7 @@ To get started on contributing to this project:
 3. Npm install
    1. Run `npm install` for application-specific dependencies.
    2. Run global install for: `'cross-env'`, `'webpack'`, `'webpack-dev-server'`, `'electron'`, and `'typescript'`.
-4. Enable sass compiling to css directory
-
-```json
-"liveSassCompile.settings.formats": [
-        {
-          "format": "expanded",
-          "savePath": "/frontend/assets/stylesheets/css"
-        }
-      ],
-"liveSassCompile.settings.generateMap": false,
-```
-
+4. Install [Live Sass Compile](https://github.com/ritwickdey/vscode-live-sass-compiler) VSCode extension (settings are configured in the .vscode file in this repo), or set up your preferred Sass compiler
 5. To run application during development
    1. `npm run dev` to launch Electron application window and webpack-dev-server.
    2. `npm run resetContainer` to reset the container and clear pre-existing SeeQR databases. If error “can’t find postgres-1” is encountered, it is simply an indication that the container is already pruned.
@@ -76,7 +65,7 @@ To get started on contributing to this project:
 
 ## Interface & Features
 <div align="center">
-<img src="./frontend/assets/images/splash_screencap.png"/><br /><br /><img src="./frontend/assets/images/wholeinterface.png"/><p>The whole interface in a nutshell</p>
+<img src="./frontend/assets/images/splash_page.png" width=800/><br /><br /><img src="./frontend/assets/images/interface.png" width=800/><p>The whole interface in a nutshell</p>
 </div>
 
 - Schema
@@ -87,12 +76,11 @@ To get started on contributing to this project:
 - Query input
 
   - The center panel is where the query input text field is located, utilizing CodeMirror for SQL styling.
-  - Provide a unique and concise label for the query as its shorthand identifier in later comparisons against other queries.
+  - Users have option to execute a tracked or untracked query—simply check the box and provide a label to identify the query in later comparisons against other queries.
   - Toggle the submit button in the bottom left to send the query to the selected database.
   <br /><br />
 <div align="center">
-<img src="./frontend/assets/images/query1.png" width=300/> <br /><br />
-<img src="./frontend/assets/images/query2.png" width=300/>
+<img src="./frontend/assets/images/query_demo.gif" width=600/>
 </div>
 <br /><br />
 
@@ -100,14 +88,25 @@ To get started on contributing to this project:
 
   - The data table displays data returned by the inputted query.
 <div align="center">
-<img src="./frontend/assets/images/data.png" width=300/><br /><br />
+<img src="./frontend/assets/images/data.png" width=600/><br /><br />
 </div>
 
 - Input Schema and Tabs
-  - New schemas can be uploaded into the application by clicking the "+" button above the main panel in the form of a ```.sql``` or a ```.tar``` file, or the schema script itself.
-  - Newly uploaded schemas are displayed as tabs, which can be activated to run tests against during application session. These schemas (and the databases they're connected to) persist beyond the application session.
+  - New schemas can be uploaded into the application by clicking the "+" button above the main panel in the form of a ```.sql``` or a ```.tar``` file.
+  - Users can also make a copy of an existing schema, with or without data included.
+  - Newly uploaded schemas are displayed as tabs, which can be activated to run tests against during application session.
 <div align="center">
-  <img src="./frontend/assets/images/schemamodal.png" width=300/>
+  <img src="./frontend/assets/images/input_schema_demo.gif"/>
+</div>
+
+- Generate Dummy Data
+  - Users can generate dummy data to fill in a selected scheama's tables—currently supported data types are:
+    - INT, SMALLINT, and BIGINT
+    - please fill in
+  - Dummy data is foreign-key complaint.
+    - please fill in the details
+<div align="center">
+  <img src="./frontend/assets/images/dummy_data_demo.gif"/>
 </div>
 
 - History
@@ -115,16 +114,8 @@ To get started on contributing to this project:
   - The history table shows the latest queries the user submitted irrespective of the database.
   - The history table also displays the total rows returned by the query and the total query execution time.
 <div align="center">
-<img src="./frontend/assets/images/history.png" width=300/>
+<img src="./frontend/assets/images/history.png" width=600/>
 </div>
-
-- Results
-
-  - The results table displays the scan type, runtime, and the amount of loops the query had to perform in addition to the analytics data available on the history table.
-  - The results table is schema-specific, showing only query results from the active schema.
-<div align="center">
-<img src="./frontend/assets/images/results.png" width=300/>
-</div> 
 
 - Compare
 
@@ -133,17 +124,17 @@ To get started on contributing to this project:
   - They can add and remove queries as they see fit.
 
 <div align="center">
-<img src="./frontend/assets/images/comparisons.png" width=300/>
+<img src="./frontend/assets/images/comparisons.png" width=600/>
 </div>
 
 - Visualized Analytics
 
   - Upon each query execution, query runtime displays under the "Query Label vs Query Runtime" graph. Graph automatically interpolates as results enumerate.
   - User may toggle on specific query analytics results with the Comparisons panel to compare query performances.
+  - Graph will be organized on x-axis by label, and colored by schema.
 
 <div align="center">
-<img src="./frontend/assets/images/queryruntime1.png" width=300/>
-<img src="./frontend/assets/images/queryruntime2.png" width=300/>
+<img src="./frontend/assets/images/graph_demo.gif"/>
 </div>
 
 ## Application Architecture and Logic
