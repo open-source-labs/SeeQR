@@ -44,6 +44,7 @@
     "react-chartjs-2": "^2.10.0",
     "react-codemirror": "^1.0.0",
     "react-dom": "^16.13.1",
+    "react-loading": "^2.0.3",
     "react-router-dom": "^5.2.0",
     "sass": "^1.26.10"
   },

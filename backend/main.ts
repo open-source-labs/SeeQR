@@ -7,7 +7,6 @@ import './channels' // all channels live here
 const { exec } = require('child_process');
 const appMenu = require('./mainMenu'); // use appMenu to add options in top menu bar of app
 const path = require('path');
-const createInsertQuery = require('./dummy_db/dataGenHandler');
 
 /************************************************************
  *********** PACKAGE ELECTRON APP FOR DEPLOYMENT ***********
@@ -138,3 +137,4 @@ app.on('activate', () => {
   }
 });
 
+export default mainWindow;

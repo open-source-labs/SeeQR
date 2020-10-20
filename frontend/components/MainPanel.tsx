@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { Compare } from './leftPanel/Compare';
 import History from './leftPanel/History';
 import { Tabs } from './rightPanel/Tabs';
+import LoadingModal from './LoadingModal';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -16,6 +17,7 @@ type MainState = {
   }[];
   currentSchema: string;
   lists: any;
+  loading: boolean;
 };
 
 type MainProps = {};
@@ -31,7 +33,8 @@ class MainPanel extends Component<MainProps, MainState> {
     lists: {
       databaseList: ['defaultDB'],
       tableList: [],
-    }
+    },
+    loading: false
   };
 
   componentDidMount() {
@@ -72,6 +75,14 @@ class MainPanel extends Component<MainProps, MainState> {
       const newSchemaIndex = this.state.lists.databaseList.length - 1;
       this.setState({currentSchema: this.state.lists.databaseList[newSchemaIndex]});
     });
+
+    ipcRenderer.on('async-started', (event: any) => {
+      this.setState({ loading: true });
+    });
+
+    ipcRenderer.on('async-complete', (event: any) => {
+      this.setState({ loading: false });
+    });
   }
 
   onClickTabItem(tabName) {
@@ -81,8 +92,14 @@ class MainPanel extends Component<MainProps, MainState> {
   }
 
   render() {
+
+    console.log('LOADING: ', this.state.loading);
+
     return (
       <div id="main-panel">
+        <div>
+          <LoadingModal show={this.state.loading}/>
+        </div>
         <div id="main-left">
           <History queries={this.state.queries} currentSchema={this.state.currentSchema} />
           <Compare queries={this.state.queries} currentSchema={this.state.currentSchema} />
