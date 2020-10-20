@@ -265,6 +265,7 @@ module.exports = {
   },
 
   addForeignKeyConstraints: async (keyObject, dummyDataRequest) => {
+    console.log('key object: ', keyObject);
     // iterate over table's keyObject property, add foreign key constraints
     for (const tableName of Object.keys(dummyDataRequest.dummyData)) {
       if (Object.keys(keyObject[tableName].foreignKeyColumns).length) {  
