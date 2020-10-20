@@ -284,6 +284,10 @@ interface dummyDataRequest {
 }
 
 ipcMain.on('generate-dummy-data', (event: any, data: dummyDataRequest) => {
+
+  // send notice to front end that DD generation has been started
+  event.sender.send('async-started');
+
   let schemaLayout: any;
   let dummyDataRequest: dummyDataRequest = data;
   let tableMatricesArray: any;
@@ -310,7 +314,7 @@ ipcMain.on('generate-dummy-data', (event: any, data: dummyDataRequest) => {
                     //mapping column headers from getColumnObjects in models.ts to columnNames
                     let columnArray: string[] = schemaLayout.tables[tableName].map(columnObj => columnObj.columnName)
                     //write all entries in tableMatrix to csv file
-                    writeCSVFile(tableObject.data, tableName, columnArray, dummyDataRequest.schemaName, keyObject, tableCountInRequest, dummyDataRequest);
+                    writeCSVFile(tableObject.data, tableName, columnArray, dummyDataRequest.schemaName, keyObject, tableCountInRequest, dummyDataRequest, event);
                   }
                 });
             });
