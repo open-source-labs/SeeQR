@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { Compare } from './leftPanel/Compare';
 import History from './leftPanel/History';
 import { Tabs } from './rightPanel/Tabs';
+import LoadingModal from './LoadingModal';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -96,6 +97,9 @@ class MainPanel extends Component<MainProps, MainState> {
 
     return (
       <div id="main-panel">
+        <div>
+          <LoadingModal show={this.state.loading}/>
+        </div>
         <div id="main-left">
           <History queries={this.state.queries} currentSchema={this.state.currentSchema} />
           <Compare queries={this.state.queries} currentSchema={this.state.currentSchema} />

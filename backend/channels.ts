@@ -70,6 +70,10 @@ const execute = (str: string, nextStep: any) => {
 
 // Listen for file upload. Create an instance of database from pre-made .tar or .sql file.
 ipcMain.on('upload-file', (event, filePath: string) => {
+
+  // send notice to the frontend that async process has begun
+  event.sender.send('async-started');
+
   let dbName: string;
   if (process.platform === 'darwin') {
     dbName = filePath[0].slice(filePath[0].lastIndexOf('/') + 1, filePath[0].lastIndexOf('.'));
@@ -95,6 +99,8 @@ ipcMain.on('upload-file', (event, filePath: string) => {
     event.sender.send('return-schema-name', dbName);
     // tell the front end to switch tabs to the newly created database
     event.sender.send('switch-to-new', null);
+    // notify frontend that async process has been completed
+    event.sender.send('async-complete');
   };
 
   // Step 4: Given the file path extension, run the appropriate command in postgres to populate db.
@@ -131,6 +137,9 @@ interface SchemaType {
 // AND
 // Listen for and handle DB copying events
 ipcMain.on('input-schema', (event, data: SchemaType) => {
+
+  // send notice to the frontend that async process has begun
+  event.sender.send('async-started');
 
   const { schemaName: dbName, schemaEntry, dbCopyName, copy } = data;
   let { schemaFilePath: filePath } = data;
@@ -180,6 +189,8 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
     event.sender.send('db-lists', listObj);
     // tell the front end to switch tabs to the newly created database
     event.sender.send('switch-to-new', null);
+    // notify frontend that async process has been completed
+    event.sender.send('async-complete');
   };
 
   // Step 4: Given the file path extension, run the appropriate command in postgres to build the db
@@ -214,6 +225,10 @@ interface QueryType {
 }
 
 ipcMain.on('execute-query-untracked', (event, data: QueryType) => {
+
+  // send notice to front end that query has been started
+  event.sender.send('async-started');
+
   console.log('execute query untracked');
   // destructure object from frontend
   const { queryString, queryCurrentSchema, queryLabel } = data;
@@ -222,7 +237,8 @@ ipcMain.on('execute-query-untracked', (event, data: QueryType) => {
     .then(() => {
       (async function getListAsync() {
         listObj = await db.getLists();
-        event.sender.send('db-lists', listObj)
+        event.sender.send('db-lists', listObj);
+        event.sender.send('async-complete');
       })();
     })
     .catch((error: string) => {
@@ -233,6 +249,10 @@ ipcMain.on('execute-query-untracked', (event, data: QueryType) => {
 
 // Listen for queries being sent from renderer
 ipcMain.on('execute-query-tracked', (event, data: QueryType) => {
+
+  // send notice to front end that query has been started
+  event.sender.send('async-started');
+
   // destructure object from frontend
   const { queryString, queryCurrentSchema, queryLabel } = data;
 
@@ -261,6 +281,7 @@ ipcMain.on('execute-query-tracked', (event, data: QueryType) => {
             frontendData.lists = listObj;
             event.sender.send('db-lists', listObj)
             event.sender.send('return-execute-query', frontendData);
+            event.sender.send('async-complete');
           })();
       })
     } else {
@@ -268,7 +289,8 @@ ipcMain.on('execute-query-tracked', (event, data: QueryType) => {
       (async function getListAsync() {
         listObj = await db.getLists();
         frontendData.lists = listObj;
-        event.sender.send('db-lists', listObj)
+        event.sender.send('db-lists', listObj);
+        event.sender.send('async-complete');
       })();
     }
     })
