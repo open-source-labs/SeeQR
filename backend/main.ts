@@ -103,7 +103,11 @@ app.on('before-quit', (event: any) => {
     const stopContainers: string = 'docker stop postgres-1 busybox-1';
     const pruneContainers: string = 'docker rm -f postgres-1 busybox-1';
     // this command removes the volume which stores the session data for the postgres instance
+    // comment this out for dev
     const pruneVolumes: string = 'docker volume rm -f seeqr_database-data';
+
+    // use this string for production build
+    // const pruneVolumes: string = 'docker volume rm -f app_database-data'
 
     const step4 = () => {
       pruned = true;
