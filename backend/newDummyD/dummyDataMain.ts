@@ -160,7 +160,7 @@ module.exports = {
       else csvArray.push(csvString.slice(startIndex, endIndex));
     }
 
-    console.log(csvArray);
+    // console.log(csvArray);
 
     // Step 1 - this writes a csv file to the postgres-1 file system, which contains all of the dummy data that will be copied into its corresponding postgres DB
 
