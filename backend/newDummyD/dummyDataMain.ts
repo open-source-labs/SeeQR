@@ -143,7 +143,9 @@ module.exports = {
     // split csv string into an array of csv strings that each are of length 175,000 characters or less
 
     // create upperLimit variable, which represents that max amount of character a bash shell command can handle
-    const upperLimit: number = 100000;
+    let upperLimit: number;
+    if (process.platform === 'win32') upperLimit = 1500;
+    else upperLimit = 100000;
     // create stringCount variable that is equal to csvString divided by upper limit rounded up
     let stringCount: number = Math.ceil(csvString.length / upperLimit);
     // create csvArray that will hold our final csv strings
