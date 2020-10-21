@@ -143,7 +143,7 @@ module.exports = {
     // split csv string into an array of csv strings that each are of length 175,000 characters or less
 
     // create upperLimit variable, which represents that max amount of character a bash shell command can handle
-    const upperLimit: number = 199000;
+    const upperLimit: number = 100000;
     // create stringCount variable that is equal to csvString divided by upper limit rounded up
     let stringCount: number = Math.ceil(csvString.length / upperLimit);
     // create csvArray that will hold our final csv strings
@@ -169,7 +169,7 @@ module.exports = {
 
     const step1 = () => {
       // console.log('in the RECURSIVE function: ', index);
-      // in order to rewrite the csv files in the container file system, we must use echo with a single angle bracket on the first element of csvArray AND then move on directly to step2 (and then also reset index)
+      // NOTE: in order to rewrite the csv files in the container file system, we must use echo with a single angle bracket on the first element of csvArray AND then move on directly to step2 (and then also reset index)
 
       // if our csvArray contains only one element
       if (csvArray.length === 1) {
