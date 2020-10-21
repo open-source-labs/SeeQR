@@ -1,8 +1,10 @@
 // Import parts of electron to use
 import { app, BrowserWindow, ipcMain, Menu } from 'electron';
+import { appendFile } from 'fs/promises';
 import { join } from 'path';
 import { format } from 'url';
-import './channels' // all channels live here
+//import './channels' // all channels live here
+import execute from './channels';
 
 const { exec } = require('child_process');
 const appMenu = require('./mainMenu'); // use appMenu to add options in top menu bar of app
@@ -22,6 +24,9 @@ const path = require('path');
 // Keep a global reference of the window objects, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow: any;
+
+//global variable to determine whether or not containers are still running
+let pruned: boolean = false;
 
 let mainMenu = Menu.buildFromTemplate(require('./mainMenu'));
 // Keep a reference for dev mode
@@ -88,32 +93,28 @@ function createWindow() {
       console.log(`${stdout}`);
     })
   });
+}
 
-  // Emitted when the window is closed.
-  mainWindow.on('closed', function () {
+app.on('before-quit', (event: any) => {
+  // check if containers have already been pruned--else, continue with default behavior to terminate application
+  if (!pruned) {
+    event.preventDefault();
     // Stop and remove postgres-1 and busybox-1 Docker containers upon window exit.
     const stopContainers: string = 'docker stop postgres-1 busybox-1';
     const pruneContainers: string = 'docker rm -f postgres-1 busybox-1';
-    // const pruneVolumes: string = 'docker volume prune -f'; //this will force remove ALL volumes in docker. Might not want to run it
-    const executeQuery = (str) => {
-      exec(str, (error, stdout, stderr) => {
-        if (error) {
-          console.log(`error: ${error.message}`);
-          return;
-        }
-        if (stderr) {
-          console.log(`stderr: ${stderr}`);
-          return;
-        }
-        console.log(`${stdout}`);
-      })
+    // this command removes the volume which stores the session data for the postgres instance
+    const pruneVolumes: string = 'docker volume rm -f seeqr_database-data';
+
+    const step4 = () => {
+      pruned = true;
+      app.quit()
     };
-    executeQuery(stopContainers);
-    executeQuery(pruneContainers);
-    // executeQuery(pruneVolumes);
-    mainWindow = null;
-  });
-}
+    const step3 = () => execute(pruneVolumes, step4);
+    const step2 = () => execute(pruneContainers, step3);
+
+    execute(stopContainers, step2);
+  }
+})
 
 
 // Invoke createWindow to create browser windows after Electron has been initialized.
