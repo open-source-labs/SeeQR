@@ -16,6 +16,7 @@ export class Data extends Component<DataProps> {
     super(props);
   }
 
+  // Rendering results of tracked query from Query panel.
   render() {
     const { queries } = this.props;
 

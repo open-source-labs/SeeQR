@@ -76,6 +76,7 @@ class MainPanel extends Component<MainProps, MainState> {
       this.setState({currentSchema: this.state.lists.databaseList[newSchemaIndex]});
     });
 
+    // Renders the loading modal during async functions.
     ipcRenderer.on('async-started', (event: any) => {
       this.setState({ loading: true });
     });
