@@ -1,7 +1,7 @@
 // Import parts of electron to use
 import { dialog, ipcMain } from 'electron';
 
-const { generateDummyData, writeCSVFile } = require('./newDummyD/dummyDataMain');
+const { generateDummyData, writeCSVFile } = require('./DummyD/dummyDataMain');
 const { exec } = require('child_process');
 const db = require('./models');
 
@@ -230,9 +230,8 @@ ipcMain.on('execute-query-untracked', (event, data: QueryType) => {
   // send notice to front end that query has been started
   event.sender.send('async-started');
 
-  console.log('execute query untracked');
   // destructure object from frontend
-  const { queryString, queryCurrentSchema, queryLabel } = data;
+  const { queryString } = data;
   // run query on db
   db.query(queryString)
     .then(() => {
@@ -272,28 +271,28 @@ ipcMain.on('execute-query-tracked', (event, data: QueryType) => {
     .then((queryData) => {
       frontendData.queryData = queryData.rows;
       if (!queryString.includes('CREATE') && !queryString.includes('create') && !queryString.includes('Create')) {
-      // Run EXPLAIN (FORMAT JSON, ANALYZE)
-      db.query('EXPLAIN (FORMAT JSON, ANALYZE) ' + queryString)
-        .then((queryStats) => {
-          frontendData.queryStatistics = queryStats.rows;
+        // Run EXPLAIN (FORMAT JSON, ANALYZE)
+        db.query('EXPLAIN (FORMAT JSON, ANALYZE) ' + queryString)
+          .then((queryStats) => {
+            frontendData.queryStatistics = queryStats.rows;
 
-          (async function getListAsync() {
-            listObj = await db.getLists();
-            frontendData.lists = listObj;
-            event.sender.send('db-lists', listObj)
-            event.sender.send('return-execute-query', frontendData);
-            event.sender.send('async-complete');
-          })();
-      })
-    } else {
-      // Handling for tracking a create table query, can't run explain/analyze on create statements
-      (async function getListAsync() {
-        listObj = await db.getLists();
-        frontendData.lists = listObj;
-        event.sender.send('db-lists', listObj);
-        event.sender.send('async-complete');
-      })();
-    }
+            (async function getListAsync() {
+              listObj = await db.getLists();
+              frontendData.lists = listObj;
+              event.sender.send('db-lists', listObj)
+              event.sender.send('return-execute-query', frontendData);
+              event.sender.send('async-complete');
+            })();
+        })
+      } else {
+        // Handling for tracking a create table query, can't run explain/analyze on create statements
+        (async function getListAsync() {
+          listObj = await db.getLists();
+          frontendData.lists = listObj;
+          event.sender.send('db-lists', listObj);
+          event.sender.send('async-complete');
+        })();
+      }
     })
     .catch((error: string) => {
       console.log('ERROR in execute-query-tracked channel in main.ts', error);
@@ -315,7 +314,6 @@ ipcMain.on('generate-dummy-data', (event: any, data: dummyDataRequest) => {
   let dummyDataRequest: dummyDataRequest = data;
   let tableMatricesArray: any;
   let keyObject: any = "Unresolved";
-  let tableCountInRequest: number = Object.keys(dummyDataRequest.dummyData).length;
 
   db.createKeyObject(dummyDataRequest)
     .then((result) => {
@@ -332,12 +330,8 @@ ipcMain.on('generate-dummy-data', (event: any, data: dummyDataRequest) => {
                   tableMatricesArray = generateDummyData(schemaLayout, dummyDataRequest, keyObject);
                   //iterate through tableMatricesArray to write individual .csv files
                   for (const tableObject of tableMatricesArray) {
-                    // extract tableName from tableObject
-                    let tableName: string = tableObject.tableName;
-                    //mapping column headers from getColumnObjects in models.ts to columnNames
-                    let columnArray: string[] = schemaLayout.tables[tableName].map(columnObj => columnObj.columnName)
-                    //write all entries in tableMatrix to csv file
-                    writeCSVFile(tableObject.data, tableName, columnArray, dummyDataRequest.schemaName, keyObject, tableCountInRequest, dummyDataRequest, event);
+                    // write all entries in tableMatrix to csv file
+                    writeCSVFile(tableObject, schemaLayout, keyObject, dummyDataRequest, event);
                   }
                 });
             });

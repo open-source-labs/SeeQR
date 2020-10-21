@@ -72,7 +72,16 @@ const generateDataByType = (columnObj) => {
 let count: number = 0;
 
 module.exports = {
-  writeCSVFile: (tableMatrix, tableName, columnArray, schemaName, keyObject, tableCount, dummyDataRequest, event: any) => {
+  writeCSVFile: (tableObject, schemaLayout, keyObject, dummyDataRequest, event: any) => {
+    // extracting variables
+    const tableCount: number = Object.keys(dummyDataRequest.dummyData).length;
+    const tableName: string = tableObject.tableName;
+    const tableMatrix: any = tableObject.data;
+    const schemaName: string = dummyDataRequest.schemaName;
+
+    // mapping column headers from getColumnObjects in models.ts to columnNames
+    const columnArray: string[] = schemaLayout.tables[tableName].map(columnObj => columnObj.columnName);
+
     // transpose the table-matrix to orient it as a table
     const table: any = [];
     let row: any  = [];

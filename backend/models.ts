@@ -1,5 +1,5 @@
 const { Pool } = require('pg');
-const { getPrimaryKeys, getForeignKeys } = require('./newDummyD/foreign_key_info')
+const { getPrimaryKeys, getForeignKeys } = require('./DummyD/foreign_key_info')
 
 // Initialize to a default db.
 // URI Format: postgres://username:password@hostname:port/databasename
