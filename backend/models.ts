@@ -31,6 +31,7 @@ const getColumnObjects = (tableName: string) => {
   })
 }
 
+// gets all the names of the current postgres instances
 const getDBNames = () => {
   return new Promise((resolve) =>{
     pool
@@ -47,6 +48,7 @@ const getDBNames = () => {
   })
 }
 
+// gets all tablenames from currentschema
 const getDBLists = () => {
   return new Promise((resolve) => {
     pool
@@ -93,7 +95,7 @@ module.exports = {
     },
 
     
-  createKeyObject: (dummyDataRequest) => {
+  createKeyObject: () => {
     return new Promise((resolve) => {
       // initialize the keyObject we eventually want to return out
       const keyObject: any  = {};
@@ -139,23 +141,19 @@ module.exports = {
     // define helper function to generate and run query
     const generateAndRunDropQuery = (table: string) => {
       let queryString = `ALTER TABLE ${table}`;
-      // let values: any = [table]
       let count: number = 2;
 
       for (const pkc in keyObject[table].primaryKeyColumns){
         if (count > 2) queryString += ',';
         queryString += ` DROP COLUMN ${pkc} CASCADE`;
-        // values.push(pkc);
         count += 1;
       }
       for (const fkc in keyObject[table].foreignKeyColumns){
         if (count > 2) queryString += ',';
         queryString += ` DROP COLUMN ${fkc}`
-        // values.push(fkc);
         count += 1;
       }
       queryString += ';'
-      // console.log('Final Query String: ', queryString);
       
       return Promise.resolve(pool.query(queryString));
     }
@@ -172,26 +170,21 @@ module.exports = {
     // define helper function to generate and run query
     const generateAndRunAddQuery = (table: string) => {
       let queryString = `ALTER TABLE ${table}`;
-      // let values: any = [table]
       let count: number = 2;
 
       for (const pkc in keyObject[table].primaryKeyColumns){
         if (count > 2) queryString += ',';
         queryString += ` ADD COLUMN ${pkc} INT`;
-        // values.push(pkc);
         count += 1;
       }
       for (const fkc in keyObject[table].foreignKeyColumns){
         if (count > 2) queryString += ',';
         queryString += ` ADD COLUMN ${fkc} INT`
-        // values.push(fkc);
         count += 1;
       }
       queryString += ';'
-      // console.log('final queryString: ', queryString);
 
       return Promise.resolve(pool.query(queryString));
-
     }
     
     // iterate over tables, running drop queries, and pushing a new promise to promise array
@@ -253,14 +246,13 @@ module.exports = {
           queryString += `ADD CONSTRAINT "${tableName}_pk${count}" PRIMARY KEY ("${pk}")`;
           count += 1;
         }
-        
-        queryString += `;`;
   
+        queryString += `;`;
+        // wait for the previous query to return before moving on to the next table
         await pool.query(queryString);
       } 
     }
 
-    console.log('PK CONSTRAINTS ADDED');
     return;
   },
 
@@ -280,12 +272,11 @@ module.exports = {
         }
         
         queryString += `;`;
-
+        // wait for the previous query to return before moving on to the next table
         await pool.query(queryString);
       }
     }
 
-    console.log('FK CONSTRAINTS ADDED');
     return;
   }
 }

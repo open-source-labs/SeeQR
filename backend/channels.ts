@@ -315,7 +315,7 @@ ipcMain.on('generate-dummy-data', (event: any, data: dummyDataRequest) => {
   let tableMatricesArray: any;
   let keyObject: any = "Unresolved";
 
-  db.createKeyObject(dummyDataRequest)
+  db.createKeyObject()
     .then((result) => {
       // set keyObject equal to the result of this query
       keyObject = result;
