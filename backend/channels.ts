@@ -270,7 +270,7 @@ ipcMain.on('execute-query-tracked', (event, data: QueryType) => {
   db.query(queryString)
     .then((queryData) => {
       frontendData.queryData = queryData.rows;
-      if (!queryString.includes('CREATE') && !queryString.includes('create') && !queryString.includes('Create')) {
+      if (!queryString.match(/create/i)) {
         // Run EXPLAIN (FORMAT JSON, ANALYZE)
         db.query('EXPLAIN (FORMAT JSON, ANALYZE) ' + queryString)
           .then((queryStats) => {
