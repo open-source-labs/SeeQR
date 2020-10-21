@@ -25,11 +25,6 @@ module.exports= {
       on tco.constraint_name = kcu.constraint_name
     where tco.constraint_type = 'PRIMARY KEY'
     order by kcu.table_name;`,
-
-  dropKeyColumns:
-  `ALTER TABLE table_name 
-  DROP COLUMN column_name;`,
-
 }
 
 
@@ -52,8 +47,3 @@ module.exports= {
 //   .
 //   .
 // }
-
-// 1. function definition to run these queries and build the KeyObject
-// 2. iterate over all tables and drop key columns, replacing with integer key columns
-// 3. integrate key data generation into dummy data generator function 
-//      (i.e. if the column name is a primary key column, ...)

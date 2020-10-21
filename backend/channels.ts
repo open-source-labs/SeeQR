@@ -1,18 +1,16 @@
 // Import parts of electron to use
 import { dialog, ipcMain } from 'electron';
-import { create } from 'domain';
 
 const { generateDummyData, writeCSVFile } = require('./newDummyD/dummyDataMain');
 const { exec } = require('child_process');
 const db = require('./models');
-const path = require('path');
 
 /************************************************************
  *********************** IPC CHANNELS ***********************
  ************************************************************/
 
 // Global variable to store list of databases and tables to provide to frontend upon refreshing view.
-let listObj;
+let listObj: any;
 
 ipcMain.on('return-db-list', (event, args) => {
   db.getLists().then(data => event.sender.send('db-lists', data));
@@ -33,11 +31,6 @@ const createDBFunc = (name) => {
 
 const importFileFunc = (file) => {
   return `docker cp ${file} postgres-1:/data_dump`;
-}
-
-//this command imports CSV file to dummy data volume
-const importCSV = (file) => {
-  return `docker cp ${file} dummy-data:/csv_files`;
 }
 
 const runSQLFunc = (file) => {
