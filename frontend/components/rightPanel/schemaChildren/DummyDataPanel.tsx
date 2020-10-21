@@ -47,6 +47,8 @@ class DummyDataPanel extends Component<DummyDataPanelProps, state> {
   dropDownList = () => {
     const result: any = [];
     let tableName;
+    // Checks to make sure tables are available to generate dummy data to.
+    // Allows user to choose a specific table, or to write dummy data to all tables.
     if (this.props.tableList.length > 0) {
       for (let i = 0; i <= this.props.tableList.length; i++) {
         if(this.props.tableList[i]) tableName = this.props.tableList[i];
@@ -54,6 +56,8 @@ class DummyDataPanel extends Component<DummyDataPanelProps, state> {
         result.push(<Dropdown.Item key={i} className="queryItem" eventKey={tableName}>{tableName}</Dropdown.Item>);
       }
     } else {
+    // Adds message in dropdown list to show that not tables are available
+    // Went this route because we couldn't get the dropdown to disappear if there were no tables in tableList
       result.push(<Dropdown.Item key='key' className="queryItem" eventKey='none'>No tables available!</Dropdown.Item>);
     }
     return result;
@@ -162,11 +166,11 @@ class DummyDataPanel extends Component<DummyDataPanelProps, state> {
               </Dropdown.Menu> 
             </Dropdown>
             <input id="dummy-rows-input" type="text" placeholder="number of rows..."
-            value={this.state.rowNumber}
-            onChange={this.changeRowNumber}>
+              value={this.state.rowNumber}
+              onChange={this.changeRowNumber}>
             </input>
             <button id="dummy-rows-button"
-                    onClick={this.addToTable}>
+              onClick={this.addToTable}>
               add to table
             </button>
           </div>
