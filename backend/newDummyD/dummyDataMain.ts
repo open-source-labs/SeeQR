@@ -126,6 +126,7 @@ module.exports = {
     }
 
     let csvString: string;
+    let csvArray: string[];
     //join tableMatrix with a line break (different on mac and windows because of line breaks in the bash CLI)
     if (process.platform === 'win32') {
       const tableDataString: string = table.join(`' >> ${tableName}.csv; echo '`);
@@ -136,36 +137,32 @@ module.exports = {
       const tableDataString: string = table.join('\n');
       const columnString: string = columnArray.join(',');
       csvString = columnString.concat('\n').concat(tableDataString);
+
+      // console.log(csvString.length);
+    
+      // split csv string into an array of csv strings that each are of length 175,000 characters or less
+  
+      // create upperLimit variable, which represents that max amount of character a bash shell command can handle
+      let upperLimit: number;
+      upperLimit = 100000;
+      // create stringCount variable that is equal to csvString divided by upper limit rounded up
+      let stringCount: number = Math.ceil(csvString.length / upperLimit);
+      // create csvArray that will hold our final csv strings
+      let csvArray: string[] = [];
+  
+      let startIndex: number;
+      let endIndex: number;
+      // iterate over i from 0 to less than stringCount, each iteration pushing slices of original csvString into an array
+      for (let i = 0; i < stringCount; i += 1) {
+        startIndex = upperLimit * i;
+        endIndex = startIndex + upperLimit;
+        // if on final iteration, only give startIndex to slice operator to grab characters until the end of csvString
+        if (i === stringCount - 1) csvArray.push(csvString.slice(startIndex));
+        else csvArray.push(csvString.slice(startIndex, endIndex));
+      }
     }
-
-    console.log(csvString.length);
-
-    // split csv string into an array of csv strings that each are of length 175,000 characters or less
-
-    // create upperLimit variable, which represents that max amount of character a bash shell command can handle
-    let upperLimit: number;
-    if (process.platform === 'win32') upperLimit = 1500;
-    else upperLimit = 100000;
-    // create stringCount variable that is equal to csvString divided by upper limit rounded up
-    let stringCount: number = Math.ceil(csvString.length / upperLimit);
-    // create csvArray that will hold our final csv strings
-    let csvArray: string[] = [];
-
-    let startIndex: number;
-    let endIndex: number;
-    // iterate over i from 0 to less than stringCount, each iteration pushing slices of original csvString into an array
-    for (let i = 0; i < stringCount; i += 1) {
-      startIndex = upperLimit * i;
-      endIndex = startIndex + upperLimit;
-      // if on final iteration, only give startIndex to slice operator to grab characters until the end of csvString
-      if (i === stringCount - 1) csvArray.push(csvString.slice(startIndex));
-      else csvArray.push(csvString.slice(startIndex, endIndex));
-    }
-
-    // console.log(csvArray);
 
     // Step 1 - this writes a csv file to the postgres-1 file system, which contains all of the dummy data that will be copied into its corresponding postgres DB
-
 
     let index: number = 0
 
@@ -174,7 +171,10 @@ module.exports = {
       // NOTE: in order to rewrite the csv files in the container file system, we must use echo with a single angle bracket on the first element of csvArray AND then move on directly to step2 (and then also reset index)
 
       // if our csvArray contains only one element
-      if (csvArray.length === 1) {
+      if (process.platform === 'win32') {
+        execute(`docker exec postgres-1 bash -c "echo '${csvString}' >> ${tableName}.csv;"`, step2);
+      }
+      else if (csvArray.length === 1) {
         execute(`docker exec postgres-1 bash -c "echo '${csvArray[index]}' > ${tableName}.csv;"`, step2);
         index = 0;
       }
