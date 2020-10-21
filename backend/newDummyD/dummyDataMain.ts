@@ -105,9 +105,15 @@ module.exports = {
               event.sender.send('async-complete');
               count = 0;
             })
-            .catch((err) => console.log(err));
+            .catch((err) => {
+              console.log(err);
+              count = 0;
+            });
           })
-          .catch((err) => console.log(err));
+          .catch((err) => {
+            console.log(err);
+            count = 0;
+          });
       }
       else return;
     } 
@@ -125,15 +131,48 @@ module.exports = {
       const tableDataString: string = table.join(`' >> ${tableName}.csv; echo '`);
       const columnString: string = columnArray.join(',');
       csvString = columnString.concat(`' > ${tableName}.csv; echo '`).concat(tableDataString);
-      execute(`docker exec postgres-1 bash -c "echo '${csvString}' >> ${tableName}.csv"`, step2);
     }
     else {
       const tableDataString: string = table.join('\n');
       const columnString: string = columnArray.join(',');
       csvString = columnString.concat('\n').concat(tableDataString);
-      // Step 1 - this writes a csv file to the postgres-1 file system, which contains all of the dummy data that will be copied into its corresponding postgres DB
-      execute(`docker exec postgres-1 bash -c "echo '${csvString}' > ${tableName}".csv`, step2);
     }
+
+    console.log(csvString.length);
+
+    // split csv string into an array of csv strings that each are of length 175,000 characters or less
+
+    // create upperLimit variable, which represents that max amount of character a bash shell command can handle
+    const upperLimit: number = 100;
+    // create stringCount variable that is equal to csvString divided by upper limit rounded up
+    let stringCount: number = Math.ceil(csvString.length / upperLimit);
+    // create csvArray that will hold our final csv strings
+    let csvArray: string[] = [];
+
+    let startIndex: number;
+    let endIndex: number;
+    // iterate over i from 0 to less than stringCount, each iteration pushing slices of original csvString into an array
+    for (let i = 0; i < stringCount; i += 1) {
+      startIndex = upperLimit * i;
+      endIndex = startIndex + upperLimit;
+      // if on final iteration, only give startIndex to slice operator to grab characters until the end of csvString
+      if (i === stringCount - 1) csvArray.push(csvString.slice(startIndex));
+      else csvArray.push(csvString.slice(startIndex, endIndex));
+    }
+
+    console.log(csvArray);
+
+    // Step 1 - this writes a csv file to the postgres-1 file system, which contains all of the dummy data that will be copied into its corresponding postgres DB
+    const step1 = (csvArray, index = 0) => {
+      console.log('in the RECURSIVE function: ', index);
+      // base case: if on last csvArray element, execute docker command but pass in step2 as second argument
+      if (index === (csvArray.length - 1)) execute(`docker exec postgres-1 bash -c "echo '${csvArray[index]}' >> ${tableName}.csv;"`, step2);
+      // execute docker command but pass in a recursive call to our step one function with updated index
+      else execute(`docker exec postgres-1 bash -c "echo -n '${csvArray[index]}' >> ${tableName}.csv;"`, step1(csvArray, index + 1));
+    }
+  
+    step1(csvArray);
+
   },
 
 

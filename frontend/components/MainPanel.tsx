@@ -93,8 +93,6 @@ class MainPanel extends Component<MainProps, MainState> {
 
   render() {
 
-    console.log('LOADING: ', this.state.loading);
-
     return (
       <div id="main-panel">
         <div>
