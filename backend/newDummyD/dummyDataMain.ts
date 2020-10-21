@@ -143,7 +143,7 @@ module.exports = {
     // split csv string into an array of csv strings that each are of length 175,000 characters or less
 
     // create upperLimit variable, which represents that max amount of character a bash shell command can handle
-    const upperLimit: number = 100;
+    const upperLimit: number = 199000;
     // create stringCount variable that is equal to csvString divided by upper limit rounded up
     let stringCount: number = Math.ceil(csvString.length / upperLimit);
     // create csvArray that will hold our final csv strings
@@ -163,15 +163,39 @@ module.exports = {
     console.log(csvArray);
 
     // Step 1 - this writes a csv file to the postgres-1 file system, which contains all of the dummy data that will be copied into its corresponding postgres DB
-    const step1 = (csvArray, index = 0) => {
-      console.log('in the RECURSIVE function: ', index);
-      // base case: if on last csvArray element, execute docker command but pass in step2 as second argument
-      if (index === (csvArray.length - 1)) execute(`docker exec postgres-1 bash -c "echo '${csvArray[index]}' >> ${tableName}.csv;"`, step2);
-      // execute docker command but pass in a recursive call to our step one function with updated index
-      else execute(`docker exec postgres-1 bash -c "echo -n '${csvArray[index]}' >> ${tableName}.csv;"`, step1(csvArray, index + 1));
+
+
+    let index: number = 0
+
+    const step1 = () => {
+      // console.log('in the RECURSIVE function: ', index);
+      // in order to rewrite the csv files in the container file system, we must use echo with a single angle bracket on the first element of csvArray AND then move on directly to step2 (and then also reset index)
+
+      // if our csvArray contains only one element
+      if (csvArray.length === 1) {
+        execute(`docker exec postgres-1 bash -c "echo '${csvArray[index]}' > ${tableName}.csv;"`, step2);
+        index = 0;
+      }
+      // otherwise if we are working with the first element in csvArray
+      else if (index === 0) {
+        execute(`docker exec postgres-1 bash -c "echo -n '${csvArray[index]}' > ${tableName}.csv;"`, step1);
+        index += 1;
+      }
+      // if working with last csvArray element, execute docker command but pass in step2 as second argument
+      else if (index === (csvArray.length - 1)) {
+        // console.log('FINAL STEP 1: ', csvArray[index]);
+        execute(`docker exec postgres-1 bash -c "echo '${csvArray[index]}' >> ${tableName}.csv;"`, step2);
+        index = 0;
+      }
+      // otherwise we know we are not working with the first OR the last element in csvArray, so execute docker command but pass in a recursive call to our step one function and then immediately increment our index variable
+      else {
+        // console.log('STEP 1: ', index, csvArray[index]);
+        execute(`docker exec postgres-1 bash -c "echo -n '${csvArray[index]}' >> ${tableName}.csv;"`, step1);
+        index += 1;
+      }
     }
   
-    step1(csvArray);
+    step1();
 
   },
 

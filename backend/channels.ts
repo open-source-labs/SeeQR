@@ -63,7 +63,7 @@ const execute = (str: string, nextStep: any) => {
       console.log(`stderr: ${stderr}`);
       return;
     }
-    console.log('exec func', `${stdout}`);
+    // console.log('exec func', `${stdout}`);
     if (nextStep) nextStep();
   });
 };
