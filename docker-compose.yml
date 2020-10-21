@@ -14,7 +14,7 @@ services:
           POSTGRES_USER: postgres
           POSTGRES_DB: defaultDB
         volumes:
-        - database-data
+        - database-data:/var/lib/postgresql/data
         depends_on:
         - bb
         container_name: postgres-1
