@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import ReactLoading from 'react-loading';
 
+// "Loading" pop up renders whenever async functions are called
 const LoadingModal = (props) => {
   if (props.show) {
     return(
