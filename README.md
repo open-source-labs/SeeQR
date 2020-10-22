@@ -100,11 +100,14 @@ To get started on contributing to this project:
 </div>
 
 - Generate Dummy Data
+  - MacOS users can generate up to 500,000 rows of foreign-key compliant dummy-data
   - Users can generate dummy data to fill in a selected scheama's tables—currently supported data types are:
-    - INT, SMALLINT, and BIGINT
-    - please fill in
-  - Dummy data is foreign-key complaint.
-    - please fill in the details
+    - INT
+    - SMALLINT
+    - BIGINT
+    - VARCHAR
+  - Dummy data is foreign-key compliant.
+    - Columns with key constraints are dropped and replaced with new primary and foreign-key integer columns
 <div align="center">
   <img src="./frontend/assets/images/dummy_data_demo.gif"/>
 </div>
