@@ -183,7 +183,7 @@ module.exports = {
         count += 1;
       }
       queryString += ';'
-
+      
       return Promise.resolve(pool.query(queryString));
     }
     
@@ -237,46 +237,48 @@ module.exports = {
   addPrimaryKeyConstraints: async (keyObject, dummyDataRequest) => {
     // iterate over table's keyObject property, add primary key constraints
     for (const tableName of Object.keys(dummyDataRequest.dummyData)) {
-      if (Object.keys(keyObject[tableName].primaryKeyColumns).length) {
-        let queryString: string = `ALTER TABLE ${tableName} `;
-        let count: number = 0;
-  
-        for (const pk in keyObject[tableName].primaryKeyColumns) {
-          if (count > 0) queryString += `, `;
-          queryString += `ADD CONSTRAINT "${tableName}_pk${count}" PRIMARY KEY ("${pk}")`;
-          count += 1;
-        }
-  
-        queryString += `;`;
-        // wait for the previous query to return before moving on to the next table
-        await pool.query(queryString);
-      } 
+      if (keyObject[tableName]) {
+        if (Object.keys(keyObject[tableName].primaryKeyColumns).length) {
+          let queryString: string = `ALTER TABLE ${tableName} `;
+          let count: number = 0;
+    
+          for (const pk in keyObject[tableName].primaryKeyColumns) {
+            if (count > 0) queryString += `, `;
+            queryString += `ADD CONSTRAINT "${tableName}_pk${count}" PRIMARY KEY ("${pk}")`;
+            count += 1;
+          }
+    
+          queryString += `;`;
+          // wait for the previous query to return before moving on to the next table
+          await pool.query(queryString);
+        } 
+      }
     }
-
     return;
   },
 
   addForeignKeyConstraints: async (keyObject, dummyDataRequest) => {
     // iterate over table's keyObject property, add foreign key constraints
     for (const tableName of Object.keys(dummyDataRequest.dummyData)) {
-      if (Object.keys(keyObject[tableName].foreignKeyColumns).length) {  
-        let queryString: string = `ALTER TABLE ${tableName} `;
-        let count: number = 0;
+      if (keyObject[tableName]) {
+        if (Object.keys(keyObject[tableName].foreignKeyColumns).length) {  
+          let queryString: string = `ALTER TABLE ${tableName} `;
+          let count: number = 0;
 
-        for (const fk in keyObject[tableName].foreignKeyColumns) {
-          let primaryTable: string = keyObject[tableName].foreignKeyColumns[fk];
-          let primaryKey: any = Object.keys(keyObject[primaryTable].primaryKeyColumns)[0];
-          if (count > 0) queryString += `, `;
-          queryString += `ADD CONSTRAINT "${tableName}_fk${count}" FOREIGN KEY ("${fk}") REFERENCES ${primaryTable}("${primaryKey}")`;
-          count += 1;
+          for (const fk in keyObject[tableName].foreignKeyColumns) {
+            let primaryTable: string = keyObject[tableName].foreignKeyColumns[fk];
+            let primaryKey: any = Object.keys(keyObject[primaryTable].primaryKeyColumns)[0];
+            if (count > 0) queryString += `, `;
+            queryString += `ADD CONSTRAINT "${tableName}_fk${count}" FOREIGN KEY ("${fk}") REFERENCES ${primaryTable}("${primaryKey}")`;
+            count += 1;
+          }
+          
+          queryString += `;`;
+          // wait for the previous query to return before moving on to the next table
+          await pool.query(queryString);
         }
-        
-        queryString += `;`;
-        // wait for the previous query to return before moving on to the next table
-        await pool.query(queryString);
       }
     }
-
     return;
   }
 }
