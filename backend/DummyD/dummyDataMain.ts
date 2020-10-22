@@ -213,29 +213,40 @@ module.exports = {
         for (let i = 0; i < columnArray.length; i++) {
           // declare a variable j (to be used in while loops below), set equal to zero
           let j: number = 0;
-          // if this is a PK column, add numbers into column 0 to n-1 (ordered)
-          if (keyObject[tableName].primaryKeyColumns[columnArray[i]]) {
-            //while i < reqeusted number of rows
-            while (j < dummyDataRequest.dummyData[tableName]) {
-              //push into columnData
-              columnData.push(j);
-              // increment j
-              j += 1;
-            } 
-          }
-
-          // if this is a FK column, add random number between 0 and n-1 (inclusive) into column (unordered)
-          else if (keyObject[tableName].foreignKeyColumns[columnArray[i]]) {
-            //while j < reqeusted number of rows
-            while (j < dummyDataRequest.dummyData[tableName]) {
-              //generate an entry
-              entry = Math.floor(Math.random() * (dummyDataRequest.dummyData[tableName]));
-              //push into columnData
-              columnData.push(entry);
-              j += 1;
+          // if there are either PK or FK columns on this table, enter this logic
+          if (keyObject[tableName]) {
+            // if this is a PK column, add numbers into column 0 to n-1 (ordered)
+            if (keyObject[tableName].primaryKeyColumns[columnArray[i]]) {
+              //while i < reqeusted number of rows
+              while (j < dummyDataRequest.dummyData[tableName]) {
+                //push into columnData
+                columnData.push(j);
+                // increment j
+                j += 1;
+              } 
+            }
+            // if this is a FK column, add random number between 0 and n-1 (inclusive) into column (unordered)
+            else if (keyObject[tableName].foreignKeyColumns[columnArray[i]]) {
+              //while j < reqeusted number of rows
+              while (j < dummyDataRequest.dummyData[tableName]) {
+                //generate an entry
+                entry = Math.floor(Math.random() * (dummyDataRequest.dummyData[tableName]));
+                //push into columnData
+                columnData.push(entry);
+                j += 1;
+              }
+            }
+            // otherwise, we'll just add data by the type to which the column is constrained
+            else {
+              while (j < dummyDataRequest.dummyData[tableName]) {
+                //generate an entry
+                entry = generateDataByType(schemaLayout.tables[tableName][i]);
+                //push into columnData
+                columnData.push(entry);
+                j += 1;
+              };
             }
           }
-          
           // otherwise, we'll just add data by the type to which the column is constrained
           else {
             while (j < dummyDataRequest.dummyData[tableName]) {

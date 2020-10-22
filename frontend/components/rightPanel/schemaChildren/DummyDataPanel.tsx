@@ -140,14 +140,18 @@ class DummyDataPanel extends Component<DummyDataPanelProps, state> {
   }
 
   submitDummyData = (event: any) => {
-    //creates a dummyDataRequest object with schema name and table name/rows
-    const dummyDataRequest = {
-      schemaName: this.props.currentSchema,
-      dummyData: this.state.dataInfo
+    //check if there are requested dummy data values
+    if (Object.keys(this.state.dataInfo).length) {
+      //creates a dummyDataRequest object with schema name and table name/rows
+      const dummyDataRequest = {
+        schemaName: this.props.currentSchema,
+        dummyData: this.state.dataInfo
+      }
+      ipcRenderer.send('generate-dummy-data', dummyDataRequest);
+      //reset state to clear the dummy data panel's table
+      this.setState({dataInfo: {}});
     }
-    ipcRenderer.send('generate-dummy-data', dummyDataRequest);
-    //reset state to clear the dummy data panel's table
-    this.setState({dataInfo: {}});
+    else dialog.showErrorBox('Please add table and row numbers', '');
   }
 
   render() {
