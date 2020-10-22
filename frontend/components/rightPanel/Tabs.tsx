@@ -10,6 +10,7 @@ type TabsProps = {
   tabList: string[],
   queries: any,
   onClickTabItem: any,
+  tableList: string[]
 }
 
 type state = {
@@ -21,7 +22,7 @@ export class Tabs extends Component<TabsProps> {
     this.showModal = this.showModal.bind(this);
   }
   state: state = {
-    show: false,
+    show: false
   };
 
   showModal = (event: any) => {
@@ -35,6 +36,7 @@ export class Tabs extends Component<TabsProps> {
     // thing as all the databases). We open a channel to listen for it here inside of componendDidMount, then
     // we invoke onClose to close schemaModal ONLY after we are sure that backend has created that channel.
     ipcRenderer.on('db-lists', (event: any, returnedLists: any) => {
+      this.setState({currentSchema: returnedLists})
       this.onClose(event);
     })
   }
@@ -79,11 +81,11 @@ export class Tabs extends Component<TabsProps> {
           </button>
           </span>
         </ol>
-        <SchemaModal show={this.state.show} showModal={this.showModal} onClose={this.onClose} />
+        <SchemaModal tabList={tabList} show={this.state.show} showModal={this.showModal} onClose={this.onClose} />
         <div className="tab-content">
           {tabList.map((tab, index) => {
             if (tab !== currentSchema) return undefined;
-            return <SchemaContainer key={index} queries={activeTabQueries} currentSchema={currentSchema} />;
+            return <SchemaContainer key={index} queries={activeTabQueries} currentSchema={currentSchema} tableList={this.props.tableList} />;
           })}
         </div>
       </div>

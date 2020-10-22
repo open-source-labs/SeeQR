@@ -20,6 +20,7 @@ export class App extends Component<AppProps, state> {
     this.handleSkipClick = this.handleSkipClick.bind(this);
   }
 
+  // Splash page will always render upon opening App
   state: state = {
     openSplash: true,
   };
@@ -34,9 +35,9 @@ export class App extends Component<AppProps, state> {
         },
       )
       .then((result: object) => {
-        const filePathArr = result["filePaths"];
+        const filePathArr = result['filePaths'];
         // send via channel to main process
-        if (!result["canceled"]) {
+        if (!result['canceled']) {
           ipcRenderer.send('upload-file', filePathArr);
           this.setState({ openSplash: false });
         }
@@ -46,6 +47,7 @@ export class App extends Component<AppProps, state> {
       });
   }
 
+  // Skips file upload and moves to main page.
   handleSkipClick(event: ClickEvent) {
     ipcRenderer.send('skip-file-upload');
     this.setState({ openSplash: false });
