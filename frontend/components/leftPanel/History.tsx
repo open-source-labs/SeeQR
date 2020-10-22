@@ -11,6 +11,7 @@ type HistoryProps = {
   currentSchema: string;
 };
 
+// Top left panel component displaying previously run queries
 export class History extends Component<HistoryProps> {
   constructor(props: HistoryProps) {
     super(props);

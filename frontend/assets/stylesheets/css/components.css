@@ -26,6 +26,10 @@
   background-color: #c6d2d5;
 }
 
+#query-panel {
+  max-width: 90%;
+}
+
 #query-panel button {
   border: 0.5px #444c50 solid;
   background-color: #596368;
@@ -89,7 +93,7 @@ input {
   background-color: #444c50;
   border: none;
   padding: 7px;
-  min-width: 240px;
+  min-width: 20em;
   outline: none;
 }
 
@@ -97,17 +101,119 @@ input *:focus {
   outline: none;
 }
 
+.dummy-data-select {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  padding: 1rem;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+#dummy-rows-input {
+  min-width: 10em;
+  margin-left: 1.5em;
+  margin-right: 1.5em;
+}
+
+.dummy-data-table-container {
+  height: 10rem;
+  overflow-y: auto;
+}
+
+.dummy-data-table {
+  margin-left: auto;
+  margin-right: auto;
+  border: 1px solid #444c50;
+}
+
+.dummy-data-table th, .dummy-data-table tr {
+  padding: 0.5rem;
+  border-bottom: 1px solid #444c50;
+}
+
+.dummy-table-row td {
+  padding: 0.5rem;
+  text-align: center;
+}
+
+#generate-dummy-data {
+  padding: 0.2rem;
+  margin: 0.5rem;
+}
+
+#label-option {
+  min-width: 60%;
+}
+
+.query-label {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+}
+
+#track {
+  min-width: 10px;
+  margin-left: 0.5rem;
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+#chart-option {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -ms-flex-pack: distribute;
+      justify-content: space-around;
+}
+
 #data-table {
   overflow: auto;
-  height: 300px;
+  height: 25em;
+  max-width: 90%;
 }
 
 .query-data {
   width: 1000px;
 }
 
+.codemirror {
+  max-width: 90%;
+}
+
+.CodeMirror-scroll {
+  overflow-x: scroll;
+}
+
+.ReactCodeMirror {
+  max-width: 50rem;
+}
+
 #codemirror {
   padding: 15px 0;
+  max-width: 30rem;
 }
 
 #data-table::-webkit-scrollbar-track {
@@ -129,7 +235,8 @@ input *:focus {
 
 /* Track */
 ::-webkit-scrollbar-track {
-  box-shadow: inset 0px 0px 5px grey;
+  -webkit-box-shadow: inset 0px 0px 5px grey;
+          box-shadow: inset 0px 0px 5px grey;
   border-radius: 10px;
 }
 
@@ -137,4 +244,11 @@ input *:focus {
 ::-webkit-scrollbar-thumb {
   background: #c6d2d5;
   border-radius: 15px;
+}
+
+.DD-Dropdown {
+  max-height: 15rem;
+  min-height: 10rem;
+  min-width: 8rem;
+  overflow-y: scroll;
 }

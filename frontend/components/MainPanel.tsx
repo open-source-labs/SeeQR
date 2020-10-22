@@ -1,7 +1,9 @@
+import { dialog } from 'electron';
 import React, { Component } from 'react';
 import { Compare } from './leftPanel/Compare';
 import History from './leftPanel/History';
 import { Tabs } from './rightPanel/Tabs';
+import LoadingModal from './LoadingModal';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -15,6 +17,7 @@ type MainState = {
   }[];
   currentSchema: string;
   lists: any;
+  loading: boolean;
 };
 
 type MainProps = {};
@@ -30,12 +33,13 @@ class MainPanel extends Component<MainProps, MainState> {
     lists: {
       databaseList: ['defaultDB'],
       tableList: [],
-    }
+    },
+    loading: false
   };
 
   componentDidMount() {
     ipcRenderer.send('return-db-list');
-
+    
     // Listening for returnedData from executing Query
     // Update state with new object (containing query data, query statistics, query schema
     // inside of state.queries array
@@ -58,26 +62,48 @@ class MainPanel extends Component<MainProps, MainState> {
     });
 
     ipcRenderer.on('db-lists', (event: any, returnedLists: any) => {
-      this.setState({ lists: returnedLists })
-      this.onClickTabItem(this.state.lists.databaseList[this.state.lists.databaseList.length - 1])
-    })
+      this.setState(prevState => ({
+        ...prevState,
+        lists: {
+          databaseList: returnedLists.databaseList,
+          tableList: returnedLists.tableList
+        }
+      }))
+    });
+
+    ipcRenderer.on('switch-to-new', (event: any) => {
+      const newSchemaIndex = this.state.lists.databaseList.length - 1;
+      this.setState({currentSchema: this.state.lists.databaseList[newSchemaIndex]});
+    });
+
+    // Renders the loading modal during async functions.
+    ipcRenderer.on('async-started', (event: any) => {
+      this.setState({ loading: true });
+    });
+
+    ipcRenderer.on('async-complete', (event: any) => {
+      this.setState({ loading: false });
+    });
   }
 
   onClickTabItem(tabName) {
     ipcRenderer.send('change-db', tabName);
-    ipcRenderer.on('return-change-db', (event: any, db_name: string) => {
-      this.setState({ currentSchema: tabName });
-    });
+    ipcRenderer.send('return-db-list');
+    this.setState({ currentSchema: tabName });
   }
 
   render() {
+
     return (
       <div id="main-panel">
+        <div>
+          <LoadingModal show={this.state.loading}/>
+        </div>
         <div id="main-left">
           <History queries={this.state.queries} currentSchema={this.state.currentSchema} />
           <Compare queries={this.state.queries} currentSchema={this.state.currentSchema} />
         </div>
-        <Tabs currentSchema={this.state.currentSchema} tabList={this.state.lists.databaseList} queries={this.state.queries} onClickTabItem={this.onClickTabItem} />
+        <Tabs currentSchema={this.state.currentSchema} tabList={this.state.lists.databaseList} queries={this.state.queries} onClickTabItem={this.onClickTabItem} tableList={this.state.lists.tableList} />
       </div>
     );
   }
