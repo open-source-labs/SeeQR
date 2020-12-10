@@ -11,27 +11,34 @@ const db = require('./models');
 
 // Generate CLI commands to be executed in child process.
 const createDBFunc = (name) => {
-  return `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE ${name}"`
-}
-const importFileFunc = (file) => {
-  return `docker cp ${file} postgres-1:/data_dump`;
-}
+  return `psql -U postgres -c "CREATE DATABASE ${name}"`;
+
+  // return `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE ${name}"`;
+};
+
+// added "name" as a parameter for importFileFunc
+const importFileFunc = (name, file) => {
+  return `psql -U postgres ${name} < ${file}`;
+
+  // return `docker cp ${file} postgres-1:/data_dump`;
+};
 const runSQLFunc = (dbName) => {
   return `docker exec postgres-1 psql -U postgres -d ${dbName} -f /data_dump`;
-}
+};
 const runTARFunc = (dbName) => {
   return `docker exec postgres-1 pg_restore -U postgres -d ${dbName} /data_dump`;
-}
+};
 const runFullCopyFunc = (dbCopyName) => {
   return `docker exec postgres-1 pg_dump -U postgres ${dbCopyName} -f /data_dump`;
-}
+};
 const runHollowCopyFunc = (dbCopyName) => {
   return `docker exec postgres-1 pg_dump -s -U postgres ${dbCopyName} -f /data_dump`;
-}
+};
 
 // Function to execute commands in the child process.
 const execute = (str: string, nextStep: any) => {
   exec(str, (error, stdout, stderr) => {
+    console.log('exec func', `${stdout}`);
     if (error) {
       //this shows the console error in an error message on the frontend
       dialog.showErrorBox(`${error.message}`, '');
@@ -44,7 +51,7 @@ const execute = (str: string, nextStep: any) => {
       console.log(`stderr: ${stderr}`);
       return;
     }
-    // console.log('exec func', `${stdout}`);
+
     if (nextStep) nextStep();
   });
 };
@@ -57,32 +64,39 @@ const execute = (str: string, nextStep: any) => {
 let listObj: any;
 
 ipcMain.on('return-db-list', (event, args) => {
-  db.getLists().then(data => event.sender.send('db-lists', data));
+  db.getLists().then((data) => event.sender.send('db-lists', data));
 });
 
 // Listen for skip button on Splash page.
-ipcMain.on('skip-file-upload', (event) => { });
+ipcMain.on('skip-file-upload', (event) => {});
 
 // Listen for database changes sent from the renderer upon changing tabs.
 ipcMain.on('change-db', (event, dbName) => {
-  db.changeDB(dbName)
+  db.changeDB(dbName);
 });
 
 // Listen for file upload. Create an instance of database from pre-made .tar or .sql file.
 ipcMain.on('upload-file', (event, filePath: string) => {
-
   // send notice to the frontend that async process has begun
   event.sender.send('async-started');
 
   let dbName: string;
   if (process.platform === 'darwin') {
-    dbName = filePath[0].slice(filePath[0].lastIndexOf('/') + 1, filePath[0].lastIndexOf('.'));
+    dbName = filePath[0].slice(
+      filePath[0].lastIndexOf('/') + 1,
+      filePath[0].lastIndexOf('.')
+    );
   } else {
-    dbName = filePath[0].slice(filePath[0].lastIndexOf('\\') + 1, filePath[0].lastIndexOf('.'));
+    dbName = filePath[0].slice(
+      filePath[0].lastIndexOf('\\') + 1,
+      filePath[0].lastIndexOf('.')
+    );
   }
 
   const createDB: string = createDBFunc(dbName);
-  const importFile: string = importFileFunc(filePath);
+
+  // added dbName to importFile
+  const importFile: string = importFileFunc(dbName, filePath);
   const runSQL: string = runSQLFunc(dbName);
   const runTAR: string = runTARFunc(dbName);
   const extension: string = filePath[0].slice(filePath[0].lastIndexOf('.'));
@@ -101,7 +115,7 @@ ipcMain.on('upload-file', (event, filePath: string) => {
     event.sender.send('switch-to-new', null);
     // notify frontend that async process has been completed
     event.sender.send('async-complete');
-  };
+  }
 
   // Step 4: Given the file path extension, run the appropriate command in postgres to populate db.
   const step4 = () => {
@@ -118,7 +132,7 @@ ipcMain.on('upload-file', (event, filePath: string) => {
   const step2 = () => {
     db.changeDB(dbName);
     return step3();
-  }
+  };
 
   // Step 1: Create empty db
   if (extension === '.sql' || extension === '.tar') execute(createDB, step2);
@@ -137,7 +151,6 @@ interface SchemaType {
 // OR
 // Listens for and handles DB copying events
 ipcMain.on('input-schema', (event, data: SchemaType) => {
-
   // send notice to the frontend that async process has begun
   event.sender.send('async-started');
 
@@ -146,7 +159,8 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
 
   // generate strings that are fed into execute functions later
   const createDB: string = createDBFunc(dbName);
-  const importFile: string = importFileFunc(filePath);
+  //added dbName to importFile
+  const importFile: string = importFileFunc(dbName, filePath);
   const runSQL: string = runSQLFunc(dbName);
   const runTAR: string = runTARFunc(dbName);
   const runFullCopy: string = runFullCopyFunc(dbCopyName);
@@ -156,8 +170,7 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
   let extension: string = '';
   if (filePath.length > 0) {
     extension = filePath[0].slice(filePath[0].lastIndexOf('.'));
-  }
-  else extension = '.sql';
+  } else extension = '.sql';
 
   // SEQUENCE OF EXECUTING COMMANDS
   // Steps are in reverse order because each step is a callback function that requires the following step to be defined.
@@ -170,7 +183,7 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
     event.sender.send('switch-to-new', null);
     // notify frontend that async process has been completed
     event.sender.send('async-complete');
-  };
+  }
 
   // Step 4: Given the file path extension, run the appropriate command in postgres to build the db
   const step4 = () => {
@@ -186,7 +199,7 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
   const step3Copy = () => {
     db.changeDB(dbName);
     return step4();
-  }
+  };
 
   // Step 2: Change curent URI to match newly created DB
   const step2 = () => {
@@ -210,8 +223,8 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
       // and now that we have changed to the new db, we can move on to importing the data file
       db.changeDB(dbName);
       return step3();
-    } 
-  }
+    }
+  };
 
   // Step 1 : Create empty db
   execute(createDB, step2);
@@ -226,7 +239,6 @@ interface QueryType {
 }
 
 ipcMain.on('execute-query-untracked', (event, data: QueryType) => {
-
   // send notice to front end that query has been started
   event.sender.send('async-started');
 
@@ -249,7 +261,6 @@ ipcMain.on('execute-query-untracked', (event, data: QueryType) => {
 
 // Listen for queries being sent from renderer
 ipcMain.on('execute-query-tracked', (event, data: QueryType) => {
-
   // send notice to front end that query has been started
   event.sender.send('async-started');
 
@@ -272,18 +283,19 @@ ipcMain.on('execute-query-tracked', (event, data: QueryType) => {
       frontendData.queryData = queryData.rows;
       if (!queryString.match(/create/i)) {
         // Run EXPLAIN (FORMAT JSON, ANALYZE)
-        db.query('EXPLAIN (FORMAT JSON, ANALYZE) ' + queryString)
-          .then((queryStats) => {
+        db.query('EXPLAIN (FORMAT JSON, ANALYZE) ' + queryString).then(
+          (queryStats) => {
             frontendData.queryStatistics = queryStats.rows;
 
             (async function getListAsync() {
               listObj = await db.getLists();
               frontendData.lists = listObj;
-              event.sender.send('db-lists', listObj)
+              event.sender.send('db-lists', listObj);
               event.sender.send('return-execute-query', frontendData);
               event.sender.send('async-complete');
             })();
-        })
+          }
+        );
       } else {
         // Handling for tracking a create table query, can't run explain/analyze on create statements
         (async function getListAsync() {
@@ -297,7 +309,6 @@ ipcMain.on('execute-query-tracked', (event, data: QueryType) => {
     .catch((error: string) => {
       console.log('ERROR in execute-query-tracked channel in main.ts', error);
     });
-    
 });
 
 interface dummyDataRequest {
@@ -306,37 +317,42 @@ interface dummyDataRequest {
 }
 
 ipcMain.on('generate-dummy-data', (event: any, data: dummyDataRequest) => {
-
   // send notice to front end that DD generation has been started
   event.sender.send('async-started');
 
   let schemaLayout: any;
   let dummyDataRequest: dummyDataRequest = data;
   let tableMatricesArray: any;
-  let keyObject: any = "Unresolved";
+  let keyObject: any = 'Unresolved';
 
-  db.createKeyObject()
-    .then((result) => {
-      // set keyObject equal to the result of this query
-      keyObject = result;
-      db.dropKeyColumns(keyObject)
-        .then(() => {
-          db.addNewKeyColumns(keyObject)
-            .then(() => {
-              db.getSchemaLayout()
-                .then((result) => {
-                  schemaLayout = result;
-                  // generate the dummy data and save it into matrices associated with table names
-                  tableMatricesArray = generateDummyData(schemaLayout, dummyDataRequest, keyObject);
-                  //iterate through tableMatricesArray to write individual .csv files
-                  for (const tableObject of tableMatricesArray) {
-                    // write all entries in tableMatrix to csv file
-                    writeCSVFile(tableObject, schemaLayout, keyObject, dummyDataRequest, event);
-                  }
-                });
-            });
+  db.createKeyObject().then((result) => {
+    // set keyObject equal to the result of this query
+    keyObject = result;
+    db.dropKeyColumns(keyObject).then(() => {
+      db.addNewKeyColumns(keyObject).then(() => {
+        db.getSchemaLayout().then((result) => {
+          schemaLayout = result;
+          // generate the dummy data and save it into matrices associated with table names
+          tableMatricesArray = generateDummyData(
+            schemaLayout,
+            dummyDataRequest,
+            keyObject
+          );
+          //iterate through tableMatricesArray to write individual .csv files
+          for (const tableObject of tableMatricesArray) {
+            // write all entries in tableMatrix to csv file
+            writeCSVFile(
+              tableObject,
+              schemaLayout,
+              keyObject,
+              dummyDataRequest,
+              event
+            );
+          }
         });
-    })  
-})
+      });
+    });
+  });
+});
 
 export default execute;
