@@ -15,6 +15,8 @@ const createDBFunc = (name) => {
 
   // return `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE ${name}"`;
 };
+
+// added "name" as a parameter for importFileFunc
 const importFileFunc = (name, file) => {
   return `psql -U postgres ${name} < ${file}`;
 
@@ -92,6 +94,8 @@ ipcMain.on('upload-file', (event, filePath: string) => {
   }
 
   const createDB: string = createDBFunc(dbName);
+
+  // added dbName to importFile
   const importFile: string = importFileFunc(dbName, filePath);
   const runSQL: string = runSQLFunc(dbName);
   const runTAR: string = runTARFunc(dbName);
@@ -155,6 +159,7 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
 
   // generate strings that are fed into execute functions later
   const createDB: string = createDBFunc(dbName);
+  //added dbName to importFile
   const importFile: string = importFileFunc(dbName, filePath);
   const runSQL: string = runSQLFunc(dbName);
   const runTAR: string = runTARFunc(dbName);
