@@ -23,16 +23,20 @@ const importFileFunc = (name, file) => {
   // return `docker cp ${file} postgres-1:/data_dump`;
 };
 const runSQLFunc = (dbName) => {
-  return `docker exec postgres-1 psql -U postgres -d ${dbName} -f /data_dump`;
+  return `psql -U postgres -d ${dbName} -f /data_dump`;
+  // return `docker exec postgres-1 psql -U postgres -d ${dbName} -f /data_dump`;
 };
 const runTARFunc = (dbName) => {
-  return `docker exec postgres-1 pg_restore -U postgres -d ${dbName} /data_dump`;
+  return `psql -U postgres -d ${dbName} -f /data_dump`;
+  // return `docker exec postgres-1 pg_restore -U postgres -d ${dbName} /data_dump`;
 };
 const runFullCopyFunc = (dbCopyName) => {
-  return `docker exec postgres-1 pg_dump -U postgres ${dbCopyName} -f /data_dump`;
+  return `pg_dump -U postgres ${dbCopyName} -f /data_dump`;
+  // `docker exec postgres-1 pg_dump -U postgres ${dbCopyName} -f /data_dump`;
 };
 const runHollowCopyFunc = (dbCopyName) => {
-  return `docker exec postgres-1 pg_dump -s -U postgres ${dbCopyName} -f /data_dump`;
+  return `pg_dump -s -U postgres ${dbCopyName} -f /data_dump`;
+  //`docker exec postgres-1 pg_dump -s -U postgres ${dbCopyName} -f /data_dump`;
 };
 
 // Function to execute commands in the child process.
