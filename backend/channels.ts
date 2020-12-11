@@ -286,7 +286,8 @@ ipcMain.on('execute-query-tracked', (event, data: QueryType) => {
         db.query('EXPLAIN (FORMAT JSON, ANALYZE) ' + queryString).then(
           (queryStats) => {
             frontendData.queryStatistics = queryStats.rows;
-
+            console.log('query stats ROWS: ');
+            console.table(queryStats.rows[0]['QUERY PLAN']);
             (async function getListAsync() {
               listObj = await db.getLists();
               frontendData.lists = listObj;
