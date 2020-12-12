@@ -31,7 +31,10 @@ let pruned: boolean = false;
 let mainMenu = Menu.buildFromTemplate(require('./mainMenu'));
 // Keep a reference for dev mode
 let dev = false;
-if (process.env.NODE_ENV !== undefined && process.env.NODE_ENV === 'development') {
+if (
+  process.env.NODE_ENV !== undefined &&
+  process.env.NODE_ENV === 'development'
+) {
   dev = true;
 }
 
@@ -49,7 +52,9 @@ function createWindow() {
   });
 
   if (process.platform === 'darwin') {
-    app.dock.setIcon(path.join(__dirname, '../../frontend/assets/images/seeqr_dock.png'));
+    app.dock.setIcon(
+      path.join(__dirname, '../../frontend/assets/images/seeqr_dock.png')
+    );
   }
 
   // Load index.html of the app
@@ -78,51 +83,52 @@ function createWindow() {
   mainWindow.once('ready-to-show', (event) => {
     mainWindow.show();
 
-//     // uncomment code below before running production build and packaging
-//     // const yamlPath = join(__dirname, '../../docker-compose.yml')
-//     // const runDocker: string = `docker-compose -f '${yamlPath}' up -d`;
-//     const runDocker: string = `docker-compose up -d`;
-//     exec(runDocker, (error, stdout, stderr) => {
-//       if (error) {
-//         console.log(`error: ${error.message}`);
-//         return;
-//       }
-//       if (stderr) {
-//         console.log(`stderr: ${stderr}`);
-//         return;
-//       }
-//       console.log(`${stdout}`);
-//     })
-//   });
-
-})
-
-// app.on('before-quit', (event: any) => {
-//   // check if containers have already been pruned--else, continue with default behavior to terminate application
-//   if (!pruned) {
-//     event.preventDefault();
-//     // Stop and remove postgres-1 and busybox-1 Docker containers upon window exit.
-//     const stopContainers: string = 'docker stop postgres-1 busybox-1';
-//     const pruneContainers: string = 'docker rm -f postgres-1 busybox-1';
-//     // this command removes the volume which stores the session data for the postgres instance
-//     // comment this out for dev
-//     const pruneVolumes: string = 'docker volume rm -f seeqr_database-data';
-
-//     // use this string for production build
-//     // const pruneVolumes: string = 'docker volume rm -f app_database-data'
-
-//     const step4 = () => {
-//       pruned = true;
-//       app.quit()
-//     };
-//     const step3 = () => execute(pruneVolumes, step4);
-//     const step2 = () => execute(pruneContainers, step3);
-
-//     execute(stopContainers, step2);
-//   }
-// })
-
+    //     // uncomment code below before running production build and packaging
+    //     // const yamlPath = join(__dirname, '../../docker-compose.yml')
+    //     // const runDocker: string = `docker-compose -f '${yamlPath}' up -d`;
+    const runDocker: string = `docker-compose up -d`;
+    exec(runDocker, (error, stdout, stderr) => {
+      if (error) {
+        console.log(`error: ${error.message}`);
+        return;
+      }
+      if (stderr) {
+        console.log(`stderr: ${stderr}`);
+        return;
+      }
+      console.log(`${stdout}`);
+    });
+  });
 }
+// ----
+app.on('before-quit', (event: any) => {
+  console.log('is this the problem?');
+
+  // check if containers have already been pruned--else, continue with default behavior to terminate application
+  if (!pruned) {
+    console.log('what the hell?');
+    event.preventDefault();
+    // Stop and remove postgres-1 and busybox-1 Docker containers upon window exit.
+    const stopContainers: string = 'docker stop postgres-1 busybox-1';
+    const pruneContainers: string = 'docker rm -f postgres-1 busybox-1';
+    // this command removes the volume which stores the session data for the postgres instance
+    // comment this out for dev
+    const pruneVolumes: string = 'docker volume rm -f seeqr_database-data';
+
+    // use this string for production build
+    // const pruneVolumes: string = 'docker volume rm -f app_database-data'
+
+    const step4 = () => {
+      pruned = true;
+      app.quit();
+    };
+    const step3 = () => execute(pruneVolumes, step4);
+    const step2 = () => execute(pruneContainers, step3);
+
+    execute(stopContainers, step2);
+  }
+});
+// ----
 // Invoke createWindow to create browser windows after Electron has been initialized.
 // Some APIs can only be used after this event occurs.
 app.on('ready', createWindow);
