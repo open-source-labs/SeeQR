@@ -298,7 +298,10 @@ ipcMain.on('execute-query-tracked', (event, data: QueryType) => {
           (queryStats) => {
             frontendData.queryStatistics = queryStats.rows;
             console.log('query stats ROWS: ');
+            console.log(queryStats.rows[0]['QUERY PLAN']);
+            console.log('console.table of queryStats.row[0]');
             console.table(queryStats.rows[0]['QUERY PLAN']);
+
             (async function getListAsync() {
               listObj = await db.getLists();
               frontendData.lists = listObj;
@@ -308,6 +311,11 @@ ipcMain.on('execute-query-tracked', (event, data: QueryType) => {
             })();
           }
         );
+        db.query(
+          `SELECT pg_size_pretty(pg_database_size('${queryCurrentSchema}'));`
+        ).then((queryStats) => {
+          console.log('this is the size of the DB: ', queryStats);
+        });
       } else {
         // Handling for tracking a create table query, can't run explain/analyze on create statements
         (async function getListAsync() {

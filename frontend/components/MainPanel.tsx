@@ -11,7 +11,7 @@ type MainState = {
   queries: {
     queryString: string;
     queryData: {}[];
-    queryStatistics: any
+    queryStatistics: any;
     querySchema: string;
     queryLabel: string;
   }[];
@@ -34,18 +34,24 @@ class MainPanel extends Component<MainProps, MainState> {
       databaseList: ['defaultDB'],
       tableList: [],
     },
-    loading: false
+    loading: false,
   };
 
   componentDidMount() {
     ipcRenderer.send('return-db-list');
-    
+
     // Listening for returnedData from executing Query
     // Update state with new object (containing query data, query statistics, query schema
     // inside of state.queries array
     ipcRenderer.on('return-execute-query', (event: any, returnedData: any) => {
       // destructure from returnedData from backend
-      const { queryString, queryData, queryStatistics, queryCurrentSchema, queryLabel } = returnedData;
+      const {
+        queryString,
+        queryData,
+        queryStatistics,
+        queryCurrentSchema,
+        queryLabel,
+      } = returnedData;
       // create new query object with returnedData
       const newQuery = {
         queryString,
@@ -53,27 +59,29 @@ class MainPanel extends Component<MainProps, MainState> {
         queryStatistics,
         querySchema: queryCurrentSchema,
         queryLabel,
-      }
+      };
       // create copy of current queries array
       let queries = this.state.queries.slice();
       // push new query object into copy of queries array
-      queries.push(newQuery)
-      this.setState({ queries })
+      queries.push(newQuery);
+      this.setState({ queries });
     });
 
     ipcRenderer.on('db-lists', (event: any, returnedLists: any) => {
-      this.setState(prevState => ({
+      this.setState((prevState) => ({
         ...prevState,
         lists: {
           databaseList: returnedLists.databaseList,
-          tableList: returnedLists.tableList
-        }
-      }))
+          tableList: returnedLists.tableList,
+        },
+      }));
     });
 
     ipcRenderer.on('switch-to-new', (event: any) => {
       const newSchemaIndex = this.state.lists.databaseList.length - 1;
-      this.setState({currentSchema: this.state.lists.databaseList[newSchemaIndex]});
+      this.setState({
+        currentSchema: this.state.lists.databaseList[newSchemaIndex],
+      });
     });
 
     // Renders the loading modal during async functions.
@@ -93,17 +101,28 @@ class MainPanel extends Component<MainProps, MainState> {
   }
 
   render() {
-
     return (
       <div id="main-panel">
         <div>
-          <LoadingModal show={this.state.loading}/>
+          <LoadingModal show={this.state.loading} />
         </div>
         <div id="main-left">
-          <History queries={this.state.queries} currentSchema={this.state.currentSchema} />
-          <Compare queries={this.state.queries} currentSchema={this.state.currentSchema} />
+          <History
+            queries={this.state.queries}
+            currentSchema={this.state.currentSchema}
+          />
+          <Compare
+            queries={this.state.queries}
+            currentSchema={this.state.currentSchema}
+          />
         </div>
-        <Tabs currentSchema={this.state.currentSchema} tabList={this.state.lists.databaseList} queries={this.state.queries} onClickTabItem={this.onClickTabItem} tableList={this.state.lists.tableList} />
+        <Tabs
+          currentSchema={this.state.currentSchema}
+          tabList={this.state.lists.databaseList}
+          queries={this.state.queries}
+          onClickTabItem={this.onClickTabItem}
+          tableList={this.state.lists.tableList}
+        />
       </div>
     );
   }
