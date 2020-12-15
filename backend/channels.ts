@@ -10,50 +10,36 @@ const db = require('./models');
  ************************************************************/
 
 // Generate CLI commands to be executed in child process.
-// updated commands to use postgres without docker (commented out docker code)
 const createDBFunc = (name) => {
-  console.log('this is the createDBFunc')
   return `psql -U postgres -c "CREATE DATABASE ${name}"`;
 
   //return `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE ${name}"`;
 };
 
-//commenting out the importFileFunc to test duplicate import errors
-// const importFileFunc = (name, file) => { // added "name" as a parameter for importFileFunc
-//   console.log('inside importFile Func');
-//   return `psql -U postgres ${name} < ${file}`;
+// added "name" as a parameter for importFileFunc
+const importFileFunc = (name, file) => {
+  console.log('inside importFile Func');
+  return `psql -U postgres ${name} < ${file}`;
 
-//   // return `docker cp ${file} postgres-1:/data_dump`;
-// };
-
+  // return `docker cp ${file} postgres-1:/data_dump`;
+};
+// added file param:
 const runSQLFunc = (dbName, file) => {
-  console.log('this is the runSQLFunc')
-  // added file param:
   return `psql -U postgres -d ${dbName} -f ${file}`; // replaced /data_dump with ${file};
 
   // return `docker exec postgres-1 psql -U postgres -d ${dbName} -f /data_dump`;
 };
-
+// added file param:
 const runTARFunc = (dbName, file) => {
-  console.log('this is the runTARFunc')
-  // added file param:
   return `pg_restore -U postgres -d ${dbName} -f ${file}`; // replaced /data_dump with ${file}`;
   // docker exec postgres-1 pg_restore -U postgres -d ${dbName} /data_dump`;
 };
-const runFullCopyFunc = (dbCopyName, file) => {
-  console.log('this is the runFullCopyFunc code');
-  console.log(file)
-  let newFile = file[0];
-  console.log(newFile)
-  return `pg_dump -U postgres -d ${dbCopyName} -f ${newFile}`;
-
+const runFullCopyFunc = (dbCopyName) => {
+  return `pg_dump -U postgres ${dbCopyName} -f /data_dump`;
   // docker exec postgres-1 pg_dump -U postgres ${dbCopyName} -f /data_dump`;
-  //
 };
-const runHollowCopyFunc = (dbCopyName, file) => {
-  //added file as param
-  console.log('this is the runHollowCopyFunc');
-  return `pg_dump -s -U postgres ${dbCopyName} -f ${file}`; // replaced /data_dump with ${file}`;
+const runHollowCopyFunc = (dbCopyName) => {
+  return `pg_dump -s -U postgres ${dbCopyName} -f /data_dump`;
   // docker exec postgres-1 pg_dump -s -U postgres ${dbCopyName} -f /data_dump`;
 };
 
@@ -117,10 +103,12 @@ ipcMain.on('upload-file', (event, filePath: string) => {
 
   const createDB: string = createDBFunc(dbName);
 
-  //const importFile: string = importFileFunc(dbName, filePath); // added dbName to importFile // commenting out to test removal of importFile func
+  // added dbName to importFile
+  const importFile: string = importFileFunc(dbName, filePath);
   const runSQL: string = runSQLFunc(dbName, filePath); // added filepath
   const runTAR: string = runTARFunc(dbName, filePath); //added filepath
   const extension: string = filePath[0].slice(filePath[0].lastIndexOf('.'));
+  let dbSize: string;
 
   // SEQUENCE OF EXECUTING COMMANDS
   // Steps are in reverse order because each step is a callback function that requires the following step to be defined.
@@ -129,7 +117,8 @@ ipcMain.on('upload-file', (event, filePath: string) => {
   async function sendLists() {
     listObj = await db.getLists();
     console.log('channels: ', listObj);
-    event.sender.send('db-lists', listObj);
+    // Send list of databases and tables, as well as database size to frontend.
+    event.sender.send('db-lists', listObj, dbSize);
     // Send schema name back to frontend, so frontend can load tab name.
     event.sender.send('return-schema-name', dbName);
     // tell the front end to switch tabs to the newly created database
@@ -144,6 +133,14 @@ ipcMain.on('upload-file', (event, filePath: string) => {
     if (extension === '.sql') runCmd = runSQL;
     else if (extension === '.tar') runCmd = runTAR;
     execute(runCmd, sendLists);
+
+    // DB query to get the database size
+    db.query(`SELECT pg_size_pretty(pg_database_size('${dbName}'));`).then(
+      (queryStats) => {
+        console.log('this is the size of the DB: ', queryStats);
+        dbSize = queryStats.rows[0].pg_size_pretty;
+      }
+    );
   };
 
   // Step 3: Import database file from file path into docker container
@@ -153,7 +150,7 @@ ipcMain.on('upload-file', (event, filePath: string) => {
   // Step 2: Change curent URI to match newly created DB
   const step2 = () => {
     db.changeDB(dbName);
-    return step4(); //changing step3 to step4 to test removal of importFile func
+    return step4();
   };
 
   // Step 1: Create empty db
@@ -178,25 +175,21 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
 
   const { schemaName: dbName, dbCopyName, copy } = data;
   let { schemaFilePath: filePath } = data;
-  console.log(
-    'Schema name: ',
-    data.schemaName,
-    'data[schemaFilePath: ',
-    data.schemaFilePath,
-    'filepath: ',
-    filePath
-  );
-  filePath = [data.schemaName + '.sql'];
-  console.log(filePath)
+
+  console.log('DBNAME:', dbName);
+  console.log('DBCOPYNAME:', dbCopyName);
+  console.log('COPY:', copy);
+  console.log('this is data: ', data);
+  console.log('this is schemaFilePath: ', data.schemaFilePath);
+
   // generate strings that are fed into execute functions later
   const createDB: string = createDBFunc(dbName);
-
-  // const importFile: string = importFileFunc(dbName, filePath); //added dbName to importFile //commenting out to test removal of importFile func
+  //added dbName to importFile
+  const importFile: string = importFileFunc(dbName, filePath);
   const runSQL: string = runSQLFunc(dbName, filePath); // added filePath
   const runTAR: string = runTARFunc(dbName, filePath); // added filePath
-  const runFullCopy: string = runFullCopyFunc(dbCopyName, filePath);
-  const runHollowCopy: string = runHollowCopyFunc(dbCopyName, filePath);
-  
+  const runFullCopy: string = runFullCopyFunc(dbCopyName);
+  const runHollowCopy: string = runHollowCopyFunc(dbCopyName);
 
   // determine if the file is a sql or a tar file, in the case of a copy, we will not have a filepath so we just hard-code the extension to be sql
   let extension: string = '';
@@ -210,7 +203,6 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
   // Step 5: Changes the pg URI to look to the newly created database and queries all the tables in that database and sends it to frontend.
   async function sendLists() {
     listObj = await db.getLists();
-    console.log('this is the async func on line 205')
     event.sender.send('db-lists', listObj);
     // tell the front end to switch tabs to the newly created database
     event.sender.send('switch-to-new', null);
@@ -228,8 +220,7 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
 
   // Step 3: Import database file from file path into docker container
 
-  //const step3 = () => execute(importFile, step4);
-
+  const step3 = () => execute(importFile, step4);
   // skip step three which is only for importing files and instead change the current db to the newly created one
   const step3Copy = () => {
     db.changeDB(dbName);
@@ -246,7 +237,6 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
       // this generates a pg_dump file from the specified db and saves it to a location in the container.
       // Full copy case
       if (copy) {
-        console.log('this is the step 2 if copy console log');
         execute(runFullCopy, step3Copy);
       }
       // Hollow copy case
@@ -258,7 +248,7 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
       // change the current database back to the newly created one
       // and now that we have changed to the new db, we can move on to importing the data file
       db.changeDB(dbName);
-      return step4(); //changing step3 to step4 to test removal of importFile func
+      return step3();
     }
   };
 
@@ -322,6 +312,10 @@ ipcMain.on('execute-query-tracked', (event, data: QueryType) => {
         db.query('EXPLAIN (FORMAT JSON, ANALYZE) ' + queryString).then(
           (queryStats) => {
             frontendData.queryStatistics = queryStats.rows;
+            console.log('query stats ROWS: ');
+            console.log(queryStats.rows[0]['QUERY PLAN']);
+            console.log('console.table of queryStats.row[0]');
+            console.table(queryStats.rows[0]['QUERY PLAN']);
 
             (async function getListAsync() {
               listObj = await db.getLists();
