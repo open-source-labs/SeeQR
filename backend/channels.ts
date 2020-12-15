@@ -10,37 +10,44 @@ const db = require('./models');
  ************************************************************/
 
 // Generate CLI commands to be executed in child process.
+// updated commands to use postgres without docker (commented out docker code)
 const createDBFunc = (name) => {
   return `psql -U postgres -c "CREATE DATABASE ${name}"`;
 
   //return `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE ${name}"`;
 };
 
-// added "name" as a parameter for importFileFunc
-const importFileFunc = (name, file) => {
-  console.log('inside importFile Func');
-  return `psql -U postgres ${name} < ${file}`;
+//commenting out the importFileFunc to test duplicate import errors
+// const importFileFunc = (name, file) => { // added "name" as a parameter for importFileFunc
+//   console.log('inside importFile Func');
+//   return `psql -U postgres ${name} < ${file}`;
 
-  // return `docker cp ${file} postgres-1:/data_dump`;
-};
-// added file param:
+//   // return `docker cp ${file} postgres-1:/data_dump`;
+// };
+
 const runSQLFunc = (dbName, file) => {
+  // added file param:
   return `psql -U postgres -d ${dbName} -f ${file}`; // replaced /data_dump with ${file};
 
   // return `docker exec postgres-1 psql -U postgres -d ${dbName} -f /data_dump`;
 };
-// added file param:
+
 const runTARFunc = (dbName, file) => {
+  // added file param:
   return `pg_restore -U postgres -d ${dbName} -f ${file}`; // replaced /data_dump with ${file}`;
   // docker exec postgres-1 pg_restore -U postgres -d ${dbName} /data_dump`;
 };
-const runFullCopyFunc = (dbCopyName) => {
-  return `pg_dump -U postgres ${dbCopyName} -f /data_dump`;
+const runFullCopyFunc = (dbCopyName, filePath) => {
+  console.log('this is the runFullCopyFunc code');
+  return `pg_dump -U postgres -d ${dbCopyName} -f ${filePath}`;
+
   // docker exec postgres-1 pg_dump -U postgres ${dbCopyName} -f /data_dump`;
   //
 };
-const runHollowCopyFunc = (dbCopyName) => {
-  return `pg_dump -s -U postgres ${dbCopyName} -f /data_dump`;
+const runHollowCopyFunc = (dbCopyName, file) => {
+  //added file as param
+  console.log('this is the runHollowCopyFunc');
+  return `pg_dump -s -U postgres ${dbCopyName} -f ${file}`; // replaced /data_dump with ${file}`;
   // docker exec postgres-1 pg_dump -s -U postgres ${dbCopyName} -f /data_dump`;
 };
 
@@ -104,8 +111,7 @@ ipcMain.on('upload-file', (event, filePath: string) => {
 
   const createDB: string = createDBFunc(dbName);
 
-  // added dbName to importFile
-  const importFile: string = importFileFunc(dbName, filePath);
+  //const importFile: string = importFileFunc(dbName, filePath); // added dbName to importFile // commenting out to test removal of importFile func
   const runSQL: string = runSQLFunc(dbName, filePath); // added filepath
   const runTAR: string = runTARFunc(dbName, filePath); //added filepath
   const extension: string = filePath[0].slice(filePath[0].lastIndexOf('.'));
@@ -136,12 +142,12 @@ ipcMain.on('upload-file', (event, filePath: string) => {
 
   // Step 3: Import database file from file path into docker container
   // Edit: We changed the functionality to create a file on the local machine instead of adding it to the docker container
-  const step3 = () => execute(importFile, step4);
+  // const step3 = () => execute(importFile, step4);
 
   // Step 2: Change curent URI to match newly created DB
   const step2 = () => {
     db.changeDB(dbName);
-    return step3();
+    return step4(); //changing step3 to step4 to test removal of importFile func
   };
 
   // Step 1: Create empty db
@@ -166,15 +172,23 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
 
   const { schemaName: dbName, dbCopyName, copy } = data;
   let { schemaFilePath: filePath } = data;
+  console.log(
+    'Schema name: ',
+    data.schemaName,
+    'data[schemaFilePath: ',
+    data.schemaFilePath,
+    'filepath: ',
+    filePath
+  );
 
   // generate strings that are fed into execute functions later
   const createDB: string = createDBFunc(dbName);
-  //added dbName to importFile
-  const importFile: string = importFileFunc(dbName, filePath);
+
+  // const importFile: string = importFileFunc(dbName, filePath); //added dbName to importFile //commenting out to test removal of importFile func
   const runSQL: string = runSQLFunc(dbName, filePath); // added filePath
   const runTAR: string = runTARFunc(dbName, filePath); // added filePath
-  const runFullCopy: string = runFullCopyFunc(dbCopyName);
-  const runHollowCopy: string = runHollowCopyFunc(dbCopyName);
+  const runFullCopy: string = runFullCopyFunc(dbCopyName, filePath);
+  const runHollowCopy: string = runHollowCopyFunc(dbCopyName, filePath);
 
   // determine if the file is a sql or a tar file, in the case of a copy, we will not have a filepath so we just hard-code the extension to be sql
   let extension: string = '';
@@ -205,7 +219,8 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
 
   // Step 3: Import database file from file path into docker container
 
-  const step3 = () => execute(importFile, step4);
+  //const step3 = () => execute(importFile, step4);
+
   // skip step three which is only for importing files and instead change the current db to the newly created one
   const step3Copy = () => {
     db.changeDB(dbName);
@@ -222,6 +237,7 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
       // this generates a pg_dump file from the specified db and saves it to a location in the container.
       // Full copy case
       if (copy) {
+        console.log('this is a console log');
         execute(runFullCopy, step3Copy);
       }
       // Hollow copy case
@@ -233,7 +249,7 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
       // change the current database back to the newly created one
       // and now that we have changed to the new db, we can move on to importing the data file
       db.changeDB(dbName);
-      return step3();
+      return step4(); //changing step3 to step4 to test removal of importFile func
     }
   };
 
