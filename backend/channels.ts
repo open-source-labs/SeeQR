@@ -109,6 +109,7 @@ ipcMain.on('upload-file', (event, filePath: string) => {
   const runSQL: string = runSQLFunc(dbName, filePath); // added filepath
   const runTAR: string = runTARFunc(dbName, filePath); //added filepath
   const extension: string = filePath[0].slice(filePath[0].lastIndexOf('.'));
+  let dbSize: string;
 
   // SEQUENCE OF EXECUTING COMMANDS
   // Steps are in reverse order because each step is a callback function that requires the following step to be defined.
@@ -117,7 +118,8 @@ ipcMain.on('upload-file', (event, filePath: string) => {
   async function sendLists() {
     listObj = await db.getLists();
     console.log('channels: ', listObj);
-    event.sender.send('db-lists', listObj);
+    // Send list of databases and tables, as well as database size to frontend.
+    event.sender.send('db-lists', listObj, dbSize);
     // Send schema name back to frontend, so frontend can load tab name.
     event.sender.send('return-schema-name', dbName);
     // tell the front end to switch tabs to the newly created database
@@ -132,16 +134,24 @@ ipcMain.on('upload-file', (event, filePath: string) => {
     if (extension === '.sql') runCmd = runSQL;
     else if (extension === '.tar') runCmd = runTAR;
     execute(runCmd, sendLists);
+
+    // DB query to get the database size
+    db.query(`SELECT pg_size_pretty(pg_database_size('${dbName}'));`).then(
+      (queryStats) => {
+        console.log('this is the size of the DB: ', queryStats);
+        dbSize = queryStats.rows[0].pg_size_pretty;
+      }
+    );
   };
 
   // Step 3: Import database file from file path into docker container
   // Edit: We changed the functionality to create a file on the local machine instead of adding it to the docker container
-  const step3 = () => execute(importFile, step4);
+  // const step3 = () => execute(importFile, step4);
 
   // Step 2: Change curent URI to match newly created DB
   const step2 = () => {
     db.changeDB(dbName);
-    return step3();
+    return step4();
   };
 
   // Step 1: Create empty db
@@ -311,11 +321,6 @@ ipcMain.on('execute-query-tracked', (event, data: QueryType) => {
             })();
           }
         );
-        db.query(
-          `SELECT pg_size_pretty(pg_database_size('${queryCurrentSchema}'));`
-        ).then((queryStats) => {
-          console.log('this is the size of the DB: ', queryStats);
-        });
       } else {
         // Handling for tracking a create table query, can't run explain/analyze on create statements
         (async function getListAsync() {

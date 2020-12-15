@@ -15,9 +15,9 @@ import CodeMirror from '@skidding/react-codemirror';
  *********************** TYPESCRIPT: TYPES ***********************
  ************************************************************/
 
-type QueryProps = { 
+type QueryProps = {
   currentSchema: string;
-  tableList: string[]; 
+  tableList: string[];
 };
 
 type state = {
@@ -33,22 +33,21 @@ class Query extends Component<QueryProps, state> {
     super(props);
     this.handleQuerySubmit = this.handleQuerySubmit.bind(this);
     this.updateCode = this.updateCode.bind(this);
-    this.handleTrackQuery = this.handleTrackQuery.bind(this); 
+    this.handleTrackQuery = this.handleTrackQuery.bind(this);
   }
 
   state: state = {
     queryString: '',
     queryLabel: '',
     show: false,
-    trackQuery: false
+    trackQuery: false,
   };
 
   componentDidMount() {
     ipcRenderer.on('query-error', (event: any, message: string) => {
       console.log('Query error: ');
       // dialog.showErrorBox('Error', message);
-
-    })
+    });
   }
 
   // Updates state.queryString as user inputs query label
@@ -74,7 +73,7 @@ class Query extends Component<QueryProps, state> {
     // if query string is empty, show error
     if (!this.state.queryString) {
       dialog.showErrorBox('Please enter a Query.', '');
-    } 
+    }
     if (!this.state.trackQuery) {
       //functionality to send query but not return stats and track
       const queryAndSchema = {
@@ -88,8 +87,7 @@ class Query extends Component<QueryProps, state> {
     }
     if (this.state.trackQuery && !this.state.queryLabel) {
       dialog.showErrorBox('Please enter a label for the Query.', '');
-    }
-    else if (this.state.trackQuery) {
+    } else if (this.state.trackQuery) {
       // send query and return stats from explain/analyze
       const queryAndSchema = {
         queryString: this.state.queryString,
@@ -112,31 +110,35 @@ class Query extends Component<QueryProps, state> {
 
     return (
       <div id="query-panel">
+        <div id="database-info">Database Size:</div>
         <div id="delete-me">
-          <DummyDataPanel tableList={this.props.tableList} currentSchema={this.props.currentSchema}/>
+          <DummyDataPanel
+            tableList={this.props.tableList}
+            currentSchema={this.props.currentSchema}
+          />
         </div>
         <h3>Query</h3>
         <form onSubmit={this.handleQuerySubmit}>
           <div className="query-label">
             <div id="chart-option">
               <span>track on chart:</span>
-              <input 
-                id="track" 
+              <input
+                id="track"
                 type="checkbox"
                 checked={this.state.trackQuery}
                 onChange={this.handleTrackQuery}
-                ></input>
+              ></input>
             </div>
-              <div id="label-option">
-                <label>label: </label>
-                <input
-                  className="label-field"
-                  type="text"
-                  placeholder="enter label to track"
-                  value={this.state.queryLabel}
-                  onChange={(e) => this.handleLabelEntry(e)}
-                />
-              </div>
+            <div id="label-option">
+              <label>label: </label>
+              <input
+                className="label-field"
+                type="text"
+                placeholder="enter label to track"
+                value={this.state.queryLabel}
+                onChange={(e) => this.handleLabelEntry(e)}
+              />
+            </div>
           </div>
           <br />
           <label>Query:</label>

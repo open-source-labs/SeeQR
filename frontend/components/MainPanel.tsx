@@ -67,15 +67,19 @@ class MainPanel extends Component<MainProps, MainState> {
       this.setState({ queries });
     });
 
-    ipcRenderer.on('db-lists', (event: any, returnedLists: any) => {
-      this.setState((prevState) => ({
-        ...prevState,
-        lists: {
-          databaseList: returnedLists.databaseList,
-          tableList: returnedLists.tableList,
-        },
-      }));
-    });
+    ipcRenderer.on(
+      'db-lists',
+      (event: any, returnedLists: any, returnedDbSize: string) => {
+        console.log('database size in FE: ', returnedDbSize);
+        this.setState((prevState) => ({
+          ...prevState,
+          lists: {
+            databaseList: returnedLists.databaseList,
+            tableList: returnedLists.tableList,
+          },
+        }));
+      }
+    );
 
     ipcRenderer.on('switch-to-new', (event: any) => {
       const newSchemaIndex = this.state.lists.databaseList.length - 1;
