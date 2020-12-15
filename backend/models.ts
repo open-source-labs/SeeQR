@@ -9,6 +9,7 @@ let pool: any = new Pool({ connectionString: PG_URI });
 //helper function that creates the column objects, which are saved to the schemaLayout object
 //this function returns a promise to be resolved with Promise.all syntax
 const getColumnObjects = (tableName: string) => {
+  console.log('this is the getColumnObjects function');
   const queryString =
     'SELECT column_name, data_type, character_maximum_length FROM information_schema.columns WHERE table_name = $1;';
   const value = [tableName];
@@ -32,6 +33,7 @@ const getColumnObjects = (tableName: string) => {
 
 // gets all the names of the current postgres instances
 const getDBNames = () => {
+  console.log('this is the getDBNames function');
   return new Promise((resolve) => {
     pool.query('SELECT datname FROM pg_database;').then((databases) => {
       let dbList: any = [];
