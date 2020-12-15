@@ -12,6 +12,7 @@ const db = require('./models');
 // Generate CLI commands to be executed in child process.
 // updated commands to use postgres without docker (commented out docker code)
 const createDBFunc = (name) => {
+  console.log('this is the createDBFunc')
   return `psql -U postgres -c "CREATE DATABASE ${name}"`;
 
   //return `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE ${name}"`;
@@ -26,6 +27,7 @@ const createDBFunc = (name) => {
 // };
 
 const runSQLFunc = (dbName, file) => {
+  console.log('this is the runSQLFunc')
   // added file param:
   return `psql -U postgres -d ${dbName} -f ${file}`; // replaced /data_dump with ${file};
 
@@ -33,13 +35,17 @@ const runSQLFunc = (dbName, file) => {
 };
 
 const runTARFunc = (dbName, file) => {
+  console.log('this is the runTARFunc')
   // added file param:
   return `pg_restore -U postgres -d ${dbName} -f ${file}`; // replaced /data_dump with ${file}`;
   // docker exec postgres-1 pg_restore -U postgres -d ${dbName} /data_dump`;
 };
-const runFullCopyFunc = (dbCopyName, filePath) => {
+const runFullCopyFunc = (dbCopyName, file) => {
   console.log('this is the runFullCopyFunc code');
-  return `pg_dump -U postgres -d ${dbCopyName} -f ${filePath}`;
+  console.log(file)
+  let newFile = file[0];
+  console.log(newFile)
+  return `pg_dump -U postgres -d ${dbCopyName} -f ${newFile}`;
 
   // docker exec postgres-1 pg_dump -U postgres ${dbCopyName} -f /data_dump`;
   //
@@ -180,7 +186,8 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
     'filepath: ',
     filePath
   );
-
+  filePath = [data.schemaName + '.sql'];
+  console.log(filePath)
   // generate strings that are fed into execute functions later
   const createDB: string = createDBFunc(dbName);
 
@@ -189,6 +196,7 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
   const runTAR: string = runTARFunc(dbName, filePath); // added filePath
   const runFullCopy: string = runFullCopyFunc(dbCopyName, filePath);
   const runHollowCopy: string = runHollowCopyFunc(dbCopyName, filePath);
+  
 
   // determine if the file is a sql or a tar file, in the case of a copy, we will not have a filepath so we just hard-code the extension to be sql
   let extension: string = '';
@@ -202,6 +210,7 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
   // Step 5: Changes the pg URI to look to the newly created database and queries all the tables in that database and sends it to frontend.
   async function sendLists() {
     listObj = await db.getLists();
+    console.log('this is the async func on line 205')
     event.sender.send('db-lists', listObj);
     // tell the front end to switch tabs to the newly created database
     event.sender.send('switch-to-new', null);
@@ -237,7 +246,7 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
       // this generates a pg_dump file from the specified db and saves it to a location in the container.
       // Full copy case
       if (copy) {
-        console.log('this is a console log');
+        console.log('this is the step 2 if copy console log');
         execute(runFullCopy, step3Copy);
       }
       // Hollow copy case

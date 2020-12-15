@@ -74,9 +74,7 @@ class SchemaModal extends Component<SchemaModalProps, state> {
       })
       .then((result: object) => {
         const filePath = result['filePaths'];
-        console.log('result: ', result);
         this.setState({ schemaFilePath: filePath });
-        console.log('state: ', this.state);
         const schemaObj = {
           schemaName: this.state.schemaName,
           schemaFilePath: this.state.schemaFilePath,
@@ -120,7 +118,7 @@ class SchemaModal extends Component<SchemaModalProps, state> {
   }
 
   selectHandler = (eventKey, e: React.SyntheticEvent<unknown>) => {
-    this.setState({ dbCopyName: eventKey += '_copy' }); // added += _copy to append copy to the dbCopyName
+    this.setState({ dbCopyName: eventKey }); // 
     console.log('this is state in the selectHandler func', this.state);
   };
 
@@ -140,7 +138,6 @@ class SchemaModal extends Component<SchemaModalProps, state> {
 
   handleCopyFilePath(event: any) {
     event.preventDefault();
-
     const schemaObj = {
       schemaName: this.state.schemaName,
       schemaFilePath: '',
@@ -150,7 +147,7 @@ class SchemaModal extends Component<SchemaModalProps, state> {
     };
 
     ipcRenderer.send('input-schema', schemaObj);
-    this.setState({ dbCopyName: 'Select Instance' });
+    this.setState({ dbCopyName: `Select Instance`  }); 
     this.setState({ schemaName: '' });
     this.props.showModal(event);
 
