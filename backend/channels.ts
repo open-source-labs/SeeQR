@@ -37,7 +37,6 @@ const runTARFunc = (dbName, file) => {
 const runFullCopyFunc = (dbCopyName) => {
   return `pg_dump -U postgres ${dbCopyName} -f /data_dump`;
   // docker exec postgres-1 pg_dump -U postgres ${dbCopyName} -f /data_dump`;
-  //
 };
 const runHollowCopyFunc = (dbCopyName) => {
   return `pg_dump -s -U postgres ${dbCopyName} -f /data_dump`;
@@ -176,6 +175,12 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
 
   const { schemaName: dbName, dbCopyName, copy } = data;
   let { schemaFilePath: filePath } = data;
+
+  console.log('DBNAME:', dbName);
+  console.log('DBCOPYNAME:', dbCopyName);
+  console.log('COPY:', copy);
+  console.log('this is data: ', data);
+  console.log('this is schemaFilePath: ', data.schemaFilePath);
 
   // generate strings that are fed into execute functions later
   const createDB: string = createDBFunc(dbName);
