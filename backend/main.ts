@@ -3,13 +3,8 @@ import { app, BrowserWindow, ipcMain, Menu } from 'electron';
 import { appendFile } from 'fs/promises';
 import { join } from 'path';
 import { format } from 'url';
-<<<<<<< HEAD
-import './channels'; // all channels live here
-// import execute from './channels';
-=======
 import './channels' // all channels live here - this format signals that we want to import the code even if we're not calling any of the functions. If we were to import an object from channels and not call any of the functions in this file, webpack thinks we're not using it and skips the import.
 //import execute from './channels';
->>>>>>> master
 
 const { exec } = require('child_process');
 const appMenu = require('./mainMenu'); // use appMenu to add options in top menu bar of app
@@ -87,8 +82,8 @@ function createWindow() {
   // Don't show until we are ready and loaded
   mainWindow.once('ready-to-show', (event) => {
     mainWindow.show();
-  }
-  )}
+  })
+}
     //     // uncomment code below before running production build and packaging
     //     // const yamlPath = join(__dirname, '../../docker-compose.yml')
     //     // const runDocker: string = `docker-compose -f '${yamlPath}' up -d`;
