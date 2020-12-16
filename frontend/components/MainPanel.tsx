@@ -90,7 +90,7 @@ class MainPanel extends Component<MainProps, MainState> {
 
     // Renders the loading modal during async functions.
     ipcRenderer.on('async-started', (event: any) => {
-      this.setState({ loading: true });
+      this.setState({ loading: false }); // ** James/Katie - changing to false for now to avoid loading modal until we can figure out later why the async complete listener isnt kicking in
     });
 
     ipcRenderer.on('async-complete', (event: any) => {
@@ -102,6 +102,7 @@ class MainPanel extends Component<MainProps, MainState> {
     ipcRenderer.send('change-db', tabName);
     ipcRenderer.send('return-db-list');
     this.setState({ currentSchema: tabName });
+    console.log('this is the onClickTabItem func', this.state);
   }
 
   render() {
