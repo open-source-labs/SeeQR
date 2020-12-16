@@ -84,8 +84,16 @@ const execute = (str: string, nextStep: any) => {
 // Global variable to store list of databases and tables to provide to frontend upon refreshing view.
 let listObj: any;
 
-ipcMain.on('return-db-list', (event, args) => {
-  db.getLists().then((data) => event.sender.send('db-lists', data));
+ipcMain.on('return-db-list', (event, dbName) => {
+  // DB query to get the database size
+  let dbSize: string;
+  db.query(`SELECT pg_size_pretty(pg_database_size('${dbName}'));`).then(
+    (queryStats) => {
+      console.log('this is DBsize inside ipcMain when new tab is clicked: ', queryStats);
+      dbSize = queryStats.rows[0].pg_size_pretty;
+    }
+  );
+  db.getLists().then((data) => event.sender.send('db-lists', data, dbSize));
 });
 
 // Listen for skip button on Splash page.
