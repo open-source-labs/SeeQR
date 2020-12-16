@@ -18,6 +18,7 @@ import CodeMirror from '@skidding/react-codemirror';
 type QueryProps = {
   currentSchema: string;
   tableList: string[];
+  dbSize: string;
 };
 
 type state = {
@@ -110,7 +111,7 @@ class Query extends Component<QueryProps, state> {
 
     return (
       <div id="query-panel">
-        <div id="database-info">Database Size:</div>
+        <div id="database-info">Database Size: {this.props.dbSize}</div>
         <div id="delete-me">
           <DummyDataPanel
             tableList={this.props.tableList}

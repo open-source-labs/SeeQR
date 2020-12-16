@@ -6,6 +6,7 @@ type SchemaContainerProps = {
   queries: any;
   currentSchema: string;
   tableList: string[];
+  databaseSize: string;
 };
 
 type state = {
@@ -30,6 +31,7 @@ export class SchemaContainer extends Component<SchemaContainerProps> {
               <Query
                 currentSchema={this.props.currentSchema}
                 tableList={this.props.tableList}
+                dbSize={this.props.databaseSize}
               />
             </div>
             <div>
