@@ -3,7 +3,7 @@ import { app, BrowserWindow, ipcMain, Menu } from 'electron';
 import { appendFile } from 'fs/promises';
 import { join } from 'path';
 import { format } from 'url';
-import './channels' // all channels live here - this format signals that we want to import the code even if we're not calling any of the functions. If we were to import an object from channels and not call any of the functions in this file, webpack thinks we're not using it and skips the import.
+import './channels'; // all channels live here - this format signals that we want to import the code even if we're not calling any of the functions. If we were to import an object from channels and not call any of the functions in this file, webpack thinks we're not using it and skips the import.
 //import execute from './channels';
 
 const { exec } = require('child_process');
@@ -82,51 +82,11 @@ function createWindow() {
   // Don't show until we are ready and loaded
   mainWindow.once('ready-to-show', (event) => {
     mainWindow.show();
-  }
-  )}
-    //     // uncomment code below before running production build and packaging
-    //     // const yamlPath = join(__dirname, '../../docker-compose.yml')
-    //     // const runDocker: string = `docker-compose -f '${yamlPath}' up -d`;
-  //   const runDocker: string = `docker-compose up -d`;
-  //   exec(runDocker, (error, stdout, stderr) => {
-  //     if (error) {
-  //       console.log(`error: ${error.message}`);
-  //       return;
-  //     }
-  //     if (stderr) {
-  //       console.log(`stderr: ${stderr}`);
-  //       return;
-  //     }
-  //     console.log(`${stdout}`);
-  //   });
-  // });
-//}
+  });
+}
+
 // ----
-// app.on('before-quit', (event: any) => {
-//   // check if containers have already been pruned--else, continue with default behavior to terminate application
-//   if (!pruned) {
-//     event.preventDefault();
-//     // Stop and remove postgres-1 and busybox-1 Docker containers upon window exit.
-//     const stopContainers: string = 'docker stop postgres-1 busybox-1';
-//     const pruneContainers: string = 'docker rm -f postgres-1 busybox-1';
-//     // this command removes the volume which stores the session data for the postgres instance
-//     // comment this out for dev
-//     const pruneVolumes: string = 'docker volume rm -f seeqr_database-data';
-
-//     // use this string for production build
-//     // const pruneVolumes: string = 'docker volume rm -f app_database-data'
-
-//     const step4 = () => {
-//       pruned = true;
-//       app.quit();
-//     };
-//     const step3 = () => execute(pruneVolumes, step4);
-//     const step2 = () => execute(pruneContainers, step3);
-
-    // execute(stopContainers, step2);
-
-//   }
-// });
+app.on('before-quit', (event: any) => {});
 // ----
 // Invoke createWindow to create browser windows after Electron has been initialized.
 // Some APIs can only be used after this event occurs.

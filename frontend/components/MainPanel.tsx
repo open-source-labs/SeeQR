@@ -18,6 +18,7 @@ type MainState = {
   currentSchema: string;
   lists: any;
   loading: boolean;
+  dbSize: string;
 };
 
 type MainProps = {};
@@ -35,6 +36,7 @@ class MainPanel extends Component<MainProps, MainState> {
       tableList: [],
     },
     loading: false,
+    dbSize: '',
   };
 
   componentDidMount() {
@@ -67,15 +69,21 @@ class MainPanel extends Component<MainProps, MainState> {
       this.setState({ queries });
     });
 
-    ipcRenderer.on('db-lists', (event: any, returnedLists: any) => {
-      this.setState((prevState) => ({
-        ...prevState,
-        lists: {
-          databaseList: returnedLists.databaseList,
-          tableList: returnedLists.tableList,
-        },
-      }));
-    });
+    ipcRenderer.on(
+      'db-lists',
+      (event: any, returnedLists: any, returnedDbSize: string) => {
+        console.log('database size in FE: ', returnedDbSize);
+        this.setState((prevState) => ({
+          ...prevState,
+          lists: {
+            databaseList: returnedLists.databaseList,
+            tableList: returnedLists.tableList,
+          },
+          dbSize: returnedDbSize,
+        }));
+        console.log('dbsize in this.state after click new tab: ', this.state);
+      }
+    );
 
     ipcRenderer.on('switch-to-new', (event: any) => {
       const newSchemaIndex = this.state.lists.databaseList.length - 1;
@@ -96,7 +104,7 @@ class MainPanel extends Component<MainProps, MainState> {
 
   onClickTabItem(tabName) {
     ipcRenderer.send('change-db', tabName);
-    ipcRenderer.send('return-db-list');
+    ipcRenderer.send('return-db-list', tabName);
     this.setState({ currentSchema: tabName });
     console.log('this is the onClickTabItem func', this.state);
   }
@@ -123,6 +131,7 @@ class MainPanel extends Component<MainProps, MainState> {
           queries={this.state.queries}
           onClickTabItem={this.onClickTabItem}
           tableList={this.state.lists.tableList}
+          databaseSize={this.state.dbSize}
         />
       </div>
     );
