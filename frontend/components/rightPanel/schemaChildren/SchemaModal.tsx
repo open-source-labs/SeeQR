@@ -55,17 +55,12 @@ class SchemaModal extends Component<SchemaModalProps, state> {
     let dbSafeName = schemaNameInput.toLowerCase();
     dbSafeName = dbSafeName.replace(/[^A-Z0-9]/gi, '');
     this.setState({ schemaName: dbSafeName });
-    console.log('this is the handleSchemaName function', this.state);
   }
 
   // Load schema file path
   // When file path is uploaded, query entry is cleared.
   handleSchemaFilePath(event: ClickEvent) {
     event.preventDefault();
-    console.log(
-      'this is state in the top of the handleSchemaFilePath func',
-      this.state
-    );
     dialog
       .showOpenDialog({
         properties: ['openFile'],
@@ -89,18 +84,12 @@ class SchemaModal extends Component<SchemaModalProps, state> {
       })
 
       .catch((err: object) => {
-        console.log(
-          'Error in handleSchemaFilePath method of SchemaModal.tsx.',
-          err
-        );
       });
-    console.log('this is state in the handleSchemaFilePath func', this.state);
   }
 
   // When schema script is inserted, file path is cleared set dialog to warn user.
   handleSchemaEntry(event: any) {
     this.setState({ schemaEntry: event.target.value, schemaFilePath: '' });
-    console.log('this is state in the handleSchemaEntry func', this.state);
     // this.setState({ schemaFilePath: '' });
   }
 
@@ -112,20 +101,16 @@ class SchemaModal extends Component<SchemaModalProps, state> {
       schemaFilePath: this.state.schemaFilePath,
       schemaEntry: this.state.schemaEntry,
     };
-    console.log(schemaObj);
-    console.log('this is state in the handleSchemaSubmit func', this.state);
     ipcRenderer.send('input-schema', schemaObj);
   }
 
   selectHandler = (eventKey, e: React.SyntheticEvent<unknown>) => {
     this.setState({ dbCopyName: eventKey }); // 
-    console.log('this is state in the selectHandler func', this.state);
   };
 
   handleCopyData(event: any) {
     if (!this.state.copy) this.setState({ copy: true });
     else this.setState({ copy: false });
-    console.log('this is state in the handleCopyData func', this.state);
   }
 
   dropDownList = () => {
@@ -150,8 +135,6 @@ class SchemaModal extends Component<SchemaModalProps, state> {
     this.setState({ dbCopyName: `Select Instance`  }); 
     this.setState({ schemaName: '' });
     this.props.showModal(event);
-
-    console.log('this is state in the handleCopyFilePath func', this.state);
   }
 
   render() {

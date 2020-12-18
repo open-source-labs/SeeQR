@@ -5,3 +5,7 @@
 .DS_Store
 dvdrental.tar
 package-lock.json
+films.csv
+people.csv
+swcopy.sql
+vessels.csv

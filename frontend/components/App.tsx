@@ -34,22 +34,13 @@ export class App extends Component<AppProps, state> {
       })
       .then((result: object) => {
         const filePathArr = result['filePaths'];
-        console.log(
-          'this is the handleFileClick function - first dot then',
-          this.state
-        );
         // send via channel to main process
         if (!result['canceled']) {
           ipcRenderer.send('upload-file', filePathArr);
           this.setState({ openSplash: false });
-          console.log(
-            'this is the handleFileClick function - second dot then',
-            this.state
-          );
         }
       })
       .catch((err: object) => {
-        console.log(err);
       });
   }
 
@@ -57,7 +48,6 @@ export class App extends Component<AppProps, state> {
   handleSkipClick(event: ClickEvent) {
     ipcRenderer.send('skip-file-upload');
     this.setState({ openSplash: false });
-    console.log('this is the handleSkipClick function', this.state);
   }
 
   render() {

@@ -43,7 +43,6 @@ export class Tabs extends Component<TabsProps> {
         currentSchema: returnedLists,
         // databaseSize: returnedDbSize,
       });
-      // console.log('db size was returned in component did mount in tabs.tsx');
       this.onClose(event);
     });
   }
@@ -60,7 +59,6 @@ export class Tabs extends Component<TabsProps> {
       queries,
       databaseSize,
     } = this.props;
-    console.log('this is this.props in tabs.tsx: ', this.props);
 
     const activeTabQueries = queries.filter(
       (query) => query.querySchema === currentSchema
