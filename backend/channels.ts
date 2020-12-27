@@ -54,7 +54,6 @@ const execute = (str: string, nextStep: any, errorStep?: any) => {
       //this shows the console error in an error message on the frontend
       dialog.showErrorBox(`${error.message}`, '');
       console.log(`error: ${error.message}`);
-      console.log(`made it this far`);
       errorStep();
       return;
     }

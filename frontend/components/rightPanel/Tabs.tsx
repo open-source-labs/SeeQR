@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import { SchemaContainer } from './SchemaContainer';
-import SchemaModal from './schemaChildren/SchemaModal';
-import { Tab } from './tabsChildren/Tab';
+// import { SchemaContainer } from './SchemaContainer';
+// import SchemaModal from './schemaChildren/SchemaModal';
+// import { Tab } from './tabsChildren/Tab';
 
-const { ipcRenderer } = window.require('electron');
+// const { ipcRenderer } = window.require('electron');
 
 type TabsProps = {
   currentSchema: string;
@@ -30,22 +30,22 @@ export class Tabs extends Component<TabsProps> {
     this.setState({ show: true });
   };
 
-  componentDidMount() {
-    // After schema is successfully sent to backend, backend spins up new database with inputted schemaName.
-    // It will send the frontend an updated variable 'lists' that is an array of updated lists of all the tabs (which is the same
-    // thing as all the databases). We open a channel to listen for it here inside of componentDidMount, then
-    // we invoke onClose to close schemaModal ONLY after we are sure that backend has created that channel.
-    ipcRenderer.on('db-lists', (
-      event: any,
-      returnedLists: any /*returnedDbSize: string*/
-    ) => {
-      this.setState({
-        currentSchema: returnedLists,
-        // databaseSize: returnedDbSize,
-      });
-      this.onClose(event);
-    });
-  }
+  // componentDidMount() {
+  //   // After schema is successfully sent to backend, backend spins up new database with inputted schemaName.
+  //   // It will send the frontend an updated variable 'lists' that is an array of updated lists of all the tabs (which is the same
+  //   // thing as all the databases). We open a channel to listen for it here inside of componentDidMount, then
+  //   // we invoke onClose to close schemaModal ONLY after we are sure that backend has created that channel.
+  //   ipcRenderer.on('db-lists', (
+  //     event: any,
+  //     returnedLists: any /*returnedDbSize: string*/
+  //   ) => {
+  //     this.setState({
+  //       currentSchema: returnedLists,
+  //       // databaseSize: returnedDbSize,
+  //     });
+  //     this.onClose(event);
+  //   });
+  // }
 
   onClose = (event: any) => {
     this.setState({ show: false });
@@ -67,7 +67,7 @@ export class Tabs extends Component<TabsProps> {
     return (
       <div className="tabs" id="main-right">
         <ol className="tab-list">
-          <span>
+          {/* <span>
             {tabList.map((tab, index) => {
               return (
                 <Tab
@@ -78,7 +78,7 @@ export class Tabs extends Component<TabsProps> {
                 />
               );
             })}
-          </span>
+          </span> */}
           <span>
             <button
               id="input-schema-button"
@@ -90,13 +90,13 @@ export class Tabs extends Component<TabsProps> {
             </button>
           </span>
         </ol>
-        <SchemaModal
+        {/* <SchemaModal
           tabList={tabList}
           show={this.state.show}
           showModal={this.showModal}
           onClose={this.onClose}
-        />
-        <div className="tab-content">
+        /> */}
+        {/* <div className="tab-content">
           {tabList.map((tab, index) => {
             if (tab !== currentSchema) return undefined;
             return (
@@ -109,7 +109,7 @@ export class Tabs extends Component<TabsProps> {
               />
             );
           })}
-        </div>
+        </div> */}
       </div>
     );
   }
