@@ -89,7 +89,10 @@ ipcMain.on('return-db-list', (event, dbName) => {
   let dbSize: string;
   db.query(`SELECT pg_size_pretty(pg_database_size('${dbName}'));`).then(
     (queryStats) => {
-      console.log('this is DBsize inside ipcMain when new tab is clicked: ', queryStats);
+      console.log(
+        'this is DBsize inside ipcMain when new tab is clicked: ',
+        queryStats
+      );
       dbSize = queryStats.rows[0].pg_size_pretty;
     }
   );
@@ -203,7 +206,12 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
     'filepath: ',
     filePath
   );
-  filePath = [data.schemaName + '.sql'];
+
+  if (!data.schemaFilePath) {
+    filePath = [data.schemaName + '.sql'];
+  } else {
+    filePath = data.schemaFilePath;
+  }
   console.log(filePath);
   // generate strings that are fed into execute functions later
   const createDB: string = createDBFunc(dbName);
