@@ -58,7 +58,7 @@
 }
 .modal-buttons {
   display: flex;
-  flex-direction: row;  
+  flex-direction: row;
 }
 
 #horizontal {
@@ -70,7 +70,6 @@
   display: flex;
   flex-direction: row;
   align-items: baseline;
-
 }
 
 #load-button {
@@ -82,16 +81,17 @@
   align-items: center;
   text-align: center;
 }
-.separator::before, .separator::after {
+.separator::before,
+.separator::after {
   content: '';
   flex: 1;
   border-bottom: 1px solid #ccc;
 }
 .separator::before {
-  margin-right: .25em;
+  margin-right: 0.25em;
 }
 .separator::after {
-  margin-left: .25em;
+  margin-left: 0.25em;
 }
 
 .copy-instance {
@@ -107,6 +107,7 @@
 #copy-data-checkbox {
   min-width: 10px;
   margin-left: 0.5rem;
+  margin-left: 1rem;
   width: 1.2rem;
   height: 1.2rem;
 }
@@ -119,6 +120,7 @@
 
 #copy-button {
   margin-top: 20px;
+  margin-left: 40px;
 }
 
 #loading-modal {

@@ -14,8 +14,6 @@ const db = require('./models');
 const createDBFunc = (name) => {
   console.log('this is the createDBFunc');
   return `psql -U postgres -c "CREATE DATABASE ${name}"`;
-
-  //return `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE ${name}"`;
 };
 
 //commenting out the importFileFunc to test duplicate import errors
@@ -52,8 +50,7 @@ const runFullCopyFunc = (dbCopyName, file) => {
 const runHollowCopyFunc = (dbCopyName, file) => {
   //added file as param
   console.log('this is the runHollowCopyFunc');
-  return `pg_dump -s -U postgres ${dbCopyName} -f ${file}`; // replaced /data_dump with ${file}`;
-  // docker exec postgres-1 pg_dump -s -U postgres ${dbCopyName} -f /data_dump`;
+  return `pg_dump -s -U postgres ${dbCopyName} -f ${file}`;
 };
 
 // Function to execute commands in the child process.
@@ -89,7 +86,10 @@ ipcMain.on('return-db-list', (event, dbName) => {
   let dbSize: string;
   db.query(`SELECT pg_size_pretty(pg_database_size('${dbName}'));`).then(
     (queryStats) => {
-      console.log('this is DBsize inside ipcMain when new tab is clicked: ', queryStats);
+      console.log(
+        'this is DBsize inside ipcMain when new tab is clicked: ',
+        queryStats
+      );
       dbSize = queryStats.rows[0].pg_size_pretty;
     }
   );
@@ -201,10 +201,19 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
     'data[schemaFilePath: ',
     data.schemaFilePath,
     'filepath: ',
-    filePath
+    filePath,
+    'dbCopyName: ',
+    dbCopyName
   );
-  filePath = [data.schemaName + '.sql'];
-  console.log(filePath);
+  if (dbCopyName) {
+    console.log('hollow copy or w/ data copy conditional');
+    filePath = [data.schemaName + '.sql'];
+  } else {
+    console.log('schema file upload conditional');
+    filePath = data.schemaFilePath;
+  }
+
+  // console.log(filePath);
   // generate strings that are fed into execute functions later
   const createDB: string = createDBFunc(dbName);
 
