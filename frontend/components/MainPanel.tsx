@@ -1,5 +1,5 @@
 // import { dialog } from 'electron';
-import React, { Component } from 'react';
+import React from 'react';
 import { Compare } from './leftPanel/Compare';
 import History from './leftPanel/History';
 import { Tabs } from './rightPanel/Tabs';
@@ -21,13 +21,8 @@ type MainState = {
   dbSize: string;
 };
 
-type MainProps = {};
-class MainPanel extends Component<MainProps, MainState> {
-  constructor(props: MainProps) {
-    super(props);
-    // this.onClickTabItem = this.onClickTabItem.bind(this);
-  }
-  state: MainState = {
+function MainPanel () {
+  const state: MainState = {
     queries: [],
     // currentSchema will change depending on which Schema Tab user selects
     currentSchema: 'defaultDB',
@@ -39,7 +34,7 @@ class MainPanel extends Component<MainProps, MainState> {
     dbSize: '',
   };
 
-  componentDidMount() {
+  // componentDidMount() {
     // ipcRenderer.send('return-db-list');
 
     // Listening for returnedData from executing Query
@@ -98,7 +93,7 @@ class MainPanel extends Component<MainProps, MainState> {
     // ipcRenderer.on('async-complete', (event: any) => {
     //   this.setState({ loading: false });
     // });
-  }
+  // }
 
   // onClickTabItem(tabName) {
   //   ipcRenderer.send('change-db', tabName);
@@ -106,33 +101,31 @@ class MainPanel extends Component<MainProps, MainState> {
   //   this.setState({ currentSchema: tabName });
   // }
 
-  render() {
-    return (
-      <div id="main-panel">
-        <div>
-          <LoadingModal show={this.state.loading} />
-        </div>
-        <div id="main-left">
-          <History
-            queries={this.state.queries}
-            currentSchema={this.state.currentSchema}
-          />
-          <Compare
-            queries={this.state.queries}
-            currentSchema={this.state.currentSchema}
-          />
-        </div>
-        <Tabs
-          currentSchema={this.state.currentSchema}
-          tabList={this.state.lists.databaseList}
-          queries={this.state.queries}
-          onClickTabItem={/*this.onClickTabItem*/() => {}}
-          tableList={this.state.lists.tableList}
-          databaseSize={this.state.dbSize}
+  return (
+    <div id="main-panel">
+      <div>
+        <LoadingModal show={state.loading} />
+      </div>
+      <div id="main-left">
+        <History
+          queries={state.queries}
+          currentSchema={state.currentSchema}
+        />
+        <Compare
+          queries={state.queries}
+          currentSchema={state.currentSchema}
         />
       </div>
-    );
-  }
+      <Tabs
+        currentSchema={state.currentSchema}
+        tabList={state.lists.databaseList}
+        queries={state.queries}
+        onClickTabItem={/*onClickTabItem*/() => {}}
+        tableList={state.lists.tableList}
+        databaseSize={state.dbSize}
+      />
+    </div>
+  );
 }
 
 export default MainPanel;
