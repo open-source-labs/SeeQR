@@ -201,7 +201,7 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
   console.log(
     'Schema name: ',
     data.schemaName,
-    'data[schemaFilePath: ',
+    'data.schemaFilePath: ',
     data.schemaFilePath,
     'filepath: ',
     filePath
