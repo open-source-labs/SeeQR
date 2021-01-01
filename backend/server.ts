@@ -17,10 +17,10 @@ server.get('/', (req, res) => {
 })
 
 //router for 'skip-file-upload', 'upload-file', and 'input-schema'
-app.use('/schema', schemaRouter);
+server.use('/schema', schemaRouter);
 
 //router for 'skip-file-upload', 'upload-file', and 'input-schema'
-app.use('/dbLists', dbRouter);
+server.use('/dbLists', dbRouter);
 
 
 server.listen(3000, () => console.log('listening on port 3000'));
