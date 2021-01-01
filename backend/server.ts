@@ -2,6 +2,8 @@ const express = require('express');
 const server = express();
 const path = require('path');
 const schemaRouter = ./routes/schemaRouter;
+const dbRouter = ./routes/dbRouter;
+
 
 
 // Body Parser Middleware
@@ -16,6 +18,9 @@ server.get('/', (req, res) => {
 
 //router for 'skip-file-upload', 'upload-file', and 'input-schema'
 app.use('/schema', schemaRouter);
+
+//router for 'skip-file-upload', 'upload-file', and 'input-schema'
+app.use('/dbLists', dbRouter);
 
 
 server.listen(3000, () => console.log('listening on port 3000'));
