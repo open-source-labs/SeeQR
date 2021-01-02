@@ -5,7 +5,7 @@ import MainPanel from './MainPanel';
 // const { dialog } = require('electron').remote;
 // const { ipcRenderer } = window.require('electron');
 
-type ClickEvent = React.MouseEvent<HTMLElement>;
+// type ClickEvent = React.MouseEvent<HTMLElement>;
 
 type state = {
   openSplash: boolean;
@@ -25,8 +25,17 @@ export class App extends Component<AppProps, state> {
     openSplash: true,
   };
 
-  handleFileClick(event: ClickEvent) {
-    alert('handlin clicks');
+  async handleFileClick(event) {
+    const files = event.target.files;
+    const formData = new FormData();
+    formData.append('myFile', files[0]);
+    console.log(files);
+
+    const response = await fetch('/schema/upload-file', {
+      method: 'POST',
+      body: formData,
+    });
+
     this.setState({ openSplash: false });
     // dialog
     //   .showOpenDialog({
@@ -47,7 +56,7 @@ export class App extends Component<AppProps, state> {
   }
 
   // Skips file upload and moves to main page.
-  handleSkipClick(event: ClickEvent) {
+  handleSkipClick(event) {
     // ipcRenderer.send('skip-file-upload');
     this.setState({ openSplash: false });
   }

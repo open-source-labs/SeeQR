@@ -17,4 +17,4 @@ router.post('/input-schema', schemaController.inputSchema, (req, res) => {
   res.status(200).json(res.locals);
 });
 
-module.exports = router;
+export default router;

@@ -1,10 +1,10 @@
 const db = require('../models');
 
-const queryController = {};
+const queryController = {
+  executeQueryUntracked: (req, res, next) => {},
 
-queryController.executeQueryUntracked = (req, res, next) => {};
+  executeQueryTracked: (req, res, next) => {},
+  generateDummyData: (req, res, next) => {},
+};
 
-queryController.executeQueryTracked = (req, res, next) => {};
-queryController.generateDummyData = (req, res, next) => {};
-
-module.exports = queryController;
+export default queryController;

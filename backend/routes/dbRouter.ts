@@ -13,4 +13,4 @@ router.get('change-db', dbController.changeDb, (req, res) => {
   res.status(200).json(res.locals);
 });
 
-module.exports = router;
+export default router;

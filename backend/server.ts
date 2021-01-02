@@ -1,10 +1,10 @@
 const express = require('express');
 const server = express();
 const path = require('path');
-const schemaRouter = ./routes/schemaRouter;
-const dbRouter = ./routes/dbRouter;
-const queryRouter = ./routes/queryRouter;
 
+const schemaRouter = require('./routes/schemaRouter');
+const dbRouter = require('./routes/dbRouter');
+const queryRouter = require('./routes/queryRouter');
 
 // Body Parser Middleware
 server.use(express.json());
@@ -14,7 +14,7 @@ server.use(express.static('dist'));
 
 server.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../dist/index.html'));
-})
+});
 
 //router for 'skip-file-upload', 'upload-file', and 'input-schema'
 server.use('/schema', schemaRouter);
@@ -37,7 +37,6 @@ server.use((err, req, res, next) => {
   return res.status(errorObj.status).json(errorObj.message);
 });
 
-
 server.listen(3000, () => console.log('listening on port 3000'));
 
-module.exports = server;
+export default server;
