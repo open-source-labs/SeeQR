@@ -48,7 +48,11 @@ const execute = (str: string, nextStep: any, errorStep?: any) => {
     if (nextStep) nextStep();
   });
 };
-
+// const schemaController: any = {};
+// console.log(schemaController);
+// schemaController.skipFileUpload = (req, res, next) => {
+//   next();
+// };
 const schemaController = {
   skipFileUpload: (req, res, next) => {
     next();
@@ -58,7 +62,7 @@ const schemaController = {
     const { formData } = req.body;
     // event.sender.send('async-started');
     console.log('this is formData: ', formData);
-    // let dbName;
+    let dbName;
 
     // if (process.platform === 'darwin') {
     //   dbName = filePath[0].slice(
@@ -79,23 +83,23 @@ const schemaController = {
     // const extension: string = filePath[0].slice(filePath[0].lastIndexOf('.'));
     // let dbSize: string;
 
-    // // SEQUENCE OF EXECUTING COMMANDS
-    // // Steps are in reverse order because each step is a callback function that requires the following step to be defined.
+    // SEQUENCE OF EXECUTING COMMANDS
+    // Steps are in reverse order because each step is a callback function that requires the following step to be defined.
 
-    // // Step 5: Changes the pg URI the newly created database, queries new database, then sends list of tables and list of databases to frontend.
-    // async function sendLists() {
-    //   const listObj = await db.getLists();
-    //   // Send list of databases and tables, as well as database size to frontend.
-    //   // event.sender.send('db-lists', listObj, dbSize);
-    //   // // Send schema name back to frontend, so frontend can load tab name.
-    //   // event.sender.send('return-schema-name', dbName);
-    //   // // tell the front end to switch tabs to the newly created database
-    //   // event.sender.send('switch-to-new', null);
-    //   // // notify frontend that async process has been completed
-    //   // event.sender.send('async-complete');
-    // }
+    // Step 5: Changes the pg URI the newly created database, queries new database, then sends list of tables and list of databases to frontend.
+    async function sendLists() {
+      const listObj = await db.getLists();
+      // Send list of databases and tables, as well as database size to frontend.
+      // event.sender.send('db-lists', listObj, dbSize);
+      // // Send schema name back to frontend, so frontend can load tab name.
+      // event.sender.send('return-schema-name', dbName);
+      // // tell the front end to switch tabs to the newly created database
+      // event.sender.send('switch-to-new', null);
+      // // notify frontend that async process has been completed
+      // event.sender.send('async-complete');
+    }
 
-    // // Step 4: Given the file path extension, run the appropriate command in postgres to populate db.
+    // Step 4: Given the file path extension, run the appropriate command in postgres to populate db.
     // const step4 = () => {
     //   let runCmd: string = '';
     //   if (extension === '.sql') runCmd = runSQL;

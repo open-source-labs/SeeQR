@@ -1,10 +1,11 @@
 const express = require('express');
-const server = express();
 const path = require('path');
 
+const server = express();
+
 const schemaRouter = require('./routes/schemaRouter');
-const dbRouter = require('./routes/dbRouter');
-const queryRouter = require('./routes/queryRouter');
+// const dbRouter = require('./routes/dbRouter');
+// const queryRouter = require('./routes/queryRouter');
 
 // Body Parser Middleware
 server.use(express.json());
@@ -20,10 +21,10 @@ server.get('/', (req, res) => {
 server.use('/schema', schemaRouter);
 
 //router for 'skip-file-upload', 'upload-file', and 'input-schema'
-server.use('/dbLists', dbRouter);
+// server.use('/dbLists', dbRouter);
 
 //router for 'execute-query-untracked', 'execute-query-tracked', 'generate-dummy-data'
-server.use('/query', queryRouter);
+// server.use('/query', queryRouter);
 
 // default error handler
 server.use((err, req, res, next) => {
