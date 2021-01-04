@@ -2,7 +2,9 @@ const express = require('express');
 
 const router = express.Router();
 
-const queryController = require('../controllers/queryController');
+import queryController from '../controllers/queryController';
+
+console.log(queryController);
 
 router.get(
   'execute-query-untracked',
@@ -12,11 +14,11 @@ router.get(
   }
 );
 
-router.get(
-  'execute-query-tracked',
+router.post(
+  'execute-query-tracked/',
   queryController.executeQueryTracked,
   (req, res) => {
-    res.status(200).json(res.locals);
+    res.status(200).json('query tracked confirmed');
   }
 );
 

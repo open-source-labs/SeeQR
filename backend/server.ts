@@ -3,10 +3,11 @@ const path = require('path');
 
 const server = express();
 
-const schemaRouter = require('./routes/schemaRouter');
+// const schemaRouter = require('./routes/schemaRouter');
 // const dbRouter = require('./routes/dbRouter');
-// const queryRouter = require('./routes/queryRouter');
+import queryRouter from './routes/queryRouter';
 
+console.log(queryRouter);
 // Body Parser Middleware
 server.use(express.json());
 server.use(express.urlencoded({ extended: false }));
@@ -18,13 +19,13 @@ server.get('/', (req, res) => {
 });
 
 //router for 'skip-file-upload', 'upload-file', and 'input-schema'
-server.use('/schema', schemaRouter);
+// server.use('/schema', schemaRouter);
 
 //router for 'skip-file-upload', 'upload-file', and 'input-schema'
 // server.use('/dbLists', dbRouter);
 
-//router for 'execute-query-untracked', 'execute-query-tracked', 'generate-dummy-data'
-// server.use('/query', queryRouter);
+// router for 'execute-query-untracked', 'execute-query-tracked', 'generate-dummy-data'
+server.use('/query', queryRouter);
 
 // default error handler
 server.use((err, req, res, next) => {

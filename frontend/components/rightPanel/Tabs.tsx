@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-// import { SchemaContainer } from './SchemaContainer';
+import { SchemaContainer } from './SchemaContainer';
 // import SchemaModal from './schemaChildren/SchemaModal';
 // import { Tab } from './tabsChildren/Tab';
 
@@ -96,20 +96,15 @@ export class Tabs extends Component<TabsProps> {
           showModal={this.showModal}
           onClose={this.onClose}
         /> */}
-        {/* <div className="tab-content">
-          {tabList.map((tab, index) => {
-            if (tab !== currentSchema) return undefined;
-            return (
-              <SchemaContainer
-                key={index}
-                queries={activeTabQueries}
-                currentSchema={currentSchema}
-                tableList={this.props.tableList}
-                databaseSize={databaseSize}
-              />
-            );
-          })}
-        </div> */}
+        <div className="tab-content">
+          <SchemaContainer
+            // key={index}
+            queries={activeTabQueries}
+            currentSchema={currentSchema}
+            tableList={this.props.tableList}
+            databaseSize={databaseSize}
+          />
+        </div>
       </div>
     );
   }

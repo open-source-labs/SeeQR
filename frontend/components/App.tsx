@@ -22,7 +22,7 @@ export class App extends Component<AppProps, state> {
 
   // Splash page will always render upon opening App
   state: state = {
-    openSplash: true,
+    openSplash: false,
   };
 
   async handleFileClick(event) {

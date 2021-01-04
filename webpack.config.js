@@ -89,7 +89,7 @@ module.exports = {
     hot: true,
     compress: true,
     proxy: {
-      '/*': 'http://localhost:3000/',
+      '/**': 'http://localhost:3000/',
     },
     watchContentBase: true,
     watchOptions: {
