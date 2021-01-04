@@ -55,6 +55,7 @@ const execute = (str: string, nextStep: any, errorStep?: any) => {
 // };
 const schemaController = {
   skipFileUpload: (req, res, next) => {
+    console.log('inside skip file upload');
     next();
   },
 

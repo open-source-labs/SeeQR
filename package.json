@@ -14,7 +14,7 @@
     "docker": "docker-compose up -d",
     "start": "webpack-dev-server --hot",
     "resetContainer": "docker container stop postgres-1 && docker container prune && docker container ls -a",
-    "dev": "tsc && NODE_ENV=development nodemon ./backend/server.ts & webpack-dev-server --open",
+    "dev": "tsc && NODE_ENV=development nodemon ./backend/server.ts & webpack-dev-server --hot",
     "new": "cross-env NODE_ENV=production electron --noDevServer .",
     "test": "jest --verbose"
   },

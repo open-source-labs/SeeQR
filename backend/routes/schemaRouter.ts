@@ -11,7 +11,7 @@ router.get('/skip-file-upload', schemaController.skipFileUpload, (req, res) => {
   res.status(200).json('skipped file upload');
 });
 
-router.post('/upload-file', (req, res) => {
+router.post('/upload-file', schemaController.fileUpload, (req, res) => {
   res.status(200).json(res.locals);
 });
 
