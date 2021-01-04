@@ -104,7 +104,6 @@ class Query extends Component<QueryProps, state> {
 
   async submitQuery(event) {
     event.preventDefault();
-    console.log(this.state)
     const response = await fetch('/query/execute-query-tracked', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

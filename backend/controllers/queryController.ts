@@ -2,7 +2,7 @@ const db = require('../models');
 
 const queryController = {
   executeQueryUntracked: (req, res, next) => {
-    // event.sender.send('async-started');
+  // event.sender.send('async-started');
 
   // destructure object from frontend
   const { queryString } = req.body;
@@ -22,7 +22,7 @@ const queryController = {
   },
 
   executeQueryTracked: (req, res, next) => {
-
+    console.log('hello world')
   // send notice to front end that query has been started
   // event.sender.send('async-started');
 

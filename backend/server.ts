@@ -7,7 +7,6 @@ const server = express();
 // const dbRouter = require('./routes/dbRouter');
 import queryRouter from './routes/queryRouter';
 
-console.log(queryRouter);
 // Body Parser Middleware
 server.use(express.json());
 server.use(express.urlencoded({ extended: false }));
