@@ -160,17 +160,15 @@ class SchemaModal extends Component<SchemaModalProps, state> {
 
     return (
       <div className="modal" id="modal">
-        <h3>Upload or Make a Copy of Schema</h3>
-        <p>Enter New Schema Name (required): {this.state.schemaName}</p>
+        {/* <h3>Upload or Make a Copy of Schema</h3> */}
+        <h3>Enter New Schema Name (required): {this.state.schemaName}</h3>
         <input
           className="schema-label"
           type="text"
           placeholder="Input New Schema Name..."
           onChange={(e) => this.handleSchemaName(e)}
         />
-        <br />
-        <div className="separator">Choose Upload OR Copy</div>
-        <br />
+
         <div className="load-schema">
           <h3>Upload New Schema:</h3>
           <div className="modal-buttons">
@@ -180,8 +178,7 @@ class SchemaModal extends Component<SchemaModalProps, state> {
           </div>
         </div>
         <br />
-
-        <hr id="horizontal"></hr>
+        <div className="separator">OR</div>
         <br />
         <div className="copy-instance">
           <h3>Copy Existing Schema: </h3>
