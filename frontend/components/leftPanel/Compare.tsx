@@ -215,4 +215,3 @@ export const Compare = (props: CompareProps) => {
     </div>
   );
 };
-

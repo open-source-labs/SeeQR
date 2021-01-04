@@ -1,4 +1,4 @@
-import React, { Component, MouseEvent } from 'react';
+import React from 'react';
 
 type SplashProps = {
   openSplash: boolean;
@@ -6,30 +6,28 @@ type SplashProps = {
   handleSkipClick: any;
 };
 
-export class Splash extends Component<SplashProps> {
+export function Splash(props: SplashProps) {
   // a dialogue menu with retrieve the file path
-  constructor(props: SplashProps) {
-    super(props);
-  }
+  return (
+    <div id="splash-page">
+      <div className="logo"></div>
 
-  render() {
-    return (
-      <div id="splash-page">
-        <div className="logo"></div>
-  
-          <h4>Welcome!</h4>
-          <div className="splash-buttons">
-            <div id="custom-schema">
-              <h4>Create custom schema</h4>
-              <button id="skip_button" onClick={this.props.handleSkipClick}>Create</button>
-            </div>
-            <div id="import-schema">
-              <h4>Import database in .sql or .tar</h4>
-              <button id="yes_button" onClick={this.props.handleFileClick}>Import</button>
-            </div>
-          </div>
-          
+      <h4>Welcome!</h4>
+      <div className="splash-buttons">
+        <div id="custom-schema">
+          <h4>Create custom schema</h4>
+          <button id="skip_button" onClick={props.handleSkipClick}>
+            Create
+          </button>
+        </div>
+        <div id="import-schema">
+          <h4>Import database in .sql or .tar</h4>
+          <input type="file" id="fileUpload" onClick={props.handleFileClick} />
+          {/* <button id="yes_button" onClick={props.handleFileClick}>
+            Import
+          </button> */}
+        </div>
       </div>
-    );
-  }
+    </div>
+  );
 }
