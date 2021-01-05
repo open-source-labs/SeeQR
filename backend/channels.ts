@@ -12,9 +12,7 @@ const db = require('./models');
 // Generate CLI commands to be executed in child process.
 // updated commands to use postgres without docker (commented out docker code)
 const createDBFunc = (name) => {
-  console.log('this is the createDBFunc');
   return `psql -U postgres -c "CREATE DATABASE ${name}"`;
-
   //return `docker exec postgres-1 psql -h localhost -p 5432 -U postgres -c "CREATE DATABASE ${name}"`;
 };
 
@@ -27,7 +25,6 @@ const createDBFunc = (name) => {
 // };
 
 const runSQLFunc = (dbName, file) => {
-  console.log('this is the runSQLFunc');
   // added file param:
   return `psql -U postgres -d ${dbName} -f ${file}`; // replaced /data_dump with ${file};
 
@@ -35,41 +32,34 @@ const runSQLFunc = (dbName, file) => {
 };
 
 const runTARFunc = (dbName, file) => {
-  console.log('this is the runTARFunc');
   // added file param:
   return `pg_restore -U postgres -d ${dbName} -f ${file}`; // replaced /data_dump with ${file}`;
   // docker exec postgres-1 pg_restore -U postgres -d ${dbName} /data_dump`;
 };
 const runFullCopyFunc = (dbCopyName, file) => {
-  console.log('this is the runFullCopyFunc code');
-  console.log(file);
   let newFile = file[0];
-  console.log(newFile);
   return `pg_dump -U postgres -d ${dbCopyName} -f ${newFile}`;
 
   // docker exec postgres-1 pg_dump -U postgres ${dbCopyName} -f /data_dump`;
 };
 const runHollowCopyFunc = (dbCopyName, file) => {
-  //added file as param
-  console.log('this is the runHollowCopyFunc');
   return `pg_dump -s -U postgres ${dbCopyName} -f ${file}`; // replaced /data_dump with ${file}`;
   // docker exec postgres-1 pg_dump -s -U postgres ${dbCopyName} -f /data_dump`;
 };
 
 // Function to execute commands in the child process.
-const execute = (str: string, nextStep: any) => {
+const execute = (str: string, nextStep: any, errorStep?: any) => {
   exec(str, (error, stdout, stderr) => {
-    console.log('exec func', `${stdout}`);
     if (error) {
       //this shows the console error in an error message on the frontend
       dialog.showErrorBox(`${error.message}`, '');
       console.log(`error: ${error.message}`);
+      errorStep();
       return;
     }
     if (stderr) {
       //this shows the console error in an error message on the frontend
       dialog.showErrorBox(`${stderr}`, '');
-      console.log(`stderr: ${stderr}`);
       return;
     }
 
@@ -89,10 +79,6 @@ ipcMain.on('return-db-list', (event, dbName) => {
   let dbSize: string;
   db.query(`SELECT pg_size_pretty(pg_database_size('${dbName}'));`).then(
     (queryStats) => {
-      console.log(
-        'this is DBsize inside ipcMain when new tab is clicked: ',
-        queryStats
-      );
       dbSize = queryStats.rows[0].pg_size_pretty;
     }
   );
@@ -139,7 +125,6 @@ ipcMain.on('upload-file', (event, filePath: string) => {
   // Step 5: Changes the pg URI the newly created database, queries new database, then sends list of tables and list of databases to frontend.
   async function sendLists() {
     listObj = await db.getLists();
-    console.log('channels: ', listObj);
     // Send list of databases and tables, as well as database size to frontend.
     event.sender.send('db-lists', listObj, dbSize);
     // Send schema name back to frontend, so frontend can load tab name.
@@ -155,12 +140,11 @@ ipcMain.on('upload-file', (event, filePath: string) => {
     let runCmd: string = '';
     if (extension === '.sql') runCmd = runSQL;
     else if (extension === '.tar') runCmd = runTAR;
-    execute(runCmd, sendLists);
+    execute(runCmd, sendLists, () => event.sender.send('async-complete'));
 
     // DB query to get the database size
     db.query(`SELECT pg_size_pretty(pg_database_size('${dbName}'));`).then(
       (queryStats) => {
-        console.log('this is the size of the DB: ', queryStats);
         dbSize = queryStats.rows[0].pg_size_pretty;
       }
     );
@@ -177,7 +161,8 @@ ipcMain.on('upload-file', (event, filePath: string) => {
   };
 
   // Step 1: Create empty db
-  if (extension === '.sql' || extension === '.tar') execute(createDB, step2);
+  if (extension === '.sql' || extension === '.tar')
+    execute(createDB, step2, () => event.sender.send('async-complete'));
   else console.log('INVALID FILE TYPE: Please use .tar or .sql extensions.');
 });
 
@@ -198,21 +183,7 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
 
   const { schemaName: dbName, dbCopyName, copy } = data;
   let { schemaFilePath: filePath } = data;
-  console.log(
-    'Schema name: ',
-    data.schemaName,
-    'data.schemaFilePath: ',
-    data.schemaFilePath,
-    'filepath: ',
-    filePath
-  );
-
-  if (!data.schemaFilePath) {
-    filePath = [data.schemaName + '.sql'];
-  } else {
-    filePath = data.schemaFilePath;
-  }
-  console.log(filePath);
+  filePath = [data.schemaName + '.sql'];
   // generate strings that are fed into execute functions later
   const createDB: string = createDBFunc(dbName);
 
@@ -234,7 +205,6 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
   // Step 5: Changes the pg URI to look to the newly created database and queries all the tables in that database and sends it to frontend.
   async function sendLists() {
     listObj = await db.getLists();
-    console.log('this is the async func on line 205');
     event.sender.send('db-lists', listObj);
     // tell the front end to switch tabs to the newly created database
     event.sender.send('switch-to-new', null);
@@ -247,7 +217,7 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
     let runCmd: string = '';
     if (extension === '.sql') runCmd = runSQL;
     else if (extension === '.tar') runCmd = runTAR;
-    execute(runCmd, sendLists);
+    execute(runCmd, sendLists, () => event.sender.send('async-complete'));
   };
 
   // Step 3: Import database file from file path into docker container
@@ -270,11 +240,15 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
       // this generates a pg_dump file from the specified db and saves it to a location in the container.
       // Full copy case
       if (copy) {
-        console.log('this is the step 2 if copy console log');
-        execute(runFullCopy, step3Copy);
+        execute(runFullCopy, step3Copy, () =>
+          event.sender.send('async-complete')
+        );
       }
       // Hollow copy case
-      else execute(runHollowCopy, step3Copy);
+      else
+        execute(runHollowCopy, step3Copy, () =>
+          event.sender.send('async-complete')
+        );
       return;
     }
     // if we are not copying
@@ -287,7 +261,7 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
   };
 
   // Step 1 : Create empty db
-  execute(createDB, step2);
+  execute(createDB, step2, () => event.sender.send('async-complete'));
 });
 
 interface QueryType {
@@ -314,7 +288,6 @@ ipcMain.on('execute-query-untracked', (event, data: QueryType) => {
       })();
     })
     .catch((error: string) => {
-      console.log('ERROR in execute-query-untracked channel in main.ts', error);
       event.sender.send('query-error', 'Error executing query.');
     });
 });
@@ -346,10 +319,6 @@ ipcMain.on('execute-query-tracked', (event, data: QueryType) => {
         db.query('EXPLAIN (FORMAT JSON, ANALYZE) ' + queryString).then(
           (queryStats) => {
             frontendData.queryStatistics = queryStats.rows;
-            console.log('query stats ROWS: ');
-            console.log(queryStats.rows[0]['QUERY PLAN']);
-            console.log('console.table of queryStats.row[0]');
-            console.table(queryStats.rows[0]['QUERY PLAN']);
 
             (async function getListAsync() {
               listObj = await db.getLists();

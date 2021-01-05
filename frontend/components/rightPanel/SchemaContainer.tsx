@@ -7,6 +7,7 @@ type SchemaContainerProps = {
   currentSchema: string;
   tableList: string[];
   databaseSize: string;
+  submit: Function;
 };
 
 type state = {
@@ -29,6 +30,7 @@ export class SchemaContainer extends Component<SchemaContainerProps> {
           <div id="schema-left">
             <div>
               <Query
+                submit={this.props.submit}
                 currentSchema={this.props.currentSchema}
                 tableList={this.props.tableList}
                 dbSize={this.props.databaseSize}

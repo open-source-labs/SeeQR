@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown';
 
-const { dialog } = require('electron').remote;
-const { ipcRenderer } = window.require('electron');
+// const { dialog } = require('electron').remote;
+// const { ipcRenderer } = window.require('electron');
 
 type ClickEvent = React.MouseEvent<HTMLElement>;
 
@@ -65,44 +65,44 @@ class DummyDataPanel extends Component<DummyDataPanelProps, state> {
 
   //submit listener to add table name and rows to the dataInfo object in state
   addToTable = (event: any) => {
-    event.preventDefault();
-    //if no number is entered
-    if (!this.state.rowNumber) {
-      dialog.showErrorBox('Please enter a number of rows.', '');
-    }
-    if (this.state.currentTable === 'select table') {
-      dialog.showErrorBox('Please select a table.', '');
-    }
-    //reset input fields and update nested object in state
-    else {
-      let table = this.state.currentTable;
-      let number = Number(this.state.rowNumber);
-        if (table !== 'all') {
-          this.setState(prevState => ({
-            ...prevState,
-            currentTable: 'select table',
-            rowNumber: '',
-            dataInfo: {
-              ...prevState.dataInfo,
-              [table]: number
-            }
-          }))
-        }
-        else {
-          const dataInfo = {};
-          this.props.tableList.forEach(table => {
-            if (table !== 'all') {
-              dataInfo[table] = number;
-            }
-          })
-          this.setState(prevState => ({
-            ...prevState,
-            currentTable: 'select table',
-            rowNumber: '',
-            dataInfo
-          }))
-        }
-      }
+    // event.preventDefault();
+    // //if no number is entered
+    // if (!this.state.rowNumber) {
+    //   dialog.showErrorBox('Please enter a number of rows.', '');
+    // }
+    // if (this.state.currentTable === 'select table') {
+    //   dialog.showErrorBox('Please select a table.', '');
+    // }
+    // //reset input fields and update nested object in state
+    // else {
+    //   let table = this.state.currentTable;
+    //   let number = Number(this.state.rowNumber);
+    //     if (table !== 'all') {
+    //       this.setState(prevState => ({
+    //         ...prevState,
+    //         currentTable: 'select table',
+    //         rowNumber: '',
+    //         dataInfo: {
+    //           ...prevState.dataInfo,
+    //           [table]: number
+    //         }
+    //       }))
+    //     }
+    //     else {
+    //       const dataInfo = {};
+    //       this.props.tableList.forEach(table => {
+    //         if (table !== 'all') {
+    //           dataInfo[table] = number;
+    //         }
+    //       })
+    //       this.setState(prevState => ({
+    //         ...prevState,
+    //         currentTable: 'select table',
+    //         rowNumber: '',
+    //         dataInfo
+    //       }))
+    //     }
+    //   }
   }
 
   //onclick listener to delete row from table
@@ -140,18 +140,18 @@ class DummyDataPanel extends Component<DummyDataPanelProps, state> {
   }
 
   submitDummyData = (event: any) => {
-    //check if there are requested dummy data values
-    if (Object.keys(this.state.dataInfo).length) {
-      //creates a dummyDataRequest object with schema name and table name/rows
-      const dummyDataRequest = {
-        schemaName: this.props.currentSchema,
-        dummyData: this.state.dataInfo
-      }
-      ipcRenderer.send('generate-dummy-data', dummyDataRequest);
-      //reset state to clear the dummy data panel's table
-      this.setState({dataInfo: {}});
-    }
-    else dialog.showErrorBox('Please add table and row numbers', '');
+    // //check if there are requested dummy data values
+    // if (Object.keys(this.state.dataInfo).length) {
+    //   //creates a dummyDataRequest object with schema name and table name/rows
+    //   const dummyDataRequest = {
+    //     schemaName: this.props.currentSchema,
+    //     dummyData: this.state.dataInfo
+    //   }
+    //   ipcRenderer.send('generate-dummy-data', dummyDataRequest);
+    //   //reset state to clear the dummy data panel's table
+    //   this.setState({dataInfo: {}});
+    // }
+    // else dialog.showErrorBox('Please add table and row numbers', '');
   }
 
   render() {

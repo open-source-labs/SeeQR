@@ -2,14 +2,15 @@ import React, { Component } from 'react';
 //delete before pull request
 import DummyDataPanel from './DummyDataPanel';
 
-const { ipcRenderer } = window.require('electron');
-const { dialog } = require('electron').remote;
+// const { ipcRenderer } = window.require('electron');
+// const { dialog } = require('electron').remote;
 
 // Codemirror configuration
 import 'codemirror/lib/codemirror.css'; // Styline
 import 'codemirror/mode/sql/sql'; // Language (Syntax Highlighting)
 import 'codemirror/theme/lesser-dark.css'; // Theme
 import CodeMirror from '@skidding/react-codemirror';
+import { json } from 'express';
 
 /************************************************************
  *********************** TYPESCRIPT: TYPES ***********************
@@ -19,6 +20,7 @@ type QueryProps = {
   currentSchema: string;
   tableList: string[];
   dbSize: string;
+  submit: Function;
 };
 
 type state = {
@@ -35,6 +37,7 @@ class Query extends Component<QueryProps, state> {
     this.handleQuerySubmit = this.handleQuerySubmit.bind(this);
     this.updateCode = this.updateCode.bind(this);
     this.handleTrackQuery = this.handleTrackQuery.bind(this);
+    // this.submitQuery = this.submitQuery.bind(this);
   }
 
   state: state = {
@@ -44,12 +47,11 @@ class Query extends Component<QueryProps, state> {
     trackQuery: false,
   };
 
-  componentDidMount() {
-    ipcRenderer.on('query-error', (event: any, message: string) => {
-      console.log('Query error: ');
-      // dialog.showErrorBox('Error', message);
-    });
-  }
+  // componentDidMount() {
+  //   ipcRenderer.on('query-error', (event: any, message: string) => {
+  //     // dialog.showErrorBox('Error', message);
+  //   });
+  // }
 
   // Updates state.queryString as user inputs query label
   handleLabelEntry(event: any) {
@@ -70,35 +72,35 @@ class Query extends Component<QueryProps, state> {
 
   // Submits query to backend on 'execute-query' channel
   handleQuerySubmit(event: any) {
-    event.preventDefault();
-    // if query string is empty, show error
-    if (!this.state.queryString) {
-      dialog.showErrorBox('Please enter a Query.', '');
-    }
-    if (!this.state.trackQuery) {
-      //functionality to send query but not return stats and track
-      const queryAndSchema = {
-        queryString: this.state.queryString,
-        queryCurrentSchema: this.props.currentSchema,
-        queryLabel: this.state.queryLabel,
-      };
-      ipcRenderer.send('execute-query-untracked', queryAndSchema);
-      //reset frontend inputs to display as empty and unchecked
-      this.setState({ queryLabel: '', trackQuery: false, queryString: '' });
-    }
-    if (this.state.trackQuery && !this.state.queryLabel) {
-      dialog.showErrorBox('Please enter a label for the Query.', '');
-    } else if (this.state.trackQuery) {
-      // send query and return stats from explain/analyze
-      const queryAndSchema = {
-        queryString: this.state.queryString,
-        queryCurrentSchema: this.props.currentSchema,
-        queryLabel: this.state.queryLabel,
-      };
-      ipcRenderer.send('execute-query-tracked', queryAndSchema);
-      //reset frontend inputs to display as empty and unchecked
-      this.setState({ queryLabel: '', trackQuery: false, queryString: '' });
-    }
+    // event.preventDefault();
+    // // if query string is empty, show error
+    // if (!this.state.queryString) {
+    //   dialog.showErrorBox('Please enter a Query.', '');
+    // }
+    // if (!this.state.trackQuery) {
+    //   //functionality to send query but not return stats and track
+    //   const queryAndSchema = {
+    //     queryString: this.state.queryString,
+    //     queryCurrentSchema: this.props.currentSchema,
+    //     queryLabel: this.state.queryLabel,
+    //   };
+    //   ipcRenderer.send('execute-query-untracked', queryAndSchema);
+    //   //reset frontend inputs to display as empty and unchecked
+    //   this.setState({ queryLabel: '', trackQuery: false, queryString: '' });
+    // }
+    // if (this.state.trackQuery && !this.state.queryLabel) {
+    //   dialog.showErrorBox('Please enter a label for the Query.', '');
+    // } else if (this.state.trackQuery) {
+    //   // send query and return stats from explain/analyze
+    //   const queryAndSchema = {
+    //     queryString: this.state.queryString,
+    //     queryCurrentSchema: this.props.currentSchema,
+    //     queryLabel: this.state.queryLabel,
+    //   };
+    //   ipcRenderer.send('execute-query-tracked', queryAndSchema);
+    //   //reset frontend inputs to display as empty and unchecked
+    //   this.setState({ queryLabel: '', trackQuery: false, queryString: '' });
+    // }
   }
 
   render() {
@@ -119,7 +121,7 @@ class Query extends Component<QueryProps, state> {
           />
         </div>
         <h3>Query</h3>
-        <form onSubmit={this.handleQuerySubmit}>
+        <form onSubmit={(e) => this.props.submit(e, this.state.queryString)}>
           <div className="query-label">
             <div id="chart-option">
               <span>track on chart:</span>
