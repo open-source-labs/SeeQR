@@ -3,8 +3,8 @@ const { getPrimaryKeys, getForeignKeys } = require('./DummyD/foreign_key_info');
 
 // Initialize to a default db.
 // URI Format: postgres://username:password@hostname:port/databasename
-let PG_URI: string =
-  'postgres://imnltipq:krVtiwnzjyQbVlfUNX9Z4J6MjB7AECm8@suleiman.db.elephantsql.com:5432/imnltipq';
+let PG_URI: string = '';
+  // 'postgres://imnltipq:krVtiwnzjyQbVlfUNX9Z4J6MjB7AECm8@suleiman.db.elephantsql.com:5432/imnltipq';
 let pool: any = new Pool({ connectionString: PG_URI });
 
 //helper function that creates the column objects, which are saved to the schemaLayout object
