@@ -19,17 +19,8 @@ import LoadingModal from './LoadingModal';
 // };
 
 function MainPanel() {
-  const [state, setState] = useState({
-    queries: [],
-    // currentSchema will change depending on which Schema Tab user selects
-    currentSchema: 'defaultDB',
-    lists: {
-      databaseList: ['defaultDB'],
-      tableList: [],
-    },
-    loading: false,
-    dbSize: '',
-  });
+  const [queries, setQueries] = useState([]);
+  const [dbSize, setDBSize] = useState('');
 
   async function submitQuery(event, query: String) {
     event.preventDefault();
@@ -39,7 +30,8 @@ function MainPanel() {
       body: JSON.stringify({ queryString: query }),
     });
     const returnedData = await response.json();
-    console.log(returnedData);
+    console.log(returnedData.queryData);
+    console.log(returnedData.queryStats);
     // const {
     //   queryStats,
     //   queryData
@@ -119,22 +111,11 @@ function MainPanel() {
 
   return (
     <div id="main-panel">
-      <div>
-        <LoadingModal show={state.loading} />
-      </div>
       <div id="main-left">
-        <History queries={state.queries} currentSchema={state.currentSchema} />
-        <Compare queries={state.queries} currentSchema={state.currentSchema} />
+        <History queries={queries} />
+        <Compare queries={queries} />
       </div>
-      <Tabs
-        submit={submitQuery}
-        currentSchema={state.currentSchema}
-        tabList={state.lists.databaseList}
-        queries={state.queries}
-        onClickTabItem={/*onClickTabItem*/ () => {}}
-        tableList={state.lists.tableList}
-        databaseSize={state.dbSize}
-      />
+      <Tabs submit={submitQuery} queries={queries} databaseSize={dbSize} />
     </div>
   );
 }

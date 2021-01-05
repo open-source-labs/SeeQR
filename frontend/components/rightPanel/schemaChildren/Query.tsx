@@ -17,8 +17,6 @@ import { json } from 'express';
  ************************************************************/
 
 type QueryProps = {
-  currentSchema: string;
-  tableList: string[];
   dbSize: string;
   submit: Function;
 };
@@ -115,10 +113,10 @@ class Query extends Component<QueryProps, state> {
       <div id="query-panel">
         <div id="database-info">Database Size: {this.props.dbSize}</div>
         <div id="delete-me">
-          <DummyDataPanel
+          {/* <DummyDataPanel
             tableList={this.props.tableList}
             currentSchema={this.props.currentSchema}
-          />
+          /> */}
         </div>
         <h3>Query</h3>
         <form onSubmit={(e) => this.props.submit(e, this.state.queryString)}>

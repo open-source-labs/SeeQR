@@ -41,7 +41,22 @@ async function makeDB(req, res, next) {
     const expiry = 1200000;
     users[id] = new Pool({ connectionString: url });
     res.cookie('session_id', id, { maxAge: expiry });
-    setTimeout(() => deleteDB(id), expiry); //1 minute
+    setTimeout(() => deleteDB(id), expiry); //20 minutes
+  } else {
+    const options = {
+      method: 'GET',
+      headers: {
+        Authorization:
+          'Basic Ojg4MDVmN2U2LTBiZWUtNDcwNC04OWRlLTU5YmM2ZTJlNWEyYw==',
+      },
+    };
+    const response = await fetch(
+      `https://customer.elephantsql.com/api/instances/${req.cookies.session_id}`,
+      options
+    );
+    const data = await response.json();
+    const { url } = data;
+    users[req.cookies.session_id] = new Pool({ connectionString: url });
   }
   next();
 }
