@@ -13,7 +13,6 @@ type CompareProps = {
     querySchema: string;
     queryLabel: string;
   }[];
-  currentSchema: string
 };
 
 export const Compare = (props: CompareProps) => {

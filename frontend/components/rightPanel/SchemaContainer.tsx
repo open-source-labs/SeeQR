@@ -4,8 +4,6 @@ import Query from './schemaChildren/Query';
 
 type SchemaContainerProps = {
   queries: any;
-  currentSchema: string;
-  tableList: string[];
   databaseSize: string;
   submit: Function;
 };
@@ -31,8 +29,6 @@ export class SchemaContainer extends Component<SchemaContainerProps> {
             <div>
               <Query
                 submit={this.props.submit}
-                currentSchema={this.props.currentSchema}
-                tableList={this.props.tableList}
                 dbSize={this.props.databaseSize}
               />
             </div>

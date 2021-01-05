@@ -6,11 +6,7 @@ import { SchemaContainer } from './SchemaContainer';
 // const { ipcRenderer } = window.require('electron');
 
 type TabsProps = {
-  currentSchema: string;
-  tabList: string[];
   queries: any;
-  onClickTabItem: any;
-  tableList: string[];
   databaseSize: string;
   submit: Function;
 };
@@ -54,16 +50,9 @@ export class Tabs extends Component<TabsProps> {
 
   render() {
     const {
-      onClickTabItem,
-      tabList,
-      currentSchema,
       queries,
       databaseSize,
     } = this.props;
-
-    const activeTabQueries = queries.filter(
-      (query) => query.querySchema === currentSchema
-    );
 
     return (
       <div className="tabs" id="main-right">
@@ -100,10 +89,8 @@ export class Tabs extends Component<TabsProps> {
         <div className="tab-content">
           <SchemaContainer
             // key={index}
+            queries={this.props.queries}
             submit={this.props.submit}
-            queries={activeTabQueries}
-            currentSchema={currentSchema}
-            tableList={this.props.tableList}
             databaseSize={databaseSize}
           />
         </div>
