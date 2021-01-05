@@ -1,40 +1,44 @@
+import queryRouter from './routes/queryRouter';
+
 const express = require('express');
 const path = require('path');
 const fetch = require('node-fetch');
+const cookieParser = require('cookie-parser');
+const { Pool } = require('pg');
+const users = {};
+let dbnum = 0;
 
 const server = express();
 // const schemaRouter = require('./routes/schemaRouter');
 // const dbRouter = require('./routes/dbRouter');
-import queryRouter from './routes/queryRouter';
 
 //Parsing Middleware
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
-server.use(express.cookieParser());
+server.use(cookieParser());
 
-// server.use(express.static('dist'));
-
-server.get('/', makeDB, setCookie, (req, res) => {
+server.get('/', makeDB, (req, res) => {
   res.sendFile(path.join(__dirname, '../dist/index.html'));
 });
 
 server.use(express.static('dist'));
 
-function setCookie(req, res, next) {
-
-}
-
-async function makeDB(req, res, next) {  
-  const options = {
-    method: 'POST',
-    headers: { 
-      'Authorization': 'Basic Ojg4MDVmN2U2LTBiZWUtNDcwNC04OWRlLTU5YmM2ZTJlNWEyYw==',
+async function makeDB(req, res, next) {
+  if(!('session_id' in req.cookies)) {
+    const options = {
+      method: 'POST',
+      headers: { 
+        'Authorization': 'Basic Ojg4MDVmN2U2LTBiZWUtNDcwNC04OWRlLTU5YmM2ZTJlNWEyYw==',
+      }
     }
+    const response = await fetch(`https://customer.elephantsql.com/api/instances?name=db${++dbnum}9&plan=turtle&region=amazon-web-services::us-east-1`, options);
+    const data = await response.json();
+    const { id, url } = data;
+    const expiry = 60000;
+    users[id] = new Pool({ connectionString: url });
+    res.cookie('session_id', id, { maxAge: expiry});
+    setTimeout(() => deleteDB(id), expiry); //1 minute
   }
-  const response = await fetch('https://customer.elephantsql.com/api/instances?name=test9&plan=turtle&region=amazon-web-services::us-east-1', options);
-  const data = await response.json();
-  const { id } = data;
-  setTimeout(() => deleteDB(id), 600000); //10 minutes
   next();
 }
 
@@ -49,23 +53,6 @@ async function deleteDB(id) {
   console.log(response.status);
 }
 
-// set a cookie
-// server.use(function (req, res, next) {
-//   // check if client sent cookie
-//   const cookie = req.cookies.cookieName;
-
-//   if (cookie === undefined) {
-//     // no: set a new cookie
-//     let randomNumber = Math.random().toString();
-//     randomNumber = randomNumber.substring(2,randomNumber.length);
-//     res.cookie('cookieName', randomNumber, { maxAge: 600000, httpOnly: true });
-//     console.log('cookie created successfully');
-//   } else {
-//     // yes, cookie was already present 
-//     console.log('cookie exists', cookie);
-//   } 
-//   next(); // <-- important!
-// });
 
 // let static middleware do its job
 // server.use(express.static(__dirname + '/public'));
@@ -77,7 +64,11 @@ async function deleteDB(id) {
 // server.use('/dbLists', dbRouter);
 
 // router for 'execute-query-untracked', 'execute-query-tracked', 'generate-dummy-data'
-server.use('/query', queryRouter);
+server.put('/query/execute-query-tracked', async (req, res, next) => {
+  const pool = users[req.cookies['session_id']];
+  const rows = await pool.query(req.body.queryString);
+  return res.status(200).send(rows);
+});
 
 // default error handler
 server.use((err, req, res, next) => {

@@ -36,13 +36,12 @@ function MainPanel() {
 
   async function submitQuery(event, query: String) {
     event.preventDefault();
-    alert(query);
-    // const response = await fetch('/query/execute-query-tracked', {
-    //   method: 'PUT',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({queryString: query}),
-    // });
-    // console.log(response);
+    const response = await fetch('/query/execute-query-tracked', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({queryString: query}),
+    });
+    console.log(response);
   }
 
   // componentDidMount() {

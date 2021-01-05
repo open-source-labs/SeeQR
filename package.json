@@ -33,6 +33,7 @@
     "codemirror": "^5.57.0",
     "concurrently": "^5.3.0",
     "cookie-parser": "^1.4.5",
+    "cookie-session": "^1.4.0",
     "cross-env": "^7.0.3",
     "electron-store": "^6.0.0",
     "express": "^4.17.1",
