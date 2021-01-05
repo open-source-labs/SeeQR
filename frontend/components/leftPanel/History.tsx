@@ -8,7 +8,6 @@ type HistoryProps = {
     querySchema: string;
     queryLabel: string;
   }[];
-  currentSchema: string;
 };
 
 // Top left panel component displaying previously run queries
