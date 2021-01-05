@@ -34,7 +34,7 @@ async function makeDB(req, res, next) {
     const response = await fetch(`https://customer.elephantsql.com/api/instances?name=db${++dbnum}9&plan=turtle&region=amazon-web-services::us-east-1`, options);
     const data = await response.json();
     const { id, url } = data;
-    const expiry = 60000;
+    const expiry = 300000;
     users[id] = new Pool({ connectionString: url });
     res.cookie('session_id', id, { maxAge: expiry});
     setTimeout(() => deleteDB(id), expiry); //1 minute
@@ -65,9 +65,25 @@ async function deleteDB(id) {
 
 // router for 'execute-query-untracked', 'execute-query-tracked', 'generate-dummy-data'
 server.put('/query/execute-query-tracked', async (req, res, next) => {
+  // create data object to send back to client
+  const frontendData = {
+    queryData: null,
+    queryStats: null,
+  };
+  // extract query string from client request
+  const { queryString }  = req.body;
+  // match the connection pool based on cookies
   const pool = users[req.cookies['session_id']];
-  const rows = await pool.query(req.body.queryString);
-  return res.status(200).send(rows);
+  // retrieve query results and attach to frontend data object
+  const rows = await pool.query(queryString);
+  frontendData.queryData = rows;
+  // Run EXPLAIN (FORMAT JSON, ANALYZE)
+  if (!queryString.match(/create/i)) {
+    const queryStats = await pool.query('EXPLAIN (FORMAT JSON, ANALYZE) ' + queryString);
+    frontendData.queryStats = queryStats;
+  } 
+  // send back to client
+  return res.status(200).json(frontendData);
 });
 
 // default error handler

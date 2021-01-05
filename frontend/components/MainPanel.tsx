@@ -1,28 +1,25 @@
-// import { dialog } from 'electron';
-import React from 'react';
+import React, { useState } from 'react';
 import { Compare } from './leftPanel/Compare';
 import History from './leftPanel/History';
 import { Tabs } from './rightPanel/Tabs';
 import LoadingModal from './LoadingModal';
 
-// const { ipcRenderer } = window.require('electron');
-
-type MainState = {
-  queries: {
-    queryString: string;
-    queryData: {}[];
-    queryStatistics: any;
-    querySchema: string;
-    queryLabel: string;
-  }[];
-  currentSchema: string;
-  lists: any;
-  loading: boolean;
-  dbSize: string;
-};
+// type MainState = {
+//   queries: {
+//     queryString: string;
+//     queryData: {}[];
+//     queryStatistics: any;
+//     querySchema: string;
+//     queryLabel: string;
+//   }[];
+//   currentSchema: string;
+//   lists: any;
+//   loading: boolean;
+//   dbSize: string;
+// };
 
 function MainPanel() {
-  const state: MainState = {
+  const [ state, setState ] = useState({
     queries: [],
     // currentSchema will change depending on which Schema Tab user selects
     currentSchema: 'defaultDB',
@@ -32,7 +29,7 @@ function MainPanel() {
     },
     loading: false,
     dbSize: '',
-  };
+  });
 
   async function submitQuery(event, query: String) {
     event.preventDefault();
@@ -41,7 +38,16 @@ function MainPanel() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({queryString: query}),
     });
-    console.log(response);
+    const returnedData = await response.json();
+    console.log(returnedData);
+    // const {
+    //   queryStats,
+    //   queryData
+    // } = returnedData;
+    // const { queries } = state;
+    // const obj = {...state, queries: [...queries, returnedData]};
+
+    // setState(obj)
   }
 
   // componentDidMount() {
