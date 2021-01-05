@@ -34,6 +34,17 @@ function MainPanel() {
     dbSize: '',
   };
 
+  async function submitQuery(event, query: String) {
+    event.preventDefault();
+    alert(query);
+    // const response = await fetch('/query/execute-query-tracked', {
+    //   method: 'PUT',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify({queryString: query}),
+    // });
+    // console.log(response);
+  }
+
   // componentDidMount() {
   // ipcRenderer.send('return-db-list');
 
@@ -111,6 +122,7 @@ function MainPanel() {
         <Compare queries={state.queries} currentSchema={state.currentSchema} />
       </div>
       <Tabs
+        submit={submitQuery}
         currentSchema={state.currentSchema}
         tabList={state.lists.databaseList}
         queries={state.queries}

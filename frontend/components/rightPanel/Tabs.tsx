@@ -12,6 +12,7 @@ type TabsProps = {
   onClickTabItem: any;
   tableList: string[];
   databaseSize: string;
+  submit: Function;
 };
 
 type state = {
@@ -99,6 +100,7 @@ export class Tabs extends Component<TabsProps> {
         <div className="tab-content">
           <SchemaContainer
             // key={index}
+            submit={this.props.submit}
             queries={activeTabQueries}
             currentSchema={currentSchema}
             tableList={this.props.tableList}

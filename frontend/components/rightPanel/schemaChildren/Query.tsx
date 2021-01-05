@@ -20,6 +20,7 @@ type QueryProps = {
   currentSchema: string;
   tableList: string[];
   dbSize: string;
+  submit: Function;
 };
 
 type state = {
@@ -36,7 +37,7 @@ class Query extends Component<QueryProps, state> {
     this.handleQuerySubmit = this.handleQuerySubmit.bind(this);
     this.updateCode = this.updateCode.bind(this);
     this.handleTrackQuery = this.handleTrackQuery.bind(this);
-    this.submitQuery = this.submitQuery.bind(this);
+    // this.submitQuery = this.submitQuery.bind(this);
   }
 
   state: state = {
@@ -102,16 +103,6 @@ class Query extends Component<QueryProps, state> {
     // }
   }
 
-  async submitQuery(event) {
-    event.preventDefault();
-    const response = await fetch('/query/execute-query-tracked', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({queryString: this.state.queryString}),
-    });
-    console.log(response);
-  }
-
   render() {
     // Codemirror module configuration options
     var options = {
@@ -130,7 +121,7 @@ class Query extends Component<QueryProps, state> {
           />
         </div>
         <h3>Query</h3>
-        <form onSubmit={this.submitQuery}>
+        <form onSubmit={(e) => this.props.submit(e, this.state.queryString)}>
           <div className="query-label">
             <div id="chart-option">
               <span>track on chart:</span>
