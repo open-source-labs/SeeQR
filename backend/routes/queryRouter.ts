@@ -16,7 +16,7 @@ router.put(
   '/execute-query-tracked',
   queryController.executeQueryTracked,
   (req, res) => {
-    res.status(200).json('query tracked confirmed');
+    res.status(200).json(res.locals);
   }
 );
 

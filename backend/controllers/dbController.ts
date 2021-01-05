@@ -1,39 +1,72 @@
-const db = require('../models');
+const fetch = require('node-fetch');
+const cookieParser = require('cookie-parser');
+const { Pool } = require('pg');
+const users = {};
+let dbnum = 0;
 
+console.log('inside DBCONTROLLER');
 const dbController = {
-  returnDbList: (req, res, next) => {
-    const { dbName } = req.body;
-    let dbSize = '';
+  makeDB: async (req, res, next) => {
+    console.log('inside makeDB');
+    if (!('session_id' in req.cookies)) {
+      const options = {
+        method: 'POST',
+        headers: {
+          Authorization:
+            'Basic Ojg4MDVmN2U2LTBiZWUtNDcwNC04OWRlLTU5YmM2ZTJlNWEyYw==',
+        },
+      };
+      const response = await fetch(
+        `https://customer.elephantsql.com/api/instances?name=db${++dbnum}9&plan=turtle&region=amazon-web-services::us-east-1`,
+        options
+      );
+      const data = await response.json();
+      const { id, url } = data;
+      const expiry = 1200000;
+      users[id] = new Pool({ connectionString: url });
+      res.cookie('session_id', id, { maxAge: expiry });
+      console.log(
+        'this is users in dbController file when user first opens page',
+        users
+      );
 
-    // get database size
-    db.query(`SELECT pg_size_pretty(pg_database_size('${dbName}'));`).then(
-      (queryStats) => {
-        res.locals.dbSize = queryStats.rows[0].pg_size_pretty;
-      }
-    );
-
-    // get list of databases
-    db.getLists()
-      .then((data) => {
-        res.locals.event = 'db-lists';
-        res.locals.data = data;
-        res.locals.dbSize = dbSize;
-      })
-      .then(next)
-      .catch(() => {
-        next({
-          log: `dbController.getLists: ERROR: Error getting the list of databases.`,
-          message: {
-            err:
-              'Error occurred in dbController.returnedDbList. Check server logs for more details.',
-          },
-        });
-      });
+      setTimeout(() => dbController.deleteDB(id), expiry); //20 minutes
+    } else {
+      const options = {
+        method: 'GET',
+        headers: {
+          Authorization:
+            'Basic Ojg4MDVmN2U2LTBiZWUtNDcwNC04OWRlLTU5YmM2ZTJlNWEyYw==',
+        },
+      };
+      const response = await fetch(
+        `https://customer.elephantsql.com/api/instances/${req.cookies.session_id}`,
+        options
+      );
+      const data = await response.json();
+      const { url } = data;
+      users[req.cookies.session_id] = new Pool({ connectionString: url });
+      console.log(
+        'this is users in dbController file when page refreshes',
+        users
+      );
+    }
+    next();
   },
 
-  changeDb: (req, res, next) => {
-    const { dbName } = req.body;
-    db.changeDB(dbName);
+  deleteDB: async (id) => {
+    const options = {
+      method: 'DELETE',
+      headers: {
+        Authorization:
+          'Basic Ojg4MDVmN2U2LTBiZWUtNDcwNC04OWRlLTU5YmM2ZTJlNWEyYw==',
+      },
+    };
+    const response = await fetch(
+      `https://customer.elephantsql.com/api/instances/${id}`,
+      options
+    );
+    // console.log(response.status);
   },
 };
 

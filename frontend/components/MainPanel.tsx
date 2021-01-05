@@ -30,8 +30,10 @@ function MainPanel() {
       body: JSON.stringify({ queryString: query }),
     });
     const returnedData = await response.json();
-    console.log(returnedData.queryData);
-    console.log(returnedData.queryStats);
+    console.log('this is returnedData Object', returnedData);
+    // console.log(returnedData.queryData);
+    // console.log(returnedData.queryStats);
+
     // const {
     //   queryStats,
     //   queryData
