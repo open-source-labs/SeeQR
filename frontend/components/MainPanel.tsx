@@ -1,8 +1,8 @@
 import { dialog } from 'electron';
 import React, { Component } from 'react';
-import { Compare } from './leftPanel/Compare';
-import History from './leftPanel/History';
-import { Tabs } from './rightPanel/Tabs';
+import { Compare } from './rightPanel/Compare';
+import History from './rightPanel/History';
+import { Tabs } from './leftPanel/Tabs';
 import LoadingModal from './LoadingModal';
 
 const { ipcRenderer } = window.require('electron');
