@@ -4,7 +4,6 @@ import { appendFile } from 'fs/promises';
 import { join } from 'path';
 import { format } from 'url';
 import './channels'; // all channels live here - this format signals that we want to import the code even if we're not calling any of the functions. If we were to import an object from channels and not call any of the functions in this file, webpack thinks we're not using it and skips the import.
-//import execute from './channels';
 
 const { exec } = require('child_process');
 const appMenu = require('./mainMenu'); // use appMenu to add options in top menu bar of app
@@ -85,9 +84,10 @@ function createWindow() {
   });
 }
 
-// ----
-app.on('before-quit', (event: any) => {});
-// ----
+app.on('before-quit', (event: any) => {
+  // future iterations should add functionality to selete .sql and .csv files from a user's computer before quitting the app
+});
+
 // Invoke createWindow to create browser windows after Electron has been initialized.
 // Some APIs can only be used after this event occurs.
 app.on('ready', createWindow);
