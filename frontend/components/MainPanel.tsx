@@ -116,6 +116,16 @@ class MainPanel extends Component<MainProps, MainState> {
           <LoadingModal show={this.state.loading} />
         </div>
         <div id="main-left">
+          <Tabs
+            currentSchema={this.state.currentSchema}
+            tabList={this.state.lists.databaseList}
+            queries={this.state.queries}
+            onClickTabItem={this.onClickTabItem}
+            tableList={this.state.lists.tableList}
+            databaseSize={this.state.dbSize}
+          />
+        </div>
+        <div id="main-right">
           <History
             queries={this.state.queries}
             currentSchema={this.state.currentSchema}
@@ -125,14 +135,6 @@ class MainPanel extends Component<MainProps, MainState> {
             currentSchema={this.state.currentSchema}
           />
         </div>
-        <Tabs
-          currentSchema={this.state.currentSchema}
-          tabList={this.state.lists.databaseList}
-          queries={this.state.queries}
-          onClickTabItem={this.onClickTabItem}
-          tableList={this.state.lists.tableList}
-          databaseSize={this.state.dbSize}
-        />
       </div>
     );
   }

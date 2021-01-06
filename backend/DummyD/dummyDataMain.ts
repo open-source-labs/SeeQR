@@ -162,10 +162,7 @@ module.exports = {
       csvString = columnString
         .concat(`' > ${tableName}.csv; echo '`)
         .concat(tableDataString);
-      execute(
-        `docker exec postgres-1 bash -c "echo '${csvString}' >> ${tableName}.csv;"`,
-        step2
-      );
+      execute(`bash -c "echo '${csvString}' >> ${tableName}.csv;"`, step2);
     } else {
       // we know we are not on Windows, thank god!
       const tableDataString: string = table.join('\n');
@@ -199,7 +196,6 @@ module.exports = {
 
         // if our csvArray contains only one element
         if (csvArray.length === 1) {
-          // `docker exec postgres-1 bash -c "echo '${csvArray[index]}' > ${tableName}.csv;"`
           execute(
             `bash -c "echo '${csvArray[index]}' > ${tableName}.csv;"`,
             step2
@@ -227,7 +223,6 @@ module.exports = {
         // otherwise we know we are not working with the first OR the last element in csvArray, so execute docker command but pass in a recursive call to our step one function and then immediately increment our index variable
         else {
           // console.log('STEP 1: ', index, csvArray[index]);
-          // `docker exec postgres-1 bash -c "echo -n '${csvArray[index]}' >> ${tableName}.csv;"`
           console.log('this is last else statement in step1 on line 230 ');
           execute(
             `bash -c “echo -n ‘${csvArray[index]}’ >> ${tableName}.csv;“`,
