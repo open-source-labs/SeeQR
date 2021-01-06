@@ -61,10 +61,7 @@ class SchemaModal extends Component<SchemaModalProps, state> {
   // When file path is uploaded, query entry is cleared.
   handleSchemaFilePath(event: ClickEvent) {
     event.preventDefault();
-    console.log(
-      'this is state in the top of the handleSchemaFilePath func',
-      this.state
-    );
+
     dialog
       .showOpenDialog({
         properties: ['openFile'],
@@ -93,14 +90,11 @@ class SchemaModal extends Component<SchemaModalProps, state> {
           err
         );
       });
-    console.log('this is state in the handleSchemaFilePath func', this.state);
   }
 
   // When schema script is inserted, file path is cleared set dialog to warn user.
   handleSchemaEntry(event: any) {
     this.setState({ schemaEntry: event.target.value, schemaFilePath: '' });
-    console.log('this is state in the handleSchemaEntry func', this.state);
-    // this.setState({ schemaFilePath: '' });
   }
 
   handleSchemaSubmit(event: any) {
@@ -160,7 +154,6 @@ class SchemaModal extends Component<SchemaModalProps, state> {
 
     return (
       <div className="modal" id="modal">
-        {/* <h3>Upload or Make a Copy of Schema</h3> */}
         <h3>Enter New Schema Name (required): {this.state.schemaName}</h3>
         <input
           className="schema-label"
@@ -223,9 +216,3 @@ class SchemaModal extends Component<SchemaModalProps, state> {
 }
 
 export default SchemaModal;
-
-{
-  /* <DropdownButton id="add-query-button" title="Select Instance &#9207;">
-            {this.dropDownList()}
-          </DropdownButton> */
-}

@@ -4,13 +4,12 @@ type TableProps = {
   queries: {
     queryString: string;
     queryData: {}[];
-    queryStatistics: any
+    queryStatistics: any;
     querySchema: string;
     queryLabel: string;
   }[];
 };
 export class Table extends Component<TableProps> {
-
   constructor(props) {
     super(props);
     this.getKeys = this.getKeys.bind(this);
@@ -23,8 +22,7 @@ export class Table extends Component<TableProps> {
     const { queries } = this.props;
 
     // All keys will be consistent across each object in queryData,
-    // so we only need to list keys of first object in data returned
-    // from backend.
+    // so we only need to list keys of first object in data returned from backend.
     return Object.keys(queries[queries.length - 1].queryData[0]);
   }
 
@@ -32,8 +30,8 @@ export class Table extends Component<TableProps> {
   getHeader() {
     var keys = this.getKeys();
     return keys.map((key, index) => {
-      return <th key={key}>{key.toUpperCase()}</th>
-    })
+      return <th key={key}>{key.toUpperCase()}</th>;
+    });
   }
 
   // Iterate through queryData array to return the body part of the table.
@@ -44,24 +42,24 @@ export class Table extends Component<TableProps> {
     var keys = this.getKeys(); // actor_id, firstName, lastName, lastUpdated
 
     return items.map((row, index) => {
-      return <tr key={index}><RenderRow key={index} data={row} keys={keys} /></tr>
-    })
+      return (
+        <tr key={index}>
+          <RenderRow key={index} data={row} keys={keys} />
+        </tr>
+      );
+    });
   }
 
   render() {
-
     return (
       <div>
         <table>
           <thead id="dataTableHead">
             <tr>{this.getHeader()}</tr>
           </thead>
-          <tbody id="dataTableBody">
-            {this.getRowsData()}
-          </tbody>
+          <tbody id="dataTableBody">{this.getRowsData()}</tbody>
         </table>
       </div>
-
     );
   }
 }
@@ -80,6 +78,6 @@ const RenderRow = (props: RenderRowProps) => {
     if (data[header] == undefined) return;
     // turn all values in data object to string or number
     data[header] = data[header].toString();
-    return <td key={index}>{data[header]}</td>
-  })
-}
+    return <td key={index}>{data[header]}</td>;
+  });
+};

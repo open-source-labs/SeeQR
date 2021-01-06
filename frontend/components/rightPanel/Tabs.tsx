@@ -35,15 +35,10 @@ export class Tabs extends Component<TabsProps> {
     // It will send the frontend an updated variable 'lists' that is an array of updated lists of all the tabs (which is the same
     // thing as all the databases). We open a channel to listen for it here inside of componentDidMount, then
     // we invoke onClose to close schemaModal ONLY after we are sure that backend has created that channel.
-    ipcRenderer.on('db-lists', (
-      event: any,
-      returnedLists: any /*returnedDbSize: string*/
-    ) => {
+    ipcRenderer.on('db-lists', (event: any, returnedLists: any) => {
       this.setState({
         currentSchema: returnedLists,
-        // databaseSize: returnedDbSize,
       });
-      // console.log('db size was returned in component did mount in tabs.tsx');
       this.onClose(event);
     });
   }
@@ -60,7 +55,6 @@ export class Tabs extends Component<TabsProps> {
       queries,
       databaseSize,
     } = this.props;
-    console.log('this is this.props in tabs.tsx: ', this.props);
 
     const activeTabQueries = queries.filter(
       (query) => query.querySchema === currentSchema

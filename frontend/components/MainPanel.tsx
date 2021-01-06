@@ -72,7 +72,6 @@ class MainPanel extends Component<MainProps, MainState> {
     ipcRenderer.on(
       'db-lists',
       (event: any, returnedLists: any, returnedDbSize: string) => {
-        console.log('database size in FE: ', returnedDbSize);
         this.setState((prevState) => ({
           ...prevState,
           lists: {
@@ -81,7 +80,6 @@ class MainPanel extends Component<MainProps, MainState> {
           },
           dbSize: returnedDbSize,
         }));
-        console.log('dbsize in this.state after click new tab: ', this.state);
       }
     );
 
@@ -106,7 +104,6 @@ class MainPanel extends Component<MainProps, MainState> {
     ipcRenderer.send('change-db', tabName);
     ipcRenderer.send('return-db-list', tabName);
     this.setState({ currentSchema: tabName });
-    console.log('this is the onClickTabItem func', this.state);
   }
 
   render() {

@@ -57,7 +57,6 @@ export class App extends Component<AppProps, state> {
   handleSkipClick(event: ClickEvent) {
     ipcRenderer.send('skip-file-upload');
     this.setState({ openSplash: false });
-    console.log('this is the handleSkipClick function', this.state);
   }
 
   render() {
