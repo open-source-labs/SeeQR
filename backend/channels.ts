@@ -198,22 +198,20 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
   console.log(
     'Schema name: ',
     data.schemaName,
-    'data[schemaFilePath: ',
+    'data.schemaFilePath: ',
     data.schemaFilePath,
     'filepath: ',
     filePath,
     'dbCopyName: ',
     dbCopyName
   );
-  if (dbCopyName) {
-    console.log('hollow copy or w/ data copy conditional');
+
+  if (!data.schemaFilePath) {
     filePath = [data.schemaName + '.sql'];
   } else {
-    console.log('schema file upload conditional');
     filePath = data.schemaFilePath;
   }
-
-  // console.log(filePath);
+  console.log(filePath);
   // generate strings that are fed into execute functions later
   const createDB: string = createDBFunc(dbName);
 

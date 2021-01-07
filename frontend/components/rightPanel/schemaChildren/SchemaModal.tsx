@@ -55,7 +55,6 @@ class SchemaModal extends Component<SchemaModalProps, state> {
     let dbSafeName = schemaNameInput.toLowerCase();
     dbSafeName = dbSafeName.replace(/[^A-Z0-9]/gi, '');
     this.setState({ schemaName: dbSafeName });
-    console.log('this is the handleSchemaName function', this.state);
   }
 
   // Load schema file path
@@ -118,7 +117,7 @@ class SchemaModal extends Component<SchemaModalProps, state> {
   }
 
   selectHandler = (eventKey, e: React.SyntheticEvent<unknown>) => {
-    this.setState({ dbCopyName: eventKey }); // 
+    this.setState({ dbCopyName: eventKey }); //
     console.log('this is state in the selectHandler func', this.state);
   };
 
@@ -147,7 +146,7 @@ class SchemaModal extends Component<SchemaModalProps, state> {
     };
 
     ipcRenderer.send('input-schema', schemaObj);
-    this.setState({ dbCopyName: `Select Instance`  }); 
+    this.setState({ dbCopyName: `Select Instance` });
     this.setState({ schemaName: '' });
     this.props.showModal(event);
 
@@ -161,19 +160,17 @@ class SchemaModal extends Component<SchemaModalProps, state> {
 
     return (
       <div className="modal" id="modal">
-        <h3>Enter New Schema Name</h3>
-        <p>(AUTO-FORMATTED): {this.state.schemaName}</p>
+        {/* <h3>Upload or Make a Copy of Schema</h3> */}
+        <h3>Enter New Schema Name (required): {this.state.schemaName}</h3>
         <input
           className="schema-label"
           type="text"
-          placeholder="Input schema label..."
+          placeholder="Input New Schema Name..."
           onChange={(e) => this.handleSchemaName(e)}
         />
-        <br />
-        <hr id="horizontal"></hr>
-        <br />
+
         <div className="load-schema">
-          <h3>Load schema:</h3>
+          <h3>Upload New Schema:</h3>
           <div className="modal-buttons">
             <button id="load-button" onClick={this.handleSchemaFilePath}>
               Select File
@@ -184,7 +181,7 @@ class SchemaModal extends Component<SchemaModalProps, state> {
         <div className="separator">OR</div>
         <br />
         <div className="copy-instance">
-          <h3>Copy Schema: </h3>
+          <h3>Copy Existing Schema: </h3>
           <Dropdown id="select-dropdown" onSelect={this.selectHandler}>
             <Dropdown.Toggle>{this.state.dbCopyName}</Dropdown.Toggle>
             <Dropdown.Menu>{this.dropDownList()}</Dropdown.Menu>
@@ -192,21 +189,24 @@ class SchemaModal extends Component<SchemaModalProps, state> {
         </div>
 
         <div className="data-checkbox">
-          <p>With Data</p>
+          <p title="Do not check box if you'd like a shell copy of an existing DB">
+            With Data?
+          </p>
           <input
             id="copy-data-checkbox"
             type="checkbox"
             name="Data"
             onClick={this.handleCopyData}
           ></input>
+          <button
+            id="copy-button"
+            className="modal-buttons"
+            onClick={this.handleCopyFilePath}
+          >
+            Make Copy
+          </button>
         </div>
-        <button
-          id="copy-button"
-          className="modal-buttons"
-          onClick={this.handleCopyFilePath}
-        >
-          Make Copy
-        </button>
+
         <button
           className="close-button"
           onClick={() => {
