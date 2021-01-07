@@ -40,7 +40,7 @@ SeeQR is still in BETA. Additional features, extensions, and improvements will c
 
 To get started on contributing to this project:
 
-1. Download and Install [Postgres App](https://postgresapp.com/) and Start it before opening up SeeQR.
+1. Download and install [Postgres App](https://postgresapp.com/) and start it before opening up SeeQR.
 2. Fork or clone this repository
 3. Npm install
    1. Run `npm install` for application-specific dependencies.
