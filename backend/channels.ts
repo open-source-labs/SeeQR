@@ -190,7 +190,6 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
   } else {
     filePath = data.schemaFilePath;
   }
-
   // generate strings that are fed into execute functions later
   const createDB: string = createDBFunc(dbName);
 

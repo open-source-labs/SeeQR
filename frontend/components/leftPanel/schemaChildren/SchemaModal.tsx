@@ -154,6 +154,10 @@ class SchemaModal extends Component<SchemaModalProps, state> {
 
     return (
       <div className="modal" id="modal">
+<<<<<<< HEAD:frontend/components/leftPanel/schemaChildren/SchemaModal.tsx
+=======
+        {/* <h3>Upload or Make a Copy of Schema</h3> */}
+>>>>>>> main:frontend/components/rightPanel/schemaChildren/SchemaModal.tsx
         <h3>Enter New Schema Name (required): {this.state.schemaName}</h3>
         <input
           className="schema-label"
