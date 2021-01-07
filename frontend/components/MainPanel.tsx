@@ -1,8 +1,8 @@
 import { dialog } from 'electron';
 import React, { Component } from 'react';
-import { Compare } from './leftPanel/Compare';
-import History from './leftPanel/History';
-import { Tabs } from './rightPanel/Tabs';
+import { Compare } from './rightPanel/Compare';
+import History from './rightPanel/History';
+import { Tabs } from './leftPanel/Tabs';
 import LoadingModal from './LoadingModal';
 
 const { ipcRenderer } = window.require('electron');
@@ -72,7 +72,6 @@ class MainPanel extends Component<MainProps, MainState> {
     ipcRenderer.on(
       'db-lists',
       (event: any, returnedLists: any, returnedDbSize: string) => {
-        console.log('database size in FE: ', returnedDbSize);
         this.setState((prevState) => ({
           ...prevState,
           lists: {
@@ -81,7 +80,6 @@ class MainPanel extends Component<MainProps, MainState> {
           },
           dbSize: returnedDbSize,
         }));
-        console.log('dbsize in this.state after click new tab: ', this.state);
       }
     );
 
@@ -106,7 +104,6 @@ class MainPanel extends Component<MainProps, MainState> {
     ipcRenderer.send('change-db', tabName);
     ipcRenderer.send('return-db-list', tabName);
     this.setState({ currentSchema: tabName });
-    console.log('this is the onClickTabItem func', this.state);
   }
 
   render() {

@@ -46,7 +46,6 @@ class Query extends Component<QueryProps, state> {
 
   componentDidMount() {
     ipcRenderer.on('query-error', (event: any, message: string) => {
-      console.log('Query error: ');
       // dialog.showErrorBox('Error', message);
     });
   }

@@ -91,17 +91,6 @@ module.exports = {
     const tableMatrix: any = tableObject.data;
     const schemaName: string = dummyDataRequest.schemaName;
 
-    console.log(
-      'tableCount: ',
-      tableCount,
-      'tableName: ',
-      tableName,
-      'tableMatrix: ',
-      tableMatrix,
-      'schemaName: ',
-      schemaName
-    );
-
     // mapping column headers from getColumnObjects in models.ts to columnNames
     const columnArray: string[] = schemaLayout.tables[tableName].map(
       (columnObj) => columnObj.columnName
@@ -147,8 +136,7 @@ module.exports = {
     // Step 2 - using the postgres COPY command, this step copies the contents of the csv file in the container file system into the appropriate postgres DB
     const step2 = () => {
       let queryString: string = `\\copy ${tableName} FROM '${tableName}.csv' WITH CSV HEADER;`;
-      // run the query in the container using a docker command
-      // docker exec postgres-1 psql -U postgres -d ${schemaName} -c "${queryString}"
+
       execute(`psql -U postgres -d ${schemaName} -c "${queryString}" `, step3);
     };
 
@@ -170,7 +158,6 @@ module.exports = {
       csvString = columnString.concat('\n').concat(tableDataString);
 
       // split csv string into an array of csv strings that each are of length 100,000 characters or less
-
       // create upperLimit variable, which represents that max amount of character a bash shell command can handle
       let upperLimit: number;
       upperLimit = 100000;
@@ -213,7 +200,6 @@ module.exports = {
         }
         // if working with last csvArray element, execute docker command but pass in step2 as second argument
         else if (index === csvArray.length - 1) {
-          // console.log('FINAL STEP 1: ', csvArray[index]);
           execute(
             `bash -c "echo '${csvArray[index]}' >> ${tableName}.csv;"`,
             step2
@@ -222,7 +208,6 @@ module.exports = {
         }
         // otherwise we know we are not working with the first OR the last element in csvArray, so execute docker command but pass in a recursive call to our step one function and then immediately increment our index variable
         else {
-          // console.log('STEP 1: ', index, csvArray[index]);
           console.log('this is last else statement in step1 on line 230 ');
           execute(
             `bash -c “echo -n ‘${csvArray[index]}’ >> ${tableName}.csv;“`,
