@@ -143,7 +143,7 @@ To get started on contributing to this project:
 ## Application Architecture and Logic
 
 <b>Sandbox Environment</b><br/>
-SeeQR streamlines the process of instantiating postgres databases by leveraging Postgres.app to import a copy of your database in postgres on your local machine. This means instances of databases are automatically created every time new schema data is uploaded or inputted via the SeeQR GUI. Electron communicates with the instantiated database’s URI’s by taking advantage of the `'pg'` npm package.
+SeeQR streamlines the process of instantiating postgres databases by leveraging Postgres.app to import a copy of your database in postgres on your local machine. This means instances of databases are automatically created every time new schema data is uploaded or inputted via the SeeQR GUI. Electron communicates with the instantiated database’s URIs by taking advantage of the `'pg'` npm package.
 
 <b>Cross-schema Comparisons</b><br/>
 One of the key features of SeeQR is to compare the efficiency of executing user-inputted queries against different schemas. This allows customization of table scale, relationship, type, and the queries themselves within the context of each schema. This flexibility affords the user granular adjustments for testing every desired scenario. Please refer to “Interface & Functionality” for more details on execution.
