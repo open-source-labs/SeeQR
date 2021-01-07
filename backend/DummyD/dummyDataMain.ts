@@ -1,5 +1,5 @@
-import faker from "faker";
-import execute from "../channels";
+import faker from 'faker';
+import execute from '../channels';
 const db = require('../models');
 
 /////////////////////////////////////////////////////////////////////
@@ -18,20 +18,20 @@ let keyObject: any;
 type schemaLayout = {
   tableNames: string[];
   tables: any;
-}
+};
 
 //this object is created on the front end in DummyDataModal
 type dummyDataRequest = {
   schemaName: string;
   dummyData: {};
-}
+};
 
 //helper function to generate random numbers that will ultimately represent a random date
 const getRandomInt = (min, max) => {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
-}
+};
 
 // this function generates data for a column
 //   column data coming in is an object of the form
@@ -43,16 +43,22 @@ const generateDataByType = (columnObj) => {
   //faker.js method to generate data by type
   switch (columnObj.dataInfo.data_type) {
     case 'smallint':
-      return faker.random.number({min: -32768, max: 32767});
+      return faker.random.number({ min: -32768, max: 32767 });
     case 'integer':
-      return faker.random.number({min: -2147483648, max: 2147483647});
+      return faker.random.number({ min: -2147483648, max: 2147483647 });
     case 'bigint':
-      return faker.random.number({min: -9223372036854775808, max: 9223372036854775807});
+      return faker.random.number({
+        min: -9223372036854775808,
+        max: 9223372036854775807,
+      });
     case 'character varying':
       if (columnObj.dataInfo.character_maximum_length) {
-        return faker.lorem.character(Math.floor(Math.random() * columnObj.dataInfo.character_maximum_length));
-      }
-      else return faker.lorem.word();
+        return faker.lorem.character(
+          Math.floor(
+            Math.random() * columnObj.dataInfo.character_maximum_length
+          )
+        );
+      } else return faker.lorem.word();
     case 'date':
       // generating a random date between 1500 and 2020
       let result: string = '';
@@ -64,7 +70,7 @@ const generateDataByType = (columnObj) => {
       result += year + '-' + month + '-' + day;
       return result;
     default:
-      console.log('Error generating dummy data by type')
+      console.log('Error generating dummy data by type');
   }
 };
 
@@ -72,7 +78,13 @@ const generateDataByType = (columnObj) => {
 let count: number = 0;
 
 module.exports = {
-  writeCSVFile: (tableObject, schemaLayout, keyObject, dummyDataRequest, event: any) => {
+  writeCSVFile: (
+    tableObject,
+    schemaLayout,
+    keyObject,
+    dummyDataRequest,
+    event: any
+  ) => {
     // extracting variables
     const tableCount: number = Object.keys(dummyDataRequest.dummyData).length;
     const tableName: string = tableObject.tableName;
@@ -80,21 +92,23 @@ module.exports = {
     const schemaName: string = dummyDataRequest.schemaName;
 
     // mapping column headers from getColumnObjects in models.ts to columnNames
-    const columnArray: string[] = schemaLayout.tables[tableName].map(columnObj => columnObj.columnName);
+    const columnArray: string[] = schemaLayout.tables[tableName].map(
+      (columnObj) => columnObj.columnName
+    );
 
     // transpose the table-matrix to orient it as a table
     const table: any = [];
-    let row: any  = [];
-    for(let i = 0; i < tableMatrix[0].length; i++) {
-      for(let j = 0; j < tableMatrix.length; j++) {
-          row.push(tableMatrix[j][i]); 
+    let row: any = [];
+    for (let i = 0; i < tableMatrix[0].length; i++) {
+      for (let j = 0; j < tableMatrix.length; j++) {
+        row.push(tableMatrix[j][i]);
       }
       //join each subarray (which correspond to rows in our table) with a comma
       const rowString = row.join(',');
       table.push(rowString); //'1, luke, etc'
       row = [];
     }
-    
+
     // Step 3 - this step adds back the PK constraints that we took off prior to copying the dummy data into the DB (using the db that is imported from models.ts)
     const step3 = () => {
       count += 1;
@@ -103,46 +117,47 @@ module.exports = {
         db.addPrimaryKeyConstraints(keyObject, dummyDataRequest)
           .then(() => {
             db.addForeignKeyConstraints(keyObject, dummyDataRequest)
-            .then(() => {
-              event.sender.send('async-complete');
-              count = 0;
-            })
-            .catch((err) => {
-              console.log(err);
-              count = 0;
-            });
+              .then(() => {
+                event.sender.send('async-complete');
+                count = 0;
+              })
+              .catch((err) => {
+                console.log(err);
+                count = 0;
+              });
           })
           .catch((err) => {
             console.log(err);
             count = 0;
           });
-      }
-      else return;
-    } 
+      } else return;
+    };
 
     // Step 2 - using the postgres COPY command, this step copies the contents of the csv file in the container file system into the appropriate postgres DB
     const step2 = () => {
-      let queryString: string = `COPY ${tableName} FROM '/${tableName}.csv' WITH CSV HEADER;`;
-      // run the query in the container using a docker command
-      execute(`docker exec postgres-1 psql -U postgres -d ${schemaName} -c "${queryString}" `, step3);
-    }
+      let queryString: string = `\\copy ${tableName} FROM '${tableName}.csv' WITH CSV HEADER;`;
+
+      execute(`psql -U postgres -d ${schemaName} -c "${queryString}" `, step3);
+    };
 
     let csvString: string;
     //join tableMatrix with a line break (different on mac and windows because of line breaks in the bash CLI)
     if (process.platform === 'win32') {
-      const tableDataString: string = table.join(`' >> ${tableName}.csv; echo '`);
+      const tableDataString: string = table.join(
+        `' >> ${tableName}.csv; echo '`
+      );
       const columnString: string = columnArray.join(',');
-      csvString = columnString.concat(`' > ${tableName}.csv; echo '`).concat(tableDataString);
-      execute(`docker exec postgres-1 bash -c "echo '${csvString}' >> ${tableName}.csv;"`, step2);
-    }
-    else {
+      csvString = columnString
+        .concat(`' > ${tableName}.csv; echo '`)
+        .concat(tableDataString);
+      execute(`bash -c "echo '${csvString}' >> ${tableName}.csv;"`, step2);
+    } else {
       // we know we are not on Windows, thank god!
       const tableDataString: string = table.join('\n');
       const columnString: string = columnArray.join(',');
       csvString = columnString.concat('\n').concat(tableDataString);
-    
+
       // split csv string into an array of csv strings that each are of length 100,000 characters or less
-  
       // create upperLimit variable, which represents that max amount of character a bash shell command can handle
       let upperLimit: number;
       upperLimit = 100000;
@@ -150,7 +165,7 @@ module.exports = {
       let stringCount: number = Math.ceil(csvString.length / upperLimit);
       // create csvArray that will hold our final csv strings
       let csvArray: string[] = [];
-      
+
       let startIndex: number;
       let endIndex: number;
       // iterate over i from 0 to less than stringCount, each iteration pushing slices of original csvString into an array
@@ -161,43 +176,54 @@ module.exports = {
         if (i === stringCount - 1) csvArray.push(csvString.slice(startIndex));
         else csvArray.push(csvString.slice(startIndex, endIndex));
       }
-      let index: number = 0
+      let index: number = 0;
       // Step 1 - this writes a csv file to the postgres-1 file system, which contains all of the dummy data that will be copied into its corresponding postgres DB
       const step1 = () => {
         // NOTE: in order to rewrite the csv files in the container file system, we must use echo with a single angle bracket on the first element of csvArray AND then move on directly to step2 (and then also reset index)
-  
+
         // if our csvArray contains only one element
         if (csvArray.length === 1) {
-          execute(`docker exec postgres-1 bash -c "echo '${csvArray[index]}' > ${tableName}.csv;"`, step2);
+          execute(
+            `bash -c "echo '${csvArray[index]}' > ${tableName}.csv;"`,
+            step2
+          );
           index = 0;
         }
         // otherwise if we are working with the first element in csvArray
         else if (index === 0) {
-          execute(`docker exec postgres-1 bash -c "echo -n '${csvArray[index]}' > ${tableName}.csv;"`, step1);
+          console.log('this is last else statement in step1 on line 211 ');
+          execute(
+            `bash -c "echo -n '${csvArray[index]}' > ${tableName}.csv;"`,
+            step1
+          );
           index += 1;
         }
         // if working with last csvArray element, execute docker command but pass in step2 as second argument
-        else if (index === (csvArray.length - 1)) {
-          // console.log('FINAL STEP 1: ', csvArray[index]);
-          execute(`docker exec postgres-1 bash -c "echo '${csvArray[index]}' >> ${tableName}.csv;"`, step2);
+        else if (index === csvArray.length - 1) {
+          execute(
+            `bash -c "echo '${csvArray[index]}' >> ${tableName}.csv;"`,
+            step2
+          );
           index = 0;
         }
         // otherwise we know we are not working with the first OR the last element in csvArray, so execute docker command but pass in a recursive call to our step one function and then immediately increment our index variable
         else {
-          // console.log('STEP 1: ', index, csvArray[index]);
-          execute(`docker exec postgres-1 bash -c "echo -n '${csvArray[index]}' >> ${tableName}.csv;"`, step1);
+          console.log('this is last else statement in step1 on line 230 ');
+          execute(
+            `bash -c “echo -n ‘${csvArray[index]}’ >> ${tableName}.csv;“`,
+            step1
+          );
           index += 1;
         }
-      }
+      };
       step1();
     }
   },
 
-
   //maps table names from schemaLayout to sql files
   generateDummyData: (schemaLayout, dummyDataRequest, keyObject) => {
     const returnArray: any = [];
-  
+
     //iterate over schemaLayout.tableNames array
     for (const tableName of schemaLayout.tableNames) {
       const tableMatrix: any = [];
@@ -209,7 +235,9 @@ module.exports = {
         let entry: any;
 
         //iterate over columnArray (i.e. an array of the column names for the table)
-        let columnArray: string[] = schemaLayout.tables[tableName].map(columnObj => columnObj.columnName)
+        let columnArray: string[] = schemaLayout.tables[tableName].map(
+          (columnObj) => columnObj.columnName
+        );
         for (let i = 0; i < columnArray.length; i++) {
           // declare a variable j (to be used in while loops below), set equal to zero
           let j: number = 0;
@@ -223,14 +251,16 @@ module.exports = {
                 columnData.push(j);
                 // increment j
                 j += 1;
-              } 
+              }
             }
             // if this is a FK column, add random number between 0 and n-1 (inclusive) into column (unordered)
             else if (keyObject[tableName].foreignKeyColumns[columnArray[i]]) {
               //while j < reqeusted number of rows
               while (j < dummyDataRequest.dummyData[tableName]) {
                 //generate an entry
-                entry = Math.floor(Math.random() * (dummyDataRequest.dummyData[tableName]));
+                entry = Math.floor(
+                  Math.random() * dummyDataRequest.dummyData[tableName]
+                );
                 //push into columnData
                 columnData.push(entry);
                 j += 1;
@@ -244,7 +274,7 @@ module.exports = {
                 //push into columnData
                 columnData.push(entry);
                 j += 1;
-              };
+              }
             }
           }
           // otherwise, we'll just add data by the type to which the column is constrained
@@ -255,19 +285,19 @@ module.exports = {
               //push into columnData
               columnData.push(entry);
               j += 1;
-            };
+            }
           }
 
           //push columnData array into tableMatrix
           tableMatrix.push(columnData);
           //reset columnData array for next column
           columnData = [];
-        };
+        }
         // only push something to the array if data was asked for for the specific table
-        returnArray.push({tableName, data: tableMatrix});
-      };
-    };
+        returnArray.push({ tableName, data: tableMatrix });
+      }
+    }
     // then return the returnArray
     return returnArray;
-  }
-}
+  },
+};

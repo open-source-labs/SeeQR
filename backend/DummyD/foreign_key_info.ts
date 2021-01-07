@@ -1,7 +1,6 @@
-module.exports= {
+module.exports = {
   // This query lists each table that has a foreign key, the name of the table that key points to, and the name of the column at which the foreign key constraint resides
-  getForeignKeys:
-    `select kcu.table_name as foreign_table,
+  getForeignKeys: `select kcu.table_name as foreign_table,
           rel_kcu.table_name as primary_table,
           kcu.column_name as fk_column
     from information_schema.table_constraints tco
@@ -17,33 +16,11 @@ module.exports= {
             kcu.ordinal_position;`,
 
   // This query lists each table and the column name at which there is a primary key
-  getPrimaryKeys:
-    `select kcu.table_name as table_name,
+  getPrimaryKeys: `select kcu.table_name as table_name,
       kcu.column_name as pk_column
     from information_schema.key_column_usage as kcu
     join information_schema.table_constraints as tco
       on tco.constraint_name = kcu.constraint_name
     where tco.constraint_type = 'PRIMARY KEY'
     order by kcu.table_name;`,
-}
-
-
-
-// structure of the key object for generating key compliant data
-// const KeyObject = {
-//   // people:
-//   Table_1: {
-//       primaryKeyColumns: {
-//           // id: true
-//           _id: true
-//       }
-//       foreignKeyColumns: {
-//           // species_id: n where n is the number of rows asked for in the primary table the key points to
-//           foreignKeyColumnName_1: numOfRows,
-//           foreignKeyColumnName_2: numOfRows
-//       }
-//   }
-//   .
-//   .
-//   .
-// }
+};
