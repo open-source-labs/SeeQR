@@ -40,7 +40,7 @@ SeeQR is still in BETA. Additional features, extensions, and improvements will c
 
 To get started on contributing to this project:
 
-1. Download and Install [Docker Desktop](https://www.docker.com/get-started)
+1. Download and Install [Postgres App](https://postgresapp.com/) and Start it before opening up SEEQR.
 2. Fork or clone this repository
 3. Npm install
    1. Run `npm install` for application-specific dependencies.
@@ -48,7 +48,6 @@ To get started on contributing to this project:
 4. Install [Live Sass Compile](https://github.com/ritwickdey/vscode-live-sass-compiler) VSCode extension (settings are configured in the .vscode file in this repo), or set up your preferred Sass compiler
 5. To run application during development
    1. `npm run dev` to launch Electron application window and webpack-dev-server.
-   2. `npm run resetContainer` to reset the container and clear pre-existing SeeQR databases. If error “can’t find postgres-1” is encountered, it is simply an indication that the container is already pruned.
 
 ## Built With
 
@@ -56,19 +55,19 @@ To get started on contributing to this project:
 - [React](https://reactjs.org/)
 - [React-Hooks](https://reactjs.org/docs/hooks-intro.html)
 - [Typescript](https://www.typescriptlang.org/)
-- [Docker](https://www.docker.com/get-started)
-- [Docker-Compose](https://docs.docker.com/compose/)
 - [PostgreSQL](https://www.postgresql.org/)
 - [Chart.js](https://github.com/chartjs)
 - [Faker.js](https://github.com/Marak/faker.js)
 - [CodeMirror](https://codemirror.net/)
 
 ## Interface & Features
+
 <div align="center">
-<img src="./frontend/assets/images/splash_page.png" width=800/><br /><br /><img src="./frontend/assets/images/interface.png" width=800/><p>The whole interface in a nutshell</p>
+<img src="./frontend/assets/images/splash_page.png" width=800/><br /><br /><img src="./frontend/assets/images/seeqr_desktop.jpg" width=800/><p>The whole interface in a nutshell</p>
 </div>
 
 - Schema
+
   - Upon application launch, upload `.sql` or `.tar` file when prompted by splash page, or hit cancel.
   - The uploaded `.sql` or `.tar` file becomes the active database.
   - To input new schemas, toggle the “Input Schema” button. Upload a .sql or .tar file or directly input schema code. Remember to provide the schema with a unique label, as it will be assigned to the name property of the newly spun up database connected to the schema.
@@ -76,49 +75,50 @@ To get started on contributing to this project:
 - Query input
 
   - The center panel is where the query input text field is located, utilizing CodeMirror for SQL styling.
-  - Users have option to execute a tracked or untracked query—simply check the box and provide a label to identify the query in later comparisons against other queries.
+  - Users have option to execute a tracked or untracked query — simply check the box and provide a label to identify the query in later comparisons against other queries.
   - Toggle the submit button in the bottom left to send the query to the selected database.
   <br /><br />
-<div align="center">
-<img src="./frontend/assets/images/query_demo.gif" width=600/>
-</div>
-<br /><br />
+  <div align="center">
+  <img src="./frontend/assets/images/query_demo.gif" width=600/>
+  </div>
+  <br /><br />
 
 - Data
 
   - The data table displays data returned by the inputted query.
-<div align="center">
-<img src="./frontend/assets/images/data.png" width=600/><br /><br />
-</div>
+  <div align="center">
+  <img src="./frontend/assets/images/data.png" width=600/><br /><br />
+  </div>
 
 - Input Schema and Tabs
-  - New schemas can be uploaded into the application by clicking the "+" button above the main panel in the form of a ```.sql``` or a ```.tar``` file.
+
+  - New schemas can be uploaded into the application by clicking the "+" button above the main panel in the form of a `.sql` or a `.tar` file.
   - Users can also make a copy of an existing schema, with or without data included.
   - Newly uploaded schemas are displayed as tabs, which can be activated to run tests against during application session.
-<div align="center">
-  <img src="./frontend/assets/images/input_schema_demo.gif"/>
-</div>
+  <div align="center">
+    <img src="./frontend/assets/images/input_schema_demo.gif"/>
+  </div>
 
 - Generate Dummy Data
+
   - MacOS users can generate up to 500,000 rows of foreign-key compliant dummy-data
   - Users can generate dummy data to fill in a selected scheama's tables—currently supported data types are:
     - INT
     - SMALLINT
     - BIGINT
     - VARCHAR
-  - Dummy data is foreign-key compliant.
-    - Columns with key constraints are dropped and replaced with new primary and foreign-key integer columns
-<div align="center">
-  <img src="./frontend/assets/images/dummy_data_demo.gif"/>
-</div>
+  - Dummy data is foreign-key compliant. - Columns with key constraints are dropped and replaced with new primary and foreign-key integer columns
+  <div align="center">
+    <img src="./frontend/assets/images/dummy_data_demo.gif"/>
+  </div>
 
 - History
 
   - The history table shows the latest queries the user submitted irrespective of the database.
   - The history table also displays the total rows returned by the query and the total query execution time.
-<div align="center">
-<img src="./frontend/assets/images/history.png" width=600/>
-</div>
+  <div align="center">
+  <img src="./frontend/assets/images/history.png" width=600/>
+  </div>
 
 - Compare
 
@@ -142,8 +142,8 @@ To get started on contributing to this project:
 
 ## Application Architecture and Logic
 
-<b>Containerization</b><br/>
-SeeQR streamlines the process of instantiating postgres databases by leveraging Docker to containerize an image of postgres. This means instances of databases are automatically created every time new schema data is uploaded or inputted via the SeeQR GUI. Electron communicates with the instantiated database’s URI’s by taking advantage of the `'pg'` npm package.
+<b>Sandbox Environment</b><br/>
+SeeQR streamlines the process of instantiating postgres databases by leveraging Postgres.app to import a copy of your database in postgres on your local machine. This means instances of databases are automatically created every time new schema data is uploaded or inputted via the SeeQR GUI. Electron communicates with the instantiated database’s URI’s by taking advantage of the `'pg'` npm package.
 
 <b>Cross-schema Comparisons</b><br/>
 One of the key features of SeeQR is to compare the efficiency of executing user-inputted queries against different schemas. This allows customization of table scale, relationship, type, and the queries themselves within the context of each schema. This flexibility affords the user granular adjustments for testing every desired scenario. Please refer to “Interface & Functionality” for more details on execution.
@@ -196,5 +196,24 @@ The outcome results from each query, both retrieved data and analytics, are stor
 <td align="center">
 <img src="./frontend/assets/images/caseywalker.png" href="https://github.com/cwalker3011" width=180/><br/>
 <a href="https://github.com/cwalker3011">Casey Walker</a>
+</td>
+</table>
+
+<table align="center">
+<td align="center">
+<img src="./frontend/assets/images/chrisakinrinade.png" href="https://github.com/chrisakinrinade" width=180/><br/>
+<a href="https://github.com/chrisakinrinade">Chris Akinrinade</a>
+</td>
+<td align="center">
+<img src="./frontend/assets/images/jameskolotouros.png" href="https://github.com/dkolotouros" width=180/><br/>
+<a href="https://github.com/dkolotouros">James Kolotouros</a>
+</td>
+<td align="center">
+<img src="./frontend/assets/images/jennifercourtner.png" href="https://github.com/jcourtner" width=180/><br/>
+<a href="https://github.com/jcourtner">Jennifer Courtner</a>
+</td>
+<td align="center">
+<img src="./frontend/assets/images/katieklochan.png" href="https://github.com/kklochan" width=180/><br/>
+<a href="https://github.com/kklochan">Katie Klochan</a>
 </td>
 </table>
