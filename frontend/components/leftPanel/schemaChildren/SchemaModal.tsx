@@ -105,20 +105,16 @@ class SchemaModal extends Component<SchemaModalProps, state> {
       schemaFilePath: this.state.schemaFilePath,
       schemaEntry: this.state.schemaEntry,
     };
-    console.log(schemaObj);
-    console.log('this is state in the handleSchemaSubmit func', this.state);
     ipcRenderer.send('input-schema', schemaObj);
   }
 
   selectHandler = (eventKey, e: React.SyntheticEvent<unknown>) => {
     this.setState({ dbCopyName: eventKey }); //
-    console.log('this is state in the selectHandler func', this.state);
   };
 
   handleCopyData(event: any) {
     if (!this.state.copy) this.setState({ copy: true });
     else this.setState({ copy: false });
-    console.log('this is state in the handleCopyData func', this.state);
   }
 
   dropDownList = () => {
@@ -143,8 +139,6 @@ class SchemaModal extends Component<SchemaModalProps, state> {
     this.setState({ dbCopyName: `Select Instance` });
     this.setState({ schemaName: '' });
     this.props.showModal(event);
-
-    console.log('this is state in the handleCopyFilePath func', this.state);
   }
 
   render() {
@@ -154,10 +148,6 @@ class SchemaModal extends Component<SchemaModalProps, state> {
 
     return (
       <div className="modal" id="modal">
-<<<<<<< HEAD:frontend/components/leftPanel/schemaChildren/SchemaModal.tsx
-=======
-        {/* <h3>Upload or Make a Copy of Schema</h3> */}
->>>>>>> main:frontend/components/rightPanel/schemaChildren/SchemaModal.tsx
         <h3>Enter New Schema Name (required): {this.state.schemaName}</h3>
         <input
           className="schema-label"
