@@ -3,11 +3,11 @@ import { dialog, ipcMain } from 'electron';
 
 const { exec } = require('child_process');
 
-const db = require('./models.ts');
+const db = require('./models');
 const {
   generateDummyData,
   writeCSVFile,
-} = require('./DummyD/dummyDataMain.ts');
+} = require('./DummyD/dummyDataMain');
 
 /**
  ***********************************************************

@@ -143,16 +143,17 @@ module.exports = {
       let queryString = `ALTER TABLE ${table}`;
       let count: number = 2;
 
-      for (const pkc in keyObject[table].primaryKeyColumns) {
+      Object.keys(keyObject[table].primaryKeyColumns).forEach((pkc) => {
         if (count > 2) queryString += ',';
         queryString += ` DROP COLUMN ${pkc} CASCADE`;
         count += 1;
-      }
-      for (const fkc in keyObject[table].foreignKeyColumns) {
+      });
+
+      Object.keys(keyObject[table].foreignKeyColumns).forEach((fkc) => {
         if (count > 2) queryString += ',';
         queryString += ` DROP COLUMN ${fkc}`;
         count += 1;
-      }
+      });
       queryString += ';';
 
       return Promise.resolve(pool.query(queryString));
@@ -259,9 +260,9 @@ module.exports = {
           let count: number = 0;
 
           for (const fk in keyObject[tableName].foreignKeyColumns) {
-            let primaryTable: string =
+            const primaryTable: string =
               keyObject[tableName].foreignKeyColumns[fk];
-            let primaryKey: any = Object.keys(
+            const primaryKey: any = Object.keys(
               keyObject[primaryTable].primaryKeyColumns
             )[0];
             if (count > 0) queryString += `, `;

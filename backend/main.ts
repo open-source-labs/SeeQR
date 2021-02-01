@@ -7,7 +7,7 @@ import { format } from 'url';
 // even if we're not calling any of the functions. If we were to import an
 // object from channels and not call any of the functions in this file, webpack
 // thinks we're not using it and skips the import.
-import './channels.ts'; 
+import './channels'; 
 
 const path = require('path');
 
@@ -31,7 +31,7 @@ const path = require('path');
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow: any;
 
-const mainMenu = Menu.buildFromTemplate(require('./mainMenu.ts'));
+const mainMenu = Menu.buildFromTemplate(require('./mainMenu'));
 // Keep a reference for dev mode
 let dev = false;
 if (
