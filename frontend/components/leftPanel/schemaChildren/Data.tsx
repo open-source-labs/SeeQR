@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table } from './dataChildren/DataTable';
+import Table from './dataChildren/DataTable';
 
 type DataProps = {
   queries: {
@@ -11,7 +11,7 @@ type DataProps = {
   }[];
 };
 
-export class Data extends Component<DataProps> {
+export default class Data extends Component<DataProps> {
   constructor(props) {
     super(props);
   }

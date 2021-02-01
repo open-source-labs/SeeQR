@@ -3,6 +3,7 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown';
 
 const { dialog } = require('electron').remote;
+
 const { ipcRenderer } = window.require('electron');
 
 type ClickEvent = React.MouseEvent<HTMLElement>;
@@ -35,22 +36,23 @@ class DummyDataPanel extends Component<DummyDataPanelProps, state> {
     rowNumber: '',
   };
 
-  //handler to change the dropdown display to the selected table name
+  // handler to change the dropdown display to the selected table name
   selectHandler = (eventKey, e: React.SyntheticEvent<unknown>) => {
     if (eventKey !== 'none') {
       this.setState({ currentTable: eventKey });
     }
   };
 
-  //function to generate the dropdown optiosn from the table names in state
+  // function to generate the dropdown optiosn from the table names in state
   dropDownList = () => {
+    const { tableList } = this.props;
     const result: any = [];
     let tableName;
     // Checks to make sure tables are available to generate dummy data to.
     // Allows user to choose a specific table, or to write dummy data to all tables.
-    if (this.props.tableList.length > 0) {
-      for (let i = 0; i <= this.props.tableList.length; i++) {
-        if (this.props.tableList[i]) tableName = this.props.tableList[i];
+    if (tableList.length > 0) {
+      for (let i = 0; i <= tableList.length; i += 1) {
+        if (tableList[i]) tableName = tableList[i];
         else tableName = 'all';
         result.push(
           <Dropdown.Item key={i} className="queryItem" eventKey={tableName}>
@@ -70,20 +72,21 @@ class DummyDataPanel extends Component<DummyDataPanelProps, state> {
     return result;
   };
 
-  //submit listener to add table name and rows to the dataInfo object in state
+  // submit listener to add table name and rows to the dataInfo object in state
   addToTable = (event: any) => {
     event.preventDefault();
-    //if no number is entered
-    if (!this.state.rowNumber) {
+    const { rowNumber, currentTable } = this.state;
+    // if no number is entered
+    if (!rowNumber) {
       dialog.showErrorBox('Please enter a number of rows.', '');
     }
-    if (this.state.currentTable === 'select table') {
+    if (currentTable === 'select table') {
       dialog.showErrorBox('Please select a table.', '');
     }
-    //reset input fields and update nested object in state
+    // reset input fields and update nested object in state
     else {
-      let table = this.state.currentTable;
-      let number = Number(this.state.rowNumber);
+      const table = currentTable;
+      const number = Number(rowNumber);
       if (table !== 'all') {
         this.setState((prevState) => ({
           ...prevState,
@@ -96,9 +99,9 @@ class DummyDataPanel extends Component<DummyDataPanelProps, state> {
         }));
       } else {
         const dataInfo = {};
-        this.props.tableList.forEach((table) => {
-          if (table !== 'all') {
-            dataInfo[table] = number;
+        this.props.tableList.forEach((currTable) => {
+          if (currTable !== 'all') {
+            dataInfo[currTable] = number;
           }
         });
         this.setState((prevState) => ({
@@ -111,9 +114,9 @@ class DummyDataPanel extends Component<DummyDataPanelProps, state> {
     }
   };
 
-  //onclick listener to delete row from table
+  // onclick listener to delete row from table
   deleteRow = (event: any) => {
-    let name = event.target.id;
+    const name = event.target.id;
     this.setState((prevState) => ({
       ...prevState,
       dataInfo: {
@@ -123,7 +126,7 @@ class DummyDataPanel extends Component<DummyDataPanelProps, state> {
     }));
   };
 
-  //onchange listener to update the rowNumber string in state
+  // onchange listener to update the rowNumber string in state
   changeRowNumber = (event: any) => {
     this.setState({ rowNumber: event.target.value });
   };
@@ -150,15 +153,15 @@ class DummyDataPanel extends Component<DummyDataPanelProps, state> {
   };
 
   submitDummyData = (event: any) => {
-    //check if there are requested dummy data values
+    // check if there are requested dummy data values
     if (Object.keys(this.state.dataInfo).length) {
-      //creates a dummyDataRequest object with schema name and table name/rows
+      // creates a dummyDataRequest object with schema name and table name/rows
       const dummyDataRequest = {
         schemaName: this.props.currentSchema,
         dummyData: this.state.dataInfo,
       };
       ipcRenderer.send('generate-dummy-data', dummyDataRequest);
-      //reset state to clear the dummy data panel's table
+      // reset state to clear the dummy data panel's table
       this.setState({ dataInfo: {} });
     } else dialog.showErrorBox('Please add table and row numbers', '');
   };
@@ -179,7 +182,7 @@ class DummyDataPanel extends Component<DummyDataPanelProps, state> {
             placeholder="number of rows..."
             value={this.state.rowNumber}
             onChange={this.changeRowNumber}
-          ></input>
+          />
           <button id="dummy-rows-button" onClick={this.addToTable}>
             add to table
           </button>
