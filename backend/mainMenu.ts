@@ -6,21 +6,21 @@ module.exports = [
   // { role: 'appMenu' }
   ...(isMac
     ? [
-      {
-        label: app.name,
-        submenu: [
-          { role: 'about' },
-          { type: 'separator' },
-          { role: 'services' },
-          { type: 'separator' },
-          { role: 'hide' },
-          { role: 'hideothers' },
-          { role: 'unhide' },
-          { type: 'separator' },
-          { role: 'quit' },
-        ],
-      },
-    ]
+        {
+          label: app.name,
+          submenu: [
+            { role: 'about' },
+            { type: 'separator' },
+            { role: 'services' },
+            { type: 'separator' },
+            { role: 'hide' },
+            { role: 'hideothers' },
+            { role: 'unhide' },
+            { type: 'separator' },
+            { role: 'quit' },
+          ],
+        },
+      ]
     : []),
   // { role: 'fileMenu' }
   {
@@ -39,14 +39,14 @@ module.exports = [
       { role: 'paste' },
       ...(isMac
         ? [
-          { role: 'delete' },
-          { role: 'selectAll' },
-          { type: 'separator' },
-          {
-            label: 'Speech',
-            submenu: [{ role: 'startspeaking' }, { role: 'stopspeaking' }],
-          },
-        ]
+            { role: 'delete' },
+            { role: 'selectAll' },
+            { type: 'separator' },
+            {
+              label: 'Speech',
+              submenu: [{ role: 'startspeaking' }, { role: 'stopspeaking' }],
+            },
+          ]
         : [{ role: 'delete' }, { type: 'separator' }, { role: 'selectAll' }]),
     ],
   },

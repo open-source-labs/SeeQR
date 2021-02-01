@@ -37,11 +37,7 @@ const getDBNames = () => {
       let dbList: any = [];
       for (let i = 0; i < databases.rows.length; ++i) {
         let curName = databases.rows[i].datname;
-        if (
-          curName !== 'postgres' &&
-          curName !== 'template0' &&
-          curName !== 'template1'
-        )
+        if (curName !== 'postgres' && curName !== 'template0' && curName !== 'template1')
           dbList.push(databases.rows[i].datname);
       }
       resolve(dbList);
@@ -270,11 +266,8 @@ module.exports = {
           let count: number = 0;
 
           for (const fk in keyObject[tableName].foreignKeyColumns) {
-            let primaryTable: string =
-              keyObject[tableName].foreignKeyColumns[fk];
-            let primaryKey: any = Object.keys(
-              keyObject[primaryTable].primaryKeyColumns
-            )[0];
+            let primaryTable: string = keyObject[tableName].foreignKeyColumns[fk];
+            let primaryKey: any = Object.keys(keyObject[primaryTable].primaryKeyColumns)[0];
             if (count > 0) queryString += `, `;
             queryString += `ADD CONSTRAINT "${tableName}_fk${count}" FOREIGN KEY ("${fk}") REFERENCES ${primaryTable}("${primaryKey}")`;
             count += 1;
