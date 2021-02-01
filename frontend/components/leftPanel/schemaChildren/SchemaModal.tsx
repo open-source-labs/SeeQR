@@ -85,10 +85,7 @@ class SchemaModal extends Component<SchemaModalProps, state> {
       })
 
       .catch((err: object) => {
-        console.log(
-          'Error in handleSchemaFilePath method of SchemaModal.tsx.',
-          err
-        );
+        console.log('Error in handleSchemaFilePath method of SchemaModal.tsx.', err);
       });
   }
 
@@ -176,20 +173,14 @@ class SchemaModal extends Component<SchemaModalProps, state> {
         </div>
 
         <div className="data-checkbox">
-          <p title="Do not check box if you'd like a shell copy of an existing DB">
-            With Data?
-          </p>
+          <p title="Do not check box if you'd like a shell copy of an existing DB">With Data?</p>
           <input
             id="copy-data-checkbox"
             type="checkbox"
             name="Data"
             onClick={this.handleCopyData}
           ></input>
-          <button
-            id="copy-button"
-            className="modal-buttons"
-            onClick={this.handleCopyFilePath}
-          >
+          <button id="copy-button" className="modal-buttons" onClick={this.handleCopyFilePath}>
             Make Copy
           </button>
         </div>

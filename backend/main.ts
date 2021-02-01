@@ -30,10 +30,7 @@ let pruned: boolean = false;
 let mainMenu = Menu.buildFromTemplate(require('./mainMenu'));
 // Keep a reference for dev mode
 let dev = false;
-if (
-  process.env.NODE_ENV !== undefined &&
-  process.env.NODE_ENV === 'development'
-) {
+if (process.env.NODE_ENV !== undefined && process.env.NODE_ENV === 'development') {
   dev = true;
 }
 
@@ -51,9 +48,7 @@ function createWindow() {
   });
 
   if (process.platform === 'darwin') {
-    app.dock.setIcon(
-      path.join(__dirname, '../../frontend/assets/images/seeqr_dock.png')
-    );
+    app.dock.setIcon(path.join(__dirname, '../../frontend/assets/images/seeqr_dock.png'));
   }
 
   // Load index.html of the app

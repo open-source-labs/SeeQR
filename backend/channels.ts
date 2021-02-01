@@ -70,11 +70,9 @@ let listObj: any;
 ipcMain.on('return-db-list', (event, dbName) => {
   // DB query to get the database size
   let dbSize: string;
-  db.query(`SELECT pg_size_pretty(pg_database_size('${dbName}'));`).then(
-    (queryStats) => {
-      dbSize = queryStats.rows[0].pg_size_pretty;
-    }
-  );
+  db.query(`SELECT pg_size_pretty(pg_database_size('${dbName}'));`).then((queryStats) => {
+    dbSize = queryStats.rows[0].pg_size_pretty;
+  });
   db.getLists().then((data) => event.sender.send('db-lists', data, dbSize));
 });
 
@@ -93,15 +91,9 @@ ipcMain.on('upload-file', (event, filePath: string) => {
 
   let dbName: string;
   if (process.platform === 'darwin') {
-    dbName = filePath[0].slice(
-      filePath[0].lastIndexOf('/') + 1,
-      filePath[0].lastIndexOf('.')
-    );
+    dbName = filePath[0].slice(filePath[0].lastIndexOf('/') + 1, filePath[0].lastIndexOf('.'));
   } else {
-    dbName = filePath[0].slice(
-      filePath[0].lastIndexOf('\\') + 1,
-      filePath[0].lastIndexOf('.')
-    );
+    dbName = filePath[0].slice(filePath[0].lastIndexOf('\\') + 1, filePath[0].lastIndexOf('.'));
   }
 
   const createDB: string = createDBFunc(dbName);
@@ -134,11 +126,9 @@ ipcMain.on('upload-file', (event, filePath: string) => {
     execute(runCmd, sendLists);
 
     // DB query to get the database size
-    db.query(`SELECT pg_size_pretty(pg_database_size('${dbName}'));`).then(
-      (queryStats) => {
-        dbSize = queryStats.rows[0].pg_size_pretty;
-      }
-    );
+    db.query(`SELECT pg_size_pretty(pg_database_size('${dbName}'));`).then((queryStats) => {
+      dbSize = queryStats.rows[0].pg_size_pretty;
+    });
   };
 
   // Step 3: Import database file from file path into docker container
@@ -315,19 +305,17 @@ ipcMain.on('execute-query-tracked', (event, data: QueryType) => {
       frontendData.queryData = queryData.rows;
       if (!queryString.match(/create/i)) {
         // Run EXPLAIN (FORMAT JSON, ANALYZE)
-        db.query('EXPLAIN (FORMAT JSON, ANALYZE) ' + queryString).then(
-          (queryStats) => {
-            frontendData.queryStatistics = queryStats.rows;
+        db.query('EXPLAIN (FORMAT JSON, ANALYZE) ' + queryString).then((queryStats) => {
+          frontendData.queryStatistics = queryStats.rows;
 
-            (async function getListAsync() {
-              listObj = await db.getLists();
-              frontendData.lists = listObj;
-              event.sender.send('db-lists', listObj);
-              event.sender.send('return-execute-query', frontendData);
-              event.sender.send('async-complete');
-            })();
-          }
-        );
+          (async function getListAsync() {
+            listObj = await db.getLists();
+            frontendData.lists = listObj;
+            event.sender.send('db-lists', listObj);
+            event.sender.send('return-execute-query', frontendData);
+            event.sender.send('async-complete');
+          })();
+        });
       } else {
         // Handling for tracking a create table query, can't run explain/analyze on create statements
         (async function getListAsync() {
@@ -365,21 +353,11 @@ ipcMain.on('generate-dummy-data', (event: any, data: dummyDataRequest) => {
         db.getSchemaLayout().then((result) => {
           schemaLayout = result;
           // generate the dummy data and save it into matrices associated with table names
-          tableMatricesArray = generateDummyData(
-            schemaLayout,
-            dummyDataRequest,
-            keyObject
-          );
+          tableMatricesArray = generateDummyData(schemaLayout, dummyDataRequest, keyObject);
           //iterate through tableMatricesArray to write individual .csv files
           for (const tableObject of tableMatricesArray) {
             // write all entries in tableMatrix to csv file
-            writeCSVFile(
-              tableObject,
-              schemaLayout,
-              keyObject,
-              dummyDataRequest,
-              event
-            );
+            writeCSVFile(tableObject, schemaLayout, keyObject, dummyDataRequest, event);
           }
         });
       });

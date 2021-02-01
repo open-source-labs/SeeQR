@@ -8,18 +8,17 @@ const { ipcRenderer } = window.require('electron');
 type ClickEvent = React.MouseEvent<HTMLElement>;
 
 type DummyDataPanelProps = {
-    currentSchema: string;
-    tableList: string[];
+  currentSchema: string;
+  tableList: string[];
 };
 
 type state = {
-  currentTable: string,
-  dataInfo: {},
-  rowNumber: string
-}
+  currentTable: string;
+  dataInfo: {};
+  rowNumber: string;
+};
 
 class DummyDataPanel extends Component<DummyDataPanelProps, state> {
-
   constructor(props: DummyDataPanelProps) {
     super(props);
     this.dropDownList = this.dropDownList.bind(this);
@@ -33,13 +32,13 @@ class DummyDataPanel extends Component<DummyDataPanelProps, state> {
   state: state = {
     currentTable: 'select table',
     dataInfo: {},
-    rowNumber: ''
-  }
+    rowNumber: '',
+  };
 
   //handler to change the dropdown display to the selected table name
   selectHandler = (eventKey, e: React.SyntheticEvent<unknown>) => {
     if (eventKey !== 'none') {
-      this.setState({currentTable: eventKey});
+      this.setState({ currentTable: eventKey });
     }
   };
 
@@ -51,14 +50,22 @@ class DummyDataPanel extends Component<DummyDataPanelProps, state> {
     // Allows user to choose a specific table, or to write dummy data to all tables.
     if (this.props.tableList.length > 0) {
       for (let i = 0; i <= this.props.tableList.length; i++) {
-        if(this.props.tableList[i]) tableName = this.props.tableList[i];
+        if (this.props.tableList[i]) tableName = this.props.tableList[i];
         else tableName = 'all';
-        result.push(<Dropdown.Item key={i} className="queryItem" eventKey={tableName}>{tableName}</Dropdown.Item>);
+        result.push(
+          <Dropdown.Item key={i} className="queryItem" eventKey={tableName}>
+            {tableName}
+          </Dropdown.Item>
+        );
       }
     } else {
-    // Adds message in dropdown list to show that not tables are available
-    // Went this route because we couldn't get the dropdown to disappear if there were no tables in tableList
-      result.push(<Dropdown.Item key='key' className="queryItem" eventKey='none'>No tables available!</Dropdown.Item>);
+      // Adds message in dropdown list to show that not tables are available
+      // Went this route because we couldn't get the dropdown to disappear if there were no tables in tableList
+      result.push(
+        <Dropdown.Item key="key" className="queryItem" eventKey="none">
+          No tables available!
+        </Dropdown.Item>
+      );
     }
     return result;
   };
@@ -77,67 +84,70 @@ class DummyDataPanel extends Component<DummyDataPanelProps, state> {
     else {
       let table = this.state.currentTable;
       let number = Number(this.state.rowNumber);
-        if (table !== 'all') {
-          this.setState(prevState => ({
-            ...prevState,
-            currentTable: 'select table',
-            rowNumber: '',
-            dataInfo: {
-              ...prevState.dataInfo,
-              [table]: number
-            }
-          }))
-        }
-        else {
-          const dataInfo = {};
-          this.props.tableList.forEach(table => {
-            if (table !== 'all') {
-              dataInfo[table] = number;
-            }
-          })
-          this.setState(prevState => ({
-            ...prevState,
-            currentTable: 'select table',
-            rowNumber: '',
-            dataInfo
-          }))
-        }
+      if (table !== 'all') {
+        this.setState((prevState) => ({
+          ...prevState,
+          currentTable: 'select table',
+          rowNumber: '',
+          dataInfo: {
+            ...prevState.dataInfo,
+            [table]: number,
+          },
+        }));
+      } else {
+        const dataInfo = {};
+        this.props.tableList.forEach((table) => {
+          if (table !== 'all') {
+            dataInfo[table] = number;
+          }
+        });
+        this.setState((prevState) => ({
+          ...prevState,
+          currentTable: 'select table',
+          rowNumber: '',
+          dataInfo,
+        }));
       }
-  }
+    }
+  };
 
   //onclick listener to delete row from table
   deleteRow = (event: any) => {
     let name = event.target.id;
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       ...prevState,
       dataInfo: {
         ...prevState.dataInfo,
-        [name]: undefined
-      }
-    }))
-  }
+        [name]: undefined,
+      },
+    }));
+  };
 
   //onchange listener to update the rowNumber string in state
   changeRowNumber = (event: any) => {
-    this.setState({ rowNumber: event.target.value })
-  }
+    this.setState({ rowNumber: event.target.value });
+  };
 
   createRow = () => {
     //once state updates on click, render the table row from the object
     const newRows: JSX.Element[] = [];
-      for (let key in this.state.dataInfo) {
-        if (this.state.dataInfo[key]) {
-          newRows.push(
-            <tr className="dummy-table-row" key={key}>
-              <td>{key}</td>
-              <td>{this.state.dataInfo[key]}</td>
-              <td><button id={key} onClick={this.deleteRow}>x</button></td>
-            </tr>
-          )
-        }
+    for (let key in this.state.dataInfo) {
+      if (this.state.dataInfo[key]) {
+        newRows.push(
+          <tr className="dummy-table-row" key={key}>
+            <td>{key}</td>
+            <td>{this.state.dataInfo[key]}</td>
+            <td>
+              <button id={key} onClick={this.deleteRow}>
+                x
+              </button>
+            </td>
+          </tr>
+        );
       }
+    }
     return newRows;
-  }
+  };
 
   submitDummyData = (event: any) => {
     //check if there are requested dummy data values
@@ -145,56 +155,52 @@ class DummyDataPanel extends Component<DummyDataPanelProps, state> {
       //creates a dummyDataRequest object with schema name and table name/rows
       const dummyDataRequest = {
         schemaName: this.props.currentSchema,
-        dummyData: this.state.dataInfo
-      }
+        dummyData: this.state.dataInfo,
+      };
       ipcRenderer.send('generate-dummy-data', dummyDataRequest);
       //reset state to clear the dummy data panel's table
-      this.setState({dataInfo: {}});
-    }
-    else dialog.showErrorBox('Please add table and row numbers', '');
-  }
+      this.setState({ dataInfo: {} });
+    } else dialog.showErrorBox('Please add table and row numbers', '');
+  };
 
   render() {
-
     return (
       <div className="dummy-data-panel">
         <h3>Generate Dummy Data</h3>
         <p>Select table and number of rows:</p>
-          <div className="dummy-data-select">
-            <Dropdown onSelect={this.selectHandler}>
-              <Dropdown.Toggle>
-                {this.state.currentTable}
-              </Dropdown.Toggle>
-              <Dropdown.Menu className="DD-Dropdown">
-                {this.dropDownList()}
-              </Dropdown.Menu> 
-            </Dropdown>
-            <input id="dummy-rows-input" type="text" placeholder="number of rows..."
-              value={this.state.rowNumber}
-              onChange={this.changeRowNumber}>
-            </input>
-            <button id="dummy-rows-button"
-              onClick={this.addToTable}>
-              add to table
-            </button>
-          </div>
-          <div className="dummy-data-table-container">
-            <table className="dummy-data-table">
-              <tbody>
-                <tr className="top-row">
-                  <th>table</th>
-                  <th># of rows</th>
-                  <th>delete</th>
-                </tr>
-                {this.createRow()}
-              </tbody>
-            </table>
-          </div>
-          <div id="generate-dummy-data">
-            <button onClick={this.submitDummyData}>Generate Dummy Data</button>
-          </div>
+        <div className="dummy-data-select">
+          <Dropdown onSelect={this.selectHandler}>
+            <Dropdown.Toggle>{this.state.currentTable}</Dropdown.Toggle>
+            <Dropdown.Menu className="DD-Dropdown">{this.dropDownList()}</Dropdown.Menu>
+          </Dropdown>
+          <input
+            id="dummy-rows-input"
+            type="text"
+            placeholder="number of rows..."
+            value={this.state.rowNumber}
+            onChange={this.changeRowNumber}
+          ></input>
+          <button id="dummy-rows-button" onClick={this.addToTable}>
+            add to table
+          </button>
+        </div>
+        <div className="dummy-data-table-container">
+          <table className="dummy-data-table">
+            <tbody>
+              <tr className="top-row">
+                <th>table</th>
+                <th># of rows</th>
+                <th>delete</th>
+              </tr>
+              {this.createRow()}
+            </tbody>
+          </table>
+        </div>
+        <div id="generate-dummy-data">
+          <button onClick={this.submitDummyData}>Generate Dummy Data</button>
+        </div>
       </div>
-    )
+    );
   }
 }
 
