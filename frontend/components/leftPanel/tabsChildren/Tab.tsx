@@ -5,24 +5,17 @@ type TabProps = {
     currentSchema: string,
     label: string,
 };
-export class Tab extends Component<TabProps> {
-
-    render() {
-        const {
-            onClickTabItem,
-            currentSchema,
-            label,
-        } = this.props;
-
-        let className = "tab-list-item";
-        if (currentSchema === label) {
-            className += " tab-list-active";
-        }
-
-        return (
-            <li className={className} onClick={() => onClickTabItem(label)}>
-                {label}
-            </li>
-        );
+export default class Tab extends Component<TabProps> {
+  render() {
+    const { onClickTabItem, currentSchema, label } = this.props;
+    let className = "tab-list-item";
+    if (currentSchema === label) {
+      className += " tab-list-active";
     }
+    return (
+      <li className={className} onClick={() => onClickTabItem(label)}>
+        {label}
+      </li>
+    );
+  }
 }

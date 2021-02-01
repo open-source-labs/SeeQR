@@ -3,6 +3,7 @@ import { Dropdown } from 'react-bootstrap';
 // import GenerateData from './GenerateData';
 
 const { dialog } = require('electron').remote;
+
 const { ipcRenderer } = window.require('electron');
 
 type ClickEvent = React.MouseEvent<HTMLElement>;
@@ -61,6 +62,7 @@ class SchemaModal extends Component<SchemaModalProps, state> {
   // When file path is uploaded, query entry is cleared.
   handleSchemaFilePath(event: ClickEvent) {
     event.preventDefault();
+    const { schemaName, schemaFilePath } = this.state;
 
     dialog
       .showOpenDialog({
@@ -72,8 +74,8 @@ class SchemaModal extends Component<SchemaModalProps, state> {
         const filePath = result['filePaths'];
         this.setState({ schemaFilePath: filePath });
         const schemaObj = {
-          schemaName: this.state.schemaName,
-          schemaFilePath: this.state.schemaFilePath,
+          schemaName,
+          schemaFilePath,
           schemaEntry: '',
         };
         if (!result['canceled']) {
@@ -96,23 +98,41 @@ class SchemaModal extends Component<SchemaModalProps, state> {
 
   handleSchemaSubmit(event: any) {
     event.preventDefault();
+    const { schemaName, schemaFilePath, schemaEntry } = this.state;
 
     const schemaObj = {
-      schemaName: this.state.schemaName,
-      schemaFilePath: this.state.schemaFilePath,
-      schemaEntry: this.state.schemaEntry,
+      schemaName,
+      schemaFilePath,
+      schemaEntry,
     };
     ipcRenderer.send('input-schema', schemaObj);
   }
-
-  selectHandler = (eventKey, e: React.SyntheticEvent<unknown>) => {
-    this.setState({ dbCopyName: eventKey }); //
-  };
 
   handleCopyData(event: any) {
     if (!this.state.copy) this.setState({ copy: true });
     else this.setState({ copy: false });
   }
+
+  handleCopyFilePath(event: any) {
+    event.preventDefault();
+    const { schemaName, dbCopyName, copy } = this.state;
+    const schemaObj = {
+      schemaName,
+      schemaFilePath: '',
+      schemaEntry: '',
+      dbCopyName,
+      copy,
+    };
+
+    ipcRenderer.send('input-schema', schemaObj);
+    this.setState({ dbCopyName: `Select Instance` });
+    this.setState({ schemaName: '' });
+    this.props.showModal(event);
+  }
+
+  selectHandler = (eventKey, e: React.SyntheticEvent<unknown>) => {
+    this.setState({ dbCopyName: eventKey }); //
+  };
 
   dropDownList = () => {
     return this.props.tabList.map((db, index) => (
@@ -122,30 +142,16 @@ class SchemaModal extends Component<SchemaModalProps, state> {
     ));
   };
 
-  handleCopyFilePath(event: any) {
-    event.preventDefault();
-    const schemaObj = {
-      schemaName: this.state.schemaName,
-      schemaFilePath: '',
-      schemaEntry: '',
-      dbCopyName: this.state.dbCopyName,
-      copy: this.state.copy,
-    };
-
-    ipcRenderer.send('input-schema', schemaObj);
-    this.setState({ dbCopyName: `Select Instance` });
-    this.setState({ schemaName: '' });
-    this.props.showModal(event);
-  }
-
   render() {
     if (this.props.show === false) {
       return null;
     }
+    
+    const { schemaName, dbCopyName } = this.state;
 
     return (
       <div className="modal" id="modal">
-        <h3>Enter New Schema Name (required): {this.state.schemaName}</h3>
+        <h3>Enter New Schema Name (required): {schemaName}</h3>
         <input
           className="schema-label"
           type="text"
@@ -167,7 +173,7 @@ class SchemaModal extends Component<SchemaModalProps, state> {
         <div className="copy-instance">
           <h3>Copy Existing Schema: </h3>
           <Dropdown id="select-dropdown" onSelect={this.selectHandler}>
-            <Dropdown.Toggle>{this.state.dbCopyName}</Dropdown.Toggle>
+            <Dropdown.Toggle>{dbCopyName}</Dropdown.Toggle>
             <Dropdown.Menu>{this.dropDownList()}</Dropdown.Menu>
           </Dropdown>
         </div>
@@ -179,7 +185,7 @@ class SchemaModal extends Component<SchemaModalProps, state> {
             type="checkbox"
             name="Data"
             onClick={this.handleCopyData}
-          ></input>
+          />
           <button id="copy-button" className="modal-buttons" onClick={this.handleCopyFilePath}>
             Make Copy
           </button>

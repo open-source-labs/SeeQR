@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { SchemaContainer } from './SchemaContainer';
 import SchemaModal from './schemaChildren/SchemaModal';
-import { Tab } from './tabsChildren/Tab';
+import Tab from './tabsChildren/Tab';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -17,17 +17,13 @@ type TabsProps = {
 type state = {
   show: boolean;
 };
-export class Tabs extends Component<TabsProps> {
+export default class Tabs extends Component<TabsProps> {
   constructor(props: TabsProps) {
     super(props);
     this.showModal = this.showModal.bind(this);
   }
   state: state = {
     show: false,
-  };
-
-  showModal = (event: any) => {
-    this.setState({ show: true });
   };
 
   componentDidMount() {
@@ -42,6 +38,10 @@ export class Tabs extends Component<TabsProps> {
       this.onClose(event);
     });
   }
+
+  showModal = (event: any) => {
+    this.setState({ show: true });
+  };
 
   onClose = (event: any) => {
     this.setState({ show: false });
