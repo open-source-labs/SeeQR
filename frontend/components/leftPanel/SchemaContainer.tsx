@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Data } from './schemaChildren/Data';
+import Data from './schemaChildren/Data';
 import Query from './schemaChildren/Query';
 
 type SchemaContainerProps = {
