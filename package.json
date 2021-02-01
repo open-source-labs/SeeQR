@@ -2,7 +2,7 @@
   "name": "SeeQR",
   "version": "2.0.0",
   "description": "SeeQR",
-  "main": "./Public/tsCompiled/backend/main",
+  "main": "./tsCompiled/backend/main",
   "babel": {
     "presets": [
       "@babel/preset-env",
