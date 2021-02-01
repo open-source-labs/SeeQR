@@ -10,9 +10,9 @@
     ]
   },
   "scripts": {
-    "build": "tsc && webpack",
+    "build": "webpack",
     "start": "cross-env NODE_ENV=production electron --noDevServer .",
-    "dev": "tsc && cross-env NODE_ENV=development webpack-dev-server --hot",
+    "dev": "cross-env NODE_ENV=development webpack-dev-server --hot",
     "test": "jest --verbose"
   },
   "repository": {
