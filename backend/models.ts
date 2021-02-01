@@ -6,8 +6,8 @@ const { getPrimaryKeys, getForeignKeys } = require('./DummyD/foreign_key_info');
 let PG_URI: string = 'postgres://postgres:postgres@localhost:5432/defaultDB';
 let pool: any = new Pool({ connectionString: PG_URI });
 
-//helper function that creates the column objects, which are saved to the schemaLayout object
-//this function returns a promise to be resolved with Promise.all syntax
+// helper function that creates the column objects, which are saved to the schemaLayout object
+// this function returns a promise to be resolved with Promise.all syntax
 const getColumnObjects = (tableName: string) => {
   const queryString =
     'SELECT column_name, data_type, character_maximum_length FROM information_schema.columns WHERE table_name = $1;';
@@ -15,7 +15,7 @@ const getColumnObjects = (tableName: string) => {
   return new Promise((resolve) => {
     pool.query(queryString, value).then((result) => {
       const columnInfoArray: any = [];
-      for (let i = 0; i < result.rows.length; i++) {
+      for (let i = 0; i < result.rows.length; i += 1) {
         const columnObj: any = {
           columnName: result.rows[i].column_name,
           dataInfo: {
@@ -31,36 +31,38 @@ const getColumnObjects = (tableName: string) => {
 };
 
 // gets all the names of the current postgres instances
-const getDBNames = () => {
-  return new Promise((resolve) => {
+const getDBNames = () =>
+  new Promise((resolve) => {
     pool.query('SELECT datname FROM pg_database;').then((databases) => {
-      let dbList: any = [];
-      for (let i = 0; i < databases.rows.length; ++i) {
-        let curName = databases.rows[i].datname;
-        if (curName !== 'postgres' && curName !== 'template0' && curName !== 'template1')
+      const dbList: any = [];
+      for (let i = 0; i < databases.rows.length; i += 1) {
+        const curName = databases.rows[i].datname;
+        if (
+          curName !== 'postgres' &&
+          curName !== 'template0' &&
+          curName !== 'template1'
+        )
           dbList.push(databases.rows[i].datname);
       }
       resolve(dbList);
     });
   });
-};
 
 // gets all tablenames from currentschema
-const getDBLists = () => {
-  return new Promise((resolve) => {
+const getDBLists = () =>
+  new Promise((resolve) => {
     pool
       .query(
         "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_name;"
       )
       .then((tables) => {
-        let tableList: any = [];
-        for (let i = 0; i < tables.rows.length; ++i) {
+        const tableList: any = [];
+        for (let i = 0; i < tables.rows.length; i += 1) {
           tableList.push(tables.rows[i].table_name);
         }
         resolve(tableList);
       });
   });
-};
 
 module.exports = {
   query: (text, params, callback) => {
@@ -69,29 +71,27 @@ module.exports = {
   },
 
   changeDB: (dbName: string) => {
-    PG_URI = 'postgres://postgres:postgres@localhost:5432/' + dbName;
+    PG_URI = `postgres://postgres:postgres@localhost:5432/${dbName}`;
     pool = new Pool({ connectionString: PG_URI });
     console.log('Current URI: ', PG_URI);
     return dbName;
   },
 
-  getLists: () => {
-    return new Promise((resolve) => {
+  getLists: () =>
+    new Promise((resolve) => {
       const listObj: any = {
         tableList: [], // current database's tables
         databaseList: [],
       };
       Promise.all([getDBNames(), getDBLists()]).then((data) => {
         console.log('models: ', data);
-        listObj.databaseList = data[0];
-        listObj.tableList = data[1];
+        [listObj.databaseList, listObj.tableList] = data;
         resolve(listObj);
       });
-    });
-  },
+    }),
 
-  createKeyObject: () => {
-    return new Promise((resolve) => {
+  createKeyObject: () =>
+    new Promise((resolve) => {
       // initialize the keyObject we eventually want to return out
       const keyObject: any = {};
       pool
@@ -100,7 +100,7 @@ module.exports = {
           let table;
           let pkColumn;
           // iterate over the primary key table, adding info to our keyObject
-          for (let i = 0; i < result.rows.length; i++) {
+          for (let i = 0; i < result.rows.length; i += 1) {
             table = result.rows[i].table_name;
             pkColumn = result.rows[i].pk_column;
             // if the table is not yet initialized within the keyObject, then initialize it
@@ -119,7 +119,7 @@ module.exports = {
             let primaryTable;
             let fkColumn;
             // iterate over the foreign key table, adding info to our keyObject
-            for (let i = 0; i < result.rows.length; i++) {
+            for (let i = 0; i < result.rows.length; i += 1) {
               table = result.rows[i].foreign_table;
               primaryTable = result.rows[i].primary_table;
               fkColumn = result.rows[i].fk_column;
@@ -135,8 +135,7 @@ module.exports = {
             resolve(keyObject);
           });
         });
-    });
-  },
+    }),
 
   dropKeyColumns: async (keyObject: any) => {
     // define helper function to generate and run query
@@ -163,8 +162,6 @@ module.exports = {
     for (const table in keyObject) {
       await generateAndRunDropQuery(table);
     }
-
-    return;
   },
 
   addNewKeyColumns: async (keyObject: any) => {
@@ -192,13 +189,11 @@ module.exports = {
     for (const table in keyObject) {
       await generateAndRunAddQuery(table);
     }
-
-    return;
   },
 
-  getSchemaLayout: () => {
-    // initialize a new promise; we resolve this promise at the end of the last async function within the promise
-    return new Promise((resolve) => {
+  // initialize a new promise; we resolve this promise at the end of the last async function within the promise
+  getSchemaLayout: () =>
+    new Promise((resolve) => {
       const schemaLayout: any = {
         tableNames: [],
         tables: {
@@ -212,7 +207,7 @@ module.exports = {
         )
         // then we save the table names into the schemaLayout object in the tableNames property
         .then((tables) => {
-          for (let i = 0; i < tables.rows.length; ++i) {
+          for (let i = 0; i < tables.rows.length; i += 1) {
             schemaLayout.tableNames.push(tables.rows[i].table_name);
           }
           const promiseArray: any = [];
@@ -222,7 +217,7 @@ module.exports = {
           //we resolve all of the promises for the data info, and are returned an array of column data objects
           Promise.all(promiseArray).then((columnInfo) => {
             //here, we create a key for each table name and assign the array of column objects to the corresponding table name
-            for (let i = 0; i < columnInfo.length; i++) {
+            for (let i = 0; i < columnInfo.length; i += 1) {
               schemaLayout.tables[schemaLayout.tableNames[i]] = columnInfo[i];
             }
             resolve(schemaLayout);
@@ -231,8 +226,7 @@ module.exports = {
         .catch(() => {
           console.log('error in models.ts');
         });
-    });
-  },
+    }),
 
   addPrimaryKeyConstraints: async (keyObject, dummyDataRequest) => {
     // iterate over table's keyObject property, add primary key constraints
@@ -254,7 +248,6 @@ module.exports = {
         }
       }
     }
-    return;
   },
 
   addForeignKeyConstraints: async (keyObject, dummyDataRequest) => {
@@ -266,8 +259,11 @@ module.exports = {
           let count: number = 0;
 
           for (const fk in keyObject[tableName].foreignKeyColumns) {
-            let primaryTable: string = keyObject[tableName].foreignKeyColumns[fk];
-            let primaryKey: any = Object.keys(keyObject[primaryTable].primaryKeyColumns)[0];
+            let primaryTable: string =
+              keyObject[tableName].foreignKeyColumns[fk];
+            let primaryKey: any = Object.keys(
+              keyObject[primaryTable].primaryKeyColumns
+            )[0];
             if (count > 0) queryString += `, `;
             queryString += `ADD CONSTRAINT "${tableName}_fk${count}" FOREIGN KEY ("${fk}") REFERENCES ${primaryTable}("${primaryKey}")`;
             count += 1;
@@ -279,6 +275,5 @@ module.exports = {
         }
       }
     }
-    return;
   },
 };

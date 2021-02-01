@@ -1,56 +1,56 @@
 // Import parts of electron to use
 import { dialog, ipcMain } from 'electron';
 
-const { generateDummyData, writeCSVFile } = require('./DummyD/dummyDataMain');
 const { exec } = require('child_process');
-const db = require('./models');
 
-/************************************************************
- *********************** Helper functions *******************
- ************************************************************/
+const db = require('./models.ts');
+const {
+  generateDummyData,
+  writeCSVFile,
+} = require('./DummyD/dummyDataMain.ts');
+
+/**
+ ***********************************************************
+ *********************** Helper functions ******************
+ ***********************************************************
+ */
 
 // Generate CLI commands to be executed in child process.
 // The electron app will access your terminal to execute these postgres commands
 
 // create a database
-const createDBFunc = (name) => {
-  return `psql -U postgres -c "CREATE DATABASE ${name}"`;
-};
+const createDBFunc = (name) => `psql -U postgres -c "CREATE DATABASE ${name}"`;
 
 // import SQL file into new DB created
-const runSQLFunc = (dbName, file) => {
-  return `psql -U postgres -d ${dbName} -f ${file}`;
-};
+const runSQLFunc = (dbName, file) => `psql -U postgres -d ${dbName} -f ${file}`;
 
 // import TAR file into new DB created
-const runTARFunc = (dbName, file) => {
-  return `pg_restore -U postgres -d ${dbName} -f ${file}`;
-};
+const runTARFunc = (dbName, file) =>
+  `pg_restore -U postgres -d ${dbName} -f ${file}`;
 
 // make a full copy of the schema
 const runFullCopyFunc = (dbCopyName, file) => {
-  let newFile = file[0];
+  const newFile = file[0];
 
   return `pg_dump -U postgres -d ${dbCopyName} -f ${newFile}`;
 };
 
 // make a hollow copy of the schema
-const runHollowCopyFunc = (dbCopyName, file) => {
-  return `pg_dump -s -U postgres ${dbCopyName} -f ${file}`;
-};
+const runHollowCopyFunc = (dbCopyName, file) =>
+  `pg_dump -s -U postgres ${dbCopyName} -f ${file}`;
 
 // Function to execute commands in the child process.
 const execute = (str: string, nextStep: any) => {
   exec(str, (error, stdout, stderr) => {
     console.log('exec func', `${stdout}`);
     if (error) {
-      //this shows the console error in an error message on the frontend
+      // this shows the console error in an error message on the frontend
       dialog.showErrorBox(`${error.message}`, '');
       console.log(`error: ${error.message}`);
       return;
     }
     if (stderr) {
-      //this shows the console error in an error message on the frontend
+      // this shows the console error in an error message on the frontend
       dialog.showErrorBox(`${stderr}`, '');
       console.log(`stderr: ${stderr}`);
       return;
@@ -60,9 +60,11 @@ const execute = (str: string, nextStep: any) => {
   });
 };
 
-/************************************************************
- *********************** IPC CHANNELS ***********************
- ************************************************************/
+/**
+ ***********************************************************
+ *********************** IPC CHANNELS **********************
+ ***********************************************************
+ */
 
 // Global variable to store list of databases and tables to provide to frontend upon refreshing view.
 let listObj: any;
@@ -70,14 +72,16 @@ let listObj: any;
 ipcMain.on('return-db-list', (event, dbName) => {
   // DB query to get the database size
   let dbSize: string;
-  db.query(`SELECT pg_size_pretty(pg_database_size('${dbName}'));`).then((queryStats) => {
-    dbSize = queryStats.rows[0].pg_size_pretty;
-  });
+  db.query(`SELECT pg_size_pretty(pg_database_size('${dbName}'));`).then(
+    (queryStats) => {
+      dbSize = queryStats.rows[0].pg_size_pretty;
+    }
+  );
   db.getLists().then((data) => event.sender.send('db-lists', data, dbSize));
 });
 
 // Listen for skip button on Splash page.
-ipcMain.on('skip-file-upload', (event) => {});
+ipcMain.on('skip-file-upload', () => {});
 
 // Listen for database changes sent from the renderer upon changing tabs.
 ipcMain.on('change-db', (event, dbName) => {
@@ -91,9 +95,15 @@ ipcMain.on('upload-file', (event, filePath: string) => {
 
   let dbName: string;
   if (process.platform === 'darwin') {
-    dbName = filePath[0].slice(filePath[0].lastIndexOf('/') + 1, filePath[0].lastIndexOf('.'));
+    dbName = filePath[0].slice(
+      filePath[0].lastIndexOf('/') + 1,
+      filePath[0].lastIndexOf('.')
+    );
   } else {
-    dbName = filePath[0].slice(filePath[0].lastIndexOf('\\') + 1, filePath[0].lastIndexOf('.'));
+    dbName = filePath[0].slice(
+      filePath[0].lastIndexOf('\\') + 1,
+      filePath[0].lastIndexOf('.')
+    );
   }
 
   const createDB: string = createDBFunc(dbName);
@@ -126,9 +136,11 @@ ipcMain.on('upload-file', (event, filePath: string) => {
     execute(runCmd, sendLists);
 
     // DB query to get the database size
-    db.query(`SELECT pg_size_pretty(pg_database_size('${dbName}'));`).then((queryStats) => {
-      dbSize = queryStats.rows[0].pg_size_pretty;
-    });
+    db.query(`SELECT pg_size_pretty(pg_database_size('${dbName}'));`).then(
+      (queryStats) => {
+        dbSize = queryStats.rows[0].pg_size_pretty;
+      }
+    );
   };
 
   // Step 3: Import database file from file path into docker container
@@ -138,7 +150,7 @@ ipcMain.on('upload-file', (event, filePath: string) => {
   // Step 2: Change current URI to match newly created DB
   const step2 = () => {
     db.changeDB(dbName);
-    return step4(); //changing step3 to step4 to test removal of importFile func
+    return step4(); // changing step3 to step4 to test removal of importFile func
   };
 
   // Step 1: Create empty db
@@ -176,7 +188,7 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
 
   // conditional to get the correct schemaFilePath name from the Load Schema Modal
   if (!data.schemaFilePath) {
-    filePath = [data.schemaName + '.sql'];
+    filePath = [`${data.schemaName}.sql`];
   } else {
     filePath = data.schemaFilePath;
   }
@@ -236,14 +248,14 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
       }
       // Hollow copy case
       else execute(runHollowCopy, step3Copy);
-      return;
     }
+
     // if we are not copying
     else {
       // change the current database back to the newly created one
       // and now that we have changed to the new db, we can move on to importing the data file
       db.changeDB(dbName);
-      return step4();
+      step4();
     }
   };
 
@@ -290,7 +302,7 @@ ipcMain.on('execute-query-tracked', (event, data: QueryType) => {
   const { queryString, queryCurrentSchema, queryLabel } = data;
 
   // initialize object to store all data to send to frontend
-  let frontendData = {
+  const frontendData = {
     queryString,
     queryCurrentSchema,
     queryLabel,
@@ -305,17 +317,19 @@ ipcMain.on('execute-query-tracked', (event, data: QueryType) => {
       frontendData.queryData = queryData.rows;
       if (!queryString.match(/create/i)) {
         // Run EXPLAIN (FORMAT JSON, ANALYZE)
-        db.query('EXPLAIN (FORMAT JSON, ANALYZE) ' + queryString).then((queryStats) => {
-          frontendData.queryStatistics = queryStats.rows;
+        db.query(`EXPLAIN (FORMAT JSON, ANALYZE) ${queryString}`).then(
+          (queryStats) => {
+            frontendData.queryStatistics = queryStats.rows;
 
-          (async function getListAsync() {
-            listObj = await db.getLists();
-            frontendData.lists = listObj;
-            event.sender.send('db-lists', listObj);
-            event.sender.send('return-execute-query', frontendData);
-            event.sender.send('async-complete');
-          })();
-        });
+            (async function getListAsync() {
+              listObj = await db.getLists();
+              frontendData.lists = listObj;
+              event.sender.send('db-lists', listObj);
+              event.sender.send('return-execute-query', frontendData);
+              event.sender.send('async-complete');
+            })();
+          }
+        );
       } else {
         // Handling for tracking a create table query, can't run explain/analyze on create statements
         (async function getListAsync() {
@@ -331,17 +345,17 @@ ipcMain.on('execute-query-tracked', (event, data: QueryType) => {
     });
 });
 
-interface dummyDataRequest {
+interface dummyDataRequestType {
   schemaName: string;
   dummyData: {};
 }
 
-ipcMain.on('generate-dummy-data', (event: any, data: dummyDataRequest) => {
+ipcMain.on('generate-dummy-data', (event: any, data: dummyDataRequestType) => {
   // send notice to front end that DD generation has been started
   event.sender.send('async-started');
 
   let schemaLayout: any;
-  let dummyDataRequest: dummyDataRequest = data;
+  const dummyDataRequest: dummyDataRequestType = data;
   let tableMatricesArray: any;
   let keyObject: any = 'Unresolved';
 
@@ -350,14 +364,24 @@ ipcMain.on('generate-dummy-data', (event: any, data: dummyDataRequest) => {
     keyObject = result;
     db.dropKeyColumns(keyObject).then(() => {
       db.addNewKeyColumns(keyObject).then(() => {
-        db.getSchemaLayout().then((result) => {
-          schemaLayout = result;
+        db.getSchemaLayout().then((schemaLayoutResult) => {
+          schemaLayout = schemaLayoutResult;
           // generate the dummy data and save it into matrices associated with table names
-          tableMatricesArray = generateDummyData(schemaLayout, dummyDataRequest, keyObject);
-          //iterate through tableMatricesArray to write individual .csv files
+          tableMatricesArray = generateDummyData(
+            schemaLayout,
+            dummyDataRequest,
+            keyObject
+          );
+          // iterate through tableMatricesArray to write individual .csv files
           for (const tableObject of tableMatricesArray) {
             // write all entries in tableMatrix to csv file
-            writeCSVFile(tableObject, schemaLayout, keyObject, dummyDataRequest, event);
+            writeCSVFile(
+              tableObject,
+              schemaLayout,
+              keyObject,
+              dummyDataRequest,
+              event
+            );
           }
         });
       });
