@@ -2,6 +2,7 @@
 const isMac = process.platform === 'darwin';
 
 const { app, shell } = require('electron');
+
 module.exports = [
   // { role: 'appMenu' }
   ...(isMac

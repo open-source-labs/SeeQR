@@ -107,19 +107,22 @@ class MainPanel extends Component<MainProps, MainState> {
   }
 
   render() {
+
+    const {currentSchema, lists, queries,  dbSize, loading} = this.state
+
     return (
       <div id="main-panel">
         <div>
-          <LoadingModal show={this.state.loading} />
+          <LoadingModal show={loading} />
         </div>
         <div id="main-left">
           <Tabs
-            currentSchema={this.state.currentSchema}
-            tabList={this.state.lists.databaseList}
-            queries={this.state.queries}
+            currentSchema={currentSchema}
+            tabList={lists.databaseList}
+            queries={queries}
             onClickTabItem={this.onClickTabItem}
-            tableList={this.state.lists.tableList}
-            databaseSize={this.state.dbSize}
+            tableList={lists.tableList}
+            databaseSize={dbSize}
           />
         </div>
         <div id="main-right">
