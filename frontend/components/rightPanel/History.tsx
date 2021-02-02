@@ -21,14 +21,14 @@ export class History extends Component<HistoryProps> {
     return this.props.queries.map((query, index) => {
       const { queryStatistics, querySchema, queryLabel } = query;
 
-      const { ['QUERY PLAN']: queryPlan } = queryStatistics[0];
+      const { 'QUERY PLAN': queryPlan } = queryStatistics[0];
 
       const {
         Plan,
-        ['Planning Time']: planningTime,
-        ['Execution Time']: executionTime,
+        'Planning Time': planningTime,
+        'Execution Time': executionTime,
       } = queryPlan[0];
-      const { ['Actual Rows']: actualRows, ['Actual Total Time']: actualTotalTime } = Plan;
+      const { 'Actual Rows': actualRows, 'Actual Total Time': actualTotalTime } = Plan;
 
       return (
         <tr key={index}>

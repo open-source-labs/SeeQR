@@ -1,6 +1,6 @@
 import { dialog } from 'electron';
 import React, { Component } from 'react';
-import { Compare } from './rightPanel/Compare';
+import Compare from './rightPanel/Compare';
 import History from './rightPanel/History';
 import Tabs from './leftPanel/Tabs';
 import LoadingModal from './LoadingModal';
@@ -63,7 +63,7 @@ class MainPanel extends Component<MainProps, MainState> {
         queryLabel,
       };
       // create copy of current queries array
-      let queries = this.state.queries.slice();
+      const queries = this.state.queries.slice();
       // push new query object into copy of queries array
       queries.push(newQuery);
       this.setState({ queries });
@@ -107,29 +107,36 @@ class MainPanel extends Component<MainProps, MainState> {
   }
 
   render() {
+    const { 
+      loading,
+      currentSchema,
+      queries,
+      dbSize,
+      lists: { databaseList, tableList }
+    } = this.state;
     return (
       <div id="main-panel">
         <div>
-          <LoadingModal show={this.state.loading} />
+          <LoadingModal show={loading} />
         </div>
         <div id="main-left">
           <Tabs
-            currentSchema={this.state.currentSchema}
-            tabList={this.state.lists.databaseList}
-            queries={this.state.queries}
+            currentSchema={currentSchema}
+            tabList={databaseList}
+            queries={queries}
             onClickTabItem={this.onClickTabItem}
-            tableList={this.state.lists.tableList}
-            databaseSize={this.state.dbSize}
+            tableList={tableList}
+            databaseSize={dbSize}
           />
         </div>
         <div id="main-right">
           <History
-            queries={this.state.queries}
-            currentSchema={this.state.currentSchema}
+            queries={queries}
+            currentSchema={currentSchema}
           />
           <Compare
-            queries={this.state.queries}
-            currentSchema={this.state.currentSchema}
+            queries={queries}
+            currentSchema={currentSchema}
           />
         </div>
       </div>
