@@ -236,3 +236,5 @@ export const Compare = (props: CompareProps) => {
     </div>
   );
 };
+
+export default Compare;

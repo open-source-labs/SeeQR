@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Splash } from './Splash';
+import Splash from './Splash';
 import MainPanel from './MainPanel';
 
 const { dialog } = require('electron').remote;
@@ -13,7 +13,7 @@ type state = {
 
 type AppProps = {};
 
-export class App extends Component<AppProps, state> {
+export default class App extends Component<AppProps, state> {
   constructor(props: AppProps) {
     super(props);
     this.handleFileClick = this.handleFileClick.bind(this);

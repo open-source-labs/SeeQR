@@ -6,7 +6,7 @@ type SplashProps = {
   handleSkipClick: any;
 };
 
-export class Splash extends Component<SplashProps> {
+export default class Splash extends Component<SplashProps> {
   // a dialogue menu with retrieve the file path
   constructor(props: SplashProps) {
     super(props);

@@ -10,7 +10,8 @@ const LoadingModal = (props) => {
         <ReactLoading type="cylon" color="#6cbba9" />
       </div>
     );
-  } else return null;
+  }
+  return null;
 };
 
 export default LoadingModal;
