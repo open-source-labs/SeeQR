@@ -1,7 +1,10 @@
-// Import parts of electron to use
-import { app, BrowserWindow, Menu } from 'electron';
-// import { join } from 'path';
-import url from 'url';
+/**
+ * The purpose of this file is to program how electron manages the window it loads on the OS
+ */
+
+/**
+ * Election-Packager can be used to compile the dmg and exe file
+ */
 
 // all channels live here - this format signals that we want to import the code
 // even if we're not calling any of the functions. If we were to import an
@@ -9,17 +12,14 @@ import url from 'url';
 // thinks we're not using it and skips the import.
 import './channels';
 
-const path = require('path');
-
 /**
- * **********************************************************
- *********** PACKAGE ELECTRON APP FOR DEPLOYMENT ***********
- ***********************************************************
+  Boilerplate code was copdied from the quick start guide (Create the main script file). Some additional changes were made.
+  Some of the comments were pasted from the boiler plate code.
  */
-
-// Uncomment to package electron app. Ensures path is correct for MacOS within inherited shell.
-// const fixPath = require('fix-path');
-// fixPath();
+const { app, BrowserWindow, Menu } = require('electron');
+const path = require('path');
+const url = require('url');
+const MainMenu = require('./mainMenu');
 
 /**
  * **********************************************************
@@ -31,18 +31,22 @@ const path = require('path');
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow: any;
 
-const mainMenu = Menu.buildFromTemplate(require('./mainMenu'));
+/**
+ * Need to understand mainMenu, dev and dev if statements
+ * Also, do we want to chance the name mainWindow, it refers to all the window objects does this include modals that can
+ * pop-up? or is it referring to the main window object
+ */
+const mainMenuBuiltFromTemplate = Menu.buildFromTemplate(MainMenu);
 // Keep a reference for dev mode
 let dev = false;
 if (
   process.env.NODE_ENV !== undefined &&
   process.env.NODE_ENV === 'development'
-) {
+)
   dev = true;
-}
 
-// Create browser window
 function createWindow() {
+  // Create browser window by adding specifications
   mainWindow = new BrowserWindow({
     width: 1800,
     height: 1400,
@@ -54,12 +58,25 @@ function createWindow() {
     icon: path.join(__dirname, '../../frontend/assets/images/seeqr_dock.png'),
   });
 
+  /**
+   * This platform is checking to see if the OS is Mac, and setting the icon
+   *
+   * Do we need this? we will need something similar to windows?
+   *
+   * */
   if (process.platform === 'darwin') {
     app.dock.setIcon(
       path.join(__dirname, '../../frontend/assets/images/seeqr_dock.png')
     );
   }
 
+  /**
+   * indexPath is used to determine which type environment we are in and how to load the window
+   * For dev, we are using localhost:8080
+   * For Prod, we are referring to the index.html file that is build after running webpack
+   * Need to understand how the index.html file is being created when the Dev environment spins up
+   * -- should be a webpack thing
+   */
   // Load index.html of the app
   let indexPath;
   if (dev && process.argv.indexOf('--noDevServer') === -1) {
@@ -69,8 +86,12 @@ function createWindow() {
       pathname: 'index.html',
       slashes: true,
     });
-    mainWindow.webContents.openDevTools();
-    Menu.setApplicationMenu(mainMenu);
+    /**
+     * Not sure why dev tools opens in dev environment when its commented out...
+     */
+    // Open the Dev Tools when in Dev Environment
+    // mainWindow.webContents.openDevTools();
+    Menu.setApplicationMenu(mainMenuBuiltFromTemplate);
   } else {
     // In production mode, load the bundled version of index.html inside the dist folder.
     indexPath = url.format({
@@ -82,15 +103,24 @@ function createWindow() {
 
   mainWindow.loadURL(indexPath);
 
+  /**
+   * Additional code added, is this necessary?
+   */
   // Don't show until we are ready and loaded
   mainWindow.once('ready-to-show', () => {
     mainWindow.show();
   });
 }
 
-app.on('before-quit', () => {
-  // future iterations should add functionality to selete .sql and .csv files from a user's computer before quitting the app
-});
+/**
+ * General Comment - the app.on functionality is specific to Mac... need to reconfigure so it also works on windows...
+ */
+
+// future iterations should add functionality to delete .sql and .csv files from a user's computer before quitting the app
+/**
+ * Need to explore app.on this can be used to delete the .sql file...
+ */
+app.on('before-quit', () => {});
 
 // Invoke createWindow to create browser windows after Electron has been initialized.
 // Some APIs can only be used after this event occurs.
@@ -113,4 +143,17 @@ app.on('activate', () => {
   }
 });
 
+/**
+ * **********************************************************
+ *********** PACKAGE ELECTRON APP FOR DEPLOYMENT ***********
+ ***********************************************************
+ */
+
+// Uncomment to package electron app. Ensures path is correct for MacOS within inherited shell.
+// const fixPath = require('fix-path');
+// fixPath();
+
+/**
+ * main.ts is the start file for electron, why are we exporting it?????
+ */
 export default mainWindow;
