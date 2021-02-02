@@ -1,13 +1,13 @@
 // Import parts of electron to use
 import { app, BrowserWindow, Menu } from 'electron';
-import { join } from 'path';
-import { format } from 'url';
+// import { join } from 'path';
+import url from 'url';
 
 // all channels live here - this format signals that we want to import the code
 // even if we're not calling any of the functions. If we were to import an
 // object from channels and not call any of the functions in this file, webpack
 // thinks we're not using it and skips the import.
-import './channels'; 
+import './channels';
 
 const path = require('path');
 
@@ -63,7 +63,7 @@ function createWindow() {
   // Load index.html of the app
   let indexPath;
   if (dev && process.argv.indexOf('--noDevServer') === -1) {
-    indexPath = format({
+    indexPath = url.format({
       protocol: 'http:',
       host: 'localhost:8080',
       pathname: 'index.html',
@@ -73,9 +73,9 @@ function createWindow() {
     Menu.setApplicationMenu(mainMenu);
   } else {
     // In production mode, load the bundled version of index.html inside the dist folder.
-    indexPath = format({
+    indexPath = url.format({
       protocol: 'file:',
-      pathname: join(__dirname, '../../dist', 'index.html'),
+      pathname: path.join(__dirname, '../../dist', 'index.html'),
       slashes: true,
     });
   }
