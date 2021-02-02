@@ -80,9 +80,6 @@ ipcMain.on('return-db-list', (event, dbName) => {
   db.getLists().then((data) => event.sender.send('db-lists', data, dbSize));
 });
 
-// Listen for skip button on Splash page.
-ipcMain.on('skip-file-upload', () => {});
-
 // Listen for database changes sent from the renderer upon changing tabs.
 ipcMain.on('change-db', (event, dbName) => {
   db.changeDB(dbName);

@@ -25,7 +25,7 @@ export default class App extends Component<AppProps, state> {
     openSplash: true,
   };
 
-  handleFileClick(event: ClickEvent) {
+  handleFileClick() {
     dialog
       .showOpenDialog({
         properties: ['openFile'],
@@ -47,8 +47,7 @@ export default class App extends Component<AppProps, state> {
   }
 
   // Skips file upload and moves to main page.
-  handleSkipClick(event: ClickEvent) {
-    ipcRenderer.send('skip-file-upload');
+  handleSkipClick() {
     this.setState({ openSplash: false });
   }
 
@@ -62,7 +61,6 @@ export default class App extends Component<AppProps, state> {
       <div>
         {this.state.openSplash ? (
           <Splash
-            openSplash={this.state.openSplash}
             handleFileClick={this.handleFileClick}
             handleSkipClick={this.handleSkipClick}
           />
