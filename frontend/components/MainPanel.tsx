@@ -135,7 +135,7 @@ class MainPanel extends Component<MainProps, MainState> {
         </div>
         <div id="main-right">
           <History queries={queries} />
-          <Compare queries={queries} currentSchema={currentSchema} />
+          <Compare queries={queries} />
         </div>
       </div>
     );
