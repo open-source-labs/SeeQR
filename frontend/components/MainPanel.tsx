@@ -1,4 +1,3 @@
-import { dialog } from 'electron';
 import React, { Component } from 'react';
 import Compare from './rightPanel/Compare';
 import History from './rightPanel/History';
@@ -7,14 +6,16 @@ import LoadingModal from './LoadingModal';
 
 const { ipcRenderer } = window.require('electron');
 
-type MainState = {
-  queries: {
+type Query = {
     queryString: string;
     queryData: {}[];
     queryStatistics: any;
     querySchema: string;
     queryLabel: string;
-  }[];
+}
+
+type MainState = {
+  queries: Query[];
   currentSchema: string;
   lists: any;
   loading: boolean;
@@ -26,18 +27,20 @@ class MainPanel extends Component<MainProps, MainState> {
   constructor(props: MainProps) {
     super(props);
     this.onClickTabItem = this.onClickTabItem.bind(this);
+
+    this.state = {
+      queries: [],
+      // currentSchema will change depending on which Schema Tab user selects
+      // currentSchema: 'defaultDB',
+      currentSchema: 'defaultDB',
+      lists: {
+        databaseList: ['defaultDB'],
+        tableList: [],
+      },
+      loading: false,
+      dbSize: '',
+    };
   }
-  state: MainState = {
-    queries: [],
-    // currentSchema will change depending on which Schema Tab user selects
-    currentSchema: 'defaultDB',
-    lists: {
-      databaseList: ['defaultDB'],
-      tableList: [],
-    },
-    loading: false,
-    dbSize: '',
-  };
 
   componentDidMount() {
     ipcRenderer.send('return-db-list');
@@ -83,7 +86,7 @@ class MainPanel extends Component<MainProps, MainState> {
       }
     );
 
-    ipcRenderer.on('switch-to-new', (event: any) => {
+    ipcRenderer.on('switch-to-new', () => {
       const newSchemaIndex = this.state.lists.databaseList.length - 1;
       this.setState({
         currentSchema: this.state.lists.databaseList[newSchemaIndex],
@@ -91,11 +94,11 @@ class MainPanel extends Component<MainProps, MainState> {
     });
 
     // Renders the loading modal during async functions.
-    ipcRenderer.on('async-started', (event: any) => {
+    ipcRenderer.on('async-started', () => {
       this.setState({ loading: false }); // ** James/Katie - changing to false for now to avoid loading modal until we can figure out later why the async complete listener isnt kicking in
     });
 
-    ipcRenderer.on('async-complete', (event: any) => {
+    ipcRenderer.on('async-complete', () => {
       this.setState({ loading: false });
     });
   }
@@ -107,12 +110,12 @@ class MainPanel extends Component<MainProps, MainState> {
   }
 
   render() {
-    const { 
+    const {
       loading,
       currentSchema,
       queries,
       dbSize,
-      lists: { databaseList, tableList }
+      lists: { databaseList, tableList },
     } = this.state;
 
     return (
@@ -131,14 +134,8 @@ class MainPanel extends Component<MainProps, MainState> {
           />
         </div>
         <div id="main-right">
-          <History
-            queries={queries}
-            currentSchema={currentSchema}
-          />
-          <Compare
-            queries={queries}
-            currentSchema={currentSchema}
-          />
+          <History queries={queries} />
+          <Compare queries={queries} currentSchema={currentSchema} />
         </div>
       </div>
     );

@@ -8,30 +8,30 @@ type HistoryProps = {
     querySchema: string;
     queryLabel: string;
   }[];
-  currentSchema: string;
 };
 
 // Top left panel component displaying previously run queries
-export class History extends Component<HistoryProps> {
-  constructor(props: HistoryProps) {
-    super(props);
-  }
-
+class History extends Component<HistoryProps> {
   renderTableHistory() {
-    return this.props.queries.map((query, index) => {
+
+    const { queries } = this.props
+
+    return queries.map((query) => {
       const { queryStatistics, querySchema, queryLabel } = query;
 
+      // queryStatistics are the rows returned from running EXPLAIN (FORMAT JSON, ANALYZE).
+      // Column containing json representation of plan is called QUERY PLAN
       const { 'QUERY PLAN': queryPlan } = queryStatistics[0];
 
       const {
-        Plan,
-        'Planning Time': planningTime,
-        'Execution Time': executionTime,
+        Plan : {'Actual Rows': actualRows, 'Actual Total Time' : actualTotalTime}
+        // Plan,
+        // 'Planning Time': planningTime,
+        // 'Execution Time': executionTime,
       } = queryPlan[0];
-      const { 'Actual Rows': actualRows, 'Actual Total Time': actualTotalTime } = Plan;
 
       return (
-        <tr key={index}>
+        <tr key={queryLabel}>
           <td id="query-label">{queryLabel}</td>
           <td id="schema-name">{querySchema}</td>
           <td id="actual-rows">{actualRows}</td>
@@ -42,8 +42,6 @@ export class History extends Component<HistoryProps> {
   }
 
   render() {
-    const { queries } = this.props;
-
     return (
       <div id="history-panel">
         <h3>History</h3>
@@ -51,10 +49,10 @@ export class History extends Component<HistoryProps> {
           <table className="scroll-box">
             <tbody>
               <tr className="top-row">
-                <td>{'Query Label'}</td>
-                <td>{'Schema'}</td>
-                <td>{'Total Rows'}</td>
-                <td>{'Total Time'}</td>
+                <td>Query Label</td>
+                <td>Schema</td>
+                <td>Total Rows</td>
+                <td>Total Time</td>
               </tr>
               {this.renderTableHistory()}
             </tbody>
