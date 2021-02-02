@@ -1,6 +1,6 @@
 import { dialog } from 'electron';
 import React, { Component } from 'react';
-import { Compare } from './rightPanel/Compare';
+import Compare from './rightPanel/Compare';
 import History from './rightPanel/History';
 import Tabs from './leftPanel/Tabs';
 import LoadingModal from './LoadingModal';
@@ -63,7 +63,7 @@ class MainPanel extends Component<MainProps, MainState> {
         queryLabel,
       };
       // create copy of current queries array
-      let queries = this.state.queries.slice();
+      const queries = this.state.queries.slice();
       // push new query object into copy of queries array
       queries.push(newQuery);
       this.setState({ queries });
@@ -107,8 +107,13 @@ class MainPanel extends Component<MainProps, MainState> {
   }
 
   render() {
-
-    const {currentSchema, lists, queries,  dbSize, loading} = this.state
+    const { 
+      loading,
+      currentSchema,
+      queries,
+      dbSize,
+      lists: { databaseList, tableList }
+    } = this.state;
 
     return (
       <div id="main-panel">
@@ -118,21 +123,21 @@ class MainPanel extends Component<MainProps, MainState> {
         <div id="main-left">
           <Tabs
             currentSchema={currentSchema}
-            tabList={lists.databaseList}
+            tabList={databaseList}
             queries={queries}
             onClickTabItem={this.onClickTabItem}
-            tableList={lists.tableList}
+            tableList={tableList}
             databaseSize={dbSize}
           />
         </div>
         <div id="main-right">
           <History
-            queries={this.state.queries}
-            currentSchema={this.state.currentSchema}
+            queries={queries}
+            currentSchema={currentSchema}
           />
           <Compare
-            queries={this.state.queries}
-            currentSchema={this.state.currentSchema}
+            queries={queries}
+            currentSchema={currentSchema}
           />
         </div>
       </div>

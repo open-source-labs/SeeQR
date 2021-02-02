@@ -83,7 +83,8 @@ module.exports = {
   },
   target: 'electron-renderer',
   devServer: {
-    contentBase: path.resolve(__dirname, '/tsCompiled/frontend'),
+    // contentBase: path.resolve(__dirname, '/tsCompiled/frontend'),
+    contentBase: path.resolve(__dirname, '/dist/'),
     host: 'localhost',
     port: '8080',
     hot: true,
