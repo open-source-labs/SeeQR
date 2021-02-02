@@ -114,6 +114,7 @@ class MainPanel extends Component<MainProps, MainState> {
       dbSize,
       lists: { databaseList, tableList }
     } = this.state;
+
     return (
       <div id="main-panel">
         <div>

@@ -1,36 +1,43 @@
 // Import parts of electron to use
-import { app, BrowserWindow, ipcMain, Menu } from 'electron';
-import { appendFile } from 'fs/promises';
+import { app, BrowserWindow, Menu } from 'electron';
 import { join } from 'path';
 import { format } from 'url';
-import './channels'; // all channels live here - this format signals that we want to import the code even if we're not calling any of the functions. If we were to import an object from channels and not call any of the functions in this file, webpack thinks we're not using it and skips the import.
 
-const { exec } = require('child_process');
-const appMenu = require('./mainMenu'); // use appMenu to add options in top menu bar of app
+// all channels live here - this format signals that we want to import the code
+// even if we're not calling any of the functions. If we were to import an
+// object from channels and not call any of the functions in this file, webpack
+// thinks we're not using it and skips the import.
+import './channels'; 
+
 const path = require('path');
 
-/************************************************************
+/**
+ * **********************************************************
  *********** PACKAGE ELECTRON APP FOR DEPLOYMENT ***********
- ************************************************************/
+ ***********************************************************
+ */
 
 // Uncomment to package electron app. Ensures path is correct for MacOS within inherited shell.
 // const fixPath = require('fix-path');
 // fixPath();
 
-/************************************************************
+/**
+ * **********************************************************
  ****************** CREATE & CLOSE WINDOW ******************
- ************************************************************/
+ ***********************************************************
+ */
+
 // Keep a global reference of the window objects, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow: any;
 
-//global variable to determine whether or not containers are still running
-let pruned: boolean = false;
-
-let mainMenu = Menu.buildFromTemplate(require('./mainMenu'));
+const mainMenu = Menu.buildFromTemplate(require('./mainMenu'));
 // Keep a reference for dev mode
 let dev = false;
-if (process.env.NODE_ENV !== undefined && process.env.NODE_ENV === 'development') {
+if (
+  process.env.NODE_ENV !== undefined &&
+  process.env.NODE_ENV === 'development'
+) {
   dev = true;
 }
 
@@ -48,7 +55,9 @@ function createWindow() {
   });
 
   if (process.platform === 'darwin') {
-    app.dock.setIcon(path.join(__dirname, '../../frontend/assets/images/seeqr_dock.png'));
+    app.dock.setIcon(
+      path.join(__dirname, '../../frontend/assets/images/seeqr_dock.png')
+    );
   }
 
   // Load index.html of the app
@@ -74,12 +83,12 @@ function createWindow() {
   mainWindow.loadURL(indexPath);
 
   // Don't show until we are ready and loaded
-  mainWindow.once('ready-to-show', (event) => {
+  mainWindow.once('ready-to-show', () => {
     mainWindow.show();
   });
 }
 
-app.on('before-quit', (event: any) => {
+app.on('before-quit', () => {
   // future iterations should add functionality to selete .sql and .csv files from a user's computer before quitting the app
 });
 

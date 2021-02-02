@@ -5,7 +5,7 @@ const { spawn } = require('child_process');
 module.exports = {
   entry: './frontend/index.tsx',
   mode: process.env.NODE_ENV,
-  devtool: 'eval-source-map',
+  devtool: 'source-map',
   output: {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'dist'),
