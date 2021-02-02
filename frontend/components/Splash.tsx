@@ -15,7 +15,7 @@ export class Splash extends Component<SplashProps> {
   render() {
     return (
       <div id="splash-page">
-        <div className="logo"></div>
+        <div className="logo" />
 
         <h4>Welcome!</h4>
         <div className="splash-buttons">
