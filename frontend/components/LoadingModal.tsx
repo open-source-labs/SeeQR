@@ -1,9 +1,9 @@
-import React, { Component } from 'react';
+import React from 'react';
 import ReactLoading from 'react-loading';
 
 // "Loading" pop up renders whenever async functions are called
-const LoadingModal = (props) => {
-  if (props.show) {
+const LoadingModal = ({ show }: { show: boolean }) => {
+  if (show) {
     return (
       <div id="loading-modal" className="modal">
         <h3>LOADING...</h3>
