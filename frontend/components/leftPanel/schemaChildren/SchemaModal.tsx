@@ -27,9 +27,7 @@ type state = {
 class SchemaModal extends Component<SchemaModalProps, state> {
   constructor(props: SchemaModalProps) {
     super(props);
-    this.handleSchemaSubmit = this.handleSchemaSubmit.bind(this);
     this.handleSchemaFilePath = this.handleSchemaFilePath.bind(this);
-    this.handleSchemaEntry = this.handleSchemaEntry.bind(this);
     this.handleSchemaName = this.handleSchemaName.bind(this);
     this.selectHandler = this.selectHandler.bind(this);
     this.handleCopyData = this.handleCopyData.bind(this);
@@ -46,6 +44,7 @@ class SchemaModal extends Component<SchemaModalProps, state> {
     schemaEntry: '',
     redirect: false,
     dbCopyName: 'Select Instance',
+    // copy determines whether on a schema copy op the data should be copied as well
     copy: false,
   };
 
@@ -76,6 +75,7 @@ class SchemaModal extends Component<SchemaModalProps, state> {
         const schemaObj = {
           schemaName,
           schemaFilePath,
+          // TODO: schemaEntry seems to be redundant
           schemaEntry: '',
         };
         if (!result['canceled']) {
@@ -89,23 +89,6 @@ class SchemaModal extends Component<SchemaModalProps, state> {
       .catch((err: object) => {
         console.log('Error in handleSchemaFilePath method of SchemaModal.tsx.', err);
       });
-  }
-
-  // When schema script is inserted, file path is cleared set dialog to warn user.
-  handleSchemaEntry(event: any) {
-    this.setState({ schemaEntry: event.target.value, schemaFilePath: '' });
-  }
-
-  handleSchemaSubmit(event: any) {
-    event.preventDefault();
-    const { schemaName, schemaFilePath, schemaEntry } = this.state;
-
-    const schemaObj = {
-      schemaName,
-      schemaFilePath,
-      schemaEntry,
-    };
-    ipcRenderer.send('input-schema', schemaObj);
   }
 
   handleCopyData(event: any) {
@@ -134,13 +117,11 @@ class SchemaModal extends Component<SchemaModalProps, state> {
     this.setState({ dbCopyName: eventKey }); //
   };
 
-  dropDownList = () => {
-    return this.props.tabList.map((db, index) => (
-      <Dropdown.Item key={index} eventKey={db} className="queryItem">
-        {db}
-      </Dropdown.Item>
+  dropDownList = () => this.props.tabList.map((db, index) => (
+    <Dropdown.Item key={index} eventKey={db} className="queryItem">
+      {db}
+    </Dropdown.Item>
     ));
-  };
 
   render() {
     if (this.props.show === false) {
@@ -162,7 +143,7 @@ class SchemaModal extends Component<SchemaModalProps, state> {
         <div className="load-schema">
           <h3>Upload New Schema:</h3>
           <div className="modal-buttons">
-            <button id="load-button" onClick={this.handleSchemaFilePath}>
+            <button id="load-button" type="button" onClick={this.handleSchemaFilePath}>
               Select File
             </button>
           </div>
@@ -186,13 +167,14 @@ class SchemaModal extends Component<SchemaModalProps, state> {
             name="Data"
             onClick={this.handleCopyData}
           />
-          <button id="copy-button" className="modal-buttons" onClick={this.handleCopyFilePath}>
+          <button id="copy-button" type="button" className="modal-buttons" onClick={this.handleCopyFilePath}>
             Make Copy
           </button>
         </div>
 
         <button
           className="close-button"
+          type="button"
           onClick={() => {
             this.props.onClose();
             this.setState({ dbCopyName: 'Select Instance' });
