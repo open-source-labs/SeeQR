@@ -4,6 +4,7 @@
     "es2021": true,
     "node": true
   },
+  "globals": { "JSX": "readonly" },
   "extends": [
     "plugin:react/recommended",
     "airbnb",

@@ -1,12 +1,9 @@
 import React, { Component } from 'react';
-import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown';
 
 const { dialog } = require('electron').remote;
 
 const { ipcRenderer } = window.require('electron');
-
-type ClickEvent = React.MouseEvent<HTMLElement>;
 
 type DummyDataPanelProps = {
   currentSchema: string;
@@ -28,16 +25,15 @@ class DummyDataPanel extends Component<DummyDataPanelProps, state> {
     this.changeRowNumber = this.changeRowNumber.bind(this);
     this.deleteRow = this.deleteRow.bind(this);
     this.submitDummyData = this.submitDummyData.bind(this);
+
+    this.state = {
+      currentTable: 'select table',
+      dataInfo: {},
+      rowNumber: '',
+    };
   }
 
-  state: state = {
-    currentTable: 'select table',
-    dataInfo: {},
-    rowNumber: '',
-  };
-
-  // handler to change the dropdown display to the selected table name
-  selectHandler = (eventKey, e: React.SyntheticEvent<unknown>) => {
+  selectHandler = (eventKey) => {
     if (eventKey !== 'none') {
       this.setState({ currentTable: eventKey });
     }
@@ -99,7 +95,8 @@ class DummyDataPanel extends Component<DummyDataPanelProps, state> {
         }));
       } else {
         const dataInfo = {};
-        this.props.tableList.forEach((currTable) => {
+        const { tableList } = this.props;
+        tableList.forEach((currTable) => {
           if (currTable !== 'all') {
             dataInfo[currTable] = number;
           }
@@ -132,33 +129,38 @@ class DummyDataPanel extends Component<DummyDataPanelProps, state> {
   };
 
   createRow = () => {
-    //once state updates on click, render the table row from the object
+    // once state updates on click, render the table row from the object
     const newRows: JSX.Element[] = [];
-    for (let key in this.state.dataInfo) {
-      if (this.state.dataInfo[key]) {
+    const { dataInfo } = this.state;
+
+    Object.keys(dataInfo).forEach((key) => {
+      if (dataInfo[key]) {
         newRows.push(
           <tr className="dummy-table-row" key={key}>
             <td>{key}</td>
-            <td>{this.state.dataInfo[key]}</td>
+            <td>{dataInfo[key]}</td>
             <td>
-              <button id={key} onClick={this.deleteRow}>
+              <button type="button" id={key} onClick={this.deleteRow}>
                 x
               </button>
             </td>
           </tr>
         );
       }
-    }
+    });
+
     return newRows;
   };
 
-  submitDummyData = (event: any) => {
+  submitDummyData = () => {
+    const { currentSchema } = this.props;
+    const { dataInfo } = this.state;
     // check if there are requested dummy data values
-    if (Object.keys(this.state.dataInfo).length) {
+    if (Object.keys(dataInfo).length) {
       // creates a dummyDataRequest object with schema name and table name/rows
       const dummyDataRequest = {
-        schemaName: this.props.currentSchema,
-        dummyData: this.state.dataInfo,
+        schemaName: currentSchema,
+        dummyData: dataInfo,
       };
       ipcRenderer.send('generate-dummy-data', dummyDataRequest);
       // reset state to clear the dummy data panel's table
@@ -167,23 +169,30 @@ class DummyDataPanel extends Component<DummyDataPanelProps, state> {
   };
 
   render() {
+    const { currentTable, rowNumber } = this.state;
     return (
       <div className="dummy-data-panel">
         <h3>Generate Dummy Data</h3>
         <p>Select table and number of rows:</p>
         <div className="dummy-data-select">
           <Dropdown onSelect={this.selectHandler}>
-            <Dropdown.Toggle>{this.state.currentTable}</Dropdown.Toggle>
-            <Dropdown.Menu className="DD-Dropdown">{this.dropDownList()}</Dropdown.Menu>
+            <Dropdown.Toggle>{currentTable}</Dropdown.Toggle>
+            <Dropdown.Menu className="DD-Dropdown">
+              {this.dropDownList()}
+            </Dropdown.Menu>
           </Dropdown>
           <input
             id="dummy-rows-input"
             type="text"
             placeholder="number of rows..."
-            value={this.state.rowNumber}
+            value={rowNumber}
             onChange={this.changeRowNumber}
           />
-          <button id="dummy-rows-button" onClick={this.addToTable}>
+          <button
+            id="dummy-rows-button"
+            type="button"
+            onClick={this.addToTable}
+          >
             add to table
           </button>
         </div>
@@ -200,7 +209,9 @@ class DummyDataPanel extends Component<DummyDataPanelProps, state> {
           </table>
         </div>
         <div id="generate-dummy-data">
-          <button onClick={this.submitDummyData}>Generate Dummy Data</button>
+          <button type="button" onClick={this.submitDummyData}>
+            Generate Dummy Data
+          </button>
         </div>
       </div>
     );
