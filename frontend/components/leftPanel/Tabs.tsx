@@ -22,6 +22,7 @@ export default class Tabs extends Component<TabsProps> {
     super(props);
     this.showModal = this.showModal.bind(this);
   }
+
   state: state = {
     show: false,
   };
@@ -35,21 +36,32 @@ export default class Tabs extends Component<TabsProps> {
       this.setState({
         currentSchema: returnedLists,
       });
-      this.onClose(event);
+      this.onClose();
     });
   }
 
-  showModal = (event: any) => {
+  showModal = () => {
     this.setState({ show: true });
   };
 
-  onClose = (event: any) => {
+  onClose = () => {
     this.setState({ show: false });
   };
 
+  generateTabs() {
+    const { tabList, currentSchema , onClickTabItem} = this.props;
+    return tabList.map((tab) => (
+      <Tab
+        currentSchema={currentSchema}
+        key={tab}
+        label={tab}
+        onClickTabItem={onClickTabItem}
+      />
+    ));
+  }
+
   render() {
     const {
-      onClickTabItem,
       tabList,
       currentSchema,
       queries,
@@ -61,25 +73,16 @@ export default class Tabs extends Component<TabsProps> {
     );
 
     return (
+      // TODO: change id for equivalent class
       <div className="tabs" id="main-right">
         <ol className="tab-list">
-          <span>
-            {tabList.map((tab, index) => {
-              return (
-                <Tab
-                  currentSchema={currentSchema}
-                  key={index}
-                  label={tab}
-                  onClickTabItem={onClickTabItem}
-                />
-              );
-            })}
-          </span>
+          <span>{this.generateTabs()}</span>
           <span>
             <button
               id="input-schema-button"
+              type="button"
               onClick={(e) => {
-                this.showModal(e);
+                this.showModal();
               }}
             >
               +
