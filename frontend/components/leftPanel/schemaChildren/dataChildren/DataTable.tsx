@@ -1,5 +1,22 @@
 import React, { Component } from 'react';
 
+type RenderRowProps = {
+  data: any;
+  keys: any;
+};
+
+// Returns each cell within table
+const RenderRow = (props: RenderRowProps) => {
+  const { data, keys } = props;
+  return keys.map((header, index) => {
+    // if the value of a row is undefined, then go to next iteration
+    if (data[header] === undefined || data[header] === null) return;
+    // turn all values in data object to string or number
+    data[header] = data[header].toString();
+    return <td key={index}>{data[header]}</td>;
+  });
+};
+
 type TableProps = {
   queries: {
     queryString: string;
@@ -9,6 +26,7 @@ type TableProps = {
     queryLabel: string;
   }[];
 };
+
 export default class Table extends Component<TableProps> {
   constructor(props) {
     super(props);
@@ -44,7 +62,7 @@ export default class Table extends Component<TableProps> {
     return items.map((row) => (
       <tr key={row.toString()}>
         <RenderRow data={row} keys={keys} />
-        </tr>
+      </tr>
     ));
   }
 
@@ -62,20 +80,3 @@ export default class Table extends Component<TableProps> {
   }
 }
 
-type RenderRowProps = {
-  data: any;
-  keys: any;
-  key: any;
-};
-
-// Returns each cell within table
-const RenderRow = (props: RenderRowProps) => {
-  const { data, keys } = props;
-  return keys.map((header, index) => {
-    // if the value of a row is undefined, then go to next iteration
-    if (data[header] === undefined || data[header] === null) return;
-    // turn all values in data object to string or number
-    data[header] = data[header].toString();
-    return <td key={index}>{data[header]}</td>;
-  });
-};

@@ -2,7 +2,7 @@ import React from 'react';
 import Data from './schemaChildren/Data';
 import Query from './schemaChildren/Query';
 
-type Query = {
+type QueryType = {
   queryString: string;
   queryData: {}[];
   queryStatistics: any;
@@ -11,7 +11,7 @@ type Query = {
 };
 
 type SchemaContainerProps = {
-  queries: Query[];
+  queries: QueryType[];
   currentSchema: string;
   tableList: string[];
   databaseSize: string;
