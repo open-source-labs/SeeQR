@@ -29,7 +29,8 @@
       "error",
       "ignorePackages",
       { "js": "never", "jsx": "never", "ts": "never", "tsx": "never" }
-    ]
+    ],
+    "jsx-a11y/label-has-associated-control": "off"
   },
   "root": true
 }
