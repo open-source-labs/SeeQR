@@ -1,3 +1,12 @@
+/**
+ * Note: I had to manually create the postgres user via terminal by running the following command
+ *    CREATE USER postgres SUPERUSER;
+ * Also, postgres needed to change from 'postgres-#' to 'postgres=#' before I could make updates
+ *
+ * Also, when the .sql script was imported, I had to run the following comment to delete the database
+ *    DROP DATABASE tables;
+ */
+
 const { Pool } = require('pg');
 const { getPrimaryKeys, getForeignKeys } = require('./DummyD/foreign_key_info');
 
@@ -212,12 +221,12 @@ module.exports = {
             schemaLayout.tableNames.push(tables.rows[i].table_name);
           }
           const promiseArray: any = [];
-          for (let tableName of schemaLayout.tableNames) {
+          for (const tableName of schemaLayout.tableNames) {
             promiseArray.push(getColumnObjects(tableName));
           }
-          //we resolve all of the promises for the data info, and are returned an array of column data objects
+          // we resolve all of the promises for the data info, and are returned an array of column data objects
           Promise.all(promiseArray).then((columnInfo) => {
-            //here, we create a key for each table name and assign the array of column objects to the corresponding table name
+            // here, we create a key for each table name and assign the array of column objects to the corresponding table name
             for (let i = 0; i < columnInfo.length; i += 1) {
               schemaLayout.tables[schemaLayout.tableNames[i]] = columnInfo[i];
             }

@@ -2,29 +2,21 @@
  * The purpose of this file is to program how electron manages the window it loads on the OS
  */
 
-/**
- * Election-Packager can be used to compile the dmg and exe file
- */
-
-// all channels live here - this format signals that we want to import the code
-// even if we're not calling any of the functions. If we were to import an
-// object from channels and not call any of the functions in this file, webpack
-// thinks we're not using it and skips the import.
-import './channels';
-
-/**
-  Boilerplate code was copdied from the quick start guide (Create the main script file). Some additional changes were made.
-  Some of the comments were pasted from the boiler plate code.
- */
 const { app, BrowserWindow, Menu } = require('electron');
 const path = require('path');
 const url = require('url');
 const MainMenu = require('./mainMenu');
-
+require('./channels');
 /**
- * **********************************************************
- ****************** CREATE & CLOSE WINDOW ******************
- ***********************************************************
+ * Explore the comment below on channels and see if its valid
+
+    all channels live here - this format signals that we want to import the code
+    even if we're not calling any of the functions. If we were to import an
+    object from channels and not call any of the functions in this file, webpack
+    thinks we're not using it and skips the import.
+    
+    Previous line of code
+    import './channels';
  */
 
 // Keep a global reference of the window objects, if you don't, the window will
@@ -32,7 +24,7 @@ const MainMenu = require('./mainMenu');
 let mainWindow: any;
 
 /**
- * Need to understand mainMenu, dev and dev if statements
+ * Need to understand dev and dev if statements
  * Also, do we want to chance the name mainWindow, it refers to all the window objects does this include modals that can
  * pop-up? or is it referring to the main window object
  */
@@ -63,6 +55,8 @@ function createWindow() {
    *
    * Do we need this? we will need something similar to windows?
    *
+   * Adding icon to the menu bar on mac (bar at the bottom)
+   *
    * */
   if (process.platform === 'darwin') {
     app.dock.setIcon(
@@ -86,9 +80,7 @@ function createWindow() {
       pathname: 'index.html',
       slashes: true,
     });
-    /**
-     * Not sure why dev tools opens in dev environment when its commented out...
-     */
+
     // Open the Dev Tools when in Dev Environment
     // mainWindow.webContents.openDevTools();
     Menu.setApplicationMenu(mainMenuBuiltFromTemplate);
@@ -126,7 +118,7 @@ app.on('before-quit', () => {});
 // Some APIs can only be used after this event occurs.
 app.on('ready', createWindow);
 
-// Quit when all windows are closed.
+// Quit when all windows are closed for Windows and Linux
 app.on('window-all-closed', () => {
   // On macOS it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
@@ -136,6 +128,10 @@ app.on('window-all-closed', () => {
 });
 
 app.on('activate', () => {
+  /**
+   * Note they never turn MainWindow to null; need to see how this is working
+   */
+
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (mainWindow === null) {

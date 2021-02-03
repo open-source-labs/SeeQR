@@ -112,9 +112,15 @@ module.exports = [
     role: 'help',
     submenu: [
       {
-        label: 'SeeQR Documentation',
+        label: 'Electron Documentation',
         click: () => {
           shell.openExternal('https://electronjs.org');
+        },
+      },
+      {
+        label: 'SeeQR GitHub Documentation',
+        click: () => {
+          shell.openExternal('https://github.com/oslabs-beta/SeeQR');
         },
       },
     ],
