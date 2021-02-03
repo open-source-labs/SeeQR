@@ -1,3 +1,29 @@
+/**
+ * This file is building the menu opens that are available..
+ * For Macs, its the file menu available at the top (i.e. File, Edit, Window, Help etc)
+ * Each menu option is a new object element within the array.
+ * Each menu object has a submenu which is also an array that holds objects
+ * Each object represents a click action the user can take or something cosemetic like a separate line
+ */
+
+/**
+ * Only defined for Macs
+ * Not sure how the roles are executing
+ * In Video, they used label and adding click functionality, in the example below, they are using roles
+ *
+ * SubMenu: [
+ * {
+ *    label: "Exit",
+ *    click() {
+ *        app.quit()
+ *    }
+ * }
+ * ]
+ *
+ * Shell is being imported, so a new browser window can open for external links
+ * Considering referring our GitHub page
+ */
+
 // if process platform is darwin, operating on mac
 const isMac = process.platform === 'darwin';
 
@@ -73,7 +99,12 @@ module.exports = [
       { role: 'minimize' },
       { role: 'zoom' },
       ...(isMac
-        ? [{ type: 'separator' }, { role: 'front' }, { type: 'separator' }, { role: 'window' }]
+        ? [
+            { type: 'separator' },
+            { role: 'front' },
+            { type: 'separator' },
+            { role: 'window' },
+          ]
         : [{ role: 'close' }]),
     ],
   },
@@ -81,9 +112,15 @@ module.exports = [
     role: 'help',
     submenu: [
       {
-        label: 'SeeQR Documentation',
+        label: 'Electron Documentation',
         click: () => {
           shell.openExternal('https://electronjs.org');
+        },
+      },
+      {
+        label: 'SeeQR GitHub Documentation',
+        click: () => {
+          shell.openExternal('https://github.com/oslabs-beta/SeeQR');
         },
       },
     ],

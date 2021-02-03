@@ -1,13 +1,25 @@
+/**
+ * Used to created a new window with regular html
+ * On the front end they are using the following.. instead of importing electron then const browerwindow = electron.remote.browserwindow
+ * Within App.tsx
+ *   const { dialog } = require('electron').remote;
+ *   const { ipcRenderer } = window.require('electron');
+ * Within MainPanel.tsx
+ *   import { dialog } from 'electron';
+ *   const { ipcRenderer } = window.require('electron');
+ *
+ * To allow communiction between FE and BE, look into Electron IPC, allows communication between windows/processes
+ * There is IPC Renderer and IPC Main
+ * IPC Main on front end maps to IPC Renderer on front end; the string that is passed is on both ends is used to pass data back and forth
+ */
+
 // Import parts of electron to use
 import { dialog, ipcMain } from 'electron';
 
 const { exec } = require('child_process');
 
 const db = require('./models');
-const {
-  generateDummyData,
-  writeCSVFile,
-} = require('./DummyD/dummyDataMain');
+const { generateDummyData, writeCSVFile } = require('./DummyD/dummyDataMain');
 
 /**
  ***********************************************************
