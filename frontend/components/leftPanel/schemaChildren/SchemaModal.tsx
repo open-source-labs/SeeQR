@@ -18,8 +18,6 @@ type SchemaModalProps = {
 type state = {
   schemaName: string;
   schemaFilePath: string;
-  schemaEntry: string;
-  redirect: boolean;
   dbCopyName: string;
   copy: boolean;
 };
@@ -36,17 +34,15 @@ class SchemaModal extends Component<SchemaModalProps, state> {
 
     // this.handleQueryPrevious = this.handleQueryPrevious.bind(this);
     // this.handleQuerySubmit = this.handleQuerySubmit.bind(this);
-  }
 
-  state: state = {
-    schemaName: '',
-    schemaFilePath: '',
-    schemaEntry: '',
-    redirect: false,
-    dbCopyName: 'Select Instance',
-    // copy determines whether on a schema copy op the data should be copied as well
-    copy: false,
-  };
+    this.state = {
+      schemaName: '',
+      schemaFilePath: '',
+      dbCopyName: 'Select Instance',
+      // copy determines whether on a schema copy op the data should be copied as well
+      copy: false,
+    };
+  }
 
   // Set schema name
   handleSchemaName(event: any) {
@@ -62,6 +58,7 @@ class SchemaModal extends Component<SchemaModalProps, state> {
   handleSchemaFilePath(event: ClickEvent) {
     event.preventDefault();
     const { schemaName, schemaFilePath } = this.state;
+    const { showModal } = this.props;
 
     dialog
       .showOpenDialog({
@@ -83,7 +80,7 @@ class SchemaModal extends Component<SchemaModalProps, state> {
           this.setState({ schemaName: '' });
         }
         this.setState({ dbCopyName: 'Select Instance' });
-        this.props.showModal(event);
+        showModal(event);
       })
 
       .catch((err: object) => {
@@ -92,13 +89,15 @@ class SchemaModal extends Component<SchemaModalProps, state> {
   }
 
   handleCopyData(event: any) {
-    if (!this.state.copy) this.setState({ copy: true });
+    const { copy } = this.state;
+    if (!copy) this.setState({ copy: true });
     else this.setState({ copy: false });
   }
 
   handleCopyFilePath(event: any) {
     event.preventDefault();
     const { schemaName, dbCopyName, copy } = this.state;
+    const { showModal } = this.props;
     const schemaObj = {
       schemaName,
       schemaFilePath: '',
@@ -110,7 +109,7 @@ class SchemaModal extends Component<SchemaModalProps, state> {
     ipcRenderer.send('input-schema', schemaObj);
     this.setState({ dbCopyName: `Select Instance` });
     this.setState({ schemaName: '' });
-    this.props.showModal(event);
+    showModal(event);
   }
 
   selectHandler = (eventKey, e: React.SyntheticEvent<unknown>) => {
@@ -124,7 +123,8 @@ class SchemaModal extends Component<SchemaModalProps, state> {
     ));
 
   render() {
-    if (this.props.show === false) {
+    const { show } = this.props;
+    if (show === false) {
       return null;
     }
     
@@ -132,7 +132,10 @@ class SchemaModal extends Component<SchemaModalProps, state> {
 
     return (
       <div className="modal" id="modal">
-        <h3>Enter New Schema Name (required): {schemaName}</h3>
+        <h3>
+          Enter New Schema Name (required): 
+          {schemaName}
+        </h3>
         <input
           className="schema-label"
           type="text"

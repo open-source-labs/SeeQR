@@ -5,8 +5,6 @@ import MainPanel from './MainPanel';
 const { dialog } = require('electron').remote;
 const { ipcRenderer } = window.require('electron');
 
-type ClickEvent = React.MouseEvent<HTMLElement>;
-
 type state = {
   openSplash: boolean;
 };
@@ -18,12 +16,12 @@ export default class App extends Component<AppProps, state> {
     super(props);
     this.handleFileClick = this.handleFileClick.bind(this);
     this.handleSkipClick = this.handleSkipClick.bind(this);
-  }
 
-  // Splash page will always render upon opening App
-  state: state = {
-    openSplash: true,
-  };
+    // Splash page will always render upon opening App
+    this.state = {
+      openSplash: true,
+    };
+  }
 
   handleFileClick() {
     dialog
@@ -53,13 +51,13 @@ export default class App extends Component<AppProps, state> {
 
   render() {
     // listen for menu to invoke handleFileClick
-    ipcRenderer.on('menu-upload-file', () => {
-      this.handleFileClick;
-    });
+    ipcRenderer.on('menu-upload-file', () => this.handleFileClick);
+
+    const { openSplash } = this.state;
 
     return (
       <div>
-        {this.state.openSplash ? (
+        {openSplash ? (
           <Splash
             handleFileClick={this.handleFileClick}
             handleSkipClick={this.handleSkipClick}
