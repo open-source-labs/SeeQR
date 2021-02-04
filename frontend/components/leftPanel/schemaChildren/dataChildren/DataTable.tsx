@@ -1,5 +1,22 @@
 import React, { Component } from 'react';
 
+type RenderRowProps = {
+  data: any;
+  keys: any;
+};
+
+// Returns each cell within table
+const RenderRow = (props: RenderRowProps) => {
+  const { data, keys } = props;
+  return keys.map((header, index) => {
+    // if the value of a row is undefined, then go to next iteration
+    if (data[header] === undefined || data[header] === null) return;
+    // turn all values in data object to string or number
+    data[header] = data[header].toString();
+    return <td key={index}>{data[header]}</td>;
+  });
+};
+
 type TableProps = {
   queries: {
     queryString: string;
@@ -9,6 +26,7 @@ type TableProps = {
     queryLabel: string;
   }[];
 };
+
 export default class Table extends Component<TableProps> {
   constructor(props) {
     super(props);
@@ -19,6 +37,7 @@ export default class Table extends Component<TableProps> {
 
   // Returns list of headings that should be displayed @ top of table
   getKeys() {
+    // TODO: order of keys could vary from different runs, which would change order of headers vs order of values
     const { queries } = this.props;
 
     // All keys will be consistent across each object in queryData,
@@ -29,23 +48,22 @@ export default class Table extends Component<TableProps> {
   // Create Header by generating a <th> element for each key.
   getHeader() {
     const keys = this.getKeys();
-    return keys.map((key, index) => <th key={key}>{key.toUpperCase()}</th>);
+    return keys.map((key) => <th key={key}>{key.toUpperCase()}</th>);
   }
 
   // Iterate through queryData array to return the body part of the table.
   getRowsData() {
     const { queries } = this.props;
 
+    // gets last query object on array of labelled querie
     const items = queries[queries.length - 1].queryData;
     const keys = this.getKeys(); // actor_id, firstName, lastName, lastUpdated
 
-    return items.map((row, index) => {
-      return (
-        <tr key={index}>
-          <RenderRow key={index} data={row} keys={keys} />
-        </tr>
-      );
-    });
+    return items.map((row) => (
+      <tr key={row.toString()}>
+        <RenderRow data={row} keys={keys} />
+      </tr>
+    ));
   }
 
   render() {
@@ -62,20 +80,3 @@ export default class Table extends Component<TableProps> {
   }
 }
 
-type RenderRowProps = {
-  data: any;
-  keys: any;
-  key: any;
-};
-
-// Returns each cell within table
-const RenderRow = (props: RenderRowProps) => {
-  const { data, keys } = props;
-  return keys.map((header, index) => {
-    // if the value of a row is undefined, then go to next iteration
-    if (data[header] === undefined || data[header] === null) return;
-    // turn all values in data object to string or number
-    data[header] = data[header].toString();
-    return <td key={index}>{data[header]}</td>;
-  });
-};

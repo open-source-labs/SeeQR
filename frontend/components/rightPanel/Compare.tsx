@@ -5,40 +5,39 @@ import { Bar, defaults } from 'react-chartjs-2';
 
 defaults.global.defaultFontColor = 'rgb(198,210,213)';
 
-type CompareProps = {
-  queries: {
-    queryString: string;
-    queryData: {}[];
-    queryStatistics: any;
-    querySchema: string;
-    queryLabel: string;
-  }[];
-  currentSchema: string;
+type Query = {
+  queryString: string;
+  queryData: {}[];
+  queryStatistics: any;
+  querySchema: string;
+  queryLabel: string;
 };
 
-export const Compare = (props: CompareProps) => {
-  // -------------------------------------------------------------------------------------------------------------
-  // ------------------------------------ logic for setting state --------------------------------------------
-  // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+type CompareProps = {
+  queries: Query[];
+};
 
-  // declaring initial state
-  let initial: any = { ...props, compareList: [] };
-  const [queryInfo, setCompare] = useState(initial);
+// -------------------------------------------------------------------------------------------------------------
+// ------------------------------------ logic for setting state --------------------------------------------
+// vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+
+const Compare = (props: CompareProps) => {
+  const [compareList, setCompareList] = useState<Query[]>([]);
 
   const addCompareQuery = (event) => {
     // compare list is a dropdown menu on the front-end
-    let compareList = queryInfo.compareList;
+    const newCompareList = [...compareList];
     props.queries.forEach((query) => {
       // if the query is clicked in the dropdown menu
       if (query.queryLabel === event.target.text) {
         // only allow the addition of queries that aren't already being compared
-        if (!compareList.includes(query)) {
-          compareList.push(query);
+        if (!newCompareList.includes(query)) {
+          newCompareList.push(query);
         }
       }
     });
     // reset state to account for the change in queries being tracked
-    setCompare({ ...queryInfo, compareList });
+    setCompareList(newCompareList);
   };
 
   // -------------------------------------------------------------------------------------------------------------
@@ -47,89 +46,78 @@ export const Compare = (props: CompareProps) => {
 
   const deleteCompareQuery = (event) => {
     // reset comparelist so that the query that is chosen is not included any more
-    let compareList: any = queryInfo.compareList.filter(
-      (query) => query.queryLabel !== event.target.id
+    setCompareList(
+      compareList.filter(({ queryLabel }) => queryLabel !== event.target.id)
     );
-    setCompare({ ...queryInfo, compareList });
   };
 
-  const dropDownList = () => {
+  const dropDownList = () =>
     // for each query on the query list, make a dropdown item in the menu
-    return props.queries.map((query, index) => (
-      <Dropdown.Item key={index} className="queryItem" onClick={addCompareQuery}>
-        {query.queryLabel}
+    props.queries.map(({ queryLabel }) => (
+      <Dropdown.Item
+        key={queryLabel}
+        className="queryItem"
+        onClick={addCompareQuery}
+      >
+        {queryLabel}
       </Dropdown.Item>
     ));
-  };
 
   // Rendering the compare table with selected queries from dropdown list
-  const renderCompare = () => {
-    return queryInfo.compareList.map((query, index) => {
-      // destructuring data and variables from queries on the compare list
-      const { queryString, queryData, queryStatistics, querySchema, queryLabel } = query;
-      const { ['QUERY PLAN']: queryPlan } = queryStatistics[0];
+  const renderCompare = () =>
+    compareList.map(({ queryLabel, querySchema, queryStatistics }) => {
+      const { 'QUERY PLAN': queryPlan } = queryStatistics[0];
+
       const {
         Plan,
-        ['Planning Time']: planningTime,
-        ['Execution Time']: executionTime,
+        'Planning Time': planningTime,
+        'Execution Time': executionTime,
       } = queryPlan[0];
-      const {
-        ['Node Type']: scanType,
-        ['Actual Rows']: actualRows,
-        ['Actual Startup Time']: actualStartupTime,
-        ['Actual Total Time']: actualTotalTime,
-        ['Actual Loops']: loops,
-      } = Plan;
-      const runtime = (planningTime + executionTime).toFixed(3);
 
-      // To display additional analytics, comment back in JSX elements in the return statement below.
+      const { 'Actual Rows': actualRows } = Plan;
+
       return (
-        <tr key={index}>
+        <tr key={queryLabel}>
           <td id="label">{queryLabel}</td>
           <td id="schema-name">{querySchema}</td>
-          {/* <td id="query-string">{queryString}</td> */}
-          {/* <td id="scan-type">{scanType}</td> */}
           <td id="actual-rows">{actualRows}</td>
-          <td id="runtime">{runtime}</td>
-          {/* <td id='planning-time'>{planningTime}</td>
-              <td id='execution-time'>{executionTime}</td>
-              <td id='time-fl'>{actualStartupTime}</td> */}
-          <td id="time-al">{actualTotalTime}</td>
-          {/* <td id="loops">{loops}</td> */}
+          <td id="planning-time">{planningTime}</td>
+          <td id="execution-time">{executionTime}</td>
           <td>
-            <button id={queryLabel} className="delete-query-button" onClick={deleteCompareQuery}>
+            <button
+              id={queryLabel}
+              type="button"
+              className="delete-query-button"
+              onClick={deleteCompareQuery}
+            >
               X
             </button>
           </td>
         </tr>
       );
     });
-  };
 
   // -------------------------------------------------------------------------------------------------------------
   // ------------------------------------ logic for the compare query graph --------------------------------------
   // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
-  const generateDatasets = () => {
-    const { compareList } = queryInfo;
+  // calculate total run time of query
+  const getTotalRuntime = (queryStatistics): number =>
+    queryStatistics[0]['QUERY PLAN'][0]['Execution Time'] +
+    queryStatistics[0]['QUERY PLAN'][0]['Planning Time'];
 
+  const generateDatasets = () => {
     // first we create an object with all of the comparelist data organized in a way that enables us to render our graph easily
     const compareDataObject: any = {};
+
     // then we populate that object
-    for (const query of compareList) {
-      const { queryLabel, querySchema, queryStatistics } = query;
-      if (!compareDataObject[querySchema]) {
-        compareDataObject[querySchema] = {
-          [queryLabel.toString()]:
-            queryStatistics[0]['QUERY PLAN'][0]['Execution Time'] +
-            queryStatistics[0]['QUERY PLAN'][0]['Planning Time'],
-        };
-      } else {
-        compareDataObject[querySchema][queryLabel.toString()] =
-          queryStatistics[0]['QUERY PLAN'][0]['Execution Time'] +
-          queryStatistics[0]['QUERY PLAN'][0]['Planning Time'];
-      }
-    }
+    compareList.forEach(({ queryLabel, querySchema, queryStatistics }) => {
+      if (!compareDataObject[querySchema]) compareDataObject[querySchema] = {};
+
+      compareDataObject[querySchema][queryLabel.toString()] = getTotalRuntime(
+        queryStatistics
+      );
+    });
 
     // then we generate a labelData array to store all unique query labels
     const labelDataArray: any = [];
@@ -146,7 +134,11 @@ export const Compare = (props: CompareProps) => {
     for (const schema in compareDataObject) {
       const schemaArray: any = [];
       for (const label of labelDataArray) {
-        schemaArray.push(compareDataObject[schema][label] ? compareDataObject[schema][label] : 0);
+        schemaArray.push(
+          compareDataObject[schema][label]
+            ? compareDataObject[schema][label]
+            : 0
+        );
       }
       runTimeDataArray.push({ [schema]: schemaArray });
     }
@@ -170,7 +162,10 @@ export const Compare = (props: CompareProps) => {
     // then we generate datasets for each schema for the bar chart
     const datasets = runTimeDataArray.map((schemaDataObject) => {
       const schemaLabel: any = Object.keys(schemaDataObject)[0];
-      const color = schemaColors.colorList[schemaColors.nextColor % schemaColors.colorList.length];
+      const color =
+        schemaColors.colorList[
+          schemaColors.nextColor % schemaColors.colorList.length
+        ];
       schemaColors.nextColor += 1;
       return {
         label: `${schemaLabel}`,
@@ -181,10 +176,12 @@ export const Compare = (props: CompareProps) => {
       };
     });
 
-    //then we combine the label array and the data arrays for each schema into a data object to pass to our bar graph
+    // then we combine the label array and the data arrays for each schema into a data object to pass to our bar graph
     return {
+      // labels per index
       labels: labelDataArray,
-      datasets: datasets,
+      // chartjs datasets with values in data key, following order of above labels array
+      datasets,
     };
   };
 
@@ -202,15 +199,11 @@ export const Compare = (props: CompareProps) => {
         <table className="compare-box">
           <tbody>
             <tr className="top-row">
-              <td>{'Query Label'}</td>
-              <td>{'Schema'}</td>
-              <td>{'Total Rows'}</td>
-              {/* <td>{'Scan Type'}</td> */}
-              {/* <td>{'Query'}</td> */}
-              <td>{'Runtime (ms)'}</td>
-              <td>{'Total Time'}</td>
-              {/* <td>{'Returned Rows'}</td> */}
-              {/* <td>{'Loops'}</td> */}
+              <td>Query Label</td>
+              <td>Schema</td>
+              <td>Total Rows</td>
+              <td>Planning</td>
+              <td>Execution</td>
             </tr>
             {renderCompare()}
           </tbody>

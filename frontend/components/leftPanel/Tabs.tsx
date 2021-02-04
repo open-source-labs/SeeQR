@@ -1,30 +1,39 @@
 import React, { Component } from 'react';
-import { SchemaContainer } from './SchemaContainer';
+import SchemaContainer from './SchemaContainer';
 import SchemaModal from './schemaChildren/SchemaModal';
 import Tab from './tabsChildren/Tab';
 
 const { ipcRenderer } = window.require('electron');
 
+type Query = {
+  queryString: string;
+  queryData: {}[];
+  queryStatistics: any;
+  querySchema: string;
+  queryLabel: string;
+};
+
 type TabsProps = {
   currentSchema: string;
   tabList: string[];
-  queries: any;
+  queries: Query[];
   onClickTabItem: any;
   tableList: string[];
   databaseSize: string;
 };
 
-type state = {
+type TabsState = {
   show: boolean;
 };
-export default class Tabs extends Component<TabsProps> {
+export default class Tabs extends Component<TabsProps, TabsState> {
   constructor(props: TabsProps) {
     super(props);
     this.showModal = this.showModal.bind(this);
+
+    this.state = {
+      show: false,
+    };
   }
-  state: state = {
-    show: false,
-  };
 
   componentDidMount() {
     // After schema is successfully sent to backend, backend spins up new database with inputted schemaName.
@@ -32,54 +41,60 @@ export default class Tabs extends Component<TabsProps> {
     // thing as all the databases). We open a channel to listen for it here inside of componentDidMount, then
     // we invoke onClose to close schemaModal ONLY after we are sure that backend has created that channel.
     ipcRenderer.on('db-lists', (event: any, returnedLists: any) => {
-      this.setState({
-        currentSchema: returnedLists,
-      });
-      this.onClose(event);
+    // TODO: claudio commented this out. Make sure it's really not necessary
+      // this.setState({
+      //   // TODO: is the type of returnedLists correct?
+      //   currentSchema: returnedLists,
+      // });
+      this.onClose();
     });
   }
 
-  showModal = (event: any) => {
+  showModal = () => {
     this.setState({ show: true });
   };
 
-  onClose = (event: any) => {
+  onClose = () => {
     this.setState({ show: false });
   };
 
+  generateTabs() {
+    const { tabList, currentSchema, onClickTabItem } = this.props;
+    return tabList.map((tab) => (
+      <Tab
+        currentSchema={currentSchema}
+        key={tab}
+        label={tab}
+        onClickTabItem={onClickTabItem}
+      />
+    ));
+  }
+
   render() {
     const {
-      onClickTabItem,
       tabList,
+      tableList,
       currentSchema,
       queries,
       databaseSize,
     } = this.props;
+    const { show } = this.state;
 
     const activeTabQueries = queries.filter(
       (query) => query.querySchema === currentSchema
     );
 
     return (
+      // TODO: change id for equivalent class
       <div className="tabs" id="main-right">
         <ol className="tab-list">
-          <span>
-            {tabList.map((tab, index) => {
-              return (
-                <Tab
-                  currentSchema={currentSchema}
-                  key={index}
-                  label={tab}
-                  onClickTabItem={onClickTabItem}
-                />
-              );
-            })}
-          </span>
+          <span>{this.generateTabs()}</span>
           <span>
             <button
               id="input-schema-button"
-              onClick={(e) => {
-                this.showModal(e);
+              type="button"
+              onClick={() => {
+                this.showModal();
               }}
             >
               +
@@ -88,23 +103,17 @@ export default class Tabs extends Component<TabsProps> {
         </ol>
         <SchemaModal
           tabList={tabList}
-          show={this.state.show}
+          show={show}
           showModal={this.showModal}
           onClose={this.onClose}
         />
         <div className="tab-content">
-          {tabList.map((tab, index) => {
-            if (tab !== currentSchema) return undefined;
-            return (
-              <SchemaContainer
-                key={index}
-                queries={activeTabQueries}
-                currentSchema={currentSchema}
-                tableList={this.props.tableList}
-                databaseSize={databaseSize}
-              />
-            );
-          })}
+          <SchemaContainer
+            queries={activeTabQueries}
+            currentSchema={currentSchema}
+            tableList={tableList}
+            databaseSize={databaseSize}
+          />
         </div>
       </div>
     );

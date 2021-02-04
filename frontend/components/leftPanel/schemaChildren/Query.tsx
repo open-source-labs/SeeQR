@@ -12,9 +12,11 @@ import DummyDataPanel from './DummyDataPanel';
 const { ipcRenderer } = window.require('electron');
 const { dialog } = require('electron').remote;
 
-/*****************************************************************
- *********************** TYPESCRIPT: TYPES ***********************
- *****************************************************************/
+/**
+ ****************************************************************
+ *********************** TYPESCRIPT: TYPES **********************
+ ****************************************************************
+*/
 
 type QueryProps = {
   currentSchema: string;
@@ -25,7 +27,6 @@ type QueryProps = {
 type state = {
   queryString: string;
   queryLabel: string;
-  show: boolean;
   // if true, will add query results to the bar chart
   trackQuery: boolean;
 };
@@ -36,19 +37,12 @@ class Query extends Component<QueryProps, state> {
     this.handleQuerySubmit = this.handleQuerySubmit.bind(this);
     this.updateCode = this.updateCode.bind(this);
     this.handleTrackQuery = this.handleTrackQuery.bind(this);
-  }
 
-  state: state = {
-    queryString: '',
-    queryLabel: '',
-    show: false,
-    trackQuery: false,
-  };
-
-  componentDidMount() {
-    ipcRenderer.on('query-error', (event: any, message: string) => {
-      // dialog.showErrorBox('Error', message);
-    });
+    this.state = {
+      queryString: '',
+      queryLabel: '',
+      trackQuery: false,
+    };
   }
 
   // Updates state.queryString as user inputs query label
@@ -64,6 +58,7 @@ class Query extends Component<QueryProps, state> {
   // Submits query to backend on 'execute-query' channel
   handleQuerySubmit(event: any) {
     event.preventDefault();
+    const { currentSchema } = this.props;
     const { queryString, trackQuery, queryLabel } = this.state;
     // if query string is empty, show error
     if (!queryString) {
@@ -73,7 +68,7 @@ class Query extends Component<QueryProps, state> {
       // functionality to send query but not return stats and track
       const queryAndSchema = {
         queryString,
-        queryCurrentSchema: this.props.currentSchema,
+        queryCurrentSchema: currentSchema,
         queryLabel,
       };
       ipcRenderer.send('execute-query-untracked', queryAndSchema);
@@ -86,7 +81,7 @@ class Query extends Component<QueryProps, state> {
       // send query and return stats from explain/analyze
       const queryAndSchema = {
         queryString,
-        queryCurrentSchema: this.props.currentSchema,
+        queryCurrentSchema: currentSchema,
         queryLabel,
       };
       ipcRenderer.send('execute-query-tracked', queryAndSchema);
@@ -115,12 +110,12 @@ class Query extends Component<QueryProps, state> {
 
     return (
       <div id="query-panel">
-        <div id="database-info">Database Size: {dbSize}</div>
+        <div id="database-info">
+          Database Size:
+          {dbSize}
+        </div>
         <div id="delete-me">
-          <DummyDataPanel
-            tableList={tableList}
-            currentSchema={currentSchema}
-          />
+          <DummyDataPanel tableList={tableList} currentSchema={currentSchema} />
         </div>
         <h3>Query</h3>
         <form onSubmit={this.handleQuerySubmit}>
@@ -135,19 +130,20 @@ class Query extends Component<QueryProps, state> {
               />
             </div>
             <div id="label-option">
-              <label>label: </label>
-              <input
-                className="label-field"
-                type="text"
-                placeholder="enter label to track"
-                value={queryLabel}
-                onChange={(e) => this.handleLabelEntry(e)}
-              />
+              <label>
+                label:
+                <input
+                  className="label-field"
+                  type="text"
+                  placeholder="enter label to track"
+                  value={queryLabel}
+                  onChange={(e) => this.handleLabelEntry(e)}
+                />
+              </label>
             </div>
           </div>
           <br />
-          <label>Query:</label>
-          {/* <input type="select" onClick={this.handleQueryPrevious}/> */}
+          <h4>Query:</h4>
           <div className="codemirror">
             <CodeMirror
               onChange={this.updateCode}
@@ -155,7 +151,7 @@ class Query extends Component<QueryProps, state> {
               value={queryString}
             />
           </div>
-          <button>Submit</button>
+          <button type="submit">Submit</button>
           <br />
           <br />
         </form>

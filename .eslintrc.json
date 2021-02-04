@@ -4,6 +4,7 @@
     "es2021": true,
     "node": true
   },
+  "globals": { "JSX": "readonly" },
   "extends": [
     "plugin:react/recommended",
     "airbnb",
@@ -29,7 +30,8 @@
       "error",
       "ignorePackages",
       { "js": "never", "jsx": "never", "ts": "never", "tsx": "never" }
-    ]
+    ],
+    "jsx-a11y/label-has-associated-control": "off"
   },
   "root": true
 }
