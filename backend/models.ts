@@ -102,6 +102,7 @@ let myobj: {
   addForeignKeyConstraints: Function;
 };
 
+// eslint-disable-next-line prefer-const
 myobj = {
   // Run any query
   query: (text, params, callback) => {
@@ -257,7 +258,7 @@ myobj = {
 
     const arrayOfObj = Object.keys(keyObject);
     for (let i = 0; i < arrayOfObj.length; i += 1) {
-      await generateAndRunDropQuery(i);
+      await generateAndRunDropQuery(arrayOfObj[i]);
     }
 
     // iterate over tables, running drop queries, and pushing a new promise to promise array
@@ -319,14 +320,25 @@ myobj = {
 
     const arrayOfObj = Object.keys(keyObject);
     for (let i = 0; i < arrayOfObj.length; i += 1) {
-      await generateAndRunAddQuery(i);
+      await generateAndRunAddQuery(arrayOfObj[i]);
     }
     // for (const table in keyObject) {
     //   await generateAndRunAddQuery(table);{}
     // }
   },
-  /**
-   *
+
+  /** Expand to see details
+   * Returning the schema layout of the current database
+   * Returns an object with two keys:
+   *    The first key, 'tableNames', has a value of an array that holds the name of all the tables
+   *    The second key, 'tables', has a value of an object that holds the following:
+   *      Each of the table names is a key
+   *      Each value is an array that represents all the columns in that table (i.e. _id, films_id, name)
+   *      Each column object will have the column name key and a data info key that has additional information
+   *        {
+   *            tableNames: ['tableName', 'tableName']
+   *            tables:   {   tableName: [ {column name}, {column name} ], tableName: [ {column name}, {column name} ]   }
+   *        }
    */
   getSchemaLayout: () =>
     // initialize a new promise; we resolve this promise at the end of the last async function within the promise
@@ -348,15 +360,20 @@ myobj = {
           for (let i = 0; i < tables.rows.length; i += 1) {
             const tableName = tables.rows[i].table_name;
             schemaLayout.tableNames.push(tableName);
-          }
-          schemaLayout.tableNames.forEach((tableName) => {
             promiseArray.push(getColumnObjects(tableName));
-          });
+          }
 
           // Delete if working properly
           // for (const tableName of schemaLayout.tableNames) {
           //   promiseArray.push(getColumnObjects(tableName));
           // }
+          // const columnObj: any = {
+          //   columnName: result.rows[i].column_name,
+          //   dataInfo: {
+          //     data_type: result.rows[i].data_type,
+          //     character_maxiumum_length: result.rows[i].character_maxiumum_length,
+          //   },
+          // };
 
           // we resolve all of the promises for the data info, and are returned an array of column data objects
           Promise.all(promiseArray).then((columnInfo) => {
@@ -371,6 +388,10 @@ myobj = {
           console.log('error in models.ts');
         });
     }),
+
+  /**
+   * Check to see if there is a better way to generate Dummy Data and discuss what to do with these methods.
+   */
   addPrimaryKeyConstraints: async (keyObject, dummyDataRequest) => {
     // iterate over table's keyObject property, add primary key constraints
     for (const tableName of Object.keys(dummyDataRequest.dummyData)) {

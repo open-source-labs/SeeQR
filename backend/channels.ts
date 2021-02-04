@@ -16,6 +16,8 @@
 // Import parts of electron to use
 import { dialog, ipcMain } from 'electron';
 
+const S3 = require('aws-sdk/clients/s3');
+
 const { exec } = require('child_process');
 
 const db = require('./models');
