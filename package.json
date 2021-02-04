@@ -64,7 +64,7 @@
     "babel-minify-webpack-plugin": "^0.3.1",
     "csp-html-webpack-plugin": "^4.0.0",
     "css-loader": "^3.5.3",
-    "electron-devtools-installer": "^3.0.0",
+    "electron-devtools-installer": "^3.1.1",
     "electron-packager": "^14.2.1",
     "electron-reloader": "^1.1.0",
     "enzyme": "^3.11.0",

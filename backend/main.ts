@@ -6,6 +6,10 @@ const { app, BrowserWindow, Menu } = require('electron');
 const path = require('path');
 const url = require('url');
 const MainMenu = require('./mainMenu');
+const {
+  default: installExtension,
+  REACT_DEVELOPER_TOOLS,
+} = require('electron-devtools-installer');
 require('./channels');
 /**
  * Explore the comment below on channels and see if its valid
@@ -113,6 +117,14 @@ function createWindow() {
  * Need to explore app.on this can be used to delete the .sql file...
  */
 app.on('before-quit', () => {});
+
+/**
+ * Install React Extension for electron devtools
+ */
+if (dev)
+  app.on('ready', () => {
+    installExtension(REACT_DEVELOPER_TOOLS);
+  });
 
 // Invoke createWindow to create browser windows after Electron has been initialized.
 // Some APIs can only be used after this event occurs.
