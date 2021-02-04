@@ -1,25 +1,31 @@
+/* eslint-disable no-console */
+const { Pool } = require('pg');
+const {
+  getPrimaryKeys,
+  getForeignKeys,
+} = require('./DummyD/primaryAndForeignKeyQueries');
+
 /**
- * Note: I had to manually create the postgres user via terminal by running the following command
- *    CREATE USER postgres SUPERUSER;
- * Also, postgres needed to change from 'postgres-#' to 'postgres=#' before I could make updates
- *
- * Also, when the .sql script was imported, I had to run the following comment to delete the database
- *    DROP DATABASE tables;
+ ********************************************************* INITIALIZE TO DEFAULT DB *************************************************
  */
 
-const { Pool } = require('pg');
-const { getPrimaryKeys, getForeignKeys } = require('./DummyD/foreign_key_info');
-
-// Initialize to a default db.
 // URI Format: postgres://username:password@hostname:port/databasename
+// Note: User must have a 'postgres' role set-up prior to initializing this connection. https://www.postgresql.org/docs/13/database-roles.html
+
 let PG_URI: string = 'postgres://postgres:postgres@localhost:5432/defaultDB';
 let pool: any = new Pool({ connectionString: PG_URI });
+
+/**
+ *  ********************************************************* HELPER FUNCTIONS *************************************************
+ */
 
 // helper function that creates the column objects, which are saved to the schemaLayout object
 // this function returns a promise to be resolved with Promise.all syntax
 const getColumnObjects = (tableName: string) => {
-  const queryString =
-    'SELECT column_name, data_type, character_maximum_length FROM information_schema.columns WHERE table_name = $1;';
+  const queryString = `SELECT column_name, data_type, character_maximum_length
+     FROM information_schema.columns
+     WHERE table_name = $1;
+    `;
   const value = [tableName];
   return new Promise((resolve) => {
     pool.query(queryString, value).then((result) => {
@@ -39,7 +45,8 @@ const getColumnObjects = (tableName: string) => {
   });
 };
 
-// gets all the names of the current postgres instances
+// gets all the database names of the current postgres instances
+// ignoring the postgres, template0 and template1 dbs
 const getDBNames = () =>
   new Promise((resolve) => {
     pool.query('SELECT datname FROM pg_database;').then((databases) => {
@@ -58,34 +65,57 @@ const getDBNames = () =>
   });
 
 // gets all tablenames from currentschema
-const getDBLists = () =>
-  new Promise((resolve) => {
-    pool
-      .query(
-        "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_name;"
-      )
-      .then((tables) => {
-        const tableList: any = [];
-        for (let i = 0; i < tables.rows.length; i += 1) {
-          tableList.push(tables.rows[i].table_name);
-        }
-        resolve(tableList);
-      });
+const getDBLists = () => {
+  const query = `
+    SELECT table_name
+    FROM information_schema.tables
+    WHERE table_schema = 'public'
+    ORDER BY table_name;
+  `;
+  return new Promise((resolve) => {
+    pool.query(query).then((tables) => {
+      const tableList: any = [];
+      for (let i = 0; i < tables.rows.length; i += 1) {
+        tableList.push(tables.rows[i].table_name);
+      }
+      resolve(tableList);
+    });
   });
+};
 
-module.exports = {
+/**
+ *  ********************************************************* MAIN QUERY FUNCTIONS *************************************************
+ */
+
+// let myobj: Object;
+// myobj = {};
+
+let myobj: {
+  query: Function;
+  changeDB: Function;
+  getLists: Function;
+  createKeyObject: Function;
+  dropKeyColumns: Function;
+  addNewKeyColumns: Function;
+  getSchemaLayout: Function;
+  addPrimaryKeyConstraints: Function;
+  addForeignKeyConstraints: Function;
+};
+
+myobj = {
+  // Run any query
   query: (text, params, callback) => {
     console.log('Executed query: ', text);
     return pool.query(text, params, callback);
   },
-
+  // Change current DB
   changeDB: (dbName: string) => {
     PG_URI = `postgres://postgres:postgres@localhost:5432/${dbName}`;
     pool = new Pool({ connectionString: PG_URI });
     console.log('Current URI: ', PG_URI);
     return dbName;
   },
-
+  // Returns a listObj that contains all tablenames form currentschdule and all database names ( using two helpful functions)
   getLists: () =>
     new Promise((resolve) => {
       const listObj: any = {
@@ -93,76 +123,133 @@ module.exports = {
         databaseList: [],
       };
       Promise.all([getDBNames(), getDBLists()]).then((data) => {
-        console.log('models: ', data);
+        console.log('models on line 126: ', data);
         [listObj.databaseList, listObj.tableList] = data;
         resolve(listObj);
       });
     }),
-
+  /** Expand to view explaination
+   * Creating a nested Object, the keys within the object are the table names
+   * The value is an object that has two keys that are objects
+   * The primaryKeyColumns holds the column name of the primary key and has a value of true
+   * The foreignKeyColumns holds multiple key value pairs where the keys are the foreign key column names
+   * from the primary table and values are the primary table name that's referenced
+   *
+   *          keyObject = {
+   *             tableName: {
+   *                 primaryKeyColumns: {
+   *                   primaryKeyColumnName: true,
+   *                 },
+   *                 foreignKeyColumns: {
+   *                   foreignKeyColumnName: primaryTableOfForeignKey,
+   *                   foreignKeyColumnName: primaryTableOfForeignKey,
+   *                 }
+   *             }
+   *          }
+   */
   createKeyObject: () =>
     new Promise((resolve) => {
       // initialize the keyObject we eventually want to return out
       const keyObject: any = {};
       pool
-        .query(getPrimaryKeys, null)
+        .query(getPrimaryKeys)
         .then((result) => {
-          let table;
-          let pkColumn;
+          let tableName;
+          let primaryKeyColumnName;
           // iterate over the primary key table, adding info to our keyObject
           for (let i = 0; i < result.rows.length; i += 1) {
-            table = result.rows[i].table_name;
-            pkColumn = result.rows[i].pk_column;
-            // if the table is not yet initialized within the keyObject, then initialize it
-            if (!keyObject[table])
-              keyObject[table] = {
-                primaryKeyColumns: {},
-                foreignKeyColumns: {},
-              };
+            tableName = result.rows[i].table_name;
+            primaryKeyColumnName = result.rows[i].pk_column;
+            /**
+* Delete once we tested this section
+  // if the table is not yet initialized within the keyObject, then initialize it
+  // if (!keyObject[tableName])
+  // keyObject[tableName] = {
+  //   primaryKeyColumns: {},
+  //   foreignKeyColumns: {},
+  // };
+  // keyObject[tableName].primaryKeyColumns[primaryKeyColumnName] = true;
+*/
             // then just set the value at the pk column name to true for later checking
-            keyObject[table].primaryKeyColumns[pkColumn] = true;
+            keyObject[tableName] = {
+              primaryKeyColumns: { [primaryKeyColumnName]: true },
+              foreignKeyColumns: {},
+            };
           }
         })
         .then(() => {
-          pool.query(getForeignKeys, null).then((result) => {
-            let table;
-            let primaryTable;
-            let fkColumn;
+          pool.query(getForeignKeys).then((result) => {
+            // This query pulls from the information schema and lists each table that has a foreign key,
+            // the name of the table that key points to, and the name of the column at which the foreign key constraint resides
+
+            let foreignKeyTableName;
+            let primaryTableOfForeignKey;
+            // foreign key column name from foreign key table
+            let fkColName;
             // iterate over the foreign key table, adding info to our keyObject
             for (let i = 0; i < result.rows.length; i += 1) {
-              table = result.rows[i].foreign_table;
-              primaryTable = result.rows[i].primary_table;
-              fkColumn = result.rows[i].fk_column;
-              // if the table is not yet initialized within the keyObject, then initialize it
-              if (!keyObject[table])
-                keyObject[table] = {
-                  primaryKeyColumns: {},
-                  foreignKeyColumns: {},
-                };
+              foreignKeyTableName = result.rows[i].foreign_table;
+              primaryTableOfForeignKey = result.rows[i].primary_table;
+              fkColName = result.rows[i].fk_column;
+              /**
+ * Delete once we tested this section
+// if the table is not yet initialized within the keyObject, then initialize it
+// if (!keyObject[foreignKeyTableName])
+// keyObject[foreignKeyTableName] = {
+//   primaryKeyColumns: {},
+//   foreignKeyColumns: {},
+// };
+*/
               // then set the value at the fk column name to the number of rows asked for in the primary table to which it points
-              keyObject[table].foreignKeyColumns[fkColumn] = primaryTable;
+              keyObject[foreignKeyTableName].foreignKeyColumns[
+                fkColName
+              ] = primaryTableOfForeignKey;
             }
             resolve(keyObject);
           });
         });
     }),
 
+  /** Expand to see detailed comments
+   * Iterating over the passed in keyObject to remove the primaryKeyColumn and all foreignKeyColumns from table
+   * 'ALTER TABLE planets DROP COLUMN _id CASCADE, DROP COLUMN foreignKeyColumnName, DROP COLUMN foreignKeyColumnName;
+   *          keyObject = {
+   *             tableName: {
+   *                 primaryKeyColumns: {
+   *                   primaryKeyColumnName: true,
+   *                 },
+   *                 foreignKeyColumns: {
+   *                   foreignKeyColumnName: primaryTableOfForeignKey,
+   *                   foreignKeyColumnName: primaryTableOfForeignKey,
+   *                 }
+   *             }
+   *          }
+   */
   dropKeyColumns: async (keyObject: any) => {
     // define helper function to generate and run query
     const generateAndRunDropQuery = (table: string) => {
       let queryString = `ALTER TABLE ${table}`;
-      let count: number = 2;
+      // let count: number = 0;
+      const primaryKeyColumnName = Object.keys(
+        keyObject[table].primaryKeyColumns
+      )[0];
 
-      Object.keys(keyObject[table].primaryKeyColumns).forEach((pkc) => {
-        if (count > 2) queryString += ',';
-        queryString += ` DROP COLUMN ${pkc} CASCADE`;
-        count += 1;
-      });
+      /**
+       * Object.keys(keyObject[table].primaryKeyColumns).forEach((pkc) => {
+       *   if (count > 0) queryString += ',';
+       *   queryString += ` DROP COLUMN ${pkc} CASCADE`;
+       *   count += 1;
+       * });
+       */
+      queryString += ` DROP COLUMN ${primaryKeyColumnName} CASCADE`;
 
-      Object.keys(keyObject[table].foreignKeyColumns).forEach((fkc) => {
-        if (count > 2) queryString += ',';
-        queryString += ` DROP COLUMN ${fkc}`;
-        count += 1;
-      });
+      Object.keys(keyObject[table].foreignKeyColumns).forEach(
+        (foreignKeyColumnName) => {
+          // if (count > 0) queryString += ',';
+          queryString += `, DROP COLUMN ${foreignKeyColumnName}`;
+          // count += 1;
+        }
+      );
       queryString += ';';
 
       return Promise.resolve(pool.query(queryString));
@@ -173,7 +260,21 @@ module.exports = {
       await generateAndRunDropQuery(table);
     }
   },
-
+  /** Expand to see detailed comments
+   * Iterating over the passed in keyObject to remove the primaryKeyColumn and all foreignKeyColumns from table
+   * 'ALTER TABLE planets DROP COLUMN _id CASCADE, DROP COLUMN foreignKeyColumnName, DROP COLUMN foreignKeyColumnName;
+   *          keyObject = {
+   *             tableName: {
+   *                 primaryKeyColumns: {
+   *                   primaryKeyColumnName: true,
+   *                 },
+   *                 foreignKeyColumns: {
+   *                   foreignKeyColumnName: primaryTableOfForeignKey,
+   *                   foreignKeyColumnName: primaryTableOfForeignKey,
+   *                 }
+   *             }
+   *          }
+   */
   addNewKeyColumns: async (keyObject: any) => {
     // define helper function to generate and run query
     const generateAndRunAddQuery = (table: string) => {
@@ -200,7 +301,6 @@ module.exports = {
       await generateAndRunAddQuery(table);
     }
   },
-
   // initialize a new promise; we resolve this promise at the end of the last async function within the promise
   getSchemaLayout: () =>
     new Promise((resolve) => {
@@ -237,7 +337,6 @@ module.exports = {
           console.log('error in models.ts');
         });
     }),
-
   addPrimaryKeyConstraints: async (keyObject, dummyDataRequest) => {
     // iterate over table's keyObject property, add primary key constraints
     for (const tableName of Object.keys(dummyDataRequest.dummyData)) {
@@ -259,7 +358,6 @@ module.exports = {
       }
     }
   },
-
   addForeignKeyConstraints: async (keyObject, dummyDataRequest) => {
     // iterate over table's keyObject property, add foreign key constraints
     for (const tableName of Object.keys(dummyDataRequest.dummyData)) {
@@ -287,3 +385,5 @@ module.exports = {
     }
   },
 };
+
+module.exports = myobj;
