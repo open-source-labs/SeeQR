@@ -26,6 +26,7 @@
   "dependencies": {
     "@skidding/react-codemirror": "^1.0.2",
     "@types/react-router-dom": "^5.1.5",
+    "@types/styled-components": "^5.1.7",
     "autoprefixer": "^9.8.5",
     "aws-sdk": "^2.836.0",
     "chart.js": "^2.9.3",
@@ -46,7 +47,8 @@
     "react-dom": "^17.0.1",
     "react-loading": "^2.0.3",
     "react-router-dom": "^5.2.0",
-    "sass": "^1.26.10"
+    "sass": "^1.26.10",
+    "styled-components": "^5.2.1"
   },
   "devDependencies": {
     "@babel/core": "^7.10.5",
