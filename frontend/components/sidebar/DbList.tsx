@@ -20,10 +20,10 @@ const DbEntry = ({ db, isSelected, select }: DbEntryProps) => (
 const DbList = ({ selectedDb, setSelectedDb }: DbListProps) => {
   const [databases, setDatabases] = useState<string[]>([]);
 
-  // TODO: Temp test. DELETE
-  if (!databases.length) {
-    setDatabases(['db1', 'planda', 'starwars', 'another one'])
-  }
+  // // TODO: Temp test. DELETE
+  // if (!databases.length) {
+  //   setDatabases(['db1', 'planda', 'starwars', 'another one'])
+  // }
 
   // Listen to backend for updates to list of available databases
   ipcRenderer.on('db-lists', (evt: IpcMainEvent, dbLists: unknown) => {

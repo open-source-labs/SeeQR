@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppState, CreateQuery } from '../../types';
+import { AppState, userCreateQuery } from '../../types';
 import TopButtons from './TopButtons';
 import QueryList from './QueryList';
 import DbList from './DbList';
@@ -11,7 +11,7 @@ type SidebarProps = Pick<
   | 'setSelectedDb'
   | 'setSelectedView'
   | 'queries'
-> & {createQuery : CreateQuery};
+> & {createQuery : userCreateQuery};
 
 type ViewSelectorProps = Pick<AppState, 'selectedView' | 'setSelectedView'>;
 

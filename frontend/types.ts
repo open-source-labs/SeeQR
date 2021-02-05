@@ -4,7 +4,7 @@
 
 import type SavedQueries from './classes/SavedQueries';
 
-type ViewName = 'compareView' | 'dbView' | 'queryView';
+type ViewName = 'compareView' | 'dbView' | 'queryView' | 'quickStartView';
 
 export interface AppState {
   selectedView: ViewName;
@@ -14,7 +14,7 @@ export interface AppState {
   queries: SavedQueries;
 }
 
-export type CreateQuery = () => void;
+export type userCreateQuery = () => void;
 
 /** Electron Interface */
 
