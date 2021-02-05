@@ -31,7 +31,18 @@
       "ignorePackages",
       { "js": "never", "jsx": "never", "ts": "never", "tsx": "never" }
     ],
-    "jsx-a11y/label-has-associated-control": "off"
+    "jsx-a11y/label-has-associated-control": "off",
+    // prevent wrong warning with typescript overloads
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": ["error"],
+    "no-dupe-class-members": "off",
+    "@typescript-eslint/no-dupe-class-members": ["error"],
+    "lines-between-class-members": "off",
+    "@typescript-eslint/lines-between-class-members": [
+      "error",
+      { "exceptAfterSingleLine": true }
+    ],
+    "react/jsx-curly-newline": "off"
   },
   "root": true
 }
