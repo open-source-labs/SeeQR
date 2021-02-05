@@ -38,10 +38,10 @@ const runHollowCopyFunc = (dbCopyName, file) =>
   `pg_dump -s -U postgres ${dbCopyName} -f ${file}`;
 
 // Function to execute commands in the child process.
-const execute = (str: string, nextStep?: any) => {
+const execute = (str: string, nextStep: any) => {
   console.log('in execute: ', str);
   exec(str, (error, stdout, stderr) => {
-    console.log('channels line 43 exec func: ', stdout); // , `${stdout}`);
+    console.log('channels line 43 exec func: ', str); // , `${stdout}`);
     if (error) {
       // this shows the console error in an error message on the frontend
       dialog.showErrorBox(`${error.message}`, '');
@@ -88,12 +88,19 @@ ipcMain.on('upload-file', (event, filePath: [string]) => {
 
   // variables
   const path = filePath[0]; // filePath = [ '/Users/faraz/Desktop/starwars_postgres_create.sql' ]
-  let dbName: string; // dbName = 'starwars_postgres_create';
+  // let dbName: string; // dbName = 'starwars_postgres_create';
   const extension: string = path.slice(path.lastIndexOf('.'));
+  const dbName: string = // dbName = 'starwars_postgres_create';
+    process.platform === 'darwin'
+      ? path.slice(path.lastIndexOf('/') + 1, path.lastIndexOf('.'))
+      : path.slice(
+          path.lastIndexOf('\\') + 1, // Need to escape to allow for '\'
+          path.lastIndexOf('.')
+        );
   let dbSize: string;
   let createDB: string;
 
-  // Send the list
+  // Send list of DBs, schema-name, tell front-end to switch tabs, tell front-end async-completed
   async function sendLists() {
     console.log('sendList');
     listObj = await db.getLists();
@@ -108,42 +115,30 @@ ipcMain.on('upload-file', (event, filePath: [string]) => {
     console.log('all events sent', dbSize);
   }
 
-  // if statement is used to determine the db name and pass it into dbName variable
-  if (process.platform === 'darwin') {
-    dbName = path.slice(path.lastIndexOf('/') + 1, path.lastIndexOf('.'));
-  } else {
-    dbName = path.slice(
-      path.lastIndexOf('\\') + 1, // Need to escape to allow for '\'
-      path.lastIndexOf('.')
-    );
-  }
-
   // Create empty db & change current URI to match the newly created DB
   if (extension === '.sql' || extension === '.tar') {
-    createDB = createDBFunc(dbName);
-    console.log('Empty DB Created: ', createDB);
+    createDB = createDBFunc(dbName); // SQL Script is Returned
+    const runCmd: string =
+      extension === '.sql'
+        ? runSQLFunc(dbName, filePath)
+        : runTARFunc(dbName, filePath); // Return SQL Script
 
-    const step4 = () => {
-      const runSQL: string = runSQLFunc(dbName, filePath);
-      const runTAR: string = runTARFunc(dbName, filePath);
-      let runCmd: string = '';
-      if (extension === '.sql') runCmd = runSQL;
-      else if (extension === '.tar') runCmd = runTAR;
-      execute(runCmd, sendLists);
-    };
-
-    execute(createDB, () => {
+    // Change the URI to made DB, get DB size, import uploaded file, and send response back
+    const importDB = () => {
+      console.log('in db123');
       // Change current URI to match newly created DB
       db.changeDB(dbName);
       // DB query to get the database size
-      db.query(`SELECT pg_size_pretty(pg_database_size('${dbName}'));`).then(
-        (queryStats) => {
+      db.query(`SELECT pg_size_pretty(pg_database_size('${dbName}'));`)
+        .then((queryStats) => {
           dbSize = queryStats.rows[0].pg_size_pretty;
           console.log('DB Size is :', dbSize);
-        }
-      );
-      return step4(); // changing step3 to step4 to test removal of importFile func
-    });
+        })
+        .then(() => {
+          execute(runCmd, sendLists); // Pass in SQL Scipt to import SQL or TAR file and next func to execute};
+        });
+    };
+    execute(createDB, importDB); // Pass in SQL Script to create DB and next func to execute
   } else
     console.log(
       'upload-file: Empty DB not created because of invalid file type.'
