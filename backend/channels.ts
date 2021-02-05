@@ -1,33 +1,17 @@
 /**
- * Used to created a new window with regular html
- * On the front end they are using the following.. instead of importing electron then const browerwindow = electron.remote.browserwindow
- * Within App.tsx
- *   const { dialog } = require('electron').remote;
- *   const { ipcRenderer } = window.require('electron');
- * Within MainPanel.tsx
- *   import { dialog } from 'electron';
- *   const { ipcRenderer } = window.require('electron');
- *
- * To allow communiction between FE and BE, look into Electron IPC, allows communication between windows/processes
- * There is IPC Renderer and IPC Main
- * IPC Main on front end maps to IPC Renderer on front end; the string that is passed is on both ends is used to pass data back and forth
+ * Dialog: display native system dialogs for opening and saving files, alerting, etc
+ * IPCMain: Communicate asynchronously from the main process to renderer processes
+ * S3: Importing Node.js module
+ * Child_Process: Importing Node.js' child_process API
  */
-
-// Import parts of electron to use
-import { dialog, ipcMain } from 'electron';
-
+const { dialog, ipcMain } = require('electron');
 const S3 = require('aws-sdk/clients/s3');
-
 const { exec } = require('child_process');
 
 const db = require('./models');
 const { generateDummyData, writeCSVFile } = require('./DummyD/dummyDataMain');
 
-/**
- ***********************************************************
- *********************** Helper functions ******************
- ***********************************************************
- */
+// ************************************** CLI COMMANDS TO CREATE, DELETE, COPY DB SCHEMA **************************************
 
 // Generate CLI commands to be executed in child process.
 // The electron app will access your terminal to execute these postgres commands
@@ -54,19 +38,20 @@ const runHollowCopyFunc = (dbCopyName, file) =>
   `pg_dump -s -U postgres ${dbCopyName} -f ${file}`;
 
 // Function to execute commands in the child process.
-const execute = (str: string, nextStep: any) => {
+const execute = (str: string, nextStep?: any) => {
+  console.log('in execute: ', str);
   exec(str, (error, stdout, stderr) => {
-    console.log('exec func', `${stdout}`);
+    console.log('channels line 43 exec func: ', stdout); // , `${stdout}`);
     if (error) {
       // this shows the console error in an error message on the frontend
       dialog.showErrorBox(`${error.message}`, '');
-      console.log(`error: ${error.message}`);
+      console.log(`channels line 47 error: ${error.message}`);
       return;
     }
     if (stderr) {
       // this shows the console error in an error message on the frontend
       dialog.showErrorBox(`${stderr}`, '');
-      console.log(`stderr: ${stderr}`);
+      console.log(`channels line 53 stderr: ${stderr}`);
       return;
     }
 
@@ -74,16 +59,13 @@ const execute = (str: string, nextStep: any) => {
   });
 };
 
-/**
- ***********************************************************
- *********************** IPC CHANNELS **********************
- ***********************************************************
- */
+// ************************************** IPC CHANNELS **************************************
 
 // Global variable to store list of databases and tables to provide to frontend upon refreshing view.
 let listObj: any;
 
 ipcMain.on('return-db-list', (event, dbName) => {
+  console.log('in return-db-list', dbName);
   // DB query to get the database size
   let dbSize: string;
   db.query(`SELECT pg_size_pretty(pg_database_size('${dbName}'));`).then(
@@ -100,34 +82,20 @@ ipcMain.on('change-db', (event, dbName) => {
 });
 
 // Listen for file upload. Create an instance of database from pre-made .tar or .sql file.
-ipcMain.on('upload-file', (event, filePath: string) => {
+ipcMain.on('upload-file', (event, filePath: [string]) => {
   // send notice to the frontend that async process has begun
   event.sender.send('async-started');
 
-  let dbName: string;
-  if (process.platform === 'darwin') {
-    dbName = filePath[0].slice(
-      filePath[0].lastIndexOf('/') + 1,
-      filePath[0].lastIndexOf('.')
-    );
-  } else {
-    dbName = filePath[0].slice(
-      filePath[0].lastIndexOf('\\') + 1,
-      filePath[0].lastIndexOf('.')
-    );
-  }
-
-  const createDB: string = createDBFunc(dbName);
-  const runSQL: string = runSQLFunc(dbName, filePath);
-  const runTAR: string = runTARFunc(dbName, filePath);
-  const extension: string = filePath[0].slice(filePath[0].lastIndexOf('.'));
+  // variables
+  const path = filePath[0]; // filePath = [ '/Users/faraz/Desktop/starwars_postgres_create.sql' ]
+  let dbName: string; // dbName = 'starwars_postgres_create';
+  const extension: string = path.slice(path.lastIndexOf('.'));
   let dbSize: string;
+  let createDB: string;
 
-  // SEQUENCE OF EXECUTING COMMANDS
-  // Steps are in reverse order because each step is a callback function that requires the following step to be defined.
-
-  // Step 5: Changes the pg URI the newly created database, queries new database, then sends list of tables and list of databases to frontend.
+  // Send the list
   async function sendLists() {
+    console.log('sendList');
     listObj = await db.getLists();
     // Send list of databases and tables, as well as database size to frontend.
     event.sender.send('db-lists', listObj, dbSize);
@@ -137,36 +105,49 @@ ipcMain.on('upload-file', (event, filePath: string) => {
     event.sender.send('switch-to-new', null);
     // notify frontend that async process has been completed
     event.sender.send('async-complete');
+    console.log('all events sent', dbSize);
   }
 
-  // Step 4: Given the file path extension, run the appropriate command in postgres to populate db.
-  const step4 = () => {
-    let runCmd: string = '';
-    if (extension === '.sql') runCmd = runSQL;
-    else if (extension === '.tar') runCmd = runTAR;
-    execute(runCmd, sendLists);
-
-    // DB query to get the database size
-    db.query(`SELECT pg_size_pretty(pg_database_size('${dbName}'));`).then(
-      (queryStats) => {
-        dbSize = queryStats.rows[0].pg_size_pretty;
-      }
+  // if statement is used to determine the db name and pass it into dbName variable
+  if (process.platform === 'darwin') {
+    dbName = path.slice(path.lastIndexOf('/') + 1, path.lastIndexOf('.'));
+  } else {
+    dbName = path.slice(
+      path.lastIndexOf('\\') + 1, // Need to escape to allow for '\'
+      path.lastIndexOf('.')
     );
-  };
+  }
 
-  // Step 3: Import database file from file path into docker container
-  // Edit: We changed the functionality to create a file on the local machine instead of adding it to the docker container
-  // const step3 = () => execute(importFile, step4);
+  // Create empty db & change current URI to match the newly created DB
+  if (extension === '.sql' || extension === '.tar') {
+    createDB = createDBFunc(dbName);
+    console.log('Empty DB Created: ', createDB);
 
-  // Step 2: Change current URI to match newly created DB
-  const step2 = () => {
-    db.changeDB(dbName);
-    return step4(); // changing step3 to step4 to test removal of importFile func
-  };
+    const step4 = () => {
+      const runSQL: string = runSQLFunc(dbName, filePath);
+      const runTAR: string = runTARFunc(dbName, filePath);
+      let runCmd: string = '';
+      if (extension === '.sql') runCmd = runSQL;
+      else if (extension === '.tar') runCmd = runTAR;
+      execute(runCmd, sendLists);
+    };
 
-  // Step 1: Create empty db
-  if (extension === '.sql' || extension === '.tar') execute(createDB, step2);
-  else console.log('INVALID FILE TYPE: Please use .tar or .sql extensions.');
+    execute(createDB, () => {
+      // Change current URI to match newly created DB
+      db.changeDB(dbName);
+      // DB query to get the database size
+      db.query(`SELECT pg_size_pretty(pg_database_size('${dbName}'));`).then(
+        (queryStats) => {
+          dbSize = queryStats.rows[0].pg_size_pretty;
+          console.log('DB Size is :', dbSize);
+        }
+      );
+      return step4(); // changing step3 to step4 to test removal of importFile func
+    });
+  } else
+    console.log(
+      'upload-file: Empty DB not created because of invalid file type.'
+    );
 });
 
 interface SchemaType {
@@ -187,6 +168,7 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
   const { schemaName: dbName, dbCopyName, copy } = data;
   let { schemaFilePath: filePath } = data;
   console.log(
+    'channels line 169: ',
     'Schema name: ',
     data.schemaName,
     'data.schemaFilePath: ',
@@ -299,7 +281,10 @@ ipcMain.on('execute-query-untracked', (event, data: QueryType) => {
       })();
     })
     .catch((error: string) => {
-      console.log('ERROR in execute-query-untracked channel in main.ts', error);
+      console.log(
+        'channels line 284: ERROR in execute-query-untracked channel in main.ts',
+        error
+      );
       event.sender.send('query-error', 'Error executing query.');
     });
 });
@@ -352,7 +337,10 @@ ipcMain.on('execute-query-tracked', (event, data: QueryType) => {
       }
     })
     .catch((error: string) => {
-      console.log('ERROR in execute-query-tracked channel in main.ts', error);
+      console.log(
+        'channels line 337: ERROR in execute-query-tracked channel in main.ts',
+        error
+      );
     });
 });
 
