@@ -6,6 +6,12 @@ import { createMuiTheme } from '@material-ui/core/styles';
 import styled from 'styled-components';
 import { Button } from '@material-ui/core/';
 
+interface PaletteColor {
+  light?: string;
+  main: string;
+  dark?: string;
+  contrastText?: string;
+}
 // previous
 export const bgColor = '#2b2d35';
 export const textColor = '#c6d2d5';
@@ -26,30 +32,35 @@ export const greyLight = '#aab6af';
 export const greyLightest = '#dfe0e2';
 
 // theme to override Mui defaults
-export const theme = createMuiTheme({
+export const MuiTheme =  createMuiTheme({
   palette: {
     primary: {
+      light: greenLight,
       main: greenPrimary,
+      dark: greenDark,
     },
     secondary: {
+      light: greyLightest,
       main: greyLight,
     },
   },
-});
-
-// Dialog Button style -> generic colors work, not variable colors. will override theme
-export const ButtonDialog = styled(Button)`
-  color: black;
-  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
-  padding: 7px 10px;
-  font-size: 1em;
-  margin: 1em;
-  border-radius: 3px;
-  &:hover {
-    /* background-color: red; */
+  overrides: {
+    MuiButton: {
+      root: {
+        margin: '8px',
+        padding: '8px',
+        boxShadow: '0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08)',
+      },
+    },
+    MuiIconButton: {
+      root: {
+        '&:hover': {
+          color: greenPrimary,
+        }
+      }
+    }
   }
-`;
-
+});
 
 // // typography
 // $font-stack: 'PT Sans', sans-serif;
