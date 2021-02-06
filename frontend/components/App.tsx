@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import GlobalStyle from '../GlobalStyle';
 // import styled from 'styled-components'
 // import {} from '../style-variables'
-import { AppState, userCreateQuery } from '../types';
+import { AppState, userCreateQuery, CreateNewQuery } from '../types';
 import { SavedQueries, QueryData } from '../classes/SavedQueries';
 import Sidebar from './sidebar/Sidebar';
-import QueryView from './views/QueryView';
+import QueryView from './views/QueryView/QueryView';
 import DbView from './views/DbView/DbView';
 import CompareView from './views/CompareView';
 import QuickStartView from './views/QuickStartView';
@@ -32,6 +32,11 @@ const App = () => {
     ipcRenderer.send('return-db-list');
   });
 
+  /**
+   * Hook to create new Query from data
+   */
+  const createNewQuery: CreateNewQuery = (query: QueryData) => queries.create(query)
+
   // TODO: refactor as a component with props ?
   const renderView = () => {
     switch (selectedView) {
@@ -47,7 +52,7 @@ const App = () => {
           <QueryView
             query={queries.selected}
             selectedDb={selectedDb}
-            createNewQuery={(query: QueryData) => queries.create(query)}
+            createNewQuery={createNewQuery}
           />
         );
       }

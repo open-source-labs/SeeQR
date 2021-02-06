@@ -1,6 +1,6 @@
 /**
- * This file declares the class that is used as the storage solution for queries on the app
- * SavedQueries is designed to be set as the state of a React component and to then receive a 
+ * This file declares the class that is used as the storage solution for queries on the app.
+ * SavedQueries is designed to be set as the state of a React component and to then receive a
  * reference to the hook that updates that state. This ensures this instance is capable of updating
  * the component's state at the end of any modifying operations.
  * All operations that create, update or delete a query MUST call .updateHookedState in order for the
@@ -13,6 +13,8 @@
 /* eslint-disable max-classes-per-file, no-redeclare, import/export */
 
 import type React from 'react';
+import ms from 'ms'
+import { ExplainResult } from '../types';
 
 export interface QueryData {
   /**
@@ -20,13 +22,13 @@ export interface QueryData {
    */
   sqlString?: string;
   /**
-   * pg rows returned from running query on db. 
+   * pg rows returned from running query on db.
    */
-  returnedRows?: Record<string, any>[];
+  returnedRows?: Record<string, unknown>[];
   /**
    * Execution Plan. Result of running EXPLAIN (FORMAT JSON, ANALYZE)
    */
-  executionPlan?: any;
+  executionPlan?: ExplainResult;
   /**
    * Name of PG database that this query is run on
    */
@@ -38,7 +40,7 @@ export interface QueryData {
 }
 
 interface QueryInternals {
-  shouldCompare?: boolean
+  shouldCompare?: boolean;
 }
 
 const buildKey = (label: string, db: string) => `label:${label} db:${db}`;
@@ -75,8 +77,8 @@ export class SavedQueries {
     private shouldCompare: boolean;
 
     sqlString?: string;
-    returnedRows?: Record<string, any>[];
-    executionPlan?: any;
+    returnedRows?: Record<string, unknown>[];
+    executionPlan?: ExplainResult;
     db: string;
     label: string;
 
@@ -88,7 +90,6 @@ export class SavedQueries {
       this.executionPlan = query.executionPlan;
       this.returnedRows = query.returnedRows;
       this.sqlString = query.sqlString;
-      
 
       this.shouldCompare = query.shouldCompare || false;
     }
@@ -101,7 +102,7 @@ export class SavedQueries {
     }
 
     /**
-     * Toggle compare flag for this Query. 
+     * Toggle compare flag for this Query.
      * Compare flag indicates whether a Query should be shown on Compare View
      */
     toggleCompare() {
@@ -126,7 +127,7 @@ export class SavedQueries {
       });
     }
 
-    /** 
+    /**
      * Set this Query selected on SavedQueries. Deselects previously selected Query if any
      */
     select() {
@@ -138,7 +139,18 @@ export class SavedQueries {
     }
 
     get isCompared() {
-      return this.shouldCompare
+      return this.shouldCompare;
+    }
+
+    get rows() {
+      if (!this.returnedRows) return 0
+      return this.returnedRows.length
+    }
+
+    get totalTime() {
+      if (!this.executionPlan) return 'n/a'
+      const totalTimeMs = this.executionPlan[0]['Execution Time'] + this.executionPlan[0]['Planning Time']
+      return ms(totalTimeMs, {long: true})
     }
   };
 
