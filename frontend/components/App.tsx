@@ -73,14 +73,14 @@ const App = () => {
     setSelectedView('queryView');
   };
 
-  // TODO: Temp test
-  if (!queries.length) {
-    queries.create({
-      label: 'ClaudioLabel',
-      db: 'MainDb',
-      sqlString: 'SELECT * FROM people;',
-    });
-  }
+  // // TODO: Temp test
+  // if (!queries.length) {
+  //   queries.create({
+  //     label: 'ClaudioLabel',
+  //     db: 'MainDb',
+  //     sqlString: 'SELECT * FROM people;',
+  //   });
+  // }
 
   return (
     <>
