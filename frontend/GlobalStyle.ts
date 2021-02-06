@@ -8,7 +8,7 @@ import { bgColor, textColor } from './style-variables';
 const GlobalStyle = createGlobalStyle`
 
  * {
-   color: ${textColor}
+   /* color: ${textColor} */
  }
 
  body {

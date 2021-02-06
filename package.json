@@ -24,6 +24,8 @@
   "author": "Team SeeQR",
   "license": "MIT",
   "dependencies": {
+    "@material-ui/core": "^4.11.3",
+    "@material-ui/icons": "^4.11.2",
     "@skidding/react-codemirror": "^1.0.2",
     "@types/react-router-dom": "^5.1.5",
     "@types/styled-components": "^5.1.7",
