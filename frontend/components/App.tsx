@@ -3,8 +3,7 @@ import GlobalStyle from '../GlobalStyle';
 // import styled from 'styled-components'
 // import {} from '../style-variables'
 import { AppState, userCreateQuery } from '../types';
-import SavedQueries from '../classes/SavedQueries';
-import type { QueryData } from '../classes/Query';
+import { SavedQueries, QueryData } from '../classes/SavedQueries';
 import Sidebar from './sidebar/Sidebar';
 import QueryView from './views/QueryView';
 import DbView from './views/DbView';
@@ -64,7 +63,7 @@ const App = () => {
 
   // TODO: Temp test
   if (!queries.length) {
-    queries.set('ClaudioLabel', 'MainDb', {
+    queries.create({
       label: 'ClaudioLabel',
       db: 'MainDb',
       sqlString: 'SELECT * FROM people;',

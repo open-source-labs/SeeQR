@@ -1,8 +1,9 @@
 import React from 'react';
-import { AppState, userCreateQuery } from '../../types';
-import type Query from '../../classes/Query';
+import { AppState, userCreateQuery, Query } from '../../types';
 
-type QueryListProps = Pick<AppState, 'queries'> & { createQuery: userCreateQuery };
+type QueryListProps = Pick<AppState, 'queries'> & {
+  createQuery: userCreateQuery;
+};
 
 interface QueryEntryProps {
   query: Query;

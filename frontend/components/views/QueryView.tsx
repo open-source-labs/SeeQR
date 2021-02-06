@@ -1,5 +1,5 @@
 import React from 'react';
-import type Query from '../../classes/Query';
+import { Query } from '../../types';
 
 interface QueryViewProps {
   query?: Query;
