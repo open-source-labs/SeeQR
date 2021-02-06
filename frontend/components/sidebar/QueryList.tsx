@@ -1,10 +1,6 @@
 import React from 'react';
 import { AppState, userCreateQuery, Query } from '../../types';
 
-type QueryListProps = Pick<AppState, 'queries'> & {
-  createQuery: userCreateQuery;
-};
-
 interface QueryEntryProps {
   query: Query;
 }
@@ -22,6 +18,10 @@ const QueryEntry = ({ query }: QueryEntryProps) => (
     </button>
   </li>
 );
+
+type QueryListProps = Pick<AppState, 'queries'> & {
+  createQuery: userCreateQuery;
+};
 
 const QueryList = ({ queries, createQuery }: QueryListProps) => (
   <>

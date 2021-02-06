@@ -25,6 +25,7 @@ const App = () => {
   const [selectedView, setSelectedView] = useState<AppState['selectedView']>(
     'quickStartView'
   );
+
   const [selectedDb, setSelectedDb] = useState<AppState['selectedDb']>('');
 
   useEffect(() => {

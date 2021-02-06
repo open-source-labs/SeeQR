@@ -39,7 +39,6 @@ export const theme = createMuiTheme({
 
 // Dialog Button style -> generic colors work, not variable colors. will override theme
 export const ButtonDialog = styled(Button)`
-  /* background-color: greenLight; */
   color: black;
   box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
   padding: 7px 10px;
@@ -50,6 +49,7 @@ export const ButtonDialog = styled(Button)`
     /* background-color: red; */
   }
 `;
+
 
 // // typography
 // $font-stack: 'PT Sans', sans-serif;

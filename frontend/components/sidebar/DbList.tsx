@@ -37,6 +37,7 @@ const DbList = ({ selectedDb, setSelectedDb }: DbListProps) => {
     if (isDbLists(dbLists)) {
       setDatabases(dbLists.databaseList);
     }
+    // TODO: handle false bug
   });
 
   const createSelectHandler = (dbName: string) => () => {
