@@ -1,7 +1,13 @@
 import React from 'react';
-import { ThemeProvider, Dialog, DialogTitle, Typography } from '@material-ui/core/';
+import {
+  MuiThemeProvider,
+  Dialog,
+  DialogTitle,
+  Typography,
+  Button,
+} from '@material-ui/core/';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
-import { ButtonDialog, theme } from '../../style-variables';
+import { MuiTheme } from '../../style-variables';
 
 const { dialog } = require('electron').remote;
 
@@ -43,31 +49,32 @@ const AddNewDbModal = ({ open, onClose }: addNewDbModalProps) => {
 
   return (
     <div>
-      <ThemeProvider theme={theme}>
-        <Dialog fullWidth maxWidth="xs" onClose={handleClose} aria-labelledby="modal-title" open={open}>
+      <MuiThemeProvider theme={MuiTheme}>
+        <Dialog
+          maxWidth="xs"
+          onClose={handleClose}
+          aria-labelledby="modal-title"
+          open={open}
+        >
           <DialogTitle id="alert-dialog-title">
             Import Existing Database
           </DialogTitle>
           <Typography paragraph align="center" id="alert-dialog-description">
             Please select a .sql or .tar file
           </Typography>
-          <ButtonDialog
+          <Button
             variant="contained"
             color="primary"
             startIcon={<CloudUploadIcon />}
             onClick={handleFileClick}
           >
             Import File
-          </ButtonDialog>
-          <ButtonDialog
-            variant="contained"
-            color="secondary"
-            onClick={handleClose}
-          >
+          </Button>
+          <Button variant="contained" color="secondary" onClick={handleClose}>
             Cancel
-          </ButtonDialog>
+          </Button>
         </Dialog>
-      </ThemeProvider>
+      </MuiThemeProvider>
     </div>
   );
 };
