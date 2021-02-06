@@ -7,7 +7,7 @@ interface QueryLabelProps {
 const QueryLabel = ({label}: QueryLabelProps) => {
   return (
     <div>
-      
+      {label}
     </div>
   )
 }
