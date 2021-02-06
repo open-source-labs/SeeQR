@@ -2,16 +2,17 @@ import React, { useState } from 'react';
 import GlobalStyle from '../GlobalStyle';
 // import styled from 'styled-components'
 // import {} from '../style-variables'
-import SavedQueries from '../SavedQueries'
+// import SavedQueries from '../SavedQueries'
+import DbList from './sidebar/DbList'
 
 
 const App = () => {
-  const [queries, setQueries] = useState(new SavedQueries());
+  // const [queries, setQueries] = useState(new SavedQueries());
 
   return (
     <>
       <GlobalStyle />
-      <div>Hello</div>
+      <DbList />
     </>
   );
 };
