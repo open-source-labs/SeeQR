@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { IpcMainEvent } from 'electron';
 import { AppState, isDbLists } from '../../types';
 
-// TODO: how to type ipcRenderer ? 
+// TODO: how to type ipcRenderer ?
 const { ipcRenderer } = window.require('electron');
 
 type DbListProps = Pick<AppState, 'selectedDb' | 'setSelectedDb'>;
@@ -20,11 +20,6 @@ const DbEntry = ({ db, isSelected, select }: DbEntryProps) => (
 const DbList = ({ selectedDb, setSelectedDb }: DbListProps) => {
   const [databases, setDatabases] = useState<string[]>([]);
 
-  // // TODO: Temp test. DELETE
-  // if (!databases.length) {
-  //   setDatabases(['db1', 'planda', 'starwars', 'another one'])
-  // }
-
   // Listen to backend for updates to list of available databases
   ipcRenderer.on('db-lists', (evt: IpcMainEvent, dbLists: unknown) => {
     if (isDbLists(dbLists)) {
@@ -32,10 +27,10 @@ const DbList = ({ selectedDb, setSelectedDb }: DbListProps) => {
     }
   });
 
-  const createSelectHandler  = (dbName: string) => () => {
-    setSelectedDb(dbName)
-    ipcRenderer.send('change-db', dbName)
-  }
+  const createSelectHandler = (dbName: string) => () => {
+    setSelectedDb(dbName);
+    ipcRenderer.send('change-db', dbName);
+  };
 
   return (
     <>

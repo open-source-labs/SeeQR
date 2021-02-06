@@ -6,7 +6,7 @@ import { AppState, userCreateQuery } from '../types';
 import { SavedQueries, QueryData } from '../classes/SavedQueries';
 import Sidebar from './sidebar/Sidebar';
 import QueryView from './views/QueryView';
-import DbView from './views/DbView';
+import DbView from './views/DbView/DbView';
 import CompareView from './views/CompareView';
 import QuickStartView from './views/QuickStartView';
 
@@ -36,7 +36,8 @@ const App = () => {
   const renderView = () => {
     switch (selectedView) {
       case 'dbView':
-        return <DbView />;
+        if (!selectedDb) return <QuickStartView />;
+        return <DbView selectedDb={selectedDb} />;
       case 'compareView':
         return <CompareView />;
       case 'queryView': {
@@ -56,6 +57,11 @@ const App = () => {
     }
   };
 
+  /**
+   * Handler for "create new query" actions.
+   */
+  // deselects all queries and sets view to queryView. queryView default
+  // behavior is to display empty query when a db is selected
   const createQuery: userCreateQuery = () => {
     queries.deselectAll();
     setSelectedView('queryView');
