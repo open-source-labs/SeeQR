@@ -12,7 +12,7 @@ const {
 // URI Format: postgres://username:password@hostname:port/databasename
 // Note: User must have a 'postgres' role set-up prior to initializing this connection. https://www.postgresql.org/docs/13/database-roles.html
 
-let PG_URI: string = 'postgres://postgres:postgres@localhost:5432/defaultDB';
+let PG_URI: string = 'postgres://postgres:postgres@localhost:5432';
 let pool: any = new Pool({ connectionString: PG_URI });
 
 /**
