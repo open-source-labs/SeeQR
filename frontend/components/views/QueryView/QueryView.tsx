@@ -1,5 +1,5 @@
 import { IpcMainEvent } from 'electron';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { MuiThemeProvider, Button } from '@material-ui/core/';
 import { MuiTheme } from '../../../style-variables';
 import {
@@ -7,8 +7,10 @@ import {
   isBackendQueryData,
   CreateNewQuery,
   AppState,
+  isDbLists,
 } from '../../../types';
 import { getPrettyTime } from '../../../lib/queries';
+import { once } from '../../../lib/utils';
 
 import QueryLabel from './QueryLabel';
 import QueryDb from './QueryDb';
@@ -19,19 +21,28 @@ import QueryTabs from './QueryTabs';
 
 const { ipcRenderer } = window.require('electron');
 
+// emitting with no payload requests backend to send back a db-lists event with list of dbs
+const requestDbListOnce = once(() => ipcRenderer.send('return-db-list'));
+
 interface QueryViewProps {
   query?: AppState['workingQuery'];
   createNewQuery: CreateNewQuery;
-  selectedDb: string;
+  selectedDb: AppState['selectedDb'];
+  setSelectedDb: AppState['setSelectedDb'];
   setQuery: AppState['setWorkingQuery'];
+  show: boolean;
 }
 
 const QueryView = ({
   query,
   createNewQuery,
   selectedDb,
+  setSelectedDb,
   setQuery,
+  show,
 }: QueryViewProps) => {
+  const [databases, setDatabases] = useState<string[]>([]);
+
   const defaultQuery: QueryData = {
     label: '',
     db: selectedDb,
@@ -40,6 +51,20 @@ const QueryView = ({
 
   const localQuery = { ...defaultQuery, ...query };
 
+  // Register event listener that receives database list for db selector
+  useEffect(() => {
+    const receiveDbs = (evt: IpcMainEvent, dbLists: unknown) => {
+      if (isDbLists(dbLists)) {
+        setDatabases(dbLists.databaseList);
+      }
+    };
+    ipcRenderer.on('db-lists', receiveDbs);
+    requestDbListOnce();
+
+    return () => ipcRenderer.removeListener('db-lists', receiveDbs);
+  });
+
+  // Register event listener that receives query information
   useEffect(() => {
     // Listen to Backend for data returned from running query and create/update query
     const receiveQuery = (evt: IpcMainEvent, queryData: unknown) => {
@@ -51,11 +76,12 @@ const QueryView = ({
           label: queryData.queryLabel,
           db: queryData.queryCurrentSchema,
         };
-        // TODO: handle updates
         createNewQuery(transformedData);
       }
     };
+
     ipcRenderer.on('return-execute-query', receiveQuery);
+
     return () =>
       ipcRenderer.removeListener('return-execute-query', receiveQuery);
   });
@@ -64,7 +90,13 @@ const QueryView = ({
     setQuery({ ...localQuery, label: newLabel });
   };
   const onDbChange = (newDb: string) => {
+    // when db is changed we must change selected db state on app, as well as
+    // request updates for db and table information. Otherwise database view tab
+    // will show wrong informatio
     setQuery({ ...localQuery, db: newDb });
+    setSelectedDb(newDb)
+    ipcRenderer.send('change-db', newDb);
+    ipcRenderer.send('return-db-list', newDb);
   };
   const onSqlChange = (newSql: string) => {
     setQuery({ ...localQuery, sqlString: newSql });
@@ -82,12 +114,17 @@ const QueryView = ({
     ipcRenderer.send('return-db-list');
   };
 
+  if (!show) return null;
   return (
     <>
       <MuiThemeProvider theme={MuiTheme}>
         <h4>Query View</h4>
         <QueryLabel label={localQuery.label} onChange={onLabelChange} />
-        <QueryDb db={localQuery.db} onChange={onDbChange} />
+        <QueryDb
+          db={localQuery.db}
+          onChange={onDbChange}
+          databases={databases}
+        />
         <Button variant="contained" onClick={onRun}>
           Run Query
         </Button>

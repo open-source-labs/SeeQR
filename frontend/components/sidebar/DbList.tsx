@@ -11,7 +11,6 @@ const { ipcRenderer } = window.require('electron');
 // emitting with no payload requests backend to send back a db-lists event with list of dbs
 const requestDbListOnce = once(() => ipcRenderer.send('return-db-list'));
 
-type DbListProps = Pick<AppState, 'selectedDb' | 'setSelectedDb'>;
 
 interface DbEntryProps {
   db: string;
@@ -23,7 +22,9 @@ const DbEntry = ({ db, isSelected, select }: DbEntryProps) => (
   <li onClick={select}>{`${db} ${isSelected ? '<' : ''}`}</li>
 );
 
-const DbList = ({ selectedDb, setSelectedDb }: DbListProps) => {
+type DbListProps = Pick<AppState, 'selectedDb' | 'setSelectedDb'> & {show: boolean};
+
+const DbList = ({ selectedDb, setSelectedDb, show }: DbListProps) => {
   const [databases, setDatabases] = useState<string[]>([]);
   const [open, setOpen] = React.useState(false);
 
@@ -51,8 +52,10 @@ const DbList = ({ selectedDb, setSelectedDb }: DbListProps) => {
   const createSelectHandler = (dbName: string) => () => {
     setSelectedDb(dbName);
     ipcRenderer.send('change-db', dbName);
+    ipcRenderer.send('return-db-list', dbName);
   };
 
+  if (!show) return null
   return (
     <>
       <ul>

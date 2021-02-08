@@ -11,9 +11,12 @@ const { ipcRenderer } = window.require('electron');
 // emitting with no payload requests backend to send back a db-lists event with list of dbs
 const requestDbListOnce = once(() => ipcRenderer.send('return-db-list'));
 
-type DbViewProps = Pick<AppState, 'selectedDb'>;
+interface DbViewProps {
+  selectedDb: AppState['selectedDb'];
+  show: boolean
+};
 
-const DbView = ({ selectedDb }: DbViewProps) => {
+const DbView = ({ selectedDb, show }: DbViewProps) => {
   const [dbTables, setTables] = useState<string[]>([]);
   // TODO: type appropriately once backend provides data
   const [selectedTable, setSelectedTable] = useState<string>('');
@@ -33,6 +36,7 @@ const DbView = ({ selectedDb }: DbViewProps) => {
     return () => ipcRenderer.removeListener('db-lists', tablesFromBackend);
   });
 
+  if (!show) return null
   return (
     <>
       <DatabaseDetails db={selectedDb} />

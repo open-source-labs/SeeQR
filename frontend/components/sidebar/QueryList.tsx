@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppState,  QueryData } from '../../types';
+import { AppState, QueryData } from '../../types';
 import { deleteQuery, toggleCompare, key as queryKey } from '../../lib/queries';
 
 interface QueryEntryProps {
@@ -40,6 +40,7 @@ type QueryListProps = Pick<
   | 'setWorkingQuery'
 > & {
   createQuery: () => void;
+  show: boolean;
 };
 
 const QueryList = ({
@@ -50,31 +51,35 @@ const QueryList = ({
   setComparedQueries,
   workingQuery,
   setWorkingQuery,
-}: QueryListProps) => (
-  <>
-    <ul>
-      {Object.values(queries).map((query: QueryData) => (
-        <QueryEntry
-          key={`QueryList_${query.label}_${query.db}`}
-          query={query}
-          select={() => setWorkingQuery(query)}
-          isSelected={
-            !!workingQuery && queryKey(query) === queryKey(workingQuery)
-          }
-          deleteThisQuery={() => {
-            setQueries(deleteQuery(queries, query));
-            setComparedQueries(deleteQuery(comparedQueries, query));
-          }}
-          toggleComparison={() =>
-            setComparedQueries(toggleCompare(comparedQueries, query))
-          }
-        />
-      ))}
-    </ul>
-    <button type="button" onClick={createQuery}>
-      Create Query
-    </button>
-  </>
-);
+  show,
+}: QueryListProps) => {
+  if (!show) return null;
+  return (
+    <>
+      <ul>
+        {Object.values(queries).map((query: QueryData) => (
+          <QueryEntry
+            key={`QueryList_${query.label}_${query.db}`}
+            query={query}
+            select={() => setWorkingQuery(query)}
+            isSelected={
+              !!workingQuery && queryKey(query) === queryKey(workingQuery)
+            }
+            deleteThisQuery={() => {
+              setQueries(deleteQuery(queries, query));
+              setComparedQueries(deleteQuery(comparedQueries, query));
+            }}
+            toggleComparison={() =>
+              setComparedQueries(toggleCompare(comparedQueries, query))
+            }
+          />
+        ))}
+      </ul>
+      <button type="button" onClick={createQuery}>
+        Create Query
+      </button>
+    </>
+  );
+};
 
 export default QueryList;

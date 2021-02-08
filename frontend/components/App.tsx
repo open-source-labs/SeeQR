@@ -1,9 +1,9 @@
-import React, { useState  } from 'react';
+import React, { useState } from 'react';
 import GlobalStyle from '../GlobalStyle';
 // import styled from 'styled-components'
 // import {} from '../style-variables'
 import { AppState, CreateNewQuery, QueryData } from '../types';
-import { createQuery } from '../lib/queries';
+import { createQuery, key } from '../lib/queries';
 import Sidebar from './sidebar/Sidebar';
 import QueryView from './views/QueryView/QueryView';
 import DbView from './views/DbView/DbView';
@@ -25,34 +25,38 @@ const App = () => {
   /**
    * Hook to create new Query from data
    */
-  const createNewQuery: CreateNewQuery = (query: QueryData) =>
-    setQueries(createQuery(queries, query));
-
-  // TODO: refactor as a component with props ?
-  const renderView = () => {
-    switch (selectedView) {
-      case 'dbView':
-        if (!selectedDb) return <QuickStartView />;
-        return <DbView selectedDb={selectedDb} />;
-      case 'compareView':
-        return <CompareView queries={comparedQueries} />;
-      case 'queryView': {
-        if (!queries.selected && !selectedDb) return <QuickStartView />;
-
-        return (
-          <QueryView
-            query={workingQuery}
-            setQuery={setWorkingQuery}
-            selectedDb={selectedDb}
-            createNewQuery={createNewQuery}
-          />
-        );
-      }
-      case 'quickStartView':
-      default:
-        return <QuickStartView />;
-    }
+  const createNewQuery: CreateNewQuery = (query: QueryData) => {
+    const newQueries = createQuery(queries, query);
+    setQueries(newQueries);
+    // we must set working query to newly created query otherwise query view won't update
+    setWorkingQuery(newQueries[key(query)]);
   };
+
+  // determine which view should be visible depending on selected view and
+  // prerequisites for each view
+  let shownView: AppState['selectedView'];
+  switch (selectedView) {
+    case 'compareView':
+      shownView = 'compareView';
+      break;
+    case 'dbView':
+      if (!selectedDb) {
+        shownView = 'quickStartView';
+        break;
+      }
+      shownView = 'dbView';
+      break;
+    case 'queryView':
+      if (!queries.selected && !selectedDb) {
+        shownView = 'quickStartView';
+        break;
+      }
+      shownView = 'queryView';
+      break;
+    case 'quickStartView':
+    default:
+      shownView = 'quickStartView';
+  }
 
   return (
     <>
@@ -71,7 +75,20 @@ const App = () => {
           setWorkingQuery,
         }}
       />
-      {renderView()}
+      <CompareView
+        queries={comparedQueries}
+        show={shownView === 'compareView'}
+      />
+      <DbView selectedDb={selectedDb} show={shownView === 'dbView'} />
+      <QueryView
+        query={workingQuery}
+        setQuery={setWorkingQuery}
+        selectedDb={selectedDb}
+        setSelectedDb={setSelectedDb}
+        createNewQuery={createNewQuery}
+        show={shownView === 'queryView'}
+      />
+      <QuickStartView show={shownView === 'quickStartView'} />
     </>
   );
 };

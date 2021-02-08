@@ -6,14 +6,18 @@ import CompareTable from './CompareTable';
 
 interface CompareViewProps {
   queries: AppState['queries'];
+  show: boolean;
 }
 
-const CompareView = ({ queries }: CompareViewProps) => (
-  <div>
-    Compare
-    <CompareTable queries={queries} />
-    <CompareChart queries={queries} />
-  </div>
-);
+const CompareView = ({ queries, show }: CompareViewProps) => {
+  if (!show) return null;
+  return (
+    <div>
+      Compare
+      <CompareTable queries={queries} />
+      <CompareChart queries={queries} />
+    </div>
+  );
+};
 
 export default CompareView;
