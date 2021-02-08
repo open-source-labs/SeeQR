@@ -1,12 +1,12 @@
 import React from 'react';
-import { Query } from '../../../types';
+import { QueryData } from '../../../types';
 
 interface QueryPlanProps {
-  executionPlan: Query['executionPlan'];
+  executionPlan: QueryData['executionPlan'];
 }
 
 const QueryPlan = ({ executionPlan }: QueryPlanProps) => {
-  return <>{executionPlan || 'Plan'}</>;
+  return <>{executionPlan?.toString() || 'Plan'}</>;
 };
 
 export default QueryPlan;

@@ -1,12 +1,12 @@
 import React from 'react';
-import { Query } from '../../../types';
+import { QueryData } from '../../../types';
 
 interface QueryResultsProps {
-  results: Query['returnedRows'];
+  results: QueryData['returnedRows'];
 }
 
 const QueryResults = ({ results }: QueryResultsProps) => {
-  return <>{results || 'results'}</>;
+  return <>{results?.toString() || 'results'}</>;
 };
 
 export default QueryResults;

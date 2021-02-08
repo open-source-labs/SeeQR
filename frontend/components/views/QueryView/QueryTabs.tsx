@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Query } from '../../../types';
+import { QueryData } from '../../../types';
 
 import QueryResults from './QueryResults';
 import QueryPlan from './QueryPlan';
@@ -26,8 +26,8 @@ const TabSelector = ({ selectedTab, select }: TabSelectorProps) => {
 };
 
 interface QueryTabsProps {
-  results: Query['returnedRows'];
-  executionPlan: Query['executionPlan'];
+  results: QueryData['returnedRows'];
+  executionPlan: QueryData['executionPlan'];
 }
 
 const QueryTabs = ({ results, executionPlan }: QueryTabsProps) => {

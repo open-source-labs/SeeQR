@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppState, userCreateQuery } from '../../types';
+import { AppState } from '../../types';
 import TopButtons from './TopButtons';
 import QueryList from './QueryList';
 import DbList from './DbList';
@@ -11,7 +11,12 @@ type SidebarProps = Pick<
   | 'setSelectedDb'
   | 'setSelectedView'
   | 'queries'
-> & {createQuery : userCreateQuery};
+  | 'setQueries'
+  | 'comparedQueries'
+  | 'setComparedQueries'
+  | 'workingQuery'
+  | 'setWorkingQuery'
+> 
 
 type ViewSelectorProps = Pick<AppState, 'selectedView' | 'setSelectedView'>;
 
@@ -30,20 +35,39 @@ const ViewSelector = ({ selectedView, setSelectedView }: ViewSelectorProps) => (
 );
 
 const Sidebar = ({
+  setQueries,
+  comparedQueries,
+  setComparedQueries,
   selectedView,
   setSelectedView,
   selectedDb,
   setSelectedDb,
-  createQuery,
   queries,
+  workingQuery,
+  setWorkingQuery,
 }: SidebarProps) => {
+
+  /**
+   * Show empty query view for user to create new query.
+   * Deselects all queries and goes to queryView
+   */
+  const showEmptyQuery = () => {
+    setSelectedView('queryView')
+    setWorkingQuery(undefined)
+  }
+
   const renderList = () => {
     switch (selectedView) {
       case 'queryView':
         return (
           <QueryList
+            setComparedQueries={setComparedQueries}
+            comparedQueries={comparedQueries}
+            setQueries={setQueries}
             queries={queries}
-            createQuery={createQuery}
+            createQuery={showEmptyQuery}
+            workingQuery={workingQuery}
+            setWorkingQuery={setWorkingQuery}
           />
         );
       case 'dbView':
