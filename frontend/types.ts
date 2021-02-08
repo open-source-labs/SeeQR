@@ -2,12 +2,6 @@
  * This file contains common types that need to be used across the frontend
  */
 
-import type { SavedQueries, QueryData } from './classes/SavedQueries';
-
-export type { SavedQueries, QueryData };
-// Rename Query type for ease of use
-export type Query = SavedQueries.Query;
-
 type ViewName = 'compareView' | 'dbView' | 'queryView' | 'quickStartView';
 
 export interface AppState {
@@ -15,11 +9,38 @@ export interface AppState {
   setSelectedView: (selView: ViewName) => void;
   selectedDb: string;
   setSelectedDb: (selDb: string) => void;
-  queries: SavedQueries;
+  workingQuery: QueryData | undefined;
+  setWorkingQuery: (selQuery: QueryData | undefined) => void;
+  queries: Record<string, QueryData>;
+  setQueries: (queries: Record<string, QueryData>) => void;
+  comparedQueries: Record<string, QueryData>;
+  setComparedQueries: (comparedQueries: Record<string, QueryData>) => void;
 }
 
-export type userCreateQuery = () => void;
 export type CreateNewQuery = (query: QueryData) => void;
+
+export interface QueryData {
+  /**
+   * SQL string as inputted by user
+   */
+  sqlString: string;
+  /**
+   * pg rows returned from running query on db.
+   */
+  returnedRows?: Record<string, unknown>[];
+  /**
+   * Execution Plan. Result of running EXPLAIN (FORMAT JSON, ANALYZE)
+   */
+  executionPlan?: ExplainJson;
+  /**
+   * Name of PG database that this query is run on
+   */
+  db: string;
+  /**
+   * User given label that identifies query
+   */
+  label: string;
+}
 
 // Electron Interface //
 
@@ -30,7 +51,7 @@ export type CreateNewQuery = (query: QueryData) => void;
  * Fake type guard that asserts a type to simplify tests inside real type guards
  */
 // type assertions don't work with arrow functions https://github.com/microsoft/TypeScript/issues/34523
-function assumeType <T>(x: unknown): asserts x is T {} 
+function assumeType<T>(x: unknown): asserts x is T {}
 
 export interface DbLists {
   databaseList: string[];
@@ -73,12 +94,13 @@ interface PlanNode {
   Plans?: PlanNode[];
 }
 
-interface ExplainJson {
+export interface ExplainJson {
   Plan: PlanNode;
   'Planning Time': number;
   'Execution Time': number;
 }
-export type ExplainResult = [ExplainJson];
+
+type ExplainResult = [{ 'QUERY PLAN': [ExplainJson] }];
 
 export interface BackendQueryData {
   queryString: string;
@@ -105,7 +127,7 @@ export const isBackendQueryData = (obj: unknown): obj is BackendQueryData => {
     )
       return false;
 
-    if (!obj.queryStatistics[0].Plan) return false;
+    if (!obj.queryStatistics[0]['QUERY PLAN'][0].Plan) return false;
   } catch (e) {
     return false;
   }

@@ -1,13 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { IpcMainEvent } from 'electron';
 import AddIcon from '@material-ui/icons/Add';
 import AddNewDbModal from '../modal/addNewDbModal';
 import { AppState, isDbLists } from '../../types';
+import { once } from '../../lib/utils'
 
 // TODO: how to type ipcRenderer ?
 const { ipcRenderer } = window.require('electron');
 
-type DbListProps = Pick<AppState, 'selectedDb' | 'setSelectedDb'>;
+// emitting with no payload requests backend to send back a db-lists event with list of dbs
+const requestDbListOnce = once(() => ipcRenderer.send('return-db-list'));
+
 
 interface DbEntryProps {
   db: string;
@@ -19,10 +22,24 @@ const DbEntry = ({ db, isSelected, select }: DbEntryProps) => (
   <li onClick={select}>{`${db} ${isSelected ? '<' : ''}`}</li>
 );
 
-const DbList = ({ selectedDb, setSelectedDb }: DbListProps) => {
-  const [databases, setDatabases] = useState<string[]>([]);
+type DbListProps = Pick<AppState, 'selectedDb' | 'setSelectedDb'> & {show: boolean};
 
+const DbList = ({ selectedDb, setSelectedDb, show }: DbListProps) => {
+  const [databases, setDatabases] = useState<string[]>([]);
   const [open, setOpen] = React.useState(false);
+
+  useEffect(() => {
+    // Listen to backend for updates to list of available databases
+    const dbListFromBackend = (evt: IpcMainEvent, dbLists: unknown) => {
+      if (isDbLists(dbLists)) {
+        setDatabases(dbLists.databaseList);
+      }
+    }
+    ipcRenderer.on('db-lists', dbListFromBackend);
+    requestDbListOnce()
+    // return cleanup function
+    return () => ipcRenderer.removeListener('db-lists', dbListFromBackend);
+  });
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -32,19 +49,13 @@ const DbList = ({ selectedDb, setSelectedDb }: DbListProps) => {
     setOpen(false);
   };
 
-  // Listen to backend for updates to list of available databases
-  ipcRenderer.on('db-lists', (evt: IpcMainEvent, dbLists: unknown) => {
-    if (isDbLists(dbLists)) {
-      setDatabases(dbLists.databaseList);
-    }
-    // TODO: handle false bug
-  });
-
   const createSelectHandler = (dbName: string) => () => {
     setSelectedDb(dbName);
     ipcRenderer.send('change-db', dbName);
+    ipcRenderer.send('return-db-list', dbName);
   };
 
+  if (!show) return null
   return (
     <>
       <ul>
@@ -64,6 +75,3 @@ const DbList = ({ selectedDb, setSelectedDb }: DbListProps) => {
 };
 
 export default DbList;
-
-
-
