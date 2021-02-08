@@ -29,13 +29,16 @@ const runTARFunc = (dbName, file) =>
 // make a full copy of the schema
 const runFullCopyFunc = (dbCopyName, file) => {
   const newFile = file[0];
+  console.log('fullCopyPath: ', newFile)
 
   return `pg_dump -U postgres -d ${dbCopyName} -f ${newFile}`;
 };
 
 // make a hollow copy of the schema
-const runHollowCopyFunc = (dbCopyName, file) =>
-  `pg_dump -s -U postgres ${dbCopyName} -f ${file}`;
+const runHollowCopyFunc = (dbCopyName, file) => {
+  console.log('shallow: ', file);
+  return `pg_dump -s -U postgres ${dbCopyName} -f ${file}`;
+}
 
 // Function to execute commands in the child process.
 const execute = (str: string, nextStep: any) => {
@@ -68,11 +71,13 @@ ipcMain.on('return-db-list', (event, dbName) => {
   console.log('in return-db-list', dbName);
   // DB query to get the database size
   let dbSize: string;
-  db.query(`SELECT pg_size_pretty(pg_database_size('${dbName}'));`).then(
-    (queryStats) => {
-      dbSize = queryStats.rows[0].pg_size_pretty;
-    }
-  );
+  if (dbName) {
+    db.query(`SELECT pg_size_pretty(pg_database_size('${dbName}'));`).then(
+      (queryStats) => {
+        dbSize = queryStats.rows[0].pg_size_pretty;
+      }
+    );
+  };
   db.getLists().then((data) => event.sender.send('db-lists', data, dbSize));
 });
 
@@ -102,7 +107,6 @@ ipcMain.on('upload-file', (event, filePath: [string]) => {
 
   // Send list of DBs, schema-name, tell front-end to switch tabs, tell front-end async-completed
   async function sendLists() {
-    console.log('sendList');
     listObj = await db.getLists();
     // Send list of databases and tables, as well as database size to frontend.
     event.sender.send('db-lists', listObj, dbSize);
@@ -112,7 +116,6 @@ ipcMain.on('upload-file', (event, filePath: [string]) => {
     event.sender.send('switch-to-new', null);
     // notify frontend that async process has been completed
     event.sender.send('async-complete');
-    console.log('all events sent', dbSize);
   }
 
   // Create empty db & change current URI to match the newly created DB
@@ -123,16 +126,14 @@ ipcMain.on('upload-file', (event, filePath: [string]) => {
         ? runSQLFunc(dbName, filePath)
         : runTARFunc(dbName, filePath); // Return SQL Script
 
-    // Change the URI to made DB, get DB size, import uploaded file, and send response back
+    // Change the URI to new DB, get DB size, import uploaded file, and send response back
     const importDB = () => {
-      console.log('in db123');
       // Change current URI to match newly created DB
       db.changeDB(dbName);
       // DB query to get the database size
       db.query(`SELECT pg_size_pretty(pg_database_size('${dbName}'));`)
         .then((queryStats) => {
           dbSize = queryStats.rows[0].pg_size_pretty;
-          console.log('DB Size is :', dbSize);
         })
         .then(() => {
           execute(runCmd, sendLists); // Pass in SQL Scipt to import SQL or TAR file and next func to execute};
@@ -153,54 +154,44 @@ interface SchemaType {
   copy: boolean;
 }
 
-// The following function creates an instance of database from pre-made .tar or .sql file.
-// OR
-// Listens for and handles DB copying events
+/**
+ * This function allows users to import the DB using the + icon on the front end
+ * Users can import a .tar or .sql file
+ * 
+ * Additionally, this function allows the user to copy an existing database schema and optionally copy the data in the db
+ */
+
 ipcMain.on('input-schema', (event, data: SchemaType) => {
   // send notice to the frontend that async process has begun
   event.sender.send('async-started');
 
-  const { schemaName: dbName, dbCopyName, copy } = data;
-  let { schemaFilePath: filePath } = data;
-  console.log(
-    'channels line 169: ',
-    'Schema name: ',
-    data.schemaName,
-    'data.schemaFilePath: ',
-    data.schemaFilePath,
-    'filepath: ',
-    filePath,
-    'dbCopyName: ',
-    dbCopyName
-  );
+  const { 
+    schemaName: dbNameEnteredByUser, 
+    dbCopyName: dbNameUserSelectedToCopy, 
+    copy: copyAllDataFromUserSelectedDB,
+  } = data
+
+  let { schemaFilePath: importedSchemaFilePath } = data;
+
+  const extension: string = Array.isArray(importedSchemaFilePath)
+  ? importedSchemaFilePath[0].slice(importedSchemaFilePath[0].lastIndexOf('.'))
+  : '.sql';
 
   // conditional to get the correct schemaFilePath name from the Load Schema Modal
-  if (!data.schemaFilePath) {
-    filePath = [`${data.schemaName}.sql`];
-  } else {
-    filePath = data.schemaFilePath;
-  }
-  // generate strings that are fed into execute functions later
-  const createDB: string = createDBFunc(dbName);
+  if (!importedSchemaFilePath) {
+    importedSchemaFilePath = [`${dbNameEnteredByUser}.sql`];
+  } 
+  
+  // Each function returns the Postgres command that will be executed on the command line by invoking the execute function
+  const createDB: string = createDBFunc(dbNameEnteredByUser);
+  const runSQL: string = runSQLFunc(dbNameEnteredByUser, importedSchemaFilePath);
+  const runTAR: string = runTARFunc(dbNameEnteredByUser, importedSchemaFilePath);
+  const runFullCopy: string = runFullCopyFunc(dbNameUserSelectedToCopy, importedSchemaFilePath);
+  const runHollowCopy: string = runHollowCopyFunc(dbNameUserSelectedToCopy, importedSchemaFilePath);
 
-  const runSQL: string = runSQLFunc(dbName, filePath);
-  const runTAR: string = runTARFunc(dbName, filePath);
-  const runFullCopy: string = runFullCopyFunc(dbCopyName, filePath);
-  const runHollowCopy: string = runHollowCopyFunc(dbCopyName, filePath);
-
-  // determine if the file is a sql or a tar file, in the case of a copy, we will not have a filepath so we just hard-code the extension to be sql
-  let extension: string = '';
-  if (filePath.length > 0) {
-    extension = filePath[0].slice(filePath[0].lastIndexOf('.'));
-  } else extension = '.sql';
-
-  // SEQUENCE OF EXECUTING COMMANDS
-  // Steps are in reverse order because each step is a callback function that requires the following step to be defined.
-
-  // Step 5: Changes the pg URI to look to the newly created database and queries all the tables in that database and sends it to frontend.
+  // Change the URI to new DB, send DB lists and tables in current DB
   async function sendLists() {
     listObj = await db.getLists();
-
     event.sender.send('db-lists', listObj);
     // tell the front end to switch tabs to the newly created database
     event.sender.send('switch-to-new', null);
@@ -208,47 +199,35 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
     event.sender.send('async-complete');
   }
 
-  // Step 4: Given the file path extension, run the appropriate command in postgres to build the db
-  const step4 = () => {
-    let runCmd: string = '';
-    if (extension === '.sql') runCmd = runSQL;
-    else if (extension === '.tar') runCmd = runTAR;
-    execute(runCmd, sendLists);
-  };
+  const changeCurrentDB = () => {
+    db.changeDB(dbNameEnteredByUser);
 
-  // Step 3: Change the database you're referencing
-  const step3Copy = () => {
-    db.changeDB(dbName);
-    return step4();
-  };
+    const runCmd: string = extension === '.sql'
+    ? runSQL
+    : runTAR;
+  
+   execute(runCmd, sendLists);
+  }
 
-  // Step 2: Change curent URI to match newly created DB
-  const step2 = () => {
-    // if we are copying
-    if (copy !== undefined) {
-      // first, we need to change the current DB instance to that of the one we need to copy, so we'll head to the changeDB function in the models file
-      db.changeDB(dbCopyName);
-      // now that our DB has been changed to the one we wish to copy, we need to either make an exact copy or a hollow copy using pg_dump OR pg_dump -s
-      // this generates a pg_dump file from the specified db and saves it to a location in the container.
-      // Full copy case
-      if (copy) {
-        execute(runFullCopy, step3Copy);
+  const importOrCopyExistingDB = () => {
+    // User selected to copy from existing DB Schema
+    if (copyAllDataFromUserSelectedDB !== undefined) {
+      // change DB instance to the DB the User wants to copy
+      db.changeDB(dbNameUserSelectedToCopy);
+      // If User wanted to copy data from Existing DB execute rullFullCopy
+      if (copyAllDataFromUserSelectedDB) {
+        execute(runFullCopy, changeCurrentDB);
       }
-      // Hollow copy case
-      else execute(runHollowCopy, step3Copy);
+      // Else execute runHollowCopy
+      else execute(runHollowCopy, changeCurrentDB);
     }
 
-    // if we are not copying
     else {
-      // change the current database back to the newly created one
-      // and now that we have changed to the new db, we can move on to importing the data file
-      db.changeDB(dbName);
-      step4();
+      changeCurrentDB();
     }
   };
-
-  // Step 1 : Create empty db
-  execute(createDB, step2);
+  // Run createDB script on command line via Node.js and then execute CB
+  execute(createDB, importOrCopyExistingDB);
 });
 
 interface QueryType {
@@ -263,9 +242,11 @@ ipcMain.on('execute-query-untracked', (event, data: QueryType) => {
   // send notice to front end that query has been started
   event.sender.send('async-started');
 
+
+
   // destructure object from frontend
   const { queryString } = data;
-
+  console.log('executing untracked query');
   // run query on db
   db.query(queryString)
     .then(() => {
@@ -302,34 +283,37 @@ ipcMain.on('execute-query-tracked', (event, data: QueryType) => {
     lists: {},
   };
 
-  // Run select * from actors;
-  db.query(queryString)
-    .then((queryData) => {
-      frontendData.queryData = queryData.rows;
-      if (!queryString.match(/create/i)) {
-        // Run EXPLAIN (FORMAT JSON, ANALYZE)
-        db.query(`EXPLAIN (FORMAT JSON, ANALYZE) ${queryString}`).then(
-          (queryStats) => {
-            frontendData.queryStatistics = queryStats.rows;
+  console.log(frontendData);
 
-            (async function getListAsync() {
-              listObj = await db.getLists();
-              frontendData.lists = listObj;
-              event.sender.send('db-lists', listObj);
-              event.sender.send('return-execute-query', frontendData);
-              event.sender.send('async-complete');
-            })();
-          }
-        );
-      } else {
-        // Handling for tracking a create table query, can't run explain/analyze on create statements
-        (async function getListAsync() {
-          listObj = await db.getLists();
-          frontendData.lists = listObj;
-          event.sender.send('db-lists', listObj);
-          event.sender.send('async-complete');
-        })();
-      }
+
+  db.query(`BEGIN; EXPLAIN (FORMAT JSON, ANALYZE) ${queryString}; ROLLBACK;`)
+  // db.query(`EXPLAIN (FORMAT JSON, ANALYZE) ${queryString}`).then(
+    .then(
+
+      (queryStats) => {
+        console.log('-----------------------------------------');
+        console.log(queryStats[1].rows);
+        console.log('-----------------------------------------');
+        frontendData.queryStatistics = queryStats[1].rows;
+        console.log('frontendData.queryStatistics ', frontendData.queryStatistics);
+    })
+    .then(() => {
+        db.query(queryString)
+        .then((queryData) => {
+          console.log('-----------------------------------------');
+          console.log(queryString);
+          console.log('-----------------------------------------');
+          frontendData.queryData = queryData.rows;
+          (async function getListAsync() {
+            listObj = await db.getLists();
+            frontendData.lists = listObj;
+            event.sender.send('db-lists', listObj);
+            event.sender.send('return-execute-query', frontendData);
+            event.sender.send('async-complete');
+            // console.log('frontendData: ', frontendData);
+            console.log('all events sent');
+          })();
+        })
     })
     .catch((error: string) => {
       console.log(
@@ -339,10 +323,58 @@ ipcMain.on('execute-query-tracked', (event, data: QueryType) => {
     });
 });
 
+  // Run select * from actors;
+  // db.query(queryString)
+  //   .then((queryData) => {
+  //     console.log('-----------------------------------------');
+  //     console.log(queryData);
+  //     console.log('-----------------------------------------');
+
+
+  //     frontendData.queryData = queryData.rows; // probably an array
+      // if (!queryString.match(/create/i)) {
+        // Run EXPLAIN (FORMAT JSON, ANALYZE)
+        // db.query(`BEGIN; EXPLAIN (FORMAT JSON, ANALYZE) ${queryString}; ROLLBACK;`).then(
+
+        // // db.query(`EXPLAIN (FORMAT JSON, ANALYZE) ${queryString}`).then(
+        //   (queryStats) => {
+        //     console.log('-----------------------------------------');
+        //     console.log(queryStats);
+        //     console.log('-----------------------------------------');
+        //     frontendData.queryStatistics = queryStats.rows;
+
+        //     (async function getListAsync() {
+        //       listObj = await db.getLists();
+        //       frontendData.lists = listObj;
+        //       event.sender.send('db-lists', listObj);
+        //       event.sender.send('return-execute-query', frontendData);
+        //       event.sender.send('async-complete');
+        //     })();
+        //   }
+        // );
+      // } else {
+      //   // Handling for tracking a create table query, can't run explain/analyze on create statements
+      //   (async function getListAsync() {
+      //     listObj = await db.getLists();
+      //     frontendData.lists = listObj;
+      //     event.sender.send('db-lists', listObj);
+      //     event.sender.send('async-complete');
+      //   })();
+      // }
+    // })
+    // .catch((error: string) => {
+    //   console.log(
+    //     'channels line 337: ERROR in execute-query-tracked channel in main.ts',
+    //     error
+    //   );
+    // });
+// });
+
 interface dummyDataRequestType {
   schemaName: string;
   dummyData: {};
 }
+
 
 ipcMain.on('generate-dummy-data', (event: any, data: dummyDataRequestType) => {
   // send notice to front end that DD generation has been started

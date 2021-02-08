@@ -124,7 +124,7 @@ myobj = {
         databaseList: [],
       };
       Promise.all([getDBNames(), getDBLists()]).then((data) => {
-        console.log('models on line 126: ', data);
+        // console.log('models on line 126: ', data);
         [listObj.databaseList, listObj.tableList] = data;
         resolve(listObj);
       });
