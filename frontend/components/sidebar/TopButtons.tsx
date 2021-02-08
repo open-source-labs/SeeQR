@@ -14,8 +14,8 @@ const TopButtons = ({ selectedView, setSelectedView }: TopButtonsProps) => {
     <div>
       <button type="button">hamburger</button>
       <button type="button" onClick={toggleCompareView}>
-        {/* // TODO: conditional style depending on whether selectedView === 'compareView' */}
         Compare
+        {selectedView === 'compareView' ? '<' : ''}
       </button>
     </div>
   );

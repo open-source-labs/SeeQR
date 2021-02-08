@@ -1,12 +1,12 @@
 import React from 'react';
-import { Query } from '../../../types';
+import { QueryData } from '../../../types';
 
 interface QuerySummaryProps {
-  executionPlan: Query['executionPlan'];
+  executionPlan: QueryData['executionPlan'];
 }
 
 const QuerySummary = ({ executionPlan }: QuerySummaryProps) => {
-  return <div>{executionPlan}</div>;
+  return <div>{executionPlan?.toString()}</div>;
 };
 
 export default QuerySummary;

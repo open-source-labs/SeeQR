@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppState, userCreateQuery } from '../../types';
+import { AppState } from '../../types';
 import TopButtons from './TopButtons';
 import QueryList from './QueryList';
 import DbList from './DbList';
@@ -11,7 +11,12 @@ type SidebarProps = Pick<
   | 'setSelectedDb'
   | 'setSelectedView'
   | 'queries'
-> & {createQuery : userCreateQuery};
+  | 'setQueries'
+  | 'comparedQueries'
+  | 'setComparedQueries'
+  | 'workingQuery'
+  | 'setWorkingQuery'
+>;
 
 type ViewSelectorProps = Pick<AppState, 'selectedView' | 'setSelectedView'>;
 
@@ -30,34 +35,46 @@ const ViewSelector = ({ selectedView, setSelectedView }: ViewSelectorProps) => (
 );
 
 const Sidebar = ({
+  setQueries,
+  comparedQueries,
+  setComparedQueries,
   selectedView,
   setSelectedView,
   selectedDb,
   setSelectedDb,
-  createQuery,
   queries,
+  workingQuery,
+  setWorkingQuery,
 }: SidebarProps) => {
-  const renderList = () => {
-    switch (selectedView) {
-      case 'queryView':
-        return (
-          <QueryList
-            queries={queries}
-            createQuery={createQuery}
-          />
-        );
-      case 'dbView':
-        return <DbList {...{ selectedDb, setSelectedDb }} />;
-      default:
-        return null;
-    }
+  /**
+   * Show empty query view for user to create new query.
+   * Deselects all queries and goes to queryView
+   */
+  const showEmptyQuery = () => {
+    setSelectedView('queryView');
+    setWorkingQuery(undefined);
   };
 
   return (
     <div>
       <TopButtons {...{ selectedView, setSelectedView }} />
       <ViewSelector {...{ selectedView, setSelectedView }} />
-      {renderList()}
+      {/* {renderList()} */}
+      <DbList
+        selectedDb={selectedDb}
+        setSelectedDb={setSelectedDb}
+        show={selectedView === 'dbView'}
+      />
+      <QueryList
+        setComparedQueries={setComparedQueries}
+        comparedQueries={comparedQueries}
+        setQueries={setQueries}
+        queries={queries}
+        createQuery={showEmptyQuery}
+        workingQuery={workingQuery}
+        setWorkingQuery={setWorkingQuery}
+        show={selectedView === 'queryView'}
+      />
     </div>
   );
 };
