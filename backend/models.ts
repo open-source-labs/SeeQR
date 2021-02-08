@@ -116,7 +116,7 @@ myobj = {
     console.log('Current URI: ', PG_URI);
     return dbName;
   },
-  // Returns a listObj that contains all tablenames form currentschdule and all database names ( using two helpful functions)
+  // Returns a listObj that contains all tablenames form current schema and all database names ( using two helpful functions)
   getLists: () =>
     new Promise((resolve) => {
       const listObj: any = {
@@ -124,7 +124,7 @@ myobj = {
         databaseList: [],
       };
       Promise.all([getDBNames(), getDBLists()]).then((data) => {
-        console.log('models on line 126: ', data);
+        // console.log('models on line 126: ', data);
         [listObj.databaseList, listObj.tableList] = data;
         resolve(listObj);
       });
