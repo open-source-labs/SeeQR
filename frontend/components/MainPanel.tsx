@@ -7,12 +7,12 @@ import LoadingModal from './LoadingModal';
 const { ipcRenderer } = window.require('electron');
 
 type Query = {
-    queryString: string;
-    queryData: {}[];
-    queryStatistics: any;
-    querySchema: string;
-    queryLabel: string;
-}
+  queryString: string;
+  queryData: {}[];
+  queryStatistics: any;
+  querySchema: string;
+  queryLabel: string;
+};
 
 type MainState = {
   queries: Query[];
@@ -43,7 +43,7 @@ class MainPanel extends Component<MainProps, MainState> {
   }
 
   componentDidMount() {
-    ipcRenderer.send('return-db-list');
+    // ipcRenderer.send('return-db-list'); // Faraz: commenting out sice the dbName is undefined
 
     // Listening for returnedData from executing Query
     // Update state with new object (containing query data, query statistics, query schema
