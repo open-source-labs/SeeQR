@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { IpcMainEvent } from 'electron';
 import AddIcon from '@material-ui/icons/Add';
-import AddNewDbModal from '../modal/addNewDbModal';
+import AddNewDbModal from '../modal/AddNewDbModal';
 import { AppState, isDbLists } from '../../types';
-import { once } from '../../lib/utils'
+import { once } from '../../lib/utils';
+import DuplicateDbModal from '../modal/DuplicateDbModal';
 
 // TODO: how to type ipcRenderer ?
 const { ipcRenderer } = window.require('electron');
@@ -11,22 +12,33 @@ const { ipcRenderer } = window.require('electron');
 // emitting with no payload requests backend to send back a db-lists event with list of dbs
 const requestDbListOnce = once(() => ipcRenderer.send('return-db-list'));
 
-
 interface DbEntryProps {
   db: string;
   isSelected: boolean;
   select: () => void;
+  duplicate: () => void;
 }
-const DbEntry = ({ db, isSelected, select }: DbEntryProps) => (
+const DbEntry = ({ db, isSelected, select, duplicate }: DbEntryProps) => (
   // TODO: conditional style basend on isSelected
-  <li onClick={select}>{`${db} ${isSelected ? '<' : ''}`}</li>
+  <div>
+    <li onClick={select}>
+      {`${db} ${isSelected ? '<' : ''}`}
+      <button type="button" onClick={duplicate}>
+        +
+      </button>
+    </li>
+  </div>
 );
 
-type DbListProps = Pick<AppState, 'selectedDb' | 'setSelectedDb'> & {show: boolean};
+type DbListProps = Pick<AppState, 'selectedDb' | 'setSelectedDb'> & {
+  show: boolean;
+};
 
 const DbList = ({ selectedDb, setSelectedDb, show }: DbListProps) => {
   const [databases, setDatabases] = useState<string[]>([]);
-  const [open, setOpen] = React.useState(false);
+  const [openAdd, setOpenAdd] = useState(false);
+  const [openDupe, setOpenDupe] = useState(false);
+  const [dbToDupe, setDbToDupe] = useState('');
 
   useEffect(() => {
     // Listen to backend for updates to list of available databases
@@ -34,19 +46,28 @@ const DbList = ({ selectedDb, setSelectedDb, show }: DbListProps) => {
       if (isDbLists(dbLists)) {
         setDatabases(dbLists.databaseList);
       }
-    }
+    };
     ipcRenderer.on('db-lists', dbListFromBackend);
-    requestDbListOnce()
+    requestDbListOnce();
     // return cleanup function
     return () => ipcRenderer.removeListener('db-lists', dbListFromBackend);
   });
 
-  const handleClickOpen = () => {
-    setOpen(true);
+  const handleClickOpenAdd = () => {
+    setOpenAdd(true);
   };
 
-  const handleClose = () => {
-    setOpen(false);
+  const handleCloseAdd = () => {
+    setOpenAdd(false);
+  };
+
+  const handleClickOpenDupe = (dbName: string) => {
+    setDbToDupe(dbName);
+    setOpenDupe(true);
+  };
+
+  const handleCloseDupe = () => {
+    setOpenDupe(false);
   };
 
   const createSelectHandler = (dbName: string) => () => {
@@ -55,7 +76,7 @@ const DbList = ({ selectedDb, setSelectedDb, show }: DbListProps) => {
     ipcRenderer.send('return-db-list', dbName);
   };
 
-  if (!show) return null
+  if (!show) return null;
   return (
     <>
       <ul>
@@ -65,11 +86,17 @@ const DbList = ({ selectedDb, setSelectedDb, show }: DbListProps) => {
             db={dbName}
             isSelected={selectedDb === dbName}
             select={createSelectHandler(dbName)}
+            duplicate={() => handleClickOpenDupe(dbName)}
           />
         ))}
       </ul>
-      <AddIcon color="primary" fontSize="large" onClick={handleClickOpen} />
-      <AddNewDbModal open={open} onClose={handleClose} />
+      <AddIcon color="primary" fontSize="large" onClick={handleClickOpenAdd} />
+      <AddNewDbModal open={openAdd} onClose={handleCloseAdd} />
+      <DuplicateDbModal
+        open={openDupe}
+        onClose={handleCloseDupe}
+        dbCopyName={dbToDupe}
+      />
     </>
   );
 };

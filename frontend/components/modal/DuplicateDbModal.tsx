@@ -10,18 +10,19 @@ import {
 } from '@material-ui/core/';
 import { MuiTheme } from '../../style-variables';
 
-type ClickEvent = React.MouseEvent<HTMLElement>;
-
-const { dialog } = require('electron').remote;
-
 const { ipcRenderer } = window.require('electron');
 
-type addNewDbModalProps = {
+type copyDbModalProps = {
   open: boolean;
   onClose: () => void;
+  dbCopyName: string;
 };
 
-const DuplicateDbModal = ({ open, onClose }: addNewDbModalProps) => {
+const DuplicateDbModal = ({
+  open,
+  onClose,
+  dbCopyName,
+}: copyDbModalProps) => {
   const [checked, setChecked] = useState(true);
   const [newSchemaName, setNewSchemaName] = useState('');
 
@@ -43,14 +44,12 @@ const DuplicateDbModal = ({ open, onClose }: addNewDbModalProps) => {
     setChecked(event.target.checked);
   };
 
-  const handleCopyFilePath = (event: React.ChangeEvent<HTMLInputElement>) => {
-    event.preventDefault();
-    const { schemaName, dbCopyName, copy } = this.state;
+  const handleCopyFilePath = () => {
     const schemaObj = {
-      schemaName,
+      schemaName: newSchemaName,
       schemaFilePath: '',
       schemaEntry: '',
-      dbCopyName: newSchemaName,
+      dbCopyName,
       copy: checked,
     };
 
@@ -71,17 +70,17 @@ const DuplicateDbModal = ({ open, onClose }: addNewDbModalProps) => {
             id="filled-required"
             label="Required"
             variant="filled"
-            defaultValue="Enter name here"
+            defaultValue={`${dbCopyName}_copy`}
             onChange={handleSchemaName}
           />
           <FormControlLabel
-            control={
+            control={(
               <Checkbox
                 checked={checked}
                 onChange={handleCopyData}
                 color="primary"
               />
-            }
+            )}
             label="Copy data"
           />
           <Button
