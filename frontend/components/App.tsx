@@ -22,6 +22,7 @@ const Main = styled.main`
   grid-area: main;
   background: ${bgColor};
   height: 100vh;
+  padding: 20px;
 `;
 
 const App = () => {
