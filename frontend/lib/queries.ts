@@ -99,5 +99,5 @@ export const getTotalTime = (query: QueryData | undefined) => {
  */
 export const getPrettyTime = (query: QueryData | undefined) => {
   if (!query?.executionPlan) return 'n/a';
-  return ms(getTotalTime(query), { long: true });
+  return ms(+getTotalTime(query).toPrecision(3), { long: true });
 };
