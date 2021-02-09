@@ -4,11 +4,14 @@ import {
   TableBody,
   TableCell,
   TableContainer,
-  TableHead,
   TableRow,
-  Paper,
 } from '@material-ui/core';
+import styled from 'styled-components'
 import { QueryData } from '../../../types';
+
+const StyledTableCell = styled(TableCell)`
+border:none;
+`
 
 interface QuerySummaryProps {
   executionPlan: QueryData['executionPlan'];
@@ -16,26 +19,22 @@ interface QuerySummaryProps {
 
 const QuerySummary = ({ executionPlan }: QuerySummaryProps) => {
   const summaryData = {
-    'Plannin Time': executionPlan?.['Planning Time'],
+    'Planning Time': executionPlan?.['Planning Time'],
     'Execution Time': executionPlan?.['Execution Time'],
     'Actual Total Time': executionPlan?.Plan['Actual Total Time'],
   };
 
-  if (!executionPlan) return null
+  if (!executionPlan) return null;
   return (
-    <TableContainer component={Paper}>
+    <TableContainer>
       <Table size="small">
-        <TableHead>
-          <TableRow>
-            {Object.keys(summaryData).map((property: string) => (
-              <TableCell>{property}</TableCell>
-            ))}
-          </TableRow>
-        </TableHead>
         <TableBody>
           <TableRow>
-            {Object.values(summaryData).map((value: number | undefined) => (
-              <TableCell>{value}</TableCell>
+            {Object.entries(summaryData).map(([property, value]) => (
+              <StyledTableCell align="center">
+                <strong>{`${property}: `}</strong>
+                {value}
+              </StyledTableCell>
             ))}
           </TableRow>
         </TableBody>
