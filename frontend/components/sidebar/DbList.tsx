@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { IpcMainEvent } from 'electron';
 import { IconButton, Tooltip } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
-import AddNewDbModal from '../modal/AddNewDbModal';
+import AddNewDbModal from '../modal/AddNewDbModalCorrect';
 import { AppState, isDbLists } from '../../types';
 import { once } from '../../lib/utils';
 import DuplicateDbModal from '../modal/DuplicateDbModal';
