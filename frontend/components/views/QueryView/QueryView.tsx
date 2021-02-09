@@ -108,9 +108,6 @@ const QueryView = ({
       queryString: localQuery.sqlString,
       queryCurrentSchema: localQuery.db,
     });
-
-    // update db and table lists in case they are affected
-    ipcRenderer.send('return-db-list');
   };
 
   if (!show) return null;

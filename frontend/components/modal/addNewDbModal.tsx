@@ -33,6 +33,7 @@ const AddNewDbModal = ({ open, onClose }: addNewDbModalProps) => {
       .then((result: object) => {
         const filePathArr = result['filePaths'];
 
+        // TODO: use input-schema event instead
         // send via channel to main process
         if (!result['canceled']) {
           ipcRenderer.send('upload-file', filePathArr);
@@ -43,9 +44,6 @@ const AddNewDbModal = ({ open, onClose }: addNewDbModalProps) => {
         console.log(err);
       });
   };
-
-  // listen for menu to invoke handleFileClick
-  ipcRenderer.on('menu-upload-file', () => handleFileClick);
 
   return (
     <div>

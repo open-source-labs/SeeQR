@@ -67,6 +67,7 @@ const DbList = ({ selectedDb, setSelectedDb, show }: DbListProps) => {
           <AddIcon fontSize="large" />
         </IconButton>
       </Tooltip>
+      {/* Validate Db name doesnt exist */}
       <AddNewDbModal open={open} onClose={handleClose} />
     </>
   );
