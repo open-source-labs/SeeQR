@@ -23,6 +23,8 @@ const AddNewDbModal = ({ open, onClose }: AddNewDbModalProps) => {
     onClose();
   };
 
+  console.log('hello');
+
   const handleFileClick = () => {
     dialog
       .showOpenDialog({
@@ -68,7 +70,11 @@ const AddNewDbModal = ({ open, onClose }: AddNewDbModalProps) => {
         >
           Import File
         </StyledButton>
-        <StyledButton variant="contained" color="secondary" onClick={handleClose}>
+        <StyledButton
+          variant="contained"
+          color="secondary"
+          onClick={handleClose}
+        >
           Cancel
         </StyledButton>
       </Dialog>
