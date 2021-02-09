@@ -43,6 +43,11 @@ const QueryList = ({
   if (!show) return null;
   return (
     <>
+      <Tooltip title="New Query">
+        <IconButton onClick={createQuery}>
+          <AddIcon fontSize="large" />
+        </IconButton>
+      </Tooltip>
       <SidebarList>
         {Object.values(queries).map((query: QueryData) => (
           <QueryEntry
@@ -58,11 +63,6 @@ const QueryList = ({
           />
         ))}
       </SidebarList>
-      <Tooltip title="New Query">
-        <IconButton onClick={createQuery}>
-          <AddIcon fontSize="large" />
-        </IconButton>
-      </Tooltip>
     </>
   );
 };

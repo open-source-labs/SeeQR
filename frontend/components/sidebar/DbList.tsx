@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { IpcMainEvent } from 'electron';
 import { IconButton, Tooltip } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
-import AddNewDbModal from '../modal/AddNewDbModal';
+import AddNewDbModal from '../modal/AddNewDbModalCorrect';
 import { AppState, isDbLists } from '../../types';
 import { once } from '../../lib/utils';
 import DuplicateDbModal from '../modal/DuplicateDbModal';
@@ -65,6 +65,11 @@ const DbList = ({ selectedDb, setSelectedDb, show }: DbListProps) => {
   if (!show) return null;
   return (
     <>
+      <Tooltip title="Import Database">
+        <IconButton onClick={handleClickOpenAdd}>
+          <AddIcon fontSize="large" />
+        </IconButton>
+      </Tooltip>
       <SidebarList>
         {databases.map((dbName) => (
           <DbEntry
@@ -81,11 +86,6 @@ const DbList = ({ selectedDb, setSelectedDb, show }: DbListProps) => {
           dbCopyName={dbToDupe}
         />
       </SidebarList>
-      <Tooltip title="Import Database">
-        <IconButton onClick={handleClickOpenAdd}>
-          <AddIcon fontSize="large" />
-        </IconButton>
-      </Tooltip>
       {/* Validate Db name doesnt exist */}
       <AddNewDbModal open={openAdd} onClose={handleCloseAdd} />
     </>

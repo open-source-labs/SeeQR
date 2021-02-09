@@ -44,6 +44,7 @@ const DuplicateDbModal = ({
     const schemaNameInput = event.target.value;
     let dbSafeName = schemaNameInput.toLowerCase();
     dbSafeName = dbSafeName.replace(/[^A-Z0-9]/gi, '');
+    //check if the newSchemaName is
     setNewSchemaName(dbSafeName);
   };
 
@@ -54,8 +55,6 @@ const DuplicateDbModal = ({
   const handleCopyFilePath = () => {
     const schemaObj = {
       schemaName: newSchemaName,
-      schemaFilePath: '',
-      schemaEntry: '',
       dbCopyName,
       copy: checked,
     };
