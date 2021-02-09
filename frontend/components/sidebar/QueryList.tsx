@@ -1,34 +1,10 @@
 import React from 'react';
+import { IconButton, Tooltip } from '@material-ui/core';
+import AddIcon from '@material-ui/icons/Add';
+import { SidebarList } from '../../style-variables';
 import { AppState, QueryData } from '../../types';
-import { deleteQuery, toggleCompare, key as queryKey } from '../../lib/queries';
-
-interface QueryEntryProps {
-  query: QueryData;
-  isSelected: boolean;
-  select: () => void;
-  toggleComparison: () => void;
-  deleteThisQuery: () => void;
-}
-
-const QueryEntry = ({
-  query,
-  select,
-  isSelected,
-  toggleComparison,
-  deleteThisQuery,
-}: QueryEntryProps) => (
-  // TODO: conditional style based on query.isSelected
-  <li>
-    <span onClick={select}>{`${query.label}${isSelected ? ' <' : ''}`}</span>
-    <span>{query.db}</span>
-    <button type="button" onClick={toggleComparison}>
-      +
-    </button>
-    <button type="button" onClick={deleteThisQuery}>
-      x
-    </button>
-  </li>
-);
+import { deleteQuery, setCompare, key as queryKey } from '../../lib/queries';
+import QueryEntry from './QueryEntry';
 
 type QueryListProps = Pick<
   AppState,
@@ -53,10 +29,21 @@ const QueryList = ({
   setWorkingQuery,
   show,
 }: QueryListProps) => {
+  const deleteQueryHandler = (query: QueryData) => () => {
+    setQueries(deleteQuery(queries, query));
+    setComparedQueries(deleteQuery(comparedQueries, query));
+  };
+
+  const setComparisonHandler = (query: QueryData) => (
+    evt: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setComparedQueries(setCompare(comparedQueries, query, evt.target.checked));
+  };
+
   if (!show) return null;
   return (
     <>
-      <ul>
+      <SidebarList>
         {Object.values(queries).map((query: QueryData) => (
           <QueryEntry
             key={`QueryList_${query.label}_${query.db}`}
@@ -65,19 +52,17 @@ const QueryList = ({
             isSelected={
               !!workingQuery && queryKey(query) === queryKey(workingQuery)
             }
-            deleteThisQuery={() => {
-              setQueries(deleteQuery(queries, query));
-              setComparedQueries(deleteQuery(comparedQueries, query));
-            }}
-            toggleComparison={() =>
-              setComparedQueries(toggleCompare(comparedQueries, query))
-            }
+            deleteThisQuery={deleteQueryHandler(query)}
+            isCompared={!!comparedQueries[queryKey(query)]}
+            setComparison={setComparisonHandler(query)}
           />
         ))}
-      </ul>
-      <button type="button" onClick={createQuery}>
-        Create Query
-      </button>
+      </SidebarList>
+      <Tooltip title="New Query">
+        <IconButton onClick={createQuery}>
+          <AddIcon fontSize="large" />
+        </IconButton>
+      </Tooltip>
     </>
   );
 };

@@ -2,16 +2,16 @@
  * This file contains all reusable variables for styling in styled-components
  * Individual variables should be named exports
  */
+import { ListItem, List } from '@material-ui/core';
 import { createMuiTheme } from '@material-ui/core/styles';
 import styled from 'styled-components';
-import { Button } from '@material-ui/core/';
 
-interface PaletteColor {
-  light?: string;
-  main: string;
-  dark?: string;
-  contrastText?: string;
-}
+// interface PaletteColor {
+//   light?: string;
+//   main: string;
+//   dark?: string;
+//   contrastText?: string;
+// }
 // previous
 export const bgColor = '#2b2d35';
 export const textColor = '#c6d2d5';
@@ -27,16 +27,21 @@ export const greenLighter = '#acccbb';
 export const greenLightest = '#ccdad4';
 
 // greys
+export const greyDarkest = '#191919';
 export const greyPrimary = '#818584';
 export const greyLight = '#aab6af';
 export const greyLightest = '#dfe0e2';
 
+// Icons and Buttons
+export const selectedColor = greenPrimary;
+export const hoverColor = greenPrimary;
+
 // theme to override Mui defaults
-export const MuiTheme =  createMuiTheme({
+export const MuiTheme = createMuiTheme({
   palette: {
     primary: {
       light: greenLight,
-      main: greenPrimary,
+      main: selectedColor,
       dark: greenDark,
     },
     secondary: {
@@ -45,22 +50,52 @@ export const MuiTheme =  createMuiTheme({
     },
   },
   overrides: {
-    MuiButton: {
-      root: {
-        margin: '8px',
-        padding: '8px',
-        boxShadow: '0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08)',
-      },
-    },
     MuiIconButton: {
       root: {
+        color: textColor,
         '&:hover': {
-          color: greenPrimary,
-        }
-      }
-    }
-  }
+          color: hoverColor,
+        },
+      },
+    },
+    MuiTooltip: {
+      tooltip: {
+        fontSize: '1em',
+      },
+    },
+  },
 });
+
+// Sizes
+export const sidebarWidth = '300px';
+
+interface SidebarListItemProps {
+  customSelected: boolean;
+}
+
+export const SidebarList = styled(List)`
+  padding: 0;
+  width: 100%;
+`
+
+/**
+ * Sidebar List item. Designed for dark bg.
+ * Takes boolean in customSelected prop to style selected item
+ */
+export const SidebarListItem = styled(ListItem)`
+  color: ${({ customSelected }: SidebarListItemProps) =>
+    customSelected ? selectedColor : textColor};
+  background: transparent;
+  border-bottom: 1px solid transparent;
+  border-top: 1px solid transparent;
+  width: 100%;
+
+  &:hover {
+    background: transparent;
+    border-bottom: 1px solid ${hoverColor};
+    border-top: 1px solid ${hoverColor};
+  }
+`;
 
 // // typography
 // $font-stack: 'PT Sans', sans-serif;

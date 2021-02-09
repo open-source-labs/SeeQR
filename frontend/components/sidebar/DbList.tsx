@@ -1,34 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { IpcMainEvent } from 'electron';
+import { IconButton, Tooltip } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import AddNewDbModal from '../modal/AddNewDbModal';
 import { AppState, isDbLists } from '../../types';
 import { once } from '../../lib/utils';
 import DuplicateDbModal from '../modal/DuplicateDbModal';
+import DbEntry from './DbEntry';
+
+import { SidebarList } from '../../style-variables';
 
 // TODO: how to type ipcRenderer ?
 const { ipcRenderer } = window.require('electron');
 
 // emitting with no payload requests backend to send back a db-lists event with list of dbs
 const requestDbListOnce = once(() => ipcRenderer.send('return-db-list'));
-
-interface DbEntryProps {
-  db: string;
-  isSelected: boolean;
-  select: () => void;
-  duplicate: () => void;
-}
-const DbEntry = ({ db, isSelected, select, duplicate }: DbEntryProps) => (
-  // TODO: conditional style basend on isSelected
-  <div>
-    <li onClick={select}>
-      {`${db} ${isSelected ? '<' : ''}`}
-      <button type="button" onClick={duplicate}>
-        +
-      </button>
-    </li>
-  </div>
-);
 
 type DbListProps = Pick<AppState, 'selectedDb' | 'setSelectedDb'> & {
   show: boolean;
@@ -79,7 +65,7 @@ const DbList = ({ selectedDb, setSelectedDb, show }: DbListProps) => {
   if (!show) return null;
   return (
     <>
-      <ul>
+      <SidebarList>
         {databases.map((dbName) => (
           <DbEntry
             key={`dbList_${dbName}`}
@@ -89,14 +75,19 @@ const DbList = ({ selectedDb, setSelectedDb, show }: DbListProps) => {
             duplicate={() => handleClickOpenDupe(dbName)}
           />
         ))}
-      </ul>
-      <AddIcon color="primary" fontSize="large" onClick={handleClickOpenAdd} />
+        <DuplicateDbModal
+          open={openDupe}
+          onClose={handleCloseDupe}
+          dbCopyName={dbToDupe}
+        />
+      </SidebarList>
+      <Tooltip title="Import Database">
+        <IconButton onClick={handleClickOpenAdd}>
+          <AddIcon fontSize="large" />
+        </IconButton>
+      </Tooltip>
+      {/* Validate Db name doesnt exist */}
       <AddNewDbModal open={openAdd} onClose={handleCloseAdd} />
-      <DuplicateDbModal
-        open={openDupe}
-        onClose={handleCloseDupe}
-        dbCopyName={dbToDupe}
-      />
     </>
   );
 };
