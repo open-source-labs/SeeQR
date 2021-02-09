@@ -31,7 +31,7 @@ const ViewSelector = ({ selectedView, setSelectedView }: ViewSelectorProps) => (
   <ViewBtnGroup variant="contained" fullWidth>
     <ViewButton
       onClick={() => setSelectedView('queryView')}
-      isSelected={selectedView === 'queryView'}
+      isSelected={selectedView === 'queryView' || selectedView === 'compareView'}
     >
       Queries
     </ViewButton>
