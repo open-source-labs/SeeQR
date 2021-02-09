@@ -64,6 +64,27 @@ export const toggleCompare = (
 };
 
 /**
+ * Sets compare flag for query
+ * Compare flag indicates whether a Query should be shown on Compare View
+ * returns new queries object with all queries
+ */
+export const setCompare = (
+  comparedQueries: AppState['comparedQueries'],
+  query: QueryData,
+  isCompared: boolean
+) => {
+  const tempQueries = { ...comparedQueries };
+
+  if (!isCompared) {
+    delete tempQueries[key(query)];
+    return tempQueries;
+  }
+
+  tempQueries[key(query)] = query;
+  return tempQueries;
+};
+
+/**
  * Get query execution time. Planning + Execution. Returns 0 if not given a given
  */
 export const getTotalTime = (query: QueryData | undefined) => {

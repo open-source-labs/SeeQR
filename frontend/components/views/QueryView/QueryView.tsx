@@ -1,7 +1,6 @@
 import { IpcMainEvent } from 'electron';
 import React, { useEffect, useState } from 'react';
-import { MuiThemeProvider, Button } from '@material-ui/core/';
-import { MuiTheme } from '../../../style-variables';
+import { Button } from '@material-ui/core/';
 import {
   QueryData,
   isBackendQueryData,
@@ -94,7 +93,7 @@ const QueryView = ({
     // request updates for db and table information. Otherwise database view tab
     // will show wrong informatio
     setQuery({ ...localQuery, db: newDb });
-    setSelectedDb(newDb)
+    setSelectedDb(newDb);
     ipcRenderer.send('change-db', newDb);
     ipcRenderer.send('return-db-list', newDb);
   };
@@ -117,31 +116,22 @@ const QueryView = ({
   if (!show) return null;
   return (
     <>
-      <MuiThemeProvider theme={MuiTheme}>
-        <h4>Query View</h4>
-        <QueryLabel label={localQuery.label} onChange={onLabelChange} />
-        <QueryDb
-          db={localQuery.db}
-          onChange={onDbChange}
-          databases={databases}
-        />
-        <Button variant="contained" onClick={onRun}>
-          Run Query
-        </Button>
-        <QueryTopSummary
-          rows={query?.returnedRows?.length || 0}
-          totalTime={getPrettyTime(query)}
-        />
-        <QuerySqlInput
-          sql={localQuery?.sqlString ?? ''}
-          onChange={onSqlChange}
-        />
-        <QuerySummary executionPlan={query?.executionPlan} />
-        <QueryTabs
-          results={query?.returnedRows}
-          executionPlan={query?.executionPlan}
-        />
-      </MuiThemeProvider>
+      <h4>Query View</h4>
+      <QueryLabel label={localQuery.label} onChange={onLabelChange} />
+      <QueryDb db={localQuery.db} onChange={onDbChange} databases={databases} />
+      <Button variant="contained" onClick={onRun}>
+        Run Query
+      </Button>
+      <QueryTopSummary
+        rows={query?.returnedRows?.length || 0}
+        totalTime={getPrettyTime(query)}
+      />
+      <QuerySqlInput sql={localQuery?.sqlString ?? ''} onChange={onSqlChange} />
+      <QuerySummary executionPlan={query?.executionPlan} />
+      <QueryTabs
+        results={query?.returnedRows}
+        executionPlan={query?.executionPlan}
+      />
     </>
   );
 };
