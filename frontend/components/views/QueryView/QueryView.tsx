@@ -1,6 +1,7 @@
 import { IpcMainEvent } from 'electron';
 import React, { useEffect, useState } from 'react';
-import { Button } from '@material-ui/core/';
+import { Button, Box } from '@material-ui/core/';
+import styled from 'styled-components';
 import {
   QueryData,
   isBackendQueryData,
@@ -8,6 +9,7 @@ import {
   AppState,
   isDbLists,
 } from '../../../types';
+import { defaultMargin } from '../../../style-variables';
 import { getPrettyTime } from '../../../lib/queries';
 import { once } from '../../../lib/utils';
 
@@ -22,6 +24,21 @@ const { ipcRenderer } = window.require('electron');
 
 // emitting with no payload requests backend to send back a db-lists event with list of dbs
 const requestDbListOnce = once(() => ipcRenderer.send('return-db-list'));
+
+const TopRow = styled(Box)`
+  display: flex;
+  align-items: flex-end;
+  margin: ${defaultMargin} 0;
+`;
+
+const CenterButton = styled(Box)`
+  display: flex;
+  justify-content: center;
+`;
+
+const RunButton = styled(Button)`
+  margin: ${defaultMargin} auto;
+`;
 
 interface QueryViewProps {
   query?: AppState['workingQuery'];
@@ -113,17 +130,24 @@ const QueryView = ({
   if (!show) return null;
   return (
     <>
-      <h4>Query View</h4>
-      <QueryLabel label={localQuery.label} onChange={onLabelChange} />
-      <QueryDb db={localQuery.db} onChange={onDbChange} databases={databases} />
-      <Button variant="contained" onClick={onRun}>
-        Run Query
-      </Button>
-      <QueryTopSummary
-        rows={query?.returnedRows?.length || 0}
-        totalTime={getPrettyTime(query)}
-      />
+      <TopRow>
+        <QueryLabel label={localQuery.label} onChange={onLabelChange} />
+        <QueryDb
+          db={localQuery.db}
+          onChange={onDbChange}
+          databases={databases}
+        />
+        <QueryTopSummary
+          rows={query?.returnedRows?.length || 0}
+          totalTime={getPrettyTime(query)}
+        />
+      </TopRow>
       <QuerySqlInput sql={localQuery?.sqlString ?? ''} onChange={onSqlChange} />
+      <CenterButton>
+        <RunButton variant="contained" onClick={onRun}>
+          Run Query
+        </RunButton>
+      </CenterButton>
       <QuerySummary executionPlan={query?.executionPlan} />
       <QueryTabs
         results={query?.returnedRows}
