@@ -22,6 +22,7 @@ let pool: any = new Pool({ connectionString: PG_URI });
 // helper function that creates the column objects, which are saved to the schemaLayout object
 // this function returns a promise to be resolved with Promise.all syntax
 const getColumnObjects = (tableName: string) => {
+  console.log('Running getColumnObjects using the following tableName', tableName)
   const queryString = `SELECT column_name, data_type, character_maximum_length
      FROM information_schema.columns
      WHERE table_name = $1;
@@ -48,17 +49,30 @@ const getColumnObjects = (tableName: string) => {
 // gets all the database names of the current postgres instances
 // ignoring the postgres, template0 and template1 dbs
 const getDBNames = () =>
+
+// let dbSize: string;
+// if (dbName) {
+//   db.query(`SELECT pg_size_pretty(pg_database_size('${dbName}'));`).then(
+//     (queryStats) => {
+//       dbSize = queryStats.rows[0].pg_size_pretty;
+//     }
+//   );
+// };
+// db.getLists().then((data) => event.sender.send('db-lists', data, dbSize));
+
   new Promise((resolve) => {
-    pool.query('SELECT datname FROM pg_database;').then((databases) => {
-      const dbList: any = [];
-      for (let i = 0; i < databases.rows.length; i += 1) {
-        const curName = databases.rows[i].datname;
-        if (
-          curName !== 'postgres' &&
-          curName !== 'template0' &&
-          curName !== 'template1'
-        )
-          dbList.push(databases.rows[i].datname);
+    pool.query('SELECT datname FROM pg_database;')
+      .then((databases) => {
+        const dbList: any = [];
+        for (let i = 0; i < databases.rows.length; i += 1) {
+          const curName = databases.rows[i].datname;
+          if (
+            curName !== 'postgres' &&
+            curName !== 'template0' &&
+            curName !== 'template1'
+          )
+            dbList.push(databases.rows[i].datname);
+          
       }
       resolve(dbList);
     });
@@ -267,8 +281,7 @@ myobj = {
     // }
   },
   /** Expand to see detailed comments
-   * Iterating over the passed in keyObject to remove the primaryKeyColumn and all foreignKeyColumns from table
-   * 'ALTER TABLE planets DROP Column _id int, ADD COLUMN foreignKeyColumnName INT, ADD COLUMN foreignKeyColumnName INT;
+   * Iterating over the passed in keyObject to add the primaryKeyColumn and all foreignKeyColumns to the table table
    *          keyObject = {
    *             tableName: {
    *                 primaryKeyColumns: {
@@ -277,9 +290,7 @@ myobj = {
    *                 foreignKeyColumns: {
    *                   foreignKeyColumnName: primaryTableOfForeignKey,
    *                   foreignKeyColumnName: primaryTableOfForeignKey,
-   *                 }
-   *             }
-   *          }
+   *                 }   }   }
    */
   addNewKeyColumns: async (keyObject: any) => {
     // define helper function to generate and run query

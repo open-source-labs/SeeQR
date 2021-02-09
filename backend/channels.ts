@@ -68,7 +68,7 @@ const execute = (str: string, nextStep: any) => {
 let listObj: any;
 
 ipcMain.on('return-db-list', (event, dbName) => {
-  console.log('in return-db-list', dbName);
+  // console.log('in return-db-list', dbName);
   // DB query to get the database size
   let dbSize: string;
   if (dbName) {
@@ -211,7 +211,7 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
 
   const importOrCopyExistingDB = () => {
     // User selected to copy from existing DB Schema
-    if (copyAllDataFromUserSelectedDB !== undefined) {
+    if (dbNameUserSelectedToCopy) {
       // change DB instance to the DB the User wants to copy
       db.changeDB(dbNameUserSelectedToCopy);
       // If User wanted to copy data from Existing DB execute rullFullCopy
@@ -243,10 +243,9 @@ ipcMain.on('execute-query-untracked', (event, data: QueryType) => {
   event.sender.send('async-started');
 
 
-
   // destructure object from frontend
   const { queryString } = data;
-  console.log('executing untracked query');
+  // console.log('executing untracked query');
   // run query on db
   db.query(queryString)
     .then(() => {
@@ -271,7 +270,11 @@ ipcMain.on('execute-query-tracked', (event, data: QueryType) => {
   event.sender.send('async-started');
 
   // destructure object from frontend
-  const { queryString, queryCurrentSchema, queryLabel } = data;
+  const { queryCurrentSchema, queryLabel } = data;
+  let { queryString } = data;
+  
+  // Removing semicolon if its added to the end of the query
+  if (queryString[queryString.length - 1] === ';') queryString = queryString.slice(0, queryString.length - 1);
 
   // initialize object to store all data to send to frontend
   const frontendData = {
@@ -283,26 +286,24 @@ ipcMain.on('execute-query-tracked', (event, data: QueryType) => {
     lists: {},
   };
 
-  console.log(frontendData);
-
+  // console.log(frontendData);
+  
+  // potential create table query
+  // CREATE TABLE IF NOT EXISTS test4 (
+  //   id SERIAL PRIMARY KEY,
+  //   name VARCHAR NOT NULL,
+  //   mass VARCHAR
+  // )
 
   db.query(`BEGIN; EXPLAIN (FORMAT JSON, ANALYZE) ${queryString}; ROLLBACK;`)
   // db.query(`EXPLAIN (FORMAT JSON, ANALYZE) ${queryString}`).then(
     .then(
-
       (queryStats) => {
-        console.log('-----------------------------------------');
-        console.log(queryStats[1].rows);
-        console.log('-----------------------------------------');
         frontendData.queryStatistics = queryStats[1].rows;
-        console.log('frontendData.queryStatistics ', frontendData.queryStatistics);
     })
     .then(() => {
         db.query(queryString)
         .then((queryData) => {
-          console.log('-----------------------------------------');
-          console.log(queryString);
-          console.log('-----------------------------------------');
           frontendData.queryData = queryData.rows;
           (async function getListAsync() {
             listObj = await db.getLists();
@@ -310,8 +311,7 @@ ipcMain.on('execute-query-tracked', (event, data: QueryType) => {
             event.sender.send('db-lists', listObj);
             event.sender.send('return-execute-query', frontendData);
             event.sender.send('async-complete');
-            // console.log('frontendData: ', frontendData);
-            console.log('all events sent');
+            // console.log('all events sent');
           })();
         })
     })
@@ -379,16 +379,18 @@ interface dummyDataRequestType {
 ipcMain.on('generate-dummy-data', (event: any, data: dummyDataRequestType) => {
   // send notice to front end that DD generation has been started
   event.sender.send('async-started');
-
   let schemaLayout: any;
-  const dummyDataRequest: dummyDataRequestType = data;
+  const dummyDataRequest: dummyDataRequestType = data; // { schemaName: 'hello', dummyData: { people: 1 } }
   let tableMatricesArray: any;
   let keyObject: any = 'Unresolved';
 
+  // Retrieves the Primary Keys and Foreign Keys for all the tables
+  //   tableName: { primaryKeyColumns: { _id: true }, foreignKeyColumns: { key: value, key: value} },
   db.createKeyObject().then((result) => {
-    // set keyObject equal to the result of this query
     keyObject = result;
+    // Iterating over the passed in keyObject to remove the primaryKeyColumn and all foreignKeyColumns from table
     db.dropKeyColumns(keyObject).then(() => {
+      
       db.addNewKeyColumns(keyObject).then(() => {
         db.getSchemaLayout().then((schemaLayoutResult) => {
           schemaLayout = schemaLayoutResult;
