@@ -65,6 +65,11 @@ const DbList = ({ selectedDb, setSelectedDb, show }: DbListProps) => {
   if (!show) return null;
   return (
     <>
+      <Tooltip title="Import Database">
+        <IconButton onClick={handleClickOpenAdd}>
+          <AddIcon fontSize="large" />
+        </IconButton>
+      </Tooltip>
       <SidebarList>
         {databases.map((dbName) => (
           <DbEntry
@@ -81,11 +86,6 @@ const DbList = ({ selectedDb, setSelectedDb, show }: DbListProps) => {
           dbCopyName={dbToDupe}
         />
       </SidebarList>
-      <Tooltip title="Import Database">
-        <IconButton onClick={handleClickOpenAdd}>
-          <AddIcon fontSize="large" />
-        </IconButton>
-      </Tooltip>
       {/* Validate Db name doesnt exist */}
       <AddNewDbModal open={openAdd} onClose={handleCloseAdd} />
     </>
