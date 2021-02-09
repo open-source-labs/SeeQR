@@ -14,6 +14,7 @@ interface QueryTabsProps {
 const QueryTabs = ({ results, executionPlan }: QueryTabsProps) => {
   const [selectedTab, setSelectedTab] = useState<ValidTabs>('Results');
 
+  if (!results && !executionPlan) return null
   return (
     <div>
       <TabSelector
