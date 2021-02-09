@@ -13,12 +13,12 @@ const { dialog } = require('electron').remote;
 
 const { ipcRenderer } = window.require('electron');
 
-type addNewDbModalProps = {
+type AddNewDbModalProps = {
   open: boolean;
   onClose: () => void;
 };
 
-const AddNewDbModal = ({ open, onClose }: addNewDbModalProps) => {
+const AddNewDbModal = ({ open, onClose }: AddNewDbModalProps) => {
   const handleClose = () => {
     onClose();
   };
