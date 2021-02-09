@@ -34,12 +34,13 @@ let mainWindow: any;
  */
 const mainMenuBuiltFromTemplate = Menu.buildFromTemplate(MainMenu);
 // Keep a reference for dev mode
-let dev = false;
-if (
-  process.env.NODE_ENV !== undefined &&
-  process.env.NODE_ENV === 'development'
-)
-  dev = true;
+const dev: boolean = process.env.NODE_ENV === 'development';
+// let dev = false;
+// if (
+//   process.env.NODE_ENV !== undefined &&
+//   process.env.NODE_ENV === 'development'
+// )
+//   dev = true;
 
 function createWindow() {
   // Create browser window by adding specifications

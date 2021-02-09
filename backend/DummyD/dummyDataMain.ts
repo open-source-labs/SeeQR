@@ -15,15 +15,18 @@ const db = require('../models');
 const getRandomInt = (min, max) => {
   const minInt = Math.ceil(min);
   const maxInt = Math.floor(max);
-  return Math.floor(Math.random() * (maxInt - minInt) + minInt); // The maximum is exclusive and the minimum is inclusive
+  // The maximum is exclusive and the minimum is inclusive
+  return Math.floor(Math.random() * (maxInt - minInt) + minInt); 
 };
 
 // this function generates data for a column
-//   column data coming in is an object of the form
-//   ex: {
-//     'data_type': 'integer';
-//     'character_maximum_length': null
-//   }
+//   column data coming in is an object with the following form
+// {
+//   columnName: result.rows[i].column_name,
+//   dataInfo: {
+//     data_type: result.rows[i].data_type,
+//     character_maxiumum_length: result.rows[i].character_maxiumum_length,
+// }
 const generateDataByType = (columnObj) => {
   // faker.js method to generate data by type
   switch (columnObj.dataInfo.data_type) {
@@ -65,7 +68,56 @@ const generateDataByType = (columnObj) => {
 // initialize a counter to make sure we are only adding back constraints once we've dropped and re-added columns
 let count: number = 0;
 
-module.exports = {
+let myObj: {
+  writeCSVFile: Function;
+  generateDummyData: Function;
+};
+
+    // console.log('tableObject: ', tableObject)
+  // tableObject:  {
+    //   tableName: 'films',
+    //   data: [
+    //     [ 'et' ],
+    //     [ 967820530 ],
+    //     [ 'commodi' ],
+    //     [ 'quis' ],
+    //     [ 'et' ],
+    //     [ '1656-03-16' ],
+    //     [ 0 ]
+    //   ]
+    // }
+    // console.log('schemaLayout ', schemaLayout)
+  // schemaLayout  {
+    //   tableNames: [
+    //     'films',
+    //     'people',
+    //   ],
+    //   tables: {
+    //     films: [
+    //       [Object], [Object],
+    //       [Object], [Object],
+    //       [Object], [Object],
+    //       [Object]
+    //     ],
+    //     vessels_in_films: [ [Object], [Object], [Object] ]
+    //   }
+    // }
+    // console.log('keyObject ', keyObject)
+  // keyObject  {
+    //   films: { primaryKeyColumns: { _id: true }, foreignKeyColumns: {} },
+    //   people: {
+    //     primaryKeyColumns: { _id: true },
+    //     foreignKeyColumns: { species_id: 'species', homeworld_id: 'planets' }
+    //   },
+    //   people_in_films: {
+    //     primaryKeyColumns: { _id: true },
+    //     foreignKeyColumns: { film_id: 'films', person_id: 'people' }
+    //   },
+    // }
+    // console.log('dummyDataRequest', dummyDataRequest)
+  // dummyDataRequest { schemaName: 'test', dummyData: { films: 2, people: 2 } }
+    // console.log('event ', event)
+myObj = {
   writeCSVFile: (
     tableObject,
     schemaLayout,
@@ -74,7 +126,9 @@ module.exports = {
     event: any
   ) => {
     // extracting variables
+    // Count of tables that will get injected with dummy data 
     const tableCount: number = Object.keys(dummyDataRequest.dummyData).length;
+    // TableName is the name of the 
     const { tableName, data: tableMatrix } = tableObject;
     const { schemaName } = dummyDataRequest;
 
@@ -279,6 +333,8 @@ module.exports = {
           }
 
           // push columnData array into tableMatrix
+  
+  
           tableMatrix.push(columnData);
           // reset columnData array for next column
           columnData = [];
@@ -291,3 +347,6 @@ module.exports = {
     return returnArray;
   },
 };
+
+
+module.exports = myObj;
