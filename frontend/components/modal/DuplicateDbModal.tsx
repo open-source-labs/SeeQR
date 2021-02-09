@@ -8,9 +8,16 @@ import {
   Checkbox,
   FormControlLabel,
 } from '@material-ui/core/';
+import styled from 'styled-components'
 import { MuiTheme } from '../../style-variables';
 
 const { ipcRenderer } = window.require('electron');
+
+const StyledButton = styled(Button)`
+  margin: 8px;
+  padding: 8px;
+  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+`;
 
 type copyDbModalProps = {
   open: boolean;
@@ -83,13 +90,13 @@ const DuplicateDbModal = ({
             )}
             label="Copy data"
           />
-          <Button
+          <StyledButton
             variant="contained"
             color="primary"
             onClick={handleCopyFilePath}
           >
             Create Copy
-          </Button>
+          </StyledButton>
         </Dialog>
       </MuiThemeProvider>
     </div>
