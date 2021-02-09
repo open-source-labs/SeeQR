@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  MuiThemeProvider,
-  Select,
-  MenuItem,
-  InputLabel,
-} from '@material-ui/core/';
-import { MuiTheme } from '../../../style-variables';
+import { Select, MenuItem, InputLabel } from '@material-ui/core/';
 
 interface QueryDbProps {
   db: string;
@@ -14,7 +8,7 @@ interface QueryDbProps {
 }
 
 const QueryDb = ({ db, onChange, databases }: QueryDbProps) => (
-  <MuiThemeProvider theme={MuiTheme}>
+  <>
     <InputLabel id="queryView-db-label">Database</InputLabel>
     <Select
       value={db}
@@ -27,7 +21,7 @@ const QueryDb = ({ db, onChange, databases }: QueryDbProps) => (
         </MenuItem>
       ))}
     </Select>
-  </MuiThemeProvider>
+  </>
 );
 
 export default QueryDb;

@@ -6,14 +6,9 @@ import { createGlobalStyle } from 'styled-components';
 import { bgColor, textColor } from './style-variables';
 
 const GlobalStyle = createGlobalStyle`
-
- * {
-   /* color: ${textColor} */
- }
-
- body {
-   background: ${bgColor}
- }
+body {
+  font-size: 1.2em;
+}
  `;
 
 export default GlobalStyle;

@@ -1,8 +1,25 @@
 import React from 'react';
+import { Drawer } from '@material-ui/core/';
+import { makeStyles } from '@material-ui/core/styles';
 import { AppState } from '../../types';
 import TopButtons from './TopButtons';
 import QueryList from './QueryList';
 import DbList from './DbList';
+import ViewSelector from './ViewSelector';
+
+import { greyDarkest, sidebarWidth } from '../../style-variables';
+
+// TODO: try to refactor with styled components
+const useStyles = makeStyles(() => ({
+  drawerPaper: {
+    width: sidebarWidth,
+    padding: 0,
+    background: greyDarkest,
+    display: 'flex',
+    'flex-direction': 'column',
+    'align-items': 'center',
+  },
+}));
 
 type SidebarProps = Pick<
   AppState,
@@ -18,21 +35,7 @@ type SidebarProps = Pick<
   | 'setWorkingQuery'
 >;
 
-type ViewSelectorProps = Pick<AppState, 'selectedView' | 'setSelectedView'>;
 
-/**
- * Selector for view on sidebar. Updates App state with selected view
- */
-const ViewSelector = ({ selectedView, setSelectedView }: ViewSelectorProps) => (
-  <div>
-    <button type="button" onClick={() => setSelectedView('queryView')}>
-      Queries
-    </button>
-    <button type="button" onClick={() => setSelectedView('dbView')}>
-      Databases
-    </button>
-  </div>
-);
 
 const Sidebar = ({
   setQueries,
@@ -55,11 +58,16 @@ const Sidebar = ({
     setWorkingQuery(undefined);
   };
 
+  const classes = useStyles();
+
   return (
-    <div>
+    <Drawer
+      variant="permanent"
+      anchor="left"
+      classes={{ paper: classes.drawerPaper }}
+    >
       <TopButtons {...{ selectedView, setSelectedView }} />
       <ViewSelector {...{ selectedView, setSelectedView }} />
-      {/* {renderList()} */}
       <DbList
         selectedDb={selectedDb}
         setSelectedDb={setSelectedDb}
@@ -73,9 +81,9 @@ const Sidebar = ({
         createQuery={showEmptyQuery}
         workingQuery={workingQuery}
         setWorkingQuery={setWorkingQuery}
-        show={selectedView === 'queryView'}
+        show={selectedView === 'queryView' || selectedView === 'compareView'}
       />
-    </div>
+    </Drawer>
   );
 };
 
