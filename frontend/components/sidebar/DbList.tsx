@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { IpcMainEvent } from 'electron';
 import { IconButton, Tooltip } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
-import AddNewDbModal from '../modal/addNewDbModal';
-import DbEntry from './DbEntry';
+import AddNewDbModal from '../modal/AddNewDbModal';
 import { AppState, isDbLists } from '../../types';
 import { once } from '../../lib/utils';
-import {SidebarList} from '../../style-variables'
+import DuplicateDbModal from '../modal/DuplicateDbModal';
+import DbEntry from './DbEntry';
+
+import { SidebarList } from '../../style-variables';
 
 // TODO: how to type ipcRenderer ?
 const { ipcRenderer } = window.require('electron');
@@ -20,7 +22,9 @@ type DbListProps = Pick<AppState, 'selectedDb' | 'setSelectedDb'> & {
 
 const DbList = ({ selectedDb, setSelectedDb, show }: DbListProps) => {
   const [databases, setDatabases] = useState<string[]>([]);
-  const [open, setOpen] = React.useState(false);
+  const [openAdd, setOpenAdd] = useState(false);
+  const [openDupe, setOpenDupe] = useState(false);
+  const [dbToDupe, setDbToDupe] = useState('');
 
   useEffect(() => {
     // Listen to backend for updates to list of available databases
@@ -35,12 +39,21 @@ const DbList = ({ selectedDb, setSelectedDb, show }: DbListProps) => {
     return () => ipcRenderer.removeListener('db-lists', dbListFromBackend);
   });
 
-  const handleClickOpen = () => {
-    setOpen(true);
+  const handleClickOpenAdd = () => {
+    setOpenAdd(true);
   };
 
-  const handleClose = () => {
-    setOpen(false);
+  const handleCloseAdd = () => {
+    setOpenAdd(false);
+  };
+
+  const handleClickOpenDupe = (dbName: string) => {
+    setDbToDupe(dbName);
+    setOpenDupe(true);
+  };
+
+  const handleCloseDupe = () => {
+    setOpenDupe(false);
   };
 
   const createSelectHandler = (dbName: string) => () => {
@@ -59,16 +72,22 @@ const DbList = ({ selectedDb, setSelectedDb, show }: DbListProps) => {
             db={dbName}
             isSelected={selectedDb === dbName}
             select={createSelectHandler(dbName)}
+            duplicate={() => handleClickOpenDupe(dbName)}
           />
         ))}
+        <DuplicateDbModal
+          open={openDupe}
+          onClose={handleCloseDupe}
+          dbCopyName={dbToDupe}
+        />
       </SidebarList>
       <Tooltip title="Import Database">
-        <IconButton onClick={handleClickOpen}>
+        <IconButton onClick={handleClickOpenAdd}>
           <AddIcon fontSize="large" />
         </IconButton>
       </Tooltip>
       {/* Validate Db name doesnt exist */}
-      <AddNewDbModal open={open} onClose={handleClose} />
+      <AddNewDbModal open={openAdd} onClose={handleCloseAdd} />
     </>
   );
 };

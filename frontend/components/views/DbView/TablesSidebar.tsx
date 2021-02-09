@@ -1,4 +1,6 @@
 import React from 'react';
+import { Typography, Button, MuiThemeProvider } from '@material-ui/core';
+import { MuiTheme } from '../../../style-variables';
 
 interface TableEntryProps {
   table: string;
@@ -16,19 +18,25 @@ interface TablesSidebarProps {
 
 const TablesSidebar = ({ tables, selectTable }: TablesSidebarProps) => (
   <>
-    <h2>Tables</h2>
-    <ul>
-      {tables.map((table: string) => (
-        <TableEntry
-          key={`tablelist_${table}`}
-          table={table}
-          select={() => selectTable(table)}
-        />
-      ))}
-    </ul>
-    <button type="button" onClick={() => console.log('generate dummy data')}>
-      Generate Dummy Data
-    </button>
+    <MuiThemeProvider theme={MuiTheme}>
+      <Typography>Tables</Typography>
+      <ul>
+        {tables.map((table: string) => (
+          <TableEntry
+            key={`tablelist_${table}`}
+            table={table}
+            select={() => selectTable(table)}
+          />
+        ))}
+      </ul>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => console.log('generate dummy data')}
+      >
+        Generate Dummy Data
+      </Button>
+    </MuiThemeProvider>
   </>
 );
 
