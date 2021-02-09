@@ -86,7 +86,7 @@ const QueryView = ({
   });
 
   const onLabelChange = (newLabel: string) => {
-    setQuery({ ...localQuery, label: newLabel });
+    setQuery({ ...localQuery, label: newLabel.trim() });
   };
   const onDbChange = (newDb: string) => {
     // when db is changed we must change selected db state on app, as well as
