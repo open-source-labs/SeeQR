@@ -138,7 +138,7 @@ const QueryView = ({
           databases={databases}
         />
         <QueryTopSummary
-          rows={query?.returnedRows?.length || 0}
+          rows={query?.returnedRows?.length}
           totalTime={getPrettyTime(query)}
         />
       </TopRow>
