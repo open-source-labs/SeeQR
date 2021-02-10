@@ -14,6 +14,7 @@ const {
 
 let PG_URI: string = 'postgres://postgres:postgres@localhost:5432';
 let pool: any = new Pool({ connectionString: PG_URI });
+console.log(PG_URI);
 
 /**
  *  ********************************************************* HELPER FUNCTIONS *************************************************
@@ -22,7 +23,10 @@ let pool: any = new Pool({ connectionString: PG_URI });
 // helper function that creates the column objects, which are saved to the schemaLayout object
 // this function returns a promise to be resolved with Promise.all syntax
 const getColumnObjects = (tableName: string) => {
-  console.log('Running getColumnObjects using the following tableName', tableName)
+  console.log(
+    'Running getColumnObjects using the following tableName',
+    tableName
+  );
   // const queryString = `SELECT column_name, data_type, character_maximum_length
   //    FROM information_schema.columns
   //    WHERE table_name = $1;
@@ -55,35 +59,34 @@ const getColumnObjects = (tableName: string) => {
 // gets the name and size of each of the databases in the current postgres instance
 // ignoring the postgres, template0 and template1 DBs
 const getDBNames = () =>
+  // let dbSize: string;
+  // if (dbName) {
+  //   db.query(`SELECT pg_size_pretty(pg_database_size('${dbName}'));`).then(
+  //     (queryStats) => {
+  //       dbSize = queryStats.rows[0].pg_size_pretty;
+  //     }
+  //   );
+  // };
+  // db.getLists().then((data) => event.sender.send('db-lists', data, dbSize));
 
-// let dbSize: string;
-// if (dbName) {
-//   db.query(`SELECT pg_size_pretty(pg_database_size('${dbName}'));`).then(
-//     (queryStats) => {
-//       dbSize = queryStats.rows[0].pg_size_pretty;
-//     }
-//   );
-// };
-// db.getLists().then((data) => event.sender.send('db-lists', data, dbSize));
+  // old function to get an array of DB names
+  // new Promise((resolve) => {
+  //   pool.query('SELECT datname FROM pg_database;')
+  //     .then((databases) => {
+  //       const dbList: any = [];
+  //       for (let i = 0; i < databases.rows.length; i += 1) {
+  //         const curName = databases.rows[i].datname;
+  //         if (
+  //           curName !== 'postgres' &&
+  //           curName !== 'template0' &&
+  //           curName !== 'template1'
+  //         )
+  //           dbList.push(databases.rows[i].datname);
 
-// old function to get an array of DB names
-// new Promise((resolve) => {
-//   pool.query('SELECT datname FROM pg_database;')
-//     .then((databases) => {
-//       const dbList: any = [];
-//       for (let i = 0; i < databases.rows.length; i += 1) {
-//         const curName = databases.rows[i].datname;
-//         if (
-//           curName !== 'postgres' &&
-//           curName !== 'template0' &&
-//           curName !== 'template1'
-//         )
-//           dbList.push(databases.rows[i].datname);
-        
-//     }
-//     resolve(dbList);
-//   });
-// });
+  //     }
+  //     resolve(dbList);
+  //   });
+  // });
 
   new Promise((resolve) => {
     const query = `
@@ -92,31 +95,29 @@ const getDBNames = () =>
       FROM pg_database dbs
       ORDER BY db_name
     `;
-    pool.query(query)
-      .then((databases) => {
-        const dbList: any = [];
-        for (let i = 0; i < databases.rows.length; i += 1) {
-          const dbName = databases.rows[i].db_name;
-          if (
-            dbName !== 'postgres' &&
-            dbName !== 'template0' &&
-            dbName !== 'template1'
-          ) {
-            // const dbObj = {
-            //   dbName,
-            //   dbSize: databases.rows[i].db_size
-            // };
-            // dbList.push(dbObj);
-            dbList.push(databases.rows[i]);
-          }
+    pool.query(query).then((databases) => {
+      const dbList: any = [];
+      for (let i = 0; i < databases.rows.length; i += 1) {
+        const dbName = databases.rows[i].db_name;
+        if (
+          dbName !== 'postgres' &&
+          dbName !== 'template0' &&
+          dbName !== 'template1'
+        ) {
+          // const dbObj = {
+          //   dbName,
+          //   dbSize: databases.rows[i].db_size
+          // };
+          // dbList.push(dbObj);
+          dbList.push(databases.rows[i]);
         }
+      }
       // console.log('dbList: ', dbList);
       resolve(dbList);
     });
   });
 
-
-  // gets all tablenames from currentschema
+// gets all tablenames from currentschema
 const getDBLists = () => {
   const query = `
     SELECT table_catalog, table_schema, table_name, is_insertable_into
@@ -200,7 +201,7 @@ myobj = {
     return pool.query(text, params, callback);
   },
   // Change current DB
-  changeDB: (dbName: string) => {
+  changeDB: (dbName: string = '') => {
     PG_URI = `postgres://postgres:postgres@localhost:5432/${dbName}`;
     pool = new Pool({ connectionString: PG_URI });
     console.log('Current URI: ', PG_URI);
