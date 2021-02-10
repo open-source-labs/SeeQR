@@ -2,15 +2,7 @@ import React from 'react';
 import { Typography, Button, ButtonGroup, Container } from '@material-ui/core';
 import styled from 'styled-components';
 import { MuiTheme } from '../../../style-variables';
-import {
-  selectedColor,
-  textColor,
-  defaultMargin,
-} from '../../../style-variables';
-
-const TableBtnGroup = styled(ButtonGroup)`
-  margin: ${defaultMargin} 5px;
-`;
+import { TableInfo } from '../../../types';
 
 interface TableEntryProps {
   table: string;
@@ -24,22 +16,23 @@ const TableEntry = ({ table, select }: TableEntryProps) => (
 );
 
 interface TablesSidebarProps {
-  tables: string[];
-  selectTable: (table: string) => void;
+  tables: TableInfo[];
+  selectTable: (table: TableInfo) => void;
 }
 
 const TablesSidebar = ({ tables, selectTable }: TablesSidebarProps) => (
   <>
+    {/* <MuiThemeProvider theme={MuiTheme}> */}
     <Typography>Tables</Typography>
-    <TableBtnGroup variant="contained" color="primary" fullWidth>
-      {tables.map((table: string) => (
+    <ul>
+      {tables.map((table) => (
         <TableEntry
-          key={`tablelist_${table}`}
-          table={table}
+          key={`tablelist_${table.table_catalog}_${table.table_name}`}
+          table={table.table_name}
           select={() => selectTable(table)}
         />
       ))}
-    </TableBtnGroup>
+    </ul>
     <Button
       variant="contained"
       color="primary"
@@ -47,6 +40,7 @@ const TablesSidebar = ({ tables, selectTable }: TablesSidebarProps) => (
     >
       Generate Dummy Data
     </Button>
+    {/* </MuiThemeProvider> */}
   </>
 );
 

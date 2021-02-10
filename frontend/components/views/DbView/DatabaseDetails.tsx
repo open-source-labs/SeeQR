@@ -1,13 +1,16 @@
 import React from 'react';
-import { Typography } from '@material-ui/core';
+import { DatabaseInfo } from '../../../types';
+// import { Typography } from '@material-ui/core';
 
 interface DatabaseDetailsProps {
-  db: string;
+  db: DatabaseInfo;
 }
 
 const DatabaseDetails = ({ db }: DatabaseDetailsProps) => (
   <>
-    <Typography variant="h2">{db}</Typography>
+    <div>{`${db.db_name} = ${db.db_size}`}</div>
+
+    {/* <Typography variant="h2">{db}</Typography> */}
   </>
 );
 

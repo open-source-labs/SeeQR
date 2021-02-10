@@ -47,7 +47,8 @@
     // don't seem to be good friends. Decided to manually handle defaults for
     // optional props instead
     "react/require-default-props": "off",
-    "react/jsx-props-no-spreading": "off"
+    "react/jsx-props-no-spreading": "off",
+    "camelcase": "off"
   },
   "root": true
 }
