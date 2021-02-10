@@ -44,7 +44,7 @@ const DuplicateDbModal = ({
     const schemaNameInput = event.target.value;
     let dbSafeName = schemaNameInput.toLowerCase();
     dbSafeName = dbSafeName.replace(/[^A-Z0-9]/gi, '');
-    //check if the newSchemaName is
+    // check if the newSchemaName is
     setNewSchemaName(dbSafeName);
   };
 
