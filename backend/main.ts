@@ -5,11 +5,11 @@
 const { app, BrowserWindow, Menu } = require('electron');
 const path = require('path');
 const url = require('url');
-const MainMenu = require('./mainMenu');
 const {
   default: installExtension,
   REACT_DEVELOPER_TOOLS,
 } = require('electron-devtools-installer');
+const MainMenu = require('./mainMenu');
 require('./channels');
 /**
  * Explore the comment below on channels and see if its valid
@@ -52,7 +52,9 @@ function createWindow() {
     title: 'SeeQR',
     show: false,
     webPreferences: { nodeIntegration: true, enableRemoteModule: true },
-    icon: path.join(__dirname, '../../frontend/assets/images/seeqr_dock.png'),
+    icon: path.join(__dirname, '../../assets/logo/seeqr_dock.png'),
+
+    // icon: path.join(__dirname, '../../frontend/assets/images/seeqr_dock.png'),
   });
 
   /**
@@ -65,7 +67,8 @@ function createWindow() {
    * */
   if (process.platform === 'darwin') {
     app.dock.setIcon(
-      path.join(__dirname, '../../frontend/assets/images/seeqr_dock.png')
+      path.join(__dirname, '../../assets/logo/seeqr_dock.png')
+      // path.join(__dirname, '../../frontend/assets/images/seeqr_dock.png')
     );
   }
 
