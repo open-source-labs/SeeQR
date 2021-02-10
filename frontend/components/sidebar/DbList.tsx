@@ -87,7 +87,11 @@ const DbList = ({ selectedDb, setSelectedDb, show }: DbListProps) => {
         />
       </SidebarList>
       {/* Validate Db name doesnt exist */}
-      <AddNewDbModal open={openAdd} onClose={handleCloseAdd} />
+      <AddNewDbModal
+        open={openAdd}
+        onClose={handleCloseAdd}
+        databases={databases}
+      />
     </>
   );
 };
