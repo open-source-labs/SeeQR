@@ -39,12 +39,14 @@ ipcMain.on('drop-db', (event, dbName: string) => {
   // send notice to the frontend that async process has begun
   event.sender.send('async-started');
   const dropDBScript = dropDBFunc(dbName);
-  db.query(dropDBScript).then(
+  db.changeDB();
+  db.query(dropDBScript).then(() => {
     db.getLists().then((data) => {
       event.sender.send('db-lists', data);
       event.sender.send('async-complete');
-    })
-  );
+      //   })
+    });
+  });
 });
 
 /**
@@ -76,6 +78,12 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
         importedSchemaFilePath[0].lastIndexOf('.')
       )
     : '.sql';
+
+  console.log('dbNameUserSelectedToCopy', dbNameUserSelectedToCopy);
+  console.log('copyAllDataFromUserSelectedDB', copyAllDataFromUserSelectedDB);
+  console.log('dbNameEnteredByUser', dbNameEnteredByUser);
+  console.log('importedSchemaFilePath', importedSchemaFilePath);
+  console.log('extension', extension);
   // conditional to get the correct schemaFilePath name from the Load Schema Modal
   if (!importedSchemaFilePath) {
     importedSchemaFilePath = [`${dbNameEnteredByUser}.sql`];
@@ -87,6 +95,9 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
       Math.random() * 1000000000000000
     ).toString()}`;
   }
+  console.log('-----------');
+  console.log('importedSchemaFilePath', importedSchemaFilePath);
+  console.log('dbNameEnteredByUser', dbNameEnteredByUser);
 
   // Each function returns the Postgres command that will be executed on the command line by invoking the execute function
   const createDB: string = createDBFunc(dbNameEnteredByUser);

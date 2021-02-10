@@ -14,6 +14,7 @@ const {
 
 let PG_URI: string = 'postgres://postgres:postgres@localhost:5432';
 let pool: any = new Pool({ connectionString: PG_URI });
+console.log(PG_URI);
 
 /**
  *  ********************************************************* HELPER FUNCTIONS *************************************************
@@ -145,7 +146,7 @@ myobj = {
     return pool.query(text, params, callback);
   },
   // Change current DB
-  changeDB: (dbName: string) => {
+  changeDB: (dbName: string = '') => {
     PG_URI = `postgres://postgres:postgres@localhost:5432/${dbName}`;
     pool = new Pool({ connectionString: PG_URI });
     console.log('Current URI: ', PG_URI);
