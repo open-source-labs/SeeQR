@@ -62,9 +62,59 @@ export interface Feedback {
 // type assertions don't work with arrow functions https://github.com/microsoft/TypeScript/issues/34523
 function assumeType<T>(x: unknown): asserts x is T {}
 
+export interface DatabaseInfo {
+  /**
+   * Database name as available in Postgres
+   */
+  db_name: string;
+  /**
+   * Pretty string of database size
+   */
+  db_size: string;
+}
+
+export interface TableColumn {
+  /**
+   * Column name as available in Postgres
+   */
+  column_name: string;
+  /**
+   * Type of data that can be inserted into Column
+   */
+  data_type: string;
+  /**
+   * Maximum char length if data type is char and length is defined. Otherwise null
+   */
+  character_maximum_length: number | null;
+  /**
+   * Can this column receive Null values or not?
+   */
+  is_nullable: 'yes' | 'no'
+}
+
+export interface TableInfo {
+  /**
+   * Table name as available in Postgres
+   */
+  table_name: string;
+  /**
+   * Database that contains this table
+   */
+  table_catalog: string;
+  /**
+   * Schema that owns this table
+   */
+  table_schema: string;
+  /**
+   * Is table read only?
+   */
+  is_insertable_into: 'yes' | 'no';
+  columns: TableColumn[]
+}
+
 export interface DbLists {
-  databaseList: string[];
-  tableList: string[];
+  databaseList: DatabaseInfo[];
+  tableList: TableInfo[];
 }
 
 /**
@@ -73,12 +123,17 @@ export interface DbLists {
 export const isDbLists = (obj: unknown): obj is DbLists => {
   try {
     assumeType<DbLists>(obj);
-    if (!obj.databaseList || !(obj as DbLists).tableList) return false;
+    if (!obj.databaseList || !obj.tableList) return false;
     if (!Array.isArray(obj.databaseList) || !Array.isArray(obj.tableList))
       return false;
-    if (obj.databaseList[0] && typeof obj.databaseList[0] !== 'string')
+    if (obj.databaseList[0] && typeof obj.databaseList[0].db_name !== 'string')
       return false;
-    if (obj.tableList[0] && typeof obj.tableList[0] !== 'string') return false;
+    if (obj.databaseList[0] && typeof obj.databaseList[0].db_size !== 'string')
+      return false;
+    if (obj.tableList[0] && typeof obj.tableList[0].table_name !== 'string') return false;
+    if (obj.tableList[0] && typeof obj.tableList[0].table_catalog !== 'string') return false;
+    if (obj.tableList[0] && typeof obj.tableList[0].table_schema !== 'string') return false;
+    // TODO: test other properties when necessary
   } catch (e) {
     return false;
   }

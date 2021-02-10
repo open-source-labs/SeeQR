@@ -71,7 +71,7 @@ const QueryView = ({
   useEffect(() => {
     const receiveDbs = (evt: IpcMainEvent, dbLists: unknown) => {
       if (isDbLists(dbLists)) {
-        setDatabases(dbLists.databaseList);
+        setDatabases(dbLists.databaseList.map(db => db.db_name));
       }
     };
     ipcRenderer.on('db-lists', receiveDbs);
