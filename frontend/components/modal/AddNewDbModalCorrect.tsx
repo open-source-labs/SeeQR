@@ -6,6 +6,7 @@ import {
   TextField,
   Button,
   Divider,
+  Tooltip,
 } from '@material-ui/core/';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import styled from 'styled-components';
@@ -46,11 +47,14 @@ const { ipcRenderer } = window.require('electron');
 type AddNewDbModalProps = {
   open: boolean;
   onClose: () => void;
+  databases: string[];
 };
 
-const AddNewDbModal = ({ open, onClose }: AddNewDbModalProps) => {
+const AddNewDbModal = ({ open, onClose, databases }: AddNewDbModalProps) => {
   const [newDbName, setNewDbName] = useState('');
+  const [isError, setIsError] = useState(false);
   const handleClose = () => {
+    setIsError(false);
     onClose();
   };
 
@@ -58,9 +62,15 @@ const AddNewDbModal = ({ open, onClose }: AddNewDbModalProps) => {
   const handleDbName = (event: React.ChangeEvent<HTMLInputElement>) => {
     // convert input label name to lowercase only with no spacing to comply with db naming convention.
     const dbNameInput = event.target.value;
+    if (databases.includes(dbNameInput)) {
+      setIsError(true);
+    } else {
+      setIsError(false);
+    }
     let dbSafeName = dbNameInput.toLowerCase();
     // TODO: Change to allow hypens, dash, numbers
-    dbSafeName = dbSafeName.replace(/[^A-Z0-9]/gi, '');
+    dbSafeName = dbSafeName.replace(/[^\w-]/gi, '');
+    // check if the newDbName is not a duplicate
     setNewDbName(dbSafeName);
   };
 
@@ -100,20 +110,24 @@ const AddNewDbModal = ({ open, onClose }: AddNewDbModalProps) => {
       >
         <TextFieldContainer>
           <DialogTitle id="alert-dialog-title">
-            Import Existing Database
+            Import Existing SQL File
           </DialogTitle>
-          <Divider variant="middle" />
-          <Typography paragraph align="center" id="alert-dialog-description">
-            Please select a .sql file
-          </Typography>
-
-          <StyledTextField
-            id="filled-basic"
-            label="Enter a database name"
-            size="small"
-            variant="outlined"
-            onChange={handleDbName}
-          />
+          <Divider variant="middle" flexItem />
+          <Tooltip title="Any special characters will be removed">
+            <StyledTextField
+              error={isError}
+              helperText={
+                isError
+                  ? 'This database name already exists. Please enter a unique name.'
+                  : ''
+              }
+              id="filled-basic"
+              label="Enter a database name"
+              size="small"
+              variant="outlined"
+              onChange={handleDbName}
+            />
+          </Tooltip>
         </TextFieldContainer>
         <ButtonContainer>
           <StyledButton
@@ -123,14 +137,16 @@ const AddNewDbModal = ({ open, onClose }: AddNewDbModalProps) => {
           >
             Cancel
           </StyledButton>
-          <StyledButton
-            variant="contained"
-            color="primary"
-            startIcon={<CloudUploadIcon />}
-            onClick={handleFileClick}
-          >
-            Import File
-          </StyledButton>
+          <Tooltip title=".sql format only">
+            <StyledButton
+              variant="contained"
+              color="primary"
+              startIcon={<CloudUploadIcon />}
+              onClick={isError ? () => {} : handleFileClick}
+            >
+              Import File
+            </StyledButton>
+          </Tooltip>
         </ButtonContainer>
       </Dialog>
     </div>
