@@ -18,6 +18,7 @@ import DbView from './views/DbView/DbView';
 import CompareView from './views/CompareView/CompareView';
 import QuickStartView from './views/QuickStartView';
 import FeedbackModal from './modal/FeedbackModal';
+import Spinner from './modal/Spinner'
 
 const AppContainer = styled.div`
   display: grid;
@@ -83,6 +84,7 @@ const App = () => {
     // Styled Components must be injected last in order to override Material UI style: https://material-ui.com/guides/interoperability/#controlling-priority-3
     <StylesProvider injectFirst>
       <MuiThemeProvider theme={MuiTheme}>
+        <Spinner />
         <AppContainer>
           <CssBaseline />
           <GlobalStyle />
