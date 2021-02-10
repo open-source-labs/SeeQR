@@ -4,10 +4,9 @@ import { Snackbar } from '@material-ui/core';
 import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
 
 import { readingTime } from '../../lib/utils';
-import type {Feedback, FeedbackSeverity} from '../../types'
+import type { Feedback, FeedbackSeverity } from '../../types';
 
 const { ipcRenderer } = window.require('electron');
-
 
 function Alert(props: AlertProps) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -21,14 +20,11 @@ const FeedbackModal = () => {
   useEffect(() => {
     // TODO: type guard
     const receiveFeedback = (evt: IpcMainEvent, feedback: Feedback) => {
-      if (feedback.type === 'error') {
+      const validTypes: FeedbackSeverity[] = ['error', 'info', 'warning'];
+      // Ignore 'success' feedback.
+      if (validTypes.includes(feedback.type)) {
         setSeverity(feedback.type);
-
-        if (typeof feedback.message === 'string') setMessage(feedback.message);
-        // TODO: custom messages depending on properties of message.
-        else
-          setMessage(feedback.message?.toString() ?? 'ERROR: Operation Failed');
-
+        setMessage(feedback.message?.toString() ?? 'ERROR: Operation Failed');
         setOpen(true);
       }
     };
