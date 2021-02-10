@@ -1,7 +1,4 @@
 import React from 'react';
-// eslint complains about undefined Chart if not imported, ts complain Chart is
-// not used if imported. Pick your poison
-import type { Chart } from 'chart.js';
 import { Bar, defaults, ChartData } from 'react-chartjs-2';
 import { AppState } from '../../../types';
 import {keyFromData, getTotalTime} from '../../../lib/queries'
