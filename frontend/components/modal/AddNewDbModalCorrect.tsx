@@ -62,12 +62,13 @@ const AddNewDbModal = ({ open, onClose, databases }: AddNewDbModalProps) => {
   const handleDbName = (event: React.ChangeEvent<HTMLInputElement>) => {
     // convert input label name to lowercase only with no spacing to comply with db naming convention.
     const dbNameInput = event.target.value;
-    if (databases.includes(dbNameInput)) ? setIsError(true) : setIsError(false);
-  
-    let dbSafeName = dbNameInput.toLowerCase();
-    // TODO: Change to allow hypens, dash, numbers
-    dbSafeName = dbSafeName.replace(/[^\w-]/gi, '');
     // check if the newDbName is not a duplicate
+    databases.includes(dbNameInput) ? setIsError(true) : setIsError(false);
+
+    let dbSafeName = dbNameInput.toLowerCase();
+
+    dbSafeName = dbSafeName.replace(/[^\w-]/gi, '');
+
     setNewDbName(dbSafeName);
   };
 
