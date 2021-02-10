@@ -4,7 +4,7 @@
     "es2021": true,
     "node": true
   },
-  "globals": { "JSX": "readonly",  "Chart": "readonly" },
+  "globals": { "JSX": "readonly", "Chart": "readonly", "NodeJS": "readonly" },
   "extends": [
     "plugin:react/recommended",
     "airbnb",
