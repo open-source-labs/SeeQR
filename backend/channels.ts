@@ -1,6 +1,7 @@
 const { ipcMain } = require('electron'); // IPCMain: Communicate asynchronously from the main process to renderer processes
 const db = require('./models');
 const { generateDummyData, writeCSVFile } = require('./DummyD/dummyDataMain');
+
 const {
   createDBFunc,
   dropDBFunc,
@@ -165,7 +166,7 @@ ipcMain.on('execute-query-tracked', (event, data: QueryType) => {
     queryLabel,
     queryData: '',
     queryStatistics: '',
-    lists: {},
+    // lists: {},
   };
 
   // console.log(frontendData);
@@ -176,31 +177,72 @@ ipcMain.on('execute-query-tracked', (event, data: QueryType) => {
   //   name VARCHAR NOT NULL,
   //   mass VARCHAR
   // )
-
+  const feedback = {};
   db.query(`BEGIN; EXPLAIN (FORMAT JSON, ANALYZE) ${queryString}; ROLLBACK;`)
     // db.query(`EXPLAIN (FORMAT JSON, ANALYZE) ${queryString}`).then(
     .then((queryStats) => {
       frontendData.queryStatistics = queryStats[1].rows;
     })
-    .then(() => {
-      db.query(queryString).then((queryData) => {
-        frontendData.queryData = queryData.rows;
-        (async function getListAsync() {
-          const listObj: any = await db.getLists();
-          frontendData.lists = listObj;
-          event.sender.send('db-lists', listObj);
-          event.sender.send('return-execute-query', frontendData);
-          event.sender.send('async-complete');
-          // console.log('all events sent');
-        })();
-      });
+    .catch((err) => {
+      feedback.type = 'error';
+      feedback.message = err;
     })
-    .catch((error: string) => {
-      console.log(
-        'channels line 337: ERROR in execute-query-tracked channel in main.ts',
-        error
-      );
-    });
+    .finally(() => {
+      db.query(queryString)
+        .then((queryData) => {
+          frontendData.queryData = queryData.rows;
+          if (!feedback.type) {
+            feedback.type = 'success';
+            feedback.message = 'Success!';
+          }
+        })
+        .catch((err) => {
+          feedback.type = 'error';
+          feedback.message = err;
+        })
+        .finally(async () => {
+          // (function getListAsync() {
+            listObj = await db.getLists();
+            // frontendData.lists = listObj;
+            event.sender.send('db-lists', listObj);
+            event.sender.send('return-execute-query', frontendData);
+            event.sender.send('async-complete');
+            event.sender.send('feedback', feedback);
+            // console.log('all events sent');
+          // })();
+        })
+    })
+    // .catch((error: string) => {
+    //   console.log(
+    //     'channels line 337: ERROR in execute-query-tracked channel in main.ts',
+    //     error
+    //   );
+  // });
+
+    // .then(
+    //   (queryStats) => {
+    //     frontendData.queryStatistics = queryStats[1].rows;
+    // })
+    // .then(() => {
+    //     db.query(queryString)
+    //     .then((queryData) => {
+    //       frontendData.queryData = queryData.rows;
+    //       (async function getListAsync() {
+    //         listObj = await db.getLists();
+    //         frontendData.lists = listObj;
+    //         event.sender.send('db-lists', listObj);
+    //         event.sender.send('return-execute-query', frontendData);
+    //         event.sender.send('async-complete');
+    //         // console.log('all events sent');
+    //       })();
+    //     })
+    // })
+    // .catch((error: string) => {
+    //   console.log(
+    //     'channels line 337: ERROR in execute-query-tracked channel in main.ts',
+    //     error
+    //   );
+    // });
 });
 
 interface dummyDataRequestType {
@@ -220,9 +262,12 @@ ipcMain.on('generate-dummy-data', (event: any, data: dummyDataRequestType) => {
   db.createKeyObject().then((result) => {
     keyObject = result;
     // Iterating over the passed in keyObject to remove the primaryKeyColumn and all foreignKeyColumns from table
-    db.dropKeyColumns(keyObject).then(() => {
-      db.addNewKeyColumns(keyObject).then(() => {
+    // db.dropKeyColumns(keyObject).then(() => {  
+      // db.addNewKeyColumns(keyObject).then(() => {
         db.getSchemaLayout().then((schemaLayoutResult) => {
+          console.log('schemaLayout: ', schemaLayoutResult);
+          console.log('films layout: ', schemaLayoutResult.tables.films[0]);
+          console.log('films layout: ', schemaLayoutResult.tables.films[1]);
           schemaLayout = schemaLayoutResult;
           // generate the dummy data and save it into matrices associated with table names
           tableMatricesArray = generateDummyData(
@@ -244,8 +289,8 @@ ipcMain.on('generate-dummy-data', (event: any, data: dummyDataRequestType) => {
         });
       });
     });
-  });
-});
+//   });
+// });
 
 export default execute;
 
