@@ -1,17 +1,9 @@
-/**
- * Dialog: display native system dialogs for opening and saving files, alerting, etc
- * IPCMain: Communicate asynchronously from the main process to renderer processes
- * S3: Importing Node.js module
- * Child_Process: Importing Node.js' child_process API
- */
-const { ipcMain } = require('electron');
-const S3 = require('aws-sdk/clients/s3');
-const { exec } = require('child_process');
-
+const { ipcMain } = require('electron'); // IPCMain: Communicate asynchronously from the main process to renderer processes
 const db = require('./models');
 const { generateDummyData, writeCSVFile } = require('./DummyD/dummyDataMain');
 const {
   createDBFunc,
+  dropDBFunc,
   runSQLFunc,
   runTARFunc,
   runFullCopyFunc,
@@ -19,8 +11,7 @@ const {
   execute,
 } = require('./helperFunctions');
 
-let listObj: any;
-
+// *************************************************** IPC Event Listeners *************************************************** //
 ipcMain.on('return-db-list', (event, dbName) => {
   // console.log('in return-db-list', dbName);
   // DB query to get the database size
@@ -36,10 +27,30 @@ ipcMain.on('return-db-list', (event, dbName) => {
 });
 
 // Listen for database changes sent from the renderer upon changing tabs.
-ipcMain.on('change-db', (event, dbName) => {
+ipcMain.on('change-db', (event, dbName: string) => {
+  event.sender.send('async-started'); // send notice to the frontend that async process has begun
   db.changeDB(dbName);
+  event.sender.send('async-complete'); // send notice to the frontend that async process has completed
 });
 
+// Deletes the dbName that is passed from the front end and returns the DB List
+ipcMain.on('drop-db', (event, dbName: string) => {
+  // send notice to the frontend that async process has begun
+  event.sender.send('async-started');
+  const dropDBScript = dropDBFunc(dbName);
+  db.query(dropDBScript).then(
+    db.getLists().then((data) => {
+      event.sender.send('db-lists', data);
+      event.sender.send('async-complete');
+    })
+  );
+});
+
+/**
+ * This function allows users to import the DB using the + icon on the front end
+ * Users can import a .tar or .sql file
+ * Additionally, this function allows the user to copy an existing database and optionally copy the data in the db
+ */
 interface SchemaType {
   schemaName: string;
   schemaFilePath: string[];
@@ -47,22 +58,18 @@ interface SchemaType {
   dbCopyName: string;
   copy: boolean;
 }
-
-/**
- * This function allows users to import the DB using the + icon on the front end
- * Users can import a .tar or .sql file
- * Additionally, this function allows the user to copy an existing database and optionally copy the data in the db
- */
 ipcMain.on('input-schema', (event, data: SchemaType) => {
   // send notice to the frontend that async process has begun
   event.sender.send('async-started');
 
   const {
-    schemaName: dbNameEnteredByUser,
     dbCopyName: dbNameUserSelectedToCopy,
     copy: copyAllDataFromUserSelectedDB,
   } = data;
-  let { schemaFilePath: importedSchemaFilePath } = data;
+  let {
+    schemaName: dbNameEnteredByUser,
+    schemaFilePath: importedSchemaFilePath,
+  } = data;
   const extension: string = Array.isArray(importedSchemaFilePath)
     ? importedSchemaFilePath[0].slice(
         importedSchemaFilePath[0].lastIndexOf('.')
@@ -71,6 +78,13 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
   // conditional to get the correct schemaFilePath name from the Load Schema Modal
   if (!importedSchemaFilePath) {
     importedSchemaFilePath = [`${dbNameEnteredByUser}.sql`];
+  }
+
+  // defaults to the sql file name if DB name is not provided by user
+  if (dbNameEnteredByUser === '') {
+    dbNameEnteredByUser = `a${Math.floor(
+      Math.random() * 1000000000000000
+    ).toString()}`;
   }
 
   // Each function returns the Postgres command that will be executed on the command line by invoking the execute function
@@ -94,7 +108,7 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
 
   // Change the URI to new DB, send DB lists and tables in current DB
   async function sendLists() {
-    listObj = await db.getLists();
+    const listObj: any = await db.getLists();
     event.sender.send('db-lists', listObj);
     event.sender.send('async-complete');
   }
@@ -124,6 +138,7 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
   execute(createDB, importOrCopyExistingDB);
 });
 
+// Listen for queries being sent from renderer
 interface QueryType {
   queryCurrentSchema: string;
   queryString: string;
@@ -131,8 +146,6 @@ interface QueryType {
   queryData: string;
   queryStatistics: string;
 }
-
-// Listen for queries being sent from renderer
 ipcMain.on('execute-query-tracked', (event, data: QueryType) => {
   // send notice to front end that query has been started
   event.sender.send('async-started');
@@ -173,7 +186,7 @@ ipcMain.on('execute-query-tracked', (event, data: QueryType) => {
       db.query(queryString).then((queryData) => {
         frontendData.queryData = queryData.rows;
         (async function getListAsync() {
-          listObj = await db.getLists();
+          const listObj: any = await db.getLists();
           frontendData.lists = listObj;
           event.sender.send('db-lists', listObj);
           event.sender.send('return-execute-query', frontendData);
@@ -190,57 +203,10 @@ ipcMain.on('execute-query-tracked', (event, data: QueryType) => {
     });
 });
 
-// Run select * from actors;
-// db.query(queryString)
-//   .then((queryData) => {
-//     console.log('-----------------------------------------');
-//     console.log(queryData);
-//     console.log('-----------------------------------------');
-
-//     frontendData.queryData = queryData.rows; // probably an array
-// if (!queryString.match(/create/i)) {
-// Run EXPLAIN (FORMAT JSON, ANALYZE)
-// db.query(`BEGIN; EXPLAIN (FORMAT JSON, ANALYZE) ${queryString}; ROLLBACK;`).then(
-
-// // db.query(`EXPLAIN (FORMAT JSON, ANALYZE) ${queryString}`).then(
-//   (queryStats) => {
-//     console.log('-----------------------------------------');
-//     console.log(queryStats);
-//     console.log('-----------------------------------------');
-//     frontendData.queryStatistics = queryStats.rows;
-
-//     (async function getListAsync() {
-//       listObj = await db.getLists();
-//       frontendData.lists = listObj;
-//       event.sender.send('db-lists', listObj);
-//       event.sender.send('return-execute-query', frontendData);
-//       event.sender.send('async-complete');
-//     })();
-//   }
-// );
-// } else {
-//   // Handling for tracking a create table query, can't run explain/analyze on create statements
-//   (async function getListAsync() {
-//     listObj = await db.getLists();
-//     frontendData.lists = listObj;
-//     event.sender.send('db-lists', listObj);
-//     event.sender.send('async-complete');
-//   })();
-// }
-// })
-// .catch((error: string) => {
-//   console.log(
-//     'channels line 337: ERROR in execute-query-tracked channel in main.ts',
-//     error
-//   );
-// });
-// });
-
 interface dummyDataRequestType {
   schemaName: string;
   dummyData: {};
 }
-
 ipcMain.on('generate-dummy-data', (event: any, data: dummyDataRequestType) => {
   // send notice to front end that DD generation has been started
   event.sender.send('async-started');
@@ -421,4 +387,50 @@ export default execute;
 //       );
 //       event.sender.send('query-error', 'Error executing query.');
 //     });
+// });
+
+// Run select * from actors;
+// db.query(queryString)
+//   .then((queryData) => {
+//     console.log('-----------------------------------------');
+//     console.log(queryData);
+//     console.log('-----------------------------------------');
+
+//     frontendData.queryData = queryData.rows; // probably an array
+// if (!queryString.match(/create/i)) {
+// Run EXPLAIN (FORMAT JSON, ANALYZE)
+// db.query(`BEGIN; EXPLAIN (FORMAT JSON, ANALYZE) ${queryString}; ROLLBACK;`).then(
+
+// // db.query(`EXPLAIN (FORMAT JSON, ANALYZE) ${queryString}`).then(
+//   (queryStats) => {
+//     console.log('-----------------------------------------');
+//     console.log(queryStats);
+//     console.log('-----------------------------------------');
+//     frontendData.queryStatistics = queryStats.rows;
+
+//     (async function getListAsync() {
+//       listObj = await db.getLists();
+//       frontendData.lists = listObj;
+//       event.sender.send('db-lists', listObj);
+//       event.sender.send('return-execute-query', frontendData);
+//       event.sender.send('async-complete');
+//     })();
+//   }
+// );
+// } else {
+//   // Handling for tracking a create table query, can't run explain/analyze on create statements
+//   (async function getListAsync() {
+//     listObj = await db.getLists();
+//     frontendData.lists = listObj;
+//     event.sender.send('db-lists', listObj);
+//     event.sender.send('async-complete');
+//   })();
+// }
+// })
+// .catch((error: string) => {
+//   console.log(
+//     'channels line 337: ERROR in execute-query-tracked channel in main.ts',
+//     error
+//   );
+// });
 // });

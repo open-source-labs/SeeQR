@@ -1,14 +1,14 @@
-/* eslint-disable no-unused-expressions */
-const { exec } = require('child_process');
-const { dialog } = require('electron');
+const { exec } = require('child_process'); // Dialog: display native system dialogs for opening and saving files, alerting, etc
+const { dialog } = require('electron'); // Child_Process: Importing Node.js' child_process API
 
-// ************************************** CLI COMMANDS TO CREATE, DELETE, COPY DB SCHEMA **************************************
+// ************************************** CLI COMMANDS TO CREATE, DELETE, COPY DB SCHEMA, etc. **************************************
 
 // Generate CLI commands to be executed in child process.
-// The electron app will access your terminal to execute these postgres commands
+// The electron app will access your terminal to execute these postgres commands via execute function
 
 let helperFunctions: {
   createDBFunc: Function;
+  dropDBFunc: Function;
   runSQLFunc: Function;
   runTARFunc: Function;
   runFullCopyFunc: Function;
@@ -16,13 +16,15 @@ let helperFunctions: {
   execute: Function;
 };
 
-// eslint-disable-next-line prefer-const
 helperFunctions = {
   // create a database
   createDBFunc: (name) => {
     console.log('function createDBFunc just ran');
     return `psql -U postgres -c "CREATE DATABASE ${name}"`;
   },
+
+  // drop provided database
+  dropDBFunc: (dbName) => `Drop database ${dbName}`,
 
   // import SQL file into new DB created
   runSQLFunc: (dbName, file) => `psql -U postgres -d ${dbName} -f ${file}`,
@@ -50,16 +52,11 @@ helperFunctions = {
         // this shows the console error in an error message on the frontend
         dialog.showErrorBox(`${error.message}`, '');
         console.log(`channels line 47 error: ${error.message}`);
-        return;
-      }
-      if (stderr) {
+      } else if (stderr) {
         // this shows the console error in an error message on the frontend
         dialog.showErrorBox(`${stderr}`, '');
         console.log(`channels line 53 stderr: ${stderr}`);
-        return;
-      }
-
-      if (nextStep) nextStep();
+      } else nextStep();
     });
   },
 };
