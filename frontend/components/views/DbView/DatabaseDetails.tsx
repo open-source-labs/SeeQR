@@ -1,16 +1,24 @@
 import React from 'react';
+import { Typography } from '@material-ui/core';
+import styled from 'styled-components';
 import { DatabaseInfo } from '../../../types';
-// import { Typography } from '@material-ui/core';
 
 interface DatabaseDetailsProps {
   db: DatabaseInfo;
 }
 
+// Container
+const Container = styled.a`
+  display: flex;
+  justify-content: space-between;
+`;
+
 const DatabaseDetails = ({ db }: DatabaseDetailsProps) => (
   <>
-    <div>{`${db.db_name} = ${db.db_size}`}</div>
-
-    {/* <Typography variant="h2">{db}</Typography> */}
+    <Container>
+      <Typography variant="h2">{`${db.db_name}`}</Typography>
+      <Typography variant="h2">{`${db.db_size}`}</Typography>
+    </Container>
   </>
 );
 
