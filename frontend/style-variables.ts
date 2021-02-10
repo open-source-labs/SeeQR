@@ -28,13 +28,20 @@ export const greenLightest = '#ccdad4';
 
 // greys
 export const greyDarkest = '#191919';
+export const greyDark = '#262626'
 export const greyPrimary = '#818584';
 export const greyLight = '#aab6af';
 export const greyLightest = '#dfe0e2';
 
+
 // Icons and Buttons
 export const selectedColor = greenPrimary;
 export const hoverColor = greenPrimary;
+
+
+// Size
+export const sidebarWidth = '300px';
+export const defaultMargin = '20px';
 
 // theme to override Mui defaults
 export const MuiTheme = createMuiTheme({
@@ -47,6 +54,10 @@ export const MuiTheme = createMuiTheme({
     secondary: {
       light: greyLightest,
       main: greyLight,
+    },
+    text: {
+      primary: textColor,
+      secondary: greyLight,
     },
   },
   overrides: {
@@ -66,8 +77,6 @@ export const MuiTheme = createMuiTheme({
   },
 });
 
-// Sizes
-export const sidebarWidth = '300px';
 
 interface SidebarListItemProps {
   customSelected: boolean;
@@ -76,7 +85,7 @@ interface SidebarListItemProps {
 export const SidebarList = styled(List)`
   padding: 0;
   width: 100%;
-`
+`;
 
 /**
  * Sidebar List item. Designed for dark bg.
