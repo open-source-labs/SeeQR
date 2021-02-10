@@ -1,3 +1,7 @@
+// TODO: Implement first/last buttons for pagination https://material-ui.com/components/tables/#custom-pagination-actions
+// TODO: dark scrollbar for table
+// TODO: line up right margin with codemirror margin
+
 import React from 'react';
 import {
   Table,
@@ -26,6 +30,8 @@ const StyledPaper = styled(({ ...other }) => (
   background: ${greyDark};
   min-width: ${tableWidth};
   width: ${tableWidth};
+
+
 `;
 
 const StyledCell = styled(TableCell)`
