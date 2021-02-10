@@ -4,15 +4,10 @@ import { Snackbar } from '@material-ui/core';
 import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
 
 import { readingTime } from '../../lib/utils';
+import type {Feedback, FeedbackSeverity} from '../../types'
 
 const { ipcRenderer } = window.require('electron');
 
-type Severity = 'error' | 'success' | 'info' | 'warning';
-
-interface Feedback {
-  type: Severity;
-  message: string | Record<string, unknown>;
-}
 
 function Alert(props: AlertProps) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -21,7 +16,7 @@ function Alert(props: AlertProps) {
 const FeedbackModal = () => {
   const [isOpen, setOpen] = useState(false);
   const [message, setMessage] = useState('');
-  const [severity, setSeverity] = useState<Severity>('info');
+  const [severity, setSeverity] = useState<FeedbackSeverity>('info');
 
   useEffect(() => {
     // TODO: type guard
