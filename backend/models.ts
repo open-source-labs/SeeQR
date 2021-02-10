@@ -23,31 +23,37 @@ let pool: any = new Pool({ connectionString: PG_URI });
 // this function returns a promise to be resolved with Promise.all syntax
 const getColumnObjects = (tableName: string) => {
   console.log('Running getColumnObjects using the following tableName', tableName)
-  const queryString = `SELECT column_name, data_type, character_maximum_length
-     FROM information_schema.columns
-     WHERE table_name = $1;
-    `;
+  // const queryString = `SELECT column_name, data_type, character_maximum_length
+  //    FROM information_schema.columns
+  //    WHERE table_name = $1;
+  //   `;
+  const queryString = `SELECT column_name, data_type, character_maximum_length, is_nullable
+  FROM information_schema.columns
+  WHERE table_name = $1;
+ `;
   const value = [tableName];
   return new Promise((resolve) => {
     pool.query(queryString, value).then((result) => {
       const columnInfoArray: any = [];
       for (let i = 0; i < result.rows.length; i += 1) {
-        const columnObj: any = {
-          columnName: result.rows[i].column_name,
-          dataInfo: {
-            data_type: result.rows[i].data_type,
-            character_maxiumum_length: result.rows[i].character_maxiumum_length,
-          },
-        };
-        columnInfoArray.push(columnObj);
+        // console.log('this is each columnObj: ', result.rows[i]);
+        // const columnObj: any = {
+        //   columnName: result.rows[i].column_name,
+        //   dataInfo: {
+        //     data_type: result.rows[i].data_type,
+        //     character_maxiumum_length: result.rows[i].character_maxiumum_length,
+        //   },
+        // };
+        // columnInfoArray.push(columnObj);
+        columnInfoArray.push(result.rows[i]);
       }
       resolve(columnInfoArray);
     });
   });
 };
 
-// gets all the database names of the current postgres instances
-// ignoring the postgres, template0 and template1 dbs
+// gets the name and size of each of the databases in the current postgres instance
+// ignoring the postgres, template0 and template1 DBs
 const getDBNames = () =>
 
 // let dbSize: string;
@@ -60,42 +66,112 @@ const getDBNames = () =>
 // };
 // db.getLists().then((data) => event.sender.send('db-lists', data, dbSize));
 
+// old function to get an array of DB names
+// new Promise((resolve) => {
+//   pool.query('SELECT datname FROM pg_database;')
+//     .then((databases) => {
+//       const dbList: any = [];
+//       for (let i = 0; i < databases.rows.length; i += 1) {
+//         const curName = databases.rows[i].datname;
+//         if (
+//           curName !== 'postgres' &&
+//           curName !== 'template0' &&
+//           curName !== 'template1'
+//         )
+//           dbList.push(databases.rows[i].datname);
+        
+//     }
+//     resolve(dbList);
+//   });
+// });
+
   new Promise((resolve) => {
-    pool.query('SELECT datname FROM pg_database;')
+    const query = `
+      SELECT dbs.datname AS db_name,
+             pg_size_pretty(pg_database_size(dbs.datname)) AS db_size
+      FROM pg_database dbs
+      ORDER BY db_name
+    `;
+    pool.query(query)
       .then((databases) => {
         const dbList: any = [];
         for (let i = 0; i < databases.rows.length; i += 1) {
-          const curName = databases.rows[i].datname;
+          const dbName = databases.rows[i].db_name;
           if (
-            curName !== 'postgres' &&
-            curName !== 'template0' &&
-            curName !== 'template1'
-          )
-            dbList.push(databases.rows[i].datname);
-          
-      }
+            dbName !== 'postgres' &&
+            dbName !== 'template0' &&
+            dbName !== 'template1'
+          ) {
+            // const dbObj = {
+            //   dbName,
+            //   dbSize: databases.rows[i].db_size
+            // };
+            // dbList.push(dbObj);
+            dbList.push(databases.rows[i]);
+          }
+        }
+      // console.log('dbList: ', dbList);
       resolve(dbList);
     });
   });
 
-// gets all tablenames from currentschema
+
+  // gets all tablenames from currentschema
 const getDBLists = () => {
   const query = `
-    SELECT table_name
+    SELECT table_catalog, table_schema, table_name, is_insertable_into
     FROM information_schema.tables
     WHERE table_schema = 'public'
     ORDER BY table_name;
   `;
   return new Promise((resolve) => {
+    const tableList: any = [];
+    const promiseArray: any = [];
     pool.query(query).then((tables) => {
-      const tableList: any = [];
       for (let i = 0; i < tables.rows.length; i += 1) {
-        tableList.push(tables.rows[i].table_name);
+        // console.log('these are the individual tables: ', tables.rows[i]);
+        tableList.push(tables.rows[i]);
+        promiseArray.push(getColumnObjects(tables.rows[i].table_name));
       }
-      resolve(tableList);
+      Promise.all(promiseArray).then((columnInfo) => {
+        for (let i = 0; i < columnInfo.length; i += 1) {
+          // console.log('columnInfo: ', columnInfo[i]);
+          tableList[i].columns = columnInfo[i];
+          // console.log('tableList: ', tableList[i]);
+        }
+        resolve(tableList);
+      });
     });
   });
 };
+
+// Promise.all(promiseArray).then((columnInfo) => {
+//   // here, we create a key for each table name and assign the array of column objects to the corresponding table name
+//   for (let i = 0; i < columnInfo.length; i += 1) {
+//     schemaLayout.tables[schemaLayout.tableNames[i]] = columnInfo[i];
+//     console.log('columnInfo: ', columnInfo[i]);
+//   }
+//   resolve(schemaLayout);
+// });
+
+// gets all tablenames from currentschema
+// const getDBLists = () => {
+//   const query = `
+//     SELECT table_name
+//     FROM information_schema.tables
+//     WHERE table_schema = 'public'
+//     ORDER BY table_name;
+//   `;
+//   return new Promise((resolve) => {
+//     pool.query(query).then((tables) => {
+//       const tableList: any = [];
+//       for (let i = 0; i < tables.rows.length; i += 1) {
+//         tableList.push(tables.rows[i].table_name);
+//       }
+//       resolve(tableList);
+//     });
+//   });
+// };
 
 /**
  *  ********************************************************* MAIN QUERY FUNCTIONS *************************************************
@@ -134,12 +210,14 @@ myobj = {
   getLists: () =>
     new Promise((resolve) => {
       const listObj: any = {
-        tableList: [], // current database's tables
         databaseList: [],
+        tableList: [], // current database's tables
       };
       Promise.all([getDBNames(), getDBLists()]).then((data) => {
         // console.log('models on line 126: ', data);
         [listObj.databaseList, listObj.tableList] = data;
+        // console.log('final listObj: ', listObj);
+        // console.log('final check: ', listObj.tableList[0]);
         resolve(listObj);
       });
     }),
@@ -391,6 +469,7 @@ myobj = {
             // here, we create a key for each table name and assign the array of column objects to the corresponding table name
             for (let i = 0; i < columnInfo.length; i += 1) {
               schemaLayout.tables[schemaLayout.tableNames[i]] = columnInfo[i];
+              console.log('columnInfo: ', columnInfo[i]);
             }
             resolve(schemaLayout);
           });
