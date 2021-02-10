@@ -30,7 +30,7 @@ const DbList = ({ selectedDb, setSelectedDb, show }: DbListProps) => {
     // Listen to backend for updates to list of available databases
     const dbListFromBackend = (evt: IpcMainEvent, dbLists: unknown) => {
       if (isDbLists(dbLists)) {
-        setDatabases(dbLists.databaseList);
+        setDatabases(dbLists.databaseList.map(db => db.db_name));
       }
     };
     ipcRenderer.on('db-lists', dbListFromBackend);
