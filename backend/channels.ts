@@ -177,7 +177,7 @@ ipcMain.on('execute-query-tracked', (event, data: QueryType) => {
   //   name VARCHAR NOT NULL,
   //   mass VARCHAR
   // )
-  const feedback = {};
+  const feedback: { type?: string; message?: string } = {};
   db.query(`BEGIN; EXPLAIN (FORMAT JSON, ANALYZE) ${queryString}; ROLLBACK;`)
     // db.query(`EXPLAIN (FORMAT JSON, ANALYZE) ${queryString}`).then(
     .then((queryStats) => {
@@ -202,47 +202,47 @@ ipcMain.on('execute-query-tracked', (event, data: QueryType) => {
         })
         .finally(async () => {
           // (function getListAsync() {
-            listObj = await db.getLists();
-            // frontendData.lists = listObj;
-            event.sender.send('db-lists', listObj);
-            event.sender.send('return-execute-query', frontendData);
-            event.sender.send('async-complete');
-            event.sender.send('feedback', feedback);
-            // console.log('all events sent');
+          const listObj = await db.getLists();
+          // frontendData.lists = listObj;
+          event.sender.send('db-lists', listObj);
+          event.sender.send('return-execute-query', frontendData);
+          event.sender.send('async-complete');
+          event.sender.send('feedback', feedback);
+          // console.log('all events sent');
           // })();
-        })
-    })
-    // .catch((error: string) => {
-    //   console.log(
-    //     'channels line 337: ERROR in execute-query-tracked channel in main.ts',
-    //     error
-    //   );
+        });
+    });
+  // .catch((error: string) => {
+  //   console.log(
+  //     'channels line 337: ERROR in execute-query-tracked channel in main.ts',
+  //     error
+  //   );
   // });
 
-    // .then(
-    //   (queryStats) => {
-    //     frontendData.queryStatistics = queryStats[1].rows;
-    // })
-    // .then(() => {
-    //     db.query(queryString)
-    //     .then((queryData) => {
-    //       frontendData.queryData = queryData.rows;
-    //       (async function getListAsync() {
-    //         listObj = await db.getLists();
-    //         frontendData.lists = listObj;
-    //         event.sender.send('db-lists', listObj);
-    //         event.sender.send('return-execute-query', frontendData);
-    //         event.sender.send('async-complete');
-    //         // console.log('all events sent');
-    //       })();
-    //     })
-    // })
-    // .catch((error: string) => {
-    //   console.log(
-    //     'channels line 337: ERROR in execute-query-tracked channel in main.ts',
-    //     error
-    //   );
-    // });
+  // .then(
+  //   (queryStats) => {
+  //     frontendData.queryStatistics = queryStats[1].rows;
+  // })
+  // .then(() => {
+  //     db.query(queryString)
+  //     .then((queryData) => {
+  //       frontendData.queryData = queryData.rows;
+  //       (async function getListAsync() {
+  //         listObj = await db.getLists();
+  //         frontendData.lists = listObj;
+  //         event.sender.send('db-lists', listObj);
+  //         event.sender.send('return-execute-query', frontendData);
+  //         event.sender.send('async-complete');
+  //         // console.log('all events sent');
+  //       })();
+  //     })
+  // })
+  // .catch((error: string) => {
+  //   console.log(
+  //     'channels line 337: ERROR in execute-query-tracked channel in main.ts',
+  //     error
+  //   );
+  // });
 });
 
 interface dummyDataRequestType {
@@ -262,33 +262,33 @@ ipcMain.on('generate-dummy-data', (event: any, data: dummyDataRequestType) => {
   db.createKeyObject().then((result) => {
     keyObject = result;
     // Iterating over the passed in keyObject to remove the primaryKeyColumn and all foreignKeyColumns from table
-    // db.dropKeyColumns(keyObject).then(() => {  
-      // db.addNewKeyColumns(keyObject).then(() => {
-        db.getSchemaLayout().then((schemaLayoutResult) => {
-          console.log('schemaLayout: ', schemaLayoutResult);
-          console.log('films layout: ', schemaLayoutResult.tables.films[0]);
-          console.log('films layout: ', schemaLayoutResult.tables.films[1]);
-          schemaLayout = schemaLayoutResult;
-          // generate the dummy data and save it into matrices associated with table names
-          tableMatricesArray = generateDummyData(
-            schemaLayout,
-            dummyDataRequest,
-            keyObject
-          );
-          // iterate through tableMatricesArray to write individual .csv files
-          for (const tableObject of tableMatricesArray) {
-            // write all entries in tableMatrix to csv file
-            writeCSVFile(
-              tableObject,
-              schemaLayout,
-              keyObject,
-              dummyDataRequest,
-              event
-            );
-          }
-        });
-      });
+    // db.dropKeyColumns(keyObject).then(() => {
+    // db.addNewKeyColumns(keyObject).then(() => {
+    db.getSchemaLayout().then((schemaLayoutResult) => {
+      console.log('schemaLayout: ', schemaLayoutResult);
+      console.log('films layout: ', schemaLayoutResult.tables.films[0]);
+      console.log('films layout: ', schemaLayoutResult.tables.films[1]);
+      schemaLayout = schemaLayoutResult;
+      // generate the dummy data and save it into matrices associated with table names
+      tableMatricesArray = generateDummyData(
+        schemaLayout,
+        dummyDataRequest,
+        keyObject
+      );
+      // iterate through tableMatricesArray to write individual .csv files
+      for (const tableObject of tableMatricesArray) {
+        // write all entries in tableMatrix to csv file
+        writeCSVFile(
+          tableObject,
+          schemaLayout,
+          keyObject,
+          dummyDataRequest,
+          event
+        );
+      }
     });
+  });
+});
 //   });
 // });
 
