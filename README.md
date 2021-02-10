@@ -63,7 +63,7 @@ To get started on contributing to this project:
 ## Interface & Features
 
 <div align="center">
-<img src="./frontend/assets/images/splash_page.png" width=800/><br /><br /><img src="./frontend/assets/images/seeqr_desktop.jpg" width=800/><p>The whole interface in a nutshell</p>
+<img src="./assets/readmeImages/splash_page.png" width=800/><br /><br /><img src="./assets/readmeImages/seeqr_desktop.jpg" width=800/><p>The whole interface in a nutshell</p>
 </div>
 
 - Schema
@@ -79,7 +79,7 @@ To get started on contributing to this project:
   - Toggle the submit button in the bottom left to send the query to the selected database.
   <br /><br />
   <div align="center">
-  <img src="./frontend/assets/images/query_demo.gif" width=600/>
+  <img src="./assets/readmeImages/query_demo.gif" width=600/>
   </div>
   <br /><br />
 
@@ -87,7 +87,7 @@ To get started on contributing to this project:
 
   - The data table displays data returned by the inputted query.
   <div align="center">
-  <img src="./frontend/assets/images/data.png" width=600/><br /><br />
+  <img src="./assets/readmeImages/data.png" width=600/><br /><br />
   </div>
 
 - Input Schema and Tabs
@@ -96,7 +96,7 @@ To get started on contributing to this project:
   - Users can also make a copy of an existing schema, with or without data included.
   - Newly uploaded schemas are displayed as tabs, which can be activated to run tests against during application session.
   <div align="center">
-    <img src="./frontend/assets/images/input_schema_demo.gif"/>
+    <img src="./assets/readmeImages/input_schema_demo.gif"/>
   </div>
 
 - Generate Dummy Data
@@ -109,7 +109,7 @@ To get started on contributing to this project:
     - VARCHAR
   - Dummy data is foreign-key compliant. - Columns with key constraints are dropped and replaced with new primary and foreign-key integer columns
   <div align="center">
-    <img src="./frontend/assets/images/dummy_data_demo.gif"/>
+    <img src="./assets/readmeImages/dummy_data_demo.gif"/>
   </div>
 
 - History
@@ -117,7 +117,7 @@ To get started on contributing to this project:
   - The history table shows the latest queries the user submitted irrespective of the database.
   - The history table also displays the total rows returned by the query and the total query execution time.
   <div align="center">
-  <img src="./frontend/assets/images/history.png" width=600/>
+  <img src="./assets/readmeImages/history.png" width=600/>
   </div>
 
 - Compare
@@ -127,7 +127,7 @@ To get started on contributing to this project:
   - They can add and remove queries as they see fit.
 
 <div align="center">
-<img src="./frontend/assets/images/comparisons.png" width=600/>
+<img src="./assets/readmeImages/comparisons.png" width=600/>
 </div>
 
 - Visualized Analytics
@@ -137,7 +137,7 @@ To get started on contributing to this project:
   - Graph will be organized on x-axis by label, and colored by schema.
 
 <div align="center">
-<img src="./frontend/assets/images/graph_demo.gif"/>
+<img src="./assets/readmeImages/graph_demo.gif"/>
 </div>
 
 ## Application Architecture and Logic
@@ -159,61 +159,61 @@ The outcome results from each query, both retrieved data and analytics, are stor
 <table>
 <tr>
 <td align="center">
-<img src="./frontend/assets/images/catherinechiu.png" href="https://github.com/catherinechiu"/><br/>
+<img src="./assets/readmeImages/catherinechiu.png" href="https://github.com/catherinechiu"/><br/>
 <a href="https://github.com/catherinechiu">Catherine Chiu</a>
 </td>
 <td align="center">
-<img src="./frontend/assets/images/serenakuo.png" href="https://github.com/serenackuo"/><br/>
+<img src="./assets/readmeImages/serenakuo.png" href="https://github.com/serenackuo"/><br/>
 <a href="https://github.com/serenackuo">Serena Kuo</a>
 </td>
 <td align="center">
-<img src="./frontend/assets/images/franknorton.png"/><br/>
+<img src="./assets/readmeImages/franknorton.png"/><br/>
 <a href="https://github.com/FrankNorton32">Frank Norton</a>
 </td>
 <td align="center">
-<img src="./frontend/assets/images/mercerstronck.png" href="https://github.com/mercerstronck"/><br/>
+<img src="./assets/readmeImages/mercerstronck.png" href="https://github.com/mercerstronck"/><br/>
 <a href="https://github.com/mercerstronck">Mercer Stronck</a>
 </td>
 <td align="center">
-<img src="./frontend/assets/images/muhammadtrad.png" href="https://github.com/muhammadtrad"/><br/>
+<img src="./assets/readmeImages/muhammadtrad.png" href="https://github.com/muhammadtrad"/><br/>
 <a href="https://github.com/muhammadtrad">Muhammad Trad</a>
 </td>
 </tr></table>
 
 <table align="center">
 <td align="center">
-<img src="./frontend/assets/images/justinduryagri.png" href="https://github.com/justinD-A" width=180/><br/>
+<img src="./assets/readmeImages/justinduryagri.png" href="https://github.com/justinD-A" width=180/><br/>
 <a href="https://github.com/justinD-A">Justin Dury-Agri</a>
 </td>
 <td align="center">
-<img src="./frontend/assets/images/caseyescovedo.png" href="https://github.com/caseyescovedo" width=180/><br/>
+<img src="./assets/readmeImages/caseyescovedo.png" href="https://github.com/caseyescovedo" width=180/><br/>
 <a href="https://github.com/caseyescovedo">Casey Escovedo</a>
 </td>
 <td align="center">
-<img src="./frontend/assets/images/samfrakes.png" href="https://github.com/frakes413" width=180/><br/>
+<img src="./assets/readmeImages/samfrakes.png" href="https://github.com/frakes413" width=180/><br/>
 <a href="https://github.com/frakes413">Sam Frakes</a>
 </td>
 <td align="center">
-<img src="./frontend/assets/images/caseywalker.png" href="https://github.com/cwalker3011" width=180/><br/>
+<img src="./assets/readmeImages/caseywalker.png" href="https://github.com/cwalker3011" width=180/><br/>
 <a href="https://github.com/cwalker3011">Casey Walker</a>
 </td>
 </table>
 
 <table align="center">
 <td align="center">
-<img src="./frontend/assets/images/chrisakinrinade.png" href="https://github.com/chrisakinrinade" width=180/><br/>
+<img src="./assets/readmeImages/chrisakinrinade.png" href="https://github.com/chrisakinrinade" width=180/><br/>
 <a href="https://github.com/chrisakinrinade">Chris Akinrinade</a>
 </td>
 <td align="center">
-<img src="./frontend/assets/images/jameskolotouros.png" href="https://github.com/dkolotouros" width=180/><br/>
+<img src="./assets/readmeImages/jameskolotouros.png" href="https://github.com/dkolotouros" width=180/><br/>
 <a href="https://github.com/dkolotouros">James Kolotouros</a>
 </td>
 <td align="center">
-<img src="./frontend/assets/images/jennifercourtner.png" href="https://github.com/jcourtner" width=180/><br/>
+<img src="./assets/readmeImages/jennifercourtner.png" href="https://github.com/jcourtner" width=180/><br/>
 <a href="https://github.com/jcourtner">Jennifer Courtner</a>
 </td>
 <td align="center">
-<img src="./frontend/assets/images/katieklochan.png" href="https://github.com/kklochan" width=180/><br/>
+<img src="./assets/readmeImages/katieklochan.png" href="https://github.com/kklochan" width=180/><br/>
 <a href="https://github.com/kklochan">Katie Klochan</a>
 </td>
 </table>
