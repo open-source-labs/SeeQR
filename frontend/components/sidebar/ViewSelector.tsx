@@ -2,15 +2,16 @@ import React from 'react';
 import { ButtonGroup, Button } from '@material-ui/core/';
 import styled from 'styled-components';
 import { AppState } from '../../types';
-import { selectedColor, textColor, hoverColor } from '../../style-variables';
+import { selectedColor, textColor, defaultMargin } from '../../style-variables';
+
+
+const ViewBtnGroup = styled(ButtonGroup)`
+  margin: ${defaultMargin} 5px;
+`;
 
 interface ViewButtonProps {
   isSelected: boolean;
 }
-
-const ViewBtnGroup = styled(ButtonGroup)`
-  margin: 20px 5px;
-`;
 
 const ViewButton = styled(Button)`
   background: ${({ isSelected }: ViewButtonProps) =>

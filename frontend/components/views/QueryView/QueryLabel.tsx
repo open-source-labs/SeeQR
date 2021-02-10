@@ -1,5 +1,7 @@
 import React from 'react';
-import { TextField } from '@material-ui/core/';
+import { TextField, Box} from '@material-ui/core/';
+// import styled from 'styled-components'
+
 
 interface QueryLabelProps {
   label?: string;
@@ -7,13 +9,13 @@ interface QueryLabelProps {
 }
 
 const QueryLabel = ({ label, onChange }: QueryLabelProps) => (
-  <>
+  <Box>
     <TextField
       label="Label"
       value={label}
       onChange={(evt) => onChange(evt.target.value)}
     />
-  </>
+  </Box>
 );
 
 export default QueryLabel;

@@ -42,6 +42,8 @@ export interface QueryData {
   label: string;
 }
 
+export type ValidTabs = 'Results' | 'Execution Plan';
+
 // Electron Interface //
 
 // Due to legacy reasons data arriving from the backend is being treated as
