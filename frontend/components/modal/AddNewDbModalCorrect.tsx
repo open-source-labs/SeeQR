@@ -53,6 +53,7 @@ type AddNewDbModalProps = {
 const AddNewDbModal = ({ open, onClose, databases }: AddNewDbModalProps) => {
   const [newDbName, setNewDbName] = useState('');
   const [isError, setIsError] = useState(false);
+
   const handleClose = () => {
     setIsError(false);
     onClose();
@@ -64,11 +65,8 @@ const AddNewDbModal = ({ open, onClose, databases }: AddNewDbModalProps) => {
     const dbNameInput = event.target.value;
     // check if the newDbName is not a duplicate
     databases.includes(dbNameInput) ? setIsError(true) : setIsError(false);
-
     let dbSafeName = dbNameInput.toLowerCase();
-
     dbSafeName = dbSafeName.replace(/[^\w-]/gi, '');
-
     setNewDbName(dbSafeName);
   };
 
@@ -113,6 +111,7 @@ const AddNewDbModal = ({ open, onClose, databases }: AddNewDbModalProps) => {
           <Divider variant="middle" flexItem />
           <Tooltip title="Any special characters will be removed">
             <StyledTextField
+              required
               error={isError}
               helperText={
                 isError

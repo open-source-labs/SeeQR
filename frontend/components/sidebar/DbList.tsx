@@ -84,6 +84,7 @@ const DbList = ({ selectedDb, setSelectedDb, show }: DbListProps) => {
           open={openDupe}
           onClose={handleCloseDupe}
           dbCopyName={dbToDupe}
+          databases={databases}
         />
       </SidebarList>
       {/* Validate Db name doesnt exist */}
