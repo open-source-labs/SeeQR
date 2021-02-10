@@ -20,11 +20,11 @@ helperFunctions = {
   // create a database
   createDBFunc: (name) => {
     console.log('function createDBFunc just ran');
-    return `psql -U postgres -c "CREATE DATABASE ${name}"`;
+    return `psql -U postgres -c 'CREATE DATABASE "${name}"'`;
   },
 
   // drop provided database
-  dropDBFunc: (dbName) => `Drop database ${dbName}`,
+  dropDBFunc: (dbName) => `Drop database "${dbName}"`,
 
   // import SQL file into new DB created
   runSQLFunc: (dbName, file) => `psql -U postgres -d ${dbName} -f ${file}`,
