@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { QueryData, ValidTabs } from '../../../types';
 
 import TabSelector from './TabSelector';
@@ -21,12 +21,12 @@ const QueryTabs = ({ results, executionPlan }: QueryTabsProps) => {
         selectedTab={selectedTab}
         select={(tab: ValidTabs) => setSelectedTab(tab)}
       />
-      <Container>
+      <Box border={0}>
         {selectedTab === 'Results' ? <QueryResults results={results} /> : null}
         {selectedTab === 'Execution Plan' ? (
           <QueryPlan executionPlan={executionPlan} />
         ) : null}
-      </Container>
+      </Box>
     </div>
   );
 };

@@ -3,11 +3,12 @@
  */
 
 import { createGlobalStyle } from 'styled-components';
-import { bgColor, textColor } from './style-variables';
+import { bgColor } from './style-variables';
 
 const GlobalStyle = createGlobalStyle`
 body {
   font-size: 1.2em;
+  background: ${bgColor};
 }
  `;
 

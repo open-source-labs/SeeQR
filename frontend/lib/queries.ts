@@ -98,6 +98,6 @@ export const getTotalTime = (query: QueryData | undefined) => {
  * Get query exeuction time as a formatted string. Returns 'n/a' if not given a query
  */
 export const getPrettyTime = (query: QueryData | undefined) => {
-  if (!query?.executionPlan) return 'n/a';
+  if (!query?.executionPlan) return undefined 
   return ms(+getTotalTime(query).toPrecision(3), { long: true });
 };
