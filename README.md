@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="./frontend/assets/images/logo_readme.png" height=300/>
+<img src="./assets/readmeImages/logo_readme.png" height=300/>
 
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/oslabs-beta/SeeQR)
 ![Release: 1.0](https://img.shields.io/badge/Release-1.0-red)
