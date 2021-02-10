@@ -42,6 +42,15 @@ export interface QueryData {
   label: string;
 }
 
+export type ValidTabs = 'Results' | 'Execution Plan';
+
+export type FeedbackSeverity = 'error' | 'success' | 'info' | 'warning';
+
+export interface Feedback {
+  type: FeedbackSeverity;
+  message: string | Record<string, unknown>;
+}
+
 // Electron Interface //
 
 // Due to legacy reasons data arriving from the backend is being treated as

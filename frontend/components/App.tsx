@@ -3,7 +3,12 @@ import styled from 'styled-components';
 import { MuiThemeProvider } from '@material-ui/core/';
 import { StylesProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import { MuiTheme, bgColor, sidebarWidth } from '../style-variables';
+import {
+  MuiTheme,
+  bgColor,
+  sidebarWidth,
+  defaultMargin,
+} from '../style-variables';
 import GlobalStyle from '../GlobalStyle';
 import { AppState, CreateNewQuery, QueryData } from '../types';
 import { createQuery, key } from '../lib/queries';
@@ -12,6 +17,7 @@ import QueryView from './views/QueryView/QueryView';
 import DbView from './views/DbView/DbView';
 import CompareView from './views/CompareView/CompareView';
 import QuickStartView from './views/QuickStartView';
+import FeedbackModal from './modal/FeedbackModal';
 
 const AppContainer = styled.div`
   display: grid;
@@ -22,6 +28,7 @@ const Main = styled.main`
   grid-area: main;
   background: ${bgColor};
   height: 100vh;
+  padding: ${defaultMargin};
 `;
 
 const App = () => {
@@ -109,6 +116,7 @@ const App = () => {
             />
             <QuickStartView show={shownView === 'quickStartView'} />
           </Main>
+          <FeedbackModal />
         </AppContainer>
       </MuiThemeProvider>
     </StylesProvider>
