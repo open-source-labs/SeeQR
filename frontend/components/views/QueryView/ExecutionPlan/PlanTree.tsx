@@ -3,6 +3,8 @@ import { Tree, TreeNode } from 'react-organizational-chart';
 
 import PlanCard from './PlanCard';
 import { PlanNode, ExplainJson } from '../../../../types';
+import { greenPrimary } from '../../../../style-variables';
+
 
 interface PlanTreeNodeProps {
   plan: PlanNode;
@@ -23,7 +25,7 @@ interface PlanTreeProps {
 const PlanTree = ({ data }: PlanTreeProps) => (
   <Tree
     lineWidth="2px"
-    lineColor="black"
+    lineColor={`${greenPrimary}`}
     lineBorderRadius="10px"
     label={<PlanCard plan={data.Plan} />}
   >
