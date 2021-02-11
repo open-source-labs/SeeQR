@@ -6,6 +6,14 @@ import {keyFromData, getTotalTime} from '../../../lib/queries'
 // TODO: connect to our variables
 defaults.global.defaultFontColor = 'rgb(198,210,213)';
 
+
+
+/**
+ * Builds Chart.js data from queries. Uses isCompared flag on each query to
+ * determine which queries to include in comparison
+ */
+const getChartData = (queries: AppState['queries']): ChartData<Chart.ChartData> => {
+
 /**
  * Gets next color from defined pallete.
  */
@@ -30,11 +38,6 @@ const getColor = (() => {
   };
 })();
 
-/**
- * Builds Chart.js data from queries. Uses isCompared flag on each query to
- * determine which queries to include in comparison
- */
-const getChartData = (queries: AppState['queries']): ChartData<Chart.ChartData> => {
   const comparedQueries = Object.values(queries)
 
   // unique query labels
