@@ -1,4 +1,6 @@
 const { ipcMain } = require('electron'); // IPCMain: Communicate asynchronously from the main process to renderer processes
+const path = require('path');
+const fs = require('fs');
 const db = require('./models');
 const { generateDummyData, writeCSVFile } = require('./DummyD/dummyDataMain');
 
@@ -38,8 +40,8 @@ ipcMain.on('change-db', (event, dbName: string) => {
 
 // Deletes the dbName that is passed from the front end and returns the DB List
 ipcMain.on('drop-db', (event, dbName: string, currDB: Boolean) => {
-  const feedback: { type?: string; message?: string } = {};
   event.sender.send('async-started');
+  const feedback: { type?: string; message?: string } = {};
   const dropDBScript = dropDBFunc(dbName);
   if (currDB) {
     db.closePool();
@@ -130,7 +132,20 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
   const changeCurrentDB = () => {
     db.changeDB(dbNameEnteredByUser);
     const runCmd: string = extension === '.sql' ? runSQL : runTAR;
-    execute(runCmd, sendLists);
+    execute(runCmd, () => {
+      const pathOfCopiedDB = path.join(
+        __dirname,
+        `../../${dbNameEnteredByUser}.sql`
+      );
+      console.log('file path: ', pathOfCopiedDB);
+      if (fs.existsSync(`${dbNameEnteredByUser}.sql`)) {
+        fs.unlinkSync(pathOfCopiedDB);
+        console.log('file exist');
+      } else {
+        console.log('file does not exist');
+      }
+      sendLists();
+    });
   };
 
   const importOrCopyExistingDB = () => {
