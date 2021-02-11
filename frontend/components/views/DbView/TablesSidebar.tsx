@@ -24,7 +24,7 @@ const TabPanel = ({ children, value, index }: TabPanelProps) => (
     aria-labelledby={`scrollable-auto-tab-${index}`}
   >
     {value === index && (
-      <Box p={5}>
+      <Box p={3}>
         <Typography>{children}</Typography>
       </Box>
     )}
