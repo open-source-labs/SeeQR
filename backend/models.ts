@@ -129,6 +129,7 @@ const getDBLists = () =>
 let myobj: {
   query: Function;
   changeDB: Function;
+  closePool: Function;
   getLists: Function;
   createKeyObject: Function;
   dropKeyColumns: Function;
@@ -152,6 +153,11 @@ myobj = {
     console.log('Current URI: ', PG_URI);
     return dbName;
   },
+  // Close connection to current pool
+  closePool: (() => {
+    console.log('closing pool: ', pool);
+    pool.end();
+  }),
   // Returns a list of the database names and sizes in the current schema and a list of the tables in the current database
   //   using two helpful functions - getDBNames and getDBLists
   // The data is returned in a listObj with the following shape:

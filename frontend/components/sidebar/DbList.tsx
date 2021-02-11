@@ -56,7 +56,7 @@ const DbList = ({ selectedDb, setSelectedDb, show }: DbListProps) => {
     setOpenDupe(false);
   };
 
-  const createSelectHandler = (dbName: string) => () => {
+  const selectHandler = (dbName: string) => {
     setSelectedDb(dbName);
     ipcRenderer.send('change-db', dbName);
     ipcRenderer.send('return-db-list', dbName);
@@ -76,7 +76,7 @@ const DbList = ({ selectedDb, setSelectedDb, show }: DbListProps) => {
             key={`dbList_${dbName}`}
             db={dbName}
             isSelected={selectedDb === dbName}
-            select={createSelectHandler(dbName)}
+            select={selectHandler}
             duplicate={() => handleClickOpenDupe(dbName)}
           />
         ))}
