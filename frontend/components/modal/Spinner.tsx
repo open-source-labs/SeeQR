@@ -14,7 +14,8 @@ const StyledLinearProg = styled(LinearProgress)`
 const Spinner = () => {
   const [show, setShow] = useState(false);
 
-  const delay = 500
+  // TODO: ensure timeout is properly cleared and doesn't interfere with component rerender.
+  const delay = 0;
   let delayTimer: NodeJS.Timeout
 
   useEffect(() => {

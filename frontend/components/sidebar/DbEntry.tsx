@@ -14,17 +14,17 @@ const { ipcRenderer } = window.require('electron');
 interface DbEntryProps {
   db: string;
   isSelected: boolean;
-  select: () => void;
+  select: (db: string) => void;
   duplicate: () => void;
 }
 const DbEntry = ({ db, isSelected, select, duplicate }: DbEntryProps) => {
   const handleDelete = () => {
     ipcRenderer.send('drop-db', db, isSelected)
-    // TODO: deselect database if selected
+    if (isSelected) select('');
   }
   
   return (
-    <SidebarListItem button customSelected={isSelected} onClick={select}>
+    <SidebarListItem button customSelected={isSelected} onClick={() => select(db)}>
       <ListItemText primary={db} />
       <ListItemSecondaryAction>
         <Tooltip title="Copy Database">
