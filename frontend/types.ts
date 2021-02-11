@@ -142,7 +142,7 @@ export const isDbLists = (obj: unknown): obj is DbLists => {
 
 // type of node when explain is run with Analyze and Costs
 // TODO: optionals vs mandatory were guessed based on examples. Needs confirmation
-interface PlanNode {
+export interface PlanNode {
   'Node Type': string;
   'Join Type'?: string;
   'Startup Cost': number;
@@ -154,7 +154,22 @@ interface PlanNode {
   'Actual Rows': number;
   'Actual Loops': number;
   'Inner Unique'?: boolean;
+  /**
+   * Condition for Hash Operation
+   * 
+   * ex: SELECT name FROM people p JOIN species s ON  **p.species_id = s._id**
+   */
   'Hash Cond'?: string;
+  /**
+   * Name of relation plan operates on. i.e. table name
+   */
+  'Relation Name'?: string;
+  /**
+   * Alias given to relation in query. 
+   * 
+   * ex: SELECT name FROM people **p**
+   */
+  Alias?: string;
   Plans?: PlanNode[];
 }
 
