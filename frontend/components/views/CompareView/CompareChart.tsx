@@ -12,15 +12,15 @@ defaults.global.defaultFontColor = 'rgb(198,210,213)';
 const getColor = (() => {
   let nextColor = 0;
   const colorList = [
-    '#006C67',
-    '#F194B4',
-    '#FFB100',
-    '#FFEBC6',
-    '#A4036F',
-    '#048BA8',
-    '#16DB93',
-    '#EFEA5A',
-    '#F29E4C',
+    '#718355',
+    '#87986a',
+    '#97a97c',
+    '#b5c99a',
+    '#cfe1b9',
+    '#cfe1b9',
+    '#6b9080',
+    '#a4c3b2',
+    '#cce3de',
   ];
   return () => {
     // cycle through colors

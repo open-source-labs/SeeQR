@@ -42,7 +42,7 @@ const TableDetails = ({ table }: TableDetailsProps) => (
               <strong>Type</strong>
             </TableCell>
             <TableCell align="right">
-              <strong>Modifiers</strong>
+              <strong>Is Nullable?</strong>
             </TableCell>
           </TableRow>
         </TableHead>
@@ -51,9 +51,7 @@ const TableDetails = ({ table }: TableDetailsProps) => (
             <TableRow key={row.column_name}>
               <StyledCell key={row?.column_name}>{row?.column_name}</StyledCell>
               <StyledCell align="right">{row?.data_type}</StyledCell>
-              <StyledCell align="right">
-                {(row?.character_maximum_length, row?.is_nullable)}
-              </StyledCell>
+              <StyledCell align="right">{row?.is_nullable}</StyledCell>
             </TableRow>
           ))}
         </TableBody>
