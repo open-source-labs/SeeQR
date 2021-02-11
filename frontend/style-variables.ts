@@ -28,16 +28,28 @@ export const greenLightest = '#ccdad4';
 
 // greys
 export const greyDarkest = '#191919';
-export const greyDark = '#262626'
+export const greyDark = '#262626';
 export const greyPrimary = '#818584';
 export const greyLight = '#aab6af';
 export const greyLightest = '#dfe0e2';
 
+// Compare Colors
+// coolors link to pallete: https://coolors.co/57a777-ee6352-08b2e3-e7bb41-9d75cb-645e9d-35524a-251605-a01a7d
+export const compareChartColors = [
+  '#57a777ff',
+  '#ee6352ff',
+  '#08b2e3ff',
+  '#e7bb41ff',
+  '#9d75cbff',
+  '#645e9dff',
+  '#35524aff',
+  '#251605ff',
+  '#a01a7dff',
+];
 
 // Icons and Buttons
 export const selectedColor = greenPrimary;
 export const hoverColor = greenPrimary;
-
 
 // Size
 export const sidebarWidth = '300px';
@@ -76,7 +88,6 @@ export const MuiTheme = createMuiTheme({
     },
   },
 });
-
 
 interface SidebarListItemProps {
   customSelected: boolean;
