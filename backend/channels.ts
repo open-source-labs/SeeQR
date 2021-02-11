@@ -89,6 +89,8 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
       )
     : '.sql';
 
+  const feedback: { type?: string; message?: string } = {};
+
   // conditional to get the correct schemaFilePath name from the Load Schema Modal
   if (!importedSchemaFilePath) {
     importedSchemaFilePath = [`${dbNameEnteredByUser}.sql`];
@@ -149,7 +151,13 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
     }
   };
 
-  db.query(createDB).then(() => importOrCopyExistingDB());
+  db.query(createDB)
+    .then(() => importOrCopyExistingDB())
+    .catch((err) => {
+      feedback.type = 'error';
+      feedback.message = err;
+      event.sender.send('feedback', feedback);
+    });
   // Run createDB script on command line via Node.js and then execute CB
   // execute(createDB, importOrCopyExistingDB);
 });
