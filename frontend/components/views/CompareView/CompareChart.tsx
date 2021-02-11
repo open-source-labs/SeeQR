@@ -1,44 +1,33 @@
 import React from 'react';
 import { Bar, defaults, ChartData } from 'react-chartjs-2';
 import { AppState } from '../../../types';
-import {keyFromData, getTotalTime} from '../../../lib/queries'
+import { keyFromData, getTotalTime } from '../../../lib/queries';
+import { compareChartColors } from '../../../style-variables';
 
 // TODO: connect to our variables
 defaults.global.defaultFontColor = 'rgb(198,210,213)';
-
-
 
 /**
  * Builds Chart.js data from queries. Uses isCompared flag on each query to
  * determine which queries to include in comparison
  */
-const getChartData = (queries: AppState['queries']): ChartData<Chart.ChartData> => {
+const getChartData = (
+  queries: AppState['queries']
+): ChartData<Chart.ChartData> => {
+  /**
+   * Gets next color from defined pallete.
+   */
+  const getColor = (() => {
+    let nextColor = 0;
+    return () => {
+      // cycle through colors
+      const color = compareChartColors[nextColor % compareChartColors.length];
+      nextColor += 1;
+      return color;
+    };
+  })();
 
-/**
- * Gets next color from defined pallete.
- */
-const getColor = (() => {
-  let nextColor = 0;
-  const colorList = [
-    '#718355',
-    '#87986a',
-    '#97a97c',
-    '#b5c99a',
-    '#cfe1b9',
-    '#cfe1b9',
-    '#6b9080',
-    '#a4c3b2',
-    '#cce3de',
-  ];
-  return () => {
-    // cycle through colors
-    const color = colorList[nextColor % colorList.length];
-    nextColor += 1;
-    return color;
-  };
-})();
-
-  const comparedQueries = Object.values(queries)
+  const comparedQueries = Object.values(queries);
 
   // unique query labels
   const labels = [...new Set(comparedQueries.map((query) => query.label))];
@@ -55,8 +44,10 @@ const getColor = (() => {
       borderColor: color,
       borderWidth: 1,
       // array with values for each label. If db doesn't have a query with a
-      // given label being compared, set it's value to 
-      data: labels.map((label) => getTotalTime(queries[keyFromData(label, db)])),
+      // given label being compared, set it's value to
+      data: labels.map((label) =>
+        getTotalTime(queries[keyFromData(label, db)])
+      ),
     };
   });
 
