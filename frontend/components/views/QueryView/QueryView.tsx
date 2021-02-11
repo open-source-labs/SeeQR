@@ -11,7 +11,7 @@ import {
 } from '../../../types';
 import { defaultMargin } from '../../../style-variables';
 import { getPrettyTime } from '../../../lib/queries';
-import { once } from '../../../lib/utils';
+import { once, sendFeedback } from '../../../lib/utils';
 
 import QueryLabel from './QueryLabel';
 import QueryDb from './QueryDb';
@@ -71,7 +71,7 @@ const QueryView = ({
   useEffect(() => {
     const receiveDbs = (evt: IpcMainEvent, dbLists: unknown) => {
       if (isDbLists(dbLists)) {
-        setDatabases(dbLists.databaseList.map(db => db.db_name));
+        setDatabases(dbLists.databaseList.map((db) => db.db_name));
       }
     };
     ipcRenderer.on('db-lists', receiveDbs);
@@ -120,6 +120,9 @@ const QueryView = ({
   };
 
   const onRun = () => {
+    if (!localQuery.label.trim()) {
+      sendFeedback({type: 'info', message: 'Queries without a label will run but won\'t be saved'})
+    }
     // request backend to run query
     ipcRenderer.send('execute-query-tracked', {
       queryLabel: localQuery.label.trim(),
@@ -132,7 +135,10 @@ const QueryView = ({
   return (
     <>
       <TopRow>
-        <QueryLabel label={localQuery.label} onChange={onLabelChange} />
+        <QueryLabel
+          label={localQuery.label}
+          onChange={onLabelChange}
+        />
         <QueryDb
           db={localQuery.db}
           onChange={onDbChange}
@@ -143,7 +149,11 @@ const QueryView = ({
           totalTime={getPrettyTime(query)}
         />
       </TopRow>
-      <QuerySqlInput sql={localQuery?.sqlString ?? ''} onChange={onSqlChange} runQuery={onRun} />
+      <QuerySqlInput
+        sql={localQuery?.sqlString ?? ''}
+        onChange={onSqlChange}
+        runQuery={onRun}
+      />
       <CenterButton>
         <RunButton variant="contained" onClick={onRun}>
           Run Query

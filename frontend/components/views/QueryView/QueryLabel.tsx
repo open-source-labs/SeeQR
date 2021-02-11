@@ -1,7 +1,6 @@
 import React from 'react';
-import { TextField, Box} from '@material-ui/core/';
+import { TextField, Box } from '@material-ui/core/';
 // import styled from 'styled-components'
-
 
 interface QueryLabelProps {
   label?: string;
