@@ -18,7 +18,7 @@ import DbView from './views/DbView/DbView';
 import CompareView from './views/CompareView/CompareView';
 import QuickStartView from './views/QuickStartView';
 import FeedbackModal from './modal/FeedbackModal';
-import Spinner from './modal/Spinner'
+import Spinner from './modal/Spinner';
 
 const AppContainer = styled.div`
   display: grid;
@@ -49,10 +49,13 @@ const App = () => {
    * Hook to create new Query from data
    */
   const createNewQuery: CreateNewQuery = (query: QueryData) => {
-    const newQueries = createQuery(queries, query);
-    setQueries(newQueries);
+    // Only save query to saved queries if it contains all minimum information
+    if (query.label && query.db && query.sqlString) {
+      const newQueries = createQuery(queries, query);
+      setQueries(newQueries);
+    }
     // we must set working query to newly created query otherwise query view won't update
-    setWorkingQuery(newQueries[key(query)]);
+    setWorkingQuery(query);
   };
 
   // determine which view should be visible depending on selected view and
