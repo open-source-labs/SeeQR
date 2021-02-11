@@ -103,8 +103,9 @@ const QueryView = ({
   });
 
   const onLabelChange = (newLabel: string) => {
-    setQuery({ ...localQuery, label: newLabel.trim() });
+    setQuery({ ...localQuery, label: newLabel });
   };
+
   const onDbChange = (newDb: string) => {
     // when db is changed we must change selected db state on app, as well as
     // request updates for db and table information. Otherwise database view tab
@@ -121,7 +122,7 @@ const QueryView = ({
   const onRun = () => {
     // request backend to run query
     ipcRenderer.send('execute-query-tracked', {
-      queryLabel: localQuery.label,
+      queryLabel: localQuery.label.trim(),
       queryString: localQuery.sqlString,
       queryCurrentSchema: localQuery.db,
     });
