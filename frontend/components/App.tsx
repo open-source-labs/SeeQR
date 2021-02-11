@@ -29,6 +29,7 @@ const Main = styled.main`
   grid-area: main;
   background: ${bgColor};
   height: 100vh;
+  max-width: calc(100vw - ${sidebarWidth} - ${defaultMargin});
   padding: ${defaultMargin};
 `;
 
