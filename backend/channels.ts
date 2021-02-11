@@ -15,17 +15,18 @@ const {
 // *************************************************** IPC Event Listeners *************************************************** //
 ipcMain.on('return-db-list', (event) => {
   // event.sender.send('async-started'); // send notice to the frontend that async process has begun
-  db.getLists().then((data) => {
-    event.sender.send('db-lists', data);
-    // event.sender.send('async-complete');
-  })
-  .catch((err) => {
-    const feedback = {
-      type: 'error',
-      message: err,
-    };
-    event.sender.send('feedback', feedback);
-  });
+  db.getLists()
+    .then((data) => {
+      event.sender.send('db-lists', data);
+      // event.sender.send('async-complete');
+    })
+    .catch((err) => {
+      const feedback = {
+        type: 'error',
+        message: err,
+      };
+      event.sender.send('feedback', feedback);
+    });
 });
 
 // Listen for database changes sent from the renderer upon changing tabs.
@@ -54,8 +55,8 @@ ipcMain.on('drop-db', (event, dbName: string, currDB: Boolean) => {
         event.sender.send('db-lists', data);
         event.sender.send('feedback', feedback);
         event.sender.send('async-complete');
+      });
     });
-  });
 });
 
 /**
@@ -147,8 +148,10 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
       changeCurrentDB();
     }
   };
+
+  db.query(createDB).then(() => importOrCopyExistingDB());
   // Run createDB script on command line via Node.js and then execute CB
-  execute(createDB, importOrCopyExistingDB);
+  // execute(createDB, importOrCopyExistingDB);
 });
 
 // Listen for queries being sent from renderer
