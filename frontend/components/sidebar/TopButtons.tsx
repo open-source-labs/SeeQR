@@ -4,11 +4,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import EqualizerIcon from '@material-ui/icons/Equalizer';
 import styled from 'styled-components';
 import { AppState } from '../../types';
-import {
-  textColor,
-  hoverColor,
-  selectedColor,
-} from '../../style-variables';
+import { textColor, hoverColor, selectedColor } from '../../style-variables';
 
 const Container = styled.div`
   display: flex;
@@ -20,6 +16,17 @@ const StyledIconButton = styled(IconButton)`
   margin: 15px;
 `;
 
+interface StyledCompareButtonProps {
+  isSelected: boolean;
+}
+const StyledCompareButton = styled(EqualizerIcon)`
+  color: ${({ isSelected }: StyledCompareButtonProps) =>
+    isSelected ? selectedColor : textColor};
+  &:hover {
+    color: ${hoverColor};
+  }
+`;
+
 type TopButtonsProps = Pick<AppState, 'selectedView' | 'setSelectedView'>;
 
 const TopButtons = ({ selectedView, setSelectedView }: TopButtonsProps) => {
@@ -28,12 +35,6 @@ const TopButtons = ({ selectedView, setSelectedView }: TopButtonsProps) => {
     return setSelectedView('compareView');
   };
 
-  const StyledCompareButton = styled(EqualizerIcon)`
-    color: ${selectedView === 'compareView' ? selectedColor : textColor};
-    &:hover {
-      color: ${hoverColor};
-    }
-  `;
   return (
     <Container>
       <StyledIconButton>
@@ -41,7 +42,10 @@ const TopButtons = ({ selectedView, setSelectedView }: TopButtonsProps) => {
       </StyledIconButton>
       <Tooltip title="Compare Queries">
         <StyledIconButton onClick={toggleCompareView}>
-          <StyledCompareButton fontSize="large" />
+          <StyledCompareButton
+            fontSize="large"
+            isSelected={selectedView === 'compareView'}
+          />
         </StyledIconButton>
       </Tooltip>
     </Container>
