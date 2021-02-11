@@ -81,24 +81,27 @@ const getDBNames = () =>
       FROM pg_database dbs
       ORDER BY db_name
     `;
-    pool.query(query).then((databases) => {
-      const dbList: any = [];
-      for (let i = 0; i < databases.rows.length; i += 1) {
-        const { db_name } = databases.rows[i];
-        if (
-          db_name !== 'postgres' &&
-          db_name !== 'template0' &&
-          db_name !== 'template1'
-        )
-          dbList.push(databases.rows[i]);
-      }
-      resolve(dbList);
-    }).catch(reject)
+    pool
+      .query(query)
+      .then((databases) => {
+        const dbList: any = [];
+        for (let i = 0; i < databases.rows.length; i += 1) {
+          const { db_name } = databases.rows[i];
+          if (
+            db_name !== 'postgres' &&
+            db_name !== 'template0' &&
+            db_name !== 'template1'
+          )
+            dbList.push(databases.rows[i]);
+        }
+        resolve(dbList);
+      })
+      .catch(reject);
   });
 
 // gets all tablenames from current schema and all columns for each of the tables
 const getDBLists = () =>
-  new Promise((resolve,reject) => {
+  new Promise((resolve, reject) => {
     const query = `
       SELECT table_catalog, table_schema, table_name, is_insertable_into
       FROM information_schema.tables
@@ -107,18 +110,23 @@ const getDBLists = () =>
     `;
     const tableList: any = [];
     const promiseArray: any = [];
-    pool.query(query).then((tables) => {
-      for (let i = 0; i < tables.rows.length; i += 1) {
-        tableList.push(tables.rows[i]);
-        promiseArray.push(getColumnObjects(tables.rows[i].table_name));
-      }
-      Promise.all(promiseArray).then((columnInfo) => {
-        for (let i = 0; i < columnInfo.length; i += 1) {
-          tableList[i].columns = columnInfo[i];
+    pool
+      .query(query)
+      .then((tables) => {
+        for (let i = 0; i < tables.rows.length; i += 1) {
+          tableList.push(tables.rows[i]);
+          promiseArray.push(getColumnObjects(tables.rows[i].table_name));
         }
-        resolve(tableList);
-      }).catch(reject)
-    }).catch(reject)
+        Promise.all(promiseArray)
+          .then((columnInfo) => {
+            for (let i = 0; i < columnInfo.length; i += 1) {
+              tableList[i].columns = columnInfo[i];
+            }
+            resolve(tableList);
+          })
+          .catch(reject);
+      })
+      .catch(reject);
   });
 
 /**
@@ -154,7 +162,6 @@ myobj = {
   },
   // Close connection to current pool
   closePool: () => {
-    console.log('closing pool: ', pool);
     pool.end();
   },
   // Returns a list of the database names and sizes in the current schema and a list of the tables in the current database
@@ -170,10 +177,12 @@ myobj = {
         databaseList: [],
         tableList: [], // current database's tables
       };
-      Promise.all([getDBNames(), getDBLists()]).then((data) => {
-        [listObj.databaseList, listObj.tableList] = data;
-        resolve(listObj);
-      }).catch(reject)
+      Promise.all([getDBNames(), getDBLists()])
+        .then((data) => {
+          [listObj.databaseList, listObj.tableList] = data;
+          resolve(listObj);
+        })
+        .catch(reject);
     }),
   /** Expand to view explaination
    * Creating a nested Object, the keys within the object are the table names
