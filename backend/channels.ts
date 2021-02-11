@@ -133,13 +133,8 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
     db.changeDB(dbNameEnteredByUser);
     const runCmd: string = extension === '.sql' ? runSQL : runTAR;
     execute(runCmd, () => {
-      const pathOfCopiedDB = path.join(
-        __dirname,
-        `../../${dbNameEnteredByUser}.sql`
-      );
-      console.log('file path: ', pathOfCopiedDB);
       if (fs.existsSync(`${dbNameEnteredByUser}.sql`)) {
-        fs.unlinkSync(pathOfCopiedDB);
+        fs.unlinkSync(`${dbNameEnteredByUser}.sql`);
         console.log('file exist');
       } else {
         console.log('file does not exist');
