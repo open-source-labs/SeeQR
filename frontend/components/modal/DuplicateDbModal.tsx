@@ -7,6 +7,7 @@ import {
   Button,
   Checkbox,
   FormControlLabel,
+  Tooltip,
 } from '@material-ui/core/';
 import styled from 'styled-components';
 import { MuiTheme } from '../../style-variables';
@@ -124,16 +125,22 @@ const DuplicateDbModal = ({
               defaultValue={defaultSchemaName}
               onChange={handleSchemaName}
             />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={checked}
-                  onChange={handleCopyData}
-                  color="primary"
-                />
+            <Tooltip
+              title={
+                checked ? 'Deselect to only copy shell' : 'Select to copy data'
               }
-              label="Copy data"
-            />
+            >
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={checked}
+                    onChange={handleCopyData}
+                    color="primary"
+                  />
+                }
+                label="Copy data"
+              />
+            </Tooltip>
           </TextFieldContainer>
           <ButtonContainer>
             <StyledButton
