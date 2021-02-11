@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Typography } from '@material-ui/core';
+import { Typography, Button } from '@material-ui/core';
 import styled from 'styled-components';
 
 import AppBar from '@material-ui/core/AppBar';
@@ -79,18 +79,15 @@ const TablesSidebar = ({ tables }: TablesSidebarProps) => {
           <TableDetails table={tableMap} />
         </TabPanel>
       ))}
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => console.log('generate dummy data')}
+      >
+        Generate Dummy Data
+      </Button>
     </>
   );
 };
-
-{
-  /* <Button
-variant="contained"
-color="primary"
-onClick={() => console.log('generate dummy data')}
->
-Generate Dummy Data
-</Button> */
-}
 
 export default TablesSidebar;
