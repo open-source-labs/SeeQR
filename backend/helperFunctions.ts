@@ -20,28 +20,28 @@ helperFunctions = {
   // create a database
   createDBFunc: (name) => {
     console.log('function createDBFunc just ran');
-    return `psql -U postgres -c 'CREATE DATABASE "${name}"'`;
+    return `CREATE DATABASE "${name}"`;
   },
 
   // drop provided database
-  dropDBFunc: (dbName) => `Drop database "${dbName}"`,
+  dropDBFunc: (dbName) => `DROP DATABASE "${dbName}"`,
 
   // import SQL file into new DB created
-  runSQLFunc: (dbName, file) => `psql -U postgres -d ${dbName} -f ${file}`,
+  runSQLFunc: (dbName, file) => `psql -U postgres -d ${dbName} -f "${file}"`,
 
   // import TAR file into new DB created
   runTARFunc: (dbName, file) =>
-    `pg_restore -U postgres -d ${dbName} -f ${file}`,
+    `pg_restore -U postgres -d ${dbName} -f "${file}"`,
 
   // make a full copy of the schema
   runFullCopyFunc: (dbCopyName, file) => {
     const newFile = file[0];
-    return `pg_dump -U postgres -d ${dbCopyName} -f ${newFile}`;
+    return `pg_dump -U postgres -d ${dbCopyName} -f "${newFile}"`;
   },
 
   // make a hollow copy of the schema
   runHollowCopyFunc: (dbCopyName, file) =>
-    `pg_dump -s -U postgres ${dbCopyName} -f ${file}`,
+    `pg_dump -s -U postgres ${dbCopyName} -f "${file}"`,
 
   // Function to execute commands in the child process.
   execute: (str: string, nextStep: any) => {
