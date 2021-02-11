@@ -1,5 +1,4 @@
 import React from 'react';
-import { TableInfo } from '../../../types';
 import { Typography } from '@material-ui/core';
 import {
   Table,
@@ -8,7 +7,6 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  TablePagination,
   Paper,
 } from '@material-ui/core';
 import styled from 'styled-components';
@@ -18,15 +16,12 @@ import {
   defaultMargin,
   sidebarWidth,
 } from '../../../style-variables';
-
-const tableWidth = `calc(100vw - (${defaultMargin} * 3) - ${sidebarWidth})`;
+import { TableInfo } from '../../../types';
 
 const StyledPaper = styled(({ ...other }) => (
   <Paper elevation={8} {...other} />
 ))`
   background: ${greyDark};
-  min-width: ${tableWidth};
-  width: ${tableWidth};
 `;
 
 const StyledCell = styled(TableCell)`
