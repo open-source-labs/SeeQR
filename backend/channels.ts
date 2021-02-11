@@ -18,6 +18,13 @@ ipcMain.on('return-db-list', (event) => {
   db.getLists().then((data) => {
     event.sender.send('db-lists', data);
     // event.sender.send('async-complete');
+  })
+  .catch((err) => {
+    const feedback = {
+      type: 'error',
+      message: err,
+    };
+    event.sender.send('feedback', feedback);
   });
 });
 
