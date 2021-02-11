@@ -11,28 +11,12 @@ import {
   TableHead,
   TableRow,
   TablePagination,
-  Paper,
 } from '@material-ui/core';
 import styled from 'styled-components';
 import { QueryData } from '../../../types';
 import {
-  greyDark,
   greyPrimary,
-  defaultMargin,
-  sidebarWidth,
 } from '../../../style-variables';
-
-const tableWidth = `calc(100vw - (${defaultMargin} * 3) - ${sidebarWidth})`;
-
-const StyledPaper = styled(({ ...other }) => (
-  <Paper elevation={8} {...other} />
-))`
-  background: ${greyDark};
-  min-width: ${tableWidth};
-  width: ${tableWidth};
-
-
-`;
 
 const StyledCell = styled(TableCell)`
   border-bottom: 1px solid ${greyPrimary};
@@ -65,7 +49,7 @@ const QueryResults = ({ results }: QueryResultsProps) => {
   if (!results || !results.length) return null;
 
   const [page, setPage] = React.useState(0);
-  const rowsPerPage = 10
+  const rowsPerPage = 10;
 
   // reset page to 1 if page is further than it could reasonable be. e.g. if
   // user edits a query that had many pages of results while being in the last
@@ -78,11 +62,10 @@ const QueryResults = ({ results }: QueryResultsProps) => {
     setPage(newPage);
   };
 
-
   // if there are performance issues, look into https://material-ui.com/components/tables/#virtualized-table
   return (
     <>
-      <TableContainer component={StyledPaper}>
+      <TableContainer>
         <Table>
           <TableHead>
             <TableRow>

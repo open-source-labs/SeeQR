@@ -1,12 +1,28 @@
 // TODO: Add Separator to divide top to bottom 
 
 import React, { useState } from 'react';
-import { Box } from '@material-ui/core';
+import styled from 'styled-components'
+import {  Paper } from '@material-ui/core';
 import { QueryData, ValidTabs } from '../../../types';
+import {
+  greyDark,
+  defaultMargin,
+  sidebarWidth,
+} from '../../../style-variables';
 
 import TabSelector from './TabSelector';
 import QueryResults from './QueryResults';
 import QueryPlan from './QueryPlan';
+
+const tableWidth = `calc(100vw - (${defaultMargin} * 3) - ${sidebarWidth})`;
+
+const StyledPaper = styled(({ ...other }) => (
+  <Paper elevation={8} {...other} />
+))`
+  background: ${greyDark};
+  min-width: ${tableWidth};
+  width: ${tableWidth};
+`;
 
 interface QueryTabsProps {
   results: QueryData['returnedRows'];
@@ -23,12 +39,12 @@ const QueryTabs = ({ results, executionPlan }: QueryTabsProps) => {
         selectedTab={selectedTab}
         select={(tab: ValidTabs) => setSelectedTab(tab)}
       />
-      <Box border={0}>
+      <StyledPaper>
         {selectedTab === 'Results' ? <QueryResults results={results} /> : null}
         {selectedTab === 'Execution Plan' ? (
           <QueryPlan executionPlan={executionPlan} />
         ) : null}
-      </Box>
+      </StyledPaper>
     </div>
   );
 };

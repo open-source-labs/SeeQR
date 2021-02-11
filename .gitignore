@@ -8,3 +8,4 @@ package-lock.json
 /appBuilds
 *.csv
 *.sql
+debug.log
