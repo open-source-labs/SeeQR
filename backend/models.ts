@@ -11,7 +11,6 @@ const {
 
 // URI Format: postgres://username:password@hostname:port/databasename
 // Note: User must have a 'postgres' role set-up prior to initializing this connection. https://www.postgresql.org/docs/13/database-roles.html
-
 let PG_URI: string = 'postgres://postgres:postgres@localhost:5432';
 let pool: any = new Pool({ connectionString: PG_URI });
 console.log(PG_URI);
@@ -22,10 +21,10 @@ console.log(PG_URI);
 
 // helper function that creates the column objects, which are saved to the schemaLayout object
 // this function returns a promise to be resolved with Promise.all syntax
-const getColumnObjects = (tableName: string) => {  
+const getColumnObjects = (tableName: string) => {
   // potential query string to get constraints and table references as well
   // const queryString = `
-  // SELECT cols.table_name, 
+  // SELECT cols.table_name,
   //   cols.column_name,
   //   cols.data_type,
   //   cols.character_maximum_length,
@@ -35,7 +34,7 @@ const getColumnObjects = (tableName: string) => {
   //   rel_kcu.table_name AS foreign_table
   // FROM information_schema.columns cols
   // LEFT JOIN information_schema.key_column_usage kcu
-  //   ON cols.column_name = kcu.column_name 
+  //   ON cols.column_name = kcu.column_name
   //   AND cols.table_name = kcu.table_name
   // LEFT JOIN information_schema.table_constraints cons
   //   ON kcu.constraint_name = cons.constraint_name
@@ -75,7 +74,7 @@ const getColumnObjects = (tableName: string) => {
 // gets the name and size of each of the databases in the current postgres instance
 // ignoring the postgres, template0 and template1 DBs
 const getDBNames = () =>
-  new Promise((resolve) => {
+  new Promise((resolve, reject) => {
     const query = `
       SELECT dbs.datname AS db_name,
              pg_size_pretty(pg_database_size(dbs.datname)) AS db_size
@@ -91,15 +90,15 @@ const getDBNames = () =>
           db_name !== 'template0' &&
           db_name !== 'template1'
         )
-        dbList.push(databases.rows[i]);
+          dbList.push(databases.rows[i]);
       }
       resolve(dbList);
-    });
+    }).catch(reject)
   });
 
 // gets all tablenames from current schema and all columns for each of the tables
 const getDBLists = () =>
-  new Promise((resolve) => {
+  new Promise((resolve,reject) => {
     const query = `
       SELECT table_catalog, table_schema, table_name, is_insertable_into
       FROM information_schema.tables
@@ -118,8 +117,8 @@ const getDBLists = () =>
           tableList[i].columns = columnInfo[i];
         }
         resolve(tableList);
-      });
-    });
+      }).catch(reject)
+    }).catch(reject)
   });
 
 /**
@@ -154,19 +153,19 @@ myobj = {
     return dbName;
   },
   // Close connection to current pool
-  closePool: (() => {
+  closePool: () => {
     console.log('closing pool: ', pool);
     pool.end();
-  }),
+  },
   // Returns a list of the database names and sizes in the current schema and a list of the tables in the current database
   //   using two helpful functions - getDBNames and getDBLists
   // The data is returned in a listObj with the following shape:
-  //   { 
+  //   {
   //      databaseList: { db_name: 'name', db_size: '1000kB' }
-  //      tableList: { table_name: 'name', data_type: 'type', columns: [ colObj ], ...etc. } 
+  //      tableList: { table_name: 'name', data_type: 'type', columns: [ colObj ], ...etc. }
   //   }
   getLists: () =>
-    new Promise((resolve) => {
+    new Promise((resolve, reject) => {
       const listObj: any = {
         databaseList: [],
         tableList: [], // current database's tables
@@ -174,7 +173,7 @@ myobj = {
       Promise.all([getDBNames(), getDBLists()]).then((data) => {
         [listObj.databaseList, listObj.tableList] = data;
         resolve(listObj);
-      });
+      }).catch(reject)
     }),
   /** Expand to view explaination
    * Creating a nested Object, the keys within the object are the table names
