@@ -43,6 +43,7 @@ const DbView = ({ selectedDb, show }: DbViewProps) => {
       <DatabaseDetails
         db={databases.find((db) => db.db_name === selectedDb) as DatabaseInfo}
       />
+      <br />
       <TablesSidebar
         tables={dbTables}
         selectTable={(table: TableInfo) => setSelectedTable(table)}
