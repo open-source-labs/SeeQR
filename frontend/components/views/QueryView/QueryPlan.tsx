@@ -1,4 +1,5 @@
 import React from 'react';
+import {Paper} from '@material-ui/core'
 import { QueryData } from '../../../types';
 
 interface QueryPlanProps {
