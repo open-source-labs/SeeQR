@@ -7,6 +7,7 @@ import {
   Button,
   Checkbox,
   FormControlLabel,
+  Tooltip,
 } from '@material-ui/core/';
 import styled from 'styled-components';
 import { MuiTheme } from '../../style-variables';
@@ -73,7 +74,7 @@ const DuplicateDbModal = ({
     // convert input label name to lowercase only with no spacing to comply with db naming convention.
     setDefaultSchema(false);
     const schemaNameInput = event.target.value;
-    let dbSafeName = schemaNameInput.toLowerCase();
+    let dbSafeName = schemaNameInput;
     dbSafeName = dbSafeName.replace(/[^\w-]/gi, '');
     databases.includes(dbSafeName) ? setIsError(true) : setIsError(false);
     // dbSafeName = dbSafeName.replace(/[^A-Z0-9]/gi, '');
@@ -86,12 +87,6 @@ const DuplicateDbModal = ({
   };
 
   const handleCopyFilePath = () => {
-    // console.log('database includes?', databases.includes(defaultSchemaName))
-    // console.log('defaultSchemaName', defaultSchemaName)
-    // databases.includes(defaultSchemaName)
-    //   ? return (setIsError(true))
-    //   : setIsError(false);
-
     const schemaObj = {
       schemaName: defaultSchema ? defaultSchemaName : newSchemaName,
       dbCopyName,
@@ -130,16 +125,22 @@ const DuplicateDbModal = ({
               defaultValue={defaultSchemaName}
               onChange={handleSchemaName}
             />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={checked}
-                  onChange={handleCopyData}
-                  color="primary"
-                />
+            <Tooltip
+              title={
+                checked ? 'Deselect to only copy shell' : 'Select to copy data'
               }
-              label="Copy data"
-            />
+            >
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={checked}
+                    onChange={handleCopyData}
+                    color="primary"
+                  />
+                }
+                label="Copy data"
+              />
+            </Tooltip>
           </TextFieldContainer>
           <ButtonContainer>
             <StyledButton

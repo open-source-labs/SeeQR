@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { AppState, isDbLists, DatabaseInfo, TableInfo } from '../../../types';
 import TablesSidebar from './TablesSidebar';
 import DatabaseDetails from './DatabaseDetails';
-// import TableName from './TableName';
 import { once } from '../../../lib/utils';
 
 const { ipcRenderer } = window.require('electron');
