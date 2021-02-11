@@ -1,14 +1,7 @@
 import React, { useState } from 'react';
-import { Typography, Button } from '@material-ui/core';
-import styled from 'styled-components';
-
-import AppBar from '@material-ui/core/AppBar';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import Box from '@material-ui/core/Box';
+import { Typography, Button, AppBar, Tabs, Tab } from '@material-ui/core';
 import TableDetails from './TableDetails';
 import { TableInfo } from '../../../types';
-import { sidebarWidth, defaultMargin } from '../../../style-variables';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -23,11 +16,7 @@ const TabPanel = ({ children, value, index }: TabPanelProps) => (
     id={`scrollable-auto-tabpanel-${index}`}
     aria-labelledby={`scrollable-auto-tab-${index}`}
   >
-    {value === index && (
-      <Box p={3}>
-        <Typography>{children}</Typography>
-      </Box>
-    )}
+    {value === index && <Typography>{children}</Typography>}
   </div>
 );
 
@@ -41,14 +30,8 @@ interface TablesSidebarProps {
   selectTable: (table: TableInfo) => void;
 }
 
-const viewWidth = `calc( 100vw - ${sidebarWidth} - (${defaultMargin} * 3))`;
-
-const StyledTabs = styled(Tabs)`
-  max-width: ${viewWidth};
-  width: ${viewWidth};
-`;
-
 const TablesSidebar = ({ tables }: TablesSidebarProps) => {
+  // const classes = useStyles();
   const [value, setValue] = useState(0);
 
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
@@ -58,7 +41,7 @@ const TablesSidebar = ({ tables }: TablesSidebarProps) => {
   return (
     <>
       <AppBar position="static" color="default">
-        <StyledTabs
+        <Tabs
           value={value}
           onChange={handleChange}
           indicatorColor="primary"
@@ -72,8 +55,9 @@ const TablesSidebar = ({ tables }: TablesSidebarProps) => {
             <Tab label={tableMap.table_name} {...a11yProps(index)} />
           ))}
           ;
-        </StyledTabs>
+        </Tabs>
       </AppBar>
+      <br />
       {tables.map((tableMap, index) => (
         <TabPanel value={value} index={index}>
           <TableDetails table={tableMap} />
