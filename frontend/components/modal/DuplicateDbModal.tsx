@@ -73,9 +73,9 @@ const DuplicateDbModal = ({
     // convert input label name to lowercase only with no spacing to comply with db naming convention.
     setDefaultSchema(false);
     const schemaNameInput = event.target.value;
-    databases.includes(schemaNameInput) ? setIsError(true) : setIsError(false);
     let dbSafeName = schemaNameInput.toLowerCase();
     dbSafeName = dbSafeName.replace(/[^\w-]/gi, '');
+    databases.includes(dbSafeName) ? setIsError(true) : setIsError(false);
     // dbSafeName = dbSafeName.replace(/[^A-Z0-9]/gi, '');
     // check if the newSchemaName is not a duplicate
     setNewSchemaName(dbSafeName);
@@ -86,12 +86,17 @@ const DuplicateDbModal = ({
   };
 
   const handleCopyFilePath = () => {
+    // console.log('database includes?', databases.includes(defaultSchemaName))
+    // console.log('defaultSchemaName', defaultSchemaName)
+    // databases.includes(defaultSchemaName)
+    //   ? return (setIsError(true))
+    //   : setIsError(false);
+
     const schemaObj = {
       schemaName: defaultSchema ? defaultSchemaName : newSchemaName,
       dbCopyName,
       copy: checked,
     };
-
     ipcRenderer.send('input-schema', schemaObj);
     setNewSchemaName(' ');
     handleClose();
@@ -122,7 +127,7 @@ const DuplicateDbModal = ({
               id="filled-required"
               label="Enter a database copy name"
               variant="outlined"
-              defaultValue={`${dbCopyName}_copy`}
+              defaultValue={defaultSchemaName}
               onChange={handleSchemaName}
             />
             <FormControlLabel
