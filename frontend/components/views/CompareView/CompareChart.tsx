@@ -47,7 +47,7 @@ const getChartData = (queries: AppState['queries']): ChartData<Chart.ChartData> 
   const datasets = comparedDbs.map((db) => {
     const color = getColor();
     return {
-      db,
+      label: db,
       backgroundColor: color,
       borderColor: color,
       borderWidth: 1,
