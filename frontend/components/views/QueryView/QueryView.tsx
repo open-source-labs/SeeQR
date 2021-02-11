@@ -142,7 +142,7 @@ const QueryView = ({
           totalTime={getPrettyTime(query)}
         />
       </TopRow>
-      <QuerySqlInput sql={localQuery?.sqlString ?? ''} onChange={onSqlChange} />
+      <QuerySqlInput sql={localQuery?.sqlString ?? ''} onChange={onSqlChange} runQuery={onRun} />
       <CenterButton>
         <RunButton variant="contained" onClick={onRun}>
           Run Query
