@@ -1,5 +1,4 @@
 import React from 'react';
-import { Typography } from '@material-ui/core';
 import {
   Table,
   TableBody,
@@ -7,15 +6,11 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Typography,
   Paper,
 } from '@material-ui/core';
 import styled from 'styled-components';
-import {
-  greyDark,
-  greyPrimary,
-  defaultMargin,
-  sidebarWidth,
-} from '../../../style-variables';
+import { greyDark, greyPrimary } from '../../../style-variables';
 import { TableInfo } from '../../../types';
 
 const StyledPaper = styled(({ ...other }) => (

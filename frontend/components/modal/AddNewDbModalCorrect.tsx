@@ -64,7 +64,7 @@ const AddNewDbModal = ({ open, onClose, databases }: AddNewDbModalProps) => {
     // convert input label name to lowercase only with no spacing to comply with db naming convention.
     const dbNameInput = event.target.value;
     // check if the newDbName is not a duplicate
-    let dbSafeName = dbNameInput.toLowerCase();
+    let dbSafeName = dbNameInput;
     dbSafeName = dbSafeName.replace(/[^\w-]/gi, '');
     databases.includes(dbSafeName) ? setIsError(true) : setIsError(false);
     setNewDbName(dbSafeName);
