@@ -1,6 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { spawn } = require('child_process');
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const webpack = require('webpack');
 
@@ -9,7 +10,7 @@ const isDevelopment = process.env.NODE_ENV !== 'production';
 module.exports = {
   entry: './frontend/index.tsx',
   mode: isDevelopment ? 'development' : 'production',
-  devtool: 'source-map',
+  devtool: 'eval-cheap-module-source-map',
   output: {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'dist'),
@@ -54,6 +55,10 @@ module.exports = {
         test: /\.ts(x)?$/,
         exclude: /node_modules/,
         loader: 'ts-loader',
+        options: {
+          // turn off type checking in loader. Type checking is done in parallel but forkts plugin
+          transpileOnly: true,
+        },
       },
       {
         test: /\.(jpg|jpeg|png|ttf|svg)$/,
@@ -141,6 +146,15 @@ module.exports = {
           'style-src': true,
         },
       },
+    }),
+    new ForkTsCheckerWebpackPlugin({
+      // // Lint files on error.  Uncomment for Hard Mode :)
+      // eslint: {
+      //   files: [
+      //     './frontend/**/*.{ts,tsx,js,jsx}',
+      //     './backend/**/*.{ts,tsx,js,jsx}',
+      //   ],
+      // },
     }),
     isDevelopment && new ReactRefreshWebpackPlugin(),
   ],
