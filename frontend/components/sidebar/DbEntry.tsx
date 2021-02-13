@@ -19,22 +19,26 @@ interface DbEntryProps {
 }
 const DbEntry = ({ db, isSelected, select, duplicate }: DbEntryProps) => {
   const handleDelete = () => {
-    ipcRenderer.send('drop-db', db, isSelected)
+    ipcRenderer.send('drop-db', db, isSelected);
     if (isSelected) select('');
-  }
-  
+  };
+
   return (
-    <SidebarListItem button $customSelected={isSelected} onClick={() => select(db)}>
+    <SidebarListItem
+      button
+      $customSelected={isSelected}
+      onClick={() => select(db)}
+    >
       <ListItemText primary={db} />
       <ListItemSecondaryAction>
         <Tooltip title="Copy Database">
-          <IconButton edge="end">
-            <FileCopyIcon onClick={duplicate} />
+          <IconButton edge="end" onClick={duplicate}>
+            <FileCopyIcon />
           </IconButton>
         </Tooltip>
         <Tooltip title="Drop Database">
-          <IconButton edge="end">
-            <DeleteIcon onClick={handleDelete} />
+          <IconButton edge="end" onClick={handleDelete}>
+            <DeleteIcon />
           </IconButton>
         </Tooltip>
       </ListItemSecondaryAction>
