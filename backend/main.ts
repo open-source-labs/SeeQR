@@ -10,7 +10,15 @@ const {
   REACT_DEVELOPER_TOOLS,
 } = require('electron-devtools-installer');
 const MainMenu = require('./mainMenu');
+
+// require('electron-reload')(process.cwd(), {
+//   electron: path.resolve(process.cwd(), 'node_modules/.bin/electron'),
+//   hardResetMethod: 'exit',
+//   // forceHardReset: true
+// });
+
 require('./channels');
+
 /**
  * Explore the comment below on channels and see if its valid
 
