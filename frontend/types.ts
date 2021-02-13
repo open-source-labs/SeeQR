@@ -15,6 +15,8 @@ export interface AppState {
   setQueries: (queries: Record<string, QueryData>) => void;
   comparedQueries: Record<string, QueryData>;
   setComparedQueries: (comparedQueries: Record<string, QueryData>) => void;
+  setSidebarHidden: (isHidden: boolean) => void;
+  sidebarIsHidden: boolean;
 }
 
 export type CreateNewQuery = (query: QueryData) => void;
@@ -89,7 +91,7 @@ export interface TableColumn {
   /**
    * Can this column receive Null values or not?
    */
-  is_nullable: 'yes' | 'no'
+  is_nullable: 'yes' | 'no';
 }
 
 export interface TableInfo {
@@ -109,7 +111,7 @@ export interface TableInfo {
    * Is table read only?
    */
   is_insertable_into: 'yes' | 'no';
-  columns: TableColumn[]
+  columns: TableColumn[];
 }
 
 export interface DbLists {
@@ -130,9 +132,12 @@ export const isDbLists = (obj: unknown): obj is DbLists => {
       return false;
     if (obj.databaseList[0] && typeof obj.databaseList[0].db_size !== 'string')
       return false;
-    if (obj.tableList[0] && typeof obj.tableList[0].table_name !== 'string') return false;
-    if (obj.tableList[0] && typeof obj.tableList[0].table_catalog !== 'string') return false;
-    if (obj.tableList[0] && typeof obj.tableList[0].table_schema !== 'string') return false;
+    if (obj.tableList[0] && typeof obj.tableList[0].table_name !== 'string')
+      return false;
+    if (obj.tableList[0] && typeof obj.tableList[0].table_catalog !== 'string')
+      return false;
+    if (obj.tableList[0] && typeof obj.tableList[0].table_schema !== 'string')
+      return false;
     // TODO: test other properties when necessary
   } catch (e) {
     return false;
@@ -156,7 +161,7 @@ export interface PlanNode {
   'Inner Unique'?: boolean;
   /**
    * Condition for Hash Operation
-   * 
+   *
    * ex: SELECT name FROM people p JOIN species s ON  **p.species_id = s._id**
    */
   'Hash Cond'?: string;
@@ -165,8 +170,8 @@ export interface PlanNode {
    */
   'Relation Name'?: string;
   /**
-   * Alias given to relation in query. 
-   * 
+   * Alias given to relation in query.
+   *
    * ex: SELECT name FROM people **p**
    */
   Alias?: string;

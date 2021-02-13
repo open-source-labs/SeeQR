@@ -16,6 +16,7 @@ import styled from 'styled-components';
 import { QueryData } from '../../../types';
 import {
   greyPrimary,
+  DarkPaperFull
 } from '../../../style-variables';
 
 const StyledCell = styled(TableCell)`
@@ -64,7 +65,7 @@ const QueryResults = ({ results }: QueryResultsProps) => {
 
   // if there are performance issues, look into https://material-ui.com/components/tables/#virtualized-table
   return (
-    <>
+    <DarkPaperFull>
       <TableContainer>
         <Table>
           <TableHead>
@@ -105,7 +106,7 @@ const QueryResults = ({ results }: QueryResultsProps) => {
         page={page}
         onChangePage={handleChangePage}
       />
-    </>
+    </DarkPaperFull>
   );
 };
 

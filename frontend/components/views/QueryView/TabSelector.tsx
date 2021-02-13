@@ -1,5 +1,7 @@
 import React from 'react';
 import { ButtonGroup, Button, Box } from '@material-ui/core';
+import AccountTreeIcon from '@material-ui/icons/AccountTree';
+import FormatListBulletedIcon from '@material-ui/icons/FormatListBulleted';
 import styled from 'styled-components';
 import {
   selectedColor,
@@ -30,24 +32,25 @@ interface TabSelectorProps {
   select: (tab: ValidTabs) => void;
 }
 
-const TabSelector = ({ selectedTab, select }: TabSelectorProps) => {
-  const tabs: ValidTabs[] = ['Results', 'Execution Plan'];
-
-  return (
-    <Box>
-      <ViewBtnGroup variant="contained">
-        {tabs.map((tab: ValidTabs) => (
-          <ViewButton
-            isSelected={selectedTab === tab}
-            onClick={() => select(tab)}
-            key={`querytab_${tab}`}
-          >
-            {tab}
-          </ViewButton>
-        ))}
-      </ViewBtnGroup>
-    </Box>
-  );
-};
+const TabSelector = ({ selectedTab, select }: TabSelectorProps) => (
+  <Box>
+    <ViewBtnGroup variant="contained">
+      <ViewButton
+        isSelected={selectedTab === 'Results'}
+        onClick={() => select('Results')}
+        startIcon={<FormatListBulletedIcon />}
+      >
+        Results
+      </ViewButton>
+      <ViewButton
+        isSelected={selectedTab === 'Execution Plan'}
+        onClick={() => select('Execution Plan')}
+        startIcon={<AccountTreeIcon />}
+      >
+        Execution Plan
+      </ViewButton>
+    </ViewBtnGroup>
+  </Box>
+);
 
 export default TabSelector;

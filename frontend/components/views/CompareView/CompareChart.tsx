@@ -1,8 +1,14 @@
 import React from 'react';
 import { Bar, defaults, ChartData } from 'react-chartjs-2';
+import styled from 'styled-components'
 import { AppState } from '../../../types';
 import { keyFromData, getTotalTime } from '../../../lib/queries';
 import { compareChartColors } from '../../../style-variables';
+
+const ChartContainer = styled.div`
+  height: 400px;
+  width: 100%;
+`
 
 // TODO: connect to our variables
 defaults.global.defaultFontColor = 'rgb(198,210,213)';
@@ -59,7 +65,7 @@ interface CompareChartProps {
 }
 
 const CompareChart = ({ queries }: CompareChartProps) => (
-  <>
+  <ChartContainer>
     <Bar
       data={getChartData(queries)}
       options={{
@@ -75,7 +81,7 @@ const CompareChart = ({ queries }: CompareChartProps) => (
         maintainAspectRatio: false,
       }}
     />
-  </>
+  </ChartContainer>
 );
 
 export default CompareChart;

@@ -40,6 +40,13 @@ const RunButton = styled(Button)`
   margin: ${defaultMargin} auto;
 `;
 
+const QueryViewContainer = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+`
+
 interface QueryViewProps {
   query?: AppState['workingQuery'];
   createNewQuery: CreateNewQuery;
@@ -116,6 +123,8 @@ const QueryView = ({
     ipcRenderer.send('return-db-list', newDb);
   };
   const onSqlChange = (newSql: string) => {
+    // TODO: this triggers a rerender of the entire query view  every stroke
+    // because App's workingQuery changes ref
     setQuery({ ...localQuery, sqlString: newSql });
   };
 
@@ -142,7 +151,7 @@ const QueryView = ({
 
   if (!show) return null;
   return (
-    <>
+    <QueryViewContainer>
       <TopRow>
         <QueryLabel
           label={localQuery.label}
@@ -173,7 +182,7 @@ const QueryView = ({
         results={query?.returnedRows}
         executionPlan={query?.executionPlan}
       />
-    </>
+    </QueryViewContainer>
   );
 };
 
