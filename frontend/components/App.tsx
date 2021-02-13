@@ -24,6 +24,7 @@ import Spinner from './modal/Spinner';
 const AppContainer = styled.div`
   display: grid;
   grid: 'sidebar main' 1fr / ${sidebarWidth} 1fr;
+  padding: 0;
 `;
 
 // TODO: why is max-width only necessary in non-fullwidth mode ? 
@@ -32,8 +33,9 @@ const Main = styled.main<{ $fullwidth: boolean }>`
   grid-area: ${({ $fullwidth }) => ($fullwidth ? '1 / 1 / -1 / -1' : 'main')};
   background: ${bgColor};
   height: calc(100vh - (2 * ${defaultMargin}));
-  max-width: ${({ $fullwidth }) => ($fullwidth ? '' : `calc(100vw - ${sidebarWidth} - ${defaultMargin})`)};
-  padding: ${defaultMargin} ${({ $fullwidth }) => ($fullwidth ? sidebarShowButtonSize : '')};
+  max-width: ${({ $fullwidth }) => ($fullwidth ? '' : `calc(100vw - ${sidebarWidth} )`)};
+  padding: ${defaultMargin} ${sidebarShowButtonSize};
+  margin: 0;
 `;
 
 const App = () => {
