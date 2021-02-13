@@ -28,7 +28,7 @@ const AppContainer = styled.div`
 const Main = styled.main`
   grid-area: main;
   background: ${bgColor};
-  height: 100vh;
+  height: calc(100vh - (2 * ${defaultMargin}));
   max-width: calc(100vw - ${sidebarWidth} - ${defaultMargin});
   padding: ${defaultMargin};
 `;

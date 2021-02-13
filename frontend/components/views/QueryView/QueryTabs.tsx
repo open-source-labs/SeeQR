@@ -16,12 +16,14 @@ import PlanTree from './ExecutionPlan/PlanTree'
 
 const tableWidth = `calc(100vw - (${defaultMargin} * 3) - ${sidebarWidth})`;
 
+
 const StyledPaper = styled(({ ...other }) => (
   <Paper elevation={8} {...other} />
 ))`
   background: ${greyDark};
   min-width: ${tableWidth};
   width: ${tableWidth};
+  flex: 1;
 `;
 
 interface QueryTabsProps {
@@ -34,7 +36,7 @@ const QueryTabs = ({ results, executionPlan }: QueryTabsProps) => {
 
   if (!results && !executionPlan) return null
   return (
-    <div>
+    <>
       <TabSelector
         selectedTab={selectedTab}
         select={(tab: ValidTabs) => setSelectedTab(tab)}
@@ -45,7 +47,7 @@ const QueryTabs = ({ results, executionPlan }: QueryTabsProps) => {
           <PlanTree data={executionPlan} />
         ) : null}
       </StyledPaper>
-    </div>
+    </>
   );
 };
 

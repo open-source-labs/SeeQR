@@ -40,6 +40,13 @@ const RunButton = styled(Button)`
   margin: ${defaultMargin} auto;
 `;
 
+const QueryViewContainer = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+`
+
 interface QueryViewProps {
   query?: AppState['workingQuery'];
   createNewQuery: CreateNewQuery;
@@ -134,7 +141,7 @@ const QueryView = ({
 
   if (!show) return null;
   return (
-    <>
+    <QueryViewContainer>
       <TopRow>
         <QueryLabel
           label={localQuery.label}
@@ -165,7 +172,7 @@ const QueryView = ({
         results={query?.returnedRows}
         executionPlan={query?.executionPlan}
       />
-    </>
+    </QueryViewContainer>
   );
 };
 

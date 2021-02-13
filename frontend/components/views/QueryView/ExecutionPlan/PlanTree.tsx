@@ -29,10 +29,11 @@ const FlowNodeComponent = ({ data: { plan } }: FlowNodeProps) => (
   </div>
 );
 
+// React-flow must be inside a container that has width and height determined and "stands on it's own".
+// Height/width must be determined either here or somewhere on the ancestors. 
 const TreeContainer = styled.div`
-/* // TODO: make this dynamic */
-  width: 700px;
-  height: 700px; 
+  width: 100%;
+  height: 100%; 
 `;
 
 interface PlanTreeProps {
