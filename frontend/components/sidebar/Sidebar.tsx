@@ -8,8 +8,13 @@ import QueryList from './QueryList';
 import DbList from './DbList';
 import ViewSelector from './ViewSelector';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
+import logo from '../../../assets/logo/seeqr_dock.png';
 
-import { greyDarkest, sidebarWidth, sidebarShowButtonSize } from '../../style-variables';
+import {
+  greyDarkest,
+  sidebarWidth,
+  sidebarShowButtonSize,
+} from '../../style-variables';
 
 // TODO: try to refactor with styled components
 const useStyles = makeStyles(() => ({
@@ -20,6 +25,11 @@ const useStyles = makeStyles(() => ({
     display: 'flex',
     'flex-direction': 'column',
     'align-items': 'center',
+  },
+  image: {
+    position: 'fixed',
+    bottom: '20px',
+    opacity: '0.5',
   },
 }));
 
@@ -90,6 +100,13 @@ const Sidebar = ({
           workingQuery={workingQuery}
           setWorkingQuery={setWorkingQuery}
           show={selectedView === 'queryView' || selectedView === 'compareView'}
+        />
+        <img
+          className={classes.image}
+          src={logo}
+          alt="Logo"
+          width="100px"
+          height="100px"
         />
       </Drawer>
     </>
