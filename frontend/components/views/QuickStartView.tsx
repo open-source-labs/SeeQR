@@ -29,14 +29,14 @@ const useStyles = makeStyles((theme: Theme) =>
       display: 'inline-block',
     },
     instructions: {
-      marginTop: theme.spacing(1),
+      marginTop: theme.spacing(4),
       marginBottom: theme.spacing(5),
     },
     image: {
-      marginTop: theme.spacing(8),
+      marginTop: theme.spacing(10),
     },
     title: {
-      marginTop: theme.spacing(4),
+      marginTop: theme.spacing(6),
     },
     stepper: {
       fontSize: '50px',
@@ -52,7 +52,7 @@ const PageContainer = styled.a`
 `;
 
 const StyledStepper = styled(Stepper)`
-  margin: 40px 0px 20px 0px;
+  margin: 70px 0px 20px 0px;
   background: transparent;
 `;
 
