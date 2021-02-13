@@ -1,7 +1,7 @@
 import { IpcMainEvent } from 'electron';
 import React, { useState, useEffect } from 'react';
 import { AppState, isDbLists, DatabaseInfo, TableInfo } from '../../../types';
-import TablesSidebar from './TablesTabBar';
+import TablesTabs from './TablesTabBar';
 import DatabaseDetails from './DatabaseDetails';
 import { once } from '../../../lib/utils';
 
@@ -42,7 +42,7 @@ const DbView = ({ selectedDb, show }: DbViewProps) => {
         db={databases.find((db) => db.db_name === selectedDb)}
       />
       <br />
-      <TablesSidebar
+      <TablesTabs
         tables={dbTables}
         selectTable={(table: TableInfo) => setSelectedTable(table)}
       />
