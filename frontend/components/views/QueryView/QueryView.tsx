@@ -63,7 +63,6 @@ const isSame = (prev: QueryViewProps, next: QueryViewProps) => {
   if (prev.query?.db !== next.query?.db) return false
   if (prev.query?.label !== next.query?.label) return false
   if (prev.query?.sqlString !== next.query?.sqlString) return false
-  console.log('its the same' )
   return true
 }
 
