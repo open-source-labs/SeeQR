@@ -1,5 +1,5 @@
 import { IpcMainEvent } from 'electron';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, memo } from 'react';
 import { Button, Box } from '@material-ui/core/';
 import styled from 'styled-components';
 import {
@@ -56,6 +56,17 @@ interface QueryViewProps {
   show: boolean;
 }
 
+
+const isSame = (prev: QueryViewProps, next: QueryViewProps) => {
+  if (prev.show !== next.show) return false
+  if (prev.selectedDb !== next.selectedDb) return false
+  if (prev.query?.db !== next.query?.db) return false
+  if (prev.query?.label !== next.query?.label) return false
+  if (prev.query?.sqlString !== next.query?.sqlString) return false
+  console.log('its the same' )
+  return true
+}
+
 const QueryView = ({
   query,
   createNewQuery,
@@ -65,7 +76,7 @@ const QueryView = ({
   show,
 }: QueryViewProps) => {
   const [databases, setDatabases] = useState<string[]>([]);
-  const [sqlLocal, setSqlLocal] = useState('');
+  // const [sqlLocal, setSqlLocal] = useState('');
 
   const defaultQuery: QueryData = {
     label: '',
@@ -125,7 +136,8 @@ const QueryView = ({
     ipcRenderer.send('return-db-list', newDb);
   };
   const onSqlChange = (newSql: string) => {
-    setSqlLocal(newSql);
+    setQuery({...localQuery, sqlString: newSql})
+    // setSqlLocal(newSql);
   };
 
   const onRun = () => {
@@ -147,7 +159,7 @@ const QueryView = ({
     // request backend to run query
     ipcRenderer.send('execute-query-tracked', {
       queryLabel: localQuery.label.trim(),
-      queryString: sqlLocal,
+      queryString: localQuery.sqlString,
       queryCurrentSchema: localQuery.db,
     });
   };
@@ -168,7 +180,7 @@ const QueryView = ({
         />
       </TopRow>
       <QuerySqlInput
-        sql={sqlLocal ?? ''}
+        sql={localQuery.sqlString ?? ''}
         onChange={onSqlChange}
         runQuery={onRun}
       />
@@ -186,4 +198,4 @@ const QueryView = ({
   );
 };
 
-export default QueryView;
+export default memo(QueryView, isSame);
