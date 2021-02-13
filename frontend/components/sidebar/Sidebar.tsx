@@ -30,6 +30,7 @@ const useStyles = makeStyles(() => ({
     position: 'fixed',
     bottom: '20px',
     opacity: '0.5',
+    zIndex: -1,
   },
 }));
 

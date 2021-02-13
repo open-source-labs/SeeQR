@@ -57,8 +57,10 @@ const StyledStepper = styled(Stepper)`
 `;
 
 const StyledStepLabel = styled(StepLabel)`
-  font-size: 100px;
   width: 20vw;
+  & .MuiStepLabel-label {
+    font-size: 25px;
+  }
 `;
 
 function getSteps() {
