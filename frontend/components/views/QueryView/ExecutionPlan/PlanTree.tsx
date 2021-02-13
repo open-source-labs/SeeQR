@@ -10,7 +10,8 @@ import ReactFlow, {
 import PlanCard from './PlanCard';
 import buildFlowGraph from '../../../../lib/flow';
 import { ExplainJson, PlanNode } from '../../../../types';
-import {DarkPaperFull} from '../../../../style-variables'
+import { DarkPaperFull } from '../../../../style-variables';
+import FlowControls from './FlowControls';
 
 type FlowNodeProps = NodeProps<{ plan: PlanNode }>;
 
@@ -31,8 +32,9 @@ const FlowNodeComponent = ({ data: { plan } }: FlowNodeProps) => (
 );
 
 const TreeContainer = styled(DarkPaperFull)`
-  flex:1;
-`
+  position: relative;
+  flex: 1;
+`;
 
 interface PlanTreeProps {
   data: ExplainJson | undefined;
@@ -52,7 +54,7 @@ const PlanTree = ({ data }: PlanTreeProps) => {
         >
           <Background />
         </ReactFlow>
-        {/* <FlowControls /> */}
+        <FlowControls />
       </ReactFlowProvider>
     </TreeContainer>
   );
