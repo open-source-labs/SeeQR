@@ -10,7 +10,7 @@
     ]
   },
   "scripts": {
-    "build": "tsc && webpack",
+    "build": "cross-env NODE_ENV=production tsc && cross-env NODE_ENV=production webpack",
     "start": "cross-env NODE_ENV=production electron --noDevServer .",
     "dev": "tsc && cross-env NODE_ENV=development webpack-dev-server --hot",
     "test": "jest --verbose",

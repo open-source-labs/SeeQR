@@ -157,5 +157,5 @@ module.exports = {
       // },
     }),
     isDevelopment && new ReactRefreshWebpackPlugin(),
-  ],
+  ].filter(Boolean),
 };
