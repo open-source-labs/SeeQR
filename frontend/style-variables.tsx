@@ -56,6 +56,7 @@ export const hoverColor = greenPrimary;
 export const sidebarWidth = '300px';
 export const defaultMargin = '20px';
 export const tableWidth = `calc(100vw - (${defaultMargin} * 3) - ${sidebarWidth})`;
+export const sidebarShowButtonSize = '50px'
 
 // Execution Tree
 export const planNodeWidth = '200px';
@@ -127,9 +128,10 @@ export const DarkPaperFull = styled(({ ...other }) => (
   <Paper elevation={8} {...other} />
 ))`
   background: ${greyDark};
-  min-width: ${tableWidth};
-  width: ${tableWidth};
 `;
+
+  // min-width: ${tableWidth};
+  // width: ${tableWidth};
 
 // // typography
 // $font-stack: 'PT Sans', sans-serif;

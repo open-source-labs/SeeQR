@@ -8,6 +8,7 @@ import {
   bgColor,
   sidebarWidth,
   defaultMargin,
+  sidebarShowButtonSize,
 } from '../style-variables';
 import GlobalStyle from '../GlobalStyle';
 import { AppState, CreateNewQuery, QueryData } from '../types';
@@ -25,12 +26,14 @@ const AppContainer = styled.div`
   grid: 'sidebar main' 1fr / ${sidebarWidth} 1fr;
 `;
 
-const Main = styled.main`
-  grid-area: main;
+// TODO: why is max-width only necessary in non-fullwidth mode ? 
+// prettier-ignore
+const Main = styled.main<{ $fullwidth: boolean }>`
+  grid-area: ${({ $fullwidth }) => ($fullwidth ? '1 / 1 / -1 / -1' : 'main')};
   background: ${bgColor};
   height: calc(100vh - (2 * ${defaultMargin}));
-  max-width: calc(100vw - ${sidebarWidth} - ${defaultMargin});
-  padding: ${defaultMargin};
+  max-width: ${({ $fullwidth }) => ($fullwidth ? '' : `calc(100vw - ${sidebarWidth} - ${defaultMargin})`)};
+  padding: ${defaultMargin} ${({ $fullwidth }) => ($fullwidth ? sidebarShowButtonSize : '')};
 `;
 
 const App = () => {
@@ -44,6 +47,7 @@ const App = () => {
   );
 
   const [selectedDb, setSelectedDb] = useState<AppState['selectedDb']>('');
+  const [sidebarIsHidden, setSidebarHidden] = useState(false);
 
   /**
    * Hook to create new Query from data
@@ -104,9 +108,11 @@ const App = () => {
               setSelectedDb,
               workingQuery,
               setWorkingQuery,
+              setSidebarHidden,
+              sidebarIsHidden,
             }}
           />
-          <Main>
+          <Main $fullwidth={sidebarIsHidden}>
             <CompareView
               queries={comparedQueries}
               show={shownView === 'compareView'}
