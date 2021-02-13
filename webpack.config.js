@@ -147,7 +147,15 @@ module.exports = {
         },
       },
     }),
-    new ForkTsCheckerWebpackPlugin(),
+    new ForkTsCheckerWebpackPlugin({
+      // // Lint files on error.  Uncomment for Hard Mode :)
+      // eslint: {
+      //   files: [
+      //     './frontend/**/*.{ts,tsx,js,jsx}',
+      //     './backend/**/*.{ts,tsx,js,jsx}',
+      //   ],
+      // },
+    }),
     isDevelopment && new ReactRefreshWebpackPlugin(),
   ],
 };
