@@ -2,7 +2,8 @@
  * This file contains all reusable variables for styling in styled-components
  * Individual variables should be named exports
  */
-import { ListItem, List } from '@material-ui/core';
+import React from 'react'
+import { ListItem, List, Paper } from '@material-ui/core';
 import { createMuiTheme } from '@material-ui/core/styles';
 import styled from 'styled-components';
 
@@ -54,10 +55,11 @@ export const hoverColor = greenPrimary;
 // Size
 export const sidebarWidth = '300px';
 export const defaultMargin = '20px';
+export const tableWidth = `calc(100vw - (${defaultMargin} * 3) - ${sidebarWidth})`;
 
 // Execution Tree
-export const planNodeWidth = '200px'
-export const planNodeHeight = '100px'
+export const planNodeWidth = '200px';
+export const planNodeHeight = '100px';
 
 // theme to override Mui defaults
 export const MuiTheme = createMuiTheme({
@@ -119,6 +121,14 @@ export const SidebarListItem = styled(ListItem)`
     border-bottom: 1px solid ${hoverColor};
     border-top: 1px solid ${hoverColor};
   }
+`;
+
+export const DarkPaperFull = styled(({ ...other }) => (
+  <Paper elevation={8} {...other} />
+))`
+  background: ${greyDark};
+  min-width: ${tableWidth};
+  width: ${tableWidth};
 `;
 
 // // typography

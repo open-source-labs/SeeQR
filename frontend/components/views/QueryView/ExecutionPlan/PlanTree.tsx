@@ -10,6 +10,7 @@ import ReactFlow, {
 import PlanCard from './PlanCard';
 import buildFlowGraph from '../../../../lib/flow';
 import { ExplainJson, PlanNode } from '../../../../types';
+import {DarkPaperFull} from '../../../../style-variables'
 
 type FlowNodeProps = NodeProps<{ plan: PlanNode }>;
 
@@ -29,12 +30,9 @@ const FlowNodeComponent = ({ data: { plan } }: FlowNodeProps) => (
   </div>
 );
 
-// React-flow must be inside a container that has width and height determined and "stands on it's own".
-// Height/width must be determined either here or somewhere on the ancestors. 
-const TreeContainer = styled.div`
-  width: 100%;
-  height: 100%; 
-`;
+const TreeContainer = styled(DarkPaperFull)`
+  flex:1;
+`
 
 interface PlanTreeProps {
   data: ExplainJson | undefined;
