@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import ReactFlow, {
   Background,
@@ -39,7 +39,7 @@ const TreeContainer = styled(DarkPaperFull)`
 interface PlanTreeProps {
   data: ExplainJson | undefined;
 }
-
+// TODO: spinner for large trees
 const PlanTree = ({ data }: PlanTreeProps) => {
   if (!data) return null;
   return (
@@ -51,6 +51,7 @@ const PlanTree = ({ data }: PlanTreeProps) => {
           nodesConnectable={false}
           nodeTypes={{ flowNode: FlowNodeComponent }}
           minZoom={0.1}
+          onLoad={(instance) => instance.fitView({ padding: 0.2 })}
         >
           <Background />
         </ReactFlow>
