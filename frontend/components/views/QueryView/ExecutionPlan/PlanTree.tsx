@@ -53,7 +53,7 @@ const PlanTree = ({ data }: PlanTreeProps) => {
           minZoom={0.1}
           onLoad={(instance) => instance.fitView({ padding: 0.2 })}
         >
-          <Background />
+          <Background gap={32} />
         </ReactFlow>
         <FlowControls />
       </ReactFlowProvider>
