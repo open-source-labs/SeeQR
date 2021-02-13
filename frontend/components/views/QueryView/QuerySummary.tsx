@@ -31,7 +31,7 @@ const QuerySummary = ({ executionPlan }: QuerySummaryProps) => {
         <TableBody>
           <TableRow>
             {Object.entries(summaryData).map(([property, value]) => (
-              <StyledTableCell align="center">
+              <StyledTableCell align="center" key={property}>
                 <strong>{`${property}: `}</strong>
                 {value}
               </StyledTableCell>
