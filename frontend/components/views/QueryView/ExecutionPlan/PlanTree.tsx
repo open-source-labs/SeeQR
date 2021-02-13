@@ -85,4 +85,4 @@ const PlanTree = ({ data }: PlanTreeProps) => {
   );
 };
 
-export default PlanTree;
+export default memo(PlanTree);
