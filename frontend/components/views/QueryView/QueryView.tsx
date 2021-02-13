@@ -131,6 +131,15 @@ const QueryView = ({
     if (!localQuery.label.trim()) {
       sendFeedback({type: 'info', message: 'Queries without a label will run but won\'t be saved'})
     }
+
+    // Select Db from  query. Necessary because backend doesn't take db sent in
+    // this event into consideration when running query.
+    // TODO: extract this selection logic into module so it can be reused in other components
+    // TODO: there could be a race condition with 'execute-query-tracked' executing before 'change-db-.
+    setSelectedDb(localQuery.db)
+    ipcRenderer.send('change-db', localQuery.db);
+    ipcRenderer.send('return-db-list', localQuery.db);
+
     // request backend to run query
     ipcRenderer.send('execute-query-tracked', {
       queryLabel: localQuery.label.trim(),

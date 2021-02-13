@@ -1,10 +1,14 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { spawn } = require('child_process');
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+const webpack = require('webpack');
+
+const isDevelopment = process.env.NODE_ENV !== 'production';
 
 module.exports = {
   entry: './frontend/index.tsx',
-  mode: process.env.NODE_ENV,
+  mode: isDevelopment ? 'development' : 'production',
   devtool: 'source-map',
   output: {
     filename: 'bundle.js',
@@ -42,6 +46,7 @@ module.exports = {
           loader: 'babel-loader',
           options: {
             presets: ['@babel/preset-env', '@babel/preset-react'],
+            plugins: [isDevelopment && require.resolve('react-refresh/babel')],
           },
         },
       },
@@ -72,10 +77,10 @@ module.exports = {
             loader: 'file-loader',
             options: {
               name: '[name].[ext]',
-              outputPath: 'fonts/'
-            }
-          }
-        ]
+              outputPath: 'fonts/',
+            },
+          },
+        ],
       },
     ],
   },
@@ -99,7 +104,7 @@ module.exports = {
     contentBase: path.resolve(__dirname, '/dist/'),
     host: 'localhost',
     port: '8080',
-    hot: true,
+    // hot: true,
     compress: true,
     watchContentBase: true,
     watchOptions: {
@@ -111,7 +116,7 @@ module.exports = {
         env: process.env,
         stdio: 'inherit',
       })
-        .on('close', (code) => process.exit(0))
+        .on('close', () => process.exit(0))
         .on('error', (spawnError) => console.error(spawnError));
     },
   },
@@ -137,5 +142,6 @@ module.exports = {
         },
       },
     }),
+    isDevelopment && new ReactRefreshWebpackPlugin(),
   ],
 };

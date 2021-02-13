@@ -1,12 +1,266 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
+import styled from 'styled-components';
+import Stepper from '@material-ui/core/Stepper';
+import Step from '@material-ui/core/Step';
+import StepButton from '@material-ui/core/StepButton';
+import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
+// import BarChartIcon from '@material-ui/icons/BarChart';
+import logo from '../../../assets/logo/seeqr_dock.png';
 
 interface QuickStartViewProps {
   show: boolean;
 }
 
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      width: '100%',
+    },
+    button: {
+      marginRight: theme.spacing(1),
+    },
+    backButton: {
+      marginRight: theme.spacing(1),
+    },
+    completed: {
+      display: 'inline-block',
+    },
+    instructions: {
+      marginTop: theme.spacing(1),
+      marginBottom: theme.spacing(1),
+    },
+  })
+);
+
+const PageContainer = styled.a`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+const StyledStepper = styled(Stepper)`
+  margin: 100px;
+  background: transparent;
+`;
+
+function getSteps() {
+  return [
+    'Import a Database',
+    'Go into the Queries Tab',
+    'Create New Queries',
+    'Check the Checkbox to Compare Queries',
+    `Select the Chart Icon to view Comparisons`,
+  ];
+}
+
+function getStepContent(step: number) {
+  switch (step) {
+    case 0:
+      return 'Step 1: To import a atabase, select the + icon in the sidebar. A modal will appear where you can enter a database name. Click the green "Import File" button and select a .sql file.';
+    case 1:
+      return 'Step 2: To go into the queries tab, select the "QUERIES" tab in the sidebar.';
+    case 2:
+      return 'Step 3: To create new queries, type in a label name and type in the query in the area below. Click the "RUN QUERY" button to execute. ';
+    case 3:
+      return 'Step 4: To compare queries, check the checkboxs in the sidebar of the specific queries.';
+    case 4:
+      return 'Step 5: Select the Chart Icon to view Comparisons';
+    default:
+      return 'Unknown step';
+  }
+}
+
+// const QuickStartView = ({ show }: QuickStartViewProps) => {
+//   if (!show) return null;
+//   return <>Quick Start</>;
+// };
+
 const QuickStartView = ({ show }: QuickStartViewProps) => {
   if (!show) return null;
-  return <>Quick Start</>;
+  const classes = useStyles();
+  const [activeStep, setActiveStep] = useState(0);
+  const [completed, setCompleted] = useState(new Set<number>());
+  const [skipped, setSkipped] = useState(new Set<number>());
+  const steps = getSteps();
+
+  const totalSteps = () => getSteps().length;
+
+  const isStepOptional = (step: number) => step === 1;
+
+  const handleSkip = () => {
+    if (!isStepOptional(activeStep)) {
+      // You probably want to guard against something like this
+      // it should never occur unless someone's actively trying to break something.
+      throw new Error("You can't skip a step that isn't optional.");
+    }
+
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    setSkipped((prevSkipped) => {
+      const newSkipped = new Set(prevSkipped.values());
+      newSkipped.add(activeStep);
+      return newSkipped;
+    });
+  };
+
+  const skippedSteps = () => skipped.size;
+
+  const completedSteps = () => completed.size;
+
+  const allStepsCompleted = () =>
+    completedSteps() === totalSteps() - skippedSteps();
+
+  const isLastStep = () => activeStep === totalSteps() - 1;
+
+  const handleNext = () => {
+    const newActiveStep =
+      isLastStep() && !allStepsCompleted()
+        ? // It's the last step, but not all steps have been completed
+          // find the first step that has been completed
+          steps.findIndex((step, i) => !completed.has(i))
+        : activeStep + 1;
+
+    setActiveStep(newActiveStep);
+  };
+
+  const handleBack = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  };
+
+  const handleStep = (step: number) => () => {
+    setActiveStep(step);
+  };
+
+  const handleComplete = () => {
+    const newCompleted = new Set(completed);
+    newCompleted.add(activeStep);
+    setCompleted(newCompleted);
+
+    /**
+     * Sigh... it would be much nicer to replace the following if conditional with
+     * `if (!this.allStepsComplete())` however state is not set when we do this,
+     * thus we have to resort to not being very DRY.
+     */
+    if (completed.size !== totalSteps() - skippedSteps()) {
+      handleNext();
+    }
+  };
+
+  const handleReset = () => {
+    setActiveStep(0);
+    setCompleted(new Set<number>());
+    setSkipped(new Set<number>());
+  };
+
+  const isStepSkipped = (step: number) => skipped.has(step);
+
+  function isStepComplete(step: number) {
+    return completed.has(step);
+  }
+
+  return (
+    <div className={classes.root}>
+      <PageContainer>
+        <Typography align="center" variant="h1">
+          Welcome to SeeQr
+        </Typography>
+        <img src={logo} alt="Logo" width="300px" height="300px" />
+        <StyledStepper alternativeLabel nonLinear activeStep={activeStep}>
+          {steps.map((label, index) => {
+            const stepProps: { completed?: boolean } = {};
+            const buttonProps: { optional?: React.ReactNode } = {};
+            if (isStepOptional(index)) {
+              buttonProps.optional = (
+                <Typography variant="caption">Optional</Typography>
+              );
+            }
+            if (isStepSkipped(index)) {
+              stepProps.completed = false;
+            }
+            return (
+              <Step key={label} {...stepProps}>
+                <StepButton
+                  onClick={handleStep(index)}
+                  completed={isStepComplete(index)}
+                  {...buttonProps}
+                >
+                  {label}
+                </StepButton>
+              </Step>
+            );
+          })}
+        </StyledStepper>
+        <div>
+          {allStepsCompleted() ? (
+            <div>
+              <Typography className={classes.instructions}>
+                All steps completed - you&apos;re finished
+              </Typography>
+              <Button onClick={handleReset}>Reset</Button>
+            </div>
+          ) : (
+            <>
+              <div>
+                <Typography align="center" className={classes.instructions}>
+                  {getStepContent(activeStep)}
+                </Typography>
+                <div>
+                  <Button
+                    disabled={activeStep === 0}
+                    onClick={handleBack}
+                    className={classes.button}
+                  >
+                    Back
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleNext}
+                    className={classes.button}
+                  >
+                    Next
+                  </Button>
+                  {isStepOptional(activeStep) && !completed.has(activeStep) && (
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={handleSkip}
+                      className={classes.button}
+                    >
+                      Skip
+                    </Button>
+                  )}
+                  {activeStep !== steps.length &&
+                    (completed.has(activeStep) ? (
+                      <Typography
+                        variant="caption"
+                        className={classes.completed}
+                      >
+                        Step
+                        {activeStep + 1}
+                        already completed
+                      </Typography>
+                    ) : (
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handleComplete}
+                      >
+                        {completedSteps() === totalSteps() - 1
+                          ? 'Finish'
+                          : 'Complete Step'}
+                      </Button>
+                    ))}
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      </PageContainer>
+    </div>
+  );
 };
 
 export default QuickStartView;
