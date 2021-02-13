@@ -12,7 +12,7 @@ import {
 
 import TabSelector from './TabSelector';
 import QueryResults from './QueryResults';
-import QueryPlan from './QueryPlan';
+import PlanTree from './ExecutionPlan/PlanTree'
 
 const tableWidth = `calc(100vw - (${defaultMargin} * 3) - ${sidebarWidth})`;
 
@@ -42,7 +42,7 @@ const QueryTabs = ({ results, executionPlan }: QueryTabsProps) => {
       <StyledPaper>
         {selectedTab === 'Results' ? <QueryResults results={results} /> : null}
         {selectedTab === 'Execution Plan' ? (
-          <QueryPlan executionPlan={executionPlan} />
+          <PlanTree data={executionPlan} />
         ) : null}
       </StyledPaper>
     </div>

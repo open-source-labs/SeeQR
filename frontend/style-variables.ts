@@ -55,6 +55,10 @@ export const hoverColor = greenPrimary;
 export const sidebarWidth = '300px';
 export const defaultMargin = '20px';
 
+// Execution Tree
+export const planNodeWidth = '200px'
+export const planNodeHeight = '100px'
+
 // theme to override Mui defaults
 export const MuiTheme = createMuiTheme({
   palette: {
