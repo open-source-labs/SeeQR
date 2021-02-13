@@ -31,19 +31,30 @@ const FlowNodeComponent = ({ data: { plan } }: FlowNodeProps) => (
   </div>
 );
 
-const TreeContainer = styled(DarkPaperFull)`
+// prettier-ignore
+const TreeContainer = styled(DarkPaperFull)<{$fullscreen: boolean}>`
+${({$fullscreen}) => $fullscreen ? `
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1200;
+  width: 100vw;
+  height: 100vh;
+` : `
   position: relative;
   flex: 1;
-`;
+`}`;
 
 interface PlanTreeProps {
   data: ExplainJson | undefined;
 }
 // TODO: spinner for large trees
 const PlanTree = ({ data }: PlanTreeProps) => {
+  const [isFullscreen, setFullscreen] = useState(false);
+
   if (!data) return null;
   return (
-    <TreeContainer>
+    <TreeContainer $fullscreen={isFullscreen}>
       <ReactFlowProvider>
         <ReactFlow
           elements={buildFlowGraph(data.Plan, 'flowNode', 'smoothstep')}
@@ -55,7 +66,7 @@ const PlanTree = ({ data }: PlanTreeProps) => {
         >
           <Background gap={32} />
         </ReactFlow>
-        <FlowControls />
+        <FlowControls toggleFullscreen={() => setFullscreen(!isFullscreen)} fullscreen={isFullscreen} />
       </ReactFlowProvider>
     </TreeContainer>
   );
