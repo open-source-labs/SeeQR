@@ -10,15 +10,15 @@ const ViewBtnGroup = styled(ButtonGroup)`
 `;
 
 interface ViewButtonProps {
-  isSelected: boolean;
+  $isSelected: boolean;
 }
 
 const ViewButton = styled(Button)`
-  background: ${({ isSelected }: ViewButtonProps) =>
-    isSelected ? selectedColor : textColor};
+  background: ${({ $isSelected }: ViewButtonProps) =>
+    $isSelected ? selectedColor : textColor};
   &:hover {
-    background: ${({ isSelected }: ViewButtonProps) =>
-      isSelected ? selectedColor : textColor};
+    background: ${({ $isSelected }: ViewButtonProps) =>
+      $isSelected ? selectedColor : textColor};
   }
 `;
 
@@ -31,13 +31,13 @@ const ViewSelector = ({ selectedView, setSelectedView }: ViewSelectorProps) => (
   <ViewBtnGroup variant="contained" fullWidth>
     <ViewButton
       onClick={() => setSelectedView('queryView')}
-      isSelected={selectedView === 'queryView' || selectedView === 'compareView'}
+      $isSelected={selectedView === 'queryView' || selectedView === 'compareView'}
     >
       Queries
     </ViewButton>
     <ViewButton
       onClick={() => setSelectedView('dbView')}
-      isSelected={selectedView === 'dbView'}
+      $isSelected={selectedView === 'dbView'}
     >
       Databases
     </ViewButton>
