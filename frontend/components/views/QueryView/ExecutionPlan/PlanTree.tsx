@@ -70,7 +70,6 @@ interface PlanTreeProps {
 // TODO: spinner for large trees
 const PlanTree = ({ data }: PlanTreeProps) => {
   const [isFullscreen, setFullscreen] = useState(false);
-
   if (!data) return null;
   return (
     <TreeContainer $fullscreen={isFullscreen}>

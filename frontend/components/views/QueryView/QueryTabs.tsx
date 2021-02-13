@@ -1,6 +1,6 @@
 // TODO: Add Separator to divide top to bottom
 
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import styled from 'styled-components';
 import { QueryData, ValidTabs } from '../../../types';
 
@@ -22,14 +22,16 @@ const ToggleDisplay = styled.div<{ $isSelected: boolean }>`
   table of results */
 
   /* define height to prevent react-flow warnings. Ignored due to flex:1 0 */
-  ${({ $isSelected }) => ($isSelected ? '' : `
+  ${({ $isSelected }) =>
+    $isSelected
+      ? ''
+      : `
     position:fixed;
     visibility: hidden;
     width:1px;
     height: 1px;
     z-index: -1
-  `)}
-  
+  `}
 `;
 
 interface QueryTabsProps {
@@ -39,7 +41,7 @@ interface QueryTabsProps {
 
 const QueryTabs = ({ results, executionPlan }: QueryTabsProps) => {
   const [selectedTab, setSelectedTab] = useState<ValidTabs>('Results');
-
+  console.log('rerender tab');
   if (!results && !executionPlan) return null;
   return (
     <>
@@ -57,4 +59,4 @@ const QueryTabs = ({ results, executionPlan }: QueryTabsProps) => {
   );
 };
 
-export default QueryTabs;
+export default memo(QueryTabs);

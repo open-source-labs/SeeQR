@@ -45,7 +45,7 @@ const QueryViewContainer = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
-`
+`;
 
 interface QueryViewProps {
   query?: AppState['workingQuery'];
@@ -65,10 +65,12 @@ const QueryView = ({
   show,
 }: QueryViewProps) => {
   const [databases, setDatabases] = useState<string[]>([]);
+  const [sqlLocal, setSqlLocal] = useState('');
 
   const defaultQuery: QueryData = {
     label: '',
     db: selectedDb,
+    // sqlString value is not used
     sqlString: '',
   };
 
@@ -123,28 +125,29 @@ const QueryView = ({
     ipcRenderer.send('return-db-list', newDb);
   };
   const onSqlChange = (newSql: string) => {
-    // TODO: this triggers a rerender of the entire query view  every stroke
-    // because App's workingQuery changes ref
-    setQuery({ ...localQuery, sqlString: newSql });
+    setSqlLocal(newSql);
   };
 
   const onRun = () => {
     if (!localQuery.label.trim()) {
-      sendFeedback({type: 'info', message: 'Queries without a label will run but won\'t be saved'})
+      sendFeedback({
+        type: 'info',
+        message: "Queries without a label will run but won't be saved",
+      });
     }
 
     // Select Db from  query. Necessary because backend doesn't take db sent in
     // this event into consideration when running query.
     // TODO: extract this selection logic into module so it can be reused in other components
     // TODO: there could be a race condition with 'execute-query-tracked' executing before 'change-db-.
-    setSelectedDb(localQuery.db)
+    setSelectedDb(localQuery.db);
     ipcRenderer.send('change-db', localQuery.db);
     ipcRenderer.send('return-db-list', localQuery.db);
 
     // request backend to run query
     ipcRenderer.send('execute-query-tracked', {
       queryLabel: localQuery.label.trim(),
-      queryString: localQuery.sqlString,
+      queryString: sqlLocal,
       queryCurrentSchema: localQuery.db,
     });
   };
@@ -153,10 +156,7 @@ const QueryView = ({
   return (
     <QueryViewContainer>
       <TopRow>
-        <QueryLabel
-          label={localQuery.label}
-          onChange={onLabelChange}
-        />
+        <QueryLabel label={localQuery.label} onChange={onLabelChange} />
         <QueryDb
           db={localQuery.db}
           onChange={onDbChange}
@@ -168,7 +168,7 @@ const QueryView = ({
         />
       </TopRow>
       <QuerySqlInput
-        sql={localQuery?.sqlString ?? ''}
+        sql={sqlLocal ?? ''}
         onChange={onSqlChange}
         runQuery={onRun}
       />
