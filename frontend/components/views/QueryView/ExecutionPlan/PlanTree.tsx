@@ -49,6 +49,7 @@ const PlanTree = ({ data }: PlanTreeProps) => {
           nodesDraggable={false}
           nodesConnectable={false}
           nodeTypes={{ flowNode: FlowNodeComponent }}
+          minZoom={0.1}
         >
           <Background />
         </ReactFlow>
