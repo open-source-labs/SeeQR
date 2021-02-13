@@ -24,8 +24,11 @@
  * Considering referring our GitHub page
  */
 
+export {};
 // if process platform is darwin, operating on mac
 const isMac = process.platform === 'darwin';
+
+// const { app, shell } = require('electron');
 
 const { app, shell } = require('electron');
 

@@ -23,6 +23,14 @@ require('./channels');
     import './channels';
  */
 
+/**
+ * Required to run package-mac and package-win builds
+ */
+if (process.env.NODE_ENV === 'production' && process.platform === 'darwin') {
+  const fixPath = require('fix-path');
+
+  fixPath();
+}
 // Keep a global reference of the window objects, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow: any;
@@ -154,18 +162,3 @@ app.on('activate', () => {
     createWindow();
   }
 });
-
-/**
- * **********************************************************
- *********** PACKAGE ELECTRON APP FOR DEPLOYMENT ***********
- ***********************************************************
- */
-
-// Uncomment to package electron app. Ensures path is correct for MacOS within inherited shell.
-// const fixPath = require('fix-path');
-// fixPath();
-
-/**
- * main.ts is the start file for electron, why are we exporting it?????
- */
-export default mainWindow;
