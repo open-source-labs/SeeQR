@@ -24,7 +24,7 @@ const DbEntry = ({ db, isSelected, select, duplicate }: DbEntryProps) => {
   }
   
   return (
-    <SidebarListItem button customSelected={isSelected} onClick={() => select(db)}>
+    <SidebarListItem button $customSelected={isSelected} onClick={() => select(db)}>
       <ListItemText primary={db} />
       <ListItemSecondaryAction>
         <Tooltip title="Copy Database">

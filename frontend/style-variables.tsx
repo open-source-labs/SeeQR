@@ -96,22 +96,23 @@ export const MuiTheme = createMuiTheme({
   },
 });
 
-interface SidebarListItemProps {
-  customSelected: boolean;
-}
 
 export const SidebarList = styled(List)`
   padding: 0;
   width: 100%;
 `;
 
+interface SidebarListItemProps {
+  $customSelected: boolean;
+}
+
 /**
  * Sidebar List item. Designed for dark bg.
- * Takes boolean in customSelected prop to style selected item
+ * Takes boolean in $customSelected prop to style selected item
  */
 export const SidebarListItem = styled(ListItem)`
-  color: ${({ customSelected }: SidebarListItemProps) =>
-    customSelected ? selectedColor : textColor};
+  color: ${({ $customSelected }: SidebarListItemProps) =>
+    $customSelected ? selectedColor : textColor};
   background: transparent;
   border-bottom: 1px solid transparent;
   border-top: 1px solid transparent;
