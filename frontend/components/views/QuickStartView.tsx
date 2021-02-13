@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepButton from '@material-ui/core/StepButton';
+import StepLabel from '@material-ui/core/StepLabel';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 // import BarChartIcon from '@material-ui/icons/BarChart';
@@ -29,7 +30,16 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     instructions: {
       marginTop: theme.spacing(1),
-      marginBottom: theme.spacing(1),
+      marginBottom: theme.spacing(5),
+    },
+    image: {
+      marginTop: theme.spacing(8),
+    },
+    title: {
+      marginTop: theme.spacing(4),
+    },
+    stepper: {
+      fontSize: '50px',
     },
   })
 );
@@ -38,45 +48,91 @@ const PageContainer = styled.a`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-evenly;
 `;
 
 const StyledStepper = styled(Stepper)`
-  margin: 100px;
+  margin: 40px 0px 20px 0px;
   background: transparent;
 `;
 
+const StyledStepLabel = styled(StepLabel)`
+  font-size: 100px;
+  width: 20vw;
+`;
+
 function getSteps() {
-  return [
-    'Import a Database',
-    'Go into the Queries Tab',
-    'Create New Queries',
-    'Check the Checkbox to Compare Queries',
-    `Select the Chart Icon to view Comparisons`,
-  ];
+  return ['Import a Database', 'Create New Queries', 'Compare Queries'];
 }
 
 function getStepContent(step: number) {
   switch (step) {
     case 0:
-      return 'Step 1: To import a atabase, select the + icon in the sidebar. A modal will appear where you can enter a database name. Click the green "Import File" button and select a .sql file.';
+      return (
+        <Typography>
+          <strong>Step 1:</strong>
+          <br />
+          To import a database, select the + icon in the sidebar.
+          <br />
+          A modal will appear where you can enter a database name.
+          <br />
+          Click the green "Import File" button and select a .sql file.
+          <br />
+          The imported database will now appear on the sidebar.
+          <br />
+          You can select a database to view table information.
+          <br />
+          To view each table, click the name of the table in the top tabs bar.
+          <br />
+          The chart will include column names, types, and if they are nullable.
+        </Typography>
+      );
     case 1:
-      return 'Step 2: To go into the queries tab, select the "QUERIES" tab in the sidebar.';
+      return (
+        <Typography>
+          <strong>Step 2:</strong>
+          <br />
+          Select which database you want to create a query in.
+          <br />
+          Go into the queries tab by selecting the "QUERIES" tab in the sidebar.
+          <br />
+          Select the + icon in the sidebar and give the query a label on the
+          rightside.
+          <br />
+          Optionally: You can change the database to create the query in from
+          the "Database" dropdown.
+          <br />
+          Write the query script in the designated body. <br />
+          Use the "Auto-Format" button on the top-left to automatically format
+          the query.
+          <br />
+          Select the "RUN QUERY" button to execute.
+          <br />
+          The planning time, execution time, and actual total time now show.
+          <br />
+          The results from the query are in the table below.
+          <br />
+          Select the "Execution Plan" button to view the analysis of running the
+          query.
+        </Typography>
+      );
     case 2:
-      return 'Step 3: To create new queries, type in a label name and type in the query in the area below. Click the "RUN QUERY" button to execute. ';
-    case 3:
-      return 'Step 4: To compare queries, check the checkboxs in the sidebar of the specific queries.';
-    case 4:
-      return 'Step 5: Select the Chart Icon to view Comparisons';
+      return (
+        <Typography>
+          <strong>Step 3:</strong>
+          <br />
+          To compare queries, select the checkbox of the queries you would like
+          to compare.
+          <br />
+          Then select the Chart Icon at the top of the sidebar.
+          <br />
+          Feel free to continually select and deselect queries to compare.
+        </Typography>
+      );
     default:
       return 'Unknown step';
   }
 }
-
-// const QuickStartView = ({ show }: QuickStartViewProps) => {
-//   if (!show) return null;
-//   return <>Quick Start</>;
-// };
 
 const QuickStartView = ({ show }: QuickStartViewProps) => {
   if (!show) return null;
@@ -88,7 +144,7 @@ const QuickStartView = ({ show }: QuickStartViewProps) => {
 
   const totalSteps = () => getSteps().length;
 
-  const isStepOptional = (step: number) => step === 1;
+  const isStepOptional = (step: number) => step === null;
 
   const handleSkip = () => {
     if (!isStepOptional(activeStep)) {
@@ -163,10 +219,16 @@ const QuickStartView = ({ show }: QuickStartViewProps) => {
   return (
     <div className={classes.root}>
       <PageContainer>
-        <Typography align="center" variant="h1">
+        <Typography className={classes.title} align="center" variant="h1">
           Welcome to SeeQr
         </Typography>
-        <img src={logo} alt="Logo" width="300px" height="300px" />
+        <img
+          className={classes.image}
+          src={logo}
+          alt="Logo"
+          width="300px"
+          height="300px"
+        />
         <StyledStepper alternativeLabel nonLinear activeStep={activeStep}>
           {steps.map((label, index) => {
             const stepProps: { completed?: boolean } = {};
@@ -186,7 +248,9 @@ const QuickStartView = ({ show }: QuickStartViewProps) => {
                   completed={isStepComplete(index)}
                   {...buttonProps}
                 >
-                  {label}
+                  <StyledStepLabel className={classes.stepper}>
+                    {label}
+                  </StyledStepLabel>
                 </StepButton>
               </Step>
             );
@@ -196,7 +260,7 @@ const QuickStartView = ({ show }: QuickStartViewProps) => {
           {allStepsCompleted() ? (
             <div>
               <Typography className={classes.instructions}>
-                All steps completed - you&apos;re finished
+                All steps completed - you&apos;re ready to use SeeQr!
               </Typography>
               <Button onClick={handleReset}>Reset</Button>
             </div>
@@ -239,7 +303,7 @@ const QuickStartView = ({ show }: QuickStartViewProps) => {
                         className={classes.completed}
                       >
                         Step
-                        {activeStep + 1}
+                        {` ${activeStep + 1} `}
                         already completed
                       </Typography>
                     ) : (
