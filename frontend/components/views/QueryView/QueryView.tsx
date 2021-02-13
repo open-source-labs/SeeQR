@@ -123,7 +123,8 @@ const QueryView = ({
     ipcRenderer.send('return-db-list', newDb);
   };
   const onSqlChange = (newSql: string) => {
-    // TODO: this triggers a rerender of the entire query view on every stroke because App's workingQuery changes ref
+    // TODO: this triggers a rerender of the entire query view  every stroke
+    // because App's workingQuery changes ref
     setQuery({ ...localQuery, sqlString: newSql });
   };
 

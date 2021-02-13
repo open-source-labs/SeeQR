@@ -54,6 +54,7 @@
     "react-loading": "^2.0.3",
     "react-router-dom": "^5.2.0",
     "sass": "^1.26.10",
+    "sql-formatter": "^4.0.2",
     "styled-components": "^5.2.1"
   },
   "devDependencies": {
