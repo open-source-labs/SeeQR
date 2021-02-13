@@ -6,12 +6,16 @@ import {
   TableContainer,
   TableRow,
 } from '@material-ui/core';
-import styled from 'styled-components'
+import styled from 'styled-components';
 import { QueryData } from '../../../types';
 
+const FlexChild = styled(TableContainer)`
+  flex: 0 0 auto;
+`;
+
 const StyledTableCell = styled(TableCell)`
-border:none;
-`
+  border: none;
+`;
 
 interface QuerySummaryProps {
   executionPlan: QueryData['executionPlan'];
@@ -26,7 +30,7 @@ const QuerySummary = ({ executionPlan }: QuerySummaryProps) => {
 
   if (!executionPlan) return null;
   return (
-    <TableContainer>
+    <FlexChild>
       <Table size="small">
         <TableBody>
           <TableRow>
@@ -39,7 +43,7 @@ const QuerySummary = ({ executionPlan }: QuerySummaryProps) => {
           </TableRow>
         </TableBody>
       </Table>
-    </TableContainer>
+    </FlexChild>
   );
 };
 
