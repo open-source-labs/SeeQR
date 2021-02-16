@@ -38,9 +38,8 @@ const DbView = ({ selectedDb, show }: DbViewProps) => {
   if (!show) return null;
   return (
     <>
-      {/* Casting to DatabaseInfo since selectedDb will always be found in list of databases */}
       <DatabaseDetails
-        db={databases.find((db) => db.db_name === selectedDb) as DatabaseInfo}
+        db={databases.find((db) => db.db_name === selectedDb)}
       />
       <br />
       <TablesSidebar
