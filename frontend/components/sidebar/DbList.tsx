@@ -57,6 +57,7 @@ const DbList = ({ selectedDb, setSelectedDb, show }: DbListProps) => {
   };
 
   const selectHandler = (dbName: string) => {
+    if (dbName === selectedDb) return 
     ipcRenderer
       .invoke('select-db', dbName)
       .then(() => {
@@ -96,7 +97,6 @@ const DbList = ({ selectedDb, setSelectedDb, show }: DbListProps) => {
           databases={databases}
         />
       </SidebarList>
-      {/* Validate Db name doesnt exist */}
       <AddNewDbModal
         open={openAdd}
         onClose={handleCloseAdd}
