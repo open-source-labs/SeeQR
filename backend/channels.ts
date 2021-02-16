@@ -16,11 +16,9 @@ const {
 
 // *************************************************** IPC Event Listeners *************************************************** //
 ipcMain.on('return-db-list', (event) => {
-  // event.sender.send('async-started'); // send notice to the frontend that async process has begun
   db.getLists()
     .then((data) => {
       event.sender.send('db-lists', data);
-      // event.sender.send('async-complete');
     })
     .catch((err) => {
       const feedback = {
@@ -36,6 +34,10 @@ ipcMain.handle('select-db', async (event, dbName: string): Promise<void> => {
   event.sender.send('async-started');
   try {
     await db.connectToDB(dbName);
+
+    // send updated db info
+    const dbsAndTables = await db.getLists();
+    event.sender.send('db-lists', dbsAndTables);
   } finally {
     event.sender.send('async-complete');
   }

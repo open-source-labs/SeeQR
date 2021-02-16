@@ -122,7 +122,6 @@ const QueryView = ({
       .then(() => {
         setQuery({ ...localQuery, db: newDb });
         setSelectedDb(newDb);
-        ipcRenderer.send('return-db-list', newDb);
       })
 
       .catch(() =>

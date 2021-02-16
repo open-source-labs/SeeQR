@@ -62,7 +62,6 @@ const DbList = ({ selectedDb, setSelectedDb, show }: DbListProps) => {
       .invoke('select-db', dbName)
       .then(() => {
         setSelectedDb(dbName);
-        ipcRenderer.send('return-db-list', dbName);
       })
       .catch(() =>
         sendFeedback({
