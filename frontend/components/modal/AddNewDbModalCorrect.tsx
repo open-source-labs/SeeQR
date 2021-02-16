@@ -74,8 +74,8 @@ const AddNewDbModal = ({ open, onClose, databases }: AddNewDbModalProps) => {
     dialog
       .showOpenDialog({
         properties: ['openFile'],
-        filters: [{ name: 'Custom File Type', extensions: ['sql'] }],
-        message: 'Please upload .sql database file',
+        filters: [{ name: 'Custom File Type', extensions: ['sql', 'tar'] }],
+        message: 'Please upload .sql or .tar database file',
       })
       .then((result: object) => {
         const filePathArr = result['filePaths'];

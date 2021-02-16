@@ -31,7 +31,7 @@ helperFunctions = {
 
   // import TAR file into new DB created
   runTARFunc: (dbName, file) =>
-    `pg_restore -U postgres -d ${dbName} -f "${file}"`,
+    `pg_restore -U postgres -d ${dbName} "${file}"`,
 
   // make a full copy of the schema
   runFullCopyFunc: (dbCopyName, file) => {
