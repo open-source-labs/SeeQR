@@ -12,7 +12,10 @@
   "scripts": {
     "build": "cross-env NODE_ENV=production tsc && cross-env NODE_ENV=production webpack",
     "start": "cross-env NODE_ENV=production electron --noDevServer .",
-    "dev": "tsc && cross-env NODE_ENV=development webpack-dev-server --hot",
+    "dev": "run-p tsc-dev electron-dev webpack-dev",
+    "webpack-dev": "cross-env NODE_ENV=development webpack-dev-server --hot",
+    "electron-dev": "nodemon --watch tsCompiled/backend --exec \"npx cross-env NODE_ENV=development electron .\"",
+    "tsc-dev": "tsc --watch",
     "test": "jest --verbose",
     "win-build-apps": "sudo npx electron-packager . SeeQR --out=appBuilds --platform=win32 --platform=darwin"
   },
@@ -97,6 +100,7 @@
     "jest": "^26.4.2",
     "mini-css-extract-plugin": "^0.9.0",
     "nodemon": "^2.0.4",
+    "npm-run-all": "^4.1.5",
     "postcss-loader": "^3.0.0",
     "prettier": "^2.2.1",
     "react-refresh": "^0.9.0",

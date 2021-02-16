@@ -115,15 +115,6 @@ module.exports = {
     watchOptions: {
       ignored: /node_modules/,
     },
-    before() {
-      spawn('electron', ['.', 'dev'], {
-        shell: true,
-        env: process.env,
-        stdio: 'inherit',
-      })
-        .on('close', () => process.exit(0))
-        .on('error', (spawnError) => console.error(spawnError));
-    },
   },
   plugins: [
     new HtmlWebpackPlugin({
