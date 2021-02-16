@@ -36,7 +36,8 @@ helperFunctions = {
   // make a full copy of the schema
   runFullCopyFunc: (dbCopyName, file) => {
     const newFile = file[0];
-    return `pg_dump -U postgres -d ${dbCopyName} -f "${newFile}"`;
+    return `${process.cwd} // ${__dirname}`;
+    // return `pg_dump -U postgres -d ${dbCopyName} -f "${newFile}"`;
   },
 
   // make a hollow copy of the schema
