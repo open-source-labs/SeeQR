@@ -32,29 +32,25 @@ ipcMain.on('return-db-list', (event) => {
 });
 
 // Listen for database changes sent from the renderer upon changing tabs.
-ipcMain.handle('select-db', (event, dbName: string) => db.connectToDB(dbName)) 
+ipcMain.handle('select-db', (event, dbName: string) => db.connectToDB(dbName));
 
 // Deletes the dbName that is passed from the front end and returns the DB List
-ipcMain.on('drop-db', (event, dbName: string, currDB: Boolean) => {
+ipcMain.handle('drop-db', async (event, dbName: string, currDB: boolean) => {
   event.sender.send('async-started');
-  const feedback: { type?: string; message?: string } = {};
-  const dropDBScript = dropDBFunc(dbName);
-  if (currDB) {
-    db.closePool();
-    db.changeDB();
+  try {
+    // if deleting currently connected db, disconnect from db
+    if (currDB) await db.connectToDB('');
+
+    // drop db
+    const dropDBScript = dropDBFunc(dbName);
+    await db.query(dropDBScript);
+
+    // send updated db info
+    const dbsAndTables = await db.getLists();
+    event.sender.send('db-lists', dbsAndTables);
+  } finally {
+    event.sender.send('async-complete');
   }
-  db.query(dropDBScript)
-    .catch((err) => {
-      feedback.type = 'error';
-      feedback.message = err;
-    })
-    .finally(() => {
-      db.getLists().then((data) => {
-        event.sender.send('db-lists', data);
-        event.sender.send('feedback', feedback);
-        event.sender.send('async-complete');
-      });
-    });
 });
 
 /**

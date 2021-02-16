@@ -8,6 +8,7 @@ import {
 import DeleteIcon from '@material-ui/icons/Delete';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import { SidebarListItem } from '../../style-variables';
+import { sendFeedback } from '../../lib/utils';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -19,8 +20,14 @@ interface DbEntryProps {
 }
 const DbEntry = ({ db, isSelected, select, duplicate }: DbEntryProps) => {
   const handleDelete = () => {
-    ipcRenderer.send('drop-db', db, isSelected);
-    if (isSelected) select('');
+    ipcRenderer
+      .invoke('drop-db', db, isSelected)
+      .then(() => {
+        if (isSelected) select('');
+      })
+      .catch(() =>
+        sendFeedback({ type: 'error', message: `Failed to delete ${db}` })
+      );
   };
 
   return (
