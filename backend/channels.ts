@@ -180,7 +180,7 @@ interface QueryType {
   queryData: string;
   queryStatistics: string;
 }
-ipcMain.on('execute-query-tracked', (event, data: QueryType) => {
+ipcMain.on('execute-query-tracked', async (event, data: QueryType) => {
   // send notice to front end that query has been started
   event.sender.send('async-started');
 
@@ -208,82 +208,114 @@ ipcMain.on('execute-query-tracked', (event, data: QueryType) => {
   //   mass VARCHAR
   // )
   const feedback: { type?: string; message?: string } = {};
-  db.query(`BEGIN; EXPLAIN (FORMAT JSON, ANALYZE) ${queryString}; ROLLBACK;`)
-    .then((queryStats) => {
-      frontendData.queryStatistics = queryStats[1].rows;
-    })
-    .catch((err) => {
-      feedback.type = 'error';
-      feedback.message = `Cannot run EXPLAIN. \n ${err}`;
-    })
-    .finally(() => {
-      db.query(queryString)
-        .then((queryData) => {
-          frontendData.queryData = queryData.rows;
-          if (!feedback.type) {
-            feedback.type = 'success';
-            feedback.message = 'Success!';
-          }
-        })
-        .catch((err) => {
-          feedback.type = 'error';
-          feedback.message = err;
-        })
-        .finally(async () => {
-          // (function getListAsync() {
-          const listObj = await db.getLists();
-          // frontendData.lists = listObj;
-          event.sender.send('db-lists', listObj);
-          event.sender.send('return-execute-query', frontendData);
-          event.sender.send('feedback', feedback);
-          event.sender.send('async-complete');
-        });
-    });
+  try {
+    const queryStats = await db.query(`BEGIN; EXPLAIN (FORMAT JSON, ANALYZE) ${queryLabel}; ROLLBACK;`)
+    frontendData.queryStatistics = queryStats[1].rows;
+    await db.query('Begin');
+    const secondReturnedData = await db.query(queryLabel);
+    const returnedData = await db.query(queryString);
+    console.log('secondReturned: ', secondReturnedData);
+    frontendData.queryData = returnedData.rows;
+    await db.query('Commit');
+  } catch (err) {
+    await db.query('Rollback');
+    console.log('rolling back');
+    feedback.type = 'error';
+    feedback.message = err;
+  }
+  const listObj = await db.getLists();
+  event.sender.send('db-lists', listObj);
+  event.sender.send('return-execute-query', frontendData);
+  event.sender.send('feedback', feedback);
+  event.sender.send('async-complete');
+
+  // db.query(`BEGIN; EXPLAIN (FORMAT JSON, ANALYZE) ${queryString}; ROLLBACK;`)
+  //   .then((queryStats) => {
+  //     frontendData.queryStatistics = queryStats[1].rows;
+  //   })
+  //   .catch((err) => {
+  //     feedback.type = 'error';
+  //     feedback.message = `Cannot run EXPLAIN. \n ${err}`;
+  //   })
+  //   .finally(() => {
+  //     db.query(queryString)
+  //       .then((queryData) => {
+  //         frontendData.queryData = queryData.rows;
+  //         if (!feedback.type) {
+  //           feedback.type = 'success';
+  //           feedback.message = 'Success!';
+  //         }
+  //       })
+  //       .catch((err) => {
+  //         feedback.type = 'error';
+  //         feedback.message = err;
+  //       })
+  //       .finally(async () => {
+  //         // (function getListAsync() {
+  //         const listObj = await db.getLists();
+  //         // frontendData.lists = listObj;
+  //         event.sender.send('db-lists', listObj);
+  //         event.sender.send('return-execute-query', frontendData);
+  //         console.log('frontend data: ', frontendData);
+  //         event.sender.send('feedback', feedback);
+  //         event.sender.send('async-complete');
+  //       });
+  //   });
 });
 
 interface dummyDataRequestType {
   schemaName: string;
   dummyData: {};
 }
+
 ipcMain.on('generate-dummy-data', (event: any, data: dummyDataRequestType) => {
+  console.log('data received: ', data);
   // send notice to front end that DD generation has been started
   event.sender.send('async-started');
-  let schemaLayout: any;
-  const dummyDataRequest: dummyDataRequestType = data; // { schemaName: 'hello', dummyData: { people: 1 } }
-  let tableMatricesArray: any;
-  let keyObject: any = 'Unresolved';
-
+  const dummyDataRequest: dummyDataRequestType = data;
   // Retrieves the Primary Keys and Foreign Keys for all the tables
-  //   tableName: { primaryKeyColumns: { _id: true }, foreignKeyColumns: { key: value, key: value} },
-  db.createKeyObject().then((result) => {
-    keyObject = result;
-    // Iterating over the passed in keyObject to remove the primaryKeyColumn and all foreignKeyColumns from table
-    // db.dropKeyColumns(keyObject).then(() => {
-    // db.addNewKeyColumns(keyObject).then(() => {
-    db.getSchemaLayout().then((schemaLayoutResult) => {
-      console.log('schemaLayout: ', schemaLayoutResult);
-      console.log('films layout: ', schemaLayoutResult.tables.films[0]);
-      console.log('films layout: ', schemaLayoutResult.tables.films[1]);
-      schemaLayout = schemaLayoutResult;
-      // generate the dummy data and save it into matrices associated with table names
-      tableMatricesArray = generateDummyData(
-        schemaLayout,
-        dummyDataRequest,
-        keyObject
-      );
-      // iterate through tableMatricesArray to write individual .csv files
-      for (const tableObject of tableMatricesArray) {
-        // write all entries in tableMatrix to csv file
-        writeCSVFile(
-          tableObject,
-          schemaLayout,
-          keyObject,
-          dummyDataRequest,
-          event
-        );
-      }
-    });
-  });
+
 });
+
+// ipcMain.on('generate-dummy-data', (event: any, data: dummyDataRequestType) => {
+//   // send notice to front end that DD generation has been started
+//   event.sender.send('async-started');
+//   let schemaLayout: any;
+//   const dummyDataRequest: dummyDataRequestType = data; // { schemaName: 'hello', dummyData: { people: 1 } }
+//   let tableMatricesArray: any;
+//   let keyObject: any = 'Unresolved';
+
+//   // Retrieves the Primary Keys and Foreign Keys for all the tables
+//   //   tableName: { primaryKeyColumns: { _id: true }, foreignKeyColumns: { key: value, key: value} },
+//   db.createKeyObject().then((result) => {
+//     keyObject = result;
+//     // Iterating over the passed in keyObject to remove the primaryKeyColumn and all foreignKeyColumns from table
+//     // db.dropKeyColumns(keyObject).then(() => {
+//     // db.addNewKeyColumns(keyObject).then(() => {
+//     db.getSchemaLayout().then((schemaLayoutResult) => {
+//       console.log('schemaLayout: ', schemaLayoutResult);
+//       console.log('films layout: ', schemaLayoutResult.tables.films[0]);
+//       console.log('films layout: ', schemaLayoutResult.tables.films[1]);
+//       schemaLayout = schemaLayoutResult;
+//       // generate the dummy data and save it into matrices associated with table names
+//       tableMatricesArray = generateDummyData(
+//         schemaLayout,
+//         dummyDataRequest,
+//         keyObject
+//       );
+//       // iterate through tableMatricesArray to write individual .csv files
+//       for (const tableObject of tableMatricesArray) {
+//         // write all entries in tableMatrix to csv file
+//         writeCSVFile(
+//           tableObject,
+//           schemaLayout,
+//           keyObject,
+//           dummyDataRequest,
+//           event
+//         );
+//       }
+//     });
+//   });
+// });
 
 export default execute;
