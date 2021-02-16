@@ -4,7 +4,7 @@ import { IconButton, Tooltip } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import AddNewDbModal from '../modal/AddNewDbModalCorrect';
 import { AppState, isDbLists } from '../../types';
-import { once } from '../../lib/utils';
+import { once, sendFeedback } from '../../lib/utils';
 import DuplicateDbModal from '../modal/DuplicateDbModal';
 import DbEntry from './DbEntry';
 
@@ -57,9 +57,18 @@ const DbList = ({ selectedDb, setSelectedDb, show }: DbListProps) => {
   };
 
   const selectHandler = (dbName: string) => {
-    setSelectedDb(dbName);
-    ipcRenderer.send('change-db', dbName);
-    ipcRenderer.send('return-db-list', dbName);
+    ipcRenderer
+      .invoke('select-db', dbName)
+      .then(() => {
+        setSelectedDb(dbName);
+        ipcRenderer.send('return-db-list', dbName);
+      })
+      .catch(() =>
+        sendFeedback({
+          type: 'error',
+          message: `Failed to connect to ${dbName}`,
+        })
+      );
   };
 
   if (!show) return null;

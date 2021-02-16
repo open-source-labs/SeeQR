@@ -32,11 +32,7 @@ ipcMain.on('return-db-list', (event) => {
 });
 
 // Listen for database changes sent from the renderer upon changing tabs.
-ipcMain.on('change-db', (event, dbName: string) => {
-  // event.sender.send('async-started'); // send notice to the frontend that async process has begun
-  db.changeDB(dbName);
-  // event.sender.send('async-complete'); // send notice to the frontend that async process has completed
-});
+ipcMain.handle('select-db', (event, dbName: string) => db.connectToDB(dbName)) 
 
 // Deletes the dbName that is passed from the front end and returns the DB List
 ipcMain.on('drop-db', (event, dbName: string, currDB: Boolean) => {
