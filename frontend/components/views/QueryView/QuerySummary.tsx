@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React from 'react';
 import {
   Table,
   TableBody,
@@ -47,4 +47,4 @@ const QuerySummary = ({ executionPlan }: QuerySummaryProps) => {
   );
 };
 
-export default memo(QuerySummary);
+export default QuerySummary;

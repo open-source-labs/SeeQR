@@ -1,5 +1,5 @@
 import { IpcMainEvent } from 'electron';
-import React, { useEffect, useState, memo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Box } from '@material-ui/core/';
 import styled from 'styled-components';
 import {
@@ -45,7 +45,7 @@ const QueryViewContainer = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
-`;
+`
 
 interface QueryViewProps {
   query?: AppState['workingQuery'];
@@ -54,18 +54,6 @@ interface QueryViewProps {
   setSelectedDb: AppState['setSelectedDb'];
   setQuery: AppState['setWorkingQuery'];
   show: boolean;
-}
-
-
-const isSame = (prev: QueryViewProps, next: QueryViewProps) => {
-  if (prev.show !== next.show) return false
-  if (prev.selectedDb !== next.selectedDb) return false
-  if (prev.query?.db !== next.query?.db) return false
-  if (prev.query?.label !== next.query?.label) return false
-  if (prev.query?.sqlString !== next.query?.sqlString) return false
-  if (prev.query?.returnedRows !== next.query?.returnedRows) return false
-  if (prev.query?.executionPlan !== next.query?.executionPlan) return false
-  return true
 }
 
 const QueryView = ({
@@ -77,12 +65,10 @@ const QueryView = ({
   show,
 }: QueryViewProps) => {
   const [databases, setDatabases] = useState<string[]>([]);
-  // const [sqlLocal, setSqlLocal] = useState('');
 
   const defaultQuery: QueryData = {
     label: '',
     db: selectedDb,
-    // sqlString value is not used
     sqlString: '',
   };
 
@@ -113,7 +99,6 @@ const QueryView = ({
           label: queryData.queryLabel,
           db: queryData.queryCurrentSchema,
         };
-        console.log('new');
         createNewQuery(transformedData);
       }
     };
@@ -138,23 +123,21 @@ const QueryView = ({
     ipcRenderer.send('return-db-list', newDb);
   };
   const onSqlChange = (newSql: string) => {
-    setQuery({...localQuery, sqlString: newSql})
-    // setSqlLocal(newSql);
+    // TODO: this triggers a rerender of the entire query view  every stroke
+    // because App's workingQuery changes ref
+    setQuery({ ...localQuery, sqlString: newSql });
   };
 
   const onRun = () => {
     if (!localQuery.label.trim()) {
-      sendFeedback({
-        type: 'info',
-        message: "Queries without a label will run but won't be saved",
-      });
+      sendFeedback({type: 'info', message: 'Queries without a label will run but won\'t be saved'})
     }
 
     // Select Db from  query. Necessary because backend doesn't take db sent in
     // this event into consideration when running query.
     // TODO: extract this selection logic into module so it can be reused in other components
     // TODO: there could be a race condition with 'execute-query-tracked' executing before 'change-db-.
-    setSelectedDb(localQuery.db);
+    setSelectedDb(localQuery.db)
     ipcRenderer.send('change-db', localQuery.db);
     ipcRenderer.send('return-db-list', localQuery.db);
 
@@ -170,7 +153,10 @@ const QueryView = ({
   return (
     <QueryViewContainer>
       <TopRow>
-        <QueryLabel label={localQuery.label} onChange={onLabelChange} />
+        <QueryLabel
+          label={localQuery.label}
+          onChange={onLabelChange}
+        />
         <QueryDb
           db={localQuery.db}
           onChange={onDbChange}
@@ -182,7 +168,7 @@ const QueryView = ({
         />
       </TopRow>
       <QuerySqlInput
-        sql={localQuery.sqlString ?? ''}
+        sql={localQuery?.sqlString ?? ''}
         onChange={onSqlChange}
         runQuery={onRun}
       />
@@ -200,4 +186,4 @@ const QueryView = ({
   );
 };
 
-export default memo(QueryView, isSame);
+export default QueryView;

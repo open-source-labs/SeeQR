@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 const Container = styled.div`
@@ -10,12 +10,9 @@ interface QueryTopSummaryProps {
   totalTime: string | undefined;
 }
 
-const isSame = (prev: QueryTopSummaryProps, next: QueryTopSummaryProps) =>
-  prev.rows === next.rows && prev.totalTime === next.totalTime;
+const QueryTopSummary = ({ rows, totalTime }: QueryTopSummaryProps) => { 
+  if (!rows || !totalTime) return null
+  return <Container>{`${rows} rows - ${totalTime}`}</Container>
+ };
 
-const QueryTopSummary = ({ rows, totalTime }: QueryTopSummaryProps) => {
-  if (!rows || !totalTime) return null;
-  return <Container>{`${rows} rows - ${totalTime}`}</Container>;
-};
-
-export default memo(QueryTopSummary, isSame);
+export default QueryTopSummary;

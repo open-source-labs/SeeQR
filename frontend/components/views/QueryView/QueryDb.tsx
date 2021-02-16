@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React from 'react';
 import { Select, MenuItem, InputLabel, Box } from '@material-ui/core/';
 import styled from 'styled-components';
 import { defaultMargin } from '../../../style-variables';
@@ -12,9 +12,6 @@ interface QueryDbProps {
   onChange: (newDb: string) => void;
   databases: string[];
 }
-
-const isSame = (prev: QueryDbProps, next: QueryDbProps) =>
-  prev.db === next.db && prev.databases === next.databases;
 
 const QueryDb = ({ db, onChange, databases }: QueryDbProps) => (
   <SpacedBox>
@@ -33,4 +30,4 @@ const QueryDb = ({ db, onChange, databases }: QueryDbProps) => (
   </SpacedBox>
 );
 
-export default memo(QueryDb, isSame);
+export default QueryDb;
