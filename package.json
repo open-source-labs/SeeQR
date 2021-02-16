@@ -16,8 +16,8 @@
     "dev": "tsc && cross-env NODE_ENV=development webpack-dev-server --hot",
     "test": "jest --verbose",
     "win-build-apps": "sudo npx electron-packager . SeeQR --out=appBuilds --platform=win32 --platform=darwin",
-    "package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=assets/icons/mac/seeqr.icns --prune=true --out=release-builds",
-    "package-win": "electron-packager . SeeQR-App --overwrite --asar=true --platform=win32 --arch=ia32 --icon=assets/icons/win/seeqr.ico --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"SeeQR App\""
+    "package-mac": "tsc && webpack && electron-packager . --overwrite --platform=darwin --arch=x64 --icon=assets/icons/mac/seeqr.icns --prune=true --out=release-builds",
+    "package-win": "tsc && webpack && electron-packager . SeeQR-App --overwrite --asar=true --platform=win32 --arch=ia32 --icon=assets/icons/win/seeqr.ico --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"SeeQR App\""
   },
   "repository": {
     "type": "git",
