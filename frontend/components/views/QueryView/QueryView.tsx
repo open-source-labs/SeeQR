@@ -63,6 +63,8 @@ const isSame = (prev: QueryViewProps, next: QueryViewProps) => {
   if (prev.query?.db !== next.query?.db) return false
   if (prev.query?.label !== next.query?.label) return false
   if (prev.query?.sqlString !== next.query?.sqlString) return false
+  if (prev.query?.returnedRows !== next.query?.returnedRows) return false
+  if (prev.query?.executionPlan !== next.query?.executionPlan) return false
   return true
 }
 
@@ -111,6 +113,7 @@ const QueryView = ({
           label: queryData.queryLabel,
           db: queryData.queryCurrentSchema,
         };
+        console.log('new');
         createNewQuery(transformedData);
       }
     };
