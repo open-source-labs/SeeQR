@@ -47,7 +47,9 @@ module.exports = {
           loader: 'babel-loader',
           options: {
             presets: ['@babel/preset-env', '@babel/preset-react'],
-            plugins: [isDevelopment && require.resolve('react-refresh/babel')],
+            plugins: [
+              isDevelopment && require.resolve('react-refresh/babel'),
+            ].filter(Boolean),
           },
         },
       },
@@ -156,6 +158,7 @@ module.exports = {
       //   ],
       // },
     }),
+    isDevelopment && new webpack.HotModuleReplacementPlugin(),
     isDevelopment && new ReactRefreshWebpackPlugin(),
-  ],
+  ].filter(Boolean),
 };
