@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 import styled from 'styled-components';
-import Stepper from '@material-ui/core/Stepper';
-import Step from '@material-ui/core/Step';
-import StepButton from '@material-ui/core/StepButton';
-import StepLabel from '@material-ui/core/StepLabel';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-// import BarChartIcon from '@material-ui/icons/BarChart';
+import {
+  Stepper,
+  Step,
+  StepButton,
+  StepLabel,
+  Button,
+  Typography,
+} from '@material-ui/core';
 import logo from '../../../assets/logo/seeqr_dock.png';
 
 interface QuickStartViewProps {
@@ -29,14 +30,14 @@ const useStyles = makeStyles((theme: Theme) =>
       display: 'inline-block',
     },
     instructions: {
-      marginTop: theme.spacing(4),
-      marginBottom: theme.spacing(5),
+      marginBottom: theme.spacing(3),
     },
     image: {
-      marginTop: theme.spacing(10),
+      marginTop: theme.spacing(6),
+      marginBottom: theme.spacing(-2),
     },
     title: {
-      marginTop: theme.spacing(6),
+      marginTop: theme.spacing(3),
     },
     stepper: {
       fontSize: '50px',
@@ -196,11 +197,6 @@ const QuickStartView = ({ show }: QuickStartViewProps) => {
     newCompleted.add(activeStep);
     setCompleted(newCompleted);
 
-    /**
-     * Sigh... it would be much nicer to replace the following if conditional with
-     * `if (!this.allStepsComplete())` however state is not set when we do this,
-     * thus we have to resort to not being very DRY.
-     */
     if (completed.size !== totalSteps() - skippedSteps()) {
       handleNext();
     }
