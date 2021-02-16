@@ -1,5 +1,4 @@
 const { ipcMain } = require('electron'); // IPCMain: Communicate asynchronously from the main process to renderer processes
-const path = require('path');
 const fs = require('fs');
 const db = require('./models');
 const { generateDummyData, writeCSVFile } = require('./DummyD/dummyDataMain');

@@ -21,23 +21,18 @@
  * ]
  *
  * Shell is being imported, so a new browser window can open for external links
- * Considering referring our GitHub page
  */
 
-export {};
 // if process platform is darwin, operating on mac
 const isMac = process.platform === 'darwin';
+const { shell } = require('electron');
 
-// const { app, shell } = require('electron');
-
-const { app, shell } = require('electron');
-
-module.exports = [
-  // { role: 'appMenu' }
+const arr = [
+  // App menu
   ...(isMac
     ? [
         {
-          label: app.name,
+          label: 'Electron',
           submenu: [
             { role: 'about' },
             { type: 'separator' },
@@ -52,12 +47,12 @@ module.exports = [
         },
       ]
     : []),
-  // { role: 'fileMenu' }
+  // File menu
   {
     label: 'File',
     submenu: [isMac ? { role: 'close' } : { role: 'quit' }],
   },
-  // { role: 'editMenu' }
+  // Edit menu
   {
     label: 'Edit',
     submenu: [
@@ -80,7 +75,7 @@ module.exports = [
         : [{ role: 'delete' }, { type: 'separator' }, { role: 'selectAll' }]),
     ],
   },
-  // { role: 'viewMenu' }
+  // View menu
   {
     label: 'View',
     submenu: [
@@ -95,7 +90,7 @@ module.exports = [
       { role: 'togglefullscreen' },
     ],
   },
-  // { role: 'windowMenu' }
+  // Window Menu
   {
     label: 'Window',
     submenu: [
@@ -129,3 +124,5 @@ module.exports = [
     ],
   },
 ];
+
+module.exports = arr;

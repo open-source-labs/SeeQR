@@ -6,10 +6,12 @@ const {
   default: installExtension,
   REACT_DEVELOPER_TOOLS,
 } = require('electron-devtools-installer');
+const fixPath = require('fix-path');
 const MainMenu = require('./mainMenu');
 // requiring channels file to initialize event listners
 require('./channels');
 
+fixPath();
 // Keep a global reference of the window objects, if you don't, the window will be closed automatically when the JavaScript object is garbage collected.
 let mainWindow: any;
 const dev: boolean = process.env.NODE_ENV === 'development';
