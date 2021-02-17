@@ -122,7 +122,14 @@ ipcMain.handle(
       event.sender.send('db-lists', dbsAndTableInfo);
     } finally {
       // cleanup temp file
-      fs.unlinkSync(tempFilePath);
+      try {
+        fs.unlinkSync(tempFilePath);
+      } catch (e){
+        event.sender.send('feedback', {
+          type: 'error',
+          message: `Failed to cleanup temp files. ${tempFilePath} could not be removed.`
+        })
+      }
 
       event.sender.send('async-complete');
     }
