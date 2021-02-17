@@ -1,9 +1,9 @@
 import { ipcMain } from 'electron'; // IPCMain: Communicate asynchronously from the main process to renderer processes
 import path from 'path';
 import fs from 'fs';
+import os from 'os';
 const db = require('./models');
 const { generateDummyData, writeCSVFile } = require('./DummyD/dummyDataMain');
-
 const {
   createDBFunc,
   dropDBFunc,
@@ -16,6 +16,7 @@ const {
 } = require('./helperFunctions');
 
 // *************************************************** IPC Event Listeners *************************************************** //
+
 ipcMain.on('return-db-list', (event) => {
   db.getLists()
     .then((data) => {
@@ -66,14 +67,6 @@ ipcMain.handle('drop-db', async (event, dbName: string, currDB: boolean) => {
   }
 });
 
-interface SchemaType {
-  schemaName: string;
-  schemaFilePath: string[];
-  schemaEntry: string;
-  dbCopyName: string;
-  copy: boolean;
-}
-
 interface DuplicatePayload {
   newName: string;
   sourceDb: string;
@@ -89,7 +82,10 @@ ipcMain.handle(
   async (event, { newName, sourceDb, withData }: DuplicatePayload) => {
     event.sender.send('async-started');
 
+    // store temporary file in user desktop
+    // const tempFilePath = path.resolve(os.homedir(), 'desktop',`temp_${newName}.sql`)
     const tempFilePath = path.resolve(__dirname, `temp_${newName}.sql`);
+    
     try {
       // dump database to temp file
       const dumpCmd = withData

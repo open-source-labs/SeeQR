@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
 import { IpcMainEvent } from 'electron';
 import { IconButton, Tooltip } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
@@ -7,14 +8,21 @@ import { AppState, isDbLists } from '../../types';
 import { once, sendFeedback } from '../../lib/utils';
 import DuplicateDbModal from '../modal/DuplicateDbModal';
 import DbEntry from './DbEntry';
-
+import logo from '../../../assets/logo/seeqr_dock.png';
 import { SidebarList } from '../../style-variables';
+import {
+  greyDarkest,
+} from '../../style-variables';
 
 // TODO: how to type ipcRenderer ?
 const { ipcRenderer } = window.require('electron');
 
 // emitting with no payload requests backend to send back a db-lists event with list of dbs
 const requestDbListOnce = once(() => ipcRenderer.send('return-db-list'));
+
+const StyledSidebarList = styled(SidebarList)`
+ background-color: ${greyDarkest};
+`
 
 type DbListProps = Pick<AppState, 'selectedDb' | 'setSelectedDb'> & {
   show: boolean;
@@ -79,7 +87,7 @@ const DbList = ({ selectedDb, setSelectedDb, show }: DbListProps) => {
           <AddIcon fontSize="large" />
         </IconButton>
       </Tooltip>
-      <SidebarList>
+      <StyledSidebarList>
         {databases.map((dbName) => (
           <DbEntry
             key={`dbList_${dbName}`}
@@ -95,7 +103,8 @@ const DbList = ({ selectedDb, setSelectedDb, show }: DbListProps) => {
           dbCopyName={dbToDupe}
           databases={databases}
         />
-      </SidebarList>
+      </StyledSidebarList>
+      {/* Validate Db name doesnt exist */}
       <AddNewDbModal
         open={openAdd}
         onClose={handleCloseAdd}
