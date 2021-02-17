@@ -10,9 +10,7 @@ import DuplicateDbModal from '../modal/DuplicateDbModal';
 import DbEntry from './DbEntry';
 import logo from '../../../assets/logo/seeqr_dock.png';
 import { SidebarList } from '../../style-variables';
-import {
-  greyDarkest,
-} from '../../style-variables';
+import { greyDarkest } from '../../style-variables';
 
 // TODO: how to type ipcRenderer ?
 const { ipcRenderer } = window.require('electron');
@@ -21,8 +19,8 @@ const { ipcRenderer } = window.require('electron');
 const requestDbListOnce = once(() => ipcRenderer.send('return-db-list'));
 
 const StyledSidebarList = styled(SidebarList)`
- background-color: ${greyDarkest};
-`
+  background-color: ${greyDarkest};
+`;
 
 type DbListProps = Pick<AppState, 'selectedDb' | 'setSelectedDb'> & {
   show: boolean;
@@ -97,12 +95,14 @@ const DbList = ({ selectedDb, setSelectedDb, show }: DbListProps) => {
             duplicate={() => handleClickOpenDupe(dbName)}
           />
         ))}
-        <DuplicateDbModal
-          open={openDupe}
-          onClose={handleCloseDupe}
-          dbCopyName={dbToDupe}
-          databases={databases}
-        />
+        {openDupe ? (
+          <DuplicateDbModal
+            open={openDupe}
+            onClose={handleCloseDupe}
+            dbCopyName={dbToDupe}
+            databases={databases}
+          />
+        ) : null}
       </StyledSidebarList>
       {/* Validate Db name doesnt exist */}
       <AddNewDbModal

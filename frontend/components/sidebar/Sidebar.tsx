@@ -8,7 +8,7 @@ import QueryList from './QueryList';
 import DbList from './DbList';
 import ViewSelector from './ViewSelector';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
-import logo from '../../../assets/logo/logo_monochrome.png';
+import logo from '../../../assets/logo/seeqr_dock.png';
 
 import {
   greyDarkest,
@@ -28,9 +28,10 @@ const useStyles = makeStyles(() => ({
   },
   image: {
     position: 'fixed',
-    bottom: '0px',
+    bottom: '10px',
     opacity: '0.5',
     zIndex: -1,
+    filter: 'grayscale(100%)',
   },
 }));
 
@@ -106,8 +107,8 @@ const Sidebar = ({
           className={classes.image}
           src={logo}
           alt="Logo"
-          width="150px"
-          height="150px"
+          width="100px"
+          height="100px"
         />
       </Drawer>
     </>

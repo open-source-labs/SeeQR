@@ -57,6 +57,21 @@ type copyDbModalProps = {
   databases: string[];
 };
 
+const handleDBName = (dbCopyName, databases) => {
+  // use regex to separate the number
+  // increment only the digit
+  let dbName = dbCopyName;
+  for (let i = 1; i < Infinity; i += 1) {
+    if (databases.includes(dbName)) {
+      dbName = dbCopyName;
+      dbName = dbName.concat(`_${i}`);
+    } else {
+      break;
+    }
+  }
+  return dbName;
+};
+
 const DuplicateDbModal = ({
   open,
   onClose,
@@ -64,11 +79,10 @@ const DuplicateDbModal = ({
   databases,
 }: copyDbModalProps) => {
   const [checked, setChecked] = useState(true);
-  const [defaultSchema, setDefaultSchema] = useState(true);
-  const [newSchemaName, setNewSchemaName] = useState('');
+  const [newSchemaName, setNewSchemaName] = useState(
+    handleDBName(dbCopyName, databases)
+  );
   const [isError, setIsError] = useState(false);
-
-  const defaultSchemaName = `${dbCopyName}_copy`;
 
   // open/close modal function
   const handleClose = () => {
@@ -79,11 +93,14 @@ const DuplicateDbModal = ({
   // Set schema name
   const handleSchemaName = (event: React.ChangeEvent<HTMLInputElement>) => {
     // convert input label name to lowercase only with no spacing to comply with db naming convention.
-    setDefaultSchema(false);
     const schemaNameInput = event.target.value;
     let dbSafeName = schemaNameInput;
     dbSafeName = dbSafeName.replace(/[^\w-]/gi, '');
-    databases.includes(dbSafeName) ? setIsError(true) : setIsError(false);
+    if (databases.includes(dbSafeName)) {
+      setIsError(true);
+    } else {
+      setIsError(false);
+    }
     // dbSafeName = dbSafeName.replace(/[^A-Z0-9]/gi, '');
     // check if the newSchemaName is not a duplicate
     setNewSchemaName(dbSafeName);
@@ -95,7 +112,7 @@ const DuplicateDbModal = ({
 
   const handleCopyFilePath = () => {
     const schemaObj: DuplicatePayload = {
-      newName: defaultSchema ? defaultSchemaName : newSchemaName,
+      newName: newSchemaName,
       sourceDb: dbCopyName,
       withData: checked,
     };
@@ -138,7 +155,7 @@ const DuplicateDbModal = ({
               id="filled-required"
               label="Enter a database copy name"
               variant="outlined"
-              defaultValue={defaultSchemaName}
+              defaultValue={newSchemaName}
               onChange={handleSchemaName}
             />
             <Tooltip
