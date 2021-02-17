@@ -14,6 +14,7 @@ const helperFunctions: {
   runFullCopyFunc: Function;
   runHollowCopyFunc: Function;
   execute: Function;
+  promExecute: (cmd: string) => Promise<{ stdout: string; stderr: string }>;
 } = {
   // create a database
   createDBFunc: (name) => `CREATE DATABASE "${name}"`,
@@ -25,16 +26,16 @@ const helperFunctions: {
   runSQLFunc: (dbName, file) => `psql -U postgres -d ${dbName} -f "${file}"`,
 
   // import TAR file into new DB created
-  runTARFunc: (dbName, file) =>
-    `pg_restore -U postgres -d ${dbName} -f "${file}"`,
+  runTARFunc: (dbName, file) => `pg_restore -U postgres -d ${dbName} "${file}"`,
 
   // make a full copy of the schema
-  runFullCopyFunc: (path, selectedDBName) =>
-  `pg_dump -U postgres -F p ${selectedDBName} > ${path}`,
-  
+  runFullCopyFunc: (dbCopyName, newFile) =>
+    `pg_dump -U postgres -F p -d ${dbCopyName} > "${newFile}"`,
+
   // make a hollow copy of the schema
-  runHollowCopyFunc: (path, selectedDBName) =>
-    `pg_dump -s -U postgres -F p ${selectedDBName} > ${path}`,
+  runHollowCopyFunc: (dbCopyName, file) =>
+    `pg_dump -s -U postgres -F p -d ${dbCopyName} > "${file}"`,
+
 
   // Function to execute commands in the child process.
   execute: (str: string, nextStep: any) => {
@@ -52,6 +53,16 @@ const helperFunctions: {
       } else nextStep();
     });
   },
+
+  // promisified execute
+  promExecute: (cmd: string) =>
+    new Promise((resolve, reject) => {
+      exec(cmd, (error, stdout, stderr) => {
+        if (error) return reject(error);
+        if (stderr) return reject(new Error(stderr));
+        return resolve({ stdout, stderr });
+      });
+    }),
 };
 
 module.exports = helperFunctions;

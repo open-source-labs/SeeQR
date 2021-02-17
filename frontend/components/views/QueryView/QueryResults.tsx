@@ -81,8 +81,7 @@ const QueryResults = ({ results }: QueryResultsProps) => {
             {results
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row) => (
-                // TODO: figure out react key
-                <TableRow hover role="checkbox" tabIndex={-1}>
+                <TableRow hover role="checkbox" tabIndex={-1} key={Object.values(row).join()}>
                   {columns.map((column) => (
                     <StyledCell
                       align={column.align}

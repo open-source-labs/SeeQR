@@ -11,12 +11,15 @@
     ]
   },
   "scripts": {
-    "build": "tsc && webpack",
+    "build": "cross-env NODE_ENV=production tsc && cross-env NODE_ENV=production webpack",
     "start": "cross-env NODE_ENV=production electron --noDevServer .",
-    "dev": "tsc && cross-env NODE_ENV=development webpack-dev-server --hot",
+    "dev": "run-p tsc-dev electron-dev webpack-dev",
+    "webpack-dev": "cross-env NODE_ENV=development webpack-dev-server --hot",
+    "electron-dev": "nodemon --watch tsCompiled/backend --exec \"npx cross-env NODE_ENV=development electron .\"",
+    "tsc-dev": "tsc --watch",
     "test": "jest --verbose",
-    "package-mac": "tsc && webpack && electron-packager . --overwrite --platform=darwin --arch=x64 --icon=assets/icons/mac/seeqr.icns --prune=true --out=release-builds",
-    "package-win": "tsc && webpack && electron-packager . SeeQR-App --overwrite --asar=true --platform=win32 --arch=ia32 --icon=assets/icons/win/seeqr.ico --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"SeeQR App\""
+    "package-mac": "tsc && cross-env NODE_ENV=production webpack && electron-packager . --overwrite --platform=darwin --arch=x64 --icon=assets/icons/mac/seeqr.icns --prune=true --out=release-builds",
+    "package-win": "tsc && cross-env NODE_ENV=production webpack && electron-packager . SeeQR-App --overwrite --asar=true --platform=win32 --arch=ia32 --icon=assets/icons/win/seeqr.ico --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"SeeQR App\""
   },
   "repository": {
     "type": "git",
@@ -99,6 +102,7 @@
     "jest": "^26.4.2",
     "mini-css-extract-plugin": "^0.9.0",
     "nodemon": "^2.0.4",
+    "npm-run-all": "^4.1.5",
     "postcss-loader": "^3.0.0",
     "prettier": "^2.2.1",
     "react-refresh": "^0.9.0",

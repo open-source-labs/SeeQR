@@ -1,7 +1,8 @@
-const { ipcMain } = require('electron'); // IPCMain: Communicate asynchronously from the main process to renderer processes
-const fs = require('fs');
-const os = require('os'); 
-const path = require('path')
+import { ipcMain } from 'electron'; // IPCMain: Communicate asynchronously from the main process to renderer processes
+import path from 'path';
+import fs from 'fs';
+import os from 'os';
+
 const db = require('./models');
 const { generateDummyData, writeCSVFile } = require('./DummyD/dummyDataMain');
 const {
@@ -12,16 +13,15 @@ const {
   runFullCopyFunc,
   runHollowCopyFunc,
   execute,
+  promExecute,
 } = require('./helperFunctions');
 
 // *************************************************** IPC Event Listeners *************************************************** //
 
 ipcMain.on('return-db-list', (event) => {
-  // event.sender.send('async-started'); // send notice to the frontend that async process has begun
   db.getLists()
     .then((data) => {
       event.sender.send('db-lists', data);
-      // event.sender.send('async-complete');
     })
     .catch((err) => {
       const feedback = {
@@ -33,148 +33,154 @@ ipcMain.on('return-db-list', (event) => {
 });
 
 // Listen for database changes sent from the renderer upon changing tabs.
-ipcMain.on('change-db', (event, dbName: string) => {
-  // event.sender.send('async-started'); // send notice to the frontend that async process has begun
-  db.changeDB(dbName);
-  // event.sender.send('async-complete'); // send notice to the frontend that async process has completed
-});
+ipcMain.handle(
+  'select-db',
+  async (event, dbName: string): Promise<void> => {
+    event.sender.send('async-started');
+    try {
+      await db.connectToDB(dbName);
+
+      // send updated db info
+      const dbsAndTables = await db.getLists();
+      event.sender.send('db-lists', dbsAndTables);
+    } finally {
+      event.sender.send('async-complete');
+    }
+  }
+);
 
 // Deletes the dbName that is passed from the front end and returns the DB List
-ipcMain.on('drop-db', (event, dbName: string, currDB: Boolean) => {
+ipcMain.handle('drop-db', async (event, dbName: string, currDB: boolean) => {
   event.sender.send('async-started');
-  const feedback: { type?: string; message?: string } = {};
-  const dropDBScript = dropDBFunc(dbName);
-  if (currDB) {
-    db.closePool();
-    db.changeDB();
-  }
-  db.query(dropDBScript)
-    .catch((err) => {
-      feedback.type = 'error';
-      feedback.message = err;
-    })
-    .finally(() => {
-      db.getLists().then((data) => {
-        event.sender.send('db-lists', data);
-        event.sender.send('feedback', feedback);
-        event.sender.send('async-complete');
-      });
-    });
-});
+  try {
+    // if deleting currently connected db, disconnect from db
+    if (currDB) await db.connectToDB('');
 
-/**
- * This function allows users to import the DB using the + icon on the front end
- * Users can import a .tar or .sql file
- * Additionally, this function allows the user to copy an existing database and optionally copy the data in the db
- */
-interface SchemaType {
-  schemaName: string;
-  schemaFilePath: string[];
-  schemaEntry: string;
-  dbCopyName: string;
-  copy: boolean;
-}
-ipcMain.on('input-schema', (event, data: SchemaType) => {
-  // send notice to the frontend that async process has begun
-  event.sender.send('async-started');
+    // drop db
+    const dropDBScript = dropDBFunc(dbName);
+    await db.query(dropDBScript);
 
-  const {
-    dbCopyName: dbNameUserSelectedToCopy,
-    copy: copyAllDataFromUserSelectedDB,
-  } = data;
-  let {
-    schemaName: dbNameEnteredByUser,
-    schemaFilePath: importedSchemaFilePath,
-  } = data;
-  const extension: string = Array.isArray(importedSchemaFilePath)
-    ? importedSchemaFilePath[0].slice(
-        importedSchemaFilePath[0].lastIndexOf('.')
-      )
-    : '.sql';
-
-  const feedback: { type?: string; message?: string } = {};
-
-  const homeDir = path.resolve(os.homedir(), 'desktop')
-  const outputFile = `${homeDir}/${dbNameEnteredByUser}.sql`
-
-  // conditional to get the correct schemaFilePath name from the Load Schema Modal
-  if (!importedSchemaFilePath) {
-    importedSchemaFilePath = [`${dbNameEnteredByUser}.sql`];
-  }
-
-  // defaults to the sql file name if DB name is not provided by user
-  if (dbNameEnteredByUser === '') {
-    dbNameEnteredByUser = `a${Math.floor(
-      Math.random() * 1000000000000000
-    ).toString()}`;
-  }
-
-  // Each function returns the Postgres command that will be executed on the command line by invoking the execute function
-  const createDB: string = createDBFunc(dbNameEnteredByUser);
-  const runSQL: string = runSQLFunc(
-    dbNameEnteredByUser,
-    outputFile
-  );
-  const runTAR: string = runTARFunc(
-    dbNameEnteredByUser,
-    outputFile
-  );
-  const runFullCopy: string = runFullCopyFunc(
-    outputFile,
-    dbNameUserSelectedToCopy
-  );
-  const runHollowCopy: string = runHollowCopyFunc(
-    outputFile,
-    dbNameUserSelectedToCopy
-  );
-
-  // Change the URI to new DB, send DB lists and tables in current DB
-  async function sendLists() {
-    const listObj: any = await db.getLists();
-    event.sender.send('db-lists', listObj);
+    // send updated db info
+    const dbsAndTables = await db.getLists();
+    event.sender.send('db-lists', dbsAndTables);
+  } finally {
     event.sender.send('async-complete');
   }
-
-  const changeCurrentDB = () => {
-    db.changeDB(dbNameEnteredByUser);
-    const runCmd: string = extension === '.sql' ? runSQL : runTAR;
-
-    console.log('------------------------ about to runCMD')
-    execute(runCmd, () => {
-      if (fs.existsSync(`${dbNameEnteredByUser}.sql`)) {
-        fs.unlinkSync(`${dbNameEnteredByUser}.sql`);
-        console.log('file exist');
-      } else {
-        console.log('file does not exist');
-      }
-      sendLists();
-    });
-  };
-
-  const importOrCopyExistingDB = () => {
-    // User selected to copy from existing DB Schema
-    if (dbNameUserSelectedToCopy) {
-      // change DB instance to the DB the User wants to copy
-      db.changeDB(dbNameUserSelectedToCopy);
-      // If User wanted to copy data from Existing DB execute rullFullCopy
-      if (copyAllDataFromUserSelectedDB) {
-        execute(runFullCopy, changeCurrentDB);
-      }
-      // Else execute runHollowCopy
-      else execute(runHollowCopy, changeCurrentDB);
-    } else {
-      changeCurrentDB();
-    }
-  };
-
-  db.query(createDB)
-    .then(() => importOrCopyExistingDB())
-    .catch((err) => {
-      feedback.type = 'error';
-      feedback.message = err;
-      event.sender.send('feedback', feedback);
-    });
 });
+
+interface DuplicatePayload {
+  newName: string;
+  sourceDb: string;
+  withData: boolean;
+}
+
+/**
+ * Handle duplicate-db events sent from frontend. Cleans up after itself in
+ * the event of failure
+ */
+ipcMain.handle(
+  'duplicate-db',
+  async (event, { newName, sourceDb, withData }: DuplicatePayload) => {
+    event.sender.send('async-started');
+
+    // store temporary file in user desktop
+    const tempFilePath = path.resolve(os.homedir(), 'desktop',`temp_${newName}.sql`)
+    
+    try {
+      // dump database to temp file
+      const dumpCmd = withData
+        ? runFullCopyFunc(sourceDb, tempFilePath)
+        : runHollowCopyFunc(sourceDb, tempFilePath);
+      try {
+        await promExecute(dumpCmd);
+      } catch (e) {
+        throw new Error(
+          `Failed to dump ${sourceDb} to temp file at ${tempFilePath}`
+        );
+      }
+
+      // create new empty database
+      try {
+        await db.query(createDBFunc(newName));
+      } catch (e) {
+        throw new Error(`Failed to create Database`);
+      }
+
+      // run temp sql file on new database
+      try {
+        await promExecute(runSQLFunc(newName, tempFilePath));
+      } catch (e) {
+        // cleanup: drop created db
+        const dropDBScript = dropDBFunc(newName);
+        await db.query(dropDBScript);
+
+        throw new Error('Failed to populate newly created database');
+      }
+
+      // update frontend with new db list
+      const dbsAndTableInfo = await db.getLists();
+      event.sender.send('db-lists', dbsAndTableInfo);
+    } finally {
+      // cleanup temp file
+      try {
+        fs.unlinkSync(tempFilePath);
+      } catch (e){
+        event.sender.send('feedback', {
+          type: 'error',
+          message: `Failed to cleanup temp files. ${tempFilePath} could not be removed.`
+        })
+      }
+
+      event.sender.send('async-complete');
+    }
+  }
+);
+
+interface ImportPayload {
+  newDbName: string;
+  filePath: string;
+}
+
+/**
+ * Handle import-db events sent from frontend. Cleans up after itself
+ * in the event of failure
+ */
+ipcMain.handle(
+  'import-db',
+  async (event, { newDbName, filePath }: ImportPayload) => {
+    event.sender.send('async-started');
+    try {
+      // create new empty db
+      await db.query(createDBFunc(newDbName));
+
+      const ext = path.extname(filePath).toLowerCase();
+      if (ext !== '.sql' && ext !== '.tar')
+        throw new Error('Invalid file extension');
+
+      const restoreCmd =
+        ext === '.sql'
+          ? runSQLFunc(newDbName, filePath)
+          : runTARFunc(newDbName, filePath);
+
+      try {
+        // populate new db with data from file
+        await promExecute(restoreCmd);
+      } catch (e) {
+        // cleanup: drop created db
+        const dropDBScript = dropDBFunc(newDbName);
+        await db.query(dropDBScript);
+
+        throw new Error('Failed to populate database');
+      }
+
+      // update frontend with new db list
+      const dbsAndTableInfo = await db.getLists();
+      event.sender.send('db-lists', dbsAndTableInfo);
+    } finally {
+      event.sender.send('async-complete');
+    }
+  }
+);
 
 // Listen for queries being sent from renderer
 interface QueryType {

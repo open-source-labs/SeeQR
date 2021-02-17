@@ -15,15 +15,15 @@ const ViewBtnGroup = styled(ButtonGroup)`
 `;
 
 interface ViewButtonProps {
-  isSelected: boolean;
+  $isSelected: boolean;
 }
 
 const ViewButton = styled(Button)`
-  background: ${({ isSelected }: ViewButtonProps) =>
-    isSelected ? selectedColor : textColor};
+  background: ${({ $isSelected }: ViewButtonProps) =>
+    $isSelected ? selectedColor : textColor};
   &:hover {
-    background: ${({ isSelected }: ViewButtonProps) =>
-      isSelected ? selectedColor : textColor};
+    background: ${({ $isSelected }: ViewButtonProps) =>
+      $isSelected ? selectedColor : textColor};
   }
 `;
 
@@ -36,14 +36,14 @@ const TabSelector = ({ selectedTab, select }: TabSelectorProps) => (
   <Box>
     <ViewBtnGroup variant="contained">
       <ViewButton
-        isSelected={selectedTab === 'Results'}
+        $isSelected={selectedTab === 'Results'}
         onClick={() => select('Results')}
         startIcon={<FormatListBulletedIcon />}
       >
         Results
       </ViewButton>
       <ViewButton
-        isSelected={selectedTab === 'Execution Plan'}
+        $isSelected={selectedTab === 'Execution Plan'}
         onClick={() => select('Execution Plan')}
         startIcon={<AccountTreeIcon />}
       >

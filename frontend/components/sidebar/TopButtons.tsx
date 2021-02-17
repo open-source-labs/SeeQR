@@ -19,11 +19,11 @@ const StyledIconButton = styled(IconButton)`
 `;
 
 interface StyledCompareButtonProps {
-  isSelected: boolean;
+  $isSelected: boolean;
 }
 
 const StyledCompareIcon = styled(EqualizerIcon)<StyledCompareButtonProps>`
-  color: ${({ isSelected }) => (isSelected ? selectedColor : textColor)};
+  color: ${({ $isSelected }) => ($isSelected ? selectedColor : textColor)};
   &:hover {
     color: ${hoverColor};
   }
@@ -52,7 +52,7 @@ const TopButtons = ({
         <StyledIconButton onClick={toggleCompareView}>
           <StyledCompareIcon
             fontSize="large"
-            isSelected={selectedView === 'compareView'}
+            $isSelected={selectedView === 'compareView'}
           />
         </StyledIconButton>
       </Tooltip>

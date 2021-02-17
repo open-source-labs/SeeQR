@@ -45,7 +45,7 @@ const QueryViewContainer = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
-`
+`;
 
 interface QueryViewProps {
   query?: AppState['workingQuery'];
@@ -117,10 +117,19 @@ const QueryView = ({
     // when db is changed we must change selected db state on app, as well as
     // request updates for db and table information. Otherwise database view tab
     // will show wrong informatio
-    setQuery({ ...localQuery, db: newDb });
-    setSelectedDb(newDb);
-    ipcRenderer.send('change-db', newDb);
-    ipcRenderer.send('return-db-list', newDb);
+    ipcRenderer
+      .invoke('select-db', newDb)
+      .then(() => {
+        setQuery({ ...localQuery, db: newDb });
+        setSelectedDb(newDb);
+      })
+
+      .catch(() =>
+        sendFeedback({
+          type: 'error',
+          message: `Failed to connect to ${newDb}`,
+        })
+      );
   };
   const onSqlChange = (newSql: string) => {
     // TODO: this triggers a rerender of the entire query view  every stroke
@@ -130,14 +139,17 @@ const QueryView = ({
 
   const onRun = () => {
     if (!localQuery.label.trim()) {
-      sendFeedback({type: 'info', message: 'Queries without a label will run but won\'t be saved'})
+      sendFeedback({
+        type: 'info',
+        message: "Queries without a label will run but won't be saved",
+      });
     }
 
     // Select Db from  query. Necessary because backend doesn't take db sent in
     // this event into consideration when running query.
     // TODO: extract this selection logic into module so it can be reused in other components
     // TODO: there could be a race condition with 'execute-query-tracked' executing before 'change-db-.
-    setSelectedDb(localQuery.db)
+    setSelectedDb(localQuery.db);
     ipcRenderer.send('change-db', localQuery.db);
     ipcRenderer.send('return-db-list', localQuery.db);
 
@@ -153,10 +165,7 @@ const QueryView = ({
   return (
     <QueryViewContainer>
       <TopRow>
-        <QueryLabel
-          label={localQuery.label}
-          onChange={onLabelChange}
-        />
+        <QueryLabel label={localQuery.label} onChange={onLabelChange} />
         <QueryDb
           db={localQuery.db}
           onChange={onDbChange}
