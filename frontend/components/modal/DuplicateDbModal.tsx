@@ -11,8 +11,15 @@ import {
 } from '@material-ui/core/';
 import styled from 'styled-components';
 import { MuiTheme } from '../../style-variables';
+import { sendFeedback } from '../../lib/utils';
 
 const { ipcRenderer } = window.require('electron');
+
+interface DuplicatePayload {
+  newName: string;
+  sourceDb: string;
+  withData: boolean;
+}
 
 // Button Container
 const ButtonContainer = styled('div')`
@@ -87,14 +94,23 @@ const DuplicateDbModal = ({
   };
 
   const handleCopyFilePath = () => {
-    const schemaObj = {
-      schemaName: defaultSchema ? defaultSchemaName : newSchemaName,
-      dbCopyName,
-      copy: checked,
+    const schemaObj: DuplicatePayload = {
+      newName: defaultSchema ? defaultSchemaName : newSchemaName,
+      sourceDb: dbCopyName,
+      withData: checked,
     };
-    ipcRenderer.send('input-schema', schemaObj);
-    setNewSchemaName(' ');
-    handleClose();
+    ipcRenderer
+      .invoke('duplicate-db', schemaObj)
+      .catch(() => {
+        sendFeedback({
+          type: 'error',
+          message: 'Failed to duplicate database',
+        });
+      })
+      .finally(() => {
+        setNewSchemaName(' ');
+        handleClose();
+      });
   };
 
   return (
