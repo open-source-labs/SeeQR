@@ -29,25 +29,25 @@ const helperFunctions: {
     `pg_restore -U postgres -d ${dbName} -f "${file}"`,
 
   // make a full copy of the schema
-  runFullCopyFunc: (dbCopyName, file) =>
-    `pg_dump -U postgres -d ${dbCopyName} -f "${file[0]}"`,
-
+  runFullCopyFunc: (path, selectedDBName) =>
+  `pg_dump -U postgres -F p ${selectedDBName} > ${path}`,
+  
   // make a hollow copy of the schema
-  runHollowCopyFunc: (dbCopyName, file) =>
-    `pg_dump -s -U postgres ${dbCopyName} -f "${file}"`,
+  runHollowCopyFunc: (path, selectedDBName) =>
+    `pg_dump -s -U postgres -F p ${selectedDBName} > ${path}`,
 
   // Function to execute commands in the child process.
   execute: (str: string, nextStep: any) => {
-    // console.log('in execute: ', str);
+    console.log('in execute: ', str);
     exec(str, (error, stdout, stderr) => {
-      // console.log('channels line 43 exec func: ', str); // , `${stdout}`);
+      console.log('channels line 43 exec func: ', str); // , `${stdout}`);
       if (error) {
         // this shows the console error in an error message on the frontend
-        // console.log(`channels line 47 error: ${error.message}`);
+        console.log(`channels line 47 error: ${error.message}`);
         dialog.showErrorBox(`${error.message}`, '');
       } else if (stderr) {
         // this shows the console error in an error message on the frontend
-        // console.log(`channels line 53 stderr: ${stderr}`);
+        console.log(`channels line 53 stderr: ${stderr}`);
         dialog.showErrorBox(`${stderr}`, '');
       } else nextStep();
     });

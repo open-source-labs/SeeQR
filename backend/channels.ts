@@ -1,8 +1,9 @@
 const { ipcMain } = require('electron'); // IPCMain: Communicate asynchronously from the main process to renderer processes
 const fs = require('fs');
+const os = require('os'); 
+const path = require('path')
 const db = require('./models');
 const { generateDummyData, writeCSVFile } = require('./DummyD/dummyDataMain');
-
 const {
   createDBFunc,
   dropDBFunc,
@@ -14,6 +15,7 @@ const {
 } = require('./helperFunctions');
 
 // *************************************************** IPC Event Listeners *************************************************** //
+
 ipcMain.on('return-db-list', (event) => {
   // event.sender.send('async-started'); // send notice to the frontend that async process has begun
   db.getLists()
@@ -92,6 +94,9 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
 
   const feedback: { type?: string; message?: string } = {};
 
+  const homeDir = path.resolve(os.homedir(), 'desktop')
+  const outputFile = `${homeDir}/${dbNameEnteredByUser}.sql`
+
   // conditional to get the correct schemaFilePath name from the Load Schema Modal
   if (!importedSchemaFilePath) {
     importedSchemaFilePath = [`${dbNameEnteredByUser}.sql`];
@@ -108,19 +113,19 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
   const createDB: string = createDBFunc(dbNameEnteredByUser);
   const runSQL: string = runSQLFunc(
     dbNameEnteredByUser,
-    importedSchemaFilePath
+    outputFile
   );
   const runTAR: string = runTARFunc(
     dbNameEnteredByUser,
-    importedSchemaFilePath
+    outputFile
   );
   const runFullCopy: string = runFullCopyFunc(
-    dbNameUserSelectedToCopy,
-    importedSchemaFilePath
+    outputFile,
+    dbNameUserSelectedToCopy
   );
   const runHollowCopy: string = runHollowCopyFunc(
-    dbNameUserSelectedToCopy,
-    importedSchemaFilePath
+    outputFile,
+    dbNameUserSelectedToCopy
   );
 
   // Change the URI to new DB, send DB lists and tables in current DB
@@ -133,6 +138,8 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
   const changeCurrentDB = () => {
     db.changeDB(dbNameEnteredByUser);
     const runCmd: string = extension === '.sql' ? runSQL : runTAR;
+
+    console.log('------------------------ about to runCMD')
     execute(runCmd, () => {
       if (fs.existsSync(`${dbNameEnteredByUser}.sql`)) {
         fs.unlinkSync(`${dbNameEnteredByUser}.sql`);
@@ -167,8 +174,6 @@ ipcMain.on('input-schema', (event, data: SchemaType) => {
       feedback.message = err;
       event.sender.send('feedback', feedback);
     });
-  // Run createDB script on command line via Node.js and then execute CB
-  // execute(createDB, importOrCopyExistingDB);
 });
 
 // Listen for queries being sent from renderer
