@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import styled from 'styled-components';
 import ReactFlow, {
   Background,
@@ -8,12 +8,12 @@ import ReactFlow, {
   NodeProps,
 } from 'react-flow-renderer';
 import PlanCard from './PlanCard';
-import buildFlowGraph from '../../../../lib/flow';
-import { ExplainJson, PlanNode } from '../../../../types';
+import buildFlowGraph, { SizedPlanNode } from '../../../../lib/flow';
+import { ExplainJson } from '../../../../types';
 import { DarkPaperFull } from '../../../../style-variables';
 import FlowControls from './FlowControls';
 
-type FlowNodeProps = NodeProps<{ plan: PlanNode }>;
+type FlowNodeProps = NodeProps<{ plan: SizedPlanNode }>;
 
 const FlowNodeComponent = ({ data: { plan } }: FlowNodeProps) => (
   <div>
@@ -30,6 +30,25 @@ const FlowNodeComponent = ({ data: { plan } }: FlowNodeProps) => (
     />
   </div>
 );
+
+const FlowTree = ({ data }: { data: ExplainJson }) => (
+  <ReactFlow
+    elements={buildFlowGraph(data.Plan, 'flowNode', 'smoothstep')}
+    nodesDraggable={false}
+    nodesConnectable={false}
+    nodeTypes={{ flowNode: FlowNodeComponent }}
+    minZoom={0.1}
+    onLoad={(instance) => instance.fitView({ padding: 0.2 })}
+    // improves performance on pan by preventing contant rerenders at the
+    // cost of higher startup time
+    onlyRenderVisibleElements={false}
+  >
+    <Background gap={32} />
+  </ReactFlow>
+);
+
+// Memoise to prevent rerender on fullscreen toggle
+const MemoFlowTree = memo(FlowTree)
 
 // prettier-ignore
 const TreeContainer = styled(DarkPaperFull)<{$fullscreen: boolean}>`
@@ -56,20 +75,14 @@ const PlanTree = ({ data }: PlanTreeProps) => {
   return (
     <TreeContainer $fullscreen={isFullscreen}>
       <ReactFlowProvider>
-        <ReactFlow
-          elements={buildFlowGraph(data.Plan, 'flowNode', 'smoothstep')}
-          nodesDraggable={false}
-          nodesConnectable={false}
-          nodeTypes={{ flowNode: FlowNodeComponent }}
-          minZoom={0.1}
-          onLoad={(instance) => instance.fitView({ padding: 0.2 })}
-        >
-          <Background gap={32} />
-        </ReactFlow>
-        <FlowControls toggleFullscreen={() => setFullscreen(!isFullscreen)} fullscreen={isFullscreen} />
+        <MemoFlowTree data={data} />
+        <FlowControls
+          toggleFullscreen={() => setFullscreen(!isFullscreen)}
+          fullscreen={isFullscreen}
+        />
       </ReactFlowProvider>
     </TreeContainer>
   );
 };
 
-export default PlanTree;
+export default memo(PlanTree);

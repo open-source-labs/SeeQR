@@ -16,7 +16,7 @@ const TabPanel = ({ children, value, index }: TabPanelProps) => (
     id={`scrollable-auto-tabpanel-${index}`}
     aria-labelledby={`scrollable-auto-tab-${index}`}
   >
-    {value === index && <Typography>{children}</Typography>}
+    {value === index && children}
   </div>
 );
 
@@ -30,7 +30,7 @@ interface TablesSidebarProps {
   selectTable: (table: TableInfo) => void;
 }
 
-const TablesSidebar = ({ tables }: TablesSidebarProps) => {
+const TablesTabs = ({ tables }: TablesSidebarProps) => {
   // const classes = useStyles();
   const [value, setValue] = useState(0);
 
@@ -49,17 +49,16 @@ const TablesSidebar = ({ tables }: TablesSidebarProps) => {
           variant="scrollable"
           scrollButtons="auto"
           aria-label="scrollable auto tabs example"
-          centered
         >
-          {tables.map((tableMap, index) => (
-            <Tab label={tableMap.table_name} {...a11yProps(index)} />
+          {tables.map(({table_name: name}, index) => (
+            <Tab label={name} {...a11yProps(index)} key={name} />
           ))}
           ;
         </Tabs>
       </AppBar>
       <br />
       {tables.map((tableMap, index) => (
-        <TabPanel value={value} index={index}>
+        <TabPanel value={value} index={index} key={tableMap.table_name}>
           <TableDetails table={tableMap} />
         </TabPanel>
       ))}
@@ -74,4 +73,4 @@ const TablesSidebar = ({ tables }: TablesSidebarProps) => {
   );
 };
 
-export default TablesSidebar;
+export default TablesTabs;

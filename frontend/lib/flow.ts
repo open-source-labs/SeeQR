@@ -7,6 +7,8 @@ export type TypedElements = Elements<{
   plan: PlanNode;
 }>;
 
+export type SizedPlanNode = PlanNode & SizedNode
+
 /**
  * Convert dagree layout to react-flow elements
  */
@@ -36,12 +38,12 @@ const dagreToFlow = (
 
 const traverse = (
   root: PlanNode,
-  idGenerator: () => number,
+  idGenerator: () => string,
   cb: (node: SizedNode) => void
 ) => {
   const node: SizedNode = {
     ...root,
-    id: idGenerator().toString(),
+    id: idGenerator(),
     width: parseInt(planNodeWidth, 10),
     height: parseInt(planNodeHeight, 10),
   };
@@ -56,14 +58,17 @@ const traverse = (
  */
 const getSizedNodes = (root: PlanNode) => {
   /**
-   * Get next number in sequence. Starts at 0. 
-   * declared here so ids always start at 0 for every traversal
+   * Build id from timestamp of this calculation and sequence that starts at 0
+   * id is later used for memoizing renders of PlanCards so they must always be unique 
+   * to different results, but consistent across renders of the same results
+   * Declared here so ids always start at 0 for every traversal
    */
   const idGen = (() => {
     let counter = -1;
+    const runId = Date.now().toString()
     return () => {
       counter += 1;
-      return counter;
+      return `${runId}_${counter}`;
     };
   })();
 
