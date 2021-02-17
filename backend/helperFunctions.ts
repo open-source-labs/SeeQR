@@ -1,14 +1,10 @@
 const { exec } = require('child_process'); // Dialog: display native system dialogs for opening and saving files, alerting, etc
 const { dialog } = require('electron'); // Child_Process: Importing Node.js' child_process API
-const os = require('os'); 
 
 // ************************************** CLI COMMANDS TO CREATE, DELETE, COPY DB SCHEMA, etc. **************************************
 
 // Generate CLI commands to be executed in child process.
 // The electron app will access your terminal to execute these postgres commands via execute function
-
-const homeDir = `${os.homedir()}/desktop`;
-console.log('-------------- home dir ', homeDir)
 
 const helperFunctions: {
   createDBFunc: Function;
@@ -33,15 +29,10 @@ const helperFunctions: {
     `pg_restore -U postgres -d ${dbName} -f "${file}"`,
 
   // make a full copy of the schema
-  // runFullCopyFunc: (dbCopyName, file) =>
-  // `pg_dump -U postgres -d ${dbCopyName} -f "${file}"`,
   runFullCopyFunc: (path, selectedDBName) =>
   `pg_dump -U postgres -F p ${selectedDBName} > ${path}`,
-  // `pg_dump -U postgres -F p ${selectedDBName} > ${homeDir}/${newDBName}.sql`,
   
   // make a hollow copy of the schema
-  // runHollowCopyFunc: (dbCopyName, file) =>
-  // `pg_dump -s -U postgres ${dbCopyName} -f "${file}"`,
   runHollowCopyFunc: (path, selectedDBName) =>
     `pg_dump -s -U postgres -F p ${selectedDBName} > ${path}`,
 
