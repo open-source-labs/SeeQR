@@ -13,8 +13,7 @@
   "scripts": {
     "build": "cross-env NODE_ENV=production tsc && cross-env NODE_ENV=production webpack",
     "start": "cross-env NODE_ENV=production electron --noDevServer .",
-    "dev": "tsc && cross-env NODE_ENV=development webpack-dev-server --hot",
-    "watch-dev": "run-p tsc-dev electron-dev webpack-dev",
+    "dev": "run-p tsc-dev electron-dev webpack-dev",
     "webpack-dev": "cross-env NODE_ENV=development webpack-dev-server --hot",
     "electron-dev": "nodemon --watch tsCompiled/backend --exec \"npx cross-env NODE_ENV=development electron .\"",
     "tsc-dev": "tsc --watch",
