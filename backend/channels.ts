@@ -84,8 +84,12 @@ ipcMain.handle(
     event.sender.send('async-started');
 
     // store temporary file in user desktop
-    const tempFilePath = path.resolve(os.homedir(), 'desktop',`temp_${newName}.sql`)
-    
+    const tempFilePath = path.resolve(
+      os.homedir(),
+      'desktop',
+      `temp_${newName}.sql`
+    );
+
     try {
       // dump database to temp file
       const dumpCmd = withData
@@ -124,11 +128,11 @@ ipcMain.handle(
       // cleanup temp file
       try {
         fs.unlinkSync(tempFilePath);
-      } catch (e){
+      } catch (e) {
         event.sender.send('feedback', {
           type: 'error',
-          message: `Failed to cleanup temp files. ${tempFilePath} could not be removed.`
-        })
+          message: `Failed to cleanup temp files. ${tempFilePath} could not be removed.`,
+        });
       }
 
       event.sender.send('async-complete');
@@ -182,79 +186,67 @@ ipcMain.handle(
   }
 );
 
-// Listen for queries being sent from renderer
-interface QueryType {
-  queryCurrentSchema: string;
-  queryString: string;
-  queryLabel: string;
-  queryData: string;
-  queryStatistics: string;
+interface QueryPayload {
+  targetDb: string;
+  sqlString: string;
+  selectedDb: string;
 }
-ipcMain.on('execute-query-tracked', (event, data: QueryType) => {
-  // send notice to front end that query has been started
-  event.sender.send('async-started');
 
-  // destructure object from frontend
-  const { queryCurrentSchema, queryLabel } = data;
-  let { queryString } = data;
+ipcMain.handle(
+  'run-query',
+  async (event, { targetDb, sqlString, selectedDb }: QueryPayload) => {
+    event.sender.send('async-started');
+    try {
+      let error: string | undefined
+      // connect to db to run query
+      if (selectedDb !== targetDb) await db.connectToDB(targetDb);
 
-  // Removing semicolon if its added to the end of the query
-  if (queryString[queryString.length - 1] === ';')
-    queryString = queryString.slice(0, queryString.length - 1);
+      // Run Explain
+      let explainResults
+      try {
+        const results = await db.query(
+          `BEGIN; EXPLAIN (FORMAT JSON, ANALYZE) ${sqlString}; ROLLBACK;`
+        );
+        explainResults = results[1].rows;
+      } catch (e) {
+        error = `Failed to get Execution Plan. EXPLAIN might not support this query.`
+      }
 
-  // initialize object to store all data to send to frontend
-  const frontendData = {
-    queryString,
-    queryCurrentSchema,
-    queryLabel,
-    queryData: '',
-    queryStatistics: '',
-  };
+      // Run Query
+      let returnedRows
+      try {
+        const results = await db.query(sqlString);
+        returnedRows = results.rows
+      } catch (e) {
+        error = e.toString()
+      }
 
-  // potential create table query
-  // CREATE TABLE IF NOT EXISTS test4 (
-  //   id SERIAL PRIMARY KEY,
-  //   name VARCHAR NOT NULL,
-  //   mass VARCHAR
-  // )
-  const feedback: { type?: string; message?: string } = {};
-  db.query(`BEGIN; EXPLAIN (FORMAT JSON, ANALYZE) ${queryString}; ROLLBACK;`)
-    .then((queryStats) => {
-      frontendData.queryStatistics = queryStats[1].rows;
-    })
-    .catch((err) => {
-      feedback.type = 'error';
-      feedback.message = `Cannot run EXPLAIN. \n ${err}`;
-    })
-    .finally(() => {
-      db.query(queryString)
-        .then((queryData) => {
-          frontendData.queryData = queryData.rows;
-          if (!feedback.type) {
-            feedback.type = 'success';
-            feedback.message = 'Success!';
-          }
-        })
-        .catch((err) => {
-          feedback.type = 'error';
-          feedback.message = err;
-        })
-        .finally(async () => {
-          // (function getListAsync() {
-          const listObj = await db.getLists();
-          // frontendData.lists = listObj;
-          event.sender.send('db-lists', listObj);
-          event.sender.send('return-execute-query', frontendData);
-          event.sender.send('feedback', feedback);
-          event.sender.send('async-complete');
-        });
-    });
-});
+      return {
+        db: targetDb,
+        sqlString,
+        returnedRows,
+        explainResults,
+        error
+      }
+    } finally {
+      // connect back to initialDb
+      if (selectedDb !== targetDb) await db.connectToDB(selectedDb);
+
+      // send updated db info in case query affected table or database information 
+      // must be run after we connect back to the originally selected so tables information is accurate
+      const dbsAndTables = await db.getLists();
+      event.sender.send('db-lists', dbsAndTables);
+
+      event.sender.send('async-complete');
+    }
+  }
+);
 
 interface dummyDataRequestType {
   schemaName: string;
   dummyData: {};
 }
+
 ipcMain.on('generate-dummy-data', (event: any, data: dummyDataRequestType) => {
   // send notice to front end that DD generation has been started
   event.sender.send('async-started');

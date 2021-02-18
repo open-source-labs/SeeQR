@@ -1,10 +1,9 @@
-import { IpcMainEvent } from 'electron';
+import { IpcRendererEvent, ipcRenderer } from 'electron';
 import React, { useEffect, useState } from 'react';
 import { Button, Box } from '@material-ui/core/';
 import styled from 'styled-components';
 import {
   QueryData,
-  isBackendQueryData,
   CreateNewQuery,
   AppState,
   isDbLists,
@@ -19,8 +18,6 @@ import QueryTopSummary from './QueryTopSummary';
 import QuerySqlInput from './QuerySqlInput';
 import QuerySummary from './QuerySummary';
 import QueryTabs from './QueryTabs';
-
-const { ipcRenderer } = window.require('electron');
 
 // emitting with no payload requests backend to send back a db-lists event with list of dbs
 const requestDbListOnce = once(() => ipcRenderer.send('return-db-list'));
@@ -76,7 +73,7 @@ const QueryView = ({
 
   // Register event listener that receives database list for db selector
   useEffect(() => {
-    const receiveDbs = (evt: IpcMainEvent, dbLists: unknown) => {
+    const receiveDbs = (evt: IpcRendererEvent, dbLists: unknown) => {
       if (isDbLists(dbLists)) {
         setDatabases(dbLists.databaseList.map((db) => db.db_name));
       }
@@ -84,29 +81,9 @@ const QueryView = ({
     ipcRenderer.on('db-lists', receiveDbs);
     requestDbListOnce();
 
-    return () => ipcRenderer.removeListener('db-lists', receiveDbs);
-  });
-
-  // Register event listener that receives query information
-  useEffect(() => {
-    // Listen to Backend for data returned from running query and create/update query
-    const receiveQuery = (evt: IpcMainEvent, queryData: unknown) => {
-      if (isBackendQueryData(queryData)) {
-        const transformedData = {
-          sqlString: queryData.queryString,
-          returnedRows: queryData.queryData,
-          executionPlan: queryData.queryStatistics[0]['QUERY PLAN'][0],
-          label: queryData.queryLabel,
-          db: queryData.queryCurrentSchema,
-        };
-        createNewQuery(transformedData);
-      }
-    };
-
-    ipcRenderer.on('return-execute-query', receiveQuery);
-
-    return () =>
-      ipcRenderer.removeListener('return-execute-query', receiveQuery);
+    return () => {
+      ipcRenderer.removeListener('db-lists', receiveDbs);
+    }
   });
 
   const onLabelChange = (newLabel: string) => {
@@ -145,20 +122,34 @@ const QueryView = ({
       });
     }
 
-    // Select Db from  query. Necessary because backend doesn't take db sent in
-    // this event into consideration when running query.
-    // TODO: extract this selection logic into module so it can be reused in other components
-    // TODO: there could be a race condition with 'execute-query-tracked' executing before 'change-db-.
-    setSelectedDb(localQuery.db);
-    ipcRenderer.send('change-db', localQuery.db);
-    ipcRenderer.send('return-db-list', localQuery.db);
-
+    // TODO: unify types for frontend/backend
     // request backend to run query
-    ipcRenderer.send('execute-query-tracked', {
-      queryLabel: localQuery.label.trim(),
-      queryString: localQuery.sqlString,
-      queryCurrentSchema: localQuery.db,
-    });
+    ipcRenderer
+      .invoke('run-query', {
+        targetDb: localQuery.db,
+        sqlString: localQuery.sqlString,
+        selectedDb,
+      })
+      .then(({ db, sqlString, returnedRows, explainResults, error }) => {
+        if (error) {
+          throw error
+        }
+
+        const transformedData = {
+          sqlString,
+          returnedRows,
+          executionPlan: explainResults[0]['QUERY PLAN'][0],
+          label: localQuery.label,
+          db,
+        };
+        createNewQuery(transformedData);
+      })
+      .catch((err) => {
+        sendFeedback({
+          type: 'error',
+          message: err ?? 'Failed to Run Query',
+        });
+      });
   };
 
   if (!show) return null;
