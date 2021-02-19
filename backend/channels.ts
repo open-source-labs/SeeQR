@@ -208,74 +208,105 @@ ipcMain.on('execute-query-tracked', async (event, data: QueryType) => {
   //   mass VARCHAR
   // )
   const feedback: { type?: string; message?: string } = {};
-  try {
-    const queryStats = await db.query(`BEGIN; EXPLAIN (FORMAT JSON, ANALYZE) ${queryLabel}; ROLLBACK;`)
-    frontendData.queryStatistics = queryStats[1].rows;
-    await db.query('Begin');
-    const secondReturnedData = await db.query(queryLabel);
-    const returnedData = await db.query(queryString);
-    console.log('secondReturned: ', secondReturnedData);
-    frontendData.queryData = returnedData.rows;
-    await db.query('Commit');
-  } catch (err) {
-    await db.query('Rollback');
-    console.log('rolling back');
-    feedback.type = 'error';
-    feedback.message = err;
-  }
-  const listObj = await db.getLists();
-  event.sender.send('db-lists', listObj);
-  event.sender.send('return-execute-query', frontendData);
-  event.sender.send('feedback', feedback);
-  event.sender.send('async-complete');
+  // try {
+  //   const queryStats = await db.query(`BEGIN; EXPLAIN (FORMAT JSON, ANALYZE) ${queryLabel}; ROLLBACK;`)
+  //   frontendData.queryStatistics = queryStats[1].rows;
+  //   await db.query('Begin');
+  //   const secondReturnedData = await db.query(queryLabel);
+  //   const returnedData = await db.query(queryString);
+  //   console.log('secondReturned: ', secondReturnedData);
+  //   frontendData.queryData = returnedData.rows;
+  //   await db.query('Commit');
+  // } catch (err) {
+  //   await db.query('Rollback');
+  //   console.log('rolling back');
+  //   feedback.type = 'error';
+  //   feedback.message = err;
+  // }
+  // const listObj = await db.getLists();
+  // event.sender.send('db-lists', listObj);
+  // event.sender.send('return-execute-query', frontendData);
+  // event.sender.send('feedback', feedback);
+  // event.sender.send('async-complete');
 
-  // db.query(`BEGIN; EXPLAIN (FORMAT JSON, ANALYZE) ${queryString}; ROLLBACK;`)
-  //   .then((queryStats) => {
-  //     frontendData.queryStatistics = queryStats[1].rows;
-  //   })
-  //   .catch((err) => {
-  //     feedback.type = 'error';
-  //     feedback.message = `Cannot run EXPLAIN. \n ${err}`;
-  //   })
-  //   .finally(() => {
-  //     db.query(queryString)
-  //       .then((queryData) => {
-  //         frontendData.queryData = queryData.rows;
-  //         if (!feedback.type) {
-  //           feedback.type = 'success';
-  //           feedback.message = 'Success!';
-  //         }
-  //       })
-  //       .catch((err) => {
-  //         feedback.type = 'error';
-  //         feedback.message = err;
-  //       })
-  //       .finally(async () => {
-  //         // (function getListAsync() {
-  //         const listObj = await db.getLists();
-  //         // frontendData.lists = listObj;
-  //         event.sender.send('db-lists', listObj);
-  //         event.sender.send('return-execute-query', frontendData);
-  //         console.log('frontend data: ', frontendData);
-  //         event.sender.send('feedback', feedback);
-  //         event.sender.send('async-complete');
-  //       });
-  //   });
+  db.query(`BEGIN; EXPLAIN (FORMAT JSON, ANALYZE) ${queryString}; ROLLBACK;`)
+    .then((queryStats) => {
+      frontendData.queryStatistics = queryStats[1].rows;
+    })
+    .catch((err) => {
+      feedback.type = 'error';
+      feedback.message = `Cannot run EXPLAIN. \n ${err}`;
+    })
+    .finally(() => {
+      db.query(queryString)
+        .then((queryData) => {
+          frontendData.queryData = queryData.rows;
+          if (!feedback.type) {
+            feedback.type = 'success';
+            feedback.message = 'Success!';
+          }
+        })
+        .catch((err) => {
+          feedback.type = 'error';
+          feedback.message = err;
+        })
+        .finally(async () => {
+          // (function getListAsync() {
+          const listObj = await db.getLists();
+          // frontendData.lists = listObj;
+          event.sender.send('db-lists', listObj);
+          event.sender.send('return-execute-query', frontendData);
+          event.sender.send('feedback', feedback);
+          event.sender.send('async-complete');
+        });
+    });
 });
 
 interface dummyDataRequestType {
-  schemaName: string;
-  dummyData: {};
+  dbName: string;
+  tableName: string;
+  rows: number;
 }
 
-ipcMain.on('generate-dummy-data', (event: any, data: dummyDataRequestType) => {
-  console.log('data received: ', data);
+ipcMain.on('generate-dummy-data', async (event: any, data: dummyDataRequestType) => {
   // send notice to front end that DD generation has been started
   event.sender.send('async-started');
   const dummyDataRequest: dummyDataRequestType = data;
-  // Retrieves the Primary Keys and Foreign Keys for all the tables
-
+  try {
+    // Retrieves the Primary Keys and Foreign Keys for all the tables
+    const tableInfo = await db.getTableInfo(data.tableName);
+    console.log('tableInfo: ', tableInfo);
+    const dummyArray = await generateDummyData(tableInfo, data.rows);
+    console.log('dummyArray: ', dummyArray);
+    const dummyArrayStringified = [] as any;
+    const columnsStringified = '('.concat(dummyArray[0].join(', ')).concat(')');
+    let insertQuery = `INSERT INTO ${data.tableName} ${columnsStringified} VALUES `;
+    for (let i = 1; i < dummyArray.length - 1; i += 1) {
+      const recordStringified = '('.concat(dummyArray[i].join(', ')).concat('), ');
+      insertQuery = insertQuery.concat(recordStringified)
+    };
+    const lastRecordStringified = '('.concat(dummyArray[dummyArray.length - 1].join(', ')).concat(');');
+    insertQuery = insertQuery.concat(lastRecordStringified);
+    console.log(insertQuery);
+    await db.query('Begin;');
+    await db.query(insertQuery);
+    await db.query('Commit;');
+    event.sender.send('async-complete');
+  } catch(err) {
+    await db.query('Rollback;');
+    const feedback = {
+      type: 'error',
+      message: err,
+    };
+    event.sender.send('feedback', feedback);
+  }
 });
+
+// INSERT INTO products (product_no, name, price) VALUES
+//     (1, 'Cheese', 9.99),
+//     (2, 'Bread', 1.99),
+//     (3, 'Milk', 2.99);
+
 
 // ipcMain.on('generate-dummy-data', (event: any, data: dummyDataRequestType) => {
 //   // send notice to front end that DD generation has been started
