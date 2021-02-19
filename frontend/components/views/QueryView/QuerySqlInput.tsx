@@ -21,7 +21,7 @@ const Toolbar = styled.div`
   position: absolute;
   z-index: 1000;
   top: 5px;
-  right: 5px;
+  right: 23px;
   opacity: 0.3;
   transition: opacity 0.3s ease;
 

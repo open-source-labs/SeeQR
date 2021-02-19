@@ -1,5 +1,6 @@
 {
-  "name": "SeeQR",
+  "name": "seeqr",
+  "productName": "SeeQR App",
   "version": "3.0.0-beta1",
   "description": "SeeQR",
   "main": "./tsCompiled/backend/main",
@@ -10,11 +11,15 @@
     ]
   },
   "scripts": {
-    "build": "tsc && webpack",
+    "build": "cross-env NODE_ENV=production tsc && cross-env NODE_ENV=production webpack",
     "start": "cross-env NODE_ENV=production electron --noDevServer .",
-    "dev": "tsc && cross-env NODE_ENV=development webpack-dev-server --hot",
+    "dev": "run-p tsc-dev electron-dev webpack-dev",
+    "webpack-dev": "cross-env NODE_ENV=development webpack-dev-server --hot",
+    "electron-dev": "nodemon --watch tsCompiled/backend --exec \"npx cross-env NODE_ENV=development electron .\"",
+    "tsc-dev": "tsc --watch",
     "test": "jest --verbose",
-    "win-build-apps": "sudo npx electron-packager . SeeQR --out=appBuilds --platform=win32 --platform=darwin"
+    "package-mac": "tsc && cross-env NODE_ENV=production webpack && electron-packager . --overwrite --platform=darwin --arch=x64 --icon=assets/icons/mac/seeqr.icns --prune=true --out=release-builds",
+    "package-win": "tsc && cross-env NODE_ENV=production webpack && electron-packager . SeeQR-App --overwrite --asar=true --platform=win32 --arch=ia32 --icon=assets/icons/win/seeqr.ico --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"SeeQR App\""
   },
   "repository": {
     "type": "git",
@@ -36,8 +41,8 @@
     "concurrently": "^5.3.0",
     "cross-env": "^7.0.3",
     "dagre": "^0.8.5",
-    "electron": "^11.2.1",
-    "electron-store": "^6.0.0",
+    "electron": "^11.2.3",
+    "electron-devtools-installer": "^3.1.1",
     "faker": "^5.1.0",
     "fix-path": "^3.0.0",
     "fontsource-roboto": "^4.0.0",
@@ -78,9 +83,9 @@
     "babel-minify-webpack-plugin": "^0.3.1",
     "csp-html-webpack-plugin": "^4.0.0",
     "css-loader": "^3.5.3",
-    "electron-devtools-installer": "^3.1.1",
     "electron-packager": "^14.2.1",
     "electron-reloader": "^1.1.0",
+    "electron-store": "^6.0.0",
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-16": "^1.15.5",
     "eslint": "^7.19.0",
@@ -97,6 +102,7 @@
     "jest": "^26.4.2",
     "mini-css-extract-plugin": "^0.9.0",
     "nodemon": "^2.0.4",
+    "npm-run-all": "^4.1.5",
     "postcss-loader": "^3.0.0",
     "prettier": "^2.2.1",
     "react-refresh": "^0.9.0",

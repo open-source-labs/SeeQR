@@ -47,7 +47,9 @@ module.exports = {
           loader: 'babel-loader',
           options: {
             presets: ['@babel/preset-env', '@babel/preset-react'],
-            plugins: [isDevelopment && require.resolve('react-refresh/babel')],
+            plugins: [
+              isDevelopment && require.resolve('react-refresh/babel'),
+            ].filter(Boolean),
           },
         },
       },
@@ -115,15 +117,6 @@ module.exports = {
     watchOptions: {
       ignored: /node_modules/,
     },
-    before() {
-      spawn('electron', ['.', 'dev'], {
-        shell: true,
-        env: process.env,
-        stdio: 'inherit',
-      })
-        .on('close', () => process.exit(0))
-        .on('error', (spawnError) => console.error(spawnError));
-    },
   },
   plugins: [
     new HtmlWebpackPlugin({
@@ -156,6 +149,7 @@ module.exports = {
       //   ],
       // },
     }),
+    isDevelopment && new webpack.HotModuleReplacementPlugin(),
     isDevelopment && new ReactRefreshWebpackPlugin(),
-  ],
+  ].filter(Boolean),
 };

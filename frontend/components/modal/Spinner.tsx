@@ -8,7 +8,7 @@ const StyledLinearProg = styled(LinearProgress)`
   /* Material Ui Drawer component used by sidebar has z-index: 1200 */
   z-index: 1300;
   height: 2px;
-  visibility: ${({ show }: { show: boolean }) => (show ? 'visible' : 'hidden')};
+  visibility: ${({ $show }: { $show: boolean }) => ($show ? 'visible' : 'hidden')};
 `;
 
 const Spinner = () => {
@@ -38,7 +38,7 @@ const Spinner = () => {
     return () => ipcRenderer.removeListener('feedback', hideProgress);
   });
 
-  return <StyledLinearProg show={show} />;
+  return <StyledLinearProg $show={show} />;
 };
 
 export default Spinner;

@@ -5,6 +5,9 @@ import { SidebarList } from '../../style-variables';
 import { AppState, QueryData } from '../../types';
 import { deleteQuery, setCompare, key as queryKey } from '../../lib/queries';
 import QueryEntry from './QueryEntry';
+import logo from '../../../assets/logo/seeqr_dock.png';
+import styled from 'styled-components';
+import { greyDarkest } from '../../style-variables';
 
 type QueryListProps = Pick<
   AppState,
@@ -18,6 +21,10 @@ type QueryListProps = Pick<
   createQuery: () => void;
   show: boolean;
 };
+
+const StyledSidebarList = styled(SidebarList)`
+  background-color: ${greyDarkest};
+`;
 
 const QueryList = ({
   queries,
@@ -48,7 +55,7 @@ const QueryList = ({
           <AddIcon fontSize="large" />
         </IconButton>
       </Tooltip>
-      <SidebarList>
+      <StyledSidebarList>
         {Object.values(queries).map((query: QueryData) => (
           <QueryEntry
             key={`QueryList_${query.label}_${query.db}`}
@@ -62,7 +69,7 @@ const QueryList = ({
             setComparison={setComparisonHandler(query)}
           />
         ))}
-      </SidebarList>
+      </StyledSidebarList>
     </>
   );
 };

@@ -1,20 +1,26 @@
 import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
 import { IpcMainEvent } from 'electron';
 import { IconButton, Tooltip } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import AddNewDbModal from '../modal/AddNewDbModalCorrect';
 import { AppState, isDbLists } from '../../types';
-import { once } from '../../lib/utils';
+import { once, sendFeedback } from '../../lib/utils';
 import DuplicateDbModal from '../modal/DuplicateDbModal';
 import DbEntry from './DbEntry';
-
+import logo from '../../../assets/logo/seeqr_dock.png';
 import { SidebarList } from '../../style-variables';
+import { greyDarkest } from '../../style-variables';
 
 // TODO: how to type ipcRenderer ?
 const { ipcRenderer } = window.require('electron');
 
 // emitting with no payload requests backend to send back a db-lists event with list of dbs
 const requestDbListOnce = once(() => ipcRenderer.send('return-db-list'));
+
+const StyledSidebarList = styled(SidebarList)`
+  background-color: ${greyDarkest};
+`;
 
 type DbListProps = Pick<AppState, 'selectedDb' | 'setSelectedDb'> & {
   show: boolean;
@@ -57,9 +63,18 @@ const DbList = ({ selectedDb, setSelectedDb, show }: DbListProps) => {
   };
 
   const selectHandler = (dbName: string) => {
-    setSelectedDb(dbName);
-    ipcRenderer.send('change-db', dbName);
-    ipcRenderer.send('return-db-list', dbName);
+    if (dbName === selectedDb) return 
+    ipcRenderer
+      .invoke('select-db', dbName)
+      .then(() => {
+        setSelectedDb(dbName);
+      })
+      .catch(() =>
+        sendFeedback({
+          type: 'error',
+          message: `Failed to connect to ${dbName}`,
+        })
+      );
   };
 
   if (!show) return null;
@@ -70,7 +85,7 @@ const DbList = ({ selectedDb, setSelectedDb, show }: DbListProps) => {
           <AddIcon fontSize="large" />
         </IconButton>
       </Tooltip>
-      <SidebarList>
+      <StyledSidebarList>
         {databases.map((dbName) => (
           <DbEntry
             key={`dbList_${dbName}`}
@@ -80,13 +95,15 @@ const DbList = ({ selectedDb, setSelectedDb, show }: DbListProps) => {
             duplicate={() => handleClickOpenDupe(dbName)}
           />
         ))}
-        <DuplicateDbModal
-          open={openDupe}
-          onClose={handleCloseDupe}
-          dbCopyName={dbToDupe}
-          databases={databases}
-        />
-      </SidebarList>
+        {openDupe ? (
+          <DuplicateDbModal
+            open={openDupe}
+            onClose={handleCloseDupe}
+            dbCopyName={dbToDupe}
+            databases={databases}
+          />
+        ) : null}
+      </StyledSidebarList>
       {/* Validate Db name doesnt exist */}
       <AddNewDbModal
         open={openAdd}

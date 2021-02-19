@@ -38,7 +38,7 @@ const QueryEntry = ({
   isCompared,
   deleteThisQuery,
 }: QueryEntryProps) => (
-  <SidebarListItem button customSelected={isSelected} onClick={select}>
+  <SidebarListItem button $customSelected={isSelected} onClick={select}>
     <QueryText primary={query.label} secondary={query.db} />
     <ListItemSecondaryAction>
       <Tooltip title="View in Comparison">

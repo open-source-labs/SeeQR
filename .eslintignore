@@ -1,0 +1,6 @@
+tsCompiled
+.vscode
+assets
+dist
+node_modules
+frontendOld

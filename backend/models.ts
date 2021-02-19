@@ -135,7 +135,6 @@ const getDBLists = () =>
 
 let myobj: {
   query: Function;
-  changeDB: Function;
   closePool: Function;
   getLists: Function;
   getTableInfo: Function;
@@ -145,6 +144,7 @@ let myobj: {
   getSchemaLayout: Function;
   addPrimaryKeyConstraints: Function;
   addForeignKeyConstraints: Function;
+  connectToDB: (db: string) => Promise<void>;
 };
 
 // eslint-disable-next-line prefer-const
@@ -154,12 +154,12 @@ myobj = {
     console.log('Executed query: ', text);
     return pool.query(text, params, callback);
   },
-  // Change current DB
-  changeDB: (dbName: string = '') => {
-    PG_URI = `postgres://postgres:postgres@localhost:5432/${dbName}`;
-    pool = new Pool({ connectionString: PG_URI });
-    console.log('Current URI: ', PG_URI);
-    return dbName;
+  // Change current Db
+  connectToDB: async (db: string) => {
+    const newURI = `postgres://postgres:postgres@localhost:5432/${db}`;
+    const newPool = new Pool({ connectionString: newURI });
+    await pool.end();
+    pool = newPool;
   },
   // Close connection to current pool
   closePool: () => {
