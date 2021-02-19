@@ -23,13 +23,13 @@ const getRandomInt = (min, max) => {
 //   column data coming in is an object with the following form
 // {
 //   columnName: result.rows[i].column_name,
-//   dataInfo: {
-//     data_type: result.rows[i].data_type,
-//     character_maxiumum_length: result.rows[i].character_maxiumum_length,
-// }
+//   data_type: result.rows[i].data_type,
+//   character_maxiumum_length: result.rows[i].character_maxiumum_length,
+//  }
 const generateDataByType = (columnObj) => {
+  let length;
   // faker.js method to generate data by type
-  switch (columnObj.dataInfo.data_type) {
+  switch (columnObj.data_type) {
     case 'smallint':
       return faker.random.number({ min: -32768, max: 32767 });
     case 'integer':
@@ -40,14 +40,11 @@ const generateDataByType = (columnObj) => {
         max: 9223372036854775807,
       });
     case 'character varying':
-      if (columnObj.dataInfo.character_maximum_length) {
-        return faker.lorem.character(
-          Math.floor(
-            Math.random() * columnObj.dataInfo.character_maximum_length
-          )
-        );
-      }
-      return faker.lorem.word();
+      // defaulting length to 3 because faker.lorem defaults to a length of 3 if no length is specified
+      length = columnObj.character_maximum_length < 3 && columnObj.character_maximum_length
+        ? Math.floor(Math.random() * columnObj.character_maximum_length)
+        : 3;
+      return '\''.concat(faker.lorem.word(length)).concat('\'');
     case 'date': {
       // generating a random date between 1500 and 2020
       let result: string = '';
@@ -68,10 +65,10 @@ const generateDataByType = (columnObj) => {
 // initialize a counter to make sure we are only adding back constraints once we've dropped and re-added columns
 let count: number = 0;
 
-let myObj: {
-  writeCSVFile: Function;
-  generateDummyData: Function;
-};
+// let myObj: {
+//   writeCSVFile: Function;
+//   generateDummyData: Function;
+// };
 
     // console.log('tableObject: ', tableObject)
   // tableObject:  {
@@ -117,7 +114,8 @@ let myObj: {
     // console.log('dummyDataRequest', dummyDataRequest)
   // dummyDataRequest { schemaName: 'test', dummyData: { films: 2, people: 2 } }
     // console.log('event ', event)
-myObj = {
+
+const myObj = {
   writeCSVFile: (
     tableObject,
     schemaLayout,
@@ -262,90 +260,135 @@ myObj = {
     }
   },
 
-  // maps table names from schemaLayout to sql files
-  generateDummyData: (schemaLayout, dummyDataRequest, keyObject) => {
-    const returnArray: any = [];
+  generateDummyData: async (tableInfo, numRows) => {
+    const dummyRecords = [] as any;
 
-    // iterate over schemaLayout.tableNames array
-    for (let m = 0; m < schemaLayout.tableNames.length; m += 1) {
-      const tableName = schemaLayout.tableNames[m];
+    // assuming primary key is serial, get all the column names except for the column with the primary key
+    const columnNames = tableInfo.reduce((acc, curr) => {
+      if (curr.constraint_type !== 'PRIMARY KEY') acc.push(curr.column_name);
+      return acc;
+    }, []);
+    dummyRecords.push(columnNames);
 
-      const tableMatrix: any = [];
-      // if matching key exists in dummyDataRequest.dummyData
-      if (dummyDataRequest.dummyData[tableName]) {
-        // declare empty columnData array for tableMatrix
-        let columnData: any = [];
-        // declare an entry variable to capture the entry we will push to column data
-        let entry: any;
-
-        // iterate over columnArray (i.e. an array of the column names for the table)
-        const columnArray: string[] = schemaLayout.tables[tableName].map(
-          (columnObj) => columnObj.columnName
-        );
-        for (let i = 0; i < columnArray.length; i += 1) {
-          // declare a variable j (to be used in while loops below), set equal to zero
-          let j: number = 0;
-          // if there are either PK or FK columns on this table, enter this logic
-          if (keyObject[tableName]) {
-            // if this is a PK column, add numbers into column 0 to n-1 (ordered)
-            if (keyObject[tableName].primaryKeyColumns[columnArray[i]]) {
-              // while i < reqeusted number of rows
-              while (j < dummyDataRequest.dummyData[tableName]) {
-                // push into columnData
-                columnData.push(j);
-                // increment j
-                j += 1;
-              }
-            }
-            // if this is a FK column, add random number between 0 and n-1 (inclusive) into column (unordered)
-            else if (keyObject[tableName].foreignKeyColumns[columnArray[i]]) {
-              // while j < reqeusted number of rows
-              while (j < dummyDataRequest.dummyData[tableName]) {
-                // generate an entry
-                entry = Math.floor(
-                  Math.random() * dummyDataRequest.dummyData[tableName]
-                );
-                // push into columnData
-                columnData.push(entry);
-                j += 1;
-              }
-            }
-            // otherwise, we'll just add data by the type to which the column is constrained
-            else {
-              while (j < dummyDataRequest.dummyData[tableName]) {
-                // generate an entry
-                entry = generateDataByType(schemaLayout.tables[tableName][i]);
-                // push into columnData
-                columnData.push(entry);
-                j += 1;
-              }
-            }
+    // generate dummy records for each row
+    for (let i = 0; i < numRows; i += 1) {
+      const row = [] as any;
+      // at each row, go through the columns of the table and generate dummy data accordingly
+      for (let j = 0; j < tableInfo.length; j += 1) {
+        // if column has no foreign key constraint, then generate dummy data based on data type
+        if (
+          tableInfo[j].constraint_type !== 'FOREIGN KEY' &&
+          tableInfo[j].constraint_type !== 'PRIMARY KEY'
+        ) row.push(generateDataByType(tableInfo[j]));
+        
+        // if there is a foreign key constraint, grab random key from foreign table 
+        else if (tableInfo[j].constraint_type === 'FOREIGN KEY') {
+          try {
+            const foreignColumn = tableInfo[j].foreign_column;
+            const foreignTable = tableInfo[j].foreign_table;
+            console.log('foreign: ', foreignTable, foreignColumn);
+            const getForeignKeyQuery = `
+              SELECT ${foreignColumn}
+              FROM ${foreignTable} TABLESAMPLE BERNOULLI(50)
+              LIMIT 1
+            `;
+            const foreignKey = await db.query(getForeignKeyQuery);
+            if (foreignKey.rows.length) row.push(foreignKey.rows[0]['_id']);
+            else return new Error('There was an error while retrieving a valid foreign key.');
+          } catch(err) {
+            return err;
           }
-          // otherwise, we'll just add data by the type to which the column is constrained
-          else {
-            while (j < dummyDataRequest.dummyData[tableName]) {
-              // generate an entry
-              entry = generateDataByType(schemaLayout.tables[tableName][i]);
-              // push into columnData
-              columnData.push(entry);
-              j += 1;
-            }
-          }
-
-          // push columnData array into tableMatrix
-  
-  
-          tableMatrix.push(columnData);
-          // reset columnData array for next column
-          columnData = [];
         }
-        // only push something to the array if data was asked for for the specific table
-        returnArray.push({ tableName, data: tableMatrix });
       }
+      dummyRecords.push(row);
     }
-    // then return the returnArray
-    return returnArray;
-  },
+    return dummyRecords;
+  }
+
+  // maps table names from schemaLayout to sql files
+  // generateDummyData: (schemaLayout, dummyDataRequest, keyObject) => {
+  //   const returnArray: any = [];
+
+  //   // iterate over schemaLayout.tableNames array
+  //   for (let m = 0; m < schemaLayout.tableNames.length; m += 1) {
+  //     const tableName = schemaLayout.tableNames[m];
+
+  //     const tableMatrix: any = [];
+  //     // if matching key exists in dummyDataRequest.dummyData
+  //     if (dummyDataRequest.dummyData[tableName]) {
+  //       // declare empty columnData array for tableMatrix
+  //       let columnData: any = [];
+  //       // declare an entry variable to capture the entry we will push to column data
+  //       let entry: any;
+
+  //       // iterate over columnArray (i.e. an array of the column names for the table)
+  //       const columnArray: string[] = schemaLayout.tables[tableName].map(
+  //         (columnObj) => columnObj.columnName
+  //       );
+  //       for (let i = 0; i < columnArray.length; i += 1) {
+  //         // declare a variable j (to be used in while loops below), set equal to zero
+  //         let j: number = 0;
+  //         // if there are either PK or FK columns on this table, enter this logic
+  //         if (keyObject[tableName]) {
+  //           // if this is a PK column, add numbers into column 0 to n-1 (ordered)
+  //           if (keyObject[tableName].primaryKeyColumns[columnArray[i]]) {
+  //             // while i < reqeusted number of rows
+  //             while (j < dummyDataRequest.dummyData[tableName]) {
+  //               // push into columnData
+  //               columnData.push(j);
+  //               // increment j
+  //               j += 1;
+  //             }
+  //           }
+  //           // if this is a FK column, add random number between 0 and n-1 (inclusive) into column (unordered)
+  //           else if (keyObject[tableName].foreignKeyColumns[columnArray[i]]) {
+  //             // while j < reqeusted number of rows
+  //             while (j < dummyDataRequest.dummyData[tableName]) {
+  //               // generate an entry
+  //               entry = Math.floor(
+  //                 Math.random() * dummyDataRequest.dummyData[tableName]
+  //               );
+  //               // push into columnData
+  //               columnData.push(entry);
+  //               j += 1;
+  //             }
+  //           }
+  //           // otherwise, we'll just add data by the type to which the column is constrained
+  //           else {
+  //             while (j < dummyDataRequest.dummyData[tableName]) {
+  //               // generate an entry
+  //               entry = generateDataByType(schemaLayout.tables[tableName][i]);
+  //               // push into columnData
+  //               columnData.push(entry);
+  //               j += 1;
+  //             }
+  //           }
+  //         }
+  //         // otherwise, we'll just add data by the type to which the column is constrained
+  //         else {
+  //           while (j < dummyDataRequest.dummyData[tableName]) {
+  //             // generate an entry
+  //             entry = generateDataByType(schemaLayout.tables[tableName][i]);
+  //             // push into columnData
+  //             columnData.push(entry);
+  //             j += 1;
+  //           }
+  //         }
+
+  //         // push columnData array into tableMatrix
+  
+  
+  //         tableMatrix.push(columnData);
+  //         // reset columnData array for next column
+  //         columnData = [];
+  //       }
+  //       // only push something to the array if data was asked for for the specific table
+  //       returnArray.push({ tableName, data: tableMatrix });
+  //     }
+  //   }
+  //   // then return the returnArray
+  //   return returnArray;
+  // },
 };
 
 
