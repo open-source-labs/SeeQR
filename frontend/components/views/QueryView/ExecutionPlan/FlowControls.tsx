@@ -44,7 +44,6 @@ const FlowControls = ({
       <Toolbar>
         <ButtonGroup orientation="vertical" variant="contained" size="small">
           <Tooltip title="Fit tree to view" enterDelay={tooltipDelay}>
-            {/* TODO: for large trees this might need to fire up spinner */}
             <SquareBtn onClick={() => fitView({ padding: 0.2 })}>
               <FilterCenterFocusIcon />
             </SquareBtn>

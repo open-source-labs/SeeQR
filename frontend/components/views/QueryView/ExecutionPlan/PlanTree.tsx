@@ -82,7 +82,6 @@ const defaultThresholds: Thresholds = {
 interface PlanTreeProps {
   data: ExplainJson | undefined;
 }
-// TODO: spinner for large trees
 const PlanTree = ({ data }: PlanTreeProps) => {
   const [isFullscreen, setFullscreen] = useState(false);
   const [userThresholds, setUserThresholds] = useState(defaultThresholds);
