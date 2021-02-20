@@ -1,8 +1,13 @@
 import React, { memo, useState } from 'react';
 import styled from 'styled-components';
-import { Card, Tooltip, LinearProgress } from '@material-ui/core';
+import {
+  Card,
+  Tooltip,
+  LinearProgress,
+} from '@material-ui/core';
 import ms from 'ms';
 import type { SizedPlanNode, Totals } from '../../../../lib/flow';
+import PlanDetails from './PlanDetails'
 
 import {
   greyMedium,
@@ -94,6 +99,7 @@ const isSameCard = (prevProps: PlanCardProps, nextProps: PlanCardProps) =>
   prevProps.plan.id === nextProps.plan.id;
 
 const PlanCard = ({ plan, totals }: PlanCardProps) => {
+  const [detailIsOpen, setDetailOpen] = useState(false)
   const rowRatio = plan['Plan Rows'] / plan['Actual Rows'];
   const exclusive = exclusiveTime(plan);
   const time = totalTime(plan);
@@ -102,48 +108,51 @@ const PlanCard = ({ plan, totals }: PlanCardProps) => {
   );
 
   return (
-    <StyledCard variant="elevation" elevation={3} raised>
-      <Tooltip title={`Percentage of Execution Time: ${exclusiveRatio}%`}>
-        <DurationBar variant="determinate" value={exclusiveRatio} />
-      </Tooltip>
-      <Header>
-        <Tooltip title="Node Type">
-          <Type>{plan['Node Type']}</Type>
+    <>
+      <StyledCard variant="elevation" elevation={3} raised onClick={() => setDetailOpen(true)}>
+        <Tooltip title={`Percentage of Execution Time: ${exclusiveRatio}%`}>
+          <DurationBar variant="determinate" value={exclusiveRatio} />
         </Tooltip>
-        <Tooltip title={`Exclusive Time out of ${formatTime(time)} total`}>
-          <Time>{formatTime(exclusive)}</Time>
+        <Header>
+          <Tooltip title="Node Type">
+            <Type>{plan['Node Type']}</Type>
+          </Tooltip>
+          <Tooltip title={`Exclusive Time out of ${formatTime(time)} total`}>
+            <Time>{formatTime(exclusive)}</Time>
+          </Tooltip>
+        </Header>
+        <Tooltip title="Table">
+          <Relation>
+            {plan['Relation Name']}
+            <Soft>
+              {plan.Alias && plan.Alias !== plan['Relation Name']
+                ? ` (${plan.Alias})`
+                : ''}
+            </Soft>
+          </Relation>
         </Tooltip>
-      </Header>
-      <Tooltip title="Table">
-        <Relation>
-          {plan['Relation Name']}
-          <Soft>
-            {plan.Alias && plan.Alias !== plan['Relation Name']
-              ? ` (${plan.Alias})`
-              : ''}
-          </Soft>
-        </Relation>
-      </Tooltip>
-      <Tooltip title="Join type and condition">
-        <Relation>
-          {plan['Join Type']}
-          <Soft>{` ${plan['Hash Cond'] ?? ''}`}</Soft>
-        </Relation>
-      </Tooltip>
-      <MiniStats>
-        <Tooltip title="Actual rows emitted">
-          <span style={{ gridArea: 'rows' }}>{plan['Actual Rows']}</span>
+        <Tooltip title="Join type and condition">
+          <Relation>
+            {plan['Join Type']}
+            <Soft>{` ${plan['Hash Cond'] ?? ''}`}</Soft>
+          </Relation>
         </Tooltip>
-        <Tooltip title="Planner estimated rows / actual rows emitted">
-          <Accuracy $ratio={rowRatio}>{rowRatio.toFixed(2)}</Accuracy>
-        </Tooltip>
-        <Tooltip title="Execution Cost">
-          <span style={{ gridArea: 'cost' }}>
-            {(plan['Total Cost'] - plan['Startup Cost']).toFixed(1)}
-          </span>
-        </Tooltip>
-      </MiniStats>
-    </StyledCard>
+        <MiniStats>
+          <Tooltip title="Actual rows emitted">
+            <span style={{ gridArea: 'rows' }}>{plan['Actual Rows']}</span>
+          </Tooltip>
+          <Tooltip title="Planner estimated rows / actual rows emitted">
+            <Accuracy $ratio={rowRatio}>{rowRatio.toFixed(2)}</Accuracy>
+          </Tooltip>
+          <Tooltip title="Execution Cost">
+            <span style={{ gridArea: 'cost' }}>
+              {(plan['Total Cost'] - plan['Startup Cost']).toFixed(1)}
+            </span>
+          </Tooltip>
+        </MiniStats>
+      </StyledCard>
+      <PlanDetails plan={plan} open={detailIsOpen} handleClose={() => setDetailOpen(false)}/>
+    </>
   );
 };
 
