@@ -83,18 +83,36 @@ const DuplicateDbModal = ({
     handleDBName(dbCopyName, databases)
   );
   const [isError, setIsError] = useState(false);
+  const [isEmpty, setIsEmpty] = useState(false);
 
   // open/close modal function
   const handleClose = () => {
     setIsError(false);
+    setIsEmpty(true);
     onClose();
+  };
+
+  // Error message depending on if the text field is empty or a duplicate
+  const errorMessage = () => {
+    if (isEmpty) {
+      return 'Required: Database must have a name. Please enter a unique name.';
+    }
+    if (isError) {
+      return 'This database name already exists. Please enter a unique name.';
+    }
+    return '';
   };
 
   // Set schema name
   const handleSchemaName = (event: React.ChangeEvent<HTMLInputElement>) => {
-    // convert input label name to lowercase only with no spacing to comply with db naming convention.
     const schemaNameInput = event.target.value;
+    if (schemaNameInput.length === 0) {
+      setIsEmpty(true);
+    } else {
+      setIsEmpty(false);
+    }
     let dbSafeName = schemaNameInput;
+    // convert input label name to lowercase only with no spacing to comply with db naming convention.
     dbSafeName = dbSafeName.replace(/[^\w-]/gi, '');
     if (databases.includes(dbSafeName)) {
       setIsError(true);
@@ -146,12 +164,8 @@ const DuplicateDbModal = ({
             </DialogTitle>
             <StyledTextField
               required
-              error={isError}
-              helperText={
-                isError
-                  ? 'This database name already exists. Please enter a unique name.'
-                  : ''
-              }
+              error={isError || isEmpty}
+              helperText={errorMessage()}
               id="filled-required"
               label="Enter a database copy name"
               variant="outlined"
@@ -164,13 +178,13 @@ const DuplicateDbModal = ({
               }
             >
               <FormControlLabel
-                control={
+                control={(
                   <Checkbox
                     checked={checked}
                     onChange={handleCopyData}
                     color="primary"
                   />
-                }
+                )}
                 label="Copy data"
               />
             </Tooltip>
@@ -186,7 +200,7 @@ const DuplicateDbModal = ({
             <StyledButton
               variant="contained"
               color="primary"
-              onClick={isError ? () => {} : handleCopyFilePath}
+              onClick={isEmpty || isError ? () => {} : handleCopyFilePath}
             >
               Create Copy
             </StyledButton>
