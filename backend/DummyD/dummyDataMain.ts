@@ -44,7 +44,7 @@ const generateDataByType = (columnObj) => {
       length = columnObj.character_maximum_length < 3 && columnObj.character_maximum_length
         ? Math.floor(Math.random() * columnObj.character_maximum_length)
         : 3;
-      return '\''.concat(faker.lorem.word(length)).concat('\'');
+      return '\''.concat(faker.random.alphaNumeric(length)).concat('\'');
     case 'date': {
       // generating a random date between 1500 and 2020
       let result: string = '';
@@ -53,8 +53,11 @@ const generateDataByType = (columnObj) => {
       if (month.length === 1) month = `0${month}`;
       let day: string = getRandomInt(1, 29).toString();
       if (day.length === 1) day = `0${day}`;
-      result += `${year}-${month}-${day}`;
-      return result;
+      result += `${year}/${month}/${day}`;
+      return '\''.concat(result).concat('\'');
+    }
+    case 'boolean': {
+      return '\''.concat(faker.random.boolean()).concat('\'');
     }
     default:
       console.log('Error generating dummy data by type');
