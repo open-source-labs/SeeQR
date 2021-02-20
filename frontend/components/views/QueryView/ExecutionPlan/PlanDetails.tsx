@@ -29,6 +29,8 @@ const LightPaper = styled(DarkPaperFull)`
   color: ${greyDarkest};
   width: fit-content;
   min-width: 400px;
+  max-width: 80vw;
+  max-height: 80vh;
 `;
 
 const StyledCell = styled(TableCell)`
@@ -62,7 +64,10 @@ const detailRows = (plan: SizedPlanNode) =>
     .map(([property, value]) => (
       <TableRow key={property}>
         <StyledCell>{property}</StyledCell>
-        <StyledCell align="right">{value?.toString() ?? ''}</StyledCell>
+        <StyledCell align="right">
+          {/* insert spaces after commas to ensure wrapping is possible. Necessary for long Output strings */}
+          {value?.toString().replace(/,/g, ', ') ?? ''}
+        </StyledCell>
       </TableRow>
     ));
 
