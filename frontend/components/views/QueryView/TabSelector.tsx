@@ -12,7 +12,7 @@ import {
 import type { ValidTabs } from '../../../types';
 
 const ViewBtnGroup = styled(ButtonGroup)`
-  margin: ${defaultMargin} 5px;
+  margin: ${defaultMargin} 0;
 `;
 
 interface ViewButtonProps {

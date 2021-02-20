@@ -1,7 +1,3 @@
-// TODO: Implement first/last buttons for pagination https://material-ui.com/components/tables/#custom-pagination-actions
-// TODO: dark scrollbar for table
-// TODO: line up right margin with codemirror margin
-
 import React from 'react';
 import {
   Table,
@@ -14,10 +10,7 @@ import {
 } from '@material-ui/core';
 import styled from 'styled-components';
 import { QueryData } from '../../../types';
-import {
-  greyPrimary,
-  DarkPaperFull
-} from '../../../style-variables';
+import { greyPrimary, DarkPaperFull } from '../../../style-variables';
 
 const StyledCell = styled(TableCell)`
   border-bottom: 1px solid ${greyPrimary};
@@ -28,7 +21,7 @@ interface Column {
   align: 'left' | 'right';
 }
 
-// TODO: temporary. In future we should get data type from table schema
+// temporary. In future we should get data type from table schema since that's more accurate
 const isNumber = (val: unknown) => {
   if (typeof val === 'number') return true;
   const numberRgx = /^-?[0-9.]+$/;
@@ -81,13 +74,17 @@ const QueryResults = ({ results }: QueryResultsProps) => {
             {results
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row) => (
-                <TableRow hover role="checkbox" tabIndex={-1} key={Object.values(row).join()}>
+                <TableRow
+                  hover
+                  role="checkbox"
+                  tabIndex={-1}
+                  key={Object.values(row).join()}
+                >
                   {columns.map((column) => (
                     <StyledCell
                       align={column.align}
                       key={`${column.name}_${row[column.name]}`}
                     >
-                      {/* // TODO: how to properly type this? */}
                       {(row[column.name] as any)?.toString()}
                     </StyledCell>
                   ))}
