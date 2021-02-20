@@ -7,15 +7,9 @@ import { ListItem, List, Paper } from '@material-ui/core';
 import { createMuiTheme } from '@material-ui/core/styles';
 import styled from 'styled-components';
 
-// interface PaletteColor {
-//   light?: string;
-//   main: string;
-//   dark?: string;
-//   contrastText?: string;
-// }
 // previous
 export const bgColor = '#2b2d35';
-export const textColor = '#c6d2d5';
+export const textColor = 'rgb(203, 212, 214)';
 // @import url('https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 // @import url('https://fonts.googleapis.com/css2?family=PT+Mono&display=swap');
 
@@ -30,8 +24,10 @@ export const greenLightest = '#ccdad4';
 // greys
 export const greyDarkest = '#191919';
 export const greyDark = '#262626';
+export const greyMedium = '#525252';
 export const greyPrimary = '#818584';
-export const greyLight = '#aab6af';
+export const greyLight = '#b9bbba';
+export const greyLighter = '#cecfcf';
 export const greyLightest = '#dfe0e2';
 
 // Compare Colors
@@ -96,22 +92,23 @@ export const MuiTheme = createMuiTheme({
   },
 });
 
-interface SidebarListItemProps {
-  customSelected: boolean;
-}
 
 export const SidebarList = styled(List)`
   padding: 0;
   width: 100%;
 `;
 
+interface SidebarListItemProps {
+  $customSelected: boolean;
+}
+
 /**
  * Sidebar List item. Designed for dark bg.
- * Takes boolean in customSelected prop to style selected item
+ * Takes boolean in $customSelected prop to style selected item
  */
 export const SidebarListItem = styled(ListItem)`
-  color: ${({ customSelected }: SidebarListItemProps) =>
-    customSelected ? selectedColor : textColor};
+  color: ${({ $customSelected }: SidebarListItemProps) =>
+    $customSelected ? selectedColor : textColor};
   background: transparent;
   border-bottom: 1px solid transparent;
   border-top: 1px solid transparent;
@@ -130,22 +127,3 @@ export const DarkPaperFull = styled(({ ...other }) => (
   background: ${greyDark};
 `;
 
-  // min-width: ${tableWidth};
-  // width: ${tableWidth};
-
-// // typography
-// $font-stack: 'PT Sans', sans-serif;
-// $font-input: 'PT Mono', monospace;
-// $p-weight: 100;
-// $title-weight: 300;
-// $default-text: 1em;
-
-// // colors
-// $background-modal-darkmode: #30353a;
-// $background-lightmode: #9abacc;
-// $primary-color-lightmode: #1a1a1a;
-// $primary-color-darkmode: #c6d2d5;
-// $border-darkmode: #444c50;
-// $button-darkmode: #596368;
-// $background-darkmode-darker: #292a30;
-// $mint-green: #6cbba9;

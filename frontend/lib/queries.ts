@@ -44,29 +44,8 @@ export const deleteQuery = (
 };
 
 /**
- * Toggle compare flag for query.
- * Compare flag indicates whether a Query should be shown on Compare View
- * returns new queries object with all queries
- */
-export const toggleCompare = (
-  comparedQueries: AppState['comparedQueries'],
-  query: QueryData
-) => {
-  const tempQueries = { ...comparedQueries };
-
-  if (tempQueries[key(query)]) {
-    delete tempQueries[key(query)];
-    return tempQueries;
-  }
-
-  tempQueries[key(query)] = query;
-  return tempQueries;
-};
-
-/**
- * Sets compare flag for query
- * Compare flag indicates whether a Query should be shown on Compare View
- * returns new queries object with all queries
+ * Sets compare state for query
+ * Adds or remove query from comparedQueries collection 
  */
 export const setCompare = (
   comparedQueries: AppState['comparedQueries'],
@@ -85,7 +64,7 @@ export const setCompare = (
 };
 
 /**
- * Get query execution time. Planning + Execution. Returns 0 if not given a given
+ * Get query execution time. Planning + Execution. Returns 0 if not given a query
  */
 export const getTotalTime = (query: QueryData | undefined) => {
   if (!query?.executionPlan) return 0;
@@ -95,7 +74,7 @@ export const getTotalTime = (query: QueryData | undefined) => {
 };
 
 /**
- * Get query exeuction time as a formatted string. Returns 'n/a' if not given a query
+ * Get query exeuction time as a formatted string. Returns undefined if  not given a query
  */
 export const getPrettyTime = (query: QueryData | undefined) => {
   if (!query?.executionPlan) return undefined 

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   Dialog,
   DialogTitle,
-  Typography,
   TextField,
   Button,
   Divider,
@@ -10,6 +9,15 @@ import {
 } from '@material-ui/core/';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import styled from 'styled-components';
+import { ipcRenderer, remote } from 'electron';
+import { sendFeedback } from '../../lib/utils';
+
+const { dialog } = remote;
+
+interface ImportPayload {
+  newDbName: string;
+  filePath: string;
+}
 
 // Button Container
 const ButtonContainer = styled('div')`
@@ -39,10 +47,6 @@ const StyledButton = styled(Button)`
 const StyledTextField = styled(TextField)`
   width: 80%;
 `;
-
-const { dialog } = require('electron').remote;
-
-const { ipcRenderer } = window.require('electron');
 
 type AddNewDbModalProps = {
   open: boolean;
@@ -74,25 +78,45 @@ const AddNewDbModal = ({ open, onClose, databases }: AddNewDbModalProps) => {
     dialog
       .showOpenDialog({
         properties: ['openFile'],
-        filters: [{ name: 'Custom File Type', extensions: ['sql'] }],
-        message: 'Please upload .sql database file',
+        filters: [{ name: 'Custom File Type', extensions: ['sql', 'tar'] }],
+        message: 'Please upload .sql or .tar database file',
       })
-      .then((result: object) => {
-        const filePathArr = result['filePaths'];
+      .then((result) => {
+        if (result.canceled) return;
 
-        // send via channel to main process
-        if (!result['canceled']) {
-          ipcRenderer.send('input-schema', {
-            schemaName: newDbName,
-            schemaFilePath: filePathArr,
+        if (!result.filePaths.length) {
+          sendFeedback({
+            type: 'warning',
+            message: 'No file was selected',
           });
-          return handleClose();
+          return;
         }
+
+        // TODO: TEMP validation for file name
+        if (!/\w+/.test(newDbName)) {
+          sendFeedback({
+            type: 'warning',
+            message: 'Invalid Database name given. File was not imported.'
+          })
+          return
+        }
+
+        const payload: ImportPayload = {
+          newDbName,
+          filePath: result.filePaths[0],
+        };
+
+        ipcRenderer.invoke('import-db', payload).catch(() =>
+          sendFeedback({
+            type: 'error',
+            message: 'Failed to import database',
+          })
+        );
       })
       .catch((err: object) => {
-        // TODO: Error handling
         console.log(err);
-      });
+      })
+      .finally(handleClose);
   };
 
   return (

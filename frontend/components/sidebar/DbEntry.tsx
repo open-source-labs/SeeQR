@@ -8,6 +8,7 @@ import {
 import DeleteIcon from '@material-ui/icons/Delete';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import { SidebarListItem } from '../../style-variables';
+import { sendFeedback } from '../../lib/utils';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -19,22 +20,32 @@ interface DbEntryProps {
 }
 const DbEntry = ({ db, isSelected, select, duplicate }: DbEntryProps) => {
   const handleDelete = () => {
-    ipcRenderer.send('drop-db', db, isSelected)
-    if (isSelected) select('');
-  }
-  
+    ipcRenderer
+      .invoke('drop-db', db, isSelected)
+      .then(() => {
+        if (isSelected) select('');
+      })
+      .catch(() =>
+        sendFeedback({ type: 'error', message: `Failed to delete ${db}` })
+      );
+  };
+
   return (
-    <SidebarListItem button customSelected={isSelected} onClick={() => select(db)}>
+    <SidebarListItem
+      button
+      $customSelected={isSelected}
+      onClick={() => select(db)}
+    >
       <ListItemText primary={db} />
       <ListItemSecondaryAction>
         <Tooltip title="Copy Database">
-          <IconButton edge="end">
-            <FileCopyIcon onClick={duplicate} />
+          <IconButton edge="end" onClick={duplicate}>
+            <FileCopyIcon />
           </IconButton>
         </Tooltip>
         <Tooltip title="Drop Database">
-          <IconButton edge="end">
-            <DeleteIcon onClick={handleDelete} />
+          <IconButton edge="end" onClick={handleDelete}>
+            <DeleteIcon />
           </IconButton>
         </Tooltip>
       </ListItemSecondaryAction>

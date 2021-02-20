@@ -1,5 +1,5 @@
 import { Elements } from 'react-flow-renderer';
-import { PlanNode } from '../types';
+import { PlanNode, ExplainJson } from '../types';
 import { planNodeWidth, planNodeHeight } from '../style-variables';
 import createLayout, { SizedNode, Graph } from './planLayout';
 
@@ -7,18 +7,25 @@ export type TypedElements = Elements<{
   plan: PlanNode;
 }>;
 
+export type SizedPlanNode = PlanNode & SizedNode;
+
+export interface Totals {
+  time: number;
+}
+
 /**
  * Convert dagree layout to react-flow elements
  */
 const dagreToFlow = (
   graphElements: Graph<PlanNode>,
+  totals: Totals,
   nodeType: string,
   edgeType: string
 ): TypedElements => {
   const nodes: TypedElements = graphElements.nodes.map((node) => ({
     id: node.id,
     // NOTE: BREAKS IF  CIRCULAR STRUCTURES ARE PASSED IN
-    data: { plan: node.nodeData },
+    data: { plan: node.nodeData, totals },
     position: { x: node.x, y: node.y },
     type: nodeType,
   }));
@@ -36,12 +43,12 @@ const dagreToFlow = (
 
 const traverse = (
   root: PlanNode,
-  idGenerator: () => number,
+  idGenerator: () => string,
   cb: (node: SizedNode) => void
 ) => {
-  const node: SizedNode = {
+  const node: SizedPlanNode = {
     ...root,
-    id: idGenerator().toString(),
+    id: idGenerator(),
     width: parseInt(planNodeWidth, 10),
     height: parseInt(planNodeHeight, 10),
   };
@@ -56,14 +63,17 @@ const traverse = (
  */
 const getSizedNodes = (root: PlanNode) => {
   /**
-   * Get next number in sequence. Starts at 0. 
-   * declared here so ids always start at 0 for every traversal
+   * Build id from timestamp of this calculation and sequence that starts at 0
+   * id is later used for memoizing renders of PlanCards so they must always be unique
+   * to different results, but consistent across renders of the same results
+   * Declared here so ids always start at 0 for every traversal
    */
   const idGen = (() => {
     let counter = -1;
+    const runId = Date.now().toString();
     return () => {
       counter += 1;
-      return counter;
+      return `${runId}_${counter}`;
     };
   })();
 
@@ -78,14 +88,17 @@ const getSizedNodes = (root: PlanNode) => {
  * of each node's size in the graph in the layout
  */
 const buildFlowGraph = (
-  root: PlanNode,
+  explain: ExplainJson,
   nodeComponent: string,
   edgeType: string
 ): TypedElements => {
-  const sizedNodes = getSizedNodes(root);
+  const sizedNodes = getSizedNodes(explain.Plan);
+
+  // values to be injected into each plan
+  const totals: Totals = { time: explain['Execution Time'] };
 
   const layout = createLayout<PlanNode>(sizedNodes);
-  return dagreToFlow(layout, nodeComponent, edgeType);
+  return dagreToFlow(layout, totals, nodeComponent, edgeType);
 };
 
 export default buildFlowGraph;

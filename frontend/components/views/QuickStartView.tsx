@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 import styled from 'styled-components';
-import Stepper from '@material-ui/core/Stepper';
-import Step from '@material-ui/core/Step';
-import StepButton from '@material-ui/core/StepButton';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-// import BarChartIcon from '@material-ui/icons/BarChart';
+import {
+  Stepper,
+  Step,
+  StepButton,
+  StepLabel,
+  Button,
+  Typography,
+} from '@material-ui/core';
 import logo from '../../../assets/logo/seeqr_dock.png';
 
 interface QuickStartViewProps {
@@ -15,9 +17,6 @@ interface QuickStartViewProps {
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
-    root: {
-      width: '100%',
-    },
     button: {
       marginRight: theme.spacing(1),
     },
@@ -28,8 +27,18 @@ const useStyles = makeStyles((theme: Theme) =>
       display: 'inline-block',
     },
     instructions: {
-      marginTop: theme.spacing(1),
-      marginBottom: theme.spacing(1),
+      marginBottom: theme.spacing(3),
+    },
+    image: {
+      marginTop: theme.spacing(10),
+      marginBottom: theme.spacing(-2),
+      width: '30vh',
+      height: '30vh',
+      maxHeight: '400px',
+      maxWidth: '400px',
+    },
+    stepper: {
+      fontSize: '50px',
     },
   })
 );
@@ -38,45 +47,103 @@ const PageContainer = styled.a`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  height: auto;
+  width: 100%;
 `;
 
 const StyledStepper = styled(Stepper)`
-  margin: 100px;
+  margin: 70px 0px 20px 0px;
   background: transparent;
 `;
 
+const StyledStepLabel = styled(StepLabel)`
+  width: 20vw;
+  & .MuiStepLabel-label {
+    font-size: clamp(1rem, 2vw, 1.5rem);
+  }
+`;
+
+const StyledTypographyInstructions = styled(Typography)`
+  font-size: clamp(1rem, 2vw, 1.3rem);
+`;
+
+const StyledTypographyTitle = styled(Typography)`
+  font-size: clamp(7rem, 2vw, 10rem);
+`;
+
 function getSteps() {
-  return [
-    'Import a Database',
-    'Go into the Queries Tab',
-    'Create New Queries',
-    'Check the Checkbox to Compare Queries',
-    `Select the Chart Icon to view Comparisons`,
-  ];
+  return ['Import a Database', 'Create New Queries', 'Compare Queries'];
 }
 
 function getStepContent(step: number) {
   switch (step) {
     case 0:
-      return 'Step 1: To import a atabase, select the + icon in the sidebar. A modal will appear where you can enter a database name. Click the green "Import File" button and select a .sql file.';
+      return (
+        <StyledTypographyInstructions>
+          <strong>Step 1:</strong>
+          <br />
+          To import a database, select the + icon in the sidebar.
+          <br />
+          A modal will appear where you can enter a database name.
+          <br />
+          Click the green "Import File" button and select a .sql file.
+          <br />
+          The imported database will now appear on the sidebar.
+          <br />
+          You can select a database to view table information.
+          <br />
+          To view each table, click the name of the table in the top tabs bar.
+          <br />
+          The chart will include column names, types, and if they are nullable.
+        </StyledTypographyInstructions>
+      );
     case 1:
-      return 'Step 2: To go into the queries tab, select the "QUERIES" tab in the sidebar.';
+      return (
+        <StyledTypographyInstructions>
+          <strong>Step 2:</strong>
+          <br />
+          Select which database you want to create a query in.
+          <br />
+          Go into the queries tab by selecting the "QUERIES" tab in the sidebar.
+          <br />
+          Select the + icon in the sidebar and give the query a label on the
+          rightside.
+          <br />
+          Optionally: You can change the database to create the query in from
+          the "Database" dropdown.
+          <br />
+          Write the query script in the designated body. <br />
+          Use the "Auto-Format" button on the top-left to automatically format
+          the query.
+          <br />
+          Select the "RUN QUERY" button to execute.
+          <br />
+          The planning time, execution time, and actual total time now show.
+          <br />
+          The results from the query are in the table below.
+          <br />
+          Select the "Execution Plan" button to view the analysis of running the
+          query.
+        </StyledTypographyInstructions>
+      );
     case 2:
-      return 'Step 3: To create new queries, type in a label name and type in the query in the area below. Click the "RUN QUERY" button to execute. ';
-    case 3:
-      return 'Step 4: To compare queries, check the checkboxs in the sidebar of the specific queries.';
-    case 4:
-      return 'Step 5: Select the Chart Icon to view Comparisons';
+      return (
+        <StyledTypographyInstructions>
+          <strong>Step 3:</strong>
+          <br />
+          To compare queries, select the checkbox of the queries you would like
+          to compare.
+          <br />
+          Then select the Chart Icon at the top of the sidebar.
+          <br />
+          Feel free to continually select and deselect queries to compare.
+        </StyledTypographyInstructions>
+      );
     default:
       return 'Unknown step';
   }
 }
-
-// const QuickStartView = ({ show }: QuickStartViewProps) => {
-//   if (!show) return null;
-//   return <>Quick Start</>;
-// };
 
 const QuickStartView = ({ show }: QuickStartViewProps) => {
   if (!show) return null;
@@ -88,7 +155,7 @@ const QuickStartView = ({ show }: QuickStartViewProps) => {
 
   const totalSteps = () => getSteps().length;
 
-  const isStepOptional = (step: number) => step === 1;
+  const isStepOptional = (step: number) => step === null;
 
   const handleSkip = () => {
     if (!isStepOptional(activeStep)) {
@@ -138,11 +205,6 @@ const QuickStartView = ({ show }: QuickStartViewProps) => {
     newCompleted.add(activeStep);
     setCompleted(newCompleted);
 
-    /**
-     * Sigh... it would be much nicer to replace the following if conditional with
-     * `if (!this.allStepsComplete())` however state is not set when we do this,
-     * thus we have to resort to not being very DRY.
-     */
     if (completed.size !== totalSteps() - skippedSteps()) {
       handleNext();
     }
@@ -161,105 +223,102 @@ const QuickStartView = ({ show }: QuickStartViewProps) => {
   }
 
   return (
-    <div className={classes.root}>
-      <PageContainer>
-        <Typography align="center" variant="h1">
-          Welcome to SeeQr
-        </Typography>
-        <img src={logo} alt="Logo" width="300px" height="300px" />
-        <StyledStepper alternativeLabel nonLinear activeStep={activeStep}>
-          {steps.map((label, index) => {
-            const stepProps: { completed?: boolean } = {};
-            const buttonProps: { optional?: React.ReactNode } = {};
-            if (isStepOptional(index)) {
-              buttonProps.optional = (
-                <Typography variant="caption">Optional</Typography>
-              );
-            }
-            if (isStepSkipped(index)) {
-              stepProps.completed = false;
-            }
-            return (
-              <Step key={label} {...stepProps}>
-                <StepButton
-                  onClick={handleStep(index)}
-                  completed={isStepComplete(index)}
-                  {...buttonProps}
-                >
-                  {label}
-                </StepButton>
-              </Step>
+    <PageContainer>
+      <StyledTypographyTitle align="center">
+        Welcome to SeeQr
+      </StyledTypographyTitle>
+      <img className={classes.image} src={logo} alt="Logo" />
+      <StyledStepper alternativeLabel nonLinear activeStep={activeStep}>
+        {steps.map((label, index) => {
+          const stepProps: { completed?: boolean } = {};
+          const buttonProps: { optional?: React.ReactNode } = {};
+          if (isStepOptional(index)) {
+            buttonProps.optional = (
+              <Typography variant="caption">Optional</Typography>
             );
-          })}
-        </StyledStepper>
-        <div>
-          {allStepsCompleted() ? (
+          }
+          if (isStepSkipped(index)) {
+            stepProps.completed = false;
+          }
+          return (
+            <Step key={label} {...stepProps}>
+              <StepButton
+                onClick={handleStep(index)}
+                completed={isStepComplete(index)}
+                {...buttonProps}
+              >
+                <StyledStepLabel className={classes.stepper}>
+                  {label}
+                </StyledStepLabel>
+              </StepButton>
+            </Step>
+          );
+        })}
+      </StyledStepper>
+      <div>
+        {allStepsCompleted() ? (
+          <div>
+            <StyledTypographyInstructions className={classes.instructions}>
+              All steps completed - you&apos;re ready to use SeeQr!
+            </StyledTypographyInstructions>
+            <Button onClick={handleReset}>Reset</Button>
+          </div>
+        ) : (
+          <>
             <div>
-              <Typography className={classes.instructions}>
-                All steps completed - you&apos;re finished
+              <Typography align="center" className={classes.instructions}>
+                {getStepContent(activeStep)}
               </Typography>
-              <Button onClick={handleReset}>Reset</Button>
-            </div>
-          ) : (
-            <>
               <div>
-                <Typography align="center" className={classes.instructions}>
-                  {getStepContent(activeStep)}
-                </Typography>
-                <div>
-                  <Button
-                    disabled={activeStep === 0}
-                    onClick={handleBack}
-                    className={classes.button}
-                  >
-                    Back
-                  </Button>
+                <Button
+                  disabled={activeStep === 0}
+                  onClick={handleBack}
+                  className={classes.button}
+                >
+                  Back
+                </Button>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleNext}
+                  className={classes.button}
+                >
+                  Next
+                </Button>
+                {isStepOptional(activeStep) && !completed.has(activeStep) && (
                   <Button
                     variant="contained"
                     color="primary"
-                    onClick={handleNext}
+                    onClick={handleSkip}
                     className={classes.button}
                   >
-                    Next
+                    Skip
                   </Button>
-                  {isStepOptional(activeStep) && !completed.has(activeStep) && (
+                )}
+                {activeStep !== steps.length &&
+                  (completed.has(activeStep) ? (
+                    <Typography variant="caption" className={classes.completed}>
+                      Step
+                      {` ${activeStep + 1} `}
+                      already completed
+                    </Typography>
+                  ) : (
                     <Button
                       variant="contained"
                       color="primary"
-                      onClick={handleSkip}
-                      className={classes.button}
+                      onClick={handleComplete}
                     >
-                      Skip
+                      {completedSteps() === totalSteps() - 1
+                        ? 'Finish'
+                        : 'Complete Step'}
                     </Button>
-                  )}
-                  {activeStep !== steps.length &&
-                    (completed.has(activeStep) ? (
-                      <Typography
-                        variant="caption"
-                        className={classes.completed}
-                      >
-                        Step
-                        {activeStep + 1}
-                        already completed
-                      </Typography>
-                    ) : (
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={handleComplete}
-                      >
-                        {completedSteps() === totalSteps() - 1
-                          ? 'Finish'
-                          : 'Complete Step'}
-                      </Button>
-                    ))}
-                </div>
+                  ))}
               </div>
-            </>
-          )}
-        </div>
-      </PageContainer>
-    </div>
+            </div>
+          </>
+        )}
+      </div>
+    </PageContainer>
   );
 };
 

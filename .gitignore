@@ -4,8 +4,8 @@
 */.DS_Store
 .DS_Store
 dvdrental.tar
-package-lock.json
 /appBuilds
 *.csv
 *.sql
 debug.log
+coverage/
