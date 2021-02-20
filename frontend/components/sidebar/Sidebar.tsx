@@ -22,17 +22,20 @@ const StyledDrawer = styled(Drawer)`
     background: ${greyDarkest};
     display: flex;
     flex-direction: column;
+    align-items: center;
   }
 `;
 
 const Logo = styled.img`
   position: fixed;
-  width: 100px;
-  height: 100px;
   bottom: 10px;
+  left: calc(${sidebarWidth} / 2);
+  transform: translateX(-50%);
   opacity: 0.5;
   z-index: -1;
   filter: grayscale(100%);
+  width: 100px;
+  height: 100px;
 `;
 
 const ShowSidebarBtn = styled(IconButton)`
