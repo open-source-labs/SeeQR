@@ -27,7 +27,6 @@ const AppContainer = styled.div`
   padding: 0;
 `;
 
-// TODO: why is max-width only necessary in non-fullwidth mode ? 
 // prettier-ignore
 const Main = styled.main<{ $fullwidth: boolean }>`
   grid-area: ${({ $fullwidth }) => ($fullwidth ? '1 / 1 / -1 / -1' : 'main')};

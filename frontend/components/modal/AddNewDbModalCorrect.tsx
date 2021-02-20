@@ -92,7 +92,6 @@ const AddNewDbModal = ({ open, onClose, databases }: AddNewDbModalProps) => {
           return;
         }
 
-        // TODO: TEMP validation for file name
         if (!/\w+/.test(newDbName)) {
           sendFeedback({
             type: 'warning',
