@@ -57,23 +57,47 @@ type AddNewDbModalProps = {
 const AddNewDbModal = ({ open, onClose, databases }: AddNewDbModalProps) => {
   const [newDbName, setNewDbName] = useState('');
   const [isError, setIsError] = useState(false);
+  const [isEmpty, setIsEmpty] = useState(true);
 
+  // Resets state for error messages
   const handleClose = () => {
     setIsError(false);
+    setIsEmpty(true);
     onClose();
+  };
+
+  // Error message depending on if the text field is empty or a duplicate
+  const errorMessage = () => {
+    if (isEmpty) {
+      return 'Required: Database must have a name. Please enter a unique name.';
+    }
+    if (isError) {
+      return 'This database name already exists. Please enter a unique name.';
+    }
+    return '';
   };
 
   // Set schema name
   const handleDbName = (event: React.ChangeEvent<HTMLInputElement>) => {
-    // convert input label name to lowercase only with no spacing to comply with db naming convention.
     const dbNameInput = event.target.value;
+    if (dbNameInput.length === 0) {
+      setIsEmpty(true);
+    } else {
+      setIsEmpty(false);
+    }
     // check if the newDbName is not a duplicate
     let dbSafeName = dbNameInput;
+     // convert input label name to lowercase only with no spacing to comply with db naming convention.
     dbSafeName = dbSafeName.replace(/[^\w-]/gi, '');
-    databases.includes(dbSafeName) ? setIsError(true) : setIsError(false);
+    if (databases.includes(dbSafeName)) {
+      setIsError(true);
+    } else {
+      setIsError(false);
+    }
     setNewDbName(dbSafeName);
   };
 
+  // Opens modal to select file and sends the selected file to backend
   const handleFileClick = () => {
     dialog
       .showOpenDialog({
@@ -90,15 +114,6 @@ const AddNewDbModal = ({ open, onClose, databases }: AddNewDbModalProps) => {
             message: 'No file was selected',
           });
           return;
-        }
-
-        // TODO: TEMP validation for file name
-        if (!/\w+/.test(newDbName)) {
-          sendFeedback({
-            type: 'warning',
-            message: 'Invalid Database name given. File was not imported.'
-          })
-          return
         }
 
         const payload: ImportPayload = {
@@ -130,18 +145,14 @@ const AddNewDbModal = ({ open, onClose, databases }: AddNewDbModalProps) => {
       >
         <TextFieldContainer>
           <DialogTitle id="alert-dialog-title">
-            Import Existing SQL File
+            Import Existing SQL or TAR File
           </DialogTitle>
           <Divider variant="middle" flexItem />
           <Tooltip title="Any special characters will be removed">
             <StyledTextField
               required
               error={isError}
-              helperText={
-                isError
-                  ? 'This database name already exists. Please enter a unique name.'
-                  : ''
-              }
+              helperText={errorMessage()}
               id="filled-basic"
               label="Enter a database name"
               size="small"
@@ -163,7 +174,7 @@ const AddNewDbModal = ({ open, onClose, databases }: AddNewDbModalProps) => {
               variant="contained"
               color="primary"
               startIcon={<CloudUploadIcon />}
-              onClick={isError ? () => {} : handleFileClick}
+              onClick={isEmpty || isError ? () => {} : handleFileClick}
             >
               Import File
             </StyledButton>
