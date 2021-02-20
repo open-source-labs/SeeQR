@@ -157,7 +157,7 @@ export interface PlanNode {
   'Actual Startup Time': number;
   'Actual Total Time': number;
   'Actual Rows': number;
-  'Actual Loops': number;
+  'Actual Loops'?: number;
   'Inner Unique'?: boolean;
   /**
    * Condition for Hash Operation

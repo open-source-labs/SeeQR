@@ -8,21 +8,21 @@ import ReactFlow, {
   NodeProps,
 } from 'react-flow-renderer';
 import PlanCard from './PlanCard';
-import buildFlowGraph, { SizedPlanNode } from '../../../../lib/flow';
+import buildFlowGraph, { SizedPlanNode, Totals } from '../../../../lib/flow';
 import { ExplainJson } from '../../../../types';
 import { DarkPaperFull } from '../../../../style-variables';
 import FlowControls from './FlowControls';
 
-type FlowNodeProps = NodeProps<{ plan: SizedPlanNode }>;
+type FlowNodeProps = NodeProps<{ plan: SizedPlanNode, totals: Totals }>;
 
-const FlowNodeComponent = ({ data: { plan } }: FlowNodeProps) => (
+const FlowNodeComponent = ({ data: { plan, totals } }: FlowNodeProps) => (
   <div>
     <Handle
       type="target"
       position={Position.Top}
       style={{ visibility: 'hidden' }}
     />
-    <PlanCard plan={plan} />
+    <PlanCard plan={plan} totals={totals} />
     <Handle
       type="source"
       position={Position.Bottom}
@@ -33,7 +33,7 @@ const FlowNodeComponent = ({ data: { plan } }: FlowNodeProps) => (
 
 const FlowTree = ({ data }: { data: ExplainJson }) => (
   <ReactFlow
-    elements={buildFlowGraph(data.Plan, 'flowNode', 'smoothstep')}
+    elements={buildFlowGraph(data, 'flowNode', 'smoothstep')}
     nodesDraggable={false}
     nodesConnectable={false}
     nodeTypes={{ flowNode: FlowNodeComponent }}

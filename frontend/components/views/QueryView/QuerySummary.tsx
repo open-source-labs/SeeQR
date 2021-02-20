@@ -25,7 +25,6 @@ const QuerySummary = ({ executionPlan }: QuerySummaryProps) => {
   const summaryData = {
     'Planning Time': executionPlan?.['Planning Time'],
     'Execution Time': executionPlan?.['Execution Time'],
-    'Actual Total Time': executionPlan?.Plan['Actual Total Time'],
   };
 
   if (!executionPlan) return null;
