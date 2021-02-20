@@ -111,7 +111,7 @@ module.exports = {
     contentBase: path.resolve(__dirname, '/dist/'),
     host: 'localhost',
     port: '8080',
-    // hot: true,
+    hot: true,
     compress: true,
     watchContentBase: true,
     watchOptions: {
@@ -149,7 +149,6 @@ module.exports = {
       //   ],
       // },
     }),
-    isDevelopment && new webpack.HotModuleReplacementPlugin(),
     isDevelopment && new ReactRefreshWebpackPlugin(),
   ].filter(Boolean),
 };
