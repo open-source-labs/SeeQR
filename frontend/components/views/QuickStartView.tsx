@@ -66,11 +66,23 @@ const StyledStepLabel = styled(StepLabel)`
 
 const StyledTypographyInstructions = styled(Typography)`
   font-size: clamp(1rem, 2vw, 1.3rem);
+  text-align: center;
 `;
 
 const StyledTypographyTitle = styled(Typography)`
   font-size: clamp(7rem, 2vw, 10rem);
 `;
+
+const NavButtons = styled.div`
+  margin: 20px auto;
+`;
+
+const StepContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`
 
 function getSteps() {
   return ['Import a Database', 'Create New Queries', 'Compare Queries'];
@@ -264,58 +276,54 @@ const QuickStartView = ({ show }: QuickStartViewProps) => {
             <Button onClick={handleReset}>Reset</Button>
           </div>
         ) : (
-          <>
-            <div>
-              <Typography align="center" className={classes.instructions}>
-                {getStepContent(activeStep)}
-              </Typography>
-              <div>
-                <Button
-                  disabled={activeStep === 0}
-                  onClick={handleBack}
-                  className={classes.button}
-                >
-                  Back
-                </Button>
+          <StepContent>
+            {getStepContent(activeStep)}
+            <NavButtons>
+              <Button
+                disabled={activeStep === 0}
+                onClick={handleBack}
+                className={classes.button}
+              >
+                Back
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleNext}
+                className={classes.button}
+              >
+                Next
+              </Button>
+              {isStepOptional(activeStep) && !completed.has(activeStep) && (
                 <Button
                   variant="contained"
                   color="primary"
-                  onClick={handleNext}
+                  onClick={handleSkip}
                   className={classes.button}
                 >
-                  Next
+                  Skip
                 </Button>
-                {isStepOptional(activeStep) && !completed.has(activeStep) && (
+              )}
+              {activeStep !== steps.length &&
+                (completed.has(activeStep) ? (
+                  <Typography variant="caption" className={classes.completed}>
+                    Step
+                    {` ${activeStep + 1} `}
+                    already completed
+                  </Typography>
+                ) : (
                   <Button
                     variant="contained"
                     color="primary"
-                    onClick={handleSkip}
-                    className={classes.button}
+                    onClick={handleComplete}
                   >
-                    Skip
+                    {completedSteps() === totalSteps() - 1
+                      ? 'Finish'
+                      : 'Complete Step'}
                   </Button>
-                )}
-                {activeStep !== steps.length &&
-                  (completed.has(activeStep) ? (
-                    <Typography variant="caption" className={classes.completed}>
-                      Step
-                      {` ${activeStep + 1} `}
-                      already completed
-                    </Typography>
-                  ) : (
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={handleComplete}
-                    >
-                      {completedSteps() === totalSteps() - 1
-                        ? 'Finish'
-                        : 'Complete Step'}
-                    </Button>
-                  ))}
-              </div>
-            </div>
-          </>
+                ))}
+            </NavButtons>
+          </StepContent>
         )}
       </div>
     </PageContainer>
