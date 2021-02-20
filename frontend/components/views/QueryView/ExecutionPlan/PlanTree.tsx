@@ -2,7 +2,6 @@ import React, { useState, memo } from 'react';
 import styled from 'styled-components';
 import ReactFlow, {
   Background,
-  ReactFlowProvider,
   Handle,
   Position,
   NodeProps,
@@ -13,7 +12,7 @@ import { ExplainJson } from '../../../../types';
 import { DarkPaperFull } from '../../../../style-variables';
 import FlowControls from './FlowControls';
 
-type FlowNodeProps = NodeProps<{ plan: SizedPlanNode, totals: Totals }>;
+type FlowNodeProps = NodeProps<{ plan: SizedPlanNode; totals: Totals }>;
 
 const FlowNodeComponent = ({ data: { plan, totals } }: FlowNodeProps) => (
   <div>
@@ -48,7 +47,7 @@ const FlowTree = ({ data }: { data: ExplainJson }) => (
 );
 
 // Memoise to prevent rerender on fullscreen toggle
-const MemoFlowTree = memo(FlowTree)
+const MemoFlowTree = memo(FlowTree);
 
 // prettier-ignore
 const TreeContainer = styled(DarkPaperFull)<{$fullscreen: boolean}>`
@@ -74,13 +73,11 @@ const PlanTree = ({ data }: PlanTreeProps) => {
   if (!data) return null;
   return (
     <TreeContainer $fullscreen={isFullscreen}>
-      <ReactFlowProvider>
-        <MemoFlowTree data={data} />
-        <FlowControls
-          toggleFullscreen={() => setFullscreen(!isFullscreen)}
-          fullscreen={isFullscreen}
-        />
-      </ReactFlowProvider>
+      <MemoFlowTree data={data} />
+      <FlowControls
+        toggleFullscreen={() => setFullscreen(!isFullscreen)}
+        fullscreen={isFullscreen}
+      />
     </TreeContainer>
   );
 };
