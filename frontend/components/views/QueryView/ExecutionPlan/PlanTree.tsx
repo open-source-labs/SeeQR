@@ -8,20 +8,26 @@ import ReactFlow, {
 } from 'react-flow-renderer';
 import PlanCard from './PlanCard';
 import buildFlowGraph, { SizedPlanNode, Totals } from '../../../../lib/flow';
-import { ExplainJson } from '../../../../types';
+import { ExplainJson, Thresholds } from '../../../../types';
 import { DarkPaperFull } from '../../../../style-variables';
 import FlowControls from './FlowControls';
 
-type FlowNodeProps = NodeProps<{ plan: SizedPlanNode; totals: Totals }>;
+type FlowNodeProps = NodeProps<{
+  plan: SizedPlanNode;
+  totals: Totals;
+  thresholds: Thresholds;
+}>;
 
-const FlowNodeComponent = ({ data: { plan, totals } }: FlowNodeProps) => (
+const FlowNodeComponent = ({
+  data: { plan, totals, thresholds },
+}: FlowNodeProps) => (
   <div>
     <Handle
       type="target"
       position={Position.Top}
       style={{ visibility: 'hidden' }}
     />
-    <PlanCard plan={plan} totals={totals} />
+    <PlanCard plan={plan} totals={totals} thresholds={thresholds} />
     <Handle
       type="source"
       position={Position.Bottom}
@@ -30,9 +36,14 @@ const FlowNodeComponent = ({ data: { plan, totals } }: FlowNodeProps) => (
   </div>
 );
 
-const FlowTree = ({ data }: { data: ExplainJson }) => (
+interface FlowTreeProps {
+  data: ExplainJson;
+  thresholds: Thresholds;
+}
+
+const FlowTree = ({ data, thresholds }: FlowTreeProps) => (
   <ReactFlow
-    elements={buildFlowGraph(data, 'flowNode', 'smoothstep')}
+    elements={buildFlowGraph(data, thresholds, 'flowNode', 'smoothstep')}
     nodesDraggable={false}
     nodesConnectable={false}
     nodeTypes={{ flowNode: FlowNodeComponent }}
@@ -63,20 +74,28 @@ ${({$fullscreen}) => $fullscreen ? `
   flex: 1;
 `}`;
 
+const defaultThresholds: Thresholds = {
+  percentDuration: 30,
+  rowsAccuracy: 5,
+};
+
 interface PlanTreeProps {
   data: ExplainJson | undefined;
 }
 // TODO: spinner for large trees
 const PlanTree = ({ data }: PlanTreeProps) => {
   const [isFullscreen, setFullscreen] = useState(false);
+  const [userThresholds, setUserThresholds] = useState(defaultThresholds);
 
   if (!data) return null;
   return (
     <TreeContainer $fullscreen={isFullscreen}>
-      <MemoFlowTree data={data} />
+      <MemoFlowTree data={data} thresholds={userThresholds} />
       <FlowControls
         toggleFullscreen={() => setFullscreen(!isFullscreen)}
         fullscreen={isFullscreen}
+        thresholds={userThresholds}
+        setThresholds={setUserThresholds}
       />
     </TreeContainer>
   );

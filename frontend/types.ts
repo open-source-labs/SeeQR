@@ -53,6 +53,12 @@ export interface Feedback {
   message: string | Record<string, unknown>;
 }
 
+// thresholds for execution plan tree visual warnings
+export interface Thresholds {
+  percentDuration: number;
+  rowsAccuracy: number;
+}
+
 // Electron Interface //
 
 // Due to legacy reasons some data arriving from the backend is being treated as
@@ -118,6 +124,7 @@ export interface DbLists {
   databaseList: DatabaseInfo[];
   tableList: TableInfo[];
 }
+
 
 /**
  * Type guard that checks if obj is compatible with type DbLists
