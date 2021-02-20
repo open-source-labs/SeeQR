@@ -1,13 +1,9 @@
 import React, { memo, useState } from 'react';
 import styled from 'styled-components';
-import {
-  Card,
-  Tooltip,
-  LinearProgress,
-} from '@material-ui/core';
+import { Card, Tooltip, LinearProgress } from '@material-ui/core';
 import ms from 'ms';
 import type { SizedPlanNode, Totals } from '../../../../lib/flow';
-import PlanDetails from './PlanDetails'
+import PlanDetails from './PlanDetails';
 
 import {
   greyMedium,
@@ -16,7 +12,14 @@ import {
   planNodeWidth,
 } from '../../../../style-variables';
 
-const StyledCard = styled(Card)`
+// TODO: document threshold for user
+// Thresholds for visual warnings on node
+const thresholds = {
+  percentDuration: 30,
+  rowsAccuracy: 5,
+};
+
+const StyledCard = styled(Card)<{ $percentDuration: number }>`
   width: ${planNodeWidth};
   height: ${planNodeHeight};
   font-size: 10pt;
@@ -25,6 +28,10 @@ const StyledCard = styled(Card)`
   display: inline-flex;
   flex-direction: column;
   cursor: pointer;
+  border: 2px solid orange;
+  // override border property if percent is lower than threshold
+  ${({ $percentDuration }) =>
+    $percentDuration > thresholds.percentDuration ? '' : 'border: none;'}
 `;
 
 const Soft = styled.span`
@@ -48,7 +55,6 @@ const Header = styled.div`
 `;
 
 const Type = styled.span`
-  font-size: 1.2em;
   font-weight: bold;
   letter-spacing: 1.5px;
 `;
@@ -59,6 +65,9 @@ const Time = styled.span`
 
 const Relation = styled.div`
   font-size: 0.9em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 `;
 
 const MiniStats = styled.div`
@@ -71,7 +80,7 @@ const MiniStats = styled.div`
 
 const Accuracy = styled.span<{ $ratio: number }>`
   grid-area: 'accuracy';
-  ${({ $ratio }) => ($ratio > 1.5 ? 'color:#e92a2a;' : '')}
+  ${({ $ratio }) => ($ratio > thresholds.rowsAccuracy ? 'color:#e92a2a;' : '')}
 `;
 
 const formatTime = (time: number) =>
@@ -99,7 +108,7 @@ const isSameCard = (prevProps: PlanCardProps, nextProps: PlanCardProps) =>
   prevProps.plan.id === nextProps.plan.id;
 
 const PlanCard = ({ plan, totals }: PlanCardProps) => {
-  const [detailIsOpen, setDetailOpen] = useState(false)
+  const [detailIsOpen, setDetailOpen] = useState(false);
   const rowRatio = plan['Plan Rows'] / plan['Actual Rows'];
   const exclusive = exclusiveTime(plan);
   const time = totalTime(plan);
@@ -109,7 +118,13 @@ const PlanCard = ({ plan, totals }: PlanCardProps) => {
 
   return (
     <>
-      <StyledCard variant="elevation" elevation={3} raised onClick={() => setDetailOpen(true)}>
+      <StyledCard
+        variant="elevation"
+        elevation={3}
+        raised
+        onClick={() => setDetailOpen(true)}
+        $percentDuration={exclusiveRatio}
+      >
         <Tooltip title={`Percentage of Execution Time: ${exclusiveRatio}%`}>
           <DurationBar variant="determinate" value={exclusiveRatio} />
         </Tooltip>
@@ -151,7 +166,11 @@ const PlanCard = ({ plan, totals }: PlanCardProps) => {
           </Tooltip>
         </MiniStats>
       </StyledCard>
-      <PlanDetails plan={plan} open={detailIsOpen} handleClose={() => setDetailOpen(false)}/>
+      <PlanDetails
+        plan={plan}
+        open={detailIsOpen}
+        handleClose={() => setDetailOpen(false)}
+      />
     </>
   );
 };
