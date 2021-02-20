@@ -112,13 +112,18 @@ const PlanCard = ({ plan, totals, thresholds }: PlanCardProps) => {
     2
   );
 
+  const handleClick = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    setDetailOpen(true);
+  };
+
   return (
     <>
       <StyledCard
         variant="elevation"
         elevation={3}
         raised
-        onClick={() => setDetailOpen(true)}
+        onClick={handleClick}
         $warn={exclusiveRatio > thresholds.percentDuration}
       >
         <Tooltip title={`Percentage of Execution Time: ${exclusiveRatio}%`}>
