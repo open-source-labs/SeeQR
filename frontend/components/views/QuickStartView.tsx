@@ -64,7 +64,7 @@ const StyledStepLabel = styled(StepLabel)`
   }
 `;
 
-const StyledTypographyInstructions = styled(Typography)`
+const StyledTypographyInstructions = styled.div`
   font-size: clamp(1rem, 2vw, 1.3rem);
   text-align: center;
 `;
