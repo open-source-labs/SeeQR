@@ -27,6 +27,7 @@ export const greyDark = '#262626';
 export const greyMedium = '#525252';
 export const greyPrimary = '#818584';
 export const greyLight = '#b9bbba';
+export const greyLighter = '#cecfcf';
 export const greyLightest = '#dfe0e2';
 
 // Compare Colors

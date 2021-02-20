@@ -13,6 +13,7 @@ import styled from 'styled-components';
 import {
   DarkPaperFull,
   greyLightest,
+  greyLighter,
   greyDarkest,
 } from '../../../../style-variables';
 import type { SizedPlanNode } from '../../../../lib/flow';
@@ -32,6 +33,10 @@ const LightPaper = styled(DarkPaperFull)`
   max-width: 80vw;
   max-height: 80vh;
 `;
+
+const StyledRow = styled(TableRow)<{$i: number}>`
+  background: ${({$i}) => $i % 2 ? 'none' : greyLighter};
+`
 
 const StyledCell = styled(TableCell)`
   color: ${greyDarkest};
@@ -61,14 +66,14 @@ const visibleProperties = ([property]: [string, any]) => {
 const detailRows = (plan: SizedPlanNode) =>
   Object.entries(plan)
     .filter(visibleProperties)
-    .map(([property, value]) => (
-      <TableRow key={property}>
+    .map(([property, value], index) => (
+      <StyledRow key={property} $i={index}>
         <StyledCell>{property}</StyledCell>
         <StyledCell align="right">
           {/* insert spaces after commas to ensure wrapping is possible. Necessary for long Output strings */}
           {value?.toString().replace(/,/g, ', ') ?? ''}
         </StyledCell>
-      </TableRow>
+      </StyledRow>
     ));
 
 const PlanDetails = ({ plan, open, handleClose }: PlanDetailsProps) => (
