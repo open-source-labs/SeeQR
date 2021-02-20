@@ -121,23 +121,5 @@
   "bugs": {
     "url": "https://github.com/oslabs-beta/SeeQR/issues"
   },
-  "homepage": "https://github.com/oslabs-beta/SeeQR",
-  "jest": {
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest",
-      "^.+\\.jsx?$": "babel-jest"
-    },
-    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json",
-      "node"
-    ],
-    "setupFilesAfterEnv": [
-      "<rootDir>/__tests__/setupTests.js"
-    ]
-  }
+  "homepage": "https://github.com/oslabs-beta/SeeQR"
 }

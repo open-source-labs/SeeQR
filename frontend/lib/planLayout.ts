@@ -1,4 +1,5 @@
 import dagre from 'dagre';
+import type { SizedPlanNode } from './flow';
 
 interface GraphNode<T = any> {
   nodeData: T;
@@ -27,7 +28,7 @@ export interface SizedNode {
   id: string;
   width: number;
   height: number;
-  children?: SizedNode[];
+  children?: SizedPlanNode[];
 }
 
 /**

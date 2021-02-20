@@ -205,7 +205,7 @@ ipcMain.handle(
       let explainResults
       try {
         const results = await db.query(
-          `BEGIN; EXPLAIN (FORMAT JSON, ANALYZE) ${sqlString}; ROLLBACK;`
+          `BEGIN; EXPLAIN (FORMAT JSON, ANALYZE, VERBOSE, BUFFERS) ${sqlString}; ROLLBACK;`
         );
         explainResults = results[1].rows;
       } catch (e) {
