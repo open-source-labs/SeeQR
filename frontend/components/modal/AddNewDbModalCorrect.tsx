@@ -116,14 +116,6 @@ const AddNewDbModal = ({ open, onClose, databases }: AddNewDbModalProps) => {
           return;
         }
 
-        if (!/\w+/.test(newDbName)) {
-          sendFeedback({
-            type: 'warning',
-            message: 'Invalid Database name given. File was not imported.',
-          });
-          return;
-        }
-
         const payload: ImportPayload = {
           newDbName,
           filePath: result.filePaths[0],
