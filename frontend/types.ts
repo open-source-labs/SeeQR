@@ -145,7 +145,6 @@ export const isDbLists = (obj: unknown): obj is DbLists => {
       return false;
     if (obj.tableList[0] && typeof obj.tableList[0].table_schema !== 'string')
       return false;
-    // TODO: test other properties when necessary
   } catch (e) {
     return false;
   }
@@ -153,7 +152,7 @@ export const isDbLists = (obj: unknown): obj is DbLists => {
 };
 
 // type of node when explain is run with Analyze and Costs
-// TODO: optionals vs mandatory were guessed based on examples. Needs confirmation
+// optionals vs mandatory were guessed based on examples. Needs confirmation
 export interface PlanNode {
   'Node Type': string;
   'Join Type'?: string;
