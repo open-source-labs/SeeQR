@@ -30,6 +30,7 @@ export const greenLightest = '#ccdad4';
 // greys
 export const greyDarkest = '#191919';
 export const greyDark = '#262626';
+export const greyMedium = '#525252';
 export const greyPrimary = '#818584';
 export const greyLight = '#aab6af';
 export const greyLightest = '#dfe0e2';
