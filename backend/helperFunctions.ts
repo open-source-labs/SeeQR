@@ -20,7 +20,6 @@ interface HelperFunctions {
   runTARFunc: CreateCommand;
   runFullCopyFunc: CreateCommand;
   runHollowCopyFunc: CreateCommand;
-  execute: any; // TODO: can take out after merge with upstream
   promExecute: (cmd: string) => Promise<{ stdout: string; stderr: string }>;
 }
 const helperFunctions:HelperFunctions = {
@@ -46,24 +45,6 @@ const helperFunctions:HelperFunctions = {
   // make a hollow copy of the schema
   runHollowCopyFunc: (dbCopyName, file) =>
     `pg_dump -s -U postgres -F p -d ${dbCopyName} > "${file}"`,
-
-
-  // Function to execute commands in the child process.
-  execute: (str: string, nextStep: any) => {
-    console.log('in execute: ', str);
-    exec(str, (error, stdout, stderr) => {
-      console.log('channels line 43 exec func: ', str); // , `${stdout}`);
-      if (error) {
-        // this shows the console error in an error message on the frontend
-        console.log(`channels line 47 error: ${error.message}`);
-        dialog.showErrorBox(`${error.message}`, '');
-      } else if (stderr) {
-        // this shows the console error in an error message on the frontend
-        console.log(`channels line 53 stderr: ${stderr}`);
-        dialog.showErrorBox(`${stderr}`, '');
-      } else nextStep();
-    });
-  },
 
   // promisified execute to execute commands in the child process
   promExecute: (cmd: string) =>

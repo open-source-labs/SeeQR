@@ -5,7 +5,7 @@ import os from 'os';
 import helperFunctions from './helperFunctions';
 
 const db = require('./models');
-const { generateDummyData, writeCSVFile } = require('./DummyD/dummyDataMain'); // TODO: take out destructuring once merged with upstream
+const generateDummyData = require('./DummyD/dummyDataMain');
 
 const {
   createDBFunc,
@@ -15,7 +15,6 @@ const {
   runTARFunc,
   runFullCopyFunc,
   runHollowCopyFunc,
-  execute, // TODO: delete once merged with upstream
   promExecute,
 } = helperFunctions;
 
@@ -354,5 +353,3 @@ ipcMain.on('generate-dummy-data', async (event: any, data: dummyDataRequestType)
 //     });
 //   });
 // });
-
-export default execute;
