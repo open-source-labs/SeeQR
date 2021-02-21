@@ -13,9 +13,8 @@ const CompareView = ({ queries, show }: CompareViewProps) => {
   if (!show) return null;
   return (
     <div>
-      Compare
-      <CompareTable queries={queries} />
       <CompareChart queries={queries} />
+      <CompareTable queries={queries} />
     </div>
   );
 };
