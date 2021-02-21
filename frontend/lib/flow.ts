@@ -1,5 +1,5 @@
 import { Elements } from 'react-flow-renderer';
-import { PlanNode, ExplainJson } from '../types';
+import { PlanNode, ExplainJson, Thresholds } from '../types';
 import { planNodeWidth, planNodeHeight } from '../style-variables';
 import createLayout, { SizedNode, Graph } from './planLayout';
 
@@ -19,13 +19,14 @@ export interface Totals {
 const dagreToFlow = (
   graphElements: Graph<PlanNode>,
   totals: Totals,
+  thresholds: Thresholds,
   nodeType: string,
   edgeType: string
 ): TypedElements => {
   const nodes: TypedElements = graphElements.nodes.map((node) => ({
     id: node.id,
     // NOTE: BREAKS IF  CIRCULAR STRUCTURES ARE PASSED IN
-    data: { plan: node.nodeData, totals },
+    data: { plan: node.nodeData, totals, thresholds },
     position: { x: node.x, y: node.y },
     type: nodeType,
   }));
@@ -89,6 +90,7 @@ const getSizedNodes = (root: PlanNode) => {
  */
 const buildFlowGraph = (
   explain: ExplainJson,
+  thresholds: Thresholds,
   nodeComponent: string,
   edgeType: string
 ): TypedElements => {
@@ -98,7 +100,7 @@ const buildFlowGraph = (
   const totals: Totals = { time: explain['Execution Time'] };
 
   const layout = createLayout<PlanNode>(sizedNodes);
-  return dagreToFlow(layout, totals, nodeComponent, edgeType);
+  return dagreToFlow(layout, totals, thresholds, nodeComponent, edgeType);
 };
 
 export default buildFlowGraph;

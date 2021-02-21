@@ -109,7 +109,6 @@ const QueryView = ({
       );
   };
   const onSqlChange = (newSql: string) => {
-    // TODO: this triggers a rerender of the entire query view  every stroke
     // because App's workingQuery changes ref
     setQuery({ ...localQuery, sqlString: newSql });
   };
@@ -122,7 +121,6 @@ const QueryView = ({
       });
     }
 
-    // TODO: unify types for frontend/backend
     // request backend to run query
     ipcRenderer
       .invoke('run-query', {

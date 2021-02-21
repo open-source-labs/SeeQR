@@ -1,5 +1,3 @@
-// TODO: Add Separator to divide top to bottom
-
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { ReactFlowProvider } from 'react-flow-renderer';
