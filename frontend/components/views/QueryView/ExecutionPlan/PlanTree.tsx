@@ -1,28 +1,33 @@
-import React, { useState, memo } from 'react';
+import React, { useState, memo  } from 'react';
 import styled from 'styled-components';
 import ReactFlow, {
   Background,
-  ReactFlowProvider,
   Handle,
   Position,
   NodeProps,
 } from 'react-flow-renderer';
 import PlanCard from './PlanCard';
-import buildFlowGraph, { SizedPlanNode } from '../../../../lib/flow';
-import { ExplainJson } from '../../../../types';
+import buildFlowGraph, { SizedPlanNode, Totals } from '../../../../lib/flow';
+import { ExplainJson, Thresholds } from '../../../../types';
 import { DarkPaperFull } from '../../../../style-variables';
 import FlowControls from './FlowControls';
 
-type FlowNodeProps = NodeProps<{ plan: SizedPlanNode }>;
+type FlowNodeProps = NodeProps<{
+  plan: SizedPlanNode;
+  totals: Totals;
+  thresholds: Thresholds;
+}>;
 
-const FlowNodeComponent = ({ data: { plan } }: FlowNodeProps) => (
+const FlowNodeComponent = ({
+  data: { plan, totals, thresholds },
+}: FlowNodeProps) => (
   <div>
     <Handle
       type="target"
       position={Position.Top}
       style={{ visibility: 'hidden' }}
     />
-    <PlanCard plan={plan} />
+    <PlanCard plan={plan} totals={totals} thresholds={thresholds} />
     <Handle
       type="source"
       position={Position.Bottom}
@@ -31,9 +36,14 @@ const FlowNodeComponent = ({ data: { plan } }: FlowNodeProps) => (
   </div>
 );
 
-const FlowTree = ({ data }: { data: ExplainJson }) => (
+interface FlowTreeProps {
+  data: ExplainJson;
+  thresholds: Thresholds;
+}
+
+const FlowTree = ({ data, thresholds }: FlowTreeProps) => (
   <ReactFlow
-    elements={buildFlowGraph(data.Plan, 'flowNode', 'smoothstep')}
+    elements={buildFlowGraph(data, thresholds, 'flowNode', 'smoothstep')}
     nodesDraggable={false}
     nodesConnectable={false}
     nodeTypes={{ flowNode: FlowNodeComponent }}
@@ -48,7 +58,7 @@ const FlowTree = ({ data }: { data: ExplainJson }) => (
 );
 
 // Memoise to prevent rerender on fullscreen toggle
-const MemoFlowTree = memo(FlowTree)
+const MemoFlowTree = memo(FlowTree);
 
 // prettier-ignore
 const TreeContainer = styled(DarkPaperFull)<{$fullscreen: boolean}>`
@@ -64,23 +74,28 @@ ${({$fullscreen}) => $fullscreen ? `
   flex: 1;
 `}`;
 
+const defaultThresholds: Thresholds = {
+  percentDuration: 30,
+  rowsAccuracy: 5,
+};
+
 interface PlanTreeProps {
   data: ExplainJson | undefined;
 }
-// TODO: spinner for large trees
 const PlanTree = ({ data }: PlanTreeProps) => {
   const [isFullscreen, setFullscreen] = useState(false);
+  const [userThresholds, setUserThresholds] = useState(defaultThresholds);
 
   if (!data) return null;
   return (
     <TreeContainer $fullscreen={isFullscreen}>
-      <ReactFlowProvider>
-        <MemoFlowTree data={data} />
-        <FlowControls
-          toggleFullscreen={() => setFullscreen(!isFullscreen)}
-          fullscreen={isFullscreen}
-        />
-      </ReactFlowProvider>
+      <MemoFlowTree data={data} thresholds={userThresholds} />
+      <FlowControls
+        toggleFullscreen={() => setFullscreen(!isFullscreen)}
+        fullscreen={isFullscreen}
+        thresholds={userThresholds}
+        setThresholds={setUserThresholds}
+      />
     </TreeContainer>
   );
 };

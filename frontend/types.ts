@@ -53,6 +53,12 @@ export interface Feedback {
   message: string | Record<string, unknown>;
 }
 
+// thresholds for execution plan tree visual warnings
+export interface Thresholds {
+  percentDuration: number;
+  rowsAccuracy: number;
+}
+
 // Electron Interface //
 
 // Due to legacy reasons some data arriving from the backend is being treated as
@@ -119,6 +125,7 @@ export interface DbLists {
   tableList: TableInfo[];
 }
 
+
 /**
  * Type guard that checks if obj is compatible with type DbLists
  */
@@ -138,7 +145,6 @@ export const isDbLists = (obj: unknown): obj is DbLists => {
       return false;
     if (obj.tableList[0] && typeof obj.tableList[0].table_schema !== 'string')
       return false;
-    // TODO: test other properties when necessary
   } catch (e) {
     return false;
   }
@@ -146,7 +152,7 @@ export const isDbLists = (obj: unknown): obj is DbLists => {
 };
 
 // type of node when explain is run with Analyze and Costs
-// TODO: optionals vs mandatory were guessed based on examples. Needs confirmation
+// optionals vs mandatory were guessed based on examples. Needs confirmation
 export interface PlanNode {
   'Node Type': string;
   'Join Type'?: string;
@@ -157,7 +163,7 @@ export interface PlanNode {
   'Actual Startup Time': number;
   'Actual Total Time': number;
   'Actual Rows': number;
-  'Actual Loops': number;
+  'Actual Loops'?: number;
   'Inner Unique'?: boolean;
   /**
    * Condition for Hash Operation

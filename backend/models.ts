@@ -15,6 +15,31 @@ let PG_URI: string = 'postgres://postgres:postgres@localhost:5432';
 let pool: any = new Pool({ connectionString: PG_URI });
 console.log(PG_URI);
 
+interface dbDetails {
+  db_name: string;
+  db_size: string;
+}
+interface ColumnObj {
+  column_name: string;
+  data_type: string;
+  character_maximum_length: number | null;
+  is_nullable: string;
+  constraint_type: string;
+  foreign_table: string;
+  foreign_column: string;
+}
+interface TableDetails {
+  table_catalog: string;
+  table_schema: string;
+  table_name: string;
+  is_insertable_into: string;
+  column?: ColumnObj[];
+}
+interface DBList {
+  databaseList: dbDetails[];
+  tableList: TableDetails[];
+}
+
 /**
  *  ********************************************************* HELPER FUNCTIONS *************************************************
  */
@@ -172,7 +197,7 @@ myobj = {
   //      databaseList: { db_name: 'name', db_size: '1000kB' }
   //      tableList: { table_name: 'name', data_type: 'type', columns: [ colObj ], ...etc. }
   //   }
-  getLists: () =>
+  getLists: ():Promise<DBList[]> =>
     new Promise((resolve, reject) => {
       const listObj: any = {
         databaseList: [],

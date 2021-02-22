@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { IpcMainEvent } from 'electron';
+import { IpcRendererEvent, ipcRenderer } from 'electron';
 import { IconButton, Tooltip } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import AddNewDbModal from '../modal/AddNewDbModalCorrect';
@@ -8,12 +8,7 @@ import { AppState, isDbLists } from '../../types';
 import { once, sendFeedback } from '../../lib/utils';
 import DuplicateDbModal from '../modal/DuplicateDbModal';
 import DbEntry from './DbEntry';
-import logo from '../../../assets/logo/seeqr_dock.png';
-import { SidebarList } from '../../style-variables';
-import { greyDarkest } from '../../style-variables';
-
-// TODO: how to type ipcRenderer ?
-const { ipcRenderer } = window.require('electron');
+import { SidebarList, greyDarkest } from '../../style-variables';
 
 // emitting with no payload requests backend to send back a db-lists event with list of dbs
 const requestDbListOnce = once(() => ipcRenderer.send('return-db-list'));
@@ -34,7 +29,7 @@ const DbList = ({ selectedDb, setSelectedDb, show }: DbListProps) => {
 
   useEffect(() => {
     // Listen to backend for updates to list of available databases
-    const dbListFromBackend = (evt: IpcMainEvent, dbLists: unknown) => {
+    const dbListFromBackend = (evt: IpcRendererEvent, dbLists: unknown) => {
       if (isDbLists(dbLists)) {
         setDatabases(dbLists.databaseList.map((db) => db.db_name));
       }
@@ -42,7 +37,9 @@ const DbList = ({ selectedDb, setSelectedDb, show }: DbListProps) => {
     ipcRenderer.on('db-lists', dbListFromBackend);
     requestDbListOnce();
     // return cleanup function
-    return () => ipcRenderer.removeListener('db-lists', dbListFromBackend);
+    return () => {
+      ipcRenderer.removeListener('db-lists', dbListFromBackend);
+    };
   });
 
   const handleClickOpenAdd = () => {
@@ -63,7 +60,7 @@ const DbList = ({ selectedDb, setSelectedDb, show }: DbListProps) => {
   };
 
   const selectHandler = (dbName: string) => {
-    if (dbName === selectedDb) return 
+    if (dbName === selectedDb) return;
     ipcRenderer
       .invoke('select-db', dbName)
       .then(() => {
@@ -104,7 +101,6 @@ const DbList = ({ selectedDb, setSelectedDb, show }: DbListProps) => {
           />
         ) : null}
       </StyledSidebarList>
-      {/* Validate Db name doesnt exist */}
       <AddNewDbModal
         open={openAdd}
         onClose={handleCloseAdd}

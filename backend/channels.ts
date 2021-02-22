@@ -2,25 +2,52 @@ import { ipcMain } from 'electron'; // IPCMain: Communicate asynchronously from 
 import path from 'path';
 import fs from 'fs';
 import os from 'os';
+import helperFunctions from './helperFunctions';
 
 const db = require('./models');
-const { generateDummyData, writeCSVFile } = require('./DummyD/dummyDataMain');
+const generateDummyData = require('./DummyD/dummyDataMain');
+
 const {
   createDBFunc,
   dropDBFunc,
+  explainQuery,
   runSQLFunc,
   runTARFunc,
   runFullCopyFunc,
   runHollowCopyFunc,
-  execute,
   promExecute,
-} = require('./helperFunctions');
+} = helperFunctions;
 
 // *************************************************** IPC Event Listeners *************************************************** //
 
+interface dbDetails {
+  db_name: string;
+  db_size: string;
+}
+interface ColumnObj {
+  column_name: string;
+  data_type: string;
+  character_maximum_length: number | null;
+  is_nullable: string;
+  constraint_type: string;
+  foreign_table: string;
+  foreign_column: string;
+}
+interface TableDetails {
+  table_catalog: string;
+  table_schema: string;
+  table_name: string;
+  is_insertable_into: string;
+  column?: ColumnObj[];
+}
+interface DBList {
+  databaseList: dbDetails[];
+  tableList: TableDetails[];
+}
+
 ipcMain.on('return-db-list', (event) => {
   db.getLists()
-    .then((data) => {
+    .then((data: DBList) => {
       event.sender.send('db-lists', data);
     })
     .catch((err) => {
@@ -41,7 +68,7 @@ ipcMain.handle(
       await db.connectToDB(dbName);
 
       // send updated db info
-      const dbsAndTables = await db.getLists();
+      const dbsAndTables: DBList = await db.getLists();
       event.sender.send('db-lists', dbsAndTables);
     } finally {
       event.sender.send('async-complete');
@@ -61,7 +88,7 @@ ipcMain.handle('drop-db', async (event, dbName: string, currDB: boolean) => {
     await db.query(dropDBScript);
 
     // send updated db info
-    const dbsAndTables = await db.getLists();
+    const dbsAndTables: DBList = await db.getLists();
     event.sender.send('db-lists', dbsAndTables);
   } finally {
     event.sender.send('async-complete');
@@ -122,7 +149,7 @@ ipcMain.handle(
       }
 
       // update frontend with new db list
-      const dbsAndTableInfo = await db.getLists();
+      const dbsAndTableInfo: DBList = await db.getLists();
       event.sender.send('db-lists', dbsAndTableInfo);
     } finally {
       // cleanup temp file
@@ -178,7 +205,7 @@ ipcMain.handle(
       }
 
       // update frontend with new db list
-      const dbsAndTableInfo = await db.getLists();
+      const dbsAndTableInfo: DBList = await db.getLists();
       event.sender.send('db-lists', dbsAndTableInfo);
     } finally {
       event.sender.send('async-complete');
@@ -197,28 +224,26 @@ ipcMain.handle(
   async (event, { targetDb, sqlString, selectedDb }: QueryPayload) => {
     event.sender.send('async-started');
     try {
-      let error: string | undefined
+      let error: string | undefined;
       // connect to db to run query
       if (selectedDb !== targetDb) await db.connectToDB(targetDb);
 
       // Run Explain
-      let explainResults
+      let explainResults;
       try {
-        const results = await db.query(
-          `BEGIN; EXPLAIN (FORMAT JSON, ANALYZE) ${sqlString}; ROLLBACK;`
-        );
+        const results = await db.query(explainQuery(sqlString));
         explainResults = results[1].rows;
       } catch (e) {
-        error = `Failed to get Execution Plan. EXPLAIN might not support this query.`
+        error = `Failed to get Execution Plan. EXPLAIN might not support this query.`;
       }
 
       // Run Query
-      let returnedRows
+      let returnedRows;
       try {
         const results = await db.query(sqlString);
-        returnedRows = results.rows
+        returnedRows = results.rows;
       } catch (e) {
-        error = e.toString()
+        error = e.toString();
       }
 
       return {
@@ -226,15 +251,15 @@ ipcMain.handle(
         sqlString,
         returnedRows,
         explainResults,
-        error
-      }
+        error,
+      };
     } finally {
       // connect back to initialDb
       if (selectedDb !== targetDb) await db.connectToDB(selectedDb);
 
-      // send updated db info in case query affected table or database information 
+      // send updated db info in case query affected table or database information
       // must be run after we connect back to the originally selected so tables information is accurate
-      const dbsAndTables = await db.getLists();
+      const dbsAndTables: DBList = await db.getLists();
       event.sender.send('db-lists', dbsAndTables);
 
       event.sender.send('async-complete');
@@ -248,45 +273,70 @@ interface dummyDataRequestType {
   rows: number;
 }
 
-ipcMain.on('generate-dummy-data', async (event: any, data: dummyDataRequestType) => {
-  // send notice to front end that DD generation has been started
-  event.sender.send('async-started');
-  const dummyDataRequest: dummyDataRequestType = data;
-  try {
-    // Retrieves the Primary Keys and Foreign Keys for all the tables
-    const tableInfo = await db.getTableInfo(data.tableName);
-    console.log('tableInfo: ', tableInfo);
-    const dummyArray = await generateDummyData(tableInfo, data.rows);
-    console.log('dummyArray: ', dummyArray);
-    const dummyArrayStringified = [] as any;
-    const columnsStringified = '('.concat(dummyArray[0].join(', ')).concat(')');
-    let insertQuery = `INSERT INTO ${data.tableName} ${columnsStringified} VALUES `;
-    for (let i = 1; i < dummyArray.length - 1; i += 1) {
-      const recordStringified = '('.concat(dummyArray[i].join(', ')).concat('), ');
-      insertQuery = insertQuery.concat(recordStringified)
+ipcMain.handle(
+  'generate-dummy-data',
+  async (event: any, data: dummyDataRequestType) => {
+    // send notice to front end that DD generation has been started
+    event.sender.send('async-started');
+    const dummyDataRequest: dummyDataRequestType = data;
+    let feedback = {
+      type: '',
+      message: '',
     };
-    const lastRecordStringified = '('.concat(dummyArray[dummyArray.length - 1].join(', ')).concat(');');
-    insertQuery = insertQuery.concat(lastRecordStringified);
-    console.log(insertQuery);
-    await db.query('Begin;');
-    await db.query(insertQuery);
-    await db.query('Commit;');
-    event.sender.send('async-complete');
-  } catch(err) {
-    await db.query('Rollback;');
-    const feedback = {
-      type: 'error',
-      message: err,
-    };
-    event.sender.send('feedback', feedback);
+    try {
+      // Retrieves the Primary Keys and Foreign Keys for all the tables
+      const tableInfo = await db.getTableInfo(data.tableName);
+
+      // generate dummy data
+      const dummyArray = await generateDummyData(tableInfo, data.rows);
+
+      // generate insert query string to insert dummy records
+      const dummyArrayStringified = [] as any;
+      const columnsStringified = '('
+        .concat(dummyArray[0].join(', '))
+        .concat(')');
+      let insertQuery = `INSERT INTO ${data.tableName} ${columnsStringified} VALUES `;
+      for (let i = 1; i < dummyArray.length - 1; i += 1) {
+        const recordStringified = '('
+          .concat(dummyArray[i].join(', '))
+          .concat('), ');
+        insertQuery = insertQuery.concat(recordStringified);
+      }
+      const lastRecordStringified = '('
+        .concat(dummyArray[dummyArray.length - 1].join(', '))
+        .concat(');');
+      insertQuery = insertQuery.concat(lastRecordStringified);
+
+      // insert dummy records into DB
+      await db.query('Begin;');
+      await db.query(insertQuery);
+      await db.query('Commit;');
+      feedback = {
+        type: 'success',
+        message: 'Dummy data successfully generated.',
+      };
+    } catch (err) {
+      // rollback transaction if there's an error in insertion and send back feedback to FE
+      await db.query('Rollback;');
+      feedback = {
+        type: 'error',
+        message: err,
+      };
+    } finally {
+      // send updated db info in case query affected table or database information
+      const dbsAndTables: DBList = await db.getLists();
+      event.sender.send('db-lists', dbsAndTables);
+      event.sender.send('feedback', feedback);
+      // send notice to FE that DD generation has been completed
+      event.sender.send('async-complete');
+    }
   }
-});
+);
 
 // INSERT INTO products (product_no, name, price) VALUES
 //     (1, 'Cheese', 9.99),
 //     (2, 'Bread', 1.99),
 //     (3, 'Milk', 2.99);
-
 
 // ipcMain.on('generate-dummy-data', (event: any, data: dummyDataRequestType) => {
 //   // send notice to front end that DD generation has been started
@@ -328,5 +378,3 @@ ipcMain.on('generate-dummy-data', async (event: any, data: dummyDataRequestType)
 //     });
 //   });
 // });
-
-export default execute;

@@ -8,3 +8,5 @@ dvdrental.tar
 *.csv
 *.sql
 debug.log
+coverage/
+release-builds/

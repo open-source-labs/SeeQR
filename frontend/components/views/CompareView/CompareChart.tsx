@@ -3,15 +3,14 @@ import { Bar, defaults, ChartData } from 'react-chartjs-2';
 import styled from 'styled-components'
 import { AppState } from '../../../types';
 import { keyFromData, getTotalTime } from '../../../lib/queries';
-import { compareChartColors } from '../../../style-variables';
+import { compareChartColors, textColor } from '../../../style-variables';
 
 const ChartContainer = styled.div`
   height: 400px;
   width: 100%;
 `
 
-// TODO: connect to our variables
-defaults.global.defaultFontColor = 'rgb(198,210,213)';
+defaults.global.defaultFontColor = textColor
 
 /**
  * Builds Chart.js data from queries. Uses isCompared flag on each query to

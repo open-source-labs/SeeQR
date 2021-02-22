@@ -50,7 +50,7 @@ const TablesTabs = ({ tables }: TablesSidebarProps) => {
           scrollButtons="auto"
           aria-label="scrollable auto tabs example"
         >
-          {tables.map(({table_name: name}, index) => (
+          {tables.map(({ table_name: name }, index) => (
             <Tab label={name} {...a11yProps(index)} key={name} />
           ))}
           ;
@@ -62,13 +62,6 @@ const TablesTabs = ({ tables }: TablesSidebarProps) => {
           <TableDetails table={tableMap} />
         </TabPanel>
       ))}
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={() => console.log('generate dummy data')}
-      >
-        Generate Dummy Data
-      </Button>
     </>
   );
 };
