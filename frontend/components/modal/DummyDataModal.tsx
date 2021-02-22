@@ -101,16 +101,8 @@ const DummyDataModal = ({
 
   // Event handler to send rows to backend
   const handleClick = () => {
-    console.log('clicked')
     // Check if dbName is given and not undefined
-    if (!dbName)
-      return sendFeedback({
-        type: 'error',
-        message: 'Failed to generate dummy data',
-      });
-
-    // Check if tableName is given and not undefined
-    if (!tableName)
+    if (!dbName || !tableName)
       return sendFeedback({
         type: 'error',
         message: 'Failed to generate dummy data',
