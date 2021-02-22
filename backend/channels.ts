@@ -273,16 +273,18 @@ interface dummyDataRequestType {
   rows: number;
 }
 
-ipcMain.on('generate-dummy-data', async (event: any, data: dummyDataRequestType) => {
+ipcMain.handle('generate-dummy-data', async (event: any, data: dummyDataRequestType) => {
   // send notice to front end that DD generation has been started
   event.sender.send('async-started');
   const dummyDataRequest: dummyDataRequestType = data;
   try {
     // Retrieves the Primary Keys and Foreign Keys for all the tables
     const tableInfo = await db.getTableInfo(data.tableName);
-    console.log('tableInfo: ', tableInfo);
+
+    // generate dummy data
     const dummyArray = await generateDummyData(tableInfo, data.rows);
-    console.log('dummyArray: ', dummyArray);
+
+    // generate insert query string to insert dummy records
     const dummyArrayStringified = [] as any;
     const columnsStringified = '('.concat(dummyArray[0].join(', ')).concat(')');
     let insertQuery = `INSERT INTO ${data.tableName} ${columnsStringified} VALUES `;
@@ -292,18 +294,26 @@ ipcMain.on('generate-dummy-data', async (event: any, data: dummyDataRequestType)
     };
     const lastRecordStringified = '('.concat(dummyArray[dummyArray.length - 1].join(', ')).concat(');');
     insertQuery = insertQuery.concat(lastRecordStringified);
-    console.log(insertQuery);
+
+    // insert dummy records into DB
     await db.query('Begin;');
     await db.query(insertQuery);
     await db.query('Commit;');
-    event.sender.send('async-complete');
   } catch(err) {
+    // rollback transaction if there's an error in insertion and send back feedback to FE
     await db.query('Rollback;');
     const feedback = {
       type: 'error',
       message: err,
     };
     event.sender.send('feedback', feedback);
+  } finally {
+    // send updated db info in case query affected table or database information
+    const dbsAndTables: DBList = await db.getLists();
+    event.sender.send('db-lists', dbsAndTables);
+
+    // send notice to FE that DD generation has been completed
+    event.sender.send('async-complete');
   }
 });
 
