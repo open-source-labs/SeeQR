@@ -15,6 +15,31 @@ let PG_URI: string = 'postgres://postgres:postgres@localhost:5432';
 let pool: any = new Pool({ connectionString: PG_URI });
 console.log(PG_URI);
 
+interface dbDetails {
+  db_name: string;
+  db_size: string;
+}
+interface ColumnObj {
+  column_name: string;
+  data_type: string;
+  character_maximum_length: number | null;
+  is_nullable: string;
+  constraint_type: string;
+  foreign_table: string;
+  foreign_column: string;
+}
+interface TableDetails {
+  table_catalog: string;
+  table_schema: string;
+  table_name: string;
+  is_insertable_into: string;
+  column?: ColumnObj[];
+}
+interface DBList {
+  databaseList: dbDetails[];
+  tableList: TableDetails[];
+}
+
 /**
  *  ********************************************************* HELPER FUNCTIONS *************************************************
  */
@@ -23,33 +48,33 @@ console.log(PG_URI);
 // this function returns a promise to be resolved with Promise.all syntax
 const getColumnObjects = (tableName: string) => {
   // potential query string to get constraints and table references as well
-  // const queryString = `
-  // SELECT cols.table_name,
-  //   cols.column_name,
-  //   cols.data_type,
-  //   cols.character_maximum_length,
-  //   cols.is_nullable,
-  //   kcu.constraint_name,
-  //   cons.constraint_type,
-  //   rel_kcu.table_name AS foreign_table
-  // FROM information_schema.columns cols
-  // LEFT JOIN information_schema.key_column_usage kcu
-  //   ON cols.column_name = kcu.column_name
-  //   AND cols.table_name = kcu.table_name
-  // LEFT JOIN information_schema.table_constraints cons
-  //   ON kcu.constraint_name = cons.constraint_name
-  // LEFT JOIN information_schema.referential_constraints rco
-  //   ON rco.constraint_name = cons.constraint_name
-  // LEFT JOIN information_schema.key_column_usage rel_kcu
-  //   ON rco.unique_constraint_name = rel_kcu.constraint_name
-  // WHERE cols.table_name = $1
-  // `;
-
   const queryString = `
-    SELECT column_name, data_type, character_maximum_length, is_nullable
-    FROM information_schema.columns
-    WHERE table_name = $1;
- `;
+  SELECT cols.column_name,
+    cols.data_type,
+    cols.character_maximum_length,
+    cols.is_nullable,
+    kcu.constraint_name,
+    cons.constraint_type,
+    rel_kcu.table_name AS foreign_table,
+    rel_kcu.column_name AS foreign_column
+  FROM information_schema.columns cols
+  LEFT JOIN information_schema.key_column_usage kcu
+    ON cols.column_name = kcu.column_name
+    AND cols.table_name = kcu.table_name
+  LEFT JOIN information_schema.table_constraints cons
+    ON kcu.constraint_name = cons.constraint_name
+  LEFT JOIN information_schema.referential_constraints rco
+    ON rco.constraint_name = cons.constraint_name
+  LEFT JOIN information_schema.key_column_usage rel_kcu
+    ON rco.unique_constraint_name = rel_kcu.constraint_name
+  WHERE cols.table_name = $1
+  `;
+
+//   const queryString = `
+//     SELECT column_name, data_type, character_maximum_length, is_nullable
+//     FROM information_schema.columns
+//     WHERE table_name = $1;
+//  `;
   const value = [tableName];
   return new Promise((resolve) => {
     pool.query(queryString, value).then((result) => {
@@ -137,6 +162,7 @@ let myobj: {
   query: Function;
   closePool: Function;
   getLists: Function;
+  getTableInfo: Function;
   createKeyObject: Function;
   dropKeyColumns: Function;
   addNewKeyColumns: Function;
@@ -171,7 +197,7 @@ myobj = {
   //      databaseList: { db_name: 'name', db_size: '1000kB' }
   //      tableList: { table_name: 'name', data_type: 'type', columns: [ colObj ], ...etc. }
   //   }
-  getLists: () =>
+  getLists: ():Promise<DBList[]> =>
     new Promise((resolve, reject) => {
       const listObj: any = {
         databaseList: [],
@@ -184,6 +210,9 @@ myobj = {
         })
         .catch(reject);
     }),
+
+  getTableInfo: (tableName) => getColumnObjects(tableName),
+
   /** Expand to view explaination
    * Creating a nested Object, the keys within the object are the table names
    * The value is an object that has two keys that are objects

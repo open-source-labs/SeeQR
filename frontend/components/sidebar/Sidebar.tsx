@@ -1,13 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Drawer, IconButton, Tooltip } from '@material-ui/core/';
-import { makeStyles } from '@material-ui/core/styles';
+import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import styled from 'styled-components';
 import { AppState } from '../../types';
 import TopButtons from './TopButtons';
 import QueryList from './QueryList';
 import DbList from './DbList';
 import ViewSelector from './ViewSelector';
-import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import logo from '../../../assets/logo/seeqr_dock.png';
 
 import {
@@ -16,24 +15,28 @@ import {
   sidebarShowButtonSize,
 } from '../../style-variables';
 
-// TODO: try to refactor with styled components
-const useStyles = makeStyles(() => ({
-  drawerPaper: {
-    width: sidebarWidth,
-    padding: 0,
-    background: greyDarkest,
-    display: 'flex',
-    'flex-direction': 'column',
-    'align-items': 'center',
-  },
-  image: {
-    position: 'fixed',
-    bottom: '10px',
-    opacity: '0.5',
-    zIndex: -1,
-    filter: 'grayscale(100%)',
-  },
-}));
+const StyledDrawer = styled(Drawer)`
+  & .MuiDrawer-paper {
+    width: ${sidebarWidth};
+    padding: 0;
+    background: ${greyDarkest};
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+`;
+
+const Logo = styled.img`
+  position: fixed;
+  bottom: 10px;
+  left: calc(${sidebarWidth} / 2);
+  transform: translateX(-50%);
+  opacity: 0.5;
+  z-index: -1;
+  filter: grayscale(100%);
+  width: 100px;
+  height: 100px;
+`;
 
 const ShowSidebarBtn = styled(IconButton)`
   width: ${sidebarShowButtonSize};
@@ -67,8 +70,6 @@ const Sidebar = ({
     setWorkingQuery(undefined);
   };
 
-  const classes = useStyles();
-
   return (
     <>
       <Tooltip title="Show Sidebar">
@@ -76,12 +77,7 @@ const Sidebar = ({
           <ArrowForwardIosIcon />
         </ShowSidebarBtn>
       </Tooltip>
-      <Drawer
-        variant="persistent"
-        anchor="left"
-        open={!sidebarIsHidden}
-        classes={{ paper: classes.drawerPaper }}
-      >
+      <StyledDrawer variant="persistent" anchor="left" open={!sidebarIsHidden}>
         <TopButtons
           selectedView={selectedView}
           setSelectedView={setSelectedView}
@@ -103,14 +99,8 @@ const Sidebar = ({
           setWorkingQuery={setWorkingQuery}
           show={selectedView === 'queryView' || selectedView === 'compareView'}
         />
-        <img
-          className={classes.image}
-          src={logo}
-          alt="Logo"
-          width="100px"
-          height="100px"
-        />
-      </Drawer>
+        <Logo src={logo} alt="Logo" />
+      </StyledDrawer>
     </>
   );
 };

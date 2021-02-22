@@ -9,3 +9,4 @@ dvdrental.tar
 *.sql
 debug.log
 coverage/
+release-builds/

@@ -1,4 +1,4 @@
-import { IpcMainEvent } from 'electron';
+import { IpcRendererEvent, ipcRenderer } from 'electron';
 import React, { useState, useEffect } from 'react';
 import { Button } from '@material-ui/core';
 import { AppState, isDbLists, DatabaseInfo, TableInfo } from '../../../types';
@@ -25,7 +25,7 @@ const DbView = ({ selectedDb, show }: DbViewProps) => {
 
   useEffect(() => {
     // Listen to backend for updates to list of tables on current db
-    const tablesFromBackend = (evt: IpcMainEvent, dbLists: unknown) => {
+    const tablesFromBackend = (evt: IpcRendererEvent, dbLists: unknown) => {
       if (isDbLists(dbLists)) {
         setDatabases(dbLists.databaseList);
         setTables(dbLists.tableList);
@@ -35,7 +35,9 @@ const DbView = ({ selectedDb, show }: DbViewProps) => {
     ipcRenderer.on('db-lists', tablesFromBackend);
     requestDbListOnce();
     // return cleanup function
-    return () => ipcRenderer.removeListener('db-lists', tablesFromBackend);
+    return () => {
+      ipcRenderer.removeListener('db-lists', tablesFromBackend);
+    };
   });
 
   const handleClickOpen = () => {
