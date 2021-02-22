@@ -104,7 +104,6 @@ const DbList = ({ selectedDb, setSelectedDb, show }: DbListProps) => {
           />
         ) : null}
       </StyledSidebarList>
-      {/* Validate Db name doesnt exist */}
       <AddNewDbModal
         open={openAdd}
         onClose={handleCloseAdd}
