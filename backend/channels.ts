@@ -2,25 +2,52 @@ import { ipcMain } from 'electron'; // IPCMain: Communicate asynchronously from 
 import path from 'path';
 import fs from 'fs';
 import os from 'os';
+import helperFunctions from './helperFunctions';
 
 const db = require('./models');
-const { generateDummyData, writeCSVFile } = require('./DummyD/dummyDataMain');
+const generateDummyData = require('./DummyD/dummyDataMain');
+
 const {
   createDBFunc,
   dropDBFunc,
+  explainQuery,
   runSQLFunc,
   runTARFunc,
   runFullCopyFunc,
   runHollowCopyFunc,
-  execute,
   promExecute,
-} = require('./helperFunctions');
+} = helperFunctions;
 
 // *************************************************** IPC Event Listeners *************************************************** //
 
+interface dbDetails {
+  db_name: string;
+  db_size: string;
+}
+interface ColumnObj {
+  column_name: string;
+  data_type: string;
+  character_maximum_length: number | null;
+  is_nullable: string;
+  constraint_type: string;
+  foreign_table: string;
+  foreign_column: string;
+}
+interface TableDetails {
+  table_catalog: string;
+  table_schema: string;
+  table_name: string;
+  is_insertable_into: string;
+  column?: ColumnObj[];
+}
+interface DBList {
+  databaseList: dbDetails[];
+  tableList: TableDetails[];
+}
+
 ipcMain.on('return-db-list', (event) => {
   db.getLists()
-    .then((data) => {
+    .then((data: DBList) => {
       event.sender.send('db-lists', data);
     })
     .catch((err) => {
@@ -41,7 +68,7 @@ ipcMain.handle(
       await db.connectToDB(dbName);
 
       // send updated db info
-      const dbsAndTables = await db.getLists();
+      const dbsAndTables: DBList = await db.getLists();
       event.sender.send('db-lists', dbsAndTables);
     } finally {
       event.sender.send('async-complete');
@@ -61,7 +88,7 @@ ipcMain.handle('drop-db', async (event, dbName: string, currDB: boolean) => {
     await db.query(dropDBScript);
 
     // send updated db info
-    const dbsAndTables = await db.getLists();
+    const dbsAndTables: DBList = await db.getLists();
     event.sender.send('db-lists', dbsAndTables);
   } finally {
     event.sender.send('async-complete');
@@ -122,7 +149,7 @@ ipcMain.handle(
       }
 
       // update frontend with new db list
-      const dbsAndTableInfo = await db.getLists();
+      const dbsAndTableInfo: DBList = await db.getLists();
       event.sender.send('db-lists', dbsAndTableInfo);
     } finally {
       // cleanup temp file
@@ -178,7 +205,7 @@ ipcMain.handle(
       }
 
       // update frontend with new db list
-      const dbsAndTableInfo = await db.getLists();
+      const dbsAndTableInfo: DBList = await db.getLists();
       event.sender.send('db-lists', dbsAndTableInfo);
     } finally {
       event.sender.send('async-complete');
@@ -204,9 +231,7 @@ ipcMain.handle(
       // Run Explain
       let explainResults
       try {
-        const results = await db.query(
-          `BEGIN; EXPLAIN (FORMAT JSON, ANALYZE, VERBOSE, BUFFERS) ${sqlString}; ROLLBACK;`
-        );
+        const results = await db.query(explainQuery(sqlString));
         explainResults = results[1].rows;
       } catch (e) {
         error = `Failed to get Execution Plan. EXPLAIN might not support this query.`
@@ -234,7 +259,7 @@ ipcMain.handle(
 
       // send updated db info in case query affected table or database information 
       // must be run after we connect back to the originally selected so tables information is accurate
-      const dbsAndTables = await db.getLists();
+      const dbsAndTables: DBList = await db.getLists();
       event.sender.send('db-lists', dbsAndTables);
 
       event.sender.send('async-complete');
@@ -328,5 +353,3 @@ ipcMain.on('generate-dummy-data', async (event: any, data: dummyDataRequestType)
 //     });
 //   });
 // });
-
-export default execute;

@@ -35,6 +35,7 @@ const getRandomInt = (min: number, max: number) => {
   return Math.floor(Math.random() * (maxInt - minInt) + minInt); 
 };
 
+
 // helper function to generate random data based on a given column's data type
 const generateDataByType = (columnObj: ColumnObj): string | number => {
   let length;
@@ -51,6 +52,7 @@ const generateDataByType = (columnObj: ColumnObj): string | number => {
       });
     case 'character varying':
       // defaulting length to 3 because faker.lorem defaults to a length of 3 if no length is specified
+
       length = columnObj.character_maximum_length && columnObj.character_maximum_length < 3
         ? Math.floor(Math.random() * columnObj.character_maximum_length)
         : 3;

@@ -1,26 +1,36 @@
 const { exec } = require('child_process'); // Dialog: display native system dialogs for opening and saving files, alerting, etc
 const { dialog } = require('electron'); // Child_Process: Importing Node.js' child_process API
 
-// ************************************** CLI COMMANDS TO CREATE, DELETE, COPY DB SCHEMA, etc. **************************************
+// ************************************** CLI COMMANDS & SQL Queries TO CREATE, DELETE, COPY DB SCHEMA, etc. ************************************** //
 
-// Generate CLI commands to be executed in child process.
-// The electron app will access your terminal to execute these postgres commands via execute function
+// Generate CLI commands & SQL queries to be executed in child process and pg respectively
+// The electron app will access your terminal to execute the postgres commands via the execute function
 
-const helperFunctions: {
-  createDBFunc: Function;
-  dropDBFunc: Function;
-  runSQLFunc: Function;
-  runTARFunc: Function;
-  runFullCopyFunc: Function;
-  runHollowCopyFunc: Function;
-  execute: Function;
+interface CreateSQLQuery {
+  (string: string): string;
+}
+interface CreateCommand {
+  (dbName: string, file: string): string;
+}
+interface HelperFunctions {
+  createDBFunc: CreateSQLQuery;
+  dropDBFunc: CreateSQLQuery;
+  explainQuery: CreateSQLQuery;
+  runSQLFunc: CreateCommand;
+  runTARFunc: CreateCommand;
+  runFullCopyFunc: CreateCommand;
+  runHollowCopyFunc: CreateCommand;
   promExecute: (cmd: string) => Promise<{ stdout: string; stderr: string }>;
-} = {
+}
+const helperFunctions:HelperFunctions = {
   // create a database
   createDBFunc: (name) => `CREATE DATABASE "${name}"`,
 
   // drop provided database
   dropDBFunc: (dbName) => `DROP DATABASE "${dbName}"`,
+
+  // run explain on query
+  explainQuery: (sqlString) => `BEGIN; EXPLAIN (FORMAT JSON, ANALYZE, VERBOSE, BUFFERS) ${sqlString}; ROLLBACK;`,
 
   // import SQL file into new DB created
   runSQLFunc: (dbName, file) => `psql -U postgres -d ${dbName} -f "${file}"`,
@@ -36,25 +46,7 @@ const helperFunctions: {
   runHollowCopyFunc: (dbCopyName, file) =>
     `pg_dump -s -U postgres -F p -d ${dbCopyName} > "${file}"`,
 
-
-  // Function to execute commands in the child process.
-  execute: (str: string, nextStep: any) => {
-    console.log('in execute: ', str);
-    exec(str, (error, stdout, stderr) => {
-      console.log('channels line 43 exec func: ', str); // , `${stdout}`);
-      if (error) {
-        // this shows the console error in an error message on the frontend
-        console.log(`channels line 47 error: ${error.message}`);
-        dialog.showErrorBox(`${error.message}`, '');
-      } else if (stderr) {
-        // this shows the console error in an error message on the frontend
-        console.log(`channels line 53 stderr: ${stderr}`);
-        dialog.showErrorBox(`${stderr}`, '');
-      } else nextStep();
-    });
-  },
-
-  // promisified execute
+  // promisified execute to execute commands in the child process
   promExecute: (cmd: string) =>
     new Promise((resolve, reject) => {
       exec(cmd, (error, stdout, stderr) => {
@@ -65,4 +57,4 @@ const helperFunctions: {
     }),
 };
 
-module.exports = helperFunctions;
+export default helperFunctions;
