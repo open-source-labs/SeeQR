@@ -7,8 +7,6 @@ import DatabaseDetails from './DatabaseDetails';
 import { once } from '../../../lib/utils';
 import DummyDataModal from '../../modal/DummyDataModal';
 
-const { ipcRenderer } = window.require('electron');
-
 // emitting with no payload requests backend to send back a db-lists event with list of dbs
 const requestDbListOnce = once(() => ipcRenderer.send('return-db-list'));
 

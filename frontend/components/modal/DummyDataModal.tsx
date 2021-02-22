@@ -79,30 +79,29 @@ const DummyDataModal = ({
 
   // Event handler for text area changes
   const handleRowChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    let localIsEmpty = false;
+    let localIsError = false;
     const targetValue = event.target.value;
-    const rowNumInput = parseInt(event.target.value, 10);
 
-    // checks for valid number input
-    if (rowNumInput) {
-      setIsEmpty(false);
-      setIsError(false);
-    }
-    // invalid input - not a number
-    if (Number.isNaN(rowNumInput)) {
-      setIsError(true);
-    }
     // invalid input - empty
     if (targetValue.length === 0) {
-      setIsEmpty(true);
-    } else {
-      setIsEmpty(false);
+      localIsEmpty = true;
+    }
+    // invalid input - not a number
+    if (!/^\d+$/.test(targetValue)) {
+      localIsError = true;
     }
 
-    setRowNum(rowNumInput);
+    setIsEmpty(localIsEmpty);
+    setIsError(localIsError);
+    if (!localIsEmpty && !localIsError) {
+      setRowNum(Number(targetValue));
+    }
   };
 
   // Event handler to send rows to backend
   const handleClick = () => {
+    console.log('clicked')
     // Check if dbName is given and not undefined
     if (!dbName)
       return sendFeedback({
