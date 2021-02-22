@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Typography, Button, AppBar, Tabs, Tab } from '@material-ui/core';
+import { AppBar, Tabs, Tab } from '@material-ui/core';
 import TableDetails from './TableDetails';
 import { TableInfo } from '../../../types';
 
@@ -28,21 +28,27 @@ const a11yProps = (index: any) => ({
 interface TablesSidebarProps {
   tables: TableInfo[];
   selectTable: (table: TableInfo) => void;
+  selectedTable: TableInfo | undefined;
 }
 
-const TablesTabs = ({ tables }: TablesSidebarProps) => {
-  // const classes = useStyles();
-  const [value, setValue] = useState(0);
-
+const TablesTabs = ({
+  tables,
+  selectTable,
+  selectedTable,
+}: TablesSidebarProps) => {
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
-    setValue(newValue);
+    selectTable(tables[newValue]);
   };
+
+  const tableIndex = tables.findIndex(
+    ({ table_name }) => table_name === selectedTable?.table_name
+  );
 
   return (
     <>
       <AppBar position="static" color="default">
         <Tabs
-          value={value}
+          value={tableIndex}
           onChange={handleChange}
           indicatorColor="primary"
           textColor="primary"
@@ -58,7 +64,11 @@ const TablesTabs = ({ tables }: TablesSidebarProps) => {
       </AppBar>
       <br />
       {tables.map((tableMap, index) => (
-        <TabPanel value={value} index={index} key={tableMap.table_name}>
+        <TabPanel
+          value={tableIndex}
+          index={index}
+          key={tableMap.table_name}
+        >
           <TableDetails table={tableMap} />
         </TabPanel>
       ))}

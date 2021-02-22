@@ -56,12 +56,15 @@ const DbView = ({ selectedDb, show }: DbViewProps) => {
       <TablesTabs
         tables={dbTables}
         selectTable={(table: TableInfo) => setSelectedTable(table)}
+        selectedTable={selectedTable}
       />
       <br />
       <br />
-      <Button variant="contained" color="primary" onClick={handleClickOpen}>
-        Generate Dummy Data
-      </Button>
+      {selectedTable ? (
+        <Button variant="contained" color="primary" onClick={handleClickOpen}>
+          Generate Dummy Data
+        </Button>
+      ) : null}
       <DummyDataModal
         open={open}
         onClose={handleClose}
