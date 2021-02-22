@@ -247,7 +247,7 @@ interface dummyDataRequestType {
   dummyData: {};
 }
 
-ipcMain.on('generate-dummy-data', (event: any, data: dummyDataRequestType) => {
+ipcMain.handle('generate-dummy-data', (event: any, data: dummyDataRequestType) => {
   // send notice to front end that DD generation has been started
   event.sender.send('async-started');
   let schemaLayout: any;
