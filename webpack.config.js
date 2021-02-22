@@ -29,9 +29,10 @@ module.exports = {
           {
             loader: 'postcss-loader', // Run postcss actions
             options: {
-              plugins() {
-                // postcss plugins, can be exported to postcss.config.js
-                return [require('autoprefixer')];
+              postcssOptions: {
+                plugins() {
+                  'autoprefixer';
+                },
               },
             },
           },
@@ -111,7 +112,7 @@ module.exports = {
     contentBase: path.resolve(__dirname, '/dist/'),
     host: 'localhost',
     port: '8080',
-    // hot: true,
+    hot: true,
     compress: true,
     watchContentBase: true,
     watchOptions: {
@@ -149,7 +150,6 @@ module.exports = {
       //   ],
       // },
     }),
-    isDevelopment && new webpack.HotModuleReplacementPlugin(),
     isDevelopment && new ReactRefreshWebpackPlugin(),
   ].filter(Boolean),
 };

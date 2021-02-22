@@ -1,12 +1,9 @@
-import { IpcMainEvent } from 'electron';
+import { IpcRendererEvent, ipcRenderer } from 'electron';
 import React, { useState, useEffect } from 'react';
 import { AppState, isDbLists, DatabaseInfo, TableInfo } from '../../../types';
 import TablesTabs from './TablesTabBar';
 import DatabaseDetails from './DatabaseDetails';
 import { once } from '../../../lib/utils';
-
-const { ipcRenderer } = window.require('electron');
-
 // emitting with no payload requests backend to send back a db-lists event with list of dbs
 const requestDbListOnce = once(() => ipcRenderer.send('return-db-list'));
 
@@ -22,7 +19,7 @@ const DbView = ({ selectedDb, show }: DbViewProps) => {
 
   useEffect(() => {
     // Listen to backend for updates to list of tables on current db
-    const tablesFromBackend = (evt: IpcMainEvent, dbLists: unknown) => {
+    const tablesFromBackend = (evt: IpcRendererEvent, dbLists: unknown) => {
       if (isDbLists(dbLists)) {
         setDatabases(dbLists.databaseList);
         setTables(dbLists.tableList);
@@ -32,15 +29,15 @@ const DbView = ({ selectedDb, show }: DbViewProps) => {
     ipcRenderer.on('db-lists', tablesFromBackend);
     requestDbListOnce();
     // return cleanup function
-    return () => ipcRenderer.removeListener('db-lists', tablesFromBackend);
+    return () => {
+      ipcRenderer.removeListener('db-lists', tablesFromBackend);
+    };
   });
 
   if (!show) return null;
   return (
     <>
-      <DatabaseDetails
-        db={databases.find((db) => db.db_name === selectedDb)}
-      />
+      <DatabaseDetails db={databases.find((db) => db.db_name === selectedDb)} />
       <br />
       <TablesTabs
         tables={dbTables}

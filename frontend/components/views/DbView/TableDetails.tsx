@@ -27,7 +27,6 @@ interface TableDetailsProps {
   table: TableInfo | undefined;
 }
 
-// TODO: don't render if no table is received
 const TableDetails = ({ table }: TableDetailsProps) => (
   <>
     <Typography variant="h3">{`${table?.table_name}`}</Typography>

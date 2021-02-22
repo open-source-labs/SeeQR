@@ -4,6 +4,7 @@ import { Card, Tooltip, LinearProgress } from '@material-ui/core';
 import ms from 'ms';
 import type { SizedPlanNode, Totals } from '../../../../lib/flow';
 import PlanDetails from './PlanDetails';
+import type { Thresholds } from '../../../../types';
 
 import {
   greyMedium,
@@ -12,14 +13,7 @@ import {
   planNodeWidth,
 } from '../../../../style-variables';
 
-// TODO: document threshold for user
-// Thresholds for visual warnings on node
-const thresholds = {
-  percentDuration: 30,
-  rowsAccuracy: 5,
-};
-
-const StyledCard = styled(Card)<{ $percentDuration: number }>`
+const StyledCard = styled(Card)<{ $warn: boolean }>`
   width: ${planNodeWidth};
   height: ${planNodeHeight};
   font-size: 10pt;
@@ -28,10 +22,9 @@ const StyledCard = styled(Card)<{ $percentDuration: number }>`
   display: inline-flex;
   flex-direction: column;
   cursor: pointer;
-  border: 2px solid orange;
-  // override border property if percent is lower than threshold
-  ${({ $percentDuration }) =>
-    $percentDuration > thresholds.percentDuration ? '' : 'border: none;'}
+  border-width: 2px;
+  border-style: solid;
+  border-color: ${({ $warn }) => ($warn ? 'orange' : 'transparent')};
 `;
 
 const Soft = styled.span`
@@ -78,9 +71,9 @@ const MiniStats = styled.div`
   text-align: center;
 `;
 
-const Accuracy = styled.span<{ $ratio: number }>`
+const Accuracy = styled.span<{ $warn: boolean }>`
   grid-area: 'accuracy';
-  ${({ $ratio }) => ($ratio > thresholds.rowsAccuracy ? 'color:#e92a2a;' : '')}
+  ${({ $warn }) => ($warn ? 'color:#e92a2a;' : '')}
 `;
 
 const formatTime = (time: number) =>
@@ -96,18 +89,21 @@ const exclusiveTime = (plan: SizedPlanNode) => {
     plan.children?.reduce((sum, p) => totalTime(p) + sum, 0) ?? 0;
   return totalTime(plan) - childrenTime;
 };
+
 interface PlanCardProps {
   plan: SizedPlanNode;
   totals: Totals;
+  thresholds: Thresholds;
 }
 
 /**
  * Memoizing predicate. Compares plan id's and prevent rerender if equal
  */
 const isSameCard = (prevProps: PlanCardProps, nextProps: PlanCardProps) =>
-  prevProps.plan.id === nextProps.plan.id;
+  prevProps.plan.id === nextProps.plan.id &&
+  prevProps.thresholds === nextProps.thresholds;
 
-const PlanCard = ({ plan, totals }: PlanCardProps) => {
+const PlanCard = ({ plan, totals, thresholds }: PlanCardProps) => {
   const [detailIsOpen, setDetailOpen] = useState(false);
   const rowRatio = plan['Plan Rows'] / plan['Actual Rows'];
   const exclusive = exclusiveTime(plan);
@@ -116,14 +112,19 @@ const PlanCard = ({ plan, totals }: PlanCardProps) => {
     2
   );
 
+  const handleClick = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    setDetailOpen(true);
+  };
+
   return (
     <>
       <StyledCard
         variant="elevation"
         elevation={3}
         raised
-        onClick={() => setDetailOpen(true)}
-        $percentDuration={exclusiveRatio}
+        onClick={handleClick}
+        $warn={exclusiveRatio > thresholds.percentDuration}
       >
         <Tooltip title={`Percentage of Execution Time: ${exclusiveRatio}%`}>
           <DurationBar variant="determinate" value={exclusiveRatio} />
@@ -157,7 +158,9 @@ const PlanCard = ({ plan, totals }: PlanCardProps) => {
             <span style={{ gridArea: 'rows' }}>{plan['Actual Rows']}</span>
           </Tooltip>
           <Tooltip title="Planner estimated rows / actual rows emitted">
-            <Accuracy $ratio={rowRatio}>{rowRatio.toFixed(2)}</Accuracy>
+            <Accuracy $warn={rowRatio > thresholds.rowsAccuracy}>
+              {rowRatio.toFixed(2)}
+            </Accuracy>
           </Tooltip>
           <Tooltip title="Execution Cost">
             <span style={{ gridArea: 'cost' }}>
