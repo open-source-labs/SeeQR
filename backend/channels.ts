@@ -3,6 +3,7 @@ import path from 'path';
 import fs from 'fs';
 import os from 'os';
 import helperFunctions from './helperFunctions';
+import { ColumnObj } from './BE_types';
 
 const db = require('./models');
 const generateDummyData = require('./DummyD/dummyDataMain');
@@ -24,15 +25,15 @@ interface dbDetails {
   db_name: string;
   db_size: string;
 }
-interface ColumnObj {
-  column_name: string;
-  data_type: string;
-  character_maximum_length: number | null;
-  is_nullable: string;
-  constraint_type: string;
-  foreign_table: string;
-  foreign_column: string;
-}
+// interface ColumnObj {
+//   column_name: string;
+//   data_type: string;
+//   character_maximum_length: number | null;
+//   is_nullable: string;
+//   constraint_type: string;
+//   foreign_table: string;
+//   foreign_column: string;
+// }
 interface TableDetails {
   table_catalog: string;
   table_schema: string;
@@ -45,13 +46,19 @@ interface DBList {
   tableList: TableDetails[];
 }
 
+interface Feedback {
+  type: string;
+  message: string;
+}
+
+// Listen for request from front-end and send back the DB List upon request
 ipcMain.on('return-db-list', (event) => {
   db.getLists()
     .then((data: DBList) => {
       event.sender.send('db-lists', data);
     })
     .catch((err) => {
-      const feedback = {
+      const feedback: Feedback = {
         type: 'error',
         message: err,
       };
@@ -59,7 +66,8 @@ ipcMain.on('return-db-list', (event) => {
     });
 });
 
-// Listen for database changes sent from the renderer upon changing tabs.
+// Listen for database changes sent from the renderer upon changing tabs
+// and send back an updated DB List
 ipcMain.handle(
   'select-db',
   async (event, dbName: string): Promise<void> => {
@@ -76,8 +84,8 @@ ipcMain.handle(
   }
 );
 
-// Deletes the dbName that is passed from the front end and returns the DB List
-ipcMain.handle('drop-db', async (event, dbName: string, currDB: boolean) => {
+// Deletes the DB that is passed from the front end and returns an updated DB List
+ipcMain.handle('drop-db', async (event, dbName: string, currDB: boolean): Promise<void> => {
   event.sender.send('async-started');
   try {
     // if deleting currently connected db, disconnect from db
@@ -219,6 +227,8 @@ interface QueryPayload {
   selectedDb: string;
 }
 
+// Run query passed from the front-end, and send back an updated DB List 
+// DB will rollback if query is unsuccessful
 ipcMain.handle(
   'run-query',
   async (event, { targetDb, sqlString, selectedDb }: QueryPayload) => {
@@ -278,8 +288,7 @@ ipcMain.handle(
   async (event: any, data: dummyDataRequestType) => {
     // send notice to front end that DD generation has been started
     event.sender.send('async-started');
-    const dummyDataRequest: dummyDataRequestType = data;
-    let feedback = {
+    let feedback: Feedback = {
       type: '',
       message: '',
     };
@@ -291,7 +300,6 @@ ipcMain.handle(
       const dummyArray = await generateDummyData(tableInfo, data.rows);
 
       // generate insert query string to insert dummy records
-      const dummyArrayStringified = [] as any;
       const columnsStringified = '('
         .concat(dummyArray[0].join(', '))
         .concat(')');
@@ -326,55 +334,11 @@ ipcMain.handle(
       // send updated db info in case query affected table or database information
       const dbsAndTables: DBList = await db.getLists();
       event.sender.send('db-lists', dbsAndTables);
+
+      // send feedback back to FE
       event.sender.send('feedback', feedback);
       // send notice to FE that DD generation has been completed
       event.sender.send('async-complete');
     }
   }
 );
-
-// INSERT INTO products (product_no, name, price) VALUES
-//     (1, 'Cheese', 9.99),
-//     (2, 'Bread', 1.99),
-//     (3, 'Milk', 2.99);
-
-// ipcMain.on('generate-dummy-data', (event: any, data: dummyDataRequestType) => {
-//   // send notice to front end that DD generation has been started
-//   event.sender.send('async-started');
-//   let schemaLayout: any;
-//   const dummyDataRequest: dummyDataRequestType = data; // { schemaName: 'hello', dummyData: { people: 1 } }
-//   let tableMatricesArray: any;
-//   let keyObject: any = 'Unresolved';
-
-//   // Retrieves the Primary Keys and Foreign Keys for all the tables
-//   //   tableName: { primaryKeyColumns: { _id: true }, foreignKeyColumns: { key: value, key: value} },
-//   db.createKeyObject().then((result) => {
-//     keyObject = result;
-//     // Iterating over the passed in keyObject to remove the primaryKeyColumn and all foreignKeyColumns from table
-//     // db.dropKeyColumns(keyObject).then(() => {
-//     // db.addNewKeyColumns(keyObject).then(() => {
-//     db.getSchemaLayout().then((schemaLayoutResult) => {
-//       console.log('schemaLayout: ', schemaLayoutResult);
-//       console.log('films layout: ', schemaLayoutResult.tables.films[0]);
-//       console.log('films layout: ', schemaLayoutResult.tables.films[1]);
-//       schemaLayout = schemaLayoutResult;
-//       // generate the dummy data and save it into matrices associated with table names
-//       tableMatricesArray = generateDummyData(
-//         schemaLayout,
-//         dummyDataRequest,
-//         keyObject
-//       );
-//       // iterate through tableMatricesArray to write individual .csv files
-//       for (const tableObject of tableMatricesArray) {
-//         // write all entries in tableMatrix to csv file
-//         writeCSVFile(
-//           tableObject,
-//           schemaLayout,
-//           keyObject,
-//           dummyDataRequest,
-//           event
-//         );
-//       }
-//     });
-//   });
-// });

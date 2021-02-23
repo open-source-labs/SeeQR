@@ -1,10 +1,10 @@
-const { exec } = require('child_process'); // Dialog: display native system dialogs for opening and saving files, alerting, etc
-const { dialog } = require('electron'); // Child_Process: Importing Node.js' child_process API
+const { exec } = require('child_process'); // Child_Process: Importing Node.js' child_process API
+const { dialog } = require('electron'); // Dialog: display native system dialogs for opening and saving files, alerting, etc
 
 // ************************************** CLI COMMANDS & SQL Queries TO CREATE, DELETE, COPY DB SCHEMA, etc. ************************************** //
 
-// Generate CLI commands & SQL queries to be executed in child process and pg respectively
-// The electron app will access your terminal to execute the postgres commands via the execute function
+// Generate SQL queries & CLI commands to be executed in pg and child process respectively
+// The electron app will access your terminal to execute the postgres commands via Node's execute function
 
 interface CreateSQLQuery {
   (string: string): string;
@@ -39,12 +39,10 @@ const helperFunctions:HelperFunctions = {
   runTARFunc: (dbName, file) => `pg_restore -U postgres -d ${dbName} "${file}"`,
 
   // make a full copy of the schema
-  runFullCopyFunc: (dbCopyName, newFile) =>
-    `pg_dump -U postgres -F p -d ${dbCopyName} > "${newFile}"`,
+  runFullCopyFunc: (dbCopyName, newFile) => `pg_dump -U postgres -F p -d ${dbCopyName} > "${newFile}"`,
 
   // make a hollow copy of the schema
-  runHollowCopyFunc: (dbCopyName, file) =>
-    `pg_dump -s -U postgres -F p -d ${dbCopyName} > "${file}"`,
+  runHollowCopyFunc: (dbCopyName, file) => `pg_dump -s -U postgres -F p -d ${dbCopyName} > "${file}"`,
 
   // promisified execute to execute commands in the child process
   promExecute: (cmd: string) =>
