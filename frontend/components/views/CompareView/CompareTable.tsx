@@ -5,7 +5,9 @@ import {
   TableCell,
   TableHead,
   TableRow,
+  Tooltip,
 } from '@material-ui/core';
+import SpeedIcon from '@material-ui/icons/Speed';
 import styled from 'styled-components';
 import { AppState, QueryData } from '../../../types';
 import {
@@ -19,9 +21,20 @@ const TableBg = styled(DarkPaperFull)`
   margin-top: ${defaultMargin};
 `;
 
-const StyledCell = styled(TableCell)<{ $isFastest: boolean }>`
+// prettier-ignore
+const StyledCell = styled(TableCell)<{
+  $isFastest: boolean;
+  $isMarker: boolean;
+}>`
   color: ${({ $isFastest }) => ($isFastest ? greenPrimary : 'inherit')};
+  ${({ $isMarker }) => $isMarker ? ` padding:0;` : ''}
 `;
+
+const FastestMarker = () => (
+  <Tooltip title="Fastest Query in label group">
+    <SpeedIcon style={{ margin: 0 }} />
+  </Tooltip>
+);
 
 type AnalysedQuery = QueryData & {
   relativeSpeed: number;
@@ -32,7 +45,7 @@ type Alignment = 'left' | 'right' | 'center';
 type InfoColumn = [
   string,
   Alignment,
-  (q: AnalysedQuery) => string | number | undefined
+  (q: AnalysedQuery) => string | number | undefined | JSX.Element
 ];
 
 // Array of columns names and transformers that receive query and return printable value
@@ -46,6 +59,8 @@ const tableInfo: InfoColumn[] = [
     'right',
     (q: AnalysedQuery) => `${q.relativeSpeed.toFixed(2)}x`,
   ],
+  // Fastest Icon marker
+  ['', 'center', (q: AnalysedQuery) => (q.isFastest ? <FastestMarker /> : '')],
 ];
 
 const getFastestPerGroup = (queries: QueryData[]) =>
@@ -96,11 +111,12 @@ const CompareTable = ({ queries }: CompareTableProps) => {
         <TableBody>
           {comparedQueries.map((query: AnalysedQuery) => (
             <TableRow key={query.label + query.db}>
-              {tableInfo.map(([label, alignment, transformer]) => (
+              {tableInfo.map(([columnLabel, alignment, transformer]) => (
                 <StyledCell
                   align={alignment}
-                  key={`${query.label}_${query.db}_${label}`}
+                  key={`${query.label}_${query.db}_${columnLabel}`}
                   $isFastest={query.isFastest}
+                  $isMarker={!columnLabel}
                 >
                   {transformer(query)}
                 </StyledCell>
