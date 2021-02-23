@@ -113,7 +113,7 @@ const DummyDataModal = ({
       tableName,
       rows: rowNum,
     };
-
+    console.log(payload)
     ipcRenderer
       .invoke('generate-dummy-data', payload)
       .catch(() =>
