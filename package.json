@@ -1,7 +1,7 @@
 {
   "name": "seeqr",
   "productName": "SeeQR App",
-  "version": "3.0.0-beta3",
+  "version": "3.0.0-beta1",
   "description": "SeeQR",
   "main": "./tsCompiled/backend/main.js",
   "babel": {
@@ -11,6 +11,7 @@
     ]
   },
   "scripts": {
+    "postinstall": "electron-builder install-app-deps",
     "build": "cross-env NODE_ENV=production tsc && cross-env NODE_ENV=production webpack",
     "start": "cross-env NODE_ENV=production electron --noDevServer .",
     "dev": "run-p tsc-dev electron-dev webpack-dev",
@@ -20,10 +21,7 @@
     "test": "jest --verbose",
     "electron-build": "electron-builder"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/oslabs-beta/SeeQR"
-  },
+  "repository": "github:oslabs-beta/SeeQR",
   "keywords": [],
   "author": "Team SeeQR",
   "license": "MIT",
@@ -40,7 +38,6 @@
     "cross-env": "^7.0.3",
     "dagre": "^0.8.5",
     "debounce": "^1.2.0",
-    "electron-devtools-installer": "^3.1.1",
     "faker": "^5.1.0",
     "fix-path": "^3.0.0",
     "fontsource-roboto": "^4.0.0",
@@ -84,6 +81,7 @@
     "css-loader": "^5.0.2",
     "electron": "^11.2.3",
     "electron-builder": "^22.9.1",
+    "electron-devtools-installer": "^3.1.1",
     "electron-packager": "^14.2.1",
     "electron-reloader": "^1.1.0",
     "electron-store": "^6.0.0",

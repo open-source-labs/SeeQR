@@ -19,3 +19,7 @@ win:
     - zip
     - nsis
   icon: assets/icons/win/seeqr.ico
+  publish:
+    provider: github
+    # releaseType: release
+    publishAutoUpdate: false
