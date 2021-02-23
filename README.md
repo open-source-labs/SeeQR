@@ -8,6 +8,8 @@
 ![Contributions Welcome](https://img.shields.io/badge/Contributions-welcome-blue.svg)
 [![Twitter](https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Ftwitter.com%2Ftheseeqr)](https://twitter.com/theseeqr)
 [![Github stars](https://img.shields.io/github/stars/oslabs-beta/SeeQR?style=social)](https://github.com/oslabs-beta/SeeQR)
+[![Tests](https://github.com/Claudiohbsantos/SeeQR/actions/workflows/test.yml/badge.svg)](https://github.com/Claudiohbsantos/SeeQR/actions/workflows/test.yml)
+
 [theSeeQR.io](http://www.theseeqr.io)
 
 <p><b>SeeQR: </b>A database analytic tool that compares the efficiency of different schemas and queries on a granular level to make better informed architectural decisions regarding SQL databases at various scales.</p>
@@ -16,20 +18,12 @@
 
 ## Table of Contents
 
+- [Table of Contents](#table-of-contents)
 - [Beta Phase](#beta-phase)
 - [Getting Started](#getting-started)
 - [Built With](#built-with)
-- [Interface & Features](#interface-&-features)
-  - Schema upload methods
-  - Query input
-  - Data
-  - History
-  - Results
-  - Compare
-  - Dummy data generation
-  - Visualized Analytics
+- [Interface & Features](#interface--features)
 - [Application Architecture and Logic](#application-architecture-and-logic)
-- [Testing](#testing)
 - [Core Team](#core-team)
 
 ## Beta Phase
