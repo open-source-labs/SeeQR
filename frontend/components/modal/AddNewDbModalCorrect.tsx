@@ -4,7 +4,6 @@ import {
   DialogTitle,
   TextField,
   Button,
-  Divider,
   Tooltip,
 } from '@material-ui/core/';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
