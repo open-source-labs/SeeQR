@@ -10,39 +10,6 @@
       "@babel/preset-react"
     ]
   },
-  "build": {
-    "appId": "com.seeqr.app",
-    "productName": "SeeQR",
-    "files": [
-      "tsCompiled/**/*",
-      "dist/**/*"
-    ],
-    "directories": {
-      "output": "release-builds/${os}"
-    },
-    "dmg": {
-      "icon": "assets/icons/mac/seeqr.icns",
-      "contents": [
-        {
-          "x": 110,
-          "y": 150
-        },
-        {
-          "x": 240,
-          "y": 150,
-          "type": "link",
-          "path": "/Applications"
-        }
-      ]
-    },
-    "win": {
-      "target": [
-        "zip",
-        "nsis"
-      ],
-      "icon": "assets/icons/win/seeqr.ico"
-    }
-  },
   "scripts": {
     "build": "cross-env NODE_ENV=production tsc && cross-env NODE_ENV=production webpack",
     "start": "cross-env NODE_ENV=production electron --noDevServer .",

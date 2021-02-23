@@ -1,0 +1,21 @@
+appId: com.seeqr.app
+productName: SeeQR
+files:
+  - tsCompiled/**/*
+  - dist/**/*
+directories:
+  output: release-builds/${os}
+dmg:
+  icon: assets/icons/mac/seeqr.icns
+  contents:
+    - x: 110
+      y: 150
+    - x: 240
+      y: 150
+      type: link
+      path: /Applications
+win:
+  target:
+    - zip
+    - nsis
+  icon: assets/icons/win/seeqr.ico
