@@ -1,5 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-const { app, BrowserWindow, Menu } = require('electron');
+import { app, BrowserWindow, Menu } from 'electron';
+
 const path = require('path');
 const url = require('url');
 const {
@@ -8,12 +9,13 @@ const {
 } = require('electron-devtools-installer');
 const fixPath = require('fix-path');
 const MainMenu = require('./mainMenu');
-// requiring channels file to initialize event listners
+
+// requiring channels file to initialize event listeners
 require('./channels');
 
 fixPath();
 // Keep a global reference of the window objects, if you don't, the window will be closed automatically when the JavaScript object is garbage collected.
-let mainWindow: any;
+let mainWindow: BrowserWindow | null;
 const dev: boolean = process.env.NODE_ENV === 'development';
 
 function createWindow() {
@@ -34,7 +36,7 @@ function createWindow() {
   }
 
   // indexPath is used to determine which type environment we are in and how to load the window
-  let indexPath;
+  let indexPath: string;
   if (dev) {
     indexPath = url.format({
       protocol: 'http:',
@@ -57,7 +59,7 @@ function createWindow() {
 
   // Window will display once it is ready and loaded
   mainWindow.once('ready-to-show', () => {
-    mainWindow.show();
+    if (mainWindow) mainWindow.show();
   });
 }
 
