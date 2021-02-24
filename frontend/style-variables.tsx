@@ -149,14 +149,6 @@ export const StyledButton = styled(Button)`
   size: small;
 `;
 
-export const StyledButtonCancel = styled(Button)`
-  margin: 10px 20px 20px 0px;
-  padding: 8px 2px;
-  width: 25%;
-  height: 10%;
-  size: small;
-`;
-
 export const StyledTextField = styled(TextField)`
   width: 80%;
 `;
