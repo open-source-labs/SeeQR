@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
-import { Dialog, DialogTitle, TextField, Button } from '@material-ui/core/';
-import styled from 'styled-components';
+import { Dialog, DialogTitle } from '@material-ui/core/';
 import { ipcRenderer } from 'electron';
+import {
+  ButtonContainer,
+  TextFieldContainer,
+  StyledButton,
+  StyledTextField,
+} from '../../style-variables';
 
 import { sendFeedback } from '../../lib/utils';
 
@@ -10,35 +15,6 @@ interface DummyPayload {
   tableName: string;
   rows: number;
 }
-
-// Button Container
-const ButtonContainer = styled('div')`
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-around;
-`;
-
-// TextField Container
-const TextFieldContainer = styled.a`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-`;
-
-// Styled Button
-const StyledButton = styled(Button)`
-  margin: 20px;
-  padding: 8px 2px;
-  width: 40%;
-  height: 10%;
-  size: small;
-  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
-`;
-
-const StyledTextField = styled(TextField)`
-  width: 80%;
-`;
 
 type DummyDataModalProps = {
   open: boolean;
@@ -113,7 +89,7 @@ const DummyDataModal = ({
       tableName,
       rows: rowNum,
     };
-    console.log(payload)
+    console.log(payload);
     ipcRenderer
       .invoke('generate-dummy-data', payload)
       .catch(() =>
@@ -149,6 +125,9 @@ const DummyDataModal = ({
             size="small"
             variant="outlined"
             onChange={handleRowChange}
+            InputProps={{
+              style: { color: '#575151' },
+            }}
           />
         </TextFieldContainer>
         <ButtonContainer>
@@ -164,7 +143,7 @@ const DummyDataModal = ({
             color="primary"
             onClick={isError || isEmpty ? () => {} : handleClick}
           >
-            Generate Dummy Data
+            Generate
           </StyledButton>
         </ButtonContainer>
       </Dialog>
