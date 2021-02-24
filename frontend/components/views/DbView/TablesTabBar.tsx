@@ -3,6 +3,7 @@ import { Tabs, Tab } from '@material-ui/core';
 import styled from 'styled-components';
 import TableDetails from './TableDetails';
 import { TableInfo } from '../../../types';
+import { greyPrimary } from '../../../style-variables';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -11,7 +12,7 @@ interface TabPanelProps {
 }
 
 const StyledTabs = styled(Tabs)`
-  background-color: #818584;
+  background-color: ${greyPrimary};
   color: white;
   border-radius: 5px;
 `;
