@@ -48,7 +48,7 @@ To get started on contributing to this project:
 - [Electron](https://www.electronjs.org/docs)
 - [React](https://reactjs.org/)
 - [React-Hooks](https://reactjs.org/docs/hooks-intro.html)
-- [React Flow] (https://reactflow.dev/)
+- [React-Flow](https://reactflow.dev/)
 - [Typescript](https://www.typescriptlang.org/)
 - [PostgreSQL](https://www.postgresql.org/)
 - [Material-UI] (https://material-ui.com/)
