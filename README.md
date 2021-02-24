@@ -63,7 +63,10 @@ To get started on contributing to this project:
 
   - Upon application launch, select the desired database to connect to or follow the quick-start guide to get started
   - The application connects to the local instance of PostgreSQL using the role 'Postgres', so all databases that 'Postgres' has access to are available
-  - Besides using the existing databases, the application also provides options to create new databases by importing `.sql` files, running `CREATE DATABASE` queries, or copying an existing database, with or without its data
+  - Besides using the existing databases, the application also provides various options to create new databases:
+      - Importing `.sql` or `.tar` files
+      - Manually running `CREATE DATABASE` queries in SeeQR
+      - Copying an existing database (with or without original data)
   - Users can toggle between the 'DATABASES' view and the 'QUERIES' view
 
 - Databases
@@ -71,7 +74,7 @@ To get started on contributing to this project:
   - In the 'DATABASES' view, users can select a table from a list of all the tables in the schema of the currently selected database
   - Information about the selected table is then displayed
   - The name and size of the selected database are also displayed at the top of the page
-  - Users can also generate up to 500,000 rows of foreign-key compliant dummy data for the selected table in the current database. Currently supported data types are:
+  - Users can also generate up to 500,000 rows of foreign-key compliant dummy data at a time for the selected table in the current database. Currently supported data types are:
     - INT
     - SMALLINT
     - BIGINT
@@ -86,8 +89,8 @@ To get started on contributing to this project:
 
 - Queries
 
-  - In the 'Queries' view, the main panel is where the query input text field is located, utilizing CodeMirror. The paint button in the top right corner of the panel auto-formats the inputted query
-  - Users can select the database to use in the 'Database' field above the main panel
+  - In the 'QUERIES' view, the main panel is where the query input text field is located, utilizing CodeMirror. The paint button in the top right corner of the panel auto-formats the inputted query
+  - Users can select the database to use in the 'Database' dropdown above the main panel
   - Users also have the option to execute a labelled or unlabelled query — simply provide a label in the 'Label' field above the main panel to identify the query in later comparisons against other queries
     - Please note that only labelled queries will be saved in the current session for future references
   - To execute the query, simply select the 'RUN QUERY' button at the bottom of the panel or press 'Ctrl-Enter' on the keyboard
@@ -104,6 +107,7 @@ To get started on contributing to this project:
   - The 'RESULTS' view displays the executed query's returned results
   - The 'EXECUTION PLAN' view displays the executed query's plan of execution
     - Within the 'EXECUTION PLAN', users can adjust the thresholds used to highlight certain nodes in the tree
+    - Clicking on a node will display additioanl details regarding that action as well
   - To execute a new query, simply select the '+' button in the sidebar. To go back to a previously saved query, just select it in the sidebar
 
 
