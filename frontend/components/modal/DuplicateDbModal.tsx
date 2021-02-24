@@ -180,7 +180,7 @@ const DuplicateDbModal = ({
               color="primary"
               onClick={isEmpty || isError ? () => {} : handleCopyFilePath}
             >
-              Create Copy
+              Copy
             </StyledButton>
           </ButtonContainer>
         </Dialog>

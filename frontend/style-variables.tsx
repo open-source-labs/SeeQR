@@ -10,6 +10,7 @@ import {
   DialogTitle,
   Button,
   TextField,
+  ListItemText,
 } from '@material-ui/core';
 import { createMuiTheme } from '@material-ui/core/styles';
 import styled from 'styled-components';
@@ -106,6 +107,7 @@ export const MuiTheme = createMuiTheme({
     MuiTab: {
       root: {
         fontSize: 20,
+        textTransform: 'none',
       },
     },
   },
@@ -130,8 +132,7 @@ export const SidebarListItem = styled(ListItem)`
   background: transparent;
   border-bottom: 1px solid transparent;
   border-top: 1px solid transparent;
-  width: 100%;
-
+  width: 100%
   &:hover {
     background: transparent;
     border-bottom: 1px solid ${hoverColor};
@@ -161,8 +162,7 @@ export const TextFieldContainer = styled.a`
 
 export const StyledButton = styled(Button)`
   margin: 10px 20px 20px 0px;
-  padding: 8px 2px;
-  width: 25%;
+  min-width: 25%;
   height: 10%;
   size: small;
 `;
@@ -174,4 +174,11 @@ export const StyledTextField = styled(TextField)`
 
 export const StyledDialogTitle = styled(DialogTitle)`
   margin-bottom: -8px;
+`;
+
+export const StyledListItemText = styled(ListItemText)`
+  & .MuiListItemText-primary {
+    max-width: 15ch;
+    overflow-wrap: break-word;
+  }
 `;
