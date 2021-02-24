@@ -43,9 +43,11 @@ const TopButtons = ({
 
   return (
     <Container>
-      <StyledIconButton onClick={() => setSelectedView('quickStartView')}>
-        <HelpOutline fontSize="large" />
-      </StyledIconButton>
+      <Tooltip title="Help">
+        <StyledIconButton onClick={() => setSelectedView('quickStartView')}>
+          <HelpOutline fontSize="large" />
+        </StyledIconButton>
+      </Tooltip>
       <Tooltip title="Compare Queries">
         <StyledIconButton onClick={toggleCompareView}>
           <StyledCompareIcon
