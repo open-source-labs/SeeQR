@@ -30,6 +30,7 @@ interface TableDetailsProps {
 const TableDetails = ({ table }: TableDetailsProps) => (
   <>
     <Typography variant="h3">{`${table?.table_name}`}</Typography>
+    <br />
     <TableContainer component={StyledPaper}>
       <Table>
         <TableHead>
