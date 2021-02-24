@@ -12,7 +12,7 @@
 
 [theSeeQR.io](http://www.theseeqr.io)
 
-<p><b>SeeQR: </b>A database analytic tool that compares the efficiency of different schemas and queries on a granular level to make better informed architectural decisions regarding SQL databases at various scales.</p>
+<p><b>SeeQR: </b>A database analytic tool to compare the efficiency of different schemas and queries on a granular level so that developers/architects can make better informed architectural decisions regarding SQL databases at various scales.</p>
 
 </div>
 
@@ -34,22 +34,25 @@ SeeQR is still in BETA. Additional features, extensions, and improvements will c
 
 To get started on contributing to this project:
 
-1. Download and install [Postgres App](https://postgresapp.com/) and start it before opening up SeeQR.
+1. Download and install [Postgres.app](https://postgresapp.com/) and start it before opening up SeeQR
 2. Fork or clone this repository
 3. Npm install
-   1. Run `npm install` for application-specific dependencies.
-   2. Run global install for: `'cross-env'`, `'webpack'`, `'webpack-dev-server'`, `'electron'`, and `'typescript'`.
+   1. Run `npm install` for application-specific dependencies
+   2. Run global install for: `'cross-env'`, `'webpack'`, `'webpack-dev-server'`, `'electron'`, and `'typescript'`
 4. Install [Live Sass Compile](https://github.com/ritwickdey/vscode-live-sass-compiler) VSCode extension (settings are configured in the .vscode file in this repo), or set up your preferred Sass compiler
 5. To run application during development
-   1. `npm run dev` to launch Electron application window and webpack-dev-server.
+   1. `npm run dev` to launch the Electron application window and webpack-dev-server
 
 ## Built With
 
 - [Electron](https://www.electronjs.org/docs)
 - [React](https://reactjs.org/)
 - [React-Hooks](https://reactjs.org/docs/hooks-intro.html)
+- [React Flow] (https://reactflow.dev/)
 - [Typescript](https://www.typescriptlang.org/)
 - [PostgreSQL](https://www.postgresql.org/)
+- [Material-UI] (https://material-ui.com/)
+- [styled-components] (https://styled-components.com/)
 - [Chart.js](https://github.com/chartjs)
 - [Faker.js](https://github.com/Marak/faker.js)
 - [CodeMirror](https://codemirror.net/)
@@ -62,46 +65,48 @@ To get started on contributing to this project:
 
 - Schema
 
-  - Upon application launch, upload `.sql` or `.tar` file when prompted by splash page, or hit cancel.
-  - The uploaded `.sql` or `.tar` file becomes the active database.
-  - To input new schemas, toggle the “Input Schema” button. Upload a .sql or .tar file or directly input schema code. Remember to provide the schema with a unique label, as it will be assigned to the name property of the newly spun up database connected to the schema.
+  - Upon application launch, select the desired database to connect to or follow the quick-start guide to get started
+  - The application connects to the local instance of PostgreSQL, so all databases that the role 'Postgres' has access to are available
+  - Besides using the existing databases, the application also provides options to create new databases by importing `.sql` files, running queries, or copying an existing database, with or without its data
 
 - Query input
 
-  - The center panel is where the query input text field is located, utilizing CodeMirror for SQL styling.
-  - Users have option to execute a tracked or untracked query — simply check the box and provide a label to identify the query in later comparisons against other queries.
-  - Toggle the submit button in the bottom left to send the query to the selected database.
+  - In the 'Queries' view, the main panel is where the query input text field is located, utilizing CodeMirror. The paint button in the top right corner of the panel auto-formats the inputted query
+  - Users can select the database to use in the 'Database' field above the main panel
+  - Users also have the option to execute a labelled or unlabelled query — simply provide a label in the 'Label' field above the main panel to identify the query in later comparisons against other queries
+    - Please note that only labelled queries will be saved in the current session for future references
+  - To execute the query, simply select the 'RUN QUERY' button at the bottom of the panel or press 'Ctrl-Enter' on the keyboard
   <br /><br />
   <div align="center">
   <img src="./assets/readmeImages/query_demo.gif" width=600/>
   </div>
-  <br /><br />
 
 - Data
 
-  - The data table displays data returned by the inputted query.
+  - Once executed, the query's output will be displayed. In addition, for eligible queries, users will be able to view the queries' planning time, execution time, and plan of execution
+    - Eligible queries include any `SELECT`, `INSERT`, `UPDATE`, `DELETE`, `VALUES`, `EXECUTE`, `DECLARE`, `CREATE TABLE AS`, or `CREATE MATERIALIZED VIEW AS` statement
+  - Users can toggle between the executed query's 'RESULTS' and 'EXECUTION PLAN'
+  - The 'RESULTS' view displays the executed query's returned results
+  - The 'EXECUTION PLAN' view displays the executed query's plan of execution
+    - Within the 'EXECUTION PLAN', users can adjust the thresholds used to highlight certain nodes in the tree
+  - To execute a new query, simply select the '+' button in the sidebar
+
+
   <div align="center">
   <img src="./assets/readmeImages/data.png" width=600/><br /><br />
   </div>
 
-- Input Schema and Tabs
-
-  - New schemas can be uploaded into the application by clicking the "+" button above the main panel in the form of a `.sql` or a `.tar` file.
-  - Users can also make a copy of an existing schema, with or without data included.
-  - Newly uploaded schemas are displayed as tabs, which can be activated to run tests against during application session.
-  <div align="center">
-    <img src="./assets/readmeImages/input_schema_demo.gif"/>
-  </div>
-
 - Generate Dummy Data
 
-  - MacOS users can generate up to 500,000 rows of foreign-key compliant dummy-data
-  - Users can generate dummy data to fill in a selected scheama's tables—currently supported data types are:
+  - Users can generate up to 500,000 rows of foreign-key compliant dummy-data
+  - Currently supported data types are:
     - INT
     - SMALLINT
     - BIGINT
     - VARCHAR
-  - Dummy data is foreign-key compliant. - Columns with key constraints are dropped and replaced with new primary and foreign-key integer columns
+    - BOOLEAN
+    - DATE
+    
   <div align="center">
     <img src="./assets/readmeImages/dummy_data_demo.gif"/>
   </div>
