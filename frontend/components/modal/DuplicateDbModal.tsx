@@ -3,15 +3,18 @@ import {
   MuiThemeProvider,
   Dialog,
   DialogTitle,
-  TextField,
-  Button,
   Checkbox,
   FormControlLabel,
   Tooltip,
 } from '@material-ui/core/';
-import styled from 'styled-components';
-import { MuiTheme } from '../../style-variables';
 import { sendFeedback } from '../../lib/utils';
+import {
+  ButtonContainer,
+  TextFieldContainer,
+  StyledButton,
+  StyledTextField,
+  MuiTheme,
+} from '../../style-variables';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -20,35 +23,6 @@ interface DuplicatePayload {
   sourceDb: string;
   withData: boolean;
 }
-
-// Button Container
-const ButtonContainer = styled('div')`
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-around;
-`;
-
-// TextField Container
-const TextFieldContainer = styled.a`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-around;
-`;
-
-// Styled Button
-const StyledButton = styled(Button)`
-  margin: 5px 20px 20px 20px;
-  padding: 8px 2px;
-  width: 40%;
-  height: 10%;
-  size: small;
-  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
-`;
-
-const StyledTextField = styled(TextField)`
-  width: 80%;
-`;
 
 type copyDbModalProps = {
   open: boolean;
@@ -171,6 +145,9 @@ const DuplicateDbModal = ({
               variant="outlined"
               defaultValue={newSchemaName}
               onChange={handleSchemaName}
+              InputProps={{
+                style: { color: '#575151' },
+              }}
             />
             <Tooltip
               title={
@@ -178,13 +155,13 @@ const DuplicateDbModal = ({
               }
             >
               <FormControlLabel
-                control={(
+                control={
                   <Checkbox
                     checked={checked}
                     onChange={handleCopyData}
                     color="primary"
                   />
-                )}
+                }
                 label="Copy data"
               />
             </Tooltip>
