@@ -311,6 +311,7 @@ ipcMain.handle(
 
       // send feedback back to FE
       event.sender.send('feedback', feedback);
+      
       // send notice to FE that DD generation has been completed
       event.sender.send('async-complete');
     }
