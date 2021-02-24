@@ -1,4 +1,5 @@
 import faker from 'faker';
+import { ColumnObj, DummyRecords } from '../BE_types';
 
 const db = require('../models');
 
@@ -10,19 +11,6 @@ const db = require('../models');
 /* - This matrix is returned inside the resolved promise, and is   */
 /*     subsequently concatenated into the INSERT query generated   */
 /*     in channels.ts to generate the dummy records for the table  */
-
-interface ColumnObj {
-  column_name: string;
-  data_type: string;
-  character_maximum_length: number | null;
-  is_nullable: string;
-  constraint_type: string;
-  foreign_table: string;
-  foreign_column: string;
-}
-
-type DummyRecords = [string[], (string | number)[]?];
-type GenerateDummyData = (tableInfo: ColumnObj[], numRows: number) => Promise<DummyRecords>;
 
 
 // *************************************************** Helper Functions *************************************************** //
@@ -71,12 +59,14 @@ const generateDataByType = (columnObj: ColumnObj): string | number => {
       return '\''.concat(faker.random.boolean()).concat('\'');
     }
     default:
-      console.log('Error generating dummy data by type');
+      // console.log('Error generating dummy data by type');
       throw new Error('unhandled data type');
   }
 };
 
 // *************************************************** Main Function to Generate Dummy Data *************************************************** //
+
+type GenerateDummyData = (tableInfo: ColumnObj[], numRows: number) => Promise<DummyRecords>;
 
 const generateDummyData: GenerateDummyData = async (tableInfo: ColumnObj[], numRows: number) => {
   // assuming primary key is serial, get all the column names except for the column with the primary key
@@ -120,4 +110,4 @@ const generateDummyData: GenerateDummyData = async (tableInfo: ColumnObj[], numR
   return dummyRecords;
 };
 
-module.exports = generateDummyData;
+export default generateDummyData;
