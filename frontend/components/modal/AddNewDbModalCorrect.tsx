@@ -87,7 +87,7 @@ const AddNewDbModal = ({ open, onClose, databases }: AddNewDbModalProps) => {
     }
     // check if the newDbName is not a duplicate
     let dbSafeName = dbNameInput;
-     // convert input label name to lowercase only with no spacing to comply with db naming convention.
+    // convert input label name to lowercase only with no spacing to comply with db naming convention.
     dbSafeName = dbSafeName.replace(/[^\w-]/gi, '');
     if (databases.includes(dbSafeName)) {
       setIsError(true);
@@ -147,7 +147,6 @@ const AddNewDbModal = ({ open, onClose, databases }: AddNewDbModalProps) => {
           <DialogTitle id="alert-dialog-title">
             Import Existing SQL or TAR File
           </DialogTitle>
-          <Divider variant="middle" flexItem />
           <Tooltip title="Any special characters will be removed">
             <StyledTextField
               required
@@ -169,16 +168,14 @@ const AddNewDbModal = ({ open, onClose, databases }: AddNewDbModalProps) => {
           >
             Cancel
           </StyledButton>
-          <Tooltip title=".sql format only">
-            <StyledButton
-              variant="contained"
-              color="primary"
-              startIcon={<CloudUploadIcon />}
-              onClick={isEmpty || isError ? () => {} : handleFileClick}
-            >
-              Import File
-            </StyledButton>
-          </Tooltip>
+          <StyledButton
+            variant="contained"
+            color="primary"
+            startIcon={<CloudUploadIcon />}
+            onClick={isEmpty || isError ? () => {} : handleFileClick}
+          >
+            Import File
+          </StyledButton>
         </ButtonContainer>
       </Dialog>
     </div>
