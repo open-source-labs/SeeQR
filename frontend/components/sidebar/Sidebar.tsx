@@ -87,7 +87,8 @@ const Sidebar = ({
         <DbList
           selectedDb={selectedDb}
           setSelectedDb={setSelectedDb}
-          show={selectedView === 'dbView'}
+          show={selectedView === 'dbView' || selectedView === 'quickStartView'}
+          setSelectedView={setSelectedView}
         />
         <QueryList
           setComparedQueries={setComparedQueries}

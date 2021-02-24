@@ -2,8 +2,16 @@
  * This file contains all reusable variables for styling in styled-components
  * Individual variables should be named exports
  */
-import React from 'react'
-import { ListItem, List, Paper } from '@material-ui/core';
+import React from 'react';
+import {
+  ListItem,
+  List,
+  Paper,
+  DialogTitle,
+  Button,
+  TextField,
+  ListItemText,
+} from '@material-ui/core';
 import { createMuiTheme } from '@material-ui/core/styles';
 import styled from 'styled-components';
 
@@ -34,14 +42,18 @@ export const greyLightest = '#dfe0e2';
 // coolors link to pallete: https://coolors.co/57a777-ee6352-08b2e3-e7bb41-9d75cb-645e9d-35524a-251605-a01a7d
 export const compareChartColors = [
   '#57a777ff',
-  '#ee6352ff',
-  '#08b2e3ff',
+  '#6B2D5C',
+  '#2F3061',
+  '#B0C6CE',
+  '#F0386B',
+  '#938BA1',
+  '#CBB3BF',
+  '#7E4E60',
   '#e7bb41ff',
   '#9d75cbff',
   '#645e9dff',
   '#35524aff',
   '#251605ff',
-  '#a01a7dff',
 ];
 
 // Icons and Buttons
@@ -52,7 +64,7 @@ export const hoverColor = greenPrimary;
 export const sidebarWidth = '300px';
 export const defaultMargin = '20px';
 export const tableWidth = `calc(100vw - (${defaultMargin} * 3) - ${sidebarWidth})`;
-export const sidebarShowButtonSize = '50px'
+export const sidebarShowButtonSize = '50px';
 
 // Execution Tree
 export const planNodeWidth = '200px';
@@ -60,6 +72,9 @@ export const planNodeHeight = '100px';
 
 // theme to override Mui defaults
 export const MuiTheme = createMuiTheme({
+  typography: {
+    fontSize: 17,
+  },
   palette: {
     primary: {
       light: greenLight,
@@ -67,8 +82,8 @@ export const MuiTheme = createMuiTheme({
       dark: greenDark,
     },
     secondary: {
-      light: greyLightest,
-      main: greyLight,
+      light: greyLight,
+      main: greyLightest,
     },
     text: {
       primary: textColor,
@@ -89,9 +104,14 @@ export const MuiTheme = createMuiTheme({
         fontSize: '1em',
       },
     },
+    MuiTab: {
+      root: {
+        fontSize: 20,
+        textTransform: 'none',
+      },
+    },
   },
 });
-
 
 export const SidebarList = styled(List)`
   padding: 0;
@@ -112,8 +132,7 @@ export const SidebarListItem = styled(ListItem)`
   background: transparent;
   border-bottom: 1px solid transparent;
   border-top: 1px solid transparent;
-  width: 100%;
-
+  width: 100%
   &:hover {
     background: transparent;
     border-bottom: 1px solid ${hoverColor};
@@ -127,3 +146,39 @@ export const DarkPaperFull = styled(({ ...other }) => (
   background: ${greyDark};
 `;
 
+export const ButtonContainer = styled('div')`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+`;
+
+export const TextFieldContainer = styled.a`
+  color: #575151;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`;
+
+export const StyledButton = styled(Button)`
+  margin: 10px 20px 20px 0px;
+  min-width: 25%;
+  height: 10%;
+  size: small;
+`;
+
+export const StyledTextField = styled(TextField)`
+  width: 80%;
+  margin: 10px;
+`;
+
+export const StyledDialogTitle = styled(DialogTitle)`
+  margin-bottom: -8px;
+`;
+
+export const StyledListItemText = styled(ListItemText)`
+  & .MuiListItemText-primary {
+    max-width: 15ch;
+    overflow-wrap: break-word;
+  }
+`;

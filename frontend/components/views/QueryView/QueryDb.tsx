@@ -1,10 +1,15 @@
 import React from 'react';
 import { Select, MenuItem, InputLabel, Box } from '@material-ui/core/';
 import styled from 'styled-components';
-import { defaultMargin } from '../../../style-variables';
+import { defaultMargin, greyPrimary } from '../../../style-variables';
 
 const SpacedBox = styled(Box)`
   margin-left: ${defaultMargin};
+`;
+
+const StyledMenuItem = styled(MenuItem)`
+  /* background-color: ${greyPrimary}; */
+  color: #575151;
 `;
 
 interface QueryDbProps {
@@ -22,9 +27,9 @@ const QueryDb = ({ db, onChange, databases }: QueryDbProps) => (
       labelId="queryView-db-label"
     >
       {databases.map((dbName) => (
-        <MenuItem value={dbName} key={`queryview_dbselect_${dbName}`}>
+        <StyledMenuItem value={dbName} key={`queryview_dbselect_${dbName}`}>
           {dbName}
-        </MenuItem>
+        </StyledMenuItem>
       ))}
     </Select>
   </SpacedBox>

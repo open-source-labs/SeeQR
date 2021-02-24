@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import { AppState } from '../../types';
 import { selectedColor, textColor, defaultMargin } from '../../style-variables';
 
-
 const ViewBtnGroup = styled(ButtonGroup)`
   margin: ${defaultMargin} 5px;
 `;
@@ -31,13 +30,17 @@ const ViewSelector = ({ selectedView, setSelectedView }: ViewSelectorProps) => (
   <ViewBtnGroup variant="contained" fullWidth>
     <ViewButton
       onClick={() => setSelectedView('queryView')}
-      $isSelected={selectedView === 'queryView' || selectedView === 'compareView'}
+      $isSelected={
+        selectedView === 'queryView' || selectedView === 'compareView'
+      }
     >
       Queries
     </ViewButton>
     <ViewButton
       onClick={() => setSelectedView('dbView')}
-      $isSelected={selectedView === 'dbView'}
+      $isSelected={
+        selectedView === 'dbView' || selectedView === 'quickStartView'
+      }
     >
       Databases
     </ViewButton>

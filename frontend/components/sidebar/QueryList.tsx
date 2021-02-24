@@ -1,12 +1,12 @@
 import React from 'react';
 import { IconButton, Tooltip } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
+import styled from 'styled-components';
 import { SidebarList } from '../../style-variables';
 import { AppState, QueryData } from '../../types';
 import { deleteQuery, setCompare, key as queryKey } from '../../lib/queries';
 import QueryEntry from './QueryEntry';
 import logo from '../../../assets/logo/seeqr_dock.png';
-import styled from 'styled-components';
 import { greyDarkest } from '../../style-variables';
 
 type QueryListProps = Pick<

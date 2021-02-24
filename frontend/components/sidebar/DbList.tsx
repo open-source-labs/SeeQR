@@ -17,11 +17,19 @@ const StyledSidebarList = styled(SidebarList)`
   background-color: ${greyDarkest};
 `;
 
-type DbListProps = Pick<AppState, 'selectedDb' | 'setSelectedDb'> & {
+type DbListProps = Pick<
+  AppState,
+  'selectedDb' | 'setSelectedDb' | 'setSelectedView'
+> & {
   show: boolean;
 };
 
-const DbList = ({ selectedDb, setSelectedDb, show }: DbListProps) => {
+const DbList = ({
+  selectedDb,
+  setSelectedDb,
+  setSelectedView,
+  show,
+}: DbListProps) => {
   const [databases, setDatabases] = useState<string[]>([]);
   const [openAdd, setOpenAdd] = useState(false);
   const [openDupe, setOpenDupe] = useState(false);
@@ -60,6 +68,7 @@ const DbList = ({ selectedDb, setSelectedDb, show }: DbListProps) => {
   };
 
   const selectHandler = (dbName: string) => {
+    setSelectedView('dbView');
     if (dbName === selectedDb) return;
     ipcRenderer
       .invoke('select-db', dbName)
