@@ -3,10 +3,10 @@ import path from 'path';
 import fs from 'fs';
 import os from 'os';
 import helperFunctions from './helperFunctions';
-import { ColumnObj } from './BE_types';
+import generateDummyData from './DummyD/dummyDataMain';
+import { ColumnObj, DBList, DummyRecords } from './BE_types';
 
 const db = require('./models');
-const generateDummyData = require('./DummyD/dummyDataMain');
 
 const {
   createDBFunc,
@@ -20,32 +20,6 @@ const {
 } = helperFunctions;
 
 // *************************************************** IPC Event Listeners *************************************************** //
-
-interface dbDetails {
-  db_name: string;
-  db_size: string;
-}
-// interface ColumnObj {
-//   column_name: string;
-//   data_type: string;
-//   character_maximum_length: number | null;
-//   is_nullable: string;
-//   constraint_type: string;
-//   foreign_table: string;
-//   foreign_column: string;
-// }
-interface TableDetails {
-  table_catalog: string;
-  table_schema: string;
-  table_name: string;
-  is_insertable_into: string;
-  column?: ColumnObj[];
-}
-interface DBList {
-  databaseList: dbDetails[];
-  tableList: TableDetails[];
-}
-
 interface Feedback {
   type: string;
   message: string;
@@ -277,7 +251,7 @@ ipcMain.handle(
   }
 );
 
-interface dummyDataRequestType {
+interface dummyDataRequestPayload {
   dbName: string;
   tableName: string;
   rows: number;
@@ -285,7 +259,7 @@ interface dummyDataRequestType {
 
 ipcMain.handle(
   'generate-dummy-data',
-  async (event: any, data: dummyDataRequestType) => {
+  async (event, data: dummyDataRequestPayload) => {
     // send notice to front end that DD generation has been started
     event.sender.send('async-started');
     let feedback: Feedback = {
@@ -294,10 +268,10 @@ ipcMain.handle(
     };
     try {
       // Retrieves the Primary Keys and Foreign Keys for all the tables
-      const tableInfo = await db.getTableInfo(data.tableName);
+      const tableInfo: ColumnObj[] = await db.getTableInfo(data.tableName);
 
       // generate dummy data
-      const dummyArray = await generateDummyData(tableInfo, data.rows);
+      const dummyArray: DummyRecords = await generateDummyData(tableInfo, data.rows);
 
       // generate insert query string to insert dummy records
       const columnsStringified = '('

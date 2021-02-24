@@ -1,4 +1,6 @@
 /* eslint-disable no-console */
+import { ColumnObj, dbDetails, TableDetails, DBList } from './BE_types';
+
 const { Pool } = require('pg');
 
 // commented out because queries are no longer being used but good to keep as a reference
@@ -13,30 +15,6 @@ const PG_URI: string = 'postgres://postgres:postgres@localhost:5432';
 let pool = new Pool({ connectionString: PG_URI });
 // console.log('Connected to: ', PG_URI);
 
-interface dbDetails {
-  db_name: string;
-  db_size: string;
-}
-interface ColumnObj {
-  column_name: string;
-  data_type: string;
-  character_maximum_length: number | null;
-  is_nullable: string;
-  constraint_type: string;
-  foreign_table: string;
-  foreign_column: string;
-}
-interface TableDetails {
-  table_catalog: string;
-  table_schema: string;
-  table_name: string;
-  is_insertable_into: string;
-  columns?: ColumnObj[];
-}
-interface DBList {
-  databaseList: dbDetails[];
-  tableList: TableDetails[];
-}
 
 // *********************************************************** HELPER FUNCTIONS ************************************************* //
 
