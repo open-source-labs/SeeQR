@@ -1,9 +1,7 @@
 import React from 'react';
 import { IconButton, Tooltip } from '@material-ui/core';
-import MenuIcon from '@material-ui/icons/Menu';
-import EqualizerIcon from '@material-ui/icons/Equalizer';
-import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import styled from 'styled-components';
+import { HelpOutline, ArrowBackIos, Equalizer } from '@material-ui/icons';
 import { AppState } from '../../types';
 
 import { textColor, hoverColor, selectedColor } from '../../style-variables';
@@ -22,7 +20,7 @@ interface StyledCompareButtonProps {
   $isSelected: boolean;
 }
 
-const StyledCompareIcon = styled(EqualizerIcon)<StyledCompareButtonProps>`
+const StyledCompareIcon = styled(Equalizer)<StyledCompareButtonProps>`
   color: ${({ $isSelected }) => ($isSelected ? selectedColor : textColor)};
   &:hover {
     color: ${hoverColor};
@@ -45,8 +43,8 @@ const TopButtons = ({
 
   return (
     <Container>
-      <StyledIconButton>
-        <MenuIcon fontSize="large" />
+      <StyledIconButton onClick={() => setSelectedView('quickStartView')}>
+        <HelpOutline fontSize="large" />
       </StyledIconButton>
       <Tooltip title="Compare Queries">
         <StyledIconButton onClick={toggleCompareView}>
@@ -58,7 +56,7 @@ const TopButtons = ({
       </Tooltip>
       <Tooltip title="Hide Sidebar">
         <StyledIconButton onClick={toggleOpen}>
-          <ArrowBackIosIcon fontSize="large" />
+          <ArrowBackIos fontSize="large" />
         </StyledIconButton>
       </Tooltip>
     </Container>

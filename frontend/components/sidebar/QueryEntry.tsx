@@ -2,16 +2,19 @@ import React from 'react';
 import styled from 'styled-components';
 import {
   IconButton,
-  ListItemText,
   ListItemSecondaryAction,
   Checkbox,
   Tooltip,
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
-import { SidebarListItem, textColor } from '../../style-variables';
+import {
+  SidebarListItem,
+  StyledListItemText,
+  textColor,
+} from '../../style-variables';
 import { QueryData } from '../../types';
 
-const QueryText = styled(ListItemText)`
+const QueryText = styled(StyledListItemText)`
   & .MuiListItemText-secondary {
     color: ${textColor};
   }

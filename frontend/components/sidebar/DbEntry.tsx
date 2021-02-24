@@ -1,13 +1,13 @@
 import React from 'react';
 import {
   IconButton,
-  ListItemText,
   ListItemSecondaryAction,
   Tooltip,
 } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
-import { SidebarListItem } from '../../style-variables';
+
+import { SidebarListItem, StyledListItemText } from '../../style-variables';
 import { sendFeedback } from '../../lib/utils';
 
 const { ipcRenderer } = window.require('electron');
@@ -36,7 +36,7 @@ const DbEntry = ({ db, isSelected, select, duplicate }: DbEntryProps) => {
       $customSelected={isSelected}
       onClick={() => select(db)}
     >
-      <ListItemText primary={db} />
+      <StyledListItemText primary={db} />
       <ListItemSecondaryAction>
         <Tooltip title="Copy Database">
           <IconButton edge="end" onClick={duplicate}>
