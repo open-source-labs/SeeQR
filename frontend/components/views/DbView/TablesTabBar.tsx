@@ -1,13 +1,21 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { AppBar, Tabs, Tab } from '@material-ui/core';
+import styled from 'styled-components';
 import TableDetails from './TableDetails';
 import { TableInfo } from '../../../types';
+import { greyMedium } from '../../../style-variables';
 
 interface TabPanelProps {
   children?: React.ReactNode;
   index: any;
   value: any;
 }
+
+const StyledTabs = styled(Tabs)`
+  background-color: #818584;
+  font-weight: bold;
+  color: white;
+`;
 
 const TabPanel = ({ children, value, index }: TabPanelProps) => (
   <div
@@ -47,11 +55,10 @@ const TablesTabs = ({
   return (
     <>
       <AppBar position="static" color="default">
-        <Tabs
+        <StyledTabs
           value={tableIndex}
           onChange={handleChange}
           indicatorColor="primary"
-          textColor="primary"
           variant="scrollable"
           scrollButtons="auto"
           aria-label="scrollable auto tabs example"
@@ -60,15 +67,11 @@ const TablesTabs = ({
             <Tab label={name} {...a11yProps(index)} key={name} />
           ))}
           ;
-        </Tabs>
+        </StyledTabs>
       </AppBar>
       <br />
       {tables.map((tableMap, index) => (
-        <TabPanel
-          value={tableIndex}
-          index={index}
-          key={tableMap.table_name}
-        >
+        <TabPanel value={tableIndex} index={index} key={tableMap.table_name}>
           <TableDetails table={tableMap} />
         </TabPanel>
       ))}
