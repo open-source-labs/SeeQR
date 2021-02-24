@@ -6,7 +6,7 @@ import { ipcRenderer } from 'electron';
 const StyledLinearProg = styled(LinearProgress)`
   /* Material Ui Drawer component used by sidebar has z-index: 1200 */
   z-index: 1300;
-  height: 2px;
+  height: 5px;
   visibility: ${({ $show }: { $show: boolean }) =>
     $show ? 'visible' : 'hidden'};
 `;
