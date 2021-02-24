@@ -1,9 +1,8 @@
 import React from 'react';
-import { AppBar, Tabs, Tab } from '@material-ui/core';
+import { Tabs, Tab } from '@material-ui/core';
 import styled from 'styled-components';
 import TableDetails from './TableDetails';
 import { TableInfo } from '../../../types';
-import { greyMedium } from '../../../style-variables';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -14,6 +13,7 @@ interface TabPanelProps {
 const StyledTabs = styled(Tabs)`
   background-color: #818584;
   color: white;
+  border-radius: 5px;
 `;
 
 const TabPanel = ({ children, value, index }: TabPanelProps) => (
@@ -32,7 +32,7 @@ const a11yProps = (index: any) => ({
   'aria-controls': `scrollable-auto-tabpanel-${index}`,
 });
 
-interface TablesSidebarProps {
+interface TablesTabBarProps {
   tables: TableInfo[];
   selectTable: (table: TableInfo) => void;
   selectedTable: TableInfo | undefined;
@@ -42,7 +42,7 @@ const TablesTabs = ({
   tables,
   selectTable,
   selectedTable,
-}: TablesSidebarProps) => {
+}: TablesTabBarProps) => {
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     selectTable(tables[newValue]);
   };
@@ -53,21 +53,19 @@ const TablesTabs = ({
 
   return (
     <>
-      <AppBar position="static" color="default">
-        <StyledTabs
-          value={tableIndex}
-          onChange={handleChange}
-          indicatorColor="primary"
-          variant="scrollable"
-          scrollButtons="auto"
-          aria-label="scrollable auto tabs example"
-        >
-          {tables.map(({ table_name: name }, index) => (
-            <Tab label={name} {...a11yProps(index)} key={name} />
-          ))}
-          ;
-        </StyledTabs>
-      </AppBar>
+      <StyledTabs
+        value={tableIndex}
+        onChange={handleChange}
+        indicatorColor="primary"
+        variant="scrollable"
+        scrollButtons="auto"
+        aria-label="scrollable auto tabs example"
+      >
+        {tables.map(({ table_name: name }, index) => (
+          <Tab label={name} {...a11yProps(index)} key={name} />
+        ))}
+        ;
+      </StyledTabs>
       <br />
       <br />
       {tables.map((tableMap, index) => (
