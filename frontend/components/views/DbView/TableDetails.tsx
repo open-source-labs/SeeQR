@@ -49,7 +49,13 @@ const TableDetails = ({ table }: TableDetailsProps) => (
           {table?.columns.map((row) => (
             <TableRow key={row.column_name}>
               <StyledCell key={row?.column_name}>{row?.column_name}</StyledCell>
-              <StyledCell align="right">{row?.data_type}</StyledCell>
+              <StyledCell align="right">
+                {`${row?.data_type}${
+                  row?.character_maximum_length
+                    ? `(${row.character_maximum_length})`
+                    : ''
+                }`}
+              </StyledCell>
               <StyledCell align="right">{row?.is_nullable}</StyledCell>
             </TableRow>
           ))}
