@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { Dialog, DialogTitle } from '@material-ui/core/';
+import { Dialog } from '@material-ui/core/';
 import { ipcRenderer } from 'electron';
 import {
   ButtonContainer,
   TextFieldContainer,
   StyledButton,
   StyledTextField,
+  StyledDialogTitle,
 } from '../../style-variables';
-
 import { sendFeedback } from '../../lib/utils';
 
 interface DummyPayload {
@@ -114,9 +114,10 @@ const DummyDataModal = ({
         open={open}
       >
         <TextFieldContainer>
-          <DialogTitle id="alert-dialog-title">
+          <StyledDialogTitle id="alert-dialog-title">
             Generate Dummy Data into Table
-          </DialogTitle>
+          </StyledDialogTitle>
+
           <StyledTextField
             error={isError}
             helperText={errorMessage()}

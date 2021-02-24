@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   MuiThemeProvider,
   Dialog,
-  DialogTitle,
   Checkbox,
   FormControlLabel,
   Tooltip,
@@ -14,6 +13,7 @@ import {
   StyledButton,
   StyledTextField,
   MuiTheme,
+  StyledDialogTitle,
 } from '../../style-variables';
 
 const { ipcRenderer } = window.require('electron');
@@ -133,9 +133,26 @@ const DuplicateDbModal = ({
           open={open}
         >
           <TextFieldContainer>
-            <DialogTitle id="alert-dialog-title">
+            <StyledDialogTitle id="alert-dialog-title">
               Copy Existing Database
-            </DialogTitle>
+            </StyledDialogTitle>
+            <Tooltip
+              title={
+                checked ? 'Deselect to only copy shell' : 'Select to copy data'
+              }
+            >
+              <FormControlLabel
+                control={
+                  // eslint-disable-next-line react/jsx-wrap-multilines
+                  <Checkbox
+                    checked={checked}
+                    onChange={handleCopyData}
+                    color="primary"
+                  />
+                }
+                label="Copy data"
+              />
+            </Tooltip>
             <StyledTextField
               required
               error={isError || isEmpty}
@@ -149,22 +166,6 @@ const DuplicateDbModal = ({
                 style: { color: '#575151' },
               }}
             />
-            <Tooltip
-              title={
-                checked ? 'Deselect to only copy shell' : 'Select to copy data'
-              }
-            >
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={checked}
-                    onChange={handleCopyData}
-                    color="primary"
-                  />
-                }
-                label="Copy data"
-              />
-            </Tooltip>
           </TextFieldContainer>
           <ButtonContainer>
             <StyledButton
