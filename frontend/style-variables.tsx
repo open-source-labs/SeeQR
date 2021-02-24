@@ -3,10 +3,16 @@
  * Individual variables should be named exports
  */
 import React from 'react';
-import { ListItem, List, Paper } from '@material-ui/core';
+import {
+  ListItem,
+  List,
+  Paper,
+  DialogTitle,
+  Button,
+  TextField,
+} from '@material-ui/core';
 import { createMuiTheme } from '@material-ui/core/styles';
 import styled from 'styled-components';
-import { Button, TextField } from '@material-ui/core/';
 
 // previous
 export const bgColor = '#2b2d35';
@@ -61,6 +67,9 @@ export const planNodeHeight = '100px';
 
 // theme to override Mui defaults
 export const MuiTheme = createMuiTheme({
+  typography: {
+    fontSize: 17,
+  },
   palette: {
     primary: {
       light: greenLight,
@@ -88,6 +97,11 @@ export const MuiTheme = createMuiTheme({
     MuiTooltip: {
       tooltip: {
         fontSize: '1em',
+      },
+    },
+    MuiTab: {
+      root: {
+        fontSize: 20,
       },
     },
   },
@@ -151,4 +165,9 @@ export const StyledButton = styled(Button)`
 
 export const StyledTextField = styled(TextField)`
   width: 80%;
+  margin: 10px;
+`;
+
+export const StyledDialogTitle = styled(DialogTitle)`
+  margin-bottom: -8px;
 `;
