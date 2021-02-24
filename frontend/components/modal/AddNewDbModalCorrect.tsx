@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import {
-  Dialog,
-  DialogTitle,
-  TextField,
-  Button,
-  Tooltip,
-} from '@material-ui/core/';
+import { Dialog, DialogTitle, Tooltip } from '@material-ui/core/';
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
-import styled from 'styled-components';
 import { ipcRenderer, remote } from 'electron';
 import { sendFeedback } from '../../lib/utils';
+import {
+  ButtonContainer,
+  TextFieldContainer,
+  StyledButton,
+  StyledButtonCancel,
+  StyledTextField,
+} from '../../style-variables';
 
 const { dialog } = remote;
 
@@ -17,35 +17,6 @@ interface ImportPayload {
   newDbName: string;
   filePath: string;
 }
-
-// Button Container
-const ButtonContainer = styled('div')`
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-around;
-`;
-
-// TextField Container
-const TextFieldContainer = styled.a`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-`;
-
-// Styled Button
-const StyledButton = styled(Button)`
-  margin: 20px;
-  padding: 8px 2px;
-  width: 40%;
-  height: 10%;
-  size: small;
-  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
-`;
-
-const StyledTextField = styled(TextField)`
-  width: 80%;
-`;
 
 type AddNewDbModalProps = {
   open: boolean;
@@ -156,24 +127,27 @@ const AddNewDbModal = ({ open, onClose, databases }: AddNewDbModalProps) => {
               size="small"
               variant="outlined"
               onChange={handleDbName}
+              InputProps={{
+                style: { color: '#575151' },
+              }}
             />
           </Tooltip>
         </TextFieldContainer>
         <ButtonContainer>
-          <StyledButton
+          <StyledButtonCancel
             variant="contained"
             color="secondary"
             onClick={handleClose}
           >
             Cancel
-          </StyledButton>
+          </StyledButtonCancel>
           <StyledButton
             variant="contained"
             color="primary"
             startIcon={<CloudUploadIcon />}
             onClick={isEmpty || isError ? () => {} : handleFileClick}
           >
-            Import File
+            Import
           </StyledButton>
         </ButtonContainer>
       </Dialog>

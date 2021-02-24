@@ -2,10 +2,11 @@
  * This file contains all reusable variables for styling in styled-components
  * Individual variables should be named exports
  */
-import React from 'react'
+import React from 'react';
 import { ListItem, List, Paper } from '@material-ui/core';
 import { createMuiTheme } from '@material-ui/core/styles';
 import styled from 'styled-components';
+import { Button, TextField } from '@material-ui/core/';
 
 // previous
 export const bgColor = '#2b2d35';
@@ -52,7 +53,7 @@ export const hoverColor = greenPrimary;
 export const sidebarWidth = '300px';
 export const defaultMargin = '20px';
 export const tableWidth = `calc(100vw - (${defaultMargin} * 3) - ${sidebarWidth})`;
-export const sidebarShowButtonSize = '50px'
+export const sidebarShowButtonSize = '50px';
 
 // Execution Tree
 export const planNodeWidth = '200px';
@@ -67,8 +68,8 @@ export const MuiTheme = createMuiTheme({
       dark: greenDark,
     },
     secondary: {
-      light: greyLightest,
-      main: greyLight,
+      light: greyLight,
+      main: greyLightest,
     },
     text: {
       primary: textColor,
@@ -91,7 +92,6 @@ export const MuiTheme = createMuiTheme({
     },
   },
 });
-
 
 export const SidebarList = styled(List)`
   padding: 0;
@@ -127,3 +127,36 @@ export const DarkPaperFull = styled(({ ...other }) => (
   background: ${greyDark};
 `;
 
+export const ButtonContainer = styled('div')`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+`;
+
+export const TextFieldContainer = styled.a`
+  color: #575151;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`;
+
+export const StyledButton = styled(Button)`
+  margin: 10px 20px 20px 0px;
+  padding: 8px 2px;
+  width: 25%;
+  height: 10%;
+  size: small;
+`;
+
+export const StyledButtonCancel = styled(Button)`
+  margin: 10px 20px 20px 0px;
+  padding: 8px 2px;
+  width: 25%;
+  height: 10%;
+  size: small;
+`;
+
+export const StyledTextField = styled(TextField)`
+  width: 80%;
+`;
