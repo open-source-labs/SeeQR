@@ -7,7 +7,6 @@ import {
   ButtonContainer,
   TextFieldContainer,
   StyledButton,
-  StyledButtonCancel,
   StyledTextField,
 } from '../../style-variables';
 
@@ -134,13 +133,13 @@ const AddNewDbModal = ({ open, onClose, databases }: AddNewDbModalProps) => {
           </Tooltip>
         </TextFieldContainer>
         <ButtonContainer>
-          <StyledButtonCancel
+          <StyledButton
             variant="contained"
             color="secondary"
             onClick={handleClose}
           >
             Cancel
-          </StyledButtonCancel>
+          </StyledButton>
           <StyledButton
             variant="contained"
             color="primary"
