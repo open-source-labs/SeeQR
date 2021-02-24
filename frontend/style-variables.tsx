@@ -41,14 +41,18 @@ export const greyLightest = '#dfe0e2';
 // coolors link to pallete: https://coolors.co/57a777-ee6352-08b2e3-e7bb41-9d75cb-645e9d-35524a-251605-a01a7d
 export const compareChartColors = [
   '#57a777ff',
-  '#ee6352ff',
-  '#08b2e3ff',
+  '#6B2D5C',
+  '#2F3061',
+  '#B0C6CE',
+  '#F0386B',
+  '#938BA1',
+  '#CBB3BF',
+  '#7E4E60',
   '#e7bb41ff',
   '#9d75cbff',
   '#645e9dff',
   '#35524aff',
   '#251605ff',
-  '#a01a7dff',
 ];
 
 // Icons and Buttons
