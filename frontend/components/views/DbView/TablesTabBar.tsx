@@ -13,7 +13,6 @@ interface TabPanelProps {
 
 const StyledTabs = styled(Tabs)`
   background-color: #818584;
-  font-weight: bold;
   color: white;
 `;
 
@@ -69,6 +68,7 @@ const TablesTabs = ({
           ;
         </StyledTabs>
       </AppBar>
+      <br />
       <br />
       {tables.map((tableMap, index) => (
         <TabPanel value={tableIndex} index={index} key={tableMap.table_name}>
