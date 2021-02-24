@@ -19,16 +19,12 @@
 ## Table of Contents
 
 - [Table of Contents](#table-of-contents)
-- [Beta Phase](#beta-phase)
 - [Getting Started](#getting-started)
 - [Built With](#built-with)
 - [Interface & Features](#interface--features)
 - [Application Architecture and Logic](#application-architecture-and-logic)
+- [Contributing](#contributing)
 - [Core Team](#core-team)
-
-## Beta Phase
-
-SeeQR is still in BETA. Additional features, extensions, and improvements will continue to be introduced. If you encounter any issues with the application, please report them in the issues tab or submit a PR. Thank you for your interest!
 
 ## Getting Started
 
@@ -48,16 +44,16 @@ To get started on contributing to this project:
 - [Electron](https://www.electronjs.org/docs)
 - [React](https://reactjs.org/)
 - [React-Hooks](https://reactjs.org/docs/hooks-intro.html)
-- [React-Flow](https://reactflow.dev/)
 - [Typescript](https://www.typescriptlang.org/)
 - [PostgreSQL](https://www.postgresql.org/)
-- [Material-UI](https://material-ui.com/)
 - [styled-components](https://styled-components.com/)
+- [Material-UI](https://material-ui.com/)
+- [React-Flow](https://reactflow.dev/)
 - [Chart.js](https://github.com/chartjs)
 - [Faker.js](https://github.com/Marak/faker.js)
 - [CodeMirror](https://codemirror.net/)
 
-## Interface & Functionality
+## Interface & Features
 
 <div align="center">
 <img src="./assets/readmeImages/splash_page.png" width=800/><br /><br /><img src="./assets/readmeImages/seeqr_desktop.jpg" width=800/><p>The whole interface in a nutshell</p>
@@ -133,7 +129,7 @@ To get started on contributing to this project:
 SeeQR streamlines the process of instantiating postgres databases by leveraging Postgres.app to create your database in postgres on your local machine. This means instances of databases are automatically created every time new schema data is uploaded or inputted via the SeeQR GUI. Electron communicates with the instantiated database’s URIs by taking advantage of the `'pg'` npm package.
 
 <b>Cross-schema Comparisons</b><br/>
-One of the key features of SeeQR is to compare the efficiency of executing user-inputted queries against different schemas. This allows customization of table scale, relationship, type, and the queries themselves within the context of each schema. This flexibility affords the user granular adjustments for testing every desired scenario. Please refer to “Interface & Functionality” for more details on execution.
+One of the key features of SeeQR is to compare the efficiency of executing user-inputted queries against different schemas. This allows customization of table scale, relationship, type, and the queries themselves within the context of each schema. This flexibility affords the user granular adjustments for testing every desired scenario. Please refer to “Interface & Features” for more details on execution.
 
 <b>Database:Schema 1:1 Architecture</b><br/>
 While it is feasible for a database to house multiple schemas, SeeQR’s default architecture for database:schema relations is 1:1. For every schema inputted, a new database is generated to hold that schema. This architecture serves the application’s central purpose: testing — by enabling the capacity to individually scale data connected to each schema, generating analytics at any user-specified conditions.
@@ -141,15 +137,11 @@ While it is feasible for a database to house multiple schemas, SeeQR’s default
 <b>Session-based Result Caching</b><br/>
 The outcome results from each query, both retrieved data and analytics, are stored in the application’s state, which can be viewed and compared in table and visualizer formats. Note that these results’ persistence is session-based and will be cleared upon quitting the application.
 
+## Contributing
+
+We've released SeeQR because it's a helpful tool to help optimize SQL databases. Additional features, extensions, and improvements will continue to be introduced. We are thankful for any contributions from the community and we encourage you to try SeeQR out and make or suggest improvements where you see fit! If you encounter any issues with the application, please report them in the issues tab or submit a PR. Thank you for your interest!
+
 ## Core Team
-
-<!-- | | | | | |
-| - | - | - | - | - |
-| [Casey Escovedo](https://github.com/caseyescovedo) | [Casey Walker](https://github.com/cwalker3011) | [Catherine Chiu](https://github.com/catherinechiu) | [Chris Akinrinade](https://github.com/chrisakinrinade) | [Cindy Chau](https://github.com/cindychau) | 
-| [Claudio Santos](https://github.com/Claudiohbsantos) | [Faraz Akhtar](https://github.com/faraza22) | [Frank Norton](https://github.com/FrankNorton32) | [James Kolotouros](https://github.com/dkolotouros) | [Jennifer Courtner](https://github.com/jcourtner) | 
-| [Justin Dury-Agri](https://github.com/justinD-A) | [Katie Klochan](https://github.com/kklochan) | [Mercer Stronck](https://github.com/mercerstronck) | [Muhammad Trad](https://github.com/muhammadtrad) | [Richard Lam](https://github.com/rlam108) |
-| [Sam Frakes](https://github.com/frakes413) | [Serena Kuo](https://github.com/serenackuo) |  |  |  | -->
-
 
 | [Casey Escovedo](https://github.com/caseyescovedo) | [Casey Walker](https://github.com/cwalker3011) | [Catherine Chiu](https://github.com/catherinechiu) | [Chris Akinrinade](https://github.com/chrisakinrinade) | [Cindy Chau](https://github.com/cindychau) | [Claudio Santos](https://github.com/Claudiohbsantos) | [Faraz Akhtar](https://github.com/faraza22) | [Frank Norton](https://github.com/FrankNorton32) | [James Kolotouros](https://github.com/dkolotouros) | [Jennifer Courtner](https://github.com/jcourtner) | [Justin Dury-Agri](https://github.com/justinD-A) | [Katie Klochan](https://github.com/kklochan) | [Mercer Stronck](https://github.com/mercerstronck) | [Muhammad Trad](https://github.com/muhammadtrad) | [Richard Lam](https://github.com/rlam108) | [Sam Frakes](https://github.com/frakes413) | [Serena Kuo](https://github.com/serenackuo) |
 
