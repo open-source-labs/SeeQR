@@ -143,20 +143,21 @@ The outcome results from each query, both retrieved data and analytics, are stor
 
 ## Core Team
 
-<!-- | | | | |
+| | | | |
 | - | - | - | - |
 | [Casey Escovedo](https://github.com/caseyescovedo) | [Casey Walker](https://github.com/cwalker3011) | [Catherine Chiu](https://github.com/catherinechiu)   |
 | [Chris Akinrinade](https://github.com/chrisakinrinade) | [Cindy Chau](https://github.com/cindychau) | [Claudio Santos](https://github.com/Claudiohbsantos) |
 | [Faraz Akhtar](https://github.com/faraza22) | [Frank Norton](https://github.com/FrankNorton32) | [James Kolotouros](https://github.com/dkolotouros) |
 | [Jennifer Courtner](https://github.com/jcourtner) | [Justin Dury-Agri](https://github.com/justinD-A) | [Katie Klochan](https://github.com/kklochan) |
 | [Mercer Stronck](https://github.com/mercerstronck) | [Muhammad Trad](https://github.com/muhammadtrad) | [Richard Lam](https://github.com/rlam108) |
-| [Sam Frakes](https://github.com/frakes413) | [Serena Kuo](https://github.com/serenackuo) |  | -->
+| [Sam Frakes](https://github.com/frakes413) | [Serena Kuo](https://github.com/serenackuo) |  |
 
+<!-- | | | | | |
 | - | - | - | - | - |
 | [Casey Escovedo](https://github.com/caseyescovedo) | [Casey Walker](https://github.com/cwalker3011) | [Catherine Chiu](https://github.com/catherinechiu) | [Chris Akinrinade](https://github.com/chrisakinrinade) | [Cindy Chau](https://github.com/cindychau) | 
 | [Claudio Santos](https://github.com/Claudiohbsantos) | [Faraz Akhtar](https://github.com/faraza22) | [Frank Norton](https://github.com/FrankNorton32) | [James Kolotouros](https://github.com/dkolotouros) | [Jennifer Courtner](https://github.com/jcourtner) | 
 | [Justin Dury-Agri](https://github.com/justinD-A) | [Katie Klochan](https://github.com/kklochan) | [Mercer Stronck](https://github.com/mercerstronck) | [Muhammad Trad](https://github.com/muhammadtrad) | [Richard Lam](https://github.com/rlam108) |
-| [Sam Frakes](https://github.com/frakes413) | [Serena Kuo](https://github.com/serenackuo) |  |  |  |
+| [Sam Frakes](https://github.com/frakes413) | [Serena Kuo](https://github.com/serenackuo) |  |  |  | -->
 
 <!-- - [Casey Escovedo](https://github.com/caseyescovedo)
 - [Casey Walker](https://github.com/cwalker3011)
