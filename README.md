@@ -82,6 +82,7 @@ To get started on contributing to this project:
     - BOOLEAN
     - DATE
   
+  <br>
   <div align="center">
     <img src="./assets/readmeImages/gifs/dummy_data.gif" width=800/>
   </div>
@@ -94,6 +95,7 @@ To get started on contributing to this project:
     - Please note that only labelled queries will be saved in the current session for future references
   - To execute the query, simply select the 'RUN QUERY' button at the bottom of the panel or press 'Ctrl-Enter' on the keyboard
 
+  <br />
   <div align="center">
     <img src="./assets/readmeImages/gifs/query.gif" width=800/>
   </div>
@@ -109,6 +111,7 @@ To get started on contributing to this project:
     - Clicking on a node will display additioanl details regarding that action as well
   - To execute a new query, simply select the '+' button in the sidebar. To go back to a previously saved query, just select it in the sidebar
 
+  <br />
   <div align="center">
     <img src="./assets/readmeImages/gifs/execution_plan.gif" width=800/>
   </div>
