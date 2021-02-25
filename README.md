@@ -31,13 +31,14 @@
 To get started on contributing to this project:
 
 1. Download and install [Postgres.app](https://postgresapp.com/) and start it before opening up SeeQR
-2. Ensure that psql is available in the PATH
-3. Download the latest version of SeeQR [here](https://github.com/oslabs-beta/seeqr/releases/latest
+2. Ensure that psql is available in the `$PATH`
+3. Ensure that a 'postgres' role exists
+4. Download the latest version of SeeQR [here](https://github.com/oslabs-beta/seeqr/releases/latest)
+
 ## Built With
 
 - [Electron](https://www.electronjs.org/docs)
 - [React](https://reactjs.org/)
-- [React-Hooks](https://reactjs.org/docs/hooks-intro.html)
 - [Typescript](https://www.typescriptlang.org/)
 - [PostgreSQL](https://www.postgresql.org/)
 - [styled-components](https://styled-components.com/)
@@ -101,8 +102,10 @@ To get started on contributing to this project:
   - Users can toggle between the executed query's 'RESULTS' and 'EXECUTION PLAN'
   - The 'RESULTS' view displays the executed query's returned results
   - The 'EXECUTION PLAN' view displays the executed query's plan of execution
-    - Within the 'EXECUTION PLAN', users can adjust the thresholds used to highlight certain nodes in the tree
-    - Clicking on a node will display additioanl details regarding that action as well
+    - Within the 'EXECUTION PLAN', users can adjust the thresholds of 'Percentage of Total Duration' and the 'Planner Rows Accuracy' that are used to highlight certain nodes in the tree
+      - The 'Percentage of Total Duration' threshold is used to highlight the nodes whose durations are higher than the set limit, indicating that these nodes may be areas of improvement
+      - The 'Planner Rows Accuracy' threshold is used to highlight the nodes for which the planner's estimate number of rows differs from the actual number of rows, indicating that the database might need vacuuming
+    - Clicking on a node will display additional details regarding that action as well
   - To execute a new query, simply select the '+' button in the sidebar. To go back to a previously saved query, just select it in the sidebar
 
   <br />
