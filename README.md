@@ -31,14 +31,8 @@
 To get started on contributing to this project:
 
 1. Download and install [Postgres.app](https://postgresapp.com/) and start it before opening up SeeQR
-2. Fork or clone this repository
-3. Npm install
-   1. Run `npm install` for application-specific dependencies
-   2. Run global install for: `'cross-env'`, `'webpack'`, `'webpack-dev-server'`, `'electron'`, and `'typescript'`
-4. Install [Live Sass Compile](https://github.com/ritwickdey/vscode-live-sass-compiler) VSCode extension (settings are configured in the .vscode file in this repo), or set up your preferred Sass compiler
-5. To run application during development
-   1. `npm run dev` to launch the Electron application window and webpack-dev-server
-
+2. Ensure that psql is available in the PATH
+3. Download the latest version of SeeQR [here](https://github.com/oslabs-beta/seeqr/releases/latest
 ## Built With
 
 - [Electron](https://www.electronjs.org/docs)
