@@ -1,12 +1,10 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { app, BrowserWindow, Menu } from 'electron';
 
+const dev: boolean = process.env.NODE_ENV === 'development';
+
 const path = require('path');
 const url = require('url');
-const {
-  default: installExtension,
-  REACT_DEVELOPER_TOOLS,
-} = require('electron-devtools-installer');
 const fixPath = require('fix-path');
 const MainMenu = require('./mainMenu');
 
@@ -16,7 +14,6 @@ require('./channels');
 fixPath();
 // Keep a global reference of the window objects, if you don't, the window will be closed automatically when the JavaScript object is garbage collected.
 let mainWindow: BrowserWindow | null;
-const dev: boolean = process.env.NODE_ENV === 'development';
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -64,10 +61,16 @@ function createWindow() {
 }
 
 // Install React Dev Tools Extension
-if (dev)
+if (dev) {
+  const {
+    default: installExtension,
+    REACT_DEVELOPER_TOOLS,
+  } = require('electron-devtools-installer');
+
   app.on('ready', () => {
     installExtension(REACT_DEVELOPER_TOOLS);
   });
+}
 
 // Invoke createWindow to create browser windows after Electron has been initialized.
 app.on('ready', createWindow);
