@@ -55,9 +55,6 @@ To get started on contributing to this project:
 
 ## Interface & Features
 
-<div align="center">
-<img src="./assets/readmeImages/splash_page.png" width=800/><br /><br /><img src="./assets/readmeImages/seeqr_desktop.jpg" width=800/><p>The whole interface in a nutshell</p>
-</div>
 
 - Overview
 
@@ -68,6 +65,10 @@ To get started on contributing to this project:
       - Manually running `CREATE DATABASE` queries in SeeQR
       - Copying an existing database (with or without original data)
   - Users can toggle between the 'DATABASES' view and the 'QUERIES' view
+
+<div align="center">
+  <img src="./assets/readmeImages/gifs/quick_start" width=600/>
+</div>
 
 - Databases
 
@@ -84,7 +85,7 @@ To get started on contributing to this project:
   
   <br /><br />
   <div align="center">
-    <img src="./assets/readmeImages/dummy_data_demo.gif"/>
+    <img src="./assets/readmeImages/gifs/dummy_data.gif" width=600/>
   </div>
 
 - Queries
@@ -94,9 +95,10 @@ To get started on contributing to this project:
   - Users also have the option to execute a labelled or unlabelled query — simply provide a label in the 'Label' field above the main panel to identify the query in later comparisons against other queries
     - Please note that only labelled queries will be saved in the current session for future references
   - To execute the query, simply select the 'RUN QUERY' button at the bottom of the panel or press 'Ctrl-Enter' on the keyboard
+
   <br /><br />
   <div align="center">
-  <img src="./assets/readmeImages/query_demo.gif" width=600/>
+  <img src="./assets/readmeImages/gifs/query.gif" width=600/>
   </div>
 
 - Data
@@ -112,7 +114,7 @@ To get started on contributing to this project:
 
 
   <div align="center">
-  <img src="./assets/readmeImages/data.png" width=600/><br /><br />
+  <img src="./assets/readmeImages/gifs/execution_plan.gif" width=600/><br /><br />
   </div>
 
 - Compare
@@ -124,7 +126,7 @@ To get started on contributing to this project:
   - Aside from the visualized performance comparison of the selected queries, a table will display information about each selected query, including its total run time and performance relative to other queries with the same label, with the most performant query highlighted 
 
 <div align="center">
-<img src="./assets/readmeImages/comparisons.png" width=600/>
+<img src="./assets/readmeImages/gifs/compare_view.gif" width=600/>
 </div>
 
 ## Application Architecture and Logic
