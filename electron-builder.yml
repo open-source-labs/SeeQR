@@ -3,9 +3,10 @@ productName: SeeQR
 files:
   - tsCompiled/**/*
   - dist/**/*
+  - ./assets/electron-builder/*
 directories:
   output: release-builds/${os}
-  buildResources: assets/electron-builder
+  buildResources: ./assets/electron-builder
 mac:
   target:
     - zip
