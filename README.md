@@ -53,7 +53,7 @@ To get started on contributing to this project:
 - Overview
 
   - Upon application launch, select the desired database to connect to or follow the quick-start guide to get started
-  - The application connects to the local instance of PostgreSQL using the role 'Postgres', so all databases that 'Postgres' has access to are available
+  - The application connects to the local instance of PostgreSQL using the role 'postgres', so all databases that 'postgres' has access to are available
   - Besides using the existing databases, the application also provides various options to create new databases:
       - Importing `.sql` or `.tar` files
       - Manually running `CREATE DATABASE` queries in SeeQR
@@ -69,7 +69,7 @@ To get started on contributing to this project:
   - In the 'DATABASES' view, users can select a table from a list of all the tables in the schema of the currently selected database
   - Information about the selected table is then displayed
   - The name and size of the selected database are also displayed at the top of the page
-  - Users can also generate up to 500,000 rows of foreign-key compliant dummy data at a time for the selected table in the current database. Currently supported data types are:
+  - Users can also generate large amounts of foreign-key compliant dummy data for the selected table in the current database. Currently supported data types are:
     - INT
     - SMALLINT
     - BIGINT
