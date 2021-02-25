@@ -33,7 +33,7 @@ To get started on contributing to this project:
 1. Download and install [Postgres.app](https://postgresapp.com/) and start it before opening up SeeQR
 2. Ensure that psql is available in the `$PATH`
 3. Ensure that a 'postgres' role exists
-4. Download the latest version of SeeQR [here](https://github.com/oslabs-beta/seeqr/releases/latest)
+4. Download the latest version of [SeeQR](https://github.com/open-source-labs/seeqr/releases/latest)
 
 ## Built With
 
