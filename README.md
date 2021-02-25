@@ -8,7 +8,7 @@
 ![Contributions Welcome](https://img.shields.io/badge/Contributions-welcome-blue.svg)
 [![Twitter](https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Ftwitter.com%2Ftheseeqr)](https://twitter.com/theseeqr)
 [![Github stars](https://img.shields.io/github/stars/oslabs-beta/SeeQR?style=social)](https://github.com/oslabs-beta/SeeQR)
-[![Tests](https://github.com/Claudiohbsantos/SeeQR/actions/workflows/test.yml/badge.svg)](https://github.com/Claudiohbsantos/SeeQR/actions/workflows/test.yml)
+[![Tests](https://github.com/open-source-labs/SeeQR/actions/workflows/test.yml/badge.svg)](https://github.com/open-source-labs/SeeQR/actions/workflows/test.yml)
 
 [theSeeQR.io](http://www.theseeqr.io)
 
