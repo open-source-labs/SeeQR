@@ -10,7 +10,6 @@ directories:
   buildResources: ./assets/electron-builder
 mac:
   target:
-    - zip
     - dmg
 dmg:
   # icon: assets/icons/mac/seeqr.icns
