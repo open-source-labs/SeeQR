@@ -55,7 +55,6 @@ To get started on contributing to this project:
 
 ## Interface & Features
 
-
 - Overview
 
   - Upon application launch, select the desired database to connect to or follow the quick-start guide to get started
@@ -67,7 +66,7 @@ To get started on contributing to this project:
   - Users can toggle between the 'DATABASES' view and the 'QUERIES' view
 
 <div align="center">
-  <img src="./assets/readmeImages/gifs/quick_start" width=600/>
+  <img src="./assets/readmeImages/gifs/quick_start.gif" width=800/>
 </div>
 
 - Databases
@@ -83,9 +82,8 @@ To get started on contributing to this project:
     - BOOLEAN
     - DATE
   
-  <br /><br />
   <div align="center">
-    <img src="./assets/readmeImages/gifs/dummy_data.gif" width=600/>
+    <img src="./assets/readmeImages/gifs/dummy_data.gif" width=800/>
   </div>
 
 - Queries
@@ -96,9 +94,8 @@ To get started on contributing to this project:
     - Please note that only labelled queries will be saved in the current session for future references
   - To execute the query, simply select the 'RUN QUERY' button at the bottom of the panel or press 'Ctrl-Enter' on the keyboard
 
-  <br /><br />
   <div align="center">
-  <img src="./assets/readmeImages/gifs/query.gif" width=600/>
+    <img src="./assets/readmeImages/gifs/query.gif" width=800/>
   </div>
 
 - Data
@@ -112,9 +109,8 @@ To get started on contributing to this project:
     - Clicking on a node will display additioanl details regarding that action as well
   - To execute a new query, simply select the '+' button in the sidebar. To go back to a previously saved query, just select it in the sidebar
 
-
   <div align="center">
-  <img src="./assets/readmeImages/gifs/execution_plan.gif" width=600/><br /><br />
+    <img src="./assets/readmeImages/gifs/execution_plan.gif" width=800/>
   </div>
 
 - Compare
@@ -126,7 +122,7 @@ To get started on contributing to this project:
   - Aside from the visualized performance comparison of the selected queries, a table will display information about each selected query, including its total run time and performance relative to other queries with the same label, with the most performant query highlighted 
 
 <div align="center">
-<img src="./assets/readmeImages/gifs/compare_view.gif" width=600/>
+  <img src="./assets/readmeImages/gifs/compare_view.gif" width=800/>
 </div>
 
 ## Application Architecture and Logic
