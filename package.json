@@ -21,7 +21,7 @@
     "test": "jest --verbose",
     "electron-build": "electron-builder"
   },
-  "repository": "github:oslabs-beta/SeeQR",
+  "repository": "github:open-source-labs/SeeQR",
   "keywords": [],
   "author": "Team SeeQR",
   "license": "MIT",
@@ -120,7 +120,7 @@
     "webpack-dev-server": "^3.11.2"
   },
   "bugs": {
-    "url": "https://github.com/oslabs-beta/SeeQR/issues"
+    "url": "https://github.com/open-source-labs/SeeQR/issues"
   },
-  "homepage": "https://github.com/oslabs-beta/SeeQR"
+  "homepage": "https://github.com/open-source-labs/SeeQR"
 }
