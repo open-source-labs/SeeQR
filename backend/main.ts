@@ -1,43 +1,20 @@
-// Import parts of electron to use
-import { app, BrowserWindow, ipcMain, Menu } from 'electron';
-import { appendFile } from 'fs/promises';
-import { join } from 'path';
-import { format } from 'url';
-import './channels'; // all channels live here - this format signals that we want to import the code even if we're not calling any of the functions. If we were to import an object from channels and not call any of the functions in this file, webpack thinks we're not using it and skips the import.
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { app, BrowserWindow, Menu } from 'electron';
 
-const { exec } = require('child_process');
-const appMenu = require('./mainMenu'); // use appMenu to add options in top menu bar of app
+const dev: boolean = process.env.NODE_ENV === 'development';
+
 const path = require('path');
+const url = require('url');
+const fixPath = require('fix-path');
+const MainMenu = require('./mainMenu');
 
-/************************************************************
- *********** PACKAGE ELECTRON APP FOR DEPLOYMENT ***********
- ************************************************************/
+// requiring channels file to initialize event listeners
+require('./channels');
 
-// Uncomment to package electron app. Ensures path is correct for MacOS within inherited shell.
-// const fixPath = require('fix-path');
-// fixPath();
+fixPath();
+// Keep a global reference of the window objects, if you don't, the window will be closed automatically when the JavaScript object is garbage collected.
+let mainWindow: BrowserWindow | null;
 
-/************************************************************
- ****************** CREATE & CLOSE WINDOW ******************
- ************************************************************/
-// Keep a global reference of the window objects, if you don't, the window will
-// be closed automatically when the JavaScript object is garbage collected.
-let mainWindow: any;
-
-//global variable to determine whether or not containers are still running
-let pruned: boolean = false;
-
-let mainMenu = Menu.buildFromTemplate(require('./mainMenu'));
-// Keep a reference for dev mode
-let dev = false;
-if (
-  process.env.NODE_ENV !== undefined &&
-  process.env.NODE_ENV === 'development'
-) {
-  dev = true;
-}
-
-// Create browser window
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1800,
@@ -47,66 +24,70 @@ function createWindow() {
     title: 'SeeQR',
     show: false,
     webPreferences: { nodeIntegration: true, enableRemoteModule: true },
-    icon: path.join(__dirname, '../../frontend/assets/images/seeqr_dock.png'),
+    icon: path.join(__dirname, '../../assets/logo/seeqr_dock.png'),
   });
 
+  // This platform is checking to see if the OS is Mac, and setting the icon
   if (process.platform === 'darwin') {
-    app.dock.setIcon(
-      path.join(__dirname, '../../frontend/assets/images/seeqr_dock.png')
-    );
+    app.dock.setIcon(path.join(__dirname, '../../assets/logo/seeqr_dock.png'));
   }
 
-  // Load index.html of the app
-  let indexPath;
-  if (dev && process.argv.indexOf('--noDevServer') === -1) {
-    indexPath = format({
+  // indexPath is used to determine which type environment we are in and how to load the window
+  let indexPath: string;
+  if (dev) {
+    indexPath = url.format({
       protocol: 'http:',
       host: 'localhost:8080',
       pathname: 'index.html',
       slashes: true,
     });
-    mainWindow.webContents.openDevTools();
-    Menu.setApplicationMenu(mainMenu);
+
+    Menu.setApplicationMenu(Menu.buildFromTemplate(MainMenu));
   } else {
     // In production mode, load the bundled version of index.html inside the dist folder.
-    indexPath = format({
+    indexPath = url.format({
       protocol: 'file:',
-      pathname: join(__dirname, '../../dist', 'index.html'),
+      pathname: path.join(__dirname, '../../dist', 'index.html'),
       slashes: true,
     });
   }
 
   mainWindow.loadURL(indexPath);
 
-  // Don't show until we are ready and loaded
-  mainWindow.once('ready-to-show', (event) => {
-    mainWindow.show();
+  // Window will display once it is ready and loaded
+  mainWindow.once('ready-to-show', () => {
+    if (mainWindow) mainWindow.show();
   });
 }
 
-app.on('before-quit', (event: any) => {
-  // future iterations should add functionality to selete .sql and .csv files from a user's computer before quitting the app
-});
+// Install React Dev Tools Extension
+if (dev) {
+  const {
+    default: installExtension,
+    REACT_DEVELOPER_TOOLS,
+  } = require('electron-devtools-installer');
+
+  app.on('ready', () => {
+    installExtension(REACT_DEVELOPER_TOOLS);
+  });
+}
 
 // Invoke createWindow to create browser windows after Electron has been initialized.
-// Some APIs can only be used after this event occurs.
 app.on('ready', createWindow);
 
-// Quit when all windows are closed.
+// Quit when all windows are closed for Windows and Linux
 app.on('window-all-closed', () => {
-  // On macOS it is common for applications and their menu bar
-  // to stay active until the user quits explicitly with Cmd + Q
+  // On macOS it is common for applications to stay active on their menu bar when the use closes the window
   if (process.platform !== 'darwin') {
     app.quit();
+  } else {
+    mainWindow = null;
   }
 });
 
 app.on('activate', () => {
-  // On macOS it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
+  // On macOS it's common to re-create a window in the app when the dock icon is clicked and there are no other windows open.
   if (mainWindow === null) {
     createWindow();
   }
 });
-
-export default mainWindow;

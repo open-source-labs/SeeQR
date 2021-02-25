@@ -1,11 +1,16 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { spawn } = require('child_process');
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+const webpack = require('webpack');
+
+const isDevelopment = process.env.NODE_ENV !== 'production';
 
 module.exports = {
   entry: './frontend/index.tsx',
-  mode: process.env.NODE_ENV,
-  devtool: 'eval-source-map',
+  mode: isDevelopment ? 'development' : 'production',
+  devtool: 'eval-cheap-module-source-map',
   output: {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'dist'),
@@ -24,9 +29,10 @@ module.exports = {
           {
             loader: 'postcss-loader', // Run postcss actions
             options: {
-              plugins() {
-                // postcss plugins, can be exported to postcss.config.js
-                return [require('autoprefixer')];
+              postcssOptions: {
+                plugins() {
+                  'autoprefixer';
+                },
               },
             },
           },
@@ -42,6 +48,9 @@ module.exports = {
           loader: 'babel-loader',
           options: {
             presets: ['@babel/preset-env', '@babel/preset-react'],
+            plugins: [
+              isDevelopment && require.resolve('react-refresh/babel'),
+            ].filter(Boolean),
           },
         },
       },
@@ -49,6 +58,10 @@ module.exports = {
         test: /\.ts(x)?$/,
         exclude: /node_modules/,
         loader: 'ts-loader',
+        options: {
+          // turn off type checking in loader. Type checking is done in parallel but forkts plugin
+          transpileOnly: true,
+        },
       },
       {
         test: /\.(jpg|jpeg|png|ttf|svg)$/,
@@ -64,6 +77,18 @@ module.exports = {
           },
         ],
         exclude: /node_modules/,
+      },
+      {
+        test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: '[name].[ext]',
+              outputPath: 'fonts/',
+            },
+          },
+        ],
       },
     ],
   },
@@ -83,7 +108,8 @@ module.exports = {
   },
   target: 'electron-renderer',
   devServer: {
-    contentBase: path.resolve(__dirname, '/tsCompiled/frontend'),
+    // contentBase: path.resolve(__dirname, '/tsCompiled/frontend'),
+    contentBase: path.resolve(__dirname, '/dist/'),
     host: 'localhost',
     port: '8080',
     hot: true,
@@ -91,15 +117,6 @@ module.exports = {
     watchContentBase: true,
     watchOptions: {
       ignored: /node_modules/,
-    },
-    before() {
-      spawn('electron', ['.', 'dev'], {
-        shell: true,
-        env: process.env,
-        stdio: 'inherit',
-      })
-        .on('close', (code) => process.exit(0))
-        .on('error', (spawnError) => console.error(spawnError));
     },
   },
   plugins: [
@@ -124,5 +141,15 @@ module.exports = {
         },
       },
     }),
-  ],
+    new ForkTsCheckerWebpackPlugin({
+      // // Lint files on error.  Uncomment for Hard Mode :)
+      // eslint: {
+      //   files: [
+      //     './frontend/**/*.{ts,tsx,js,jsx}',
+      //     './backend/**/*.{ts,tsx,js,jsx}',
+      //   ],
+      // },
+    }),
+    isDevelopment && new ReactRefreshWebpackPlugin(),
+  ].filter(Boolean),
 };
