@@ -1,5 +1,15 @@
 name: Electron Release
 
+# This workflow is responsible for automatically building and releasing the electron app on pushes to the master branch. Build specific configurations are set in electron-builder.yml. 
+
+# When ready to release a new version:
+# 1. create a draft release and set tag to the new version
+# 2. adjust version in package.json
+# 3. commit
+# 4. tag commit with the new version (ie. v4.0.0) - version must be prefixed by "v"
+# 5. push commit and tag (git push && git push --tags)
+# 6. This workflow should be triggered and in about 8 minutes the binaries will be available in the release draft
+
 on:
   push:
     branches: [master]
