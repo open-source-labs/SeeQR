@@ -5,8 +5,13 @@ files:
   - dist/**/*
 directories:
   output: release-builds/${os}
+  buildResources: assets/electron-builder
+mac:
+  target:
+    - zip
+    - dmg
 dmg:
-  icon: assets/icons/mac/seeqr.icns
+  # icon: assets/icons/mac/seeqr.icns
   contents:
     - x: 110
       y: 150
@@ -18,7 +23,7 @@ win:
   target:
     - zip
     - nsis
-  icon: assets/icons/win/seeqr.ico
+  # icon: assets/icons/win/seeqr.ico
   publish:
     provider: github
     # releaseType: release
