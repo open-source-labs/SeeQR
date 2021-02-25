@@ -3,10 +3,10 @@ name: Electron Release
 on:
   push:
     branches: [master]
-  pull_request:
-    branches: [master]
-  create:
-    branches: [master]
+  # pull_request:
+  #   branches: [master]
+  # create:
+  #   branches: [master]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -43,4 +43,4 @@ jobs:
           release: ${{ startsWith(github.ref, 'refs/tags/v') }}
 
           # # always release
-          # args: --publish always
+          args: --publish always
