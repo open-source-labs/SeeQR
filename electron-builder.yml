@@ -29,3 +29,7 @@ win:
     provider: github
     # releaseType: release
     publishAutoUpdate: false
+linux:
+  target:
+    - AppImage
+  category: Utility

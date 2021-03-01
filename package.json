@@ -1,8 +1,8 @@
 {
   "name": "seeqr",
   "productName": "SeeQR App",
-  "version": "4.0.0",
-  "description": "SeeQR",
+  "version": "4.0.1",
+  "description": "SQL toolbox - Execution Plan visualizer and Comparison tool",
   "main": "./tsCompiled/backend/main.js",
   "babel": {
     "presets": [
@@ -23,7 +23,10 @@
   },
   "repository": "github:open-source-labs/SeeQR",
   "keywords": [],
-  "author": "Team SeeQR",
+  "author": {
+    "name": "Team SeeQR",
+    "email": "theseeqr@gmail.com"
+  },
   "license": "MIT",
   "dependencies": {
     "@material-ui/core": "^4.11.3",
