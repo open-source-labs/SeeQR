@@ -11,7 +11,7 @@ describe('once', () => {
       counter += 1;
     };
     const limitedFunc = utils.once(cb);
-    
+
     expect(counter).toBe(0)
     limitedFunc()
     expect(counter).toBe(1)
@@ -21,3 +21,9 @@ describe('once', () => {
     expect(counter).toBe(1)
   });
 });
+
+describe('readingTime', () => {
+  it('should never be less than 3s',() => {
+    expect(utils.readingTime('short')).toBe(3000)
+  })
+})
