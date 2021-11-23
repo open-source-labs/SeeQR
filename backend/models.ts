@@ -88,7 +88,7 @@ const getDBLists = (): Promise<TableDetails[]> =>
     const query = `
       SELECT table_catalog, table_schema, table_name, is_insertable_into
       FROM information_schema.tables
-      WHERE table_schema = 'public'
+      WHERE table_schema = 'public' or table_schema = 'base'
       ORDER BY table_name;
     `;
     const tableList: TableDetails[] = [];
