@@ -1,13 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Drawer, IconButton, Tooltip } from '@material-ui/core/';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import styled from 'styled-components';
-import { AppState } from '../../types';
+import { AppState, TableInfo } from '../../types';
 import TopButtons from './TopButtons';
 import QueryList from './QueryList';
 import DbList from './DbList';
 import ViewSelector from './ViewSelector';
 import logo from '../../../assets/logo/seeqr_dock.png';
+import BottomButtons from './BottomButtons';
 
 import {
   greyDarkest,
@@ -38,6 +39,7 @@ const Logo = styled.img`
   height: 100px;
 `;
 
+
 const ShowSidebarBtn = styled(IconButton)`
   width: ${sidebarShowButtonSize};
   height: ${sidebarShowButtonSize};
@@ -60,6 +62,7 @@ const Sidebar = ({
   setSidebarHidden,
   sidebarIsHidden,
 }: AppState) => {
+
   const toggleOpen = () => setSidebarHidden(!sidebarIsHidden);
   /**
    * Show empty query view for user to create new query.
@@ -87,7 +90,7 @@ const Sidebar = ({
         <DbList
           selectedDb={selectedDb}
           setSelectedDb={setSelectedDb}
-          show={selectedView === 'dbView' || selectedView === 'quickStartView'}
+          show={selectedView === 'dbView' || selectedView === 'quickStartView' || selectedView === 'newSchemaView'}
           setSelectedView={setSelectedView}
         />
         <QueryList
@@ -100,7 +103,13 @@ const Sidebar = ({
           setWorkingQuery={setWorkingQuery}
           show={selectedView === 'queryView' || selectedView === 'compareView'}
         />
-        <Logo src={logo} alt="Logo" />
+        <BottomButtons
+          selectedDb={selectedDb}
+          selectedView={selectedView}
+          setSelectedView={setSelectedView}
+          setSelectedDb={setSelectedDb}
+        />
+        {/* <Logo src={logo} alt="Logo" /> */}
       </StyledDrawer>
     </>
   );

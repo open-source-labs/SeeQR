@@ -61,6 +61,7 @@ const DbView = ({ selectedDb, show }: DbViewProps) => {
       <DatabaseDetails db={db} />
       <br />
       <TablesTabs
+        // setTables={setTables}
         tables={dbTables}
         selectTable={(table: TableInfo) => setSelectedTable(table)}
         selectedTable={selectedTable}

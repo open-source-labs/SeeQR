@@ -18,6 +18,7 @@ import QueryView from './views/QueryView/QueryView';
 import DbView from './views/DbView/DbView';
 import CompareView from './views/CompareView/CompareView';
 import QuickStartView from './views/QuickStartView';
+import NewSchemaView from './views/NewSchemaView/NewSchemaView';
 import FeedbackModal from './modal/FeedbackModal';
 import Spinner from './modal/Spinner';
 
@@ -84,6 +85,9 @@ const App = () => {
       }
       shownView = 'queryView';
       break;
+    case 'newSchemaView': 
+      shownView = 'newSchemaView';
+      break;
     case 'quickStartView':
     default:
       shownView = 'quickStartView';
@@ -128,6 +132,14 @@ const App = () => {
               show={shownView === 'queryView'}
             />
             <QuickStartView show={shownView === 'quickStartView'} />
+            <NewSchemaView 
+              query={workingQuery}
+              setQuery={setWorkingQuery}
+              selectedDb={selectedDb}
+              setSelectedDb={setSelectedDb}
+              createNewQuery={createNewQuery}
+              show={shownView === 'newSchemaView'} 
+            />
           </Main>
           <FeedbackModal />
         </AppContainer>
