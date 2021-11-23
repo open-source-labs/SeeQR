@@ -10,7 +10,7 @@
 [![Github stars](https://img.shields.io/github/stars/oslabs-beta/SeeQR?style=social)](https://github.com/oslabs-beta/SeeQR)
 [![Tests](https://github.com/open-source-labs/SeeQR/actions/workflows/test.yml/badge.svg)](https://github.com/open-source-labs/SeeQR/actions/workflows/test.yml)
 
-[theSeeQR.io](http://www.theseeqr.io)
+[SeeQR.info](http://www.seeqr.info)
 
 <p><b>SeeQR: </b>A database analytic tool to compare the efficiency of different schemas and queries on a granular level so that developers/architects can make better informed architectural decisions regarding SQL databases at various scales.</p>
 
