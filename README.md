@@ -10,7 +10,7 @@
 [![Github stars](https://img.shields.io/github/stars/oslabs-beta/SeeQR?style=social)](https://github.com/oslabs-beta/SeeQR)
 [![Tests](https://github.com/open-source-labs/SeeQR/actions/workflows/test.yml/badge.svg)](https://github.com/open-source-labs/SeeQR/actions/workflows/test.yml)
 
-[theSeeQR.io](http://www.theseeqr.io)
+[theSeeQR.com](http://www.theseeqr.com)
 
 <p><b>SeeQR: </b>A database analytic tool to compare the efficiency of different schemas and queries on a granular level so that developers/architects can make better informed architectural decisions regarding SQL databases at various scales.</p>
 
@@ -56,7 +56,7 @@ To get started on contributing to this project:
   - The application connects to the local instance of PostgreSQL using the role 'postgres', so all databases that 'postgres' has access to are available
   - Besides using the existing databases, the application also provides various options to create new databases:
       - Importing `.sql` or `.tar` files
-      - Manually running `CREATE DATABASE` queries in SeeQR
+      - Navigating to the `Create Database` view at bottom of sidebar
       - Copying an existing database (with or without original data)
   - Users can toggle between the 'DATABASES' view and the 'QUERIES' view
 
@@ -81,7 +81,19 @@ To get started on contributing to this project:
   <div align="center">
     <img src="./assets/readmeImages/gifs/dummy_data.gif" width=800/>
   </div>
+- Create/Edit Database
 
+  - Users can create a new database from scratch by clicking the `Create New Database` button at the bottom of the sidebar
+  - Once a the database is given a name, htiting the `Initialize Database` button will create new database on the users PostgreSQL instance
+  - Users can then input SQL commands and click `Update Database` to create and drop tables in the database
+  - Users have the option to alter any existing databases as well by selecting the database on the sidebar and running any SQL commands they would like. 
+  - The `Export` button will write a .sql file on the user's desktop of the selected database
+
+
+<br>
+<div align="center">
+    <img src="./assets/readmeImages/gifs/create_db.gif" width=800/>
+  </div>
 - Queries
 
   - In the 'QUERIES' view, the main panel is where the query input text field is located, utilizing CodeMirror. The paint button in the top right corner of the panel auto-formats the inputted query
@@ -139,7 +151,7 @@ We've released SeeQR because it's a useful tool to help optimize SQL databases. 
 
 ## Core Team
 
-[Casey Escovedo](https://github.com/caseyescovedo) | [Casey Walker](https://github.com/cwalker3011) | [Catherine Chiu](https://github.com/catherinechiu) | [Chris Akinrinade](https://github.com/chrisakinrinade) | [Cindy Chau](https://github.com/cindychau) | [Claudio Santos](https://github.com/Claudiohbsantos) | [Faraz Akhtar](https://github.com/faraza22) | [Frank Norton](https://github.com/FrankNorton32) | [James Kolotouros](https://github.com/dkolotouros) | [Jennifer Courtner](https://github.com/jcourtner) | [Justin Dury-Agri](https://github.com/justinD-A) | [Katie Klochan](https://github.com/kklochan) | [Mercer Stronck](https://github.com/mercerstronck) | [Muhammad Trad](https://github.com/muhammadtrad) | [Richard Lam](https://github.com/rlam108) | [Sam Frakes](https://github.com/frakes413) | [Serena Kuo](https://github.com/serenackuo)
+[Allison Le](https://github.com/allisonle1) | [Brandon Lee](https://github.com/BrandonW-Lee) | [Casey Escovedo](https://github.com/caseyescovedo) | [Casey Walker](https://github.com/cwalker3011) | [Catherine Chiu](https://github.com/catherinechiu) | [Chris Akinrinade](https://github.com/chrisakinrinade) | [Cindy Chau](https://github.com/cindychau) | [Claudio Santos](https://github.com/Claudiohbsantos) | [Faraz Akhtar](https://github.com/faraza22) | [Frank Norton](https://github.com/FrankNorton32) | [Harrison Nam](https://github.com/harrynam07) | [James Kolotouros](https://github.com/dkolotouros) | [Jennifer Courtner](https://github.com/jcourtner) | [Justin Dury-Agri](https://github.com/justinD-A) | [Katie Klochan](https://github.com/kklochan) | [Mercer Stronck](https://github.com/mercerstronck) | [Muhammad Trad](https://github.com/muhammadtrad) | [Richard Guo](https://github.com/richardguoo) | [Richard Lam](https://github.com/rlam108) | [Sam Frakes](https://github.com/frakes413) | [Serena Kuo](https://github.com/serenackuo) | [Timothy Sin](https://github.com/timothysin)
 
 
 ## License
