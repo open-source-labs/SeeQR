@@ -2,7 +2,7 @@
  * This file contains common types that need to be used across the frontend
  */
 
-type ViewName = 'compareView' | 'dbView' | 'queryView' | 'quickStartView';
+type ViewName = 'compareView' | 'dbView' | 'queryView' | 'quickStartView' | 'newSchemaView';
 
 export interface AppState {
   selectedView: ViewName;

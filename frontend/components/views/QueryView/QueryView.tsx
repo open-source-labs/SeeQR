@@ -142,6 +142,9 @@ const QueryView = ({
         };
         createNewQuery(transformedData);
       })
+      .then(() => {
+        localQuery.sqlString = '';
+      })
       .catch((err) => {
         sendFeedback({
           type: 'error',
@@ -167,6 +170,7 @@ const QueryView = ({
       </TopRow>
       <QuerySqlInput
         sql={localQuery?.sqlString ?? ''}
+        // sql=''
         onChange={onSqlChange}
         runQuery={onRun}
       />

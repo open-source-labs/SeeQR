@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect }from 'react';
 import { Tabs, Tab } from '@material-ui/core';
 import styled from 'styled-components';
 import TableDetails from './TableDetails';
@@ -33,7 +33,8 @@ const a11yProps = (index: any) => ({
   'aria-controls': `scrollable-auto-tabpanel-${index}`,
 });
 
-interface TablesTabBarProps {
+interface TablesTabBarProps { 
+
   tables: TableInfo[];
   selectTable: (table: TableInfo) => void;
   selectedTable: TableInfo | undefined;
@@ -44,6 +45,10 @@ const TablesTabs = ({
   selectTable,
   selectedTable,
 }: TablesTabBarProps) => {
+
+ 
+
+  
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     selectTable(tables[newValue]);
   };

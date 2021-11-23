@@ -68,7 +68,7 @@ const DbList = ({
   };
 
   const selectHandler = (dbName: string) => {
-    setSelectedView('dbView');
+    // setSelectedView('dbView');
     if (dbName === selectedDb) return;
     ipcRenderer
       .invoke('select-db', dbName)
@@ -109,7 +109,7 @@ const DbList = ({
             databases={databases}
           />
         ) : null}
-      </StyledSidebarList>
+      </StyledSidebarList> 
       <AddNewDbModal
         open={openAdd}
         onClose={handleCloseAdd}
