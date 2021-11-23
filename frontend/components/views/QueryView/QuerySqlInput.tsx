@@ -63,7 +63,7 @@ const QuerySqlInput = ({ sql, onChange, runQuery }: QuerySqlInputProps) => {
           </Tooltip>
         </ButtonGroup>
       </Toolbar>
-      <CodeMirror onChange={onChange} options={options} value={sql} />
+      <CodeMirror onChange={onChange} options={options} value={sql}/>
     </Container>
   );
 };
