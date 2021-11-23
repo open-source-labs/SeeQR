@@ -134,7 +134,7 @@ ipcMain.handle(
       const dbsAndTableInfo: DBList = await db.getLists();
       event.sender.send('db-lists', dbsAndTableInfo);
     } finally {
-      // cleanup temp file
+    //  //cleanup temp file
       try {
         fs.unlinkSync(tempFilePath);
       } catch (e) {
@@ -251,6 +251,49 @@ ipcMain.handle(
   }
 );
 
+interface ExportPayload { 
+  sourceDb: string;
+}
+
+ipcMain.handle(
+  'export-db',
+  async (event, { sourceDb }: ExportPayload) => {
+    event.sender.send('async-started');
+    // store temporary file in user desktop     
+    const FilePath = path.resolve(
+      os.homedir(),
+      'desktop',
+      `${sourceDb}.sql`
+    );
+
+  let feedback: Feedback = {
+      type: '',
+      message: '',
+    };
+
+  try {
+    // dump database to new file
+    const dumpCmd = runFullCopyFunc(sourceDb, FilePath);
+    
+    try {
+      await promExecute(dumpCmd);
+      feedback = {
+        type: 'success',
+        message: `${sourceDb} Schema successfully exported to ${FilePath}`
+      }
+      event.sender.send('feedback', feedback);
+    } catch (e) {
+      throw new Error(
+        `Failed to dump ${sourceDb} to a file at ${FilePath}`
+        );
+      }
+    }
+      finally {
+        event.sender.send('async-complete');
+      }
+    }
+);
+
 interface dummyDataRequestPayload {
   dbName: string;
   tableName: string;
@@ -313,6 +356,78 @@ ipcMain.handle(
       event.sender.send('feedback', feedback);
       
       // send notice to FE that DD generation has been completed
+      event.sender.send('async-complete');
+    }
+  }
+);
+
+// handle initialization of a new schema from frontend (newSchemaView)
+interface InitializePayload {
+  newDbName: string;
+}
+
+ipcMain.handle(
+  'initialize-db',
+  async (event, { newDbName }: InitializePayload) => {
+    event.sender.send('async-started');
+    try {
+      // create new empty db
+      await db.query(createDBFunc(newDbName));
+
+      // connect to initialized db
+      await db.connectToDB(newDbName);
+
+      // update DBList in the sidebar to show this new db
+      const dbsAndTableInfo: DBList = await db.getLists();
+      event.sender.send('db-lists', dbsAndTableInfo);
+
+    } catch (e) {
+      // in the case of an error, delete the created db
+      const dropDBScript = dropDBFunc(newDbName);
+      await db.query(dropDBScript);
+      throw new Error('Failed to initialize new database');
+      
+    } finally {
+      event.sender.send('async-complete');
+    }
+  }
+);
+
+// handle updating schemas from the frontend (newSchemaView)
+interface UpdatePayload {
+  // targetDb: string;
+  sqlString: string;
+  selectedDb: string;
+}
+
+// Run query passed from the front-end, and send back an updated DB List 
+// DB will rollback if query is unsuccessful
+ipcMain.handle(
+  'update-db',
+  async (event, { sqlString, selectedDb }: UpdatePayload) => {
+    event.sender.send('async-started');
+    try {
+      let error: string | undefined;
+      // connect to db to run query
+      await db.connectToDB(selectedDb);
+
+      // Run Query
+      // let returnedRows;
+      try {
+
+        await db.query(sqlString);
+        
+      } catch (e) {
+        if (e) throw new Error('Failed to update schema');
+      }
+
+    } finally {
+
+      // send updated db info in case query affected table or database information
+      // must be run after we connect back to the originally selected so tables information is accurate
+      const dbsAndTables: DBList = await db.getLists();
+      event.sender.send('db-lists', dbsAndTables);
+
       event.sender.send('async-complete');
     }
   }
