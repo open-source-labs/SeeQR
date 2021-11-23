@@ -253,7 +253,7 @@ const QuickStartView = ({ show }: QuickStartViewProps) => {
   return (
     <PageContainer>
       <StyledTypographyTitle align="center">
-        Welcome to SeeQr
+        Welcome to SeeQR
       </StyledTypographyTitle>
       <img className={classes.image} src={logo} alt="Logo" />
       <StyledStepper alternativeLabel nonLinear activeStep={activeStep}>
