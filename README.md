@@ -97,7 +97,7 @@ To get started on contributing to this project:
 - Queries
 
   - In the 'QUERIES' view, the main panel is where the query input text field is located, utilizing CodeMirror. The paint button in the top right corner of the panel auto-formats the inputted query
-  - Users can select the database to use in the 'Database' dropdown above the main panel
+  - Users can select the database to use in the 'Database' dropdown above the main panel (feature in beta)
   - Users also have the option to execute a labelled or unlabelled query — simply provide a label in the 'Label' field above the main panel to identify the query in later comparisons against other queries
     - Please note that only labelled queries will be saved in the current session for future references
   - To execute the query, simply select the 'RUN QUERY' button at the bottom of the panel or press 'Ctrl-Enter' on the keyboard
@@ -147,7 +147,7 @@ The outcome results from each query, both retrieved data and analytics, are stor
 
 ## Contributing
 
-We've released SeeQR because it's a useful tool to help optimize SQL databases. Additional features, extensions, and improvements will continue to be introduced. We are thankful for any contributions from the community and we encourage you to try SeeQR out and make or suggest improvements where you see fit! If you encounter any issues with the application, please report them in the issues tab or submit a PR. Thank you for your interest!
+We've released SeeQR because it's a useful tool to help optimize SQL databases. Additional features, extensions, and improvements will continue to be introduced. We are thankful for any contributions from the community and we encourage you to try SeeQR out to make or suggest improvements where you see fit! If you encounter any issues with the application, please report them in the issues tab or submit a PR. Thank you for your interest!
 
 ## Core Team
 
