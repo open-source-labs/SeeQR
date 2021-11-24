@@ -58,6 +58,7 @@ To get started on contributing to this project:
       - Importing `.sql` or `.tar` files
       - Navigating to the `Create Database` view at bottom of sidebar
       - Copying an existing database (with or without original data)
+  - Users can export any database onto their local machine
   - Users can toggle between the 'DATABASES' view and the 'QUERIES' view
 
 <div align="center">
@@ -81,7 +82,7 @@ To get started on contributing to this project:
   <div align="center">
     <img src="./assets/readmeImages/gifs/dummy_data.gif" width=800/>
   </div>
-- Create/Edit Database
+- Create/Edit Database <i>(currently in beta)</i>
 
   - Users can create a new database from scratch by clicking the `Create New Database` button at the bottom of the sidebar
   - Once a the database is given a name, htiting the `Initialize Database` button will create new database on the users PostgreSQL instance
@@ -97,7 +98,7 @@ To get started on contributing to this project:
 - Queries
 
   - In the 'QUERIES' view, the main panel is where the query input text field is located, utilizing CodeMirror. The paint button in the top right corner of the panel auto-formats the inputted query
-  - Users can select the database to use in the 'Database' dropdown above the main panel (feature in beta)
+  - Users can select the database to use in the 'Database' dropdown above the main panel
   - Users also have the option to execute a labelled or unlabelled query — simply provide a label in the 'Label' field above the main panel to identify the query in later comparisons against other queries
     - Please note that only labelled queries will be saved in the current session for future references
   - To execute the query, simply select the 'RUN QUERY' button at the bottom of the panel or press 'Ctrl-Enter' on the keyboard
