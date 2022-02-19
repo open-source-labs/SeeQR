@@ -140,6 +140,7 @@ const QueryView = ({
           label: localQuery.label,
           db,
         };
+        console.log("onRun in QueryView", transformedData)
         createNewQuery(transformedData);
       })
       .then(() => {

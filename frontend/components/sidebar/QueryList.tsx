@@ -34,7 +34,7 @@ const QueryList = ({
   setComparedQueries,
   workingQuery,
   setWorkingQuery,
-  show,
+  show
 }: QueryListProps) => {
   const deleteQueryHandler = (query: QueryData) => () => {
     setQueries(deleteQuery(queries, query));
@@ -67,8 +67,10 @@ const QueryList = ({
             deleteThisQuery={deleteQueryHandler(query)}
             isCompared={!!comparedQueries[queryKey(query)]}
             setComparison={setComparisonHandler(query)}
+            // save={saveQueryHandler(query)}
           />
         ))}
+        
       </StyledSidebarList>
     </>
   );

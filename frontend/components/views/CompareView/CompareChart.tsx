@@ -22,6 +22,7 @@ const getChartData = (
   /**
    * Gets next color from defined pallete.
    */
+  console.log("compareChart", queries)
   const getColor = (() => {
     let nextColor = 0;
     return () => {
