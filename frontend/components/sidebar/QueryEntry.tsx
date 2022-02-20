@@ -13,6 +13,8 @@ import {
   textColor,
 } from '../../style-variables';
 import { QueryData } from '../../types';
+import QueryDbname from './QueryDbname';
+import { Accordion } from 'react-bootstrap-accordion';
 
 const QueryText = styled(StyledListItemText)`
   & .MuiListItemText-secondary {
@@ -42,10 +44,25 @@ const QueryEntry = ({
   deleteThisQuery,
 }: QueryEntryProps) => (
   <SidebarListItem button $customSelected={isSelected} onClick={select}>
-    <QueryText primary={query.label} secondary={query.db} />
+    <QueryText primary={query.label} />
+
     <ListItemSecondaryAction>
-      <Tooltip title="View in Comparison">
-        <CompareCheck onChange={setComparison} checked={isCompared} />
+      <Tooltip title="drop down">
+        {/* <CompareCheck onChange={setComparison} checked={isCompared} /> */}
+        <div className="accordion" id="accordionPanelsStayOpenExample"></div>
+        <div className="accordion-item">
+          <h2 className="accordion-header" id="panelsStayOpen-headingOne">
+            <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+              Accordion Item #1
+            </button>
+          </h2>
+          <div id="panelsStayOpen-collapseOne" className="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingOne">
+            <div className="accordion-body">
+              <strong>This is the first item's accordion body.</strong> It is shown by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+            </div>
+          </div>
+        </div>
+        </div>
       </Tooltip>
       <Tooltip title="Forget Query">
         <IconButton edge="end" onClick={deleteThisQuery}>
