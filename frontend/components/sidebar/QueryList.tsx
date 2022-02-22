@@ -4,7 +4,7 @@ import AddIcon from '@material-ui/icons/Add';
 import styled from 'styled-components';
 import { SidebarList } from '../../style-variables';
 import { AppState, QueryData } from '../../types';
-import { deleteQuery, setCompare, key as queryKey } from '../../lib/queries';
+import { deleteQuery, setCompare, saveQuery, key as queryKey } from '../../lib/queries';
 import QueryEntry from './QueryEntry';
 import logo from '../../../assets/logo/seeqr_dock.png';
 import { greyDarkest } from '../../style-variables';
@@ -47,6 +47,10 @@ const QueryList = ({
     setComparedQueries(setCompare(comparedQueries, query, evt.target.checked));
   };
 
+  const saveQueryHandler = (query: QueryData) => () => { 
+    saveQuery(queries, query)
+  }
+
   if (!show) return null;
   return (
     <>
@@ -67,7 +71,8 @@ const QueryList = ({
             deleteThisQuery={deleteQueryHandler(query)}
             isCompared={!!comparedQueries[queryKey(query)]}
             setComparison={setComparisonHandler(query)}
-            // save={saveQueryHandler(query)}
+            saveThisQuery={saveQueryHandler(query)} 
+      
           />
         ))}
         

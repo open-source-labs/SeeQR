@@ -1,5 +1,4 @@
 import React from 'react';
-// import electron from 'electron';
 
 import styled from 'styled-components';
 import {
@@ -18,13 +17,6 @@ import {
 } from '../../style-variables';
 import { QueryData, AppState } from '../../types';
 
-
-
-const path = require('path');
-const fs = require('fs');
-const electron = require('electron');
-
-
 const QueryText = styled(StyledListItemText)`
   & .MuiListItemText-secondary {
     color: ${textColor};
@@ -42,43 +34,8 @@ interface QueryEntryProps {
   setComparison: (evt: React.ChangeEvent<HTMLInputElement>) => void;
   isCompared: boolean;
   deleteThisQuery: () => void;
+  saveThisQuery: () => void 
 }
-
-// const query = 
-
-
-const handleClick = () => {
-  electron.remote.dialog.showSaveDialog({
-    title: 'Select the File Path to save',
-    defaultPath: path.join(__dirname, '../assets/logo/logo_color.png'),
-    // defaultPath: path.join(__dirname, '../assets/'),
-    buttonLabel: 'Save',
-    // Restricting the user to only Text Files.
-    // filters: [
-    //     {
-      //         name: 'Text Files',
-      //         extensions: ['txt', 'docx']
-    //     }, ],
-    properties: []
-}).then(file => {
-    // Stating whether dialog operation was cancelled or not.
-    console.log(file.cancelled);
-    if (!file.cancelled) {
-      console.log(file.filePath.toString());
-      
-        // Creating and Writing to the sample.txt file
-        fs.writeFile(file.filePath.toString(), 
-                     'This is a Sample File', function (err) {
-            if (err) throw err;
-            console.log('Saved!');
-        });
-    }
-}).catch(err => {
-    console.log(err)
-  });
-}
-
-
 
 const QueryEntry = ({
   query,
@@ -87,6 +44,7 @@ const QueryEntry = ({
   setComparison,
   isCompared,
   deleteThisQuery,
+  saveThisQuery 
 }: QueryEntryProps) => (
   <SidebarListItem button $customSelected={isSelected} onClick={select}>
     <QueryText primary={query.label} secondary={query.db} />
@@ -100,9 +58,8 @@ const QueryEntry = ({
         </IconButton>
       </Tooltip>
       <Tooltip title="Save Query">
-        <Button startIcon={<SaveIcon />} onClick={handleClick} />
+        <Button startIcon={<SaveIcon />} onClick={saveThisQuery} />
       </Tooltip>
-      
     </ListItemSecondaryAction>
   </SidebarListItem>
   

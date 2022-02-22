@@ -7,6 +7,12 @@
 import ms from 'ms';
 import { AppState, QueryData } from '../types';
 
+
+const path = require('path');
+const fs = require('fs');
+const electron = require('electron');
+
+
 /**
  * create identifiew from label and database name
  */
@@ -42,6 +48,43 @@ export const deleteQuery = (
   delete tempQueries[key(queryToDelete)];
   return tempQueries;
 };
+
+
+// Finds proper data path for saving based on operating system
+
+function getAppDataPath() {
+  switch (process.platform) {
+    case "darwin": {
+      return path.join(process.env.HOME, "Library", "Application Support", "SeeQR App", "SeeQR Data");
+    }
+    case "win32": {
+      return path.join(process.env.APPDATA, "SeeQR");
+    }
+    case "linux": {
+      return path.join(process.env.HOME, ".SeeQR");
+    }
+    default: {
+      console.log("Unsupported platform!");
+      process.exit(1);
+    }
+  }
+}
+
+// saves query data locally
+
+export const saveQuery = (
+  queries: AppState['queries'],
+  saveQuery: QueryData
+) => {
+  const appDatatDirPath = getAppDataPath();
+  const query = JSON.stringify(queries);
+  fs.appendFile(appDatatDirPath, query, (err) => {
+    if (err) console.log(err);
+    else console.log('file saved!')
+  })
+}
+
+
 
 /**
  * Sets compare state for query
