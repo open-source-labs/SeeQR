@@ -34,7 +34,7 @@ interface QueryEntryProps {
   setComparison: (evt: React.ChangeEvent<HTMLInputElement>) => void;
   isCompared: boolean;
   deleteThisQuery: () => void;
-  saveThisQuery: () => void 
+  saveThisQuery: () => void;
 }
 
 const QueryEntry = ({
@@ -44,7 +44,7 @@ const QueryEntry = ({
   setComparison,
   isCompared,
   deleteThisQuery,
-  saveThisQuery 
+  saveThisQuery,
 }: QueryEntryProps) => (
   <SidebarListItem button $customSelected={isSelected} onClick={select}>
     <QueryText primary={query.label} secondary={query.db} />

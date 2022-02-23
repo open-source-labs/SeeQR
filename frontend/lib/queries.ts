@@ -55,14 +55,14 @@ export const deleteQuery = (
 function getAppDataPath() {
   switch (process.platform) {
     case "darwin": {
-      return path.join(process.env.HOME, "Library", "Application Support", "SeeQR App", "SeeQR Data");
+      return path.join(process.env.HOME, "Library", "Application Support", "SeeQR App", "SeeQR Data.json");
     }
     case "win32": {
-      return path.join(process.env.APPDATA, "SeeQR");
+      return path.join(process.env.APPDATA, "SeeQR Data.json");
     }
-    case "linux": {
-      return path.join(process.env.HOME, ".SeeQR");
-    }
+    // case "linux": {
+    //   return path.join(process.env.HOME, ".SeeQR Data.json");
+    // }
     default: {
       console.log("Unsupported platform!");
       process.exit(1);
@@ -80,7 +80,7 @@ export const saveQuery = (
   const query = JSON.stringify(queries);
   fs.appendFile(appDatatDirPath, query, (err) => {
     if (err) console.log(err);
-    else console.log('file saved!')
+    else console.log("file saved at:", appDatatDirPath)
   })
 }
 
