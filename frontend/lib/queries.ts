@@ -76,15 +76,62 @@ export const saveQuery = (
   queries: AppState['queries'],
   saveQuery: QueryData
 ) => {
-  const appDatatDirPath = getAppDataPath();
-  const query = JSON.stringify(queries);
-  fs.appendFile(appDatatDirPath, query, (err) => {
+  const appDataDirPath = getAppDataPath();
+  // const query = JSON.stringify(queries);
+  const query = queries
+  // fs.appendFile(appDatatDirPath, query, (err) => {
+  //   if (err) console.log(err);
+  //   else console.log("file saved at:", appDatatDirPath)
+  // })
+  fs.readFile(appDataDirPath, )
+  fs.stat(appDataDirPath, (err, status) => {
+    // console.log(status.isDirectory());
+    if (status) console.log(status)
     if (err) console.log(err);
-    else console.log("file saved at:", appDatatDirPath)
+    else {
+      fs.readFile(appDataDirPath, "utf8", (err, data) => {
+        if (err) {
+          console.log(err)
+        } else {
+          //helper variables
+          let helper = true;
+          const arr = Object.keys(data);
+          const compared = Object.keys(query)[0]
+          //checking if label is already inside data
+          for (let i = 0; i < arr.length; i++) {
+            if (arr[i] === compared) helper = false;
+          }
+          //if not already there then write it in
+          if (helper) {
+            const newData = data;
+            newData[compared] = query[compared]
+            fs.writeFile(newData, appDataDirPath)
+            console.log('file saved!')
+          }
+        }
+      });
+    }
   })
 }
 
-
+/**
+fs.access(appDataDirPath, (err) => {
+  if (err) {
+    try {
+      fs.writeFileSync('SeeQR Data.json', query);
+      console.log('File saved successfully');
+    } catch (err) {
+      console.log(err);
+    };
+  } else {
+    const data = JSON.parse(fs.readFileSync(appDataDirPath));
+    const label = Object.keys(query)[0];
+    data[label] = query[label];
+    fs.writeFileSync('SeeQR Data.json', data);
+    });
+  };
+})
+*/
 
 /**
  * Sets compare state for query

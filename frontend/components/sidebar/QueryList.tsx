@@ -230,19 +230,19 @@ const globalAny: any = global;
   if (!show) return null;
   return (
     <>
-    <span>
-      <Tooltip title="New Query">
-        <IconButton onClick={createQuery}>
-          <AddIcon fontSize="large" />
-        </IconButton>
-      </Tooltip>
+      <span>
+        <Tooltip title="New Query">
+          <IconButton onClick={createQuery}>
+            <AddIcon fontSize="large" />
+          </IconButton>
+        </Tooltip>
 
-      <Tooltip title="Import Query">
-        <IconButton onClick={loadQueryHandler}>
-          <BathtubIcon fontSize="large"/>
-        </IconButton>
-      </Tooltip>
-    </span>
+        <Tooltip title="Import Query">
+          <IconButton onClick={loadQueryHandler}>
+            <BathtubIcon fontSize="large" />
+          </IconButton>
+        </Tooltip>
+      </span>
 
       <StyledSidebarList>
         {Object.values(queries).map((query: QueryData) => (
