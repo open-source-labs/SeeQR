@@ -15,14 +15,25 @@ import {
   StyledListItemText,
   textColor,
 } from '../../style-variables';
+<<<<<<< HEAD
 import { QueryData, AppState } from '../../types';
+=======
+import { QueryData } from '../../types';
+import QueryDbname from './QueryDbname';
+import { deleteQuery, setCompare, key as queryKey } from '../../lib/queries';
+/******************* ACCORDION ***********************/
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import Typography from '@mui/material/Typography';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+>>>>>>> 80350dfe29619646ea4267ae79a66dd51b08a9e5
 
 const QueryText = styled(StyledListItemText)`
   & .MuiListItemText-secondary {
     color: ${textColor};
   }
 `;
-
 const CompareCheck = styled(Checkbox)`
   color: ${textColor};
 `;
@@ -47,10 +58,38 @@ const QueryEntry = ({
   saveThisQuery,
 }: QueryEntryProps) => (
   <SidebarListItem button $customSelected={isSelected} onClick={select}>
-    <QueryText primary={query.label} secondary={query.db} />
+    {/* <QueryText primary={query.label} /> */}
+
     <ListItemSecondaryAction>
-      <Tooltip title="View in Comparison">
-        <CompareCheck onChange={setComparison} checked={isCompared} />
+      <Tooltip title="drop down">
+        {/* <CompareCheck onChange={setComparison} checked={isCompared} /> */}
+        <div>
+          <Accordion>
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="panel1a-content"
+              id="panel1a-header"
+            >
+              <Typography>
+                <QueryText primary={query.label} />
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Typography>
+                {/* //if statement here  */}
+                <QueryDbname
+                  query={query}
+                  isSelected={isSelected}
+                  select={select}
+                  setComparison={setComparison}
+                  isCompared={isCompared}
+                  deleteThisQuery={deleteThisQuery}
+                />
+                test
+              </Typography>
+            </AccordionDetails>
+          </Accordion>
+        </div>
       </Tooltip>
       <Tooltip title="Save Query">
         <IconButton onClick={saveThisQuery}>
