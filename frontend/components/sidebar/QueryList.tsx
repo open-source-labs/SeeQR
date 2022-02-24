@@ -1,7 +1,7 @@
 import React from 'react';
 import { IconButton, Tooltip } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
-import BathtubIcon from '@material-ui/icons/Bathtub';
+import UploadIcon from '@material-ui/icons/File_Upload';
 import styled from 'styled-components';
 import { SidebarList } from '../../style-variables';
 import { AppState, QueryData } from '../../types';
@@ -137,7 +137,7 @@ const QueryList = ({
     };
   
   const saveQueryHandler = (query: QueryData) => () => { 
-    saveQuery(queries, query)
+    saveQuery(query)
   }
 
   const loadQueryHandler = async function () { 
@@ -145,8 +145,8 @@ const QueryList = ({
   //   console.log(data);
 
 
-const globalAny: any = global;
-  if (process.platform !== 'darwin') {
+  const globalAny: any = global;
+    if (process.platform !== 'darwin') {
     // Resolves to a Promise<Object>
     electron.remote.dialog.showOpenDialog({
       title: 'Select the File to be uploaded',
@@ -239,7 +239,7 @@ const globalAny: any = global;
 
         <Tooltip title="Import Query">
           <IconButton onClick={loadQueryHandler}>
-            <BathtubIcon fontSize="large" />
+            <UploadIcon fontSize="large" />
           </IconButton>
         </Tooltip>
       </span>
