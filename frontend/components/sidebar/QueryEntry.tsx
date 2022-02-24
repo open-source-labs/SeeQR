@@ -15,9 +15,6 @@ import {
   StyledListItemText,
   textColor,
 } from '../../style-variables';
-<<<<<<< HEAD
-import { QueryData, AppState } from '../../types';
-=======
 import { QueryData } from '../../types';
 import QueryDbname from './QueryDbname';
 import { deleteQuery, setCompare, key as queryKey } from '../../lib/queries';
@@ -27,7 +24,6 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
->>>>>>> 80350dfe29619646ea4267ae79a66dd51b08a9e5
 
 const QueryText = styled(StyledListItemText)`
   & .MuiListItemText-secondary {

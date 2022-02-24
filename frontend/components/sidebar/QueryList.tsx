@@ -32,90 +32,6 @@ const StyledSidebarList = styled(SidebarList)`
 background-color: ${greyDarkest};
 `;
 
-// type LoadFiles = (path: string) => /**Record<string, QueryData>**/ Promise<Record<string, QueryData>> | Promise<void>;
-
-// const loadFiles = function (path: string) {
-//   let info: Record<string, QueryData> | undefined;
-
-//   fs.stat(path, (err: object | null, state: object) => {
-//     if (err) {
-//       console.log(err);
-//     } else {
-//       info = JSON.parse(fs.readFileSync(path).toString());
-//       console.log('line 44', info);
-//       return info;
-//     };
-//   })
-// }
-
-// type FindFiles = () => any;
-
-// const findFiles: FindFiles = async function () {
-//   const globalAny: any = global;
-//   if (process.platform !== 'darwin') {
-//     // Resolves to a Promise<Object>
-//     electron.remote.dialog.showOpenDialog({
-//       title: 'Select the File to be uploaded',
-//       defaultPath: path.join(__dirname, '../assets/'),
-//       buttonLabel: 'Upload',
-//       // Restricting the user to only Text Files.
-//       filters: [
-//         {
-//           name: 'Text Files',
-//           extensions: ['json', 'docx', 'txt']
-//         },],
-//       // Specifying the File Selector Property
-//       properties: ['openFile']
-//     }).then(file => {
-//       // Stating whether dialog operation was
-//       // cancelled or not.
-//       if (!file.canceled) {
-//         // Updating the GLOBAL filepath variable 
-//         // to user-selected file.
-//         globalAny.filepath = file.filePaths[0].toString();
-//         // console.log(globalAny.filepath);
-//         const data = JSON.parse(fs.readFileSync(globalAny.filepath).toString());
-//         console.log(data);
-//         return data;
-//       }
-//       return undefined;
-//     }).catch((err: unknown | undefined) => {
-//       console.log(err);
-//       return undefined;
-//     });
-//   }
-//   else {
-//     // If the platform is 'darwin' (macOS)
-//     electron.remote.dialog.showOpenDialog({
-//       title: 'Select the File to be uploaded',
-//       defaultPath: path.join(__dirname, '../assets/'),
-//       buttonLabel: 'Upload',
-//       filters: [
-//         {
-//           name: 'Text Files',
-//           extensions: ['json', 'docx', 'txt']
-//         },],
-//       // Specifying the File Selector and Directory 
-//       // Selector Property In macOS
-//       properties: ['openFile', 'openDirectory']
-//     }).then(file => {
-//       // console.log('line 96', file.canceled);
-//       if (!file.canceled) {
-//         globalAny.filepath = file.filePaths[0].toString();
-//         // console.log(globalAny.filepath);
-//         const data = JSON.parse(fs.readFileSync(globalAny.filepath).toString());
-//         console.log(data);
-//         return data;
-//       }
-//       return undefined;
-//     }).catch(err => {
-//       console.log(err);
-//       return undefined;
-//     });
-//   }
-// }
-
-
 const QueryList = ({
   queries,
   createQuery,
@@ -209,23 +125,6 @@ const QueryList = ({
     });
   }
 
-
-    // console.log('LoadQuery Data:', data)
-    // if (data){
-    //   setQueries(data);
-    // }
-    // else return console.log('uh oh :(')
-    // findFiles()
-    // .then((res: Record<string, QueryData> | void) => {
-    //   if (res) {
-    //     console.log(res)
-    //    return setQueries(res);
-    //   }
-    // })
-   
-    // console.log('before set queries', loadedQueries)
-    // if (loadedQueries === undefined) return console.log('im undefined you IDIOTS')
-    // setQueries(loadedQueries)
   }
 
   if (!show) return null;
