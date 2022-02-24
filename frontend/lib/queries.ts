@@ -58,7 +58,7 @@ function getAppDataPath() {
       return path.join(process.env.HOME, "Library", "Application Support", "SeeQR App", "SeeQR Data.json");
     }
     case "win32": {
-      return path.join(process.env.APPDATA, "SeeQR Data.json");
+      return path.join(process.env.APPDATA, "../../Documents/SeeQR Data.json");
     }
     // case "linux": {
     //   return path.join(process.env.HOME, ".SeeQR Data.json");
@@ -80,6 +80,7 @@ export const saveQuery: SaveQuery = (
   fs.access(appDataDirPath, (err) => {
     if (err) {
       console.log('File not found, writing file');
+      console.log(appDataDirPath)
       try {
         const label: string = `label:${query.label} db:${query.db}`
         const data: object = {};
@@ -91,6 +92,7 @@ export const saveQuery: SaveQuery = (
       };
     } else {
       console.log('File is found');
+      console.log(appDataDirPath)
       const data: object = JSON.parse(fs.readFileSync(appDataDirPath));
       const label: string = `label:${query.label} db:${query.db}`
       console.log(data);
