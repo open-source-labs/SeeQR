@@ -52,13 +52,15 @@ const QueryEntry = ({
       <Tooltip title="View in Comparison">
         <CompareCheck onChange={setComparison} checked={isCompared} />
       </Tooltip>
+      <Tooltip title="Save Query">
+        <IconButton onClick={saveThisQuery}>
+          <SaveIcon fontSize='default' />
+        </IconButton>
+      </Tooltip>
       <Tooltip title="Forget Query">
         <IconButton edge="end" onClick={deleteThisQuery}>
           <CloseIcon />
         </IconButton>
-      </Tooltip>
-      <Tooltip title="Save Query">
-        <Button startIcon={<SaveIcon />} onClick={saveThisQuery} />
       </Tooltip>
     </ListItemSecondaryAction>
   </SidebarListItem>

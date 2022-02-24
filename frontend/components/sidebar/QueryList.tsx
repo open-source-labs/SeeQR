@@ -1,7 +1,8 @@
 import React from 'react';
 import { IconButton, Tooltip } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
-import UploadIcon from '@material-ui/icons/File_Upload';
+import UploadFileIcon from '@mui/icons-material/UploadFile';
+// import UploadFileIcon from '@material-ui/icons/FileCopy';
 import styled from 'styled-components';
 import { SidebarList } from '../../style-variables';
 import { AppState, QueryData } from '../../types';
@@ -239,7 +240,7 @@ const QueryList = ({
 
         <Tooltip title="Import Query">
           <IconButton onClick={loadQueryHandler}>
-            <UploadIcon fontSize="large" />
+            <UploadFileIcon fontSize="large" />
           </IconButton>
         </Tooltip>
       </span>
