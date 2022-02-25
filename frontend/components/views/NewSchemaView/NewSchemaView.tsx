@@ -100,6 +100,7 @@ const NewSchemaView = ({
     label: '', // required by QueryData interface, but not necessary for this view
     db: '', // name that user inputs in SchemaName.tsx
     sqlString: '', // sql string that user inputs in SchemaSqlInput.tsx
+    group: '' // group string for sorting queries in accordians
   };
 
   const localQuery = { ...defaultQuery, ...query };

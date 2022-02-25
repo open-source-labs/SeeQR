@@ -9,21 +9,13 @@ import {
   Button
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
-import SaveIcon from '@material-ui/icons/Save';
 import {
   SidebarListItem,
   StyledListItemText,
   textColor,
 } from '../../style-variables';
 import { QueryData } from '../../types';
-import QueryDbname from './QueryDbname';
-import { deleteQuery, setCompare, key as queryKey } from '../../lib/queries';
-/******************* ACCORDION ***********************/
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import Typography from '@mui/material/Typography';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import SaveIcon from '@material-ui/icons/Save';
 
 const QueryText = styled(StyledListItemText)`
   & .MuiListItemText-secondary {
@@ -54,38 +46,10 @@ const QueryEntry = ({
   saveThisQuery,
 }: QueryEntryProps) => (
   <SidebarListItem button $customSelected={isSelected} onClick={select}>
-    {/* <QueryText primary={query.label} /> */}
-
+    <QueryText primary={`${query.label} - ${query.db}`} />
     <ListItemSecondaryAction>
-      <Tooltip title="drop down">
-        {/* <CompareCheck onChange={setComparison} checked={isCompared} /> */}
-        <div>
-          <Accordion>
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
-              aria-controls="panel1a-content"
-              id="panel1a-header"
-            >
-              <Typography>
-                <QueryText primary={query.label} />
-              </Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <Typography>
-                {/* //if statement here  */}
-                <QueryDbname
-                  query={query}
-                  isSelected={isSelected}
-                  select={select}
-                  setComparison={setComparison}
-                  isCompared={isCompared}
-                  deleteThisQuery={deleteThisQuery}
-                />
-                test
-              </Typography>
-            </AccordionDetails>
-          </Accordion>
-        </div>
+      <Tooltip title="View in Comparison">
+        <CompareCheck onChange={setComparison} checked={isCompared} />
       </Tooltip>
       <Tooltip title="Save Query">
         <IconButton onClick={saveThisQuery}>
@@ -99,7 +63,6 @@ const QueryEntry = ({
       </Tooltip>
     </ListItemSecondaryAction>
   </SidebarListItem>
-  
 );
 
 

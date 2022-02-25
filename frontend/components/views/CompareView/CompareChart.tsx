@@ -22,7 +22,6 @@ const getChartData = (
   /**
    * Gets next color from defined pallete.
    */
-  console.log("compareChart", queries)
   const getColor = (() => {
     let nextColor = 0;
     return () => {
@@ -36,10 +35,20 @@ const getChartData = (
   const comparedQueries = Object.values(queries);
 
   // unique query labels
-  const labels = [...new Set(comparedQueries.map((query) => query.label))];
+  const groupLabels = [...new Set(comparedQueries.map((query) => `label:${query.label} db:${query.db} group:${query.group}`))];
+  const labels = [...new Set(comparedQueries.map((query) => query.group))];
 
   // unique dbs in comparison
   const comparedDbs = [...new Set(comparedQueries.map((query) => query.db))];
+
+  const groups:object = {};
+  for (let i = 0; i < groupLabels.length; i++) {
+    if (groups[queries[groupLabels[i]].db]) {
+      groups[queries[groupLabels[i]].db].push(getTotalTime(queries[groupLabels[i]]));
+    } else {
+      groups[queries[groupLabels[i]].db] = [getTotalTime(queries[groupLabels[i]])];
+    };
+  };
 
   // array of objects representing each database that is being displayed
   const datasets = comparedDbs.map((db) => {
@@ -51,11 +60,10 @@ const getChartData = (
       borderWidth: 1,
       // array with values for each label. If db doesn't have a query with a
       // given label being compared, set it's value to
-      data: labels.map((label) =>
-        getTotalTime(queries[keyFromData(label, db)])
-      ),
+      data: groups[db],
     };
   });
+  console.log(labels, datasets)
 
   return { labels, datasets };
 };
@@ -71,12 +79,19 @@ const CompareChart = ({ queries }: CompareChartProps) => (
       options={{
         title: {
           display: true,
-          text: 'QUERY LABEL VS RUNTIME (ms)',
+          text: 'QUERY GROUP VS RUNTIME (ms)',
           fontSize: 16,
         },
         legend: {
           display: true,
           position: 'right',
+        },
+        scales: {
+          yAxes: [{
+            ticks: {
+            beginAtZero: true
+          }
+          }],
         },
         maintainAspectRatio: false,
       }}
