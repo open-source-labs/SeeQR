@@ -4,12 +4,12 @@ import AddIcon from '@material-ui/icons/Add';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 // import UploadFileIcon from '@material-ui/icons/FileCopy';
 import styled from 'styled-components';
-import { SidebarList } from '../../style-variables';
+import { greyLight, SidebarList } from '../../style-variables';
 import { AppState, QueryData } from '../../types';
 import { deleteQuery, setCompare, saveQuery, key as queryKey } from '../../lib/queries';
 import QueryEntry from './QueryEntry';
 import logo from '../../../assets/logo/seeqr_dock.png';
-import { greyDarkest } from '../../style-variables';
+import { greyDarkest, greyDark, greenPrimary, greenBlack } from '../../style-variables';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -24,6 +24,28 @@ import {
   StyledListItemText,
   textColor,
 } from '../../style-variables';
+
+const Dropdown = styled(Accordion)`
+root: {
+  width: "100%",
+    "& .Mui-expanded": {
+      transform: "rotate(0deg)",
+      backgroundColor: "pink",
+      textColor: "green"
+    }
+  },
+  accordion: {
+    minHeight: 150, //ugly but works
+    height: "100%",
+    backgroundColor: "pink",
+    textColor: "green"
+  },
+  details: {
+    alignItems: "center",
+    border: "1px solid rgba(0,0,0,0.1)",
+    borderRadius: 4
+  }
+`;
 
 const QueryText = styled(StyledListItemText)`
   & .MuiListItemText-secondary {
@@ -194,12 +216,14 @@ const QueryList = ({
         {Object.values(accordians).map((arrGroup: any) => (
             <Tooltip title="drop down">
               <Accordion>
-                <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
-                  <Typography>
+                <AccordionSummary sx={{
+    backgroundColor: `${greenPrimary}`, color: "black"
+  }} expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
+                  <Typography sx = {{color: 'black'}}>
                     <QueryText primary={splitGroups[counter++]} />
                   </Typography>
                 </AccordionSummary>
-                <AccordionDetails>
+                <AccordionDetails sx={{backgroundColor: `${greyDark}`, color: `${textColor}`}}>
                   {arrGroup}
                 </AccordionDetails>
               </Accordion>

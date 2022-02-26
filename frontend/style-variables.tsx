@@ -61,7 +61,7 @@ export const selectedColor = greenPrimary;
 export const hoverColor = greenPrimary;
 
 // Size
-export const sidebarWidth = '300px';
+export const sidebarWidth = '375px';
 export const defaultMargin = '20px';
 export const tableWidth = `calc(100vw - (${defaultMargin} * 3) - ${sidebarWidth})`;
 export const sidebarShowButtonSize = '50px';
