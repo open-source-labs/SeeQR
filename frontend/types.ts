@@ -42,6 +42,10 @@ export interface QueryData {
    * User given label that identifies query
    */
   label: string;
+  /**
+   * User given group for acordian grouping
+   */
+  group: string
 }
 
 export type ValidTabs = 'Results' | 'Execution Plan';

@@ -56,7 +56,7 @@ const App = () => {
    */
   const createNewQuery: CreateNewQuery = (query: QueryData) => {
     // Only save query to saved queries if it contains all minimum information
-    if (query.label && query.db && query.sqlString) {
+    if (query.label && query.db && query.sqlString && query.group) {
       const newQueries = createQuery(queries, query);
       setQueries(newQueries);
     }

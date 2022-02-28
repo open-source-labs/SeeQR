@@ -11,7 +11,7 @@ import {
 import { defaultMargin } from '../../../style-variables';
 import { getPrettyTime } from '../../../lib/queries';
 import { once, sendFeedback } from '../../../lib/utils';
-
+import QueryGroup from './QueryGroup'
 import QueryLabel from './QueryLabel';
 import QueryDb from './QueryDb';
 import QueryTopSummary from './QueryTopSummary';
@@ -67,6 +67,7 @@ const QueryView = ({
     label: '',
     db: selectedDb,
     sqlString: '',
+    group: '',
   };
 
   const localQuery = { ...defaultQuery, ...query };
@@ -88,6 +89,10 @@ const QueryView = ({
 
   const onLabelChange = (newLabel: string) => {
     setQuery({ ...localQuery, label: newLabel });
+  };
+
+  const onGroupChange = (newGroup: string) => {
+    setQuery({ ...localQuery, group: newGroup });
   };
 
   const onDbChange = (newDb: string) => {
@@ -139,7 +144,9 @@ const QueryView = ({
           executionPlan: explainResults[0]['QUERY PLAN'][0],
           label: localQuery.label,
           db,
+          group: localQuery.group,
         };
+        console.log("onRun in QueryView", transformedData)
         createNewQuery(transformedData);
       })
       .then(() => {
@@ -158,6 +165,7 @@ const QueryView = ({
     <QueryViewContainer>
       <TopRow>
         <QueryLabel label={localQuery.label} onChange={onLabelChange} />
+        <QueryGroup group={localQuery.group} onChange={onGroupChange} />
         <QueryDb
           db={localQuery.db}
           onChange={onDbChange}

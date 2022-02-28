@@ -58,6 +58,7 @@ To get started on contributing to this project:
       - Importing `.sql` or `.tar` files
       - Navigating to the `Create Database` view at bottom of sidebar
       - Copying an existing database (with or without original data)
+  - Users can export any database onto their local machine
   - Users can toggle between the 'DATABASES' view and the 'QUERIES' view
 
 <div align="center">
@@ -81,7 +82,7 @@ To get started on contributing to this project:
   <div align="center">
     <img src="./assets/readmeImages/gifs/dummy_data.gif" width=800/>
   </div>
-- Create/Edit Database
+- Create/Edit Database <i>(currently in beta)</i>
 
   - Users can create a new database from scratch by clicking the `Create New Database` button at the bottom of the sidebar
   - Once a the database is given a name, htiting the `Initialize Database` button will create new database on the users PostgreSQL instance
@@ -147,7 +148,7 @@ The outcome results from each query, both retrieved data and analytics, are stor
 
 ## Contributing
 
-We've released SeeQR because it's a useful tool to help optimize SQL databases. Additional features, extensions, and improvements will continue to be introduced. We are thankful for any contributions from the community and we encourage you to try SeeQR out and make or suggest improvements where you see fit! If you encounter any issues with the application, please report them in the issues tab or submit a PR. Thank you for your interest!
+We've released SeeQR because it's a useful tool to help optimize SQL databases. Additional features, extensions, and improvements will continue to be introduced. We are thankful for any contributions from the community and we encourage you to try SeeQR out to make or suggest improvements where you see fit! If you encounter any issues with the application, please report them in the issues tab or submit a PR. Thank you for your interest!
 
 ## Core Team
 

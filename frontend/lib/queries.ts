@@ -7,6 +7,12 @@
 import ms from 'ms';
 import { AppState, QueryData } from '../types';
 
+
+const path = require('path');
+const fs = require('fs');
+const electron = require('electron');
+
+
 /**
  * create identifiew from label and database name
  */
@@ -16,7 +22,7 @@ export const keyFromData = (label: string, db: string) =>
 /**
  * create identifiew from query object
  */
-export const key = (query: QueryData) => `label:${query.label} db:${query.db}`;
+export const key = (query: QueryData) => `label:${query.label} db:${query.db} group:${query.group}`;
 
 /**
  * Creates new query in collection
@@ -41,6 +47,62 @@ export const deleteQuery = (
   const tempQueries = { ...queries };
   delete tempQueries[key(queryToDelete)];
   return tempQueries;
+};
+
+
+// Finds proper data path for saving based on operating system
+type GetAppDataPath = () => string;
+
+const getAppDataPath: GetAppDataPath = () => {
+  switch (process.platform) {
+    case "darwin": {
+      return path.join(process.env.HOME, "Library", "Application Support", "SeeQR App", "SeeQR Data.json");
+    }
+    case "win32": {
+      return path.join(process.env.APPDATA, "../../Documents/SeeQR Data.json");
+    }
+    case "linux": {
+      return path.join(process.env.HOME, ".SeeQR Data.json");
+    }
+    default: {
+      console.log("Unsupported platform!");
+      process.exit(1);
+    }
+  }
+}
+
+// saves query data locally
+type SaveQuery = (query: QueryData) => void
+
+export const saveQuery: SaveQuery = (
+  query: QueryData
+) => {
+  const appDataDirPath: string = getAppDataPath();
+  fs.access(appDataDirPath, (err: unknown) => {
+    if (err) {
+      console.log('File not found, writing file');
+      console.log(appDataDirPath)
+      try {
+        const label: string = `label:${query.label} db:${query.db} group:${query.group}`
+        const data: object = {};
+        data[label] = query;
+        fs.writeFileSync(appDataDirPath, JSON.stringify(data));
+        console.log('File saved successfully');
+      } catch (err: unknown) {
+        console.log(err);
+      };
+    } else {
+      console.log('File is found');
+      console.log(appDataDirPath)
+      const data: object = JSON.parse(fs.readFileSync(appDataDirPath));
+      const label: string = `label:${query.label} db:${query.db} group:${query.group}`
+      console.log(data);
+      console.log(query);
+      data[label] = query;
+      fs.writeFileSync(appDataDirPath, JSON.stringify(data));
+      console.log('File saved successfully');
+    };
+  })
 };
 
 /**

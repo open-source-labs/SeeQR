@@ -71,7 +71,6 @@ if (dev) {
     installExtension(REACT_DEVELOPER_TOOLS);
   });
 }
-
 // Invoke createWindow to create browser windows after Electron has been initialized.
 app.on('ready', createWindow);
 

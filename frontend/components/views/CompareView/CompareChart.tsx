@@ -35,10 +35,21 @@ const getChartData = (
   const comparedQueries = Object.values(queries);
 
   // unique query labels
-  const labels = [...new Set(comparedQueries.map((query) => query.label))];
+  const uniqueLabels = [...new Set(comparedQueries.map((query) => `label:${query.label} db:${query.db} group:${query.group}`))];
+  const labels = [...new Set(comparedQueries.map((query) => query.group))];
 
   // unique dbs in comparison
   const comparedDbs = [...new Set(comparedQueries.map((query) => query.db))];
+
+  //Algorithm for grouping speeds by group
+  const groups:object = {};
+  for (let i = 0; i < uniqueLabels.length; i++) {
+    if (groups[queries[uniqueLabels[i]].db]) {
+      groups[queries[uniqueLabels[i]].db].push(getTotalTime(queries[uniqueLabels[i]]));
+    } else {
+      groups[queries[uniqueLabels[i]].db] = [getTotalTime(queries[uniqueLabels[i]])];
+    };
+  };
 
   // array of objects representing each database that is being displayed
   const datasets = comparedDbs.map((db) => {
@@ -48,11 +59,9 @@ const getChartData = (
       backgroundColor: color,
       borderColor: color,
       borderWidth: 1,
-      // array with values for each label. If db doesn't have a query with a
+      // array with values for each group. If group doesn't have a query with a
       // given label being compared, set it's value to
-      data: labels.map((label) =>
-        getTotalTime(queries[keyFromData(label, db)])
-      ),
+      data: groups[db],
     };
   });
 
@@ -68,16 +77,31 @@ const CompareChart = ({ queries }: CompareChartProps) => (
     <Bar
       data={getChartData(queries)}
       options={{
+
         title: {
           display: true,
-          text: 'QUERY LABEL VS RUNTIME (ms)',
+          text: 'QUERY GROUP VS RUNTIME (ms)',
           fontSize: 16,
         },
         legend: {
           display: true,
           position: 'right',
         },
+        scales: {
+          yAxes: [{
+            ticks: {
+            beginAtZero: true
+          }
+          }],
+        },
         maintainAspectRatio: false,
+        // tooltips: {
+        //   callbacks: {
+        //     label: function(data) {
+        //       return `${Object.keys(data)} THIS IS THE OTHER THING: ${data.index}`
+        //     }
+        //   }
+        // },
       }}
     />
   </ChartContainer>
