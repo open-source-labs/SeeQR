@@ -35,18 +35,19 @@ const getChartData = (
   const comparedQueries = Object.values(queries);
 
   // unique query labels
-  const groupLabels = [...new Set(comparedQueries.map((query) => `label:${query.label} db:${query.db} group:${query.group}`))];
+  const uniqueLabels = [...new Set(comparedQueries.map((query) => `label:${query.label} db:${query.db} group:${query.group}`))];
   const labels = [...new Set(comparedQueries.map((query) => query.group))];
 
   // unique dbs in comparison
   const comparedDbs = [...new Set(comparedQueries.map((query) => query.db))];
 
+  //Algorithm for grouping speeds by group
   const groups:object = {};
-  for (let i = 0; i < groupLabels.length; i++) {
-    if (groups[queries[groupLabels[i]].db]) {
-      groups[queries[groupLabels[i]].db].push(getTotalTime(queries[groupLabels[i]]));
+  for (let i = 0; i < uniqueLabels.length; i++) {
+    if (groups[queries[uniqueLabels[i]].db]) {
+      groups[queries[uniqueLabels[i]].db].push(getTotalTime(queries[uniqueLabels[i]]));
     } else {
-      groups[queries[groupLabels[i]].db] = [getTotalTime(queries[groupLabels[i]])];
+      groups[queries[uniqueLabels[i]].db] = [getTotalTime(queries[uniqueLabels[i]])];
     };
   };
 
@@ -58,12 +59,11 @@ const getChartData = (
       backgroundColor: color,
       borderColor: color,
       borderWidth: 1,
-      // array with values for each label. If db doesn't have a query with a
+      // array with values for each group. If group doesn't have a query with a
       // given label being compared, set it's value to
       data: groups[db],
     };
   });
-  console.log(labels, datasets)
 
   return { labels, datasets };
 };
@@ -77,6 +77,7 @@ const CompareChart = ({ queries }: CompareChartProps) => (
     <Bar
       data={getChartData(queries)}
       options={{
+
         title: {
           display: true,
           text: 'QUERY GROUP VS RUNTIME (ms)',
@@ -94,6 +95,13 @@ const CompareChart = ({ queries }: CompareChartProps) => (
           }],
         },
         maintainAspectRatio: false,
+        // tooltips: {
+        //   callbacks: {
+        //     label: function(data) {
+        //       return `${Object.keys(data)} THIS IS THE OTHER THING: ${data.index}`
+        //     }
+        //   }
+        // },
       }}
     />
   </ChartContainer>
