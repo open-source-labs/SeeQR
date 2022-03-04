@@ -7,7 +7,7 @@
 import ms from 'ms';
 import { AppState, QueryData } from '../types';
 
-
+const jsonminify = require("jsonminify")
 const path = require('path');
 const fs = require('fs');
 const electron = require('electron');
