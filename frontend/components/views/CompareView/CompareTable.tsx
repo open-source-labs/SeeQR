@@ -91,9 +91,9 @@ const CompareTable = ({ queries }: CompareTableProps) => {
   const comparedQueries = analyze(Object.values(queries));
   comparedQueries.sort(
     (a, b) =>
-      // sort by label alphabetically
-      a.label.localeCompare(b.label) ||
-      // if same label, sort by speed ascending
+      // sort by group alphabetically
+      a.group.localeCompare(b.group) ||
+      // if same group, sort by speed ascending
       a.relativeSpeed - b.relativeSpeed
   );
 
