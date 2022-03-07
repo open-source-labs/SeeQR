@@ -95,13 +95,7 @@ const CompareChart = ({ queries }: CompareChartProps) => (
           }],
         },
         maintainAspectRatio: false,
-        // tooltips: {
-        //   callbacks: {
-        //     label: function(data) {
-        //       return `${Object.keys(data)} THIS IS THE OTHER THING: ${data.index}`
-        //     }
-        //   }
-        // },
+
       }}
     />
   </ChartContainer>

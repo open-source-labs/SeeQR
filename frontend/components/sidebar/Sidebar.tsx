@@ -29,7 +29,7 @@ const StyledDrawer = styled(Drawer)`
 
 const Logo = styled.img`
   position: fixed;
-  bottom: 10px;
+  bottom: 100px;
   left: calc(${sidebarWidth} / 2);
   transform: translateX(-50%);
   opacity: 0.5;
@@ -61,6 +61,8 @@ const Sidebar = ({
   setWorkingQuery,
   setSidebarHidden,
   sidebarIsHidden,
+  setFilePath,
+  newFilePath,
 }: AppState) => {
 
   const toggleOpen = () => setSidebarHidden(!sidebarIsHidden);
@@ -102,6 +104,8 @@ const Sidebar = ({
           workingQuery={workingQuery}
           setWorkingQuery={setWorkingQuery}
           show={selectedView === 'queryView' || selectedView === 'compareView'}
+          setFilePath={setFilePath}
+          newFilePath={newFilePath}
         />
         <BottomButtons
           selectedDb={selectedDb}
@@ -109,7 +113,7 @@ const Sidebar = ({
           setSelectedView={setSelectedView}
           setSelectedDb={setSelectedDb}
         />
-        {/* <Logo src={logo} alt="Logo" /> */}
+        <Logo src={logo} alt="Logo" />
       </StyledDrawer>
     </>
   );

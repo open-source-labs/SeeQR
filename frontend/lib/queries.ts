@@ -5,7 +5,7 @@
  */
 
 import ms from 'ms';
-import { AppState, QueryData } from '../types';
+import { AppState, QueryData, FilePath } from '../types';
 
 const jsonminify = require("jsonminify")
 const path = require('path');
@@ -53,10 +53,11 @@ export const deleteQuery = (
 // Finds proper data path for saving based on operating system
 type GetAppDataPath = () => string;
 
-const getAppDataPath: GetAppDataPath = () => {
+//used to determine default filepath for saving query information locally
+export const getAppDataPath: GetAppDataPath = () => {
   switch (process.platform) {
     case "darwin": {
-      return path.join(process.env.HOME, "Library", "Application Support", "SeeQR App", "SeeQR Data.json");
+      return path.join(process.env.HOME, "Library", "SeeQR Data.json");
     }
     case "win32": {
       return path.join(process.env.APPDATA, "../../Documents/SeeQR Data.json");
@@ -72,37 +73,31 @@ const getAppDataPath: GetAppDataPath = () => {
 }
 
 // saves query data locally
-type SaveQuery = (query: QueryData) => void
+type SaveQuery = ( query: QueryData, filepath: string ) => void
 
-export const saveQuery: SaveQuery = (
-  query: QueryData
-) => {
-  const appDataDirPath: string = getAppDataPath();
-  fs.access(appDataDirPath, (err: unknown) => {
-    if (err) {
-      console.log('File not found, writing file');
-      console.log(appDataDirPath)
-      try {
-        const label: string = `label:${query.label} db:${query.db} group:${query.group}`
-        const data: object = {};
-        data[label] = query;
-        fs.writeFileSync(appDataDirPath, JSON.stringify(data));
-        console.log('File saved successfully');
-      } catch (err: unknown) {
-        console.log(err);
-      };
-    } else {
-      console.log('File is found');
-      console.log(appDataDirPath)
-      const data: object = JSON.parse(fs.readFileSync(appDataDirPath));
-      const label: string = `label:${query.label} db:${query.db} group:${query.group}`
-      console.log(data);
-      console.log(query);
-      data[label] = query;
-      fs.writeFileSync(appDataDirPath, JSON.stringify(data));
-      console.log('File saved successfully');
-    };
-  })
+export const saveQuery:SaveQuery = ( query: QueryData, filePath: string) => {
+  //Open electron prompt and async writes to file
+      fs.access(filePath, (err: unknown) => {
+        if (err) {
+          console.log('File not found, writing file');
+          try {
+            const label: string = `label:${query.label} db:${query.db} group:${query.group}`
+            const data: object = {};
+            data[label] = query;
+            fs.writeFileSync(filePath, JSON.stringify(data));
+            console.log('File saved successfully');
+          } catch (err: unknown) {
+            console.log(err);
+          };
+        } else {
+          console.log('File is found');
+          const data: object = JSON.parse(fs.readFileSync(filePath));
+          const label: string = `label:${query.label} db:${query.db} group:${query.group}`
+          data[label] = query;
+          fs.writeFileSync(filePath, JSON.stringify(data));
+          console.log('File saved successfully');
+        };
+      })
 };
 
 /**
