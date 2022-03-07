@@ -53,6 +53,9 @@ export interface QueryData {
    * User given group for acordian grouping
    */
   group: string
+
+  // flag: boolean
+
 }
 
 export type ValidTabs = 'Results' | 'Execution Plan';
