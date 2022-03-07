@@ -3,20 +3,20 @@ import { IconButton, Tooltip } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import FileCopyIcon from '@mui/icons-material/FileCopy';
+import fs from 'fs';
+import path from 'path';
+import electron from 'electron';
 import styled from 'styled-components';
-import { AppState, QueryData } from '../../types';
-import { deleteQuery, setCompare, saveQuery, getAppDataPath, key as queryKey } from '../../lib/queries';
-import QueryEntry from './QueryEntry';
-import logo from '../../../assets/logo/seeqr_dock.png';
-import { greyDarkest, greyDark, greenPrimary, SidebarList, StyledListItemText, textColor } from '../../style-variables';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import path from 'path';
-import fs from 'fs';
-import electron from 'electron';
+import { AppState, QueryData } from '../../types';
+import { deleteQuery, setCompare, saveQuery, getAppDataPath, key as queryKey } from '../../lib/queries';
+import QueryEntry from './QueryEntry';
+import logo from '../../../assets/logo/seeqr_dock.png';
+import { greyDarkest, greyDark, greenPrimary, SidebarList, StyledListItemText, textColor } from '../../style-variables';
 
 const Dropdown = styled(Accordion)`
 root: {
@@ -85,7 +85,8 @@ const QueryList = ({
   const setComparisonHandler = (query: QueryData) => (
     evt: React.ChangeEvent<HTMLInputElement>
     ) => {
-      setComparedQueries(setCompare(comparedQueries, query, evt.target.checked));
+      setComparedQueries(setCompare(comparedQueries, queries, query, evt.target.checked));
+      // setComparedQueries(setCompare(comparedQueries, query));
     };
   
   const saveQueryHandler = (query: QueryData, newFilePath: string) => () => { 
@@ -161,21 +162,33 @@ const QueryList = ({
   const accordians:object = {};
 
   // Algorithm to create the entrys to be bundled into accoridans
+  const compQ: any = { ...comparedQueries }
   if(values.length > 0) {
     for (let i = 0; i < values.length; i++) {
-      const entry:JSX.Element = <QueryEntry 
-      //This key is used in the .map to create the group label for accordians
-      key={`QueryList_${values[i].label}_${values[i].db}_${values[i].group}`}
-      query={values[i]}
-      select={() => setWorkingQuery(values[i])}
-      isSelected={
-        !!workingQuery && queryKey(values[i]) === queryKey(workingQuery)
-      }
-      deleteThisQuery={deleteQueryHandler(values[i])}
-      isCompared={!!comparedQueries[queryKey(values[i])]}
-      setComparison={setComparisonHandler(values[i])}
-      saveThisQuery={saveQueryHandler(values[i], newFilePath)} 
-      />
+      let compared = false;
+      if (compQ[queryKey(values[i])]) {
+        if (compQ[queryKey(values[i])].hasOwnProperty('executionPlan')) {
+          if (compQ[queryKey(values[i])].executionPlan['Execution Time'] !== 0) {
+            compared = true;
+          }
+        }
+      };
+      
+      const entry: JSX.Element = (
+        <QueryEntry
+          // This key is used in the .map to create the group label for accordians
+          key={`QueryList_${values[i].label}_${values[i].db}_group:::${values[i].group}`}
+          query={values[i]}
+          select={() => setWorkingQuery(values[i])}
+          isSelected={
+            !!workingQuery && queryKey(values[i]) === queryKey(workingQuery)
+          }
+          deleteThisQuery={deleteQueryHandler(values[i])}
+          isCompared={compared}
+          setComparison={setComparisonHandler(values[i])}
+          saveThisQuery={saveQueryHandler(values[i], newFilePath)}
+        />
+      );
       
       if(!accordians[values[i].group]) {
         accordians[values[i].group] = [entry];
@@ -187,10 +200,10 @@ const QueryList = ({
 
   // function to store user-selected file path in state
   const designateFile = function() {
-    const dialog = electron.remote.dialog
+    const dialog = electron.remote.dialog;
     const WIN = electron.remote.getCurrentWindow();
   
-    let options = {
+    const options = {
       title: "Choose File Path",
       defaultPath: `${getAppDataPath()}`,
       buttonLabel: "Select Path",filters: [
@@ -221,7 +234,7 @@ const QueryList = ({
 
         <Tooltip title="Designate Save Location">
           <IconButton onClick={designateFile}> 
-            <FileCopyIcon fontSize='large'/>
+            <FileCopyIcon fontSize='large' />
           </IconButton>
         </Tooltip>
       </span>
@@ -232,11 +245,16 @@ const QueryList = ({
         {Object.values(accordians).map((arrGroup: any) => (
           <Tooltip title="drop down">
             <Accordion>
-              <AccordionSummary sx={{
+              <AccordionSummary 
+                sx={{
                 backgroundColor: `${greenPrimary}`, color: "black"
-              }} expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
+              }} 
+                expandIcon={<ExpandMoreIcon />} 
+                aria-controls="panel1a-content" 
+                id="panel1a-header"
+              >
                 <Typography sx={{ color: 'black' }}>
-                  <QueryText primary={arrGroup[0].key.split('_')[3]} />
+                  <QueryText primary={arrGroup[0].key.slice(arrGroup[0].key.indexOf('group:::') + 8)} />
                 </Typography>
               </AccordionSummary>
               <AccordionDetails sx={{ backgroundColor: `${greyDark}`, color: `${textColor}` }}>
