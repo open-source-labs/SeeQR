@@ -32,6 +32,8 @@ const getChartData = (
     };
   })();
 
+ 
+
   const comparedQueries = Object.values(queries);
 
   // unique query labels
@@ -41,16 +43,15 @@ const getChartData = (
   // unique dbs in comparison
   const comparedDbs = [...new Set(comparedQueries.map((query) => query.db))];
 
-  //Algorithm for grouping speeds by group
+  // Algorithm for grouping speeds by group
   const groups:object = {};
   for (let i = 0; i < uniqueLabels.length; i++) {
     if (groups[queries[uniqueLabels[i]].db]) {
-      groups[queries[uniqueLabels[i]].db].push(getTotalTime(queries[uniqueLabels[i]]));
+      groups[queries[uniqueLabels[i]].db].push(uniqueLabels[i]);
     } else {
-      groups[queries[uniqueLabels[i]].db] = [getTotalTime(queries[uniqueLabels[i]])];
+      groups[queries[uniqueLabels[i]].db] = [uniqueLabels[i]];
     };
   };
-
   // array of objects representing each database that is being displayed
   const datasets = comparedDbs.map((db) => {
     const color = getColor();
@@ -61,10 +62,9 @@ const getChartData = (
       borderWidth: 1,
       // array with values for each group. If group doesn't have a query with a
       // given label being compared, set it's value to
-      data: groups[db],
+      data: groups[db].map((label) => getTotalTime(queries[label])),
     };
   });
-
   return { labels, datasets };
 };
 
@@ -102,3 +102,4 @@ const CompareChart = ({ queries }: CompareChartProps) => (
 );
 
 export default CompareChart;
+
