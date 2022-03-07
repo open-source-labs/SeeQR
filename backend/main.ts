@@ -1,4 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
+import { FamilyRestroomRounded } from '@mui/icons-material';
 import { app, BrowserWindow, Menu } from 'electron';
 
 const dev: boolean = process.env.NODE_ENV === 'development';

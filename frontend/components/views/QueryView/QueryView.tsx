@@ -51,6 +51,7 @@ interface QueryViewProps {
   setSelectedDb: AppState['setSelectedDb'];
   setQuery: AppState['setWorkingQuery'];
   show: boolean;
+  queries: Record<string, QueryData>;
 }
 
 const QueryView = ({
@@ -60,6 +61,7 @@ const QueryView = ({
   setSelectedDb,
   setQuery,
   show,
+  queries
 }: QueryViewProps) => {
   const [databases, setDatabases] = useState<string[]>([]);
 
@@ -126,6 +128,14 @@ const QueryView = ({
       });
     }
 
+    if (!localQuery.group.trim()) {
+      sendFeedback({
+        type: 'info',
+        message: "Queries without a group will run but won't be saved",
+      });
+    }
+
+
     // request backend to run query
     ipcRenderer
       .invoke('run-query', {
@@ -146,7 +156,18 @@ const QueryView = ({
           db,
           group: localQuery.group,
         };
-        console.log("onRun in QueryView", transformedData)
+
+        const keys:string[] = Object.keys(queries);
+        for (let i = 0; i < keys.length; i++){
+          if (keys[i].includes(`db:${localQuery.db} group:${localQuery.group}`)) {
+           return sendFeedback({
+              type: 'info',
+              message: `${localQuery.db} already exists in ${localQuery.group}`,
+            });
+          };
+          
+
+        };
         createNewQuery(transformedData);
       })
       .then(() => {
@@ -178,7 +199,6 @@ const QueryView = ({
       </TopRow>
       <QuerySqlInput
         sql={localQuery?.sqlString ?? ''}
-        // sql=''
         onChange={onSqlChange}
         runQuery={onRun}
       />

@@ -13,7 +13,6 @@ const { Pool } = require('pg');
 // Note: User must have a 'postgres' role set-up prior to initializing this connection. https://www.postgresql.org/docs/13/database-roles.html
 const PG_URI: string = 'postgres://postgres:postgres@localhost:5432';
 let pool = new Pool({ connectionString: PG_URI });
-// console.log('Connected to: ', PG_URI);
 
 
 // *********************************************************** HELPER FUNCTIONS ************************************************* //

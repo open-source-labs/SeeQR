@@ -50,6 +50,7 @@ const App = () => {
 
   const [selectedDb, setSelectedDb] = useState<AppState['selectedDb']>('');
   const [sidebarIsHidden, setSidebarHidden] = useState(false);
+  const [newFilePath, setFilePath] = useState<AppState['newFilePath']>('');
 
   /**
    * Hook to create new Query from data
@@ -115,6 +116,8 @@ const App = () => {
               setWorkingQuery,
               setSidebarHidden,
               sidebarIsHidden,
+              setFilePath,
+              newFilePath
             }}
           />
           <Main $fullwidth={sidebarIsHidden}>
@@ -130,6 +133,7 @@ const App = () => {
               setSelectedDb={setSelectedDb}
               createNewQuery={createNewQuery}
               show={shownView === 'queryView'}
+              queries={queries}
             />
             <QuickStartView show={shownView === 'quickStartView'} />
             <NewSchemaView 
