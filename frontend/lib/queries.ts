@@ -5,7 +5,9 @@
  */
 
 import ms from 'ms';
+import { useState } from 'react';
 import { AppState, QueryData, FilePath } from '../types';
+import { sendFeedback } from './utils';
 
 const jsonminify = require("jsonminify")
 const path = require('path');
@@ -16,8 +18,8 @@ const electron = require('electron');
 /**
  * create identifiew from label and database name
  */
-export const keyFromData = (label: string, db: string) =>
-  `label:${label} db:${db}`;
+export const keyFromData = (label: string, db: string, group: string) =>
+  `label:${label} db:${db} group:${group}`;
 
 /**
  * create identifiew from query object
@@ -53,7 +55,7 @@ export const deleteQuery = (
 // Finds proper data path for saving based on operating system
 type GetAppDataPath = () => string;
 
-//used to determine default filepath for saving query information locally
+// used to determine default filepath for saving query information locally
 export const getAppDataPath: GetAppDataPath = () => {
   switch (process.platform) {
     case "darwin": {
@@ -76,17 +78,20 @@ export const getAppDataPath: GetAppDataPath = () => {
 type SaveQuery = ( query: QueryData, filepath: string ) => void
 
 export const saveQuery:SaveQuery = ( query: QueryData, filePath: string) => {
-  //Open electron prompt and async writes to file
+  // Open electron prompt and async writes to file
       fs.access(filePath, (err: unknown) => {
         if (err) {
-          console.log('File not found, writing file');
           try {
             const label: string = `label:${query.label} db:${query.db} group:${query.group}`
             const data: object = {};
             data[label] = query;
             fs.writeFileSync(filePath, JSON.stringify(data));
-            console.log('File saved successfully');
-          } catch (err: unknown) {
+            sendFeedback({
+              type: 'info',
+              message: `File saved at location ${filePath}`,
+            });
+          }
+          catch (err: unknown) {
             console.log(err);
           };
         } else {
@@ -95,7 +100,10 @@ export const saveQuery:SaveQuery = ( query: QueryData, filePath: string) => {
           const label: string = `label:${query.label} db:${query.db} group:${query.group}`
           data[label] = query;
           fs.writeFileSync(filePath, JSON.stringify(data));
-          console.log('File saved successfully');
+          sendFeedback({
+            type: 'info',
+            message: `File saved at location ${filePath}`,
+          });
         };
       })
 };
@@ -106,17 +114,26 @@ export const saveQuery:SaveQuery = ( query: QueryData, filePath: string) => {
  */
 export const setCompare = (
   comparedQueries: AppState['comparedQueries'],
+  queries: Record<string, QueryData>,
   query: QueryData,
   isCompared: boolean
 ) => {
-  const tempQueries = { ...comparedQueries };
+  const tempQueries: any = JSON.parse(JSON.stringify(comparedQueries));
+  const queriess:any = { ...queries }
+  const qKey = key(query);
 
   if (!isCompared) {
-    delete tempQueries[key(query)];
+    tempQueries[qKey].executionPlan['Execution Time'] = 0;  
+    tempQueries[qKey].executionPlan['Planning Time'] = 0;  
     return tempQueries;
   }
 
-  tempQueries[key(query)] = query;
+  if (tempQueries.hasOwnProperty(qKey)) {
+    tempQueries[qKey].executionPlan['Execution Time'] = queriess[qKey].executionPlan['Execution Time'];
+    tempQueries[qKey].executionPlan['Planning Time'] = queriess[qKey].executionPlan['Planning Time'];
+  } else {
+    tempQueries[qKey] = query;
+  }
   return tempQueries;
 };
 
