@@ -33,11 +33,12 @@
       "ignorePackages",
       { "js": "never", "jsx": "never", "ts": "never", "tsx": "never" }
     ],
+    // "import/no-extraneous-dependencies": ["error", { "devDependencies": true }], **trying to resolve the electron issue 
     "jsx-a11y/label-has-associated-control": "off",
     // prevent wrong warning with typescript overloads
     "no-unused-vars": "off",
     "@typescript-eslint/no-unused-vars": ["error"],
-    "no-dupe-class-members": "off",
+    "no-dupe-class-members": "off", 
     "@typescript-eslint/no-dupe-class-members": ["error"],
     "lines-between-class-members": "off",
     "@typescript-eslint/lines-between-class-members": [
@@ -52,5 +53,6 @@
     "react/jsx-props-no-spreading": "off",
     "camelcase": "off"
   },
+  // "settings": "import/core-modules: [ electron ]",  **trying to resolve the electron issue 
   "root": true
 }

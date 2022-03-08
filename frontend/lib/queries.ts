@@ -5,18 +5,26 @@
  */
 
 import ms from 'ms';
-import { AppState, QueryData } from '../types';
+import { useState } from 'react';
+import { AppState, QueryData, FilePath } from '../types';
+import { sendFeedback } from './utils';
+
+const jsonminify = require("jsonminify")
+const path = require('path');
+const fs = require('fs');
+const electron = require('electron');
+
 
 /**
  * create identifiew from label and database name
  */
-export const keyFromData = (label: string, db: string) =>
-  `label:${label} db:${db}`;
+export const keyFromData = (label: string, db: string, group: string) =>
+  `label:${label} db:${db} group:${group}`;
 
 /**
  * create identifiew from query object
  */
-export const key = (query: QueryData) => `label:${query.label} db:${query.db}`;
+export const key = (query: QueryData) => `label:${query.label} db:${query.db} group:${query.group}`;
 
 /**
  * Creates new query in collection
@@ -43,23 +51,89 @@ export const deleteQuery = (
   return tempQueries;
 };
 
+
+// Finds proper data path for saving based on operating system
+type GetAppDataPath = () => string;
+
+// used to determine default filepath for saving query information locally
+export const getAppDataPath: GetAppDataPath = () => {
+  switch (process.platform) {
+    case "darwin": {
+      return path.join(process.env.HOME, "Library", "SeeQR Data.json");
+    }
+    case "win32": {
+      return path.join(process.env.APPDATA, "../../Documents/SeeQR Data.json");
+    }
+    case "linux": {
+      return path.join(process.env.HOME, ".SeeQR Data.json");
+    }
+    default: {
+      console.log("Unsupported platform!");
+      process.exit(1);
+    }
+  }
+}
+
+// saves query data locally
+type SaveQuery = ( query: QueryData, filepath: string ) => void
+
+export const saveQuery:SaveQuery = ( query: QueryData, filePath: string) => {
+  // Open electron prompt and async writes to file
+      fs.access(filePath, (err: unknown) => {
+        if (err) {
+          try {
+            const label: string = `label:${query.label} db:${query.db} group:${query.group}`
+            const data: object = {};
+            data[label] = query;
+            fs.writeFileSync(filePath, JSON.stringify(data));
+            sendFeedback({
+              type: 'info',
+              message: `File saved at location ${filePath}`,
+            });
+          }
+          catch (err: unknown) {
+            console.log(err);
+          };
+        } else {
+          console.log('File is found');
+          const data: object = JSON.parse(fs.readFileSync(filePath));
+          const label: string = `label:${query.label} db:${query.db} group:${query.group}`
+          data[label] = query;
+          fs.writeFileSync(filePath, JSON.stringify(data));
+          sendFeedback({
+            type: 'info',
+            message: `File saved at location ${filePath}`,
+          });
+        };
+      })
+};
+
 /**
  * Sets compare state for query
  * Adds or remove query from comparedQueries collection 
  */
 export const setCompare = (
   comparedQueries: AppState['comparedQueries'],
+  queries: Record<string, QueryData>,
   query: QueryData,
   isCompared: boolean
 ) => {
-  const tempQueries = { ...comparedQueries };
+  const tempQueries: any = JSON.parse(JSON.stringify(comparedQueries));
+  const queriess:any = { ...queries }
+  const qKey = key(query);
 
   if (!isCompared) {
-    delete tempQueries[key(query)];
+    tempQueries[qKey].executionPlan['Execution Time'] = 0;  
+    tempQueries[qKey].executionPlan['Planning Time'] = 0;  
     return tempQueries;
   }
 
-  tempQueries[key(query)] = query;
+  if (tempQueries.hasOwnProperty(qKey)) {
+    tempQueries[qKey].executionPlan['Execution Time'] = queriess[qKey].executionPlan['Execution Time'];
+    tempQueries[qKey].executionPlan['Planning Time'] = queriess[qKey].executionPlan['Planning Time'];
+  } else {
+    tempQueries[qKey] = query;
+  }
   return tempQueries;
 };
 

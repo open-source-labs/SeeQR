@@ -31,7 +31,7 @@ const StyledCell = styled(TableCell)<{
 `;
 
 const FastestMarker = () => (
-  <Tooltip title="Fastest Query in label group">
+  <Tooltip title="Fastest Query in group">
     <SpeedIcon style={{ margin: 0 }} />
   </Tooltip>
 );
@@ -50,6 +50,7 @@ type InfoColumn = [
 
 // Array of columns names and transformers that receive query and return printable value
 const tableInfo: InfoColumn[] = [
+  ['Group', 'left', (q: QueryData) => q.group],
   ['Label', 'left', (q: QueryData) => q.label],
   ['Database', 'left', (q: QueryData) => q.db],
   ['Timing', 'right', getPrettyTime],
@@ -63,22 +64,25 @@ const tableInfo: InfoColumn[] = [
   ['', 'center', (q: AnalysedQuery) => (q.isFastest ? <FastestMarker /> : '')],
 ];
 
+// Callback function for getFastestPerGroup
+function fastestCallback (acc, q) {
+  if (getTotalTime(q) === 0) {return acc}
+  return {
+    ...acc,
+    [q.group]: Math.min(acc[q.group] ?? Infinity, getTotalTime(q))
+  };
+};
+
 const getFastestPerGroup = (queries: QueryData[]) =>
-  queries.reduce<Record<string, number>>(
-    (acc, q) => ({
-      ...acc,
-      [q.label]: Math.min(acc[q.label] ?? Infinity, getTotalTime(q)),
-    }),
-    {}
-  );
+  queries.reduce<Record<string, number>>( fastestCallback, {} );
 
 const analyze = (queries: QueryData[]): AnalysedQuery[] => {
   // fastest query in each group
   const fastest = getFastestPerGroup(queries);
   return queries.map((q) => ({
     ...q,
-    relativeSpeed: getTotalTime(q) / fastest[q.label],
-    isFastest: fastest[q.label] === getTotalTime(q),
+    relativeSpeed: getTotalTime(q) / fastest[q.group],
+    isFastest: fastest[q.group] === getTotalTime(q),
   }));
 };
 
@@ -90,9 +94,9 @@ const CompareTable = ({ queries }: CompareTableProps) => {
   const comparedQueries = analyze(Object.values(queries));
   comparedQueries.sort(
     (a, b) =>
-      // sort by label alphabetically
-      a.label.localeCompare(b.label) ||
-      // if same label, sort by speed ascending
+      // sort by group alphabetically
+      a.group.localeCompare(b.group) ||
+      // if same group, sort by speed ascending
       a.relativeSpeed - b.relativeSpeed
   );
 
@@ -110,11 +114,11 @@ const CompareTable = ({ queries }: CompareTableProps) => {
         </TableHead>
         <TableBody>
           {comparedQueries.map((query: AnalysedQuery) => (
-            <TableRow key={query.label + query.db}>
+            <TableRow key={query.label + query.db + query.group}>
               {tableInfo.map(([columnLabel, alignment, transformer]) => (
                 <StyledCell
                   align={alignment}
-                  key={`${query.label}_${query.db}_${columnLabel}`}
+                  key={`${query.label}_${query.db}_${query.group}_${columnLabel}`}
                   $isFastest={query.isFastest}
                   $isMarker={!columnLabel}
                 >

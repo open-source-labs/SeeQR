@@ -50,13 +50,14 @@ const App = () => {
 
   const [selectedDb, setSelectedDb] = useState<AppState['selectedDb']>('');
   const [sidebarIsHidden, setSidebarHidden] = useState(false);
+  const [newFilePath, setFilePath] = useState<AppState['newFilePath']>('');
 
   /**
    * Hook to create new Query from data
    */
   const createNewQuery: CreateNewQuery = (query: QueryData) => {
     // Only save query to saved queries if it contains all minimum information
-    if (query.label && query.db && query.sqlString) {
+    if (query.label && query.db && query.sqlString && query.group) {
       const newQueries = createQuery(queries, query);
       setQueries(newQueries);
     }
@@ -115,6 +116,8 @@ const App = () => {
               setWorkingQuery,
               setSidebarHidden,
               sidebarIsHidden,
+              setFilePath,
+              newFilePath
             }}
           />
           <Main $fullwidth={sidebarIsHidden}>
@@ -130,6 +133,7 @@ const App = () => {
               setSelectedDb={setSelectedDb}
               createNewQuery={createNewQuery}
               show={shownView === 'queryView'}
+              queries={queries}
             />
             <QuickStartView show={shownView === 'quickStartView'} />
             <NewSchemaView 
