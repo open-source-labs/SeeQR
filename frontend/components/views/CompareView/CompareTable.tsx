@@ -64,14 +64,17 @@ const tableInfo: InfoColumn[] = [
   ['', 'center', (q: AnalysedQuery) => (q.isFastest ? <FastestMarker /> : '')],
 ];
 
+// Callback function for getFastestPerGroup
+function fastestCallback (acc, q) {
+  if (getTotalTime(q) === 0) {return acc}
+  return {
+    ...acc,
+    [q.group]: Math.min(acc[q.group] ?? Infinity, getTotalTime(q))
+  };
+};
+
 const getFastestPerGroup = (queries: QueryData[]) =>
-  queries.reduce<Record<string, number>>(
-    (acc, q) => ({
-      ...acc,
-      [q.group]: Math.min(acc[q.group] ?? Infinity, getTotalTime(q)),
-    }),
-    {}
-  );
+  queries.reduce<Record<string, number>>( fastestCallback, {} );
 
 const analyze = (queries: QueryData[]): AnalysedQuery[] => {
   // fastest query in each group
