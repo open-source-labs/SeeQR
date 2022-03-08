@@ -1,4 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
+import { FamilyRestroomRounded } from '@mui/icons-material';
 import { app, BrowserWindow, Menu } from 'electron';
 
 const dev: boolean = process.env.NODE_ENV === 'development';
@@ -71,7 +72,6 @@ if (dev) {
     installExtension(REACT_DEVELOPER_TOOLS);
   });
 }
-
 // Invoke createWindow to create browser windows after Electron has been initialized.
 app.on('ready', createWindow);
 

@@ -11,7 +11,7 @@ import {
 import { defaultMargin } from '../../../style-variables';
 import { getPrettyTime } from '../../../lib/queries';
 import { once, sendFeedback } from '../../../lib/utils';
-
+import QueryGroup from './QueryGroup'
 import QueryLabel from './QueryLabel';
 import QueryDb from './QueryDb';
 import QueryTopSummary from './QueryTopSummary';
@@ -51,6 +51,7 @@ interface QueryViewProps {
   setSelectedDb: AppState['setSelectedDb'];
   setQuery: AppState['setWorkingQuery'];
   show: boolean;
+  queries: Record<string, QueryData>;
 }
 
 const QueryView = ({
@@ -60,6 +61,7 @@ const QueryView = ({
   setSelectedDb,
   setQuery,
   show,
+  queries
 }: QueryViewProps) => {
   const [databases, setDatabases] = useState<string[]>([]);
 
@@ -67,6 +69,7 @@ const QueryView = ({
     label: '',
     db: selectedDb,
     sqlString: '',
+    group: '',
   };
 
   const localQuery = { ...defaultQuery, ...query };
@@ -88,6 +91,10 @@ const QueryView = ({
 
   const onLabelChange = (newLabel: string) => {
     setQuery({ ...localQuery, label: newLabel });
+  };
+
+  const onGroupChange = (newGroup: string) => {
+    setQuery({ ...localQuery, group: newGroup });
   };
 
   const onDbChange = (newDb: string) => {
@@ -121,6 +128,14 @@ const QueryView = ({
       });
     }
 
+    if (!localQuery.group.trim()) {
+      sendFeedback({
+        type: 'info',
+        message: "Queries without a group will run but won't be saved",
+      });
+    }
+
+
     // request backend to run query
     ipcRenderer
       .invoke('run-query', {
@@ -139,6 +154,19 @@ const QueryView = ({
           executionPlan: explainResults[0]['QUERY PLAN'][0],
           label: localQuery.label,
           db,
+          group: localQuery.group,
+        };
+
+        const keys:string[] = Object.keys(queries);
+        for (let i = 0; i < keys.length; i++){
+          if (keys[i].includes(`db:${localQuery.db} group:${localQuery.group}`)) {
+           return sendFeedback({
+              type: 'info',
+              message: `${localQuery.db} already exists in ${localQuery.group}`,
+            });
+          };
+          
+
         };
         createNewQuery(transformedData);
       })
@@ -158,6 +186,7 @@ const QueryView = ({
     <QueryViewContainer>
       <TopRow>
         <QueryLabel label={localQuery.label} onChange={onLabelChange} />
+        <QueryGroup group={localQuery.group} onChange={onGroupChange} />
         <QueryDb
           db={localQuery.db}
           onChange={onDbChange}
@@ -170,7 +199,6 @@ const QueryView = ({
       </TopRow>
       <QuerySqlInput
         sql={localQuery?.sqlString ?? ''}
-        // sql=''
         onChange={onSqlChange}
         runQuery={onRun}
       />
