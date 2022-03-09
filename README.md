@@ -30,7 +30,7 @@
 
 To get started on contributing to this project:
 
-1. Download and install [Postgres.app](https://postgresapp.com/) and start it before opening up SeeQR
+1. Download and install [Postgres.app](https://postgresapp.com/)(Mac)/[PGAdmin](https://www.pgadmin.org/download)(Windows) and start it before opening up SeeQR
 2. Ensure that psql is available in the `$PATH`
 3. Ensure that a 'postgres' role exists
 4. Download the latest version of [SeeQR](https://github.com/open-source-labs/seeqr/releases/latest)
@@ -85,7 +85,7 @@ To get started on contributing to this project:
 - Create/Edit Database <i>(currently in beta)</i>
 
   - Users can create a new database from scratch by clicking the `Create New Database` button at the bottom of the sidebar
-  - Once a the database is given a name, htiting the `Initialize Database` button will create new database on the users PostgreSQL instance
+  - Once a the database is given a name, hitting the `Initialize Database` button will create new database on the users PostgreSQL instance
   - Users can then input SQL commands and click `Update Database` to create and drop tables in the database
   - Users have the option to alter any existing databases as well by selecting the database on the sidebar and running any SQL commands they would like. 
   - The `Export` button will write a .sql file on the user's desktop of the selected database
@@ -99,13 +99,24 @@ To get started on contributing to this project:
 
   - In the 'QUERIES' view, the main panel is where the query input text field is located, utilizing CodeMirror. The paint button in the top right corner of the panel auto-formats the inputted query
   - Users can select the database to use in the 'Database' dropdown above the main panel
-  - Users also have the option to execute a labelled or unlabelled query — simply provide a label in the 'Label' field above the main panel to identify the query in later comparisons against other queries
+  - Users also have the option to execute a labelled/grouped or unlabelled/ungrouped query — simply provide a label/group in the 'Label'/'Group' field above the main panel to identify the query in later comparisons against other queries
     - Please note that only labelled queries will be saved in the current session for future references
   - To execute the query, simply select the 'RUN QUERY' button at the bottom of the panel or press 'Ctrl-Enter' on the keyboard
 
+   <br />
+  <div align="center">
+    <img src="./assets/readmeImages/gifs/Query_Execution.gif" width=800/>
+  </div>
+
+- Save/Load Queries
+
+  - In the 'QUERIES' view, the file upload icon will open a file explorer window to select a .JSON to import query data from
+  - The file icon to the right of the upload icon will designate the file path to save query data to if you press the save button on the queries
+  - To save individual query data press the save icon on the individual queries in the dropdowns 
+
   <br />
   <div align="center">
-    <img src="./assets/readmeImages/gifs/query.gif" width=800/>
+    <img src="./assets/readmeImages/gifs/Save_Load_Queries.gif" width=800/>
   </div>
 
 - Data
@@ -121,9 +132,10 @@ To get started on contributing to this project:
     - Clicking on a node will display additional details regarding that action as well
   - To execute a new query, simply select the '+' button in the sidebar. To go back to a previously saved query, just select it in the sidebar
 
+
   <br />
   <div align="center">
-    <img src="./assets/readmeImages/gifs/execution_plan.gif" width=800/>
+    <img src="./assets/readmeImages/gifs/Query_Exec_Plan.gif" width=800/>
   </div>
 
 - Compare
@@ -131,11 +143,11 @@ To get started on contributing to this project:
   - Click on the 'bar graph' icon at the top of the sidebar to get to the 'Compare Queries' view
   - The comparison table is flexible to the user’s preferences as the user selects which queries to compare side by side
   - Simply check or uncheck the box next to each saved query to add or remove the query from the graph
-  - Graph will be organized along the x-axis by label, and colored by schema
+  - Graph will be organized along the x-axis by group, and colored by schema
   - Aside from the visualized performance comparison of the selected queries, a table will display information about each selected query, including its total run time and performance relative to other queries with the same label, with the most performant query highlighted 
 
 <div align="center">
-  <img src="./assets/readmeImages/gifs/compare_view.gif" width=800/>
+  <img src="./assets/readmeImages/gifs/Comparing_Queries.gif" width=800/>
 </div>
 
 ## Application Architecture and Logic
@@ -152,7 +164,7 @@ We've released SeeQR because it's a useful tool to help optimize SQL databases. 
 
 ## Core Team
 
-[Allison Le](https://github.com/allisonle1) | [Brandon Lee](https://github.com/BrandonW-Lee) | [Casey Escovedo](https://github.com/caseyescovedo) | [Casey Walker](https://github.com/cwalker3011) | [Catherine Chiu](https://github.com/catherinechiu) | [Chris Akinrinade](https://github.com/chrisakinrinade) | [Cindy Chau](https://github.com/cindychau) | [Claudio Santos](https://github.com/Claudiohbsantos) | [Faraz Akhtar](https://github.com/faraza22) | [Frank Norton](https://github.com/FrankNorton32) | [Harrison Nam](https://github.com/harrynam07) | [James Kolotouros](https://github.com/dkolotouros) | [Jennifer Courtner](https://github.com/jcourtner) | [Justin Dury-Agri](https://github.com/justinD-A) | [Katie Klochan](https://github.com/kklochan) | [Mercer Stronck](https://github.com/mercerstronck) | [Muhammad Trad](https://github.com/muhammadtrad) | [Richard Guo](https://github.com/richardguoo) | [Richard Lam](https://github.com/rlam108) | [Sam Frakes](https://github.com/frakes413) | [Serena Kuo](https://github.com/serenackuo) | [Timothy Sin](https://github.com/timothysin)
+[Allison Le](https://github.com/allisonle1) | [Brandon Lee](https://github.com/BrandonW-Lee) | [Casey Escovedo](https://github.com/caseyescovedo) | [Casey Walker](https://github.com/cwalker3011) | [Catherine Chiu](https://github.com/catherinechiu) | [Chris Akinrinade](https://github.com/chrisakinrinade) | [Cindy Chau](https://github.com/cindychau) | [Claudio Santos](https://github.com/Claudiohbsantos) | [Eric Han](https://github.com/ericJH92) | [Faraz Akhtar](https://github.com/faraza22) | [Frank Norton](https://github.com/FrankNorton32) | [Harrison Nam](https://github.com/harrynam07) | [James Kolotouros](https://github.com/dkolotouros) | [Jennifer Courtner](https://github.com/jcourtner) | [John Wagner](https://github.com/jwagner988) | [Justin Dury-Agri](https://github.com/justinD-A) | [Justin Hicks](https://github.com/JuiceBawks) | [Katie Klochan](https://github.com/kklochan) | [May Wirapa Boonyasurat](https://github.com/mimiwrp) | [Mercer Stronck](https://github.com/mercerstronck) | [Muhammad Trad](https://github.com/muhammadtrad) | [Richard Guo](https://github.com/richardguoo) | [Richard Lam](https://github.com/rlam108) | [Sam Frakes](https://github.com/frakes413) | [Serena Kuo](https://github.com/serenackuo) | [Timothy Sin](https://github.com/timothysin) | [Vincent Trang](https://github.com/vincentt114)
 
 
 ## License

@@ -17,6 +17,13 @@ export interface AppState {
   setComparedQueries: (comparedQueries: Record<string, QueryData>) => void;
   setSidebarHidden: (isHidden: boolean) => void;
   sidebarIsHidden: boolean;
+  setFilePath: (filePath: string) => void;
+  newFilePath: string
+}
+
+export interface FilePath {
+  cancelled: boolean,
+  filePath: string
 }
 
 export type CreateNewQuery = (query: QueryData) => void;
@@ -42,6 +49,13 @@ export interface QueryData {
    * User given label that identifies query
    */
   label: string;
+  /**
+   * User given group for acordian grouping
+   */
+  group: string
+
+  // flag: boolean
+
 }
 
 export type ValidTabs = 'Results' | 'Execution Plan';
