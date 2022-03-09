@@ -94,7 +94,7 @@ const StepList = styled.ul`
 `;
 
 function getSteps() {
-  return ['Import a Database', 'Create New Queries', 'Compare Queries'];
+  return ['Import a Database', 'Create New Queries', 'Saving/Loading Queries', 'Compare Queries'];
 }
 
 function getStepContent(step: number) {
@@ -134,8 +134,8 @@ function getStepContent(step: number) {
               in the sidebar.
             </li>
             <li>
-              Select the + icon in the sidebar and give the query a label on the
-              rightside.
+              Select the + icon in the sidebar and give the query a label and a group on the
+              right side.
             </li>
             <li>
               Optionally: You can change the database to create the query in
@@ -157,12 +157,23 @@ function getStepContent(step: number) {
           </StepList>
         </StyledTypographyInstructions>
       );
-    case 2:
-      return (
+      case 2: 
+        return (
         <StyledTypographyInstructions>
           <strong>Step 3:</strong>
           <StepList>
-            <li>To compare queries, select the checkbox of the queries you would like to compare.</li>
+            <li>To save a query, first you must declare a file location by clicking the &quot;Designate Save Location&quot; button in the queries tab</li>
+            <li>Then you can save your queries individually by clicking the &quot;Save Query&quot; button</li>
+            <li>To load data into SeeQR just click the &quot;Import Query&quot; button, select the file you wish to upload in your local file system and click &quot;Upload&quot;</li>
+          </StepList>
+        </StyledTypographyInstructions>
+        )
+    case 3:
+      return (
+        <StyledTypographyInstructions>
+          <strong>Step 4:</strong>
+          <StepList>
+            <li>To compare queries, select the checkbox of the queries inside the groups you would like to compare.</li>
             <li>Then select the Chart Icon at the top of the sidebar.</li>
             <li>Feel free to continually select and deselect queries to compare.</li>
           </StepList>
