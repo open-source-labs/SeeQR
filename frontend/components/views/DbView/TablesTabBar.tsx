@@ -42,7 +42,8 @@ interface TablesTabBarProps {
 }
 
 const StyledViewButton = styled(Button)`
-
+  margin: 1rem;
+  margin-left: 0rem;
 `;
 
 const TablesTabs = ({
@@ -59,16 +60,15 @@ const TablesTabs = ({
     ({ table_name }) => table_name === selectedTable?.table_name
   );
 
-  const [active, setActive] = React.useState(1);
+  const [active, setActive] = React.useState(true);
   const SetView = (active) => {
     setActive(active);
   };
-  const ActiveView = () => {
-    switch (active) {
-      case 1:
-        return <></>;
-      case 2:
-        return (
+
+  const ErView = () => (
+    <div>
+      {active === true ? (<></>) :
+        (
           <>
             <StyledTabs
               value={tableIndex}
@@ -92,28 +92,27 @@ const TablesTabs = ({
             ))}
           </>
         )
-      default:
-        return <></>
-    }
-  }
+      }
+    </div>
+  )
 
   return (
     <div>
       <StyledViewButton
         variant="contained"
         color="primary"
-        onClick={() => SetView(1)}
+        onClick={() => SetView(true)}
       >
         ER
       </StyledViewButton>
       <StyledViewButton
         variant="contained"
         color="primary"
-        onClick={() => SetView(2)}
+        onClick={() => SetView(false)}
       >
         TABLE
       </StyledViewButton>
-      {ActiveView()}
+      {ErView()}
     </div>
   );
 };
