@@ -43,12 +43,13 @@ interface FlowTreeProps {
 
 const FlowTree = ({ data, thresholds }: FlowTreeProps) => (
   <ReactFlow
-    elements={buildFlowGraph(data, thresholds, 'flowNode', 'smoothstep')}
+    nodes={buildFlowGraph(data, thresholds, 'flowNode', 'smoothstep').nodes}
+    edges={buildFlowGraph(data, thresholds, 'flowNode', 'smoothstep').edges}
     nodesDraggable={false}
     nodesConnectable={false}
     nodeTypes={{ flowNode: FlowNodeComponent }}
     minZoom={0.1}
-    onLoad={(instance) => instance.fitView({ padding: 0.2 })}
+    // onLoad={(instance) => instance.fitView({ padding: 0.2 })}
     // improves performance on pan by preventing contant rerenders at the
     // cost of higher startup time
     onlyRenderVisibleElements={false}

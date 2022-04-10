@@ -1,4 +1,10 @@
 import React, { useEffect } from 'react';
+import ReactFlow, {
+  addEdge,
+  Background,
+  applyEdgeChanges,
+  applyNodeChanges,
+} from 'react-flow-renderer';
 import { Tabs, Tab, Button } from '@material-ui/core';
 import styled from 'styled-components';
 import TableDetails from './TableDetails';
@@ -67,7 +73,7 @@ const TablesTabs = ({
 
   const ErView = () => (
     <div>
-      {active === true ? (<></>) :
+      {active ? (<></>) :
         (
           <>
             <StyledTabs

@@ -45,6 +45,8 @@ const DbView = ({ selectedDb, show }: DbViewProps) => {
     };
   });
 
+  
+
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -54,6 +56,7 @@ const DbView = ({ selectedDb, show }: DbViewProps) => {
   };
 
   const db = databases.find((dbN) => dbN.db_name === selectedDb);
+  console.log('dbTables', dbTables);
 
   if (!show) return null;
   return (

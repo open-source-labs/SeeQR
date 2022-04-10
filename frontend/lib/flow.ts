@@ -1,11 +1,7 @@
-import { Elements } from 'react-flow-renderer';
 import { PlanNode, ExplainJson, Thresholds } from '../types';
 import { planNodeWidth, planNodeHeight } from '../style-variables';
 import createLayout, { SizedNode, Graph } from './planLayout';
 
-export type TypedElements = Elements<{
-  plan: PlanNode;
-}>;
 
 export type SizedPlanNode = PlanNode & SizedNode;
 
@@ -22,8 +18,8 @@ const dagreToFlow = (
   thresholds: Thresholds,
   nodeType: string,
   edgeType: string
-): TypedElements => {
-  const nodes: TypedElements = graphElements.nodes.map((node) => ({
+) => {
+  const nodes = graphElements.nodes.map((node) => ({
     id: node.id,
     // NOTE: BREAKS IF  CIRCULAR STRUCTURES ARE PASSED IN
     data: { plan: node.nodeData, totals, thresholds },
@@ -31,7 +27,7 @@ const dagreToFlow = (
     type: nodeType,
   }));
 
-  const edges: TypedElements = graphElements.edges.map((edge) => ({
+  const edges = graphElements.edges.map((edge) => ({
     id: `${edge.nodes.from}-${edge.nodes.to}`,
     source: edge.nodes.from,
     target: edge.nodes.to,
@@ -39,7 +35,12 @@ const dagreToFlow = (
     animated: true,
   }));
 
-  return nodes.concat(edges);
+  return (
+    {
+      nodes,
+      edges
+    })
+
 };
 
 const traverse = (
@@ -93,7 +94,7 @@ const buildFlowGraph = (
   thresholds: Thresholds,
   nodeComponent: string,
   edgeType: string
-): TypedElements => {
+) => {
   const sizedNodes = getSizedNodes(explain.Plan);
 
   // values to be injected into each plan
