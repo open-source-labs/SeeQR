@@ -10,6 +10,7 @@ import styled from 'styled-components';
 import TableDetails from './TableDetails';
 import { TableInfo } from '../../../types';
 import { greyPrimary } from '../../../style-variables';
+import ERTables from '../ERTables/ERTabling'
 
 
 interface TabPanelProps {
@@ -71,9 +72,11 @@ const TablesTabs = ({
     setActive(active);
   };
 
+  const state = {tables}
+
   const ErView = () => (
     <div>
-      {active ? (<></>) :
+      {active ? (<ERTables tables={tables} />) :
         (
           <>
             <StyledTabs

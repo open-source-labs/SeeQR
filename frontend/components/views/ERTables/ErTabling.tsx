@@ -1,32 +1,49 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import ReactFlow, {
   addEdge,
   applyEdgeChanges,
   applyNodeChanges,
   Background,
+  Node,
+  Edge
 } from 'react-flow-renderer';
+import stateToReactFlow from '../../../lib/convertStateToReactFlow';
 
 // CURRENTLY ACTING AS INITIAL STATE
-// import initialState from './nodes/initial-state/mockState.js';
-
-
 // import node types
-// import tableHeader from './nodes/components/tableHeaderNode.js';
-// import tableField from './nodes/components/tableFieldNode.js';
+import tableHeader from './TableHeaderNode';
+import tableField from './TableFieldNode';
 
-const nodeTypes = {
+type NodeTypes = {
+  tableHeader: any
+  tableField: any
+}
+
+const nodeTypes: NodeTypes = {
   tableHeader,
   tableField
 }
 
 // here is where we would update the styling of the page background
 const rfStyle = {
-  backgroundColor: '#D0C0F7',
+  height: '100vh',
 };
 
-function Flow() {
-  const [nodes, setNodes] = useState([]);
-  const [edges, setEdges] = useState([]);
+type ERTablingProps = {
+  tables 
+}
+
+function ERTabling({tables} : ERTablingProps) {
+  console.log('ERTabling', tables)
+
+
+  const [nodes, setNodes] = useState<Node[]>([]);
+  const [edges, setEdges] = useState<Edge[]>([]);
+  useEffect(() => {
+    const initialState = stateToReactFlow.convert(tables); 
+    setNodes(initialState.nodes);
+    setEdges(initialState.edges);
+  }, [tables])
   const onNodesChange = useCallback(
     (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
     [setNodes]
@@ -48,8 +65,8 @@ function Flow() {
       onNodesChange={onNodesChange}
       onEdgesChange={onEdgesChange}
       onConnect={onConnect}
-      fitView
-      // style={rfStyle}
+      fitView = {true}
+      style={rfStyle}
       // attributionPosition="top-right"
       >
       <button id='add-table-btn'> Add New Table </button>
@@ -58,4 +75,4 @@ function Flow() {
   );
 }
 
-export default Flow;
+export default ERTabling;

@@ -1,3 +1,5 @@
+import {TABLE_HEADER, TABLE_FIELD} from './constants/constants'
+
 /**
  * This file contains common types that need to be used across the frontend
  */
@@ -203,6 +205,35 @@ export interface ExplainJson {
   'Planning Time': number;
   'Execution Time': number;
 }
+
+/**
+ * 
+ * This section contains the types used for ER Tabling
+ * 
+ * 
+ */
+
+export type ERTablingConstants = {TABLE_HEADER} | {TABLE_FIELD};
+
+export type NodeTypes = {
+  tableHeader: JSX.Element
+  tableField: JSX.Element
+}
+
+export type ERTableColumnData = {
+  constraint_type: string;
+  column_name: string;
+  data_type: string;
+  character_maximum_length: number;
+  unique?: boolean; // optional until implemented
+  auto_increment?: boolean; // optional until implemented
+  foreign_column: string[];
+  foreign_table: string[];
+}
+
+
+
+
 
 
 
