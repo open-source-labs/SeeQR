@@ -8,22 +8,7 @@ import ReactFlow, {
   Edge
 } from 'react-flow-renderer';
 import stateToReactFlow from '../../../lib/convertStateToReactFlow';
-
-// CURRENTLY ACTING AS INITIAL STATE
-// import node types
-import tableHeader from './TableHeaderNode';
-import tableField from './TableFieldNode';
-
-// TODO: Assign types to tableHeader and TableField
-type NodeTypes = {
-  tableHeader: any
-  tableField: any
-}
-
-const nodeTypes: NodeTypes = {
-  tableHeader,
-  tableField
-}
+import nodeTypes from './NodeTypes';
 
 // here is where we would update the styling of the page background
 const rfStyle = {
@@ -35,13 +20,36 @@ type ERTablingProps = {
 }
 
 function ERTabling({tables} : ERTablingProps) {
+  const [schemaState, setSchemaState] = useState([]);
   const [nodes, setNodes] = useState<Node[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
+  // when tables (which is the database that is selected changes, update SchemaState)
   useEffect(() => {
-    const initialState = stateToReactFlow.convert(tables); 
-    setNodes(initialState.nodes);
-    setEdges(initialState.edges);
+    setSchemaState(tables);
   }, [tables])
+
+  // when SchemaState changes, convert the schema to react flow
+  useEffect(() => {
+    const initialState = stateToReactFlow.convert(schemaState); 
+    // create a deep copy of the state, to ensure the state is not directly modified
+    const schemaStateString = JSON.stringify(schemaState);
+    const schemaStateCopy = JSON.parse(schemaStateString);
+    const nodesArray = initialState.nodes.map((currentNode) => {
+      // add the schemaStateCopy and setSchemaState to the nodes data so that each node
+      // has reference to the current state and can modify the state to cause rerenders
+      const {data} = currentNode;
+      return ({
+        ...currentNode,
+        data : {
+          ...data,
+          schemaStateCopy,
+          setSchemaState
+        }
+      })
+    });
+    setNodes(nodesArray);
+    setEdges(initialState.edges);
+  },[schemaState])
 
   const onNodesChange = useCallback(
     (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
