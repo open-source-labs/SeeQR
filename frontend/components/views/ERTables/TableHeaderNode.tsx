@@ -7,6 +7,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
 
+import "./styles.css";
+
 type TableHeaderProps = {
   data: any
 }

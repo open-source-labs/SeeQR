@@ -6,11 +6,11 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  Typography,
-  List,
-  TextField,
 } from '@mui/material'
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+
+import "./styles.css";
 
 import TableFieldCheckBox from './TableFieldCheckBox';
 import TableFieldInput from './TableFieldInput';
