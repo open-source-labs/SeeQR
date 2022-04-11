@@ -34,7 +34,8 @@ const dagreToFlow = (
     type: edgeType,
     animated: true,
   }));
-
+  console.log('nodes', nodes);
+  console.log('edges', edges);
   return (
     {
       nodes,
@@ -101,7 +102,10 @@ const buildFlowGraph = (
   const totals: Totals = { time: explain['Execution Time'] };
 
   const layout = createLayout<PlanNode>(sizedNodes);
-  return dagreToFlow(layout, totals, thresholds, nodeComponent, edgeType);
+
+  const result = dagreToFlow(layout, totals, thresholds, nodeComponent, edgeType);
+  console.log('result', result);
+  return result;
 };
 
 export default buildFlowGraph;

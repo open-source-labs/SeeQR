@@ -14,6 +14,7 @@ import stateToReactFlow from '../../../lib/convertStateToReactFlow';
 import tableHeader from './TableHeaderNode';
 import tableField from './TableFieldNode';
 
+// TODO: Assign types to tableHeader and TableField
 type NodeTypes = {
   tableHeader: any
   tableField: any
@@ -34,9 +35,6 @@ type ERTablingProps = {
 }
 
 function ERTabling({tables} : ERTablingProps) {
-  console.log('ERTabling', tables)
-
-
   const [nodes, setNodes] = useState<Node[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
   useEffect(() => {
@@ -44,6 +42,7 @@ function ERTabling({tables} : ERTablingProps) {
     setNodes(initialState.nodes);
     setEdges(initialState.edges);
   }, [tables])
+
   const onNodesChange = useCallback(
     (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
     [setNodes]
@@ -65,7 +64,7 @@ function ERTabling({tables} : ERTablingProps) {
       onNodesChange={onNodesChange}
       onEdgesChange={onEdgesChange}
       onConnect={onConnect}
-      fitView = {true}
+      fitView
       style={rfStyle}
       // attributionPosition="top-right"
       >

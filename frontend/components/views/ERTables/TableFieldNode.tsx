@@ -52,8 +52,8 @@ function TableField({ data } : TableFieldProps) {
   return (
     <div>
       {constraint_type === "PRIMARY KEY" ? 
-        <Handle type='target' position={Position.Left} onChange={onChange} /> : 
-        <Handle type='source' position={Position.Left} onChange={onChange} />}
+        <Handle type='target' position={Position.Left} onChange={onChange} style={{background: '#fff'}}/> : 
+        <Handle type='source' position={Position.Right} onChange={onChange} />}
       <Accordion sx={{width: 350}}>
 
         <AccordionSummary expandIcon={<ExpandMoreIcon/>}>

@@ -1,4 +1,6 @@
-import * as types from '../constants/constants'
+import * as types from '../constants/constants';
+import {MarkerType} from 'react-flow-renderer';
+import { greenPrimary } from '../style-variables';
 
 class Table {
   constructor(id, columns, name,otherTables ){
@@ -37,7 +39,14 @@ class Table {
           source: `table-${this.name}_column-${el.column_name}`,
           target: `table-${el.foreign_table}_column-${el.foreign_column}`,
           id: `table-${this.name}_column${el.column_name}__table-${el.foreign_table}_column-${el.foreign_column}`,
-          animated: true
+          markerEnd: {
+            type: MarkerType.Arrow,
+            color: greenPrimary
+          },
+          animated: false,
+          style: {"stroke-width": 7,
+          stroke: greenPrimary,
+          }
         })
       }
     })
