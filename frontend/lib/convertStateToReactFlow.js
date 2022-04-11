@@ -44,7 +44,7 @@ class Table {
             color: greenPrimary
           },
           animated: false,
-          style: {"stroke-width": 7,
+          style: {"strokeWidth": 7,
           stroke: greenPrimary,
           }
         })

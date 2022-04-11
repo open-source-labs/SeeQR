@@ -1,10 +1,4 @@
-import React, { useEffect } from 'react';
-import ReactFlow, {
-  addEdge,
-  Background,
-  applyEdgeChanges,
-  applyNodeChanges,
-} from 'react-flow-renderer';
+import React, { useEffect,useState } from 'react';
 import { Tabs, Tab, Button } from '@material-ui/core';
 import styled from 'styled-components';
 import TableDetails from './TableDetails';
@@ -67,12 +61,11 @@ const TablesTabs = ({
     ({ table_name }) => table_name === selectedTable?.table_name
   );
 
-  const [active, setActive] = React.useState(true);
+  const [active, setActive] = useState(true);
   const SetView = (active) => {
     setActive(active);
   };
 
-  const state = {tables}
 
   const ErView = () => (
     <div>
