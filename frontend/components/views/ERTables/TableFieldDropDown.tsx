@@ -12,7 +12,7 @@ const TableFieldDropDown = (props: TableFieldDropDownProps) => {
   const {label, idName, options, defaultValue} = props
   const optionsArray = options.map(opt => {
      const isSelected = (opt === defaultValue)
-    return <option key={opt} selected={isSelected} value={opt}>{opt}</option>
+    return <option key={opt} value={opt}>{opt}</option>
   });
 
   return (

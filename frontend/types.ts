@@ -230,6 +230,56 @@ export type ERTableColumnData = {
   foreign_column: string[];
   foreign_table: string[];
 }
+export type DataTypes = 'integer' | 'bigint' | 'character varying' | 'serial' | 'date';
+export type AddColumnsObjType = {
+  column_name: string | null;
+  data_type: DataTypes;
+}
+export type DropColumnsObjType = {
+  column_name: string
+}
+export type AlterColumnsObjType = {
+  character_maximum_length: number | null;
+  column_name: string | null;
+  new_column_name: string | null;
+  constraint_name: string | null;
+  constriant_type: string | null;
+  data_type: DataTypes;
+  foreign_column: string | null;
+  foreign_table: string | null;
+  is_nullable: "YES" | "NO" | null;
+  auto_increment: boolean | null;
+  unique: boolean | null;
+}
+export type AddTablesObjType = {
+  is_insertable_into: 'YES' | 'NO';
+  table_catalog: string;
+  table_name: string;
+  table_schema: string;
+}
+export type DropTablesObjType = {
+  table_name: string | null;
+  table_schema: string
+}
+export type AlterTablesObjType = {
+  is_insertable_into: 'YES' | 'NO' | null;
+  table_catalog: string | null;
+  table_name: string | null;
+  new_table_name: string | null;
+  table_schema: string | null;
+  addColumns: AddColumnsObjType[];
+  dropColumns: DropColumnsObjType[];
+  alterColumns: AlterColumnsObjType[];
+}
+export type UpdatesObjType = {
+  addTables: AddTablesObjType[];
+  dropTables: DropTablesObjType[];
+  alterTables: AlterTablesObjType[];
+}
+export type BackendObjType = {
+  database: string;
+  updates: UpdatesObjType;
+}
 
 
 
