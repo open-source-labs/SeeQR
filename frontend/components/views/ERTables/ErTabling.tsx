@@ -30,10 +30,10 @@ function ERTabling({tables} : ERTablingProps) {
 
   // when SchemaState changes, convert the schema to react flow
   useEffect(() => {
-    const initialState = stateToReactFlow.convert(schemaState); 
+    const initialState = stateToReactFlow.convert(schemaState);
     // create a deep copy of the state, to ensure the state is not directly modified
     const schemaStateString = JSON.stringify(schemaState);
-    const schemaStateCopy = JSON.parse(schemaStateString);
+    const schemaStateCopy = JSON.parse(schemaStateString); 
     const nodesArray = initialState.nodes.map((currentNode) => {
       // add the schemaStateCopy and setSchemaState to the nodes data so that each node
       // has reference to the current state and can modify the state to cause rerenders
@@ -46,7 +46,8 @@ function ERTabling({tables} : ERTablingProps) {
           setSchemaState
         }
       })
-    });
+
+    }); 
     setNodes(nodesArray);
     setEdges(initialState.edges);
   },[schemaState])
@@ -63,7 +64,6 @@ function ERTabling({tables} : ERTablingProps) {
     (connection) => setEdges((eds) => addEdge(connection, eds)),
     [setEdges]
   );
-
   return (
     <ReactFlow
       nodes={nodes}
