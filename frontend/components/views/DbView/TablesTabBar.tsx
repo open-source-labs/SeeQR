@@ -1,9 +1,10 @@
-import React, { useEffect }from 'react';
-import { Tabs, Tab } from '@material-ui/core';
+import React, { useEffect } from 'react';
+import { Tabs, Tab, Button } from '@material-ui/core';
 import styled from 'styled-components';
 import TableDetails from './TableDetails';
 import { TableInfo } from '../../../types';
 import { greyPrimary } from '../../../style-variables';
+
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -33,12 +34,17 @@ const a11yProps = (index: any) => ({
   'aria-controls': `scrollable-auto-tabpanel-${index}`,
 });
 
-interface TablesTabBarProps { 
+interface TablesTabBarProps {
 
   tables: TableInfo[];
   selectTable: (table: TableInfo) => void;
   selectedTable: TableInfo | undefined;
 }
+
+const StyledViewButton = styled(Button)`
+  margin: 1rem;
+  margin-left: 0rem;
+`;
 
 const TablesTabs = ({
   tables,
@@ -46,9 +52,6 @@ const TablesTabs = ({
   selectedTable,
 }: TablesTabBarProps) => {
 
- 
-
-  
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     selectTable(tables[newValue]);
   };
@@ -57,29 +60,60 @@ const TablesTabs = ({
     ({ table_name }) => table_name === selectedTable?.table_name
   );
 
+  const [active, setActive] = React.useState(true);
+  const SetView = (active) => {
+    setActive(active);
+  };
+
+  const ErView = () => (
+    <div>
+      {active === true ? (<></>) :
+        (
+          <>
+            <StyledTabs
+              value={tableIndex}
+              onChange={handleChange}
+              indicatorColor="primary"
+              variant="scrollable"
+              scrollButtons="auto"
+              aria-label="scrollable auto tabs example"
+            >
+              {tables.map(({ table_name: name }, index) => (
+                <Tab label={name} {...a11yProps(index)} key={name} />
+              ))}
+              ;
+            </StyledTabs>
+            <br />
+            <br />
+            {tables.map((tableMap, index) => (
+              <TabPanel value={tableIndex} index={index} key={tableMap.table_name}>
+                <TableDetails table={tableMap} />
+              </TabPanel>
+            ))}
+          </>
+        )
+      }
+    </div>
+  )
+
   return (
-    <>
-      <StyledTabs
-        value={tableIndex}
-        onChange={handleChange}
-        indicatorColor="primary"
-        variant="scrollable"
-        scrollButtons="auto"
-        aria-label="scrollable auto tabs example"
+    <div>
+      <StyledViewButton
+        variant="contained"
+        color="primary"
+        onClick={() => SetView(true)}
       >
-        {tables.map(({ table_name: name }, index) => (
-          <Tab label={name} {...a11yProps(index)} key={name} />
-        ))}
-        ;
-      </StyledTabs>
-      <br />
-      <br />
-      {tables.map((tableMap, index) => (
-        <TabPanel value={tableIndex} index={index} key={tableMap.table_name}>
-          <TableDetails table={tableMap} />
-        </TabPanel>
-      ))}
-    </>
+        ER
+      </StyledViewButton>
+      <StyledViewButton
+        variant="contained"
+        color="primary"
+        onClick={() => SetView(false)}
+      >
+        TABLE
+      </StyledViewButton>
+      {ErView()}
+    </div>
   );
 };
 
