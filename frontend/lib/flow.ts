@@ -2,7 +2,6 @@ import { PlanNode, ExplainJson, Thresholds } from '../types';
 import { planNodeWidth, planNodeHeight } from '../style-variables';
 import createLayout, { SizedNode, Graph } from './planLayout';
 
-
 export type SizedPlanNode = PlanNode & SizedNode;
 
 export interface Totals {
@@ -34,14 +33,10 @@ const dagreToFlow = (
     type: edgeType,
     animated: true,
   }));
-  console.log('nodes', nodes);
-  console.log('edges', edges);
-  return (
-    {
-      nodes,
-      edges
-    })
-
+  return {
+    nodes,
+    edges,
+  };
 };
 
 const traverse = (
@@ -103,7 +98,13 @@ const buildFlowGraph = (
 
   const layout = createLayout<PlanNode>(sizedNodes);
 
-  const result = dagreToFlow(layout, totals, thresholds, nodeComponent, edgeType);
+  const result = dagreToFlow(
+    layout,
+    totals,
+    thresholds,
+    nodeComponent,
+    edgeType
+  );
   console.log('result', result);
   return result;
 };
