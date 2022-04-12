@@ -29,6 +29,7 @@ class Table {
         draggable: false,
         position: {x: 0, y: (i+1) * 76},
         data: {
+          tableName: this.name,
           columnData: el,
           otherTables: this.otherTables
         },
