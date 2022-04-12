@@ -85,23 +85,23 @@ function ERTabling({tables} : ERTablingProps) {
     console.log(backendObj.current);
   }
   return (
-    <>
-    <ReactFlow
-      nodes={nodes}
-      edges={edges}
-      nodeTypes={nodeTypes}
-      onNodesChange={onNodesChange}
-      onEdgesChange={onEdgesChange}
-      onConnect={onConnect}
-      fitView
-      style={rfStyle}
-      // attributionPosition="top-right"
+    <div>
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        nodeTypes={nodeTypes}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        onConnect={onConnect}
+        fitView
+        style={rfStyle}
+        // attributionPosition="top-right"
       >
-      <Background />
-    </ReactFlow>
-    <button id='add-table-btn'> Add New Table </button>
-    <button id='save' onClick = {handleClickSave}> Save </button>
-    </>
+        <Background />
+      </ReactFlow>
+      <button type='button' id='add-table-btn'> Add New Table </button>
+      <button type='button' id='save' onClick={handleClickSave}> Save </button>
+    </div>
   );
 }
 
