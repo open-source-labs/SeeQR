@@ -1,145 +1,6 @@
-const updateSchema =
-{
-  database: "starwars",
-  updates: {
-    addTables: [
-      {
-        is_insertable_into: "YES",
-        table_catalog: "starwars",
-        table_name: "people",
-        table_schema: "public"
-      },
-      {
-        is_insertable_into: "YES",
-        table_catalog: "starwars",
-        table_name: "people_in_films",
-        table_schema: "public"
-      },
-      {
-        is_insertable_into: "YES",
-        table_catalog: "starwars",
-        table_name: "testdrop",
-        table_schema: "public"
-      },
-    ],
-    dropTables: [
-      {
-        table_name: "testdrop",
-        table_schema: "public"
-      }
-    ],
-    alterTables: [ 
-      {
-        is_insertable_into: "YES",
-        table_catalog: "starwars",
-        table_name: "people",
-        new_table_name: "people_new",
-        table_schema: "public",
-        addColumns: [
-          {
-            column_name: "mass",
-            data_type: "SERIAL"
-          },
-        ],
-        dropColumns: [
-        ],
-        alterColumns: [ 
-          {
-            character_maximum_length: 20,
-            column_name: "mass",
-            new_column_name: "mass_new",
-            add_constraint: [
-              {
-                constraint_type: "PRIMARY KEY",
-                constraint_name: "pk2",
-                foreign_table: null,
-                foreign_column: null,
-              },
-            ],
-            data_type: null,
-            is_nullable: "NO",
-            drop_constraint: []
-          },
-        ],
-      },
-      {
-        is_insertable_into: "YES",
-        table_catalog: "starwars",
-        table_name: "people_in_films",
-        new_table_name: "people_in_starwars",
-        table_schema: "public",
-        addColumns: [
-          {
-            column_name: "id",
-            data_type: "SERIAL"
-          },
-          {
-            column_name: "person_name",
-            data_type: "INTEGER"
-          },
-          {
-            column_name: "name1",
-            data_type: "VARCHAR"
-          },
-        ],
-        dropColumns: [
-          {
-            column_name: "name1"
-          },
-        ],
-        alterColumns: [ 
-          {
-            character_maximum_length: 20,
-            column_name: "id",
-            new_column_name: "id_new",
-            add_constraint: [
-              {
-                constraint_type: "PRIMARY KEY",
-                constraint_name: "pk",
-                foreign_table: null,
-                foreign_column: null,
-              },
-              {
-                constraint_type: "UNIQUE",
-                constraint_name: "unique_1",
-                foreign_table: null,
-                foreign_column: null,
-              },
-            ],
-            data_type: null,
-            is_nullable: "NO",
-            drop_constraint: []
-          },
-          {
-            character_maximum_length: 20,
-            column_name: "person_name",
-            constraint_name: "mass_fk0",
-            new_column_name: "person_new_name",
-            add_constraint: [
-              {
-              constraint_type: "FOREIGN KEY",
-              constraint_name: "fk000",
-              foreign_table: "people",
-              foreign_column: "mass",
-              unique: null,
-              },
-            ],
-            data_type: null,
-            is_nullable: "YES",
-            drop_constraint: []
-          },
-        ],
-      },
-    ],
-  }
-}
-
-
-
-
-function stateChangeToSchema (stateChangeObj) {
+function backendObjToQuery (backendObj) {
   const outputArray = [];
-  const dbName = stateChangeObj.database;
+  const dbName = backendObj.database;
   
   function addTable (addTableArray) {
     for (let i = 0; i < addTableArray.length; i++) {
@@ -153,7 +14,6 @@ function stateChangeToSchema (stateChangeObj) {
       const currTable = dropTableArray[i];
       outputArray.push(`DROP TABLE ${currTable.table_schema}.${currTable.table_name}; `)
     }
-    // TODO: add conditional to check if there are primary or foreign keys; unless the related table is also being dropped, need to throw error
   };
 
   function alterTable (alterTableArray) {
@@ -180,18 +40,23 @@ function stateChangeToSchema (stateChangeObj) {
 
     function alterTableConstraint (currTable) {
       let alterTableConstraintString = ''
+
       function addPrimaryKey (currConstraint, currColumn) {
         alterTableConstraintString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} ADD CONSTRAINT ${currConstraint.constraint_name} PRIMARY KEY (${currColumn.column_name}); `;
       }
+
       function addForeignKey (currConstraint, currColumn) {
         alterTableConstraintString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} ADD CONSTRAINT ${currConstraint.constraint_name} FOREIGN KEY ("${currColumn.column_name}") REFERENCES ${currConstraint.foreign_table}(${currConstraint.foreign_column}); `;
       }
+
       function addUnique (currConstraint, currColumn) {
         alterTableConstraintString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} ADD CONSTRAINT ${currConstraint.constraint_name} UNIQUE (${currColumn.column_name}); `;
       }
+
       function dropConstraint (currDrop) {
         alterTableConstraintString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} DROP CONSTRAINT, ${currDrop}; `;
       }
+
       for (let i = 0; i < currTable.alterColumns.length; i++) {
         const currColumn = currTable.alterColumns[i];
         for (let j = 0; j < currColumn.add_constraint.length; j++) {
@@ -208,7 +73,6 @@ function stateChangeToSchema (stateChangeObj) {
         }
         for (let j = 0; j < currColumn.drop_constraint.length; j++) {
           const currDrop = currColumn.drop_constraint[j];
-          console.log(currDrop)
           dropConstraint(currDrop);
         }
       }
@@ -246,6 +110,7 @@ function stateChangeToSchema (stateChangeObj) {
 
   function renameTablesColumns(renameTableArray) {
     let renameString = '';
+
     function renameTable (currTable) {
       if (currTable.new_table_name) {
         renameString+= `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} RENAME TO ${currTable.new_table_name}; `;
@@ -267,11 +132,11 @@ function stateChangeToSchema (stateChangeObj) {
     outputArray.push(renameString);
   }
 
-  addTable(stateChangeObj.updates.addTables);
-  dropTable(stateChangeObj.updates.dropTables);
-  alterTable(stateChangeObj.updates.alterTables);
-  renameTablesColumns(stateChangeObj.updates.alterTables)
+  addTable(backendObj.updates.addTables);
+  dropTable(backendObj.updates.dropTables);
+  alterTable(backendObj.updates.alterTables);
+  renameTablesColumns(backendObj.updates.alterTables);
   return (outputArray.join(''))
 }
 
-console.log(stateChangeToSchema(updateSchema))
+export default backendObjToQuery;
