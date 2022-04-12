@@ -1,24 +1,27 @@
 import React from 'react';
 
 type TableFieldCheckBoxProps = {
-  label : string
-  idName : string
-  isChecked? : boolean | undefined
+  label : string;
+  idName : string;
+  isChecked? : boolean | undefined;
+  changeCallback? : (any) => any; // FIXME:
 }
 
-const TableFieldCheckBox = ({label, idName, isChecked}: TableFieldCheckBoxProps) => {
-
-  
+const TableFieldCheckBox = ({label, idName, isChecked, changeCallback}: TableFieldCheckBoxProps) => {
   const handleChange = (e) => {
-    console.log(e.target.checked);
-
+    if (changeCallback) changeCallback(e.target.checked);
   }
 
   return (  
     <div className='field-info-checkbox'>
-      {label + ':'}
+      {`${label}:`}
       <div className='checkbox-wrapper'>
-        <input id={idName} type="checkbox" defaultChecked={isChecked} onChange={(evnt) => {handleChange(evnt)}}/>
+        <input 
+          id={idName} 
+          type="checkbox" 
+          defaultChecked={isChecked}
+          onChange={(evnt) => {handleChange(evnt)}}
+        />
       </div>
     </div>
   )
