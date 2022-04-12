@@ -133,3 +133,5 @@ const updateSchema =
     ],
   }
 }
+
+export default updateSchema;

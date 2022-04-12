@@ -5,6 +5,7 @@ import os from 'os';
 import helperFunctions from './helperFunctions';
 import generateDummyData from './DummyD/dummyDataMain';
 import { ColumnObj, DBList, DummyRecords } from './BE_types';
+import backendObjToQuery from './ertable-functions';
 
 const db = require('./models');
 
@@ -428,6 +429,48 @@ ipcMain.handle(
       const dbsAndTables: DBList = await db.getLists();
       event.sender.send('db-lists', dbsAndTables);
 
+      event.sender.send('async-complete');
+    }
+  }
+);
+
+// Generate and run query from react-flow ER diagram
+ipcMain.handle(
+  'ertable-schemaupdate',
+  async (event, backendObj) => {   // send notice to front end that schema update has started
+    event.sender.send('async-started');
+    let feedback: Feedback = {
+      type: '',
+      message: '',
+    };
+    try {
+      // Generates query from backendObj
+      const query = backendObjToQuery(backendObj);
+
+      // run sql command
+      await db.query('Begin;');
+      await db.query(query);
+      await db.query('Commit;');
+      feedback = {
+        type: 'success',
+        message: 'Database updated successfully.',
+      };
+    } catch (err) {
+      // rollback transaction if there's an error in update and send back feedback to FE
+      await db.query('Rollback;');
+      feedback = {
+        type: 'error',
+        message: err,
+      };
+    } finally {
+      // send updated db info 
+      const updatedDb: DBList = await db.getLists();
+      event.sender.send('db-lists', updatedDb);
+
+      // send feedback back to FE
+      event.sender.send('feedback', feedback);
+      
+      // send notice to FE that schema update has been completed
       event.sender.send('async-complete');
     }
   }
