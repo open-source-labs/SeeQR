@@ -37,18 +37,12 @@ function TableField({ data } : TableFieldProps) {
     console.log(evt.target.value);
   }, []);
 
-
-  useEffect(() => {
-    // #TODO: UPDATE FKTABLE/FIELD DISABLED BASED ON DK CHECKBOX
-    // #TODO: UPDATEFK FIELD OPTIONS BASED ON FK TABLE
-    // console.log('thes', column_name)
-  },[])
-
   const disableFKDD = (isChecked) => {
     // const id = `foreign-key-table-dd-${column_name}`;
     // console.log(isChecked, id)
     // if (document.getElementById(id) !== null) document.getElementById(id).disabled = isChecked;
-
+    // #TODO: UPDATE FKTABLE/FIELD DISABLED BASED ON DK CHECKBOX
+    // #TODO: UPDATEFK FIELD OPTIONS BASED ON FK TABLE
     
   }
 
