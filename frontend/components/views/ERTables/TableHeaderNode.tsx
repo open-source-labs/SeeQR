@@ -1,6 +1,3 @@
-//#TODO: replace with proper numbered table name
-//#TODO: FIGURE OUT HOW TO PASS DOWN THEMES
-//#TODO: GET BOX TO WORK
 import React from 'react';
 import Tooltip from '@mui/material/Tooltip';
 import DeleteIcon from '@mui/icons-material/Delete';
