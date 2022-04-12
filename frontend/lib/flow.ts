@@ -105,7 +105,6 @@ const buildFlowGraph = (
     nodeComponent,
     edgeType
   );
-  console.log('result', result);
   return result;
 };
 
