@@ -7,7 +7,7 @@ type TableFieldInputProps = {
 const TableFieldInput = ({defaultValue, label}: TableFieldInputProps) => {
   return (
     <div className='field-info-input'>
-      {label + ':'}
+      {`${label}:`}
       <input defaultValue={defaultValue} />
     </div>
   );
