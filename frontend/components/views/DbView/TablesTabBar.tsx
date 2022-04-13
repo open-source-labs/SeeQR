@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect,useState } from 'react';
 import { Tabs, Tab, Button } from '@material-ui/core';
 import styled from 'styled-components';
 import { ipcRenderer } from 'electron';
@@ -7,6 +7,8 @@ import { TableInfo } from '../../../types';
 import { greyPrimary } from '../../../style-variables';
 import updateSchema from './sample-updateschema';
 import { sendFeedback } from '../../../lib/utils';
+import ERTables from '../ERTables/ERTabling';
+
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -62,7 +64,7 @@ const TablesTabs = ({
     ({ table_name }) => table_name === selectedTable?.table_name
   );
 
-  const [active, setActive] = React.useState(true);
+  const [active, setActive] = useState(true);
   const SetView = (active) => {
     setActive(active);
   };
@@ -85,7 +87,7 @@ const TablesTabs = ({
 
   const ErView = () => (
     <div>
-      {active === true ? (<></>) :
+      {active ? (<ERTables tables={tables} />) :
         (
           <>
             <StyledTabs

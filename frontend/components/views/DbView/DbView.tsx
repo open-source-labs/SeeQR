@@ -45,6 +45,8 @@ const DbView = ({ selectedDb, show }: DbViewProps) => {
     };
   });
 
+  
+
   const handleClickOpen = () => {
     setOpen(true);
   };

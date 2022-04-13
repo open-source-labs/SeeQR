@@ -1,3 +1,5 @@
+import {TABLE_HEADER, TABLE_FIELD} from './constants/constants'
+
 /**
  * This file contains common types that need to be used across the frontend
  */
@@ -203,6 +205,89 @@ export interface ExplainJson {
   'Planning Time': number;
   'Execution Time': number;
 }
+
+/**
+ * 
+ * This section contains the types used for ER Tabling
+ * 
+ * 
+ */
+
+export type ERTablingConstants = {TABLE_HEADER} | {TABLE_FIELD};
+
+export type NodeTypes = {
+  tableHeader: JSX.Element
+  tableField: JSX.Element
+}
+
+export type ERTableColumnData = {
+  constraint_type: string;
+  column_name: string;
+  data_type: string;
+  character_maximum_length: number;
+  unique?: boolean; // optional until implemented
+  auto_increment?: boolean; // optional until implemented
+  foreign_column: string;
+  foreign_table: string;
+}
+export type DataTypes = 'integer' | 'bigint' | 'character varying' | 'serial' | 'date';
+export type AddColumnsObjType = {
+  column_name: string | null;
+  data_type: DataTypes;
+}
+export type DropColumnsObjType = {
+  column_name: string
+}
+export type AlterColumnsObjType = {
+  column_name: string;
+  character_maximum_length: number | null;
+  new_column_name: string | null;
+  add_constraint: AddConstraintObjType;
+  data_type: DataTypes;
+  is_nullable: "YES" | "NO" | null;
+  drop_constraint: string[];
+}
+
+export type AddConstraintObjType = {
+  constraint_type: 'PRIMARY KEY' | 'FOREIGN KEY' | 'UNIQUE';
+  constraint_name: string;
+  foreign_table: string | null;
+  foreign_column: string | null;
+}
+
+export type AddTablesObjType = {
+  is_insertable_into: 'YES' | 'NO';
+  table_catalog: string;
+  table_name: string;
+  table_schema: string;
+}
+export type DropTablesObjType = {
+  table_name: string;
+  table_schema: string;
+}
+export type AlterTablesObjType = {
+  is_insertable_into: 'YES' | 'NO' | null;
+  table_catalog: string | null;
+  table_name: string | null;
+  new_table_name: string | null;
+  table_schema: string | null;
+  addColumns: AddColumnsObjType[];
+  dropColumns: DropColumnsObjType[];
+  alterColumns: AlterColumnsObjType[];
+}
+export type UpdatesObjType = {
+  addTables: AddTablesObjType[];
+  dropTables: DropTablesObjType[];
+  alterTables: AlterTablesObjType[];
+}
+export type BackendObjType = {
+  database: string;
+  updates: UpdatesObjType;
+}
+
+
+
+
 
 
 

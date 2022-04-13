@@ -1,0 +1,43 @@
+.field-info-input {
+    display: flex;
+    justify-content: space-between;
+}
+
+.field-info-input > input {
+    text-align: center;
+}
+
+.field-info-dropdown {
+    display: flex;
+    justify-content: space-between;
+}
+
+.field-info-checkbox {
+    display: flex;
+    justify-content: space-between;
+}
+
+.checkbox-wrapper {
+    display: flex;
+    justify-content: space-around;
+    width: 50%;
+}
+
+.field-summary-wrapper {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.field-summary-wrapper > p {
+    width: 50%;
+}
+
+.field-summary-wrapper > p {
+    width: 50%;
+    text-align: left;
+}
+
+#delete-btn {
+    float: right;
+}
