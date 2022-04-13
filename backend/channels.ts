@@ -435,7 +435,7 @@ ipcMain.handle('ertable-schemaupdate', async (event, backendObj) => {
   try {
     // Generates query from backendObj
     const query = backendObjToQuery(backendObj);
-    console.log('query', query);
+    console.log('query: ', query);
     // run sql command
     await db.query('Begin;');
     await db.query(query);

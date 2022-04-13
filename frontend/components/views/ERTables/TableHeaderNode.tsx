@@ -25,18 +25,20 @@ type TableHeaderProps = {
 function TableHeader({ data }: TableHeaderProps) {
   const { table_name, schemaStateCopy, setSchemaState, backendObj } = data;
 
+
   const handleAddColumn = () => {
     // iterate through the schema copy
     for (let i = 0; i < schemaStateCopy.length; i++) {
       // edit the schema table for this current table
       if (schemaStateCopy[i].table_name === table_name) {
+        console.log('schemastatecopy: ', schemaStateCopy[i])
         // create an alterTableObject with AlterTablesObjectType
         const alterTablesObj: AlterTablesObjType = {
           is_insertable_into: null,
           table_catalog: schemaStateCopy[i].table_catalog,
           table_name,
           new_table_name: null,
-          table_schema: null,
+          table_schema: schemaStateCopy[i].table_schema,
           addColumns: [],
           dropColumns: [],
           alterColumns: [],
@@ -47,7 +49,6 @@ function TableHeader({ data }: TableHeaderProps) {
           column_name: `NewColumn${schemaStateCopy[i].columns.length + 1}`,
           data_type: 'character varying',
         };
-
         // add the addColumnsObj to the alterTablesObj
         alterTablesObj.addColumns.push(addColumnsObj);
         // update the backendObj

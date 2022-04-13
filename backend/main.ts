@@ -2,19 +2,7 @@
 import { FamilyRestroomRounded } from '@mui/icons-material';
 import { BrowserWindow, Menu } from 'electron';
 
-import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
-
 const { app } = require('electron');
-app.whenReady().then(() => {
-    installExtension(REACT_DEVELOPER_TOOLS, {
-      loadExtensionOptions: {
-          allowFileAccess: true,
-      },
-    })
-      .then((name) => console.log(`Added Extension:  ${name}`))
-      .catch((err) => console.log('An error occurred: ', err));
-});
-
 
 const dev: boolean = process.env.NODE_ENV === 'development';
 
@@ -75,17 +63,6 @@ function createWindow() {
   });
 }
 
-// Install React Dev Tools Extension
-if (dev) {
-  const {
-    default: installExtension,
-    REACT_DEVELOPER_TOOLS,
-  } = require('electron-devtools-installer');
-
-  app.on('ready', () => {
-    installExtension(REACT_DEVELOPER_TOOLS);
-  });
-}
 // Invoke createWindow to create browser windows after Electron has been initialized.
 app.on('ready', createWindow);
 

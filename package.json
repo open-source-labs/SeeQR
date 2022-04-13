@@ -89,7 +89,6 @@
     "css-loader": "^5.2.7",
     "electron": "^11.2.3",
     "electron-builder": "^22.9.1",
-    "electron-devtools-installer": "git+https://github.com/mduclehcm/electron-devtools-installer#mduclehcm-patch-1",
     "electron-packager": "^14.2.1",
     "electron-reloader": "^1.1.0",
     "electron-store": "^6.0.0",
