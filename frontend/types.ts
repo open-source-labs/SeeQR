@@ -239,18 +239,22 @@ export type DropColumnsObjType = {
   column_name: string
 }
 export type AlterColumnsObjType = {
+  column_name: string;
   character_maximum_length: number | null;
-  column_name: string | null;
   new_column_name: string | null;
-  constraint_name: string | null;
-  constriant_type: string | null;
+  add_constraint: AddConstraintObjType;
   data_type: DataTypes;
-  foreign_column: string | null;
-  foreign_table: string | null;
   is_nullable: "YES" | "NO" | null;
-  auto_increment: boolean | null;
-  unique: boolean | null;
+  drop_constraint: string[];
 }
+
+export type AddConstraintObjType = {
+  constraint_type: 'PRIMARY KEY' | 'FOREIGN KEY' | 'UNIQUE';
+  constraint_name: string;
+  foreign_table: string | null;
+  foreign_column: string | null;
+}
+
 export type AddTablesObjType = {
   is_insertable_into: 'YES' | 'NO';
   table_catalog: string;
@@ -258,8 +262,8 @@ export type AddTablesObjType = {
   table_schema: string;
 }
 export type DropTablesObjType = {
-  table_name: string | null;
-  table_schema: string
+  table_name: string;
+  table_schema: string;
 }
 export type AlterTablesObjType = {
   is_insertable_into: 'YES' | 'NO' | null;
