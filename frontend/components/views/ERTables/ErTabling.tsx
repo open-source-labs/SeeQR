@@ -6,13 +6,12 @@ import ReactFlow, {
   applyNodeChanges,
   Background,
   Node,
-  Edge
+  Edge,
 } from 'react-flow-renderer';
 import stateToReactFlow from '../../../lib/convertStateToReactFlow';
 import nodeTypes from './NodeTypes';
 import { BackendObjType, UpdatesObjType } from '../../../types';
 import { sendFeedback } from '../../../lib/utils';
-
 
 // here is where we would update the styling of the page background
 const rfStyle = {
@@ -20,54 +19,53 @@ const rfStyle = {
 };
 
 type ERTablingProps = {
-  tables 
-}
+  tables;
+};
 
-function ERTabling({tables} : ERTablingProps) {
+function ERTabling({ tables }: ERTablingProps) {
   const [schemaState, setSchemaState] = useState([]);
   const [nodes, setNodes] = useState<Node[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
   // when tables (which is the database that is selected changes, update SchemaState)
   useEffect(() => {
     setSchemaState(tables);
-  }, [tables])
+  }, [tables]);
   // define an object using the useRef hook to maintain its value throughout all rerenders
   // this object will hold the data that needs to get sent to the backend to update the
   // SQL database. Each node will have access to this backendObj
   const updates: UpdatesObjType = {
     addTables: [],
     dropTables: [],
-    alterTables: []
-  }
+    alterTables: [],
+  };
   const backendObj = useRef<BackendObjType>({
     database: tables[0].table_catalog,
-    updates
+    updates,
   });
   // when SchemaState changes, convert the schema to react flow
   useEffect(() => {
     const initialState = stateToReactFlow.convert(schemaState);
     // create a deep copy of the state, to ensure the state is not directly modified
     const schemaStateString = JSON.stringify(schemaState);
-    const schemaStateCopy = JSON.parse(schemaStateString); 
+    const schemaStateCopy = JSON.parse(schemaStateString);
     // initialize the backendobj with the current database
     const nodesArray = initialState.nodes.map((currentNode) => {
       // add the schemaStateCopy and setSchemaState to the nodes data so that each node
       // has reference to the current state and can modify the state to cause rerenders
-      const {data} = currentNode;
-      return ({
+      const { data } = currentNode;
+      return {
         ...currentNode,
-        data : {
+        data: {
           ...data,
           schemaStateCopy,
           setSchemaState,
-          backendObj: backendObj.current
-        }
-      })
-
-    }); 
+          backendObj: backendObj.current,
+        },
+      };
+    });
     setNodes(nodesArray);
     setEdges(initialState.edges);
-  },[schemaState])
+  }, [schemaState]);
 
   const onNodesChange = useCallback(
     (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
@@ -81,41 +79,49 @@ function ERTabling({tables} : ERTablingProps) {
     (connection) => setEdges((eds) => addEdge(connection, eds)),
     [setEdges]
   );
-  
+
   const handleClickSave = () => {
     // #TODO: This function will send a message to the back end with
     // the data in backendObj.current
     console.log(backendObj.current);
 
     ipcRenderer
-    .invoke('ertable-schemaupdate', backendObj.current)
-    .catch(() =>
-      sendFeedback({
-        type: 'error',
-        message: 'Query failed',
-      })
-    )
-    .catch((err: object) => {
-      console.log(err);
-    });
-  }
+      .invoke('ertable-schemaupdate', backendObj.current)
+      .catch(() =>
+        sendFeedback({
+          type: 'error',
+          message: 'Query failed',
+        })
+      )
+      .catch((err: object) => {
+        console.log(err);
+      });
+  };
   return (
     <div>
       <ReactFlow
         nodes={nodes}
         edges={edges}
         nodeTypes={nodeTypes}
+        nodesConnectable={false}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         fitView
         style={rfStyle}
+        onlyRenderVisibleElements={false}
         // attributionPosition="top-right"
       >
         <Background />
       </ReactFlow>
-      <button type='button' id='add-table-btn'> Add New Table </button>
-      <button type='button' id='save' onClick={handleClickSave}> Save </button>
+      <button type="button" id="add-table-btn">
+        {' '}
+        Add New Table{' '}
+      </button>
+      <button type="button" id="save" onClick={handleClickSave}>
+        {' '}
+        Save{' '}
+      </button>
     </div>
   );
 }

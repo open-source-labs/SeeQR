@@ -14,7 +14,7 @@ class Table {
       {
         id: `table-${this.name}`,
         type: types.TABLE_HEADER,
-        position: { x: (this.id - 1) * 550, y: 0 },
+        position: { x: (this.id - 1) * 500, y: 0 },
         tableName: this.name,
         data: {
           table_name: this.name,
@@ -46,7 +46,7 @@ class Table {
             type: MarkerType.Arrow,
             color: greenPrimary,
           },
-          animated: false,
+          animated: true,
           style: { strokeWidth: 7, stroke: greenPrimary },
         });
       }
