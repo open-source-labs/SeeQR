@@ -42,7 +42,9 @@ function TableField({ data } : TableFieldProps) {
     const options:string[] = [];
 
     // if foreign_table is NOT provided return column names of first table in otherTables
-    if (foreign_table == null) options.push(... data.otherTables[0].column_names)
+    if (foreign_table == null && data.otherTables.length > 0) {
+      options.push(... data.otherTables[0].column_names)
+    }
 
     // if foreign_table is provided return associated column_names
     data.otherTables.forEach(table => {

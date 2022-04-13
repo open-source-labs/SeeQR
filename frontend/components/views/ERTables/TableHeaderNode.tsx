@@ -53,7 +53,7 @@ function TableHeader({ data }: TableHeaderProps) {
         alterTablesObj.addColumns.push(addColumnsObj);
         // update the backendObj
         backendObj.updates.alterTables.push(alterTablesObj);
-        // push a new object into backendObj.alterTables
+
         // push a new object with blank properties
         schemaStateCopy[i].columns.push({
           character_maxmimum_length: null,
@@ -72,6 +72,26 @@ function TableHeader({ data }: TableHeaderProps) {
     }
   };
 
+
+  const handleDeleteTable = () => {
+    for (let i = 0; i < schemaStateCopy.length; i++) {
+      if (schemaStateCopy[i].table_name === table_name) {
+        // update backend
+        const dropTablesObj = {
+          table_name,
+          table_schema: schemaStateCopy[i].table_schema
+        }
+        backendObj.updates.dropTables.push(dropTablesObj);
+
+        // update frontend
+        schemaStateCopy.splice(i, 1);
+        setSchemaState(schemaStateCopy)
+
+        return;
+      }
+    }
+  };
+
   return (
     <div className="table-header table">
       <Tooltip title="Enter a new name to change table name">
@@ -80,13 +100,10 @@ function TableHeader({ data }: TableHeaderProps) {
           label="Table Name"
           variant="standard"
           defaultValue={data.table_name}
-          // required={true}
-          // type='string'
-          // value={data.tableName}
         />
       </Tooltip>
       <Tooltip title="Delete Table">
-        <IconButton>
+        <IconButton onClick={handleDeleteTable}>
           <DeleteIcon />
         </IconButton>
       </Tooltip>
