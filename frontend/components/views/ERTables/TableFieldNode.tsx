@@ -8,20 +8,31 @@ import {
 } from '@mui/material'
 
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { ERTableColumnData } from '../../../types';
+import { ERTableColumnData,
+  BackendObjType,
+  AlterTablesObjType,
+  DropColumnsObjType,
+} from '../../../types';
 
 import TableFieldCheckBox from './TableFieldCheckBox';
 import TableFieldInput from './TableFieldInput';
 import TableFieldDropDown from './TableFieldDropDown';
 import TableFieldDropDownOption from './TableFieldDropDownOption';
-
 import "./styles.css";
+
+type TableFieldDataObjectType = {
+  table_name: string;
+  schemaStateCopy: any;
+  setSchemaState: (string) => {};
+  backendObj: BackendObjType;
+}
 
 type TableFieldProps = {
   data
 }
 
 function TableField({ data } : TableFieldProps) {
+  const { table_name, schemaStateCopy, setSchemaState, backendObj }: TableFieldDataObjectType = data;
   const {
     constraint_type, 
     column_name, 
@@ -33,9 +44,48 @@ function TableField({ data } : TableFieldProps) {
     foreign_table } : ERTableColumnData = data.columnData;
 
   const tableColumn = `${data.tableName}-${column_name}`;
-  const onChange = useCallback((evt) => {
-    console.log(evt.target.value);
-  }, []);
+
+
+  const handleDropColumn = () => {
+    // iterate through schema copy
+    for (let i = 0; i < schemaStateCopy.length; i++) {
+      // edit schema table for this current table
+      if (schemaStateCopy[i].table_name === data.tableName) {
+        let columnIndex;
+        // iterate through columns
+        for (let j = 0; j < schemaStateCopy[i].columns.length; j++) {
+          if (schemaStateCopy[i].columns[j].column_name === column_name) {
+            columnIndex = j;
+
+            // create alterTablesObject with AlterTablesObjecttype
+            const alterTablesObj: AlterTablesObjType = {
+            is_insertable_into: null,
+            table_catalog: schemaStateCopy[i].table_catalog,
+            table_name: schemaStateCopy[i].table_name,
+            new_table_name: null,
+            table_schema: schemaStateCopy[i].table_schema,
+            addColumns: [],
+            dropColumns: [],
+            alterColumns: [],
+          };
+        // create a deleteColumnsType object
+        const dropColumnObj: DropColumnsObjType = {
+          column_name: schemaStateCopy[i].columns[j].column_name
+        };
+        // add deleteColumns obj to the alterTablesObj
+        alterTablesObj.dropColumns.push(dropColumnObj);
+        // update the backendObj
+        backendObj.updates.alterTables.push(alterTablesObj);
+        // alter schema state to remove the column
+        schemaStateCopy[i].columns.splice(columnIndex, 1);
+        // set the state
+        setSchemaState(schemaStateCopy);
+        return;
+          }
+        }
+      }
+    }
+  }
 
   // autopopulates the fk field options from state
   const createFieldOptions = () => {
@@ -73,8 +123,8 @@ function TableField({ data } : TableFieldProps) {
   return (
     <div>
       {constraint_type === "PRIMARY KEY" ? 
-        <Handle type='target' position={Position.Left} onChange={onChange} style={{background: '#fff'}} /> : 
-        <Handle type='source' position={Position.Right} onChange={onChange} />}
+        <Handle type='target' position={Position.Left} style={{background: '#fff'}} /> : 
+        <Handle type='source' position={Position.Right} />}
       <Accordion sx={{width: 350}}>
 
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -147,7 +197,7 @@ function TableField({ data } : TableFieldProps) {
           <div>
             <button id='update-btn'>Update</button>  
             <button id='cancel-btn'>Cancel</button>  
-            <button id='delete-btn'>Delete</button>  
+            <button id='delete-btn' onClick={handleDropColumn}>Delete</button>  
           </div>
         </AccordionDetails>
 

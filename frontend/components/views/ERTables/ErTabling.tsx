@@ -28,7 +28,6 @@ function ERTabling({ tables }: ERTablingProps) {
   const [edges, setEdges] = useState<Edge[]>([]);
   // when tables (which is the database that is selected changes, update SchemaState)
   useEffect(() => {
-    console.log('tables: ', tables)
     setSchemaState(tables);
   }, [tables]);
   // define an object using the useRef hook to maintain its value throughout all rerenders
