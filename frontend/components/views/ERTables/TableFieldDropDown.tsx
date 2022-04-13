@@ -1,5 +1,10 @@
-import React, {useEffect} from 'react';
+import React, { useEffect, useState } from 'react';
 import TableFieldDropDownOption from './TableFieldDropDownOption';
+
+type OtherTablesType = {
+  table_name: string;
+  column_names: string[];
+};
 
 type TableFieldDropDownProps = {
   label: string;
@@ -7,26 +12,56 @@ type TableFieldDropDownProps = {
   options: string[];
   defaultValue: string;
   isDisabled?: boolean;
-  changeCallback?: (any?) => any; // FIXME:
-}
-
+  otherTables: OtherTablesType[];
+  setFkOptions?: (fkOptions: string[]) => void;
+};
 
 const TableFieldDropDown = (props: TableFieldDropDownProps) => {
-  const {label, idName, options, defaultValue, isDisabled, changeCallback} = props
+  const {
+    label,
+    idName,
+    options,
+    defaultValue,
+    isDisabled,
+    otherTables,
+    setFkOptions,
+  } = props;
 
-  const optionsArray = options.map(option => <TableFieldDropDownOption idName={idName} option={option} />);
+  const optionsArray = options.map((option, i) => (
+    <TableFieldDropDownOption
+      key={idName + i}
+      idName={idName}
+      option={option}
+    />
+    ));
 
   const handleChange = (e) => {
-    // // only apply callback if one is passed in
-    if (changeCallback) changeCallback(e.target.checked);
-  }
+    // if setFKOptions is truthy, the instance of TableFieldDropDown
+    // with Other table names has been changed
+    if (setFkOptions) {
+      // check to see if otherTables is truthy
+      // set the FK options to rerender a new list depending on the table name
+      const newTableFkOptions = otherTables.find(
+        (el) => el.table_name === e.target.value
+      );
+
+      if (newTableFkOptions) {
+        setFkOptions(newTableFkOptions.column_names);
+      }
+    }
+  };
 
   return (
-    <div id={`${idName}-wrapper`} className='field-info-dropdown'>
+    <div id={`${idName}-wrapper`} className="field-info-dropdown">
       {`${label}:`}
-      <select id={idName} defaultValue={defaultValue} disabled={isDisabled} onChange={(evnt)=>handleChange(evnt)}> 
+      <select
+        id={idName}
+        defaultValue={defaultValue}
+        disabled={isDisabled}
+        onChange={(evnt) => handleChange(evnt)}
+      >
         {optionsArray}
-      </select> 
+      </select>
     </div>
   );
 };

@@ -33,13 +33,12 @@ function TableField({ data } : TableFieldProps) {
     foreign_table } : ERTableColumnData = data.columnData;
 
   const tableColumn = `${data.tableName}-${column_name}`;
-  const [fkOptions, setFkOptions] = useState<string[]>(createFieldOptions());
   const onChange = useCallback((evt) => {
     console.log(evt.target.value);
   }, []);
 
-  // autopopulates the fk field options
-  function createFieldOptions() {
+  // autopopulates the fk field options from state
+  const createFieldOptions = () => {
     const options:string[] = [];
 
     // if foreign_table is NOT provided return column names of first table in otherTables
@@ -55,6 +54,8 @@ function TableField({ data } : TableFieldProps) {
     return options;
   };
 
+  const [fkOptions, setFkOptions] = useState<string[]>(createFieldOptions());
+
   // disable the dropdown menus for fk table and field when fk checkbox is not checked
   const disableFKHandler = (isChecked) => {
     const tableID = `foreign-key-table-dd-${tableColumn}`;
@@ -67,34 +68,6 @@ function TableField({ data } : TableFieldProps) {
     fieldDD.disabled = !isChecked;
   };
 
-  // create and update the fk field dropdown options based on the selected fk table
-  const changeFKOptionsHandler = () => {
-    // const tableID = `foreign-key-table-dd-${tableColumn}`;
-    // const fieldID = `foreign-key-field-dd-${tableColumn}`;
-
-    // const tableDD = document.getElementById(tableID) as HTMLSelectElement;
-    // let fieldDD = document.getElementById(fieldID) as HTMLSelectElement;
-
-    // // const options:HTMLOptionElement[] = []; //FIXME: FIX TYPE
-    // const options: JSX.Element[] = [];
-    // data.otherTables.forEach(table => {
-    //   if (table.table_name === tableDD.value) {
-    //     table.column_names.forEach(col => {
-    //       options.push(<TableFieldDropDownOption idName={fieldID} option={col} />);
-    //     });
-    //   }
-    // });
-
-    // if (options.length > 0) {
-    //   console.log(options)
-    //   fieldDD.add(options[0])
-    // }
-
-
-  }
-
-
-  
   return (
     <div>
       {constraint_type === "PRIMARY KEY" ? 
@@ -117,7 +90,8 @@ function TableField({ data } : TableFieldProps) {
           <TableFieldDropDown 
             label='Type' 
             idName={`type-dd-${tableColumn}`}
-            defaultValue={data_type} 
+            defaultValue={data_type}
+            otherTables={data.otherTables}
             options={['serial', 'varchar', 'bigint', 'integer', 'date']}
           />
           <TableFieldInput 
@@ -137,8 +111,8 @@ function TableField({ data } : TableFieldProps) {
             isDisabled={foreign_table == null}
             defaultValue={foreign_table} 
             options={data.otherTables.map(table => table.table_name)}
-            // changeCallback={changeFKOptionsHandler}
-            // setFkOptions={setFkOptions}
+            setFkOptions={setFkOptions}
+            otherTables={data.otherTables}
           />
           <TableFieldDropDown 
             label='Field' 
@@ -146,6 +120,7 @@ function TableField({ data } : TableFieldProps) {
             isDisabled={foreign_table == null}
             defaultValue={foreign_column} 
             options={fkOptions}
+            otherTables={data.otherTables}
           />
           <p />
           <TableFieldCheckBox // FIXME:
