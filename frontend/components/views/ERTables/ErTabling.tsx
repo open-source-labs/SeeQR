@@ -1,3 +1,4 @@
+import { ipcRenderer } from 'electron';
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 import ReactFlow, {
   addEdge,
@@ -10,6 +11,8 @@ import ReactFlow, {
 import stateToReactFlow from '../../../lib/convertStateToReactFlow';
 import nodeTypes from './NodeTypes';
 import { BackendObjType, UpdatesObjType } from '../../../types';
+import { sendFeedback } from '../../../lib/utils';
+
 
 // here is where we would update the styling of the page background
 const rfStyle = {
@@ -83,6 +86,18 @@ function ERTabling({tables} : ERTablingProps) {
     // #TODO: This function will send a message to the back end with
     // the data in backendObj.current
     console.log(backendObj.current);
+
+    ipcRenderer
+    .invoke('ertable-schemaupdate', backendObj.current)
+    .catch(() =>
+      sendFeedback({
+        type: 'error',
+        message: 'Query failed',
+      })
+    )
+    .catch((err: object) => {
+      console.log(err);
+    });
   }
   return (
     <div>
