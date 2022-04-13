@@ -105,7 +105,7 @@ function TableField({ data } : TableFieldProps) {
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <div className='field-summary-wrapper'>
             <p id='column-name'>{column_name}</p>
-            <p id='data-type'>{data_type}</p>
+            <p id='data-type'>{data_type === 'character varying' ? 'varchar' : data_type}</p>
           </div>
         </AccordionSummary>
 
