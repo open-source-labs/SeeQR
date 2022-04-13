@@ -1,62 +1,36 @@
 import React, { useState, memo  } from 'react';
 import styled from 'styled-components';
-import ReactFlow, {
-  Background,
-  Handle,
-  Position,
-  NodeProps,
-} from 'react-flow-renderer';
-import PlanCard from './PlanCard';
-import buildFlowGraph, { SizedPlanNode, Totals } from '../../../../lib/flow';
+import ReactFlow, { Background } from 'react-flow-renderer';
+import buildFlowGraph from '../../../../lib/flow';
 import { ExplainJson, Thresholds } from '../../../../types';
 import { DarkPaperFull } from '../../../../style-variables';
 import FlowControls from './FlowControls';
-
-type FlowNodeProps = NodeProps<{
-  plan: SizedPlanNode;
-  totals: Totals;
-  thresholds: Thresholds;
-}>;
-
-const FlowNodeComponent = ({
-  data: { plan, totals, thresholds },
-}: FlowNodeProps) => (
-  <div>
-    <Handle
-      type="target"
-      position={Position.Top}
-      style={{ visibility: 'hidden' }}
-    />
-    <PlanCard plan={plan} totals={totals} thresholds={thresholds} />
-    <Handle
-      type="source"
-      position={Position.Bottom}
-      style={{ visibility: 'hidden' }}
-    />
-  </div>
-);
+import nodeTypes from './ExecutionPlanNodeTypes';
 
 interface FlowTreeProps {
   data: ExplainJson;
   thresholds: Thresholds;
 }
 
-const FlowTree = ({ data, thresholds }: FlowTreeProps) => (
-  <ReactFlow
-    nodes={buildFlowGraph(data, thresholds, 'flowNode', 'smoothstep').nodes}
-    edges={buildFlowGraph(data, thresholds, 'flowNode', 'smoothstep').edges}
-    nodesDraggable={false}
-    nodesConnectable={false}
-    nodeTypes={{ flowNode: FlowNodeComponent }}
-    minZoom={0.1}
-    // onLoad={(instance) => instance.fitView({ padding: 0.2 })}
-    // improves performance on pan by preventing contant rerenders at the
-    // cost of higher startup time
-    onlyRenderVisibleElements={false}
-  >
-    <Background gap={32} />
-  </ReactFlow>
-);
+const FlowTree = ({ data, thresholds }: FlowTreeProps) => {
+  const result = buildFlowGraph(data,thresholds,'flowNode','smoothstep');
+  return (
+    <ReactFlow
+      nodes={result.nodes}
+      edges={result.edges}
+      nodesDraggable={false}
+      nodesConnectable={false}
+      nodeTypes={nodeTypes}
+      minZoom={0.1}
+      fitView
+      // onLoad={(instance) => instance.fitView({ padding: 0.2 })}
+      // improves performance on pan by preventing contant rerenders at the
+      // cost of higher startup time
+      onlyRenderVisibleElements={false}
+    >
+      <Background gap={32} />
+    </ReactFlow>
+)};
 
 // Memoise to prevent rerender on fullscreen toggle
 const MemoFlowTree = memo(FlowTree);

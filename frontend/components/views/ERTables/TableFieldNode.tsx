@@ -56,7 +56,7 @@ function TableField({ data } : TableFieldProps) {
         <Handle type='source' position={Position.Right} onChange={onChange} />}
       <Accordion sx={{width: 350}}>
 
-        <AccordionSummary expandIcon={<ExpandMoreIcon/>}>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <div className='field-summary-wrapper'>
             <p id='column-name'>{column_name}</p>
             <p id='data-type'>{data_type}</p>
