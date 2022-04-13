@@ -16,12 +16,9 @@ const TableFieldDropDown = (props: TableFieldDropDownProps) => {
 
   const optionsArray = options.map(option => <TableFieldDropDownOption idName={idName} option={option} />);
 
-
   const handleChange = (e) => {
     // // only apply callback if one is passed in
     if (changeCallback) changeCallback(e.target.checked);
-    
-  } 
 
   return (
     <div id={`${idName}-wrapper`} className='field-info-dropdown'>
