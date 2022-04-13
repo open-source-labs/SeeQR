@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import TableDetails from './TableDetails';
 import { TableInfo } from '../../../types';
 import { greyPrimary } from '../../../style-variables';
-import ERTables from '../ERTables/ERTabling'
+import ERTables from '../ERTables/ERTabling';
 
 
 interface TabPanelProps {

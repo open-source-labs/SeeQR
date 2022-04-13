@@ -227,8 +227,8 @@ export type ERTableColumnData = {
   character_maximum_length: number;
   unique?: boolean; // optional until implemented
   auto_increment?: boolean; // optional until implemented
-  foreign_column: string[];
-  foreign_table: string[];
+  foreign_column: string;
+  foreign_table: string;
 }
 export type DataTypes = 'integer' | 'bigint' | 'character varying' | 'serial' | 'date';
 export type AddColumnsObjType = {

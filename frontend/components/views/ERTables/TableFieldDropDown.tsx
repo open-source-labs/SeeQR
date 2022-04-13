@@ -1,24 +1,30 @@
-import React from 'react';
+import React, {useEffect} from 'react';
+import TableFieldDropDownOption from './TableFieldDropDownOption';
 
 type TableFieldDropDownProps = {
   label: string;
   idName: string;
   options: string[];
-  defaultValue: string[] | string | number | boolean;
+  defaultValue: string;
+  isDisabled?: boolean;
+  changeCallback?: (any?) => any; // FIXME:
 }
 
 
 const TableFieldDropDown = (props: TableFieldDropDownProps) => {
-  const {label, idName, options, defaultValue} = props
-  const optionsArray = options.map(opt => {
-     const isSelected = (opt === defaultValue)
-    return <option key={opt} value={opt}>{opt}</option>
-  });
+  const {label, idName, options, defaultValue, isDisabled, changeCallback} = props
+
+  const optionsArray = options.map(option => <TableFieldDropDownOption idName={idName} option={option} />);
+
+  const handleChange = (e) => {
+    // // only apply callback if one is passed in
+    if (changeCallback) changeCallback(e.target.checked);
+  }
 
   return (
-    <div id={idName} className='field-info-dropdown'>
-      {label + ':'}
-      <select> 
+    <div id={`${idName}-wrapper`} className='field-info-dropdown'>
+      {`${label}:`}
+      <select id={idName} defaultValue={defaultValue} disabled={isDisabled} onChange={(evnt)=>handleChange(evnt)}> 
         {optionsArray}
       </select> 
     </div>

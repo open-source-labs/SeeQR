@@ -1,26 +1,25 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { Handle, Position } from 'react-flow-renderer';
-import { ERTableColumnData } from '../../../types';
 
 import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  Typography,
-  List,
-  TextField,
 } from '@mui/material'
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { ERTableColumnData } from '../../../types';
 
 import TableFieldCheckBox from './TableFieldCheckBox';
 import TableFieldInput from './TableFieldInput';
 import TableFieldDropDown from './TableFieldDropDown';
+import TableFieldDropDownOption from './TableFieldDropDownOption';
+
+import "./styles.css";
 
 type TableFieldProps = {
   data
 }
-
-//import "./styles.css";
 
 function TableField({ data } : TableFieldProps) {
   const {
@@ -32,34 +31,81 @@ function TableField({ data } : TableFieldProps) {
     auto_increment,
     foreign_column,
     foreign_table } : ERTableColumnData = data.columnData;
-  
+
+  const tableColumn = `${data.tableName}-${column_name}`;
+  const [fkOptions, setFkOptions] = useState<string[]>(createFieldOptions());
   const onChange = useCallback((evt) => {
     console.log(evt.target.value);
   }, []);
 
+  // autopopulates the fk field options
+  function createFieldOptions() {
+    const options:string[] = [];
 
-  useEffect(() => {
-    // #TODO: UPDATE FKTABLE/FIELD DISABLED BASED ON DK CHECKBOX
-    // #TODO: UPDATEFK FIELD OPTIONS BASED ON FK TABLE
-  },[])
-  
-  // if (document.getElementById('foreign-key-chkbox')) {
-  //   console.log('fk', document.getElementById('foreign-key-chkbox'))
-  //   console.log('fk', document.getElementById('foreign-key-chkbox').value)
-  // }
+    // if foreign_table is NOT provided return column names of first table in otherTables
+    if (foreign_table == null) options.push(... data.otherTables[0].column_names)
+
+    // if foreign_table is provided return associated column_names
+    data.otherTables.forEach(table => {
+      if (table.table_name === foreign_table) {
+        options.push(... table.column_names);
+      }
+    });
+
+    return options;
+  };
+
+  // disable the dropdown menus for fk table and field when fk checkbox is not checked
+  const disableFKHandler = (isChecked) => {
+    const tableID = `foreign-key-table-dd-${tableColumn}`;
+    const fieldID = `foreign-key-field-dd-${tableColumn}`;
+
+    const tableDD = document.getElementById(tableID) as HTMLSelectElement;
+    const fieldDD = document.getElementById(fieldID) as HTMLSelectElement;
+
+    tableDD.disabled = !isChecked;
+    fieldDD.disabled = !isChecked;
+  };
+
+  // create and update the fk field dropdown options based on the selected fk table
+  const changeFKOptionsHandler = () => {
+    // const tableID = `foreign-key-table-dd-${tableColumn}`;
+    // const fieldID = `foreign-key-field-dd-${tableColumn}`;
+
+    // const tableDD = document.getElementById(tableID) as HTMLSelectElement;
+    // let fieldDD = document.getElementById(fieldID) as HTMLSelectElement;
+
+    // // const options:HTMLOptionElement[] = []; //FIXME: FIX TYPE
+    // const options: JSX.Element[] = [];
+    // data.otherTables.forEach(table => {
+    //   if (table.table_name === tableDD.value) {
+    //     table.column_names.forEach(col => {
+    //       options.push(<TableFieldDropDownOption idName={fieldID} option={col} />);
+    //     });
+    //   }
+    // });
+
+    // if (options.length > 0) {
+    //   console.log(options)
+    //   fieldDD.add(options[0])
+    // }
+
+
+  }
+
 
   
   return (
     <div>
       {constraint_type === "PRIMARY KEY" ? 
-        <Handle type='target' position={Position.Left} onChange={onChange} style={{background: '#fff'}}/> : 
+        <Handle type='target' position={Position.Left} onChange={onChange} style={{background: '#fff'}} /> : 
         <Handle type='source' position={Position.Right} onChange={onChange} />}
       <Accordion sx={{width: 350}}>
 
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <div className='field-summary-wrapper'>
             <p id='column-name'>{column_name}</p>
-            <p id='data-type'>{data_type}</p>
+            <p id='data-type'>{data_type === 'character varying' ? 'varchar' : data_type}</p>
           </div>
         </AccordionSummary>
 
@@ -70,7 +116,7 @@ function TableField({ data } : TableFieldProps) {
           />
           <TableFieldDropDown 
             label='Type' 
-            idName={`type-dd-${column_name}`}
+            idName={`type-dd-${tableColumn}`}
             defaultValue={data_type} 
             options={['serial', 'varchar', 'bigint', 'integer', 'date']}
           />
@@ -78,49 +124,53 @@ function TableField({ data } : TableFieldProps) {
             label='Size' 
             defaultValue={character_maximum_length}
           />
-          <p></p>
+          <p />
           <TableFieldCheckBox 
             label='Foreign Key' 
-            idName={`foreign-key-chkbox-${column_name}`}
+            idName={`foreign-key-chkbox-${tableColumn}`}
             isChecked={foreign_table != null}
+            changeCallback={disableFKHandler}
           />
           <TableFieldDropDown 
             label='Table'
-            idName={`foreign-key-table-dd-${column_name}`}
-            // isDisabled={document.getElementById(id);!= null}
+            idName={`foreign-key-table-dd-${tableColumn}`}
+            isDisabled={foreign_table == null}
             defaultValue={foreign_table} 
             options={data.otherTables.map(table => table.table_name)}
+            // changeCallback={changeFKOptionsHandler}
+            // setFkOptions={setFkOptions}
           />
           <TableFieldDropDown 
             label='Field' 
-            idName={`foreign-key-field-dd-${column_name}`}
+            idName={`foreign-key-field-dd-${tableColumn}`}
+            isDisabled={foreign_table == null}
             defaultValue={foreign_column} 
-            options={[]}
+            options={fkOptions}
           />
-          <p></p>
+          <p />
           <TableFieldCheckBox // FIXME:
-            idName={`primary-key-chkbox-${column_name}`}
+            idName={`primary-key-chkbox-${tableColumn}`}
             label='Primary Key'
           />
           <TableFieldCheckBox // FIXME:
-            idName='allow-null-chkbox'
+            idName={`allow-null-chkbox-${tableColumn}`}
             label='Allow Null'
           />
           <TableFieldCheckBox // FIXME: MAKE FIXED TO PRIMARY KEY
-            idName={`unique-chkbox-${column_name}`}
+            idName={`unique-chkbox-${tableColumn}`}
             label='Unique' 
             isChecked={unique} 
           />
           <TableFieldCheckBox // FIXME: MAKE FIXED TO PRIMARY KEY
-            idName={`auto-increment-chkbox-${column_name}`}
+            idName={`auto-increment-chkbox-${tableColumn}`}
             label='Auto Increment' 
             isChecked={auto_increment}
           />
-          <p></p>
+          <p />
           <div>
-            <button id='update-btn' >Update</button>  
-            <button id='cancel-btn' >Cancel</button>  
-            <button id='delete-btn' >Delete</button>  
+            <button id='update-btn'>Update</button>  
+            <button id='cancel-btn'>Cancel</button>  
+            <button id='delete-btn'>Delete</button>  
           </div>
         </AccordionDetails>
 
