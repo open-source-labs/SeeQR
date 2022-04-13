@@ -13,6 +13,7 @@ import { ERTableColumnData } from '../../../types';
 import TableFieldCheckBox from './TableFieldCheckBox';
 import TableFieldInput from './TableFieldInput';
 import TableFieldDropDown from './TableFieldDropDown';
+import TableFieldDropDownOption from './TableFieldDropDownOption';
 
 import "./styles.css";
 
@@ -32,19 +33,66 @@ function TableField({ data } : TableFieldProps) {
     foreign_table } : ERTableColumnData = data.columnData;
 
   const tableColumn = `${data.tableName}-${column_name}`;
-  
+  const [fkOptions, setFkOptions] = useState<string[]>(createFieldOptions());
   const onChange = useCallback((evt) => {
     console.log(evt.target.value);
   }, []);
 
-  const disableFKDD = (isChecked) => {
-    // const id = `foreign-key-table-dd-${column_name}`;
-    // console.log(isChecked, id)
-    // if (document.getElementById(id) !== null) document.getElementById(id).disabled = isChecked;
-    // #TODO: UPDATE FKTABLE/FIELD DISABLED BASED ON DK CHECKBOX
-    // #TODO: UPDATEFK FIELD OPTIONS BASED ON FK TABLE
-    
+  // autopopulates the fk field options
+  function createFieldOptions() {
+    const options:string[] = [];
+
+    // if foreign_table is NOT provided return column names of first table in otherTables
+    if (foreign_table == null) options.push(... data.otherTables[0].column_names)
+
+    // if foreign_table is provided return associated column_names
+    data.otherTables.forEach(table => {
+      if (table.table_name === foreign_table) {
+        options.push(... table.column_names);
+      }
+    });
+
+    return options;
+  };
+
+  // disable the dropdown menus for fk table and field when fk checkbox is not checked
+  const disableFKHandler = (isChecked) => {
+    const tableID = `foreign-key-table-dd-${tableColumn}`;
+    const fieldID = `foreign-key-field-dd-${tableColumn}`;
+
+    const tableDD = document.getElementById(tableID) as HTMLSelectElement;
+    const fieldDD = document.getElementById(fieldID) as HTMLSelectElement;
+
+    tableDD.disabled = !isChecked;
+    fieldDD.disabled = !isChecked;
+  };
+
+  // create and update the fk field dropdown options based on the selected fk table
+  const changeFKOptionsHandler = () => {
+    // const tableID = `foreign-key-table-dd-${tableColumn}`;
+    // const fieldID = `foreign-key-field-dd-${tableColumn}`;
+
+    // const tableDD = document.getElementById(tableID) as HTMLSelectElement;
+    // let fieldDD = document.getElementById(fieldID) as HTMLSelectElement;
+
+    // // const options:HTMLOptionElement[] = []; //FIXME: FIX TYPE
+    // const options: JSX.Element[] = [];
+    // data.otherTables.forEach(table => {
+    //   if (table.table_name === tableDD.value) {
+    //     table.column_names.forEach(col => {
+    //       options.push(<TableFieldDropDownOption idName={fieldID} option={col} />);
+    //     });
+    //   }
+    // });
+
+    // if (options.length > 0) {
+    //   console.log(options)
+    //   fieldDD.add(options[0])
+    // }
+
+
   }
+
 
   
   return (
@@ -80,8 +128,8 @@ function TableField({ data } : TableFieldProps) {
           <TableFieldCheckBox 
             label='Foreign Key' 
             idName={`foreign-key-chkbox-${tableColumn}`}
-            isChecked={foreign_table == null}
-            changeCallback={disableFKDD}
+            isChecked={foreign_table != null}
+            changeCallback={disableFKHandler}
           />
           <TableFieldDropDown 
             label='Table'
@@ -89,13 +137,15 @@ function TableField({ data } : TableFieldProps) {
             isDisabled={foreign_table == null}
             defaultValue={foreign_table} 
             options={data.otherTables.map(table => table.table_name)}
+            // changeCallback={changeFKOptionsHandler}
+            // setFkOptions={setFkOptions}
           />
           <TableFieldDropDown 
             label='Field' 
             idName={`foreign-key-field-dd-${tableColumn}`}
             isDisabled={foreign_table == null}
             defaultValue={foreign_column} 
-            options={[]}
+            options={fkOptions}
           />
           <p />
           <TableFieldCheckBox // FIXME:

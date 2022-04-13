@@ -4,7 +4,7 @@ type TableFieldCheckBoxProps = {
   label : string;
   idName : string;
   isChecked? : boolean | undefined;
-  changeCallback? : (any) => any; // FIXME:
+  changeCallback? : (any?) => any; // FIXME:
 }
 
 const TableFieldCheckBox = ({label, idName, isChecked, changeCallback}: TableFieldCheckBoxProps) => {
