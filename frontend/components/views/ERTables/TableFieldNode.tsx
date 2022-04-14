@@ -161,7 +161,7 @@ function TableField({ data }: TableFieldProps) {
             label="Foreign Key"
             idName={`foreign-key-chkbox-${tableColumn}`}
             isChecked={foreign_table != null}
-            changeCallback={disableFKHandler}
+            onChange={disableFKHandler}
           />
           <TableFieldDropDown
             label="Table"
@@ -184,6 +184,7 @@ function TableField({ data }: TableFieldProps) {
           <TableFieldCheckBox // FIXME:
             idName={`primary-key-chkbox-${tableColumn}`}
             label="Primary Key"
+            isChecked={constraint_type === 'PRIMARY KEY'}
           />
           <TableFieldCheckBox // FIXME:
             idName={`allow-null-chkbox-${tableColumn}`}

@@ -4,14 +4,11 @@ type TableFieldCheckBoxProps = {
   label : string;
   idName : string;
   isChecked? : boolean | undefined;
-  changeCallback? : (any?) => any; // FIXME:
+  onChange? : (any?) => any; // FIXME:
 }
 
-const TableFieldCheckBox = ({label, idName, isChecked, changeCallback}: TableFieldCheckBoxProps) => {
-  const handleChange = (e) => {
-    // only apply callback if one is passed in
-    if (changeCallback) changeCallback(e.target.checked);
-  }
+// eslint-disable-next-line arrow-body-style
+const TableFieldCheckBox = ({label, idName, isChecked, onChange}: TableFieldCheckBoxProps) => {
 
   return (  
     <div className='field-info-checkbox'>
@@ -21,7 +18,7 @@ const TableFieldCheckBox = ({label, idName, isChecked, changeCallback}: TableFie
           id={idName} 
           type="checkbox" 
           defaultChecked={isChecked}
-          onChange={(evnt) => {handleChange(evnt)}}
+          onChange={(e) => {if (onChange) onChange(e.target.checked)}}
         />
       </div>
     </div>
