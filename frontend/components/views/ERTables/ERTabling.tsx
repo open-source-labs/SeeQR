@@ -107,9 +107,17 @@ function ERTabling({ tables }: ERTablingProps) {
   const handleClickSave = () => {
     // #TODO: This function will send a message to the back end with
     // the data in backendObj.current
-
     ipcRenderer
       .invoke('ertable-schemaupdate', backendObj.current)
+      .then((data) => {
+        // resets the backendObj
+        if (data === 'success') {
+          backendObj.current = {
+            database: tables[0] ? tables[0].table_catalog : null,
+            updates,
+          }
+        }
+      })
       .catch(() =>
         sendFeedback({
           type: 'error',

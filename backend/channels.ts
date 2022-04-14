@@ -444,6 +444,7 @@ ipcMain.handle('ertable-schemaupdate', async (event, backendObj) => {
       type: 'success',
       message: 'Database updated successfully.',
     };
+    return 'success';
   } catch (err) {
     // rollback transaction if there's an error in update and send back feedback to FE
     await db.query('Rollback;');
@@ -462,5 +463,6 @@ ipcMain.handle('ertable-schemaupdate', async (event, backendObj) => {
 
     // send notice to FE that schema update has been completed
     event.sender.send('async-complete');
+   
   }
 });
