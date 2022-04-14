@@ -139,7 +139,8 @@ function ERTabling({ tables }: ERTablingProps) {
     <div>
       <StyledViewButton
         variant="contained"
-        id="add-table-btn">
+        id="add-table-btn"
+        onClick={handleAddTable}>
           {' '}
         Add New Table{' '}
       </StyledViewButton>
@@ -165,14 +166,6 @@ function ERTabling({ tables }: ERTablingProps) {
       >
         <Background />
       </ReactFlow>
-      <button type="button" id="add-table-btn" onClick={handleAddTable}>
-        {' '}
-        Add New Table{' '}
-      </button>
-      <button type="button" id="save" onClick={handleClickSave}>
-        {' '}
-        Save{' '}
-      </button>
     </div>
   );
 }
