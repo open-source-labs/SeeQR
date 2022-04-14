@@ -27,8 +27,6 @@ function ERTabling({ tables }: ERTablingProps) {
   const [nodes, setNodes] = useState<Node[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
 
-  console.log(tables)
-
   // when tables (which is the database that is selected changes, update SchemaState)
   useEffect(() => {
     setSchemaState(tables);
@@ -109,8 +107,6 @@ function ERTabling({ tables }: ERTablingProps) {
   const handleClickSave = () => {
     // #TODO: This function will send a message to the back end with
     // the data in backendObj.current
-    console.log(backendObj.current);
-
     ipcRenderer
       .invoke('ertable-schemaupdate', backendObj.current)
       .catch(() =>
