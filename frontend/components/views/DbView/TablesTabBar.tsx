@@ -5,6 +5,9 @@ import TableDetails from './TableDetails';
 import { TableInfo } from '../../../types';
 import { greyPrimary } from '../../../style-variables';
 import ERTables from '../ERTables/ERTabling';
+import updateSchema from './sample-updateschema';
+import { sendFeedback } from '../../../lib/utils';
+import ERTables from '../ERTables/ErTabling';
 
 
 interface TabPanelProps {

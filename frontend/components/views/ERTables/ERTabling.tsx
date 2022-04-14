@@ -8,10 +8,13 @@ import ReactFlow, {
   Node,
   Edge,
 } from 'react-flow-renderer';
+import { Button } from '@material-ui/core';
+import styled from 'styled-components';
 import stateToReactFlow from '../../../lib/convertStateToReactFlow';
 import nodeTypes from './NodeTypes';
 import { BackendObjType, UpdatesObjType, AddTablesObjType } from '../../../types';
 import { sendFeedback } from '../../../lib/utils';
+
 
 // here is where we would update the styling of the page background
 const rfStyle = {
@@ -103,6 +106,10 @@ function ERTabling({ tables }: ERTablingProps) {
 
     return;
   };
+  const StyledViewButton = styled(Button)`
+  margin: 1rem;
+  margin-left: 0rem;
+`;
 
   const handleClickSave = () => {
     // #TODO: This function will send a message to the back end with
@@ -130,7 +137,20 @@ function ERTabling({ tables }: ERTablingProps) {
   };
   return (
     <div>
-      <ReactFlow
+      <StyledViewButton
+        variant="contained"
+        id="add-table-btn">
+          {' '}
+        Add New Table{' '}
+      </StyledViewButton>
+      <StyledViewButton 
+        variant="contained" 
+        id="save" 
+        onClick={handleClickSave}>
+        {' '}
+        Save{' '}
+      </StyledViewButton>
+      <ReactFlow 
         nodes={nodes}
         edges={edges}
         nodeTypes={nodeTypes}
