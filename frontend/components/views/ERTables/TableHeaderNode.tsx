@@ -25,7 +25,6 @@ type TableHeaderProps = {
 function TableHeader({ data }: TableHeaderProps) {
   const { table_name, schemaStateCopy, setSchemaState, backendObj } = data;
 
-
   const handleAddColumn = () => {
     // iterate through the schema copy
     for (let i = 0; i < schemaStateCopy.length; i++) {
@@ -71,34 +70,67 @@ function TableHeader({ data }: TableHeaderProps) {
     }
   };
 
-
   const handleDeleteTable = () => {
     for (let i = 0; i < schemaStateCopy.length; i++) {
       if (schemaStateCopy[i].table_name === table_name) {
         // update backend
         const dropTablesObj = {
           table_name,
-          table_schema: schemaStateCopy[i].table_schema
-        }
+          table_schema: schemaStateCopy[i].table_schema,
+        };
         backendObj.updates.dropTables.push(dropTablesObj);
 
         // update frontend
         schemaStateCopy.splice(i, 1);
-        setSchemaState(schemaStateCopy)
+        setSchemaState(schemaStateCopy);
 
         return;
       }
     }
   };
 
+  // updates the table name when the user hits enter on the submit form
+  const handleChangeTableName = (e) => {
+    if (e.key === 'Enter') {
+      for (let i = 0; i < schemaStateCopy.length; i++) {
+        if (schemaStateCopy[i].table_name === table_name) {
+          const tableInputField = document.getElementById(
+            `table-name-form-${data.table_name}`
+          ) as HTMLInputElement;
+
+          // update backend
+          const alterTablesObj: AlterTablesObjType = {
+            is_insertable_into: schemaStateCopy[i].is_insertable_into,
+            table_catalog: schemaStateCopy[i].table_catalog,
+            table_name: schemaStateCopy[i].table_name,
+            new_table_name: tableInputField.value,
+            table_schema: schemaStateCopy[i].table_schema,
+            addColumns: [],
+            dropColumns: [],
+            alterColumns: [],
+          };
+
+          // update frontend
+          if (tableInputField !== null) {
+            schemaStateCopy[i].table_name = tableInputField.value;
+            setSchemaState(schemaStateCopy);
+          }
+
+          backendObj.updates.alterTables.push(alterTablesObj);
+        }
+      }
+    }
+  };
+
   return (
     <div className="table-header table">
-      <Tooltip title="Enter a new name to change table name">
+      <Tooltip title="Press ENTER to submit new table name">
         <TextField
-          id="table-name-form"
+          id={`table-name-form-${data.table_name}`}
           label="Table Name"
-          variant="standard"
+          variant="outlined"
           defaultValue={data.table_name}
+          onKeyPress={handleChangeTableName}
         />
       </Tooltip>
       <Tooltip title="Delete Table">
