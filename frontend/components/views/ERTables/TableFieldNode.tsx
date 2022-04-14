@@ -138,7 +138,7 @@ function TableField({ data }: TableFieldProps) {
           <div className="field-summary-wrapper">
             <p id="column-name">{column_name}</p>
             <p id="data-type">
-              {data_type === 'varchar' ? 'varchar' : data_type}
+              {(data_type === 'character varying') ? 'varchar' : data_type}
             </p>
           </div>
         </AccordionSummary>
@@ -161,7 +161,7 @@ function TableField({ data }: TableFieldProps) {
             label="Foreign Key"
             idName={`foreign-key-chkbox-${tableColumn}`}
             isChecked={foreign_table != null}
-            changeCallback={disableFKHandler}
+            onChange={disableFKHandler}
           />
           <TableFieldDropDown
             label="Table"
@@ -184,6 +184,7 @@ function TableField({ data }: TableFieldProps) {
           <TableFieldCheckBox // FIXME:
             idName={`primary-key-chkbox-${tableColumn}`}
             label="Primary Key"
+            isChecked={constraint_type === 'PRIMARY KEY'}
           />
           <TableFieldCheckBox // FIXME:
             idName={`allow-null-chkbox-${tableColumn}`}

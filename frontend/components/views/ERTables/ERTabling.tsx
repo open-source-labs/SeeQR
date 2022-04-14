@@ -8,10 +8,13 @@ import ReactFlow, {
   Node,
   Edge,
 } from 'react-flow-renderer';
+import { Button } from '@material-ui/core';
+import styled from 'styled-components';
 import stateToReactFlow from '../../../lib/convertStateToReactFlow';
 import nodeTypes from './NodeTypes';
 import { BackendObjType, UpdatesObjType, AddTablesObjType } from '../../../types';
 import { sendFeedback } from '../../../lib/utils';
+
 
 // here is where we would update the styling of the page background
 const rfStyle = {
@@ -103,12 +106,25 @@ function ERTabling({ tables }: ERTablingProps) {
 
     return;
   };
+  const StyledViewButton = styled(Button)`
+  margin: 1rem;
+  margin-left: 0rem;
+`;
 
   const handleClickSave = () => {
     // #TODO: This function will send a message to the back end with
     // the data in backendObj.current
     ipcRenderer
       .invoke('ertable-schemaupdate', backendObj.current)
+      .then((data) => {
+        // resets the backendObj
+        if (data === 'success') {
+          backendObj.current = {
+            database: tables[0] ? tables[0].table_catalog : null,
+            updates,
+          }
+        }
+      })
       .catch(() =>
         sendFeedback({
           type: 'error',
@@ -121,7 +137,21 @@ function ERTabling({ tables }: ERTablingProps) {
   };
   return (
     <div>
-      <ReactFlow
+      <StyledViewButton
+        variant="contained"
+        id="add-table-btn"
+        onClick={handleAddTable}>
+          {' '}
+        Add New Table{' '}
+      </StyledViewButton>
+      <StyledViewButton 
+        variant="contained" 
+        id="save" 
+        onClick={handleClickSave}>
+        {' '}
+        Save{' '}
+      </StyledViewButton>
+      <ReactFlow 
         nodes={nodes}
         edges={edges}
         nodeTypes={nodeTypes}
@@ -136,14 +166,6 @@ function ERTabling({ tables }: ERTablingProps) {
       >
         <Background />
       </ReactFlow>
-      <button type="button" id="add-table-btn" onClick={handleAddTable}>
-        {' '}
-        Add New Table{' '}
-      </button>
-      <button type="button" id="save" onClick={handleClickSave}>
-        {' '}
-        Save{' '}
-      </button>
     </div>
   );
 }

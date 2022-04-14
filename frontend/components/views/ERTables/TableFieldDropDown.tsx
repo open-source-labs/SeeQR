@@ -33,7 +33,7 @@ const TableFieldDropDown = (props: TableFieldDropDownProps) => {
       idName={idName}
       option={option}
     />
-    ));
+  ));
 
   const handleChange = (e) => {
     // if setFKOptions is truthy, the instance of TableFieldDropDown
@@ -56,7 +56,9 @@ const TableFieldDropDown = (props: TableFieldDropDownProps) => {
       {`${label}:`}
       <select
         id={idName}
-        defaultValue={defaultValue}
+        defaultValue={
+          defaultValue === 'character varying' ? 'varchar' : defaultValue
+        }
         disabled={isDisabled}
         onChange={(evnt) => handleChange(evnt)}
       >
