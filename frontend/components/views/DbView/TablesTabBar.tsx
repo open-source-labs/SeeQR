@@ -7,8 +7,6 @@ import { greyPrimary } from '../../../style-variables';
 import ERTables from '../ERTables/ERTabling';
 import updateSchema from './sample-updateschema';
 import { sendFeedback } from '../../../lib/utils';
-import ERTables from '../ERTables/ErTabling';
-
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -39,7 +37,6 @@ const a11yProps = (index: any) => ({
 });
 
 interface TablesTabBarProps {
-
   tables: TableInfo[];
   selectTable: (table: TableInfo) => void;
   selectedTable: TableInfo | undefined;
@@ -55,7 +52,6 @@ const TablesTabs = ({
   selectTable,
   selectedTable,
 }: TablesTabBarProps) => {
-
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     selectTable(tables[newValue]);
   };
@@ -71,34 +67,38 @@ const TablesTabs = ({
 
   const ErView = () => (
     <div>
-      {active ? (<ERTables tables={tables} />) :
-        (
-          <>
-            <StyledTabs
-              value={tableIndex}
-              onChange={handleChange}
-              indicatorColor="primary"
-              variant="scrollable"
-              scrollButtons="auto"
-              aria-label="scrollable auto tabs example"
-            >
-              {tables.map(({ table_name: name }, index) => (
-                <Tab label={name} {...a11yProps(index)} key={name} />
-              ))}
-              ;
-            </StyledTabs>
-            <br />
-            <br />
-            {tables.map((tableMap, index) => (
-              <TabPanel value={tableIndex} index={index} key={tableMap.table_name}>
-                <TableDetails table={tableMap} />
-              </TabPanel>
+      {active ? (
+        <ERTables tables={tables} />
+      ) : (
+        <>
+          <StyledTabs
+            value={tableIndex}
+            onChange={handleChange}
+            indicatorColor="primary"
+            variant="scrollable"
+            scrollButtons="auto"
+            aria-label="scrollable auto tabs example"
+          >
+            {tables.map(({ table_name: name }, index) => (
+              <Tab label={name} {...a11yProps(index)} key={name} />
             ))}
-          </>
-        )
-      }
+            ;
+          </StyledTabs>
+          <br />
+          <br />
+          {tables.map((tableMap, index) => (
+            <TabPanel
+              value={tableIndex}
+              index={index}
+              key={tableMap.table_name}
+            >
+              <TableDetails table={tableMap} />
+            </TabPanel>
+          ))}
+        </>
+      )}
     </div>
-  )
+  );
 
   return (
     <div>
