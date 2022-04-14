@@ -1,12 +1,9 @@
-import React, { useEffect,useState } from 'react';
+import React, { useState } from 'react';
 import { Tabs, Tab, Button } from '@material-ui/core';
 import styled from 'styled-components';
-import { ipcRenderer } from 'electron';
 import TableDetails from './TableDetails';
 import { TableInfo } from '../../../types';
 import { greyPrimary } from '../../../style-variables';
-import updateSchema from './sample-updateschema';
-import { sendFeedback } from '../../../lib/utils';
 import ERTables from '../ERTables/ERTabling';
 
 
@@ -69,22 +66,6 @@ const TablesTabs = ({
     setActive(active);
   };
 
-  // function for testing backend ER query
-  const handleClick = () => {
-
-    ipcRenderer
-      .invoke('ertable-schemaupdate', updateSchema)
-      .catch(() =>
-        sendFeedback({
-          type: 'error',
-          message: 'Query failed',
-        })
-      )
-      .catch((err: object) => {
-        console.log(err);
-      });
-  };
-
   const ErView = () => (
     <div>
       {active ? (<ERTables tables={tables} />) :
@@ -131,13 +112,6 @@ const TablesTabs = ({
         onClick={() => SetView(false)}
       >
         TABLE
-      </StyledViewButton>
-      <StyledViewButton
-        variant="contained"
-        color="primary"
-        onClick={() => handleClick()}
-      >
-        Update
       </StyledViewButton>
       {ErView()}
     </div>

@@ -230,7 +230,7 @@ export type ERTableColumnData = {
   foreign_column: string;
   foreign_table: string;
 }
-export type DataTypes = 'integer' | 'bigint' | 'character varying' | 'serial' | 'date';
+export type DataTypes = 'integer' | 'bigint' | 'varchar' | 'serial' | 'date';
 export type AddColumnsObjType = {
   column_name: string | null;
   data_type: DataTypes;
@@ -260,6 +260,7 @@ export type AddTablesObjType = {
   table_catalog: string;
   table_name: string;
   table_schema: string;
+  columns: ERTableColumnData[];
 }
 export type DropTablesObjType = {
   table_name: string;

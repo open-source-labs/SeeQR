@@ -31,7 +31,6 @@ function TableHeader({ data }: TableHeaderProps) {
     for (let i = 0; i < schemaStateCopy.length; i++) {
       // edit the schema table for this current table
       if (schemaStateCopy[i].table_name === table_name) {
-        console.log('schemastatecopy: ', schemaStateCopy[i])
         // create an alterTableObject with AlterTablesObjectType
         const alterTablesObj: AlterTablesObjType = {
           is_insertable_into: null,
@@ -47,7 +46,7 @@ function TableHeader({ data }: TableHeaderProps) {
         // create an addColumnsType object
         const addColumnsObj: AddColumnsObjType = {
           column_name: `NewColumn${schemaStateCopy[i].columns.length + 1}`,
-          data_type: 'character varying',
+          data_type: 'varchar',
         };
         // add the addColumnsObj to the alterTablesObj
         alterTablesObj.addColumns.push(addColumnsObj);
@@ -60,7 +59,7 @@ function TableHeader({ data }: TableHeaderProps) {
           column_name: `NewColumn${schemaStateCopy[i].columns.length + 1}`,
           constraint_name: null,
           constraint_type: null,
-          data_type: 'character varying',
+          data_type: 'varchar',
           foreign_column: null,
           foreign_table: null,
           is_nullable: 'NO',

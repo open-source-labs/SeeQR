@@ -10,7 +10,7 @@ import ReactFlow, {
 } from 'react-flow-renderer';
 import stateToReactFlow from '../../../lib/convertStateToReactFlow';
 import nodeTypes from './NodeTypes';
-import { BackendObjType, UpdatesObjType } from '../../../types';
+import { BackendObjType, UpdatesObjType, AddTablesObjType } from '../../../types';
 import { sendFeedback } from '../../../lib/utils';
 
 // here is where we would update the styling of the page background
@@ -26,9 +26,11 @@ function ERTabling({ tables }: ERTablingProps) {
   const [schemaState, setSchemaState] = useState([]);
   const [nodes, setNodes] = useState<Node[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
+
+  console.log(tables)
+
   // when tables (which is the database that is selected changes, update SchemaState)
   useEffect(() => {
-    console.log('tables: ', tables)
     setSchemaState(tables);
   }, [tables]);
   // define an object using the useRef hook to maintain its value throughout all rerenders
@@ -40,7 +42,7 @@ function ERTabling({ tables }: ERTablingProps) {
     alterTables: [],
   };
   const backendObj = useRef<BackendObjType>({
-    database: tables[0].table_catalog,
+    database: tables[0] ? tables[0].table_catalog : null,
     updates,
   });
   // when SchemaState changes, convert the schema to react flow
@@ -81,6 +83,29 @@ function ERTabling({ tables }: ERTablingProps) {
     [setEdges]
   );
 
+  const handleAddTable = () => {
+    const schemaStateString = JSON.stringify(schemaState);
+    const schemaStateCopy = JSON.parse(schemaStateString);
+
+    // create an addColumnsType object
+    const addTableObj: AddTablesObjType = {
+      is_insertable_into: "YES",
+      table_name: `NewTable${schemaStateCopy.length + 1}`,
+      table_schema: `${schemaStateCopy[0].table_schema}`,
+      table_catalog: `${schemaStateCopy[0].table_catalog}`,
+      columns: []
+    };
+    
+    // update the backendObj
+    backendObj.current.updates.addTables.push(addTableObj);
+    // push a new object with blank properties
+    schemaStateCopy.push(addTableObj);
+    // set the state
+    setSchemaState(schemaStateCopy);
+
+    return;
+  };
+
   const handleClickSave = () => {
     // #TODO: This function will send a message to the back end with
     // the data in backendObj.current
@@ -111,11 +136,11 @@ function ERTabling({ tables }: ERTablingProps) {
         fitView
         style={rfStyle}
         onlyRenderVisibleElements={false}
-        // attributionPosition="top-right"
+      // attributionPosition="top-right"
       >
         <Background />
       </ReactFlow>
-      <button type="button" id="add-table-btn">
+      <button type="button" id="add-table-btn" onClick={handleAddTable}>
         {' '}
         Add New Table{' '}
       </button>
