@@ -109,7 +109,7 @@ function TableField({ data }: TableFieldProps) {
   };
 
   // disable the dropdown menus for fk table and field when fk checkbox is not checked
-  const disableFKHandler = (isChecked) => {
+  const disableForeignKeyMenuHandler = (isChecked) => {
     const tableID = `foreign-key-table-dd-${tableColumn}`;
     const fieldID = `foreign-key-field-dd-${tableColumn}`;
 
@@ -118,6 +118,20 @@ function TableField({ data }: TableFieldProps) {
 
     tableDD.disabled = !isChecked;
     fieldDD.disabled = !isChecked;
+  };
+
+  const disableAllowNullHandler = () => {
+    const pkID = `primary-key-chkbox-${tableColumn}`;
+    const pkCheckBox = document.getElementById(pkID) as HTMLInputElement;
+    const isPkChecked = pkCheckBox.checked;
+
+    const fkID = `foreign-key-chkbox-${tableColumn}`;
+    const fkCheckBox = document.getElementById(fkID) as HTMLInputElement;
+    const isFkChecked = fkCheckBox.checked;
+
+    const allowNullID = `allow-null-chkbox-${tableColumn}`;
+    const allowNullCheckBox = document.getElementById(allowNullID) as HTMLSelectElement;
+    allowNullCheckBox.disabled = (isFkChecked || isPkChecked);
   };
 
   const [fkOptions, setFkOptions] = useState<string[]>(createFieldOptions());
@@ -161,7 +175,7 @@ function TableField({ data }: TableFieldProps) {
             label="Foreign Key"
             idName={`foreign-key-chkbox-${tableColumn}`}
             isChecked={foreign_table != null}
-            onChange={disableFKHandler}
+            onChange={[disableForeignKeyMenuHandler, disableAllowNullHandler]}
           />
           <TableFieldDropDown
             label="Table"
@@ -181,14 +195,16 @@ function TableField({ data }: TableFieldProps) {
             otherTables={data.otherTables}
           />
           <p />
-          <TableFieldCheckBox // FIXME:
+          <TableFieldCheckBox
             idName={`primary-key-chkbox-${tableColumn}`}
             label="Primary Key"
             isChecked={constraint_type === 'PRIMARY KEY'}
+            onChange={disableAllowNullHandler}
           />
-          <TableFieldCheckBox // FIXME:
+          <TableFieldCheckBox
             idName={`allow-null-chkbox-${tableColumn}`}
             label="Allow Null"
+            isChecked={!(constraint_type === 'PRIMARY KEY' || foreign_table == null) }
           />
           <TableFieldCheckBox // FIXME: MAKE FIXED TO PRIMARY KEY
             idName={`unique-chkbox-${tableColumn}`}
