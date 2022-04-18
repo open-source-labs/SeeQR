@@ -45,6 +45,8 @@ const DbView = ({ selectedDb, show }: DbViewProps) => {
     };
   });
 
+  
+
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -65,6 +67,7 @@ const DbView = ({ selectedDb, show }: DbViewProps) => {
         tables={dbTables}
         selectTable={(table: TableInfo) => setSelectedTable(table)}
         selectedTable={selectedTable}
+        selectedDb={selectedDb}
       />
       <br />
       <br />
