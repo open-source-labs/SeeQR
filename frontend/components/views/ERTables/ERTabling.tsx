@@ -1,5 +1,6 @@
+import * as path from 'path';
 import fs from 'fs';
-import { ipcRenderer } from 'electron';
+import { app, ipcRenderer, remote } from 'electron';
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 import ReactFlow, {
   addEdge,
@@ -17,8 +18,10 @@ import {
   BackendObjType,
   UpdatesObjType,
   AddTablesObjType,
+  TableHeaderNodeType
 } from '../../../types';
 import { sendFeedback } from '../../../lib/utils';
+// import UserTableLayouts from '/UserTableLayouts.json';
 
 // here is where we would update the styling of the page background
 const rfStyle = {
@@ -118,30 +121,90 @@ function ERTabling({ tables }: ERTablingProps) {
 
   const handleSaveLayout = () => {
     // get the array of header nodes
-    const headerNodes = nodes.filter((node) => node.type === 'tableHeader');
+    const headerNodes = nodes.filter((node) => node.type === 'tableHeader') as TableHeaderNodeType[];
 
     // create object for the current database
-    const databaseLayoutObj = {
+    type TablePosObjType = {
+      table_name: string,
+      table_position: number[]
+    }
+
+    type DatabaseLayoutObjType = {
+      db_name: string,
+      db_tables: TablePosObjType[]
+    }
+
+    const currDatabaseLayout: DatabaseLayoutObjType = {
       db_name: backendObj.current.database,
       db_tables: [],
     };
 
-    // populate the db_tables property for the database
+    console.log(backendObj)
+    // // populate the db_tables property for the database
     headerNodes.forEach(node => {
-      const tablePosObj = {
+      const tablePosObj: TablePosObjType = {
         table_name: node.tableName,
         table_position: [node.position.x, node.position.y]
       };
-      databaseLayoutObj.db_tables.push(tablePosObj)
+      currDatabaseLayout.db_tables.push(tablePosObj)
     });
 
 
+    const location = remote.app.getAppPath().concat('/UserTableLayouts.json');
+    fs.readFile(location, 'utf-8', (err, data) => {
+      // check if error exists (no file found)
+      if (err) {
+        fs.writeFile(
+          location, 
+          JSON.stringify([currDatabaseLayout], null, 2), 
+          (error) => { if (error) console.log(error)});
 
-    // if there isnt a file, push in an oblect with info abt db
+      // check if file exists
+      } else {
+        const dbLayouts = JSON.parse(data) as DatabaseLayoutObjType[];
+        let dbExists = false;
+        // if db has saved layout settings overwrite them
+        dbLayouts.forEach((db, i) => {
+          if (db.db_name === currDatabaseLayout.db_name) {
+            dbLayouts[i] = currDatabaseLayout;
+            dbExists = true;
+          }
+        });
+        // if db has no saved layout settings add to file
+        if (!dbExists) dbLayouts.push(currDatabaseLayout);
 
+        // write changes to the file
+        fs.writeFile(
+          location, 
+          JSON.stringify(dbLayouts, null, 2), 
+          (error) => { if (error) console.log(error)});
+      }
+    });
+
+    // // if file 'UserTableLayouts' exists
+    // if (UserTableLayouts) {
+    //   // iterate thru array of dbs
+    //     for (let i = 0; i < UserTableLayouts.length; i++) {
+    //     // if current db exists
+    //     if (UserTableLayouts[i].db_name === currDatabaseLayout.db_name) {
+    //       // set array[i] = currDatabaseLayout
+    //       UserTableLayouts[i] = currDatabaseLayout
+    //     } else {
+    //       // push curr db layout to array
+    //       UserTableLayouts.push(currDatabaseLayout);
     //     }
-    //   ]
-    // }]`;
+    //   }
+    // } else {
+    // // if file doesnt exist
+    //   // create file w db array data and append currDataBaseLayout
+    //   // fs.writeFileSync()
+    // }
+
+
+
+
+    // if there isnt a file, push in an object with info abt db
+
     // fs.writeFileSync( file, databaseLayouts, options );
     // // if there is a file
     //   // if user has a saved layout for that db

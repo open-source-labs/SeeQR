@@ -289,7 +289,7 @@ export type BackendObjType = {
   updates: UpdatesObjType;
 }
 
-type TableHeaderDataObjectType = {
+export type TableHeaderDataObjectType = {
   table_name: string;
   schemaStateCopy: any;
   setSchemaState: (string) => {};
@@ -299,7 +299,10 @@ type TableHeaderDataObjectType = {
 export type TableHeaderNodeType = {
   data: TableHeaderDataObjectType,
   id: string,
-  postion: ,
+  position: {
+    x: number,
+    y: number
+  },
   tableName: string,
   type: string,
 }

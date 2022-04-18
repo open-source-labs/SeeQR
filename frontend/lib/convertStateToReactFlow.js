@@ -2,6 +2,10 @@ import * as types from '../constants/constants';
 import { MarkerType } from 'react-flow-renderer';
 import { greenPrimary } from '../style-variables';
 
+const getTablePosition = (tableName, dbName) => {
+  // { x: (this.id - 1) * 500, y: 0 }
+};
+
 class Table {
   constructor(id, columns, name, otherTables) {
     this.id = id;
@@ -14,7 +18,7 @@ class Table {
       {
         id: `table-${this.name}`,
         type: types.TABLE_HEADER,
-        position: { x: (this.id - 1) * 500, y: 0 },
+        position: getTablePosition(this.name),
         tableName: this.name,
         data: {
           table_name: this.name,
