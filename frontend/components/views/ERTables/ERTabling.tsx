@@ -1,3 +1,4 @@
+import fs from 'fs';
 import { ipcRenderer } from 'electron';
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 import ReactFlow, {
@@ -12,9 +13,12 @@ import { Button } from '@material-ui/core';
 import styled from 'styled-components';
 import stateToReactFlow from '../../../lib/convertStateToReactFlow';
 import nodeTypes from './NodeTypes';
-import { BackendObjType, UpdatesObjType, AddTablesObjType } from '../../../types';
+import {
+  BackendObjType,
+  UpdatesObjType,
+  AddTablesObjType,
+} from '../../../types';
 import { sendFeedback } from '../../../lib/utils';
-
 
 // here is where we would update the styling of the page background
 const rfStyle = {
@@ -90,13 +94,13 @@ function ERTabling({ tables }: ERTablingProps) {
 
     // create an addColumnsType object
     const addTableObj: AddTablesObjType = {
-      is_insertable_into: "YES",
+      is_insertable_into: 'YES',
       table_name: `NewTable${schemaStateCopy.length + 1}`,
       table_schema: `${schemaStateCopy[0].table_schema}`,
       table_catalog: `${schemaStateCopy[0].table_catalog}`,
-      columns: []
+      columns: [],
     };
-    
+
     // update the backendObj
     backendObj.current.updates.addTables.push(addTableObj);
     // push a new object with blank properties
@@ -106,10 +110,43 @@ function ERTabling({ tables }: ERTablingProps) {
 
     return;
   };
+
   const StyledViewButton = styled(Button)`
-  margin: 1rem;
-  margin-left: 0rem;
-`;
+    margin: 1rem;
+    margin-left: 0rem;
+  `;
+
+  const handleSaveLayout = () => {
+    // get the array of header nodes
+    const headerNodes = nodes.filter((node) => node.type === 'tableHeader');
+
+    // create object for the current database
+    const databaseLayoutObj = {
+      db_name: backendObj.current.database,
+      db_tables: [],
+    };
+
+    // populate the db_tables property for the database
+    headerNodes.forEach(node => {
+      const tablePosObj = {
+        table_name: node.tableName,
+        table_position: [node.position.x, node.position.y]
+      };
+      databaseLayoutObj.db_tables.push(tablePosObj)
+    });
+
+
+
+    // if there isnt a file, push in an oblect with info abt db
+
+    //     }
+    //   ]
+    // }]`;
+    // fs.writeFileSync( file, databaseLayouts, options );
+    // // if there is a file
+    //   // if user has a saved layout for that db
+    //   // if user does NOT have a layout
+  };
 
   const handleClickSave = () => {
     // #TODO: This function will send a message to the back end with
@@ -122,7 +159,7 @@ function ERTabling({ tables }: ERTablingProps) {
           backendObj.current = {
             database: tables[0] ? tables[0].table_catalog : null,
             updates,
-          }
+          };
         }
       })
       .catch(() =>
@@ -134,24 +171,25 @@ function ERTabling({ tables }: ERTablingProps) {
       .catch((err: object) => {
         console.log(err);
       });
+
+    handleSaveLayout();
   };
+
   return (
     <div>
       <StyledViewButton
         variant="contained"
         id="add-table-btn"
-        onClick={handleAddTable}>
-          {' '}
+        onClick={handleAddTable}
+      >
+        {' '}
         Add New Table{' '}
       </StyledViewButton>
-      <StyledViewButton 
-        variant="contained" 
-        id="save" 
-        onClick={handleClickSave}>
+      <StyledViewButton variant="contained" id="save" onClick={handleClickSave}>
         {' '}
         Save{' '}
       </StyledViewButton>
-      <ReactFlow 
+      <ReactFlow
         nodes={nodes}
         edges={edges}
         nodeTypes={nodeTypes}
@@ -162,7 +200,7 @@ function ERTabling({ tables }: ERTablingProps) {
         fitView
         style={rfStyle}
         onlyRenderVisibleElements={false}
-      // attributionPosition="top-right"
+        // attributionPosition="top-right"
       >
         <Background />
       </ReactFlow>

@@ -231,6 +231,7 @@ export type ERTableColumnData = {
   foreign_table: string;
 }
 export type DataTypes = 'integer' | 'bigint' | 'varchar' | 'serial' | 'date';
+
 export type AddColumnsObjType = {
   column_name: string | null;
   data_type: DataTypes;
@@ -276,16 +277,32 @@ export type AlterTablesObjType = {
   dropColumns: DropColumnsObjType[];
   alterColumns: AlterColumnsObjType[];
 }
+
 export type UpdatesObjType = {
   addTables: AddTablesObjType[];
   dropTables: DropTablesObjType[];
   alterTables: AlterTablesObjType[];
 }
+
 export type BackendObjType = {
   database: string;
   updates: UpdatesObjType;
 }
 
+type TableHeaderDataObjectType = {
+  table_name: string;
+  schemaStateCopy: any;
+  setSchemaState: (string) => {};
+  backendObj: BackendObjType;
+};
+
+export type TableHeaderNodeType = {
+  data: TableHeaderDataObjectType,
+  id: string,
+  postion: ,
+  tableName: string,
+  type: string,
+}
 
 
 

@@ -8,15 +8,9 @@ import {
   BackendObjType,
   AlterTablesObjType,
   AddColumnsObjType,
+  TableHeaderDataObjectType
 } from '../../../types';
 import './styles.css';
-
-type TableHeaderDataObjectType = {
-  table_name: string;
-  schemaStateCopy: any;
-  setSchemaState: (string) => {};
-  backendObj: BackendObjType;
-};
 
 type TableHeaderProps = {
   data: TableHeaderDataObjectType;

@@ -36,6 +36,7 @@ class Table {
           otherTables: this.otherTables,
         },
       });
+
       // if the element has a foregin_column and foreign_table create an edge
       if (el.foreign_column && el.foreign_table) {
         edges.push({
