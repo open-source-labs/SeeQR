@@ -51,8 +51,7 @@ function TableHeader({ data }: TableHeaderProps) {
         // add the addColumnsObj to the alterTablesObj
         alterTablesObj.addColumns.push(addColumnsObj);
         // update the backendObj
-        backendObj.updates.alterTables.push(alterTablesObj);
-
+        backendObj.current.updates.alterTables.push(alterTablesObj);
         // push a new object with blank properties
         schemaStateCopy.tableList[i].columns.push({
           column_name: `NewColumn${schemaStateCopy.tableList[i].columns.length + 1}`,
@@ -79,7 +78,7 @@ function TableHeader({ data }: TableHeaderProps) {
           table_name,
           table_schema: schemaStateCopy.tableList[i].table_schema,
         };
-        backendObj.updates.dropTables.push(dropTablesObj);
+        backendObj.current.updates.dropTables.push(dropTablesObj);
 
         // update frontend
         schemaStateCopy.tableList.splice(i, 1);
@@ -117,7 +116,7 @@ function TableHeader({ data }: TableHeaderProps) {
             setSchemaState(schemaStateCopy);
           }
 
-          backendObj.updates.alterTables.push(alterTablesObj);
+          backendObj.current.updates.alterTables.push(alterTablesObj);
         }
       }
     }

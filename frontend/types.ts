@@ -294,6 +294,10 @@ export type UpdatesObjType = {
 }
 
 export type BackendObjType = {
+  current: BackendObjCurrent
+}
+
+export type BackendObjCurrent = {
   database: string;
   updates: UpdatesObjType;
 }

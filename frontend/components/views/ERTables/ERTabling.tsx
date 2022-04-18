@@ -26,6 +26,11 @@ type ERTablingProps = {
   selectedDb: AppState['selectedDb'];
 };
 
+const StyledViewButton = styled(Button)`
+margin: 1rem;
+margin-left: 0rem;
+`;
+
 function ERTabling({ tables, selectedDb }: ERTablingProps) {
   const [schemaState, setSchemaState] = useState<SchemaStateObjType>({database: 'initial', tableList: []});
   const [nodes, setNodes] = useState<Node[]>([]);
@@ -43,8 +48,8 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
     dropTables: [],
     alterTables: [],
   };
-  const backendObj = useRef<BackendObjType>({
-    database: tables[0] ? tables[0].table_catalog : null,
+  const backendObj = useRef({
+    database: schemaState.database,
     updates,
   });
   // when SchemaState changes, convert the schema to react flow
@@ -64,7 +69,7 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
           ...data,
           schemaStateCopy,
           setSchemaState,
-          backendObj: backendObj.current,
+          backendObj,
         },
       };
     });
@@ -105,12 +110,8 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
     // set the state
     setSchemaState(schemaStateCopy);
 
-    return;
+    // return;
   };
-  const StyledViewButton = styled(Button)`
-  margin: 1rem;
-  margin-left: 0rem;
-`;
 
   const handleClickSave = () => {
     // #TODO: This function will send a message to the back end with

@@ -77,7 +77,7 @@ function TableField({ data }: TableFieldProps) {
             // add deleteColumns obj to the alterTablesObj
             alterTablesObj.dropColumns.push(dropColumnObj);
             // update the backendObj
-            backendObj.updates.alterTables.push(alterTablesObj);
+            backendObj.current.updates.alterTables.push(alterTablesObj);
             // alter schema state to remove the column
             schemaStateCopy.tableList[i].columns.splice(columnIndex, 1);
             // set the state
