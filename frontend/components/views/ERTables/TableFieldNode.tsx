@@ -50,36 +50,36 @@ function TableField({ data }: TableFieldProps) {
 
   const handleDropColumn = () => {
     // iterate through schema copy
-    for (let i = 0; i < schemaStateCopy.length; i++) {
+    for (let i = 0; i < schemaStateCopy.tableList.length; i++) {
       // edit schema table for this current table
-      if (schemaStateCopy[i].table_name === data.tableName) {
+      if (schemaStateCopy.tableList[i].table_name === data.tableName) {
         let columnIndex;
         // iterate through columns
-        for (let j = 0; j < schemaStateCopy[i].columns.length; j++) {
-          if (schemaStateCopy[i].columns[j].column_name === column_name) {
+        for (let j = 0; j < schemaStateCopy.tableList[i].columns.length; j++) {
+          if (schemaStateCopy.tableList[i].columns[j].column_name === column_name) {
             columnIndex = j;
 
             // create alterTablesObject with AlterTablesObjecttype
             const alterTablesObj: AlterTablesObjType = {
               is_insertable_into: null,
-              table_catalog: schemaStateCopy[i].table_catalog,
-              table_name: schemaStateCopy[i].table_name,
+              table_catalog: schemaStateCopy.tableList[i].table_catalog,
+              table_name: schemaStateCopy.tableList[i].table_name,
               new_table_name: null,
-              table_schema: schemaStateCopy[i].table_schema,
+              table_schema: schemaStateCopy.tableList[i].table_schema,
               addColumns: [],
               dropColumns: [],
               alterColumns: [],
             };
             // create a deleteColumnsType object
             const dropColumnObj: DropColumnsObjType = {
-              column_name: schemaStateCopy[i].columns[j].column_name,
+              column_name: schemaStateCopy.tableList[i].columns[j].column_name,
             };
             // add deleteColumns obj to the alterTablesObj
             alterTablesObj.dropColumns.push(dropColumnObj);
             // update the backendObj
             backendObj.updates.alterTables.push(alterTablesObj);
             // alter schema state to remove the column
-            schemaStateCopy[i].columns.splice(columnIndex, 1);
+            schemaStateCopy.tableList[i].columns.splice(columnIndex, 1);
             // set the state
             setSchemaState(schemaStateCopy);
             return;

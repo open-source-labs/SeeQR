@@ -12,7 +12,7 @@ import { Button } from '@material-ui/core';
 import styled from 'styled-components';
 import stateToReactFlow from '../../../lib/convertStateToReactFlow';
 import nodeTypes from './NodeTypes';
-import { BackendObjType, UpdatesObjType, AddTablesObjType } from '../../../types';
+import { BackendObjType, UpdatesObjType, AddTablesObjType, AppState, SchemaStateObjType } from '../../../types';
 import { sendFeedback } from '../../../lib/utils';
 
 
@@ -23,16 +23,17 @@ const rfStyle = {
 
 type ERTablingProps = {
   tables;
+  selectedDb: AppState['selectedDb'];
 };
 
-function ERTabling({ tables }: ERTablingProps) {
-  const [schemaState, setSchemaState] = useState([]);
+function ERTabling({ tables, selectedDb }: ERTablingProps) {
+  const [schemaState, setSchemaState] = useState<SchemaStateObjType>({database: 'initial', tableList: []});
   const [nodes, setNodes] = useState<Node[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
 
   // when tables (which is the database that is selected changes, update SchemaState)
   useEffect(() => {
-    setSchemaState(tables);
+    setSchemaState({database: selectedDb, tableList: tables});
   }, [tables]);
   // define an object using the useRef hook to maintain its value throughout all rerenders
   // this object will hold the data that needs to get sent to the backend to update the
@@ -90,17 +91,17 @@ function ERTabling({ tables }: ERTablingProps) {
 
     // create an addColumnsType object
     const addTableObj: AddTablesObjType = {
-      is_insertable_into: "YES",
-      table_name: `NewTable${schemaStateCopy.length + 1}`,
-      table_schema: `${schemaStateCopy[0].table_schema}`,
-      table_catalog: `${schemaStateCopy[0].table_catalog}`,
+      is_insertable_into: "yes",
+      table_name: `NewTable${schemaStateCopy.tableList.length + 1}`,
+      table_schema: `public`,
+      table_catalog: `${schemaStateCopy.database}`,
       columns: []
     };
     
     // update the backendObj
     backendObj.current.updates.addTables.push(addTableObj);
     // push a new object with blank properties
-    schemaStateCopy.push(addTableObj);
+    schemaStateCopy.tableList.push(addTableObj);
     // set the state
     setSchemaState(schemaStateCopy);
 
@@ -120,7 +121,7 @@ function ERTabling({ tables }: ERTablingProps) {
         // resets the backendObj
         if (data === 'success') {
           backendObj.current = {
-            database: tables[0] ? tables[0].table_catalog : null,
+            database: schemaState.database,
             updates,
           }
         }

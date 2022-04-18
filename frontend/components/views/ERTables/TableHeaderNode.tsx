@@ -8,12 +8,13 @@ import {
   BackendObjType,
   AlterTablesObjType,
   AddColumnsObjType,
+  SchemaStateObjType
 } from '../../../types';
 import './styles.css';
 
 type TableHeaderDataObjectType = {
   table_name: string;
-  schemaStateCopy: any;
+  schemaStateCopy: SchemaStateObjType;
   setSchemaState: (string) => {};
   backendObj: BackendObjType;
 };
@@ -27,16 +28,16 @@ function TableHeader({ data }: TableHeaderProps) {
 
   const handleAddColumn = () => {
     // iterate through the schema copy
-    for (let i = 0; i < schemaStateCopy.length; i++) {
+    for (let i = 0; i < schemaStateCopy.tableList.length; i++) {
       // edit the schema table for this current table
-      if (schemaStateCopy[i].table_name === table_name) {
+      if (schemaStateCopy.tableList[i].table_name === table_name) {
         // create an alterTableObject with AlterTablesObjectType
         const alterTablesObj: AlterTablesObjType = {
           is_insertable_into: null,
-          table_catalog: schemaStateCopy[i].table_catalog,
+          table_catalog: schemaStateCopy.tableList[i].table_catalog,
           table_name,
           new_table_name: null,
-          table_schema: schemaStateCopy[i].table_schema,
+          table_schema: schemaStateCopy.tableList[i].table_schema,
           addColumns: [],
           dropColumns: [],
           alterColumns: [],
@@ -44,7 +45,7 @@ function TableHeader({ data }: TableHeaderProps) {
 
         // create an addColumnsType object
         const addColumnsObj: AddColumnsObjType = {
-          column_name: `NewColumn${schemaStateCopy[i].columns.length + 1}`,
+          column_name: `NewColumn${schemaStateCopy.tableList[i].columns.length + 1}`,
           data_type: 'varchar',
         };
         // add the addColumnsObj to the alterTablesObj
@@ -53,15 +54,15 @@ function TableHeader({ data }: TableHeaderProps) {
         backendObj.updates.alterTables.push(alterTablesObj);
 
         // push a new object with blank properties
-        schemaStateCopy[i].columns.push({
-          character_maxmimum_length: null,
-          column_name: `NewColumn${schemaStateCopy[i].columns.length + 1}`,
+        schemaStateCopy.tableList[i].columns.push({
+          column_name: `NewColumn${schemaStateCopy.tableList[i].columns.length + 1}`,
           constraint_name: null,
           constraint_type: null,
           data_type: 'varchar',
-          foreign_column: null,
-          foreign_table: null,
-          is_nullable: 'NO',
+          character_maximum_length: null,
+          foreign_column: 'none',
+          foreign_table: 'none',
+          is_nullable: 'no',
         });
         // set the state
         setSchemaState(schemaStateCopy);
@@ -71,17 +72,17 @@ function TableHeader({ data }: TableHeaderProps) {
   };
 
   const handleDeleteTable = () => {
-    for (let i = 0; i < schemaStateCopy.length; i++) {
-      if (schemaStateCopy[i].table_name === table_name) {
+    for (let i = 0; i < schemaStateCopy.tableList.length; i++) {
+      if (schemaStateCopy.tableList[i].table_name === table_name) {
         // update backend
         const dropTablesObj = {
           table_name,
-          table_schema: schemaStateCopy[i].table_schema,
+          table_schema: schemaStateCopy.tableList[i].table_schema,
         };
         backendObj.updates.dropTables.push(dropTablesObj);
 
         // update frontend
-        schemaStateCopy.splice(i, 1);
+        schemaStateCopy.tableList.splice(i, 1);
         setSchemaState(schemaStateCopy);
 
         return;
@@ -92,19 +93,19 @@ function TableHeader({ data }: TableHeaderProps) {
   // updates the table name when the user hits enter on the submit form
   const handleChangeTableName = (e) => {
     if (e.key === 'Enter') {
-      for (let i = 0; i < schemaStateCopy.length; i++) {
-        if (schemaStateCopy[i].table_name === table_name) {
+      for (let i = 0; i < schemaStateCopy.tableList.length; i++) {
+        if (schemaStateCopy.tableList[i].table_name === table_name) {
           const tableInputField = document.getElementById(
             `table-name-form-${data.table_name}`
           ) as HTMLInputElement;
 
           // update backend
           const alterTablesObj: AlterTablesObjType = {
-            is_insertable_into: schemaStateCopy[i].is_insertable_into,
-            table_catalog: schemaStateCopy[i].table_catalog,
-            table_name: schemaStateCopy[i].table_name,
+            is_insertable_into: schemaStateCopy.tableList[i].is_insertable_into,
+            table_catalog: schemaStateCopy.tableList[i].table_catalog,
+            table_name: schemaStateCopy.tableList[i].table_name,
             new_table_name: tableInputField.value,
-            table_schema: schemaStateCopy[i].table_schema,
+            table_schema: schemaStateCopy.tableList[i].table_schema,
             addColumns: [],
             dropColumns: [],
             alterColumns: [],
@@ -112,7 +113,7 @@ function TableHeader({ data }: TableHeaderProps) {
 
           // update frontend
           if (tableInputField !== null) {
-            schemaStateCopy[i].table_name = tableInputField.value;
+            schemaStateCopy.tableList[i].table_name = tableInputField.value;
             setSchemaState(schemaStateCopy);
           }
 
