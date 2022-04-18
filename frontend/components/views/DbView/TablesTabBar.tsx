@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Tabs, Tab, Button } from '@material-ui/core';
 import styled from 'styled-components';
 import TableDetails from './TableDetails';
-import { TableInfo } from '../../../types';
+import { AppState, TableInfo } from '../../../types';
 import { greyPrimary } from '../../../style-variables';
 import ERTables from '../ERTables/ERTabling';
 import updateSchema from './sample-updateschema';
@@ -40,6 +40,7 @@ interface TablesTabBarProps {
   tables: TableInfo[];
   selectTable: (table: TableInfo) => void;
   selectedTable: TableInfo | undefined;
+  selectedDb: AppState['selectedDb'];
 }
 
 const StyledViewButton = styled(Button)`
@@ -51,6 +52,7 @@ const TablesTabs = ({
   tables,
   selectTable,
   selectedTable,
+  selectedDb
 }: TablesTabBarProps) => {
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     selectTable(tables[newValue]);
@@ -68,7 +70,7 @@ const TablesTabs = ({
   const ErView = () => (
     <div>
       {active ? (
-        <ERTables tables={tables} />
+        <ERTables tables={tables} selectedDb={selectedDb} />
       ) : (
         <>
           <StyledTabs

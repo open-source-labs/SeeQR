@@ -71,31 +71,31 @@ const convertStateToReactFlow = {
     const edges = [];
     const tableList = [];
     // iterate through the tableList
-    for (let i = 0; i < schema.length; i++) {
+    for (let i = 0; i < schema.tableList.length; i++) {
       const column_names = [];
       // get all the column names from the table
-      for (let j = 0; j < schema[i].columns.length; j++) {
-        column_names.push(schema[i].columns[j].column_name);
+      for (let j = 0; j < schema.tableList[i].columns.length; j++) {
+        column_names.push(schema.tableList[i].columns[j].column_name);
       }
       // push tablelsit an object with the table name and
       tableList.push({
-        table_name: schema[i].table_name,
+        table_name: schema.tableList[i].table_name,
         column_names,
       });
     }
-    for (let i = 0; i < schema.length; i++) {
+    for (let i = 0; i < schema.tableList.length; i++) {
       // make a deep copy so that modifying these values will not affect the data
-      const copyString = JSON.stringify(schema[i]);
+      const copyString = JSON.stringify(schema.tableList[i]);
       const copy = JSON.parse(copyString);
       // filter the table that is the same from the tableList
       const otherTableList = tableList.filter(
-        (el) => el.table_name !== schema[i].table_name
+        (el) => el.table_name !== schema.tableList[i].table_name
       );
       // create a new instance of Table, push into table array
       const table = new Table(
         i + 1,
         copy.columns,
-        schema[i].table_name,
+        schema.tableList[i].table_name,
         otherTableList
       );
       // assign the evaluated result of rendering the table into tablesNodesEdges

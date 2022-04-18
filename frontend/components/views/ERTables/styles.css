@@ -42,6 +42,21 @@
   float: right;
 }
 
-.react-flow__node {
-  background-color: white;
+.table-header > label {
+  color: '#57a777';
+  font-size: 25px;
+  font-weight: bold;
+  margin: 2px;
 }
+
+.table-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  padding: 15px;
+  width: 350px;
+  margin: 0px;
+}
+
+

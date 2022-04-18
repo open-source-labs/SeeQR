@@ -220,15 +220,25 @@ export type NodeTypes = {
   tableField: JSX.Element
 }
 
+export type ERTableData = {
+  columns: ERTableColumnData[];
+  is_insertable_into: 'yes' | 'no';
+  table_catalog: string;
+  table_name: string;
+  table_schema: string;
+}
+
 export type ERTableColumnData = {
-  constraint_type: string;
   column_name: string;
+  constraint_name: string | null;
+  constraint_type: string | null;
   data_type: string;
-  character_maximum_length: number;
-  unique?: boolean; // optional until implemented
-  auto_increment?: boolean; // optional until implemented
+  character_maximum_length: number | null;
   foreign_column: string;
   foreign_table: string;
+  is_nullable: 'yes' | 'no';
+  unique?: boolean; // optional until implemented
+  auto_increment?: boolean; // optional until implemented
 }
 export type DataTypes = 'integer' | 'bigint' | 'varchar' | 'serial' | 'date';
 
@@ -245,7 +255,7 @@ export type AlterColumnsObjType = {
   new_column_name: string | null;
   add_constraint: AddConstraintObjType;
   data_type: DataTypes;
-  is_nullable: "YES" | "NO" | null;
+  is_nullable: "yes" | "no" | null;
   drop_constraint: string[];
 }
 
@@ -257,7 +267,7 @@ export type AddConstraintObjType = {
 }
 
 export type AddTablesObjType = {
-  is_insertable_into: 'YES' | 'NO';
+  is_insertable_into: 'yes' | 'no';
   table_catalog: string;
   table_name: string;
   table_schema: string;
@@ -268,7 +278,7 @@ export type DropTablesObjType = {
   table_schema: string;
 }
 export type AlterTablesObjType = {
-  is_insertable_into: 'YES' | 'NO' | null;
+  is_insertable_into: 'yes' | 'no' | null;
   table_catalog: string | null;
   table_name: string | null;
   new_table_name: string | null;
@@ -285,8 +295,15 @@ export type UpdatesObjType = {
 }
 
 export type BackendObjType = {
+  current: {
+    database: string;
+    updates: UpdatesObjType;
+  }
+}
+
+export type SchemaStateObjType = {
   database: string;
-  updates: UpdatesObjType;
+  tableList: ERTableData[];
 }
 
 export type TableHeaderDataObjectType = {
