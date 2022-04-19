@@ -9,6 +9,7 @@ import {
   BackendObjType,
   AlterTablesObjType,
   DropColumnsObjType,
+  AlterColumnsObjType,
 } from '../../../types';
 
 import TableFieldCheckBox from './TableFieldCheckBox';
@@ -30,7 +31,6 @@ type TableFieldProps = {
 
 function TableField({ data }: TableFieldProps) {
   const {
-    table_name,
     schemaStateCopy,
     setSchemaState,
     backendObj,
@@ -56,7 +56,9 @@ function TableField({ data }: TableFieldProps) {
         let columnIndex;
         // iterate through columns
         for (let j = 0; j < schemaStateCopy.tableList[i].columns.length; j++) {
-          if (schemaStateCopy.tableList[i].columns[j].column_name === column_name) {
+          if (
+            schemaStateCopy.tableList[i].columns[j].column_name === column_name
+          ) {
             columnIndex = j;
 
             // create alterTablesObject with AlterTablesObjecttype
@@ -86,6 +88,80 @@ function TableField({ data }: TableFieldProps) {
           }
         }
       }
+    }
+  };
+
+  const handleUpdateColumn = () => {
+    // create an alterColumns object
+    const alterColumnsObj: AlterColumnsObjType = {
+      column_name,
+      character_maximum_length: null,
+      new_column_name: null,
+      add_constraint: [],
+      data_type: null,
+      is_nullable: null,
+      drop_constraint: [],
+    };
+
+    // // handle is_nullable change
+    // const isNullable = document.getElementById(
+    //   `allow-null-chkbox-${tableColumn}`
+    // ) as HTMLInputElement;
+    // const isNullableString = isNullable.checked ? 'yes' : 'no';
+    // alterColumnsObj.is_nullable =
+    //   isNull !== isNullableString ? isNullableString : null;
+
+    for (let i = 0; i < schemaStateCopy.tableList.length; i++) {
+      if (schemaStateCopy.tableList[i].table_name === data.tableName) {
+        let columnIndex;
+        // iterate through columns
+        for (let j = 0; j < schemaStateCopy.tableList[i].columns.length; j++) {
+          if (
+            schemaStateCopy.tableList[i].columns[j].column_name === column_name
+          ) {
+            const alterTablesObj: AlterTablesObjType = {
+              is_insertable_into: null,
+              table_catalog: schemaStateCopy.tableList[i].table_catalog,
+              table_name: data.tableName,
+              new_table_name: null,
+              table_schema: schemaStateCopy.tableList[i].table_schema,
+              addColumns: [],
+              dropColumns: [],
+              alterColumns: [],
+            };
+
+            // handle column_name change
+            const columnNameInput = document.getElementById(
+              `type-input-column_name-${tableColumn}`
+            ) as HTMLSelectElement;
+            console.log('columnNameInput.value', columnNameInput.value);
+            if (column_name !== columnNameInput.value) {
+              alterColumnsObj.new_column_name = columnNameInput.value;
+              schemaStateCopy.tableList[i].columns[j].column_name =
+                columnNameInput.value;
+            }
+
+            // handle data_type change
+            const dataTypeInput = document.getElementById(
+              `type-dd-${tableColumn}`
+            ) as HTMLSelectElement;
+            if (data_type !== dataTypeInput.value) {
+              alterColumnsObj.data_type = dataTypeInput.value;
+              schemaStateCopy.tableList[i].columns[j].data_type =
+                dataTypeInput.value;
+            }
+
+            // add the alterTablesObj
+            alterTablesObj.alterColumns.push(alterColumnsObj);
+            // update the backendObj
+            backendObj.current.updates.alterTables.push(alterTablesObj);
+            setSchemaState(schemaStateCopy);
+            console.log('backendobj after update', backendObj.current);
+            return;
+          }
+        }
+      }
+      // TODO: MAKE STATE CHANGE
     }
   };
 
@@ -130,8 +206,10 @@ function TableField({ data }: TableFieldProps) {
     const isFkChecked = fkCheckBox.checked;
 
     const allowNullID = `allow-null-chkbox-${tableColumn}`;
-    const allowNullCheckBox = document.getElementById(allowNullID) as HTMLSelectElement;
-    allowNullCheckBox.disabled = (isFkChecked || isPkChecked);
+    const allowNullCheckBox = document.getElementById(
+      allowNullID
+    ) as HTMLSelectElement;
+    allowNullCheckBox.disabled = isFkChecked || isPkChecked;
   };
 
   const [fkOptions, setFkOptions] = useState<string[]>(createFieldOptions());
@@ -152,13 +230,17 @@ function TableField({ data }: TableFieldProps) {
           <div className="field-summary-wrapper">
             <p id="column-name">{column_name}</p>
             <p id="data-type">
-              {(data_type === 'character varying') ? 'varchar' : data_type}
+              {data_type === 'character varying' ? 'varchar' : data_type}
             </p>
           </div>
         </AccordionSummary>
 
         <AccordionDetails>
-          <TableFieldInput label="Name" defaultValue={column_name} />
+          <TableFieldInput
+            idName={`type-input-column_name-${tableColumn}`}
+            label="Name"
+            defaultValue={column_name}
+          />
           <TableFieldDropDown
             label="Type"
             idName={`type-dd-${tableColumn}`}
@@ -167,6 +249,7 @@ function TableField({ data }: TableFieldProps) {
             options={['serial', 'varchar', 'bigint', 'integer', 'date']}
           />
           <TableFieldInput
+            idName={`type-input-char_max_size-${tableColumn}`}
             label="Size"
             defaultValue={character_maximum_length}
           />
@@ -204,7 +287,9 @@ function TableField({ data }: TableFieldProps) {
           <TableFieldCheckBox
             idName={`allow-null-chkbox-${tableColumn}`}
             label="Allow Null"
-            isChecked={!(constraint_type === 'PRIMARY KEY' || foreign_table == null) }
+            isChecked={
+              !(constraint_type === 'PRIMARY KEY' || foreign_table == null)
+            }
           />
           <TableFieldCheckBox // FIXME: MAKE FIXED TO PRIMARY KEY
             idName={`unique-chkbox-${tableColumn}`}
@@ -218,7 +303,9 @@ function TableField({ data }: TableFieldProps) {
           />
           <p />
           <div>
-            <button id="update-btn">Update</button>
+            <button id="update-btn" onClick={handleUpdateColumn}>
+              Update
+            </button>
             <button id="cancel-btn">Cancel</button>
             <button id="delete-btn" onClick={handleDropColumn}>
               Delete

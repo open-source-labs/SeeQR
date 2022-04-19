@@ -240,7 +240,7 @@ export type ERTableColumnData = {
   unique?: boolean; // optional until implemented
   auto_increment?: boolean; // optional until implemented
 }
-export type DataTypes = 'integer' | 'bigint' | 'varchar' | 'serial' | 'date';
+export type DataTypes = 'integer' | 'bigint' | 'varchar' | 'serial' | 'date' | null;
 
 export type AddColumnsObjType = {
   column_name: string | null;
@@ -253,8 +253,8 @@ export type AlterColumnsObjType = {
   column_name: string;
   character_maximum_length: number | null;
   new_column_name: string | null;
-  add_constraint: AddConstraintObjType;
-  data_type: DataTypes;
+  add_constraint: AddConstraintObjType[];
+  data_type: string | null;
   is_nullable: "yes" | "no" | null;
   drop_constraint: string[];
 }

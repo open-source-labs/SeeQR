@@ -12,9 +12,14 @@ import { Button } from '@material-ui/core';
 import styled from 'styled-components';
 import stateToReactFlow from '../../../lib/convertStateToReactFlow';
 import nodeTypes from './NodeTypes';
-import { BackendObjType, UpdatesObjType, AddTablesObjType, AppState, SchemaStateObjType } from '../../../types';
+import {
+  BackendObjType,
+  UpdatesObjType,
+  AddTablesObjType,
+  AppState,
+  SchemaStateObjType,
+} from '../../../types';
 import { sendFeedback } from '../../../lib/utils';
-
 
 // here is where we would update the styling of the page background
 const rfStyle = {
@@ -27,18 +32,21 @@ type ERTablingProps = {
 };
 
 const StyledViewButton = styled(Button)`
-margin: 1rem;
-margin-left: 0rem;
+  margin: 1rem;
+  margin-left: 0rem;
 `;
 
 function ERTabling({ tables, selectedDb }: ERTablingProps) {
-  const [schemaState, setSchemaState] = useState<SchemaStateObjType>({database: 'initial', tableList: []});
+  const [schemaState, setSchemaState] = useState<SchemaStateObjType>({
+    database: 'initial',
+    tableList: [],
+  });
   const [nodes, setNodes] = useState<Node[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
 
   // when tables (which is the database that is selected changes, update SchemaState)
   useEffect(() => {
-    setSchemaState({database: selectedDb, tableList: tables});
+    setSchemaState({ database: selectedDb, tableList: tables });
   }, [tables]);
   // define an object using the useRef hook to maintain its value throughout all rerenders
   // this object will hold the data that needs to get sent to the backend to update the
@@ -52,6 +60,10 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
     database: schemaState.database,
     updates,
   });
+  useEffect(() => {
+    backendObj.current.database = selectedDb;
+  }, [selectedDb]);
+
   // when SchemaState changes, convert the schema to react flow
   useEffect(() => {
     const initialState = stateToReactFlow.convert(schemaState);
@@ -96,13 +108,13 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
 
     // create an addColumnsType object
     const addTableObj: AddTablesObjType = {
-      is_insertable_into: "yes",
+      is_insertable_into: 'yes',
       table_name: `NewTable${schemaStateCopy.tableList.length + 1}`,
       table_schema: `public`,
       table_catalog: `${schemaStateCopy.database}`,
-      columns: []
+      columns: [],
     };
-    
+
     // update the backendObj
     backendObj.current.updates.addTables.push(addTableObj);
     // push a new object with blank properties
@@ -116,16 +128,16 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
   const handleClickSave = () => {
     // #TODO: This function will send a message to the back end with
     // the data in backendObj.current
+    console.log('backendObj before sending to back', backendObj.current);
     ipcRenderer
       .invoke('ertable-schemaupdate', backendObj.current)
       .then((data) => {
+        console.log('resetting backendObj');
         // resets the backendObj
-        if (data === 'success') {
-          backendObj.current = {
-            database: schemaState.database,
-            updates,
-          }
-        }
+        backendObj.current = {
+          database: schemaState.database,
+          updates,
+        };
       })
       .catch(() =>
         sendFeedback({
@@ -142,18 +154,16 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
       <StyledViewButton
         variant="contained"
         id="add-table-btn"
-        onClick={handleAddTable}>
-          {' '}
+        onClick={handleAddTable}
+      >
+        {' '}
         Add New Table{' '}
       </StyledViewButton>
-      <StyledViewButton 
-        variant="contained" 
-        id="save" 
-        onClick={handleClickSave}>
+      <StyledViewButton variant="contained" id="save" onClick={handleClickSave}>
         {' '}
         Save{' '}
       </StyledViewButton>
-      <ReactFlow 
+      <ReactFlow
         nodes={nodes}
         edges={edges}
         nodeTypes={nodeTypes}
@@ -164,7 +174,7 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
         fitView
         style={rfStyle}
         onlyRenderVisibleElements={false}
-      // attributionPosition="top-right"
+        // attributionPosition="top-right"
       >
         <Background />
       </ReactFlow>
