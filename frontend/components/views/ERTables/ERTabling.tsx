@@ -18,7 +18,9 @@ import {
   BackendObjType,
   UpdatesObjType,
   AddTablesObjType,
-  TableHeaderNodeType
+  TableHeaderNodeType,
+  AppState,
+  SchemaStateObjType
 } from '../../../types';
 import { sendFeedback } from '../../../lib/utils';
 // import UserTableLayouts from '/UserTableLayouts.json';
@@ -132,7 +134,10 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
     // create object for the current database
     type TablePosObjType = {
       table_name: string,
-      table_position: number[]
+      table_position: {
+        x: number,
+        y: number
+      }
     }
 
     type DatabaseLayoutObjType = {
@@ -145,12 +150,11 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
       db_tables: [],
     };
 
-    console.log(backendObj)
-    // // populate the db_tables property for the database
+    // populate the db_tables property for the database
     headerNodes.forEach(node => {
       const tablePosObj: TablePosObjType = {
         table_name: node.tableName,
-        table_position: [node.position.x, node.position.y]
+        table_position: {'x': node.position.x, 'y': node.position.y}
       };
       currDatabaseLayout.db_tables.push(tablePosObj)
     });

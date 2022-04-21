@@ -1,30 +1,57 @@
-import * as types from '../constants/constants';
+import fs from 'fs';
+import { remote } from 'electron';
+
 import { MarkerType } from 'react-flow-renderer';
 import { greenPrimary } from '../style-variables';
 
-const getTablePosition = (tableName, dbName) => {
-  // { x: (this.id - 1) * 500, y: 0 }
-};
+import * as types from '../constants/constants';
 
 class Table {
-  constructor(id, columns, name, otherTables) {
+  constructor(id, columns, name, otherTables, database) {
     this.id = id;
     this.columns = columns;
     this.name = name;
     this.otherTables = otherTables;
+    this.database = database;
   }
+
   render() {
+    const getTablePosition = () => {
+      const location = remote.app.getAppPath().concat('/UserTableLayouts.json');
+      fs.readFile(location, 'utf8', (err, data) => {
+        const parsedData = JSON.parse(data);
+        if (!err) {
+          parsedData.forEach((db) => {
+            if (db.db_name === this.database) {
+              // eslint-disable-next-line consistent-return
+              db.db_tables.forEach((table) => {
+                if (table.table_name === this.name) {
+                  console.log(table.table_position)
+                  return table.table_position;
+                }
+              });
+            }
+          });
+        }
+         // return generic positions if either no layout file or no
+         // layout for the db or no layout for the specifc table
+        // return { x: (this.id - 1) * 500, y: 0 };
+      });
+      return { x: (this.id - 1) * 500, y: 0 };
+    };
+
     const nodes = [
       {
         id: `table-${this.name}`,
         type: types.TABLE_HEADER,
-        position: getTablePosition(this.name),
+        position: getTablePosition(this.name, this.id),
         tableName: this.name,
         data: {
           table_name: this.name,
         },
       },
     ];
+
     const edges = [];
     this.columns.forEach((el, i) => {
       // create a node for react-flow
@@ -56,6 +83,7 @@ class Table {
         });
       }
     });
+
     // return an object with nodes and edges
     return {
       nodes,
@@ -96,7 +124,8 @@ const convertStateToReactFlow = {
         i + 1,
         copy.columns,
         schema.tableList[i].table_name,
-        otherTableList
+        otherTableList,
+        schema.database
       );
       // assign the evaluated result of rendering the table into tablesNodesEdges
       const tableNodesAndEdges = table.render();
