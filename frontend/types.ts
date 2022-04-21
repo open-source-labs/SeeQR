@@ -236,8 +236,8 @@ export type ERTableColumnData = {
   constraint_type: string | null;
   data_type: string;
   character_maximum_length: number | null;
-  foreign_column: string;
-  foreign_table: string;
+  foreign_column: string 
+  foreign_table: string
   is_nullable: 'yes' | 'no';
   unique?: boolean; // optional until implemented
   auto_increment?: boolean; // optional until implemented
@@ -262,7 +262,7 @@ export type AlterColumnsObjType = {
 }
 
 export type AddConstraintObjType = {
-  constraint_type: 'PRIMARY KEY' | 'FOREIGN KEY' | 'UNIQUE';
+  constraint_type: 'PRIMARY KEY' | 'FOREIGN KEY' | 'UNIQUE' | null;
   constraint_name: string;
   foreign_table: string | null;
   foreign_column: string | null;

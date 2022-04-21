@@ -60,8 +60,8 @@ function TableHeader({ data }: TableHeaderProps) {
           constraint_type: null,
           data_type: 'varchar',
           character_maximum_length: null,
-          foreign_column: 'none',
-          foreign_table: 'none',
+          foreign_column: '',
+          foreign_table: '',
           is_nullable: 'no',
         });
         // set the state

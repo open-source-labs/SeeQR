@@ -57,7 +57,7 @@ function backendObjToQuery(backendObj) {
       }
 
       function dropConstraint(currDrop) {
-        alterTableConstraintString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} DROP CONSTRAINT, ${currDrop}; `;
+        alterTableConstraintString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} DROP CONSTRAINT ${currDrop}; `;
       }
 
       for (let i = 0; i < currTable.alterColumns.length; i += 1) {
