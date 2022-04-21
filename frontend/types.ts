@@ -226,10 +226,12 @@ export type ERTableData = {
   table_catalog: string;
   table_name: string;
   table_schema: string;
+  new_table_name: string | null;
 }
 
 export type ERTableColumnData = {
   column_name: string;
+  new_column_name: string | null;
   constraint_name: string | null;
   constraint_type: string | null;
   data_type: string;

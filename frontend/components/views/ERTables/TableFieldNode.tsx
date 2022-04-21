@@ -137,7 +137,7 @@ function TableField({ data }: TableFieldProps) {
             console.log('columnNameInput.value', columnNameInput.value);
             if (column_name !== columnNameInput.value) {
               alterColumnsObj.new_column_name = columnNameInput.value;
-              schemaStateCopy.tableList[i].columns[j].column_name =
+              schemaStateCopy.tableList[i].columns[j].new_column_name =
                 columnNameInput.value;
             }
 
