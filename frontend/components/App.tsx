@@ -33,7 +33,7 @@ const Main = styled.main<{ $fullwidth: boolean }>`
   grid-area: ${({ $fullwidth }) => ($fullwidth ? '1 / 1 / -1 / -1' : 'main')};
   background: ${bgColor};
   height: calc(100vh - (2 * ${defaultMargin}));
-  max-width: ${({ $fullwidth }) => ($fullwidth ? '' : `calc(100vw - ${sidebarWidth} )`)};
+  max-width: ${({ $fullwidth }) => ($fullwidth ? '' : `calc(90vw - ${sidebarWidth} )`)};
   padding: ${defaultMargin} ${sidebarShowButtonSize};
   margin: 0;
 `;
