@@ -7,6 +7,7 @@ import ReactFlow, {
   Background,
   Node,
   Edge,
+  MiniMap
 } from 'react-flow-renderer';
 import { Button } from '@material-ui/core';
 import styled from 'styled-components';
@@ -20,10 +21,35 @@ import {
   SchemaStateObjType,
 } from '../../../types';
 import { sendFeedback } from '../../../lib/utils';
+import { 
+  greenPrimary, 
+  greyPrimary,
+  bgColor,
+  greenLightest,
+} from '../../../style-variables';
 
-// here is where we would update the styling of the page background
+// defines the styling for the ERDiagram window
 const rfStyle = {
-  height: '100vh',
+  height: '65vh',
+};
+
+// defines the styling for the minimap
+const mmStyle = {
+  backgroundColor: bgColor,
+  border: `2px solid ${greenPrimary}`,
+  'border-radius': '0.3rem',
+}
+
+// defines the styling for the minimap nodes
+const nodeColor = (node) => {
+  switch (node.type) {
+    case 'tableHeader':
+      return greenPrimary;
+    case 'tableField':
+      return greyPrimary;
+    default:
+      return 'blue';
+  }
 };
 
 type ERTablingProps = {
@@ -185,6 +211,7 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
         onlyRenderVisibleElements={false}
         // attributionPosition="top-right"
       >
+        <MiniMap nodeColor={nodeColor}  style={mmStyle} nodeStrokeWidth={3} />
         <Background />
       </ReactFlow>
     </div>
