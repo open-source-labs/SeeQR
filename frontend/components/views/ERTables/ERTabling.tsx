@@ -1,7 +1,6 @@
 import { ipcRenderer } from 'electron';
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 import ReactFlow, {
-  addEdge,
   applyEdgeChanges,
   applyNodeChanges,
   Background,
@@ -13,13 +12,12 @@ import styled from 'styled-components';
 import stateToReactFlow from '../../../lib/convertStateToReactFlow';
 import nodeTypes from './NodeTypes';
 import {
-  BackendObjType,
   UpdatesObjType,
   AddTablesObjType,
   AppState,
   SchemaStateObjType,
 } from '../../../types';
-import { sendFeedback } from '../../../lib/utils';
+
 
 // here is where we would update the styling of the page background
 const rfStyle = {
@@ -65,39 +63,33 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
     database: schemaState.database,
     updates,
   });
-
+  // whenever the selectedDb changes, reassign the backendObj to contain this selectedDb
   useEffect(() => {
     backendObj.current.database = selectedDb;
     backendColumnObj.current.database = selectedDb;
   }, [selectedDb]);
 
+  // This function sends a messsage to the back end with the backendObj to specify what changes to the
+  // database neeeds to be made
   const handleClickSave = () => {
-    // #TODO: This function will send a message to the back end with
-    // the data in backendObj.current
-    console.log('backendObj before sending to back', backendObj.current);
     ipcRenderer
       .invoke('ertable-schemaupdate', backendObj.current)
-      .then((data) => {
-        console.log('resetting backendObj');
+      .then(() => {
         // resets the backendObj
         backendObj.current = {
           database: schemaState.database,
           updates,
         };
       })
-      .catch(() =>
-        sendFeedback({
-          type: 'error',
-          message: 'Query failed',
-        })
-      )
       .catch((err: object) => {
+        // console.log here to notify developers that there was an error messaging the main process
         console.log(err);
       });
   };
 
-  // when SchemaState changes, convert the schema to react flow
+  // This useEffect fires when schemaState changes and will convert the state to a form react flow requires
   useEffect(() => {
+    // send the schema state to the convert method to convert the schema to the form react flow requires
     const initialState = stateToReactFlow.convert(schemaState);
     // create a deep copy of the state, to ensure the state is not directly modified
     const schemaStateString = JSON.stringify(schemaState);
@@ -121,25 +113,23 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
     setNodes(nodesArray);
     setEdges(initialState.edges);
   }, [schemaState]);
-
+  
+  // whenever the node changes, this callback gets invoked
   const onNodesChange = useCallback(
     (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
     [setNodes]
   );
+  // whenever the edges changes, this callback gets invoked
   const onEdgesChange = useCallback(
     (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
     [setEdges]
   );
-  const onConnect = useCallback(
-    (connection) => setEdges((eds) => addEdge(connection, eds)),
-    [setEdges]
-  );
 
+  // This function handles the add table button on the ER Diagram view
   const handleAddTable = () => {
     const schemaStateString = JSON.stringify(schemaState);
     const schemaStateCopy = JSON.parse(schemaStateString);
-
-    // create an addColumnsType object
+    // create an addTablesType object with AddTablesObjType
     const addTableObj: AddTablesObjType = {
       is_insertable_into: 'yes',
       table_name: `NewTable${schemaStateCopy.tableList.length + 1}`,
@@ -147,15 +137,12 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
       table_catalog: `${schemaStateCopy.database}`,
       columns: [],
     };
-
     // update the backendObj
     backendObj.current.updates.addTables.push(addTableObj);
     // push a new object with blank properties
     schemaStateCopy.tableList.push(addTableObj);
     // set the state
     setSchemaState(schemaStateCopy);
-
-    // return;
   };
 
   return (
@@ -179,7 +166,7 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
         nodesConnectable={false}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
+        // onConnect={onConnect}
         fitView
         style={rfStyle}
         onlyRenderVisibleElements={false}
