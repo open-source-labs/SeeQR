@@ -98,7 +98,6 @@ function backendObjToQuery(backendObj) {
     function alterType(currTable) {
       let alterTypeString = '';
       for (let i = 0; i < currTable.alterColumns.length; i += 1) {
-        console.log(currTable.alterColumns[i])
         if (currTable.alterColumns[i].data_type !== null) {
           if (currTable.alterColumns[i].data_type === 'date') {
             alterTypeString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} ALTER COLUMN ${currTable.alterColumns[i].column_name} TYPE date USING ${currTable.alterColumns[i].column_name}::text::date; `;
@@ -113,8 +112,8 @@ function backendObjToQuery(backendObj) {
     function alterMaxCharacterLength(currTable) {
       let alterMaxCharacterLengthString = '';
       for (let i = 0; i < currTable.alterColumns.length; i += 1) {
-        if (currTable.alterColumns[i].max_character_length !== null) {
-          alterMaxCharacterLengthString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} ALTER COLUMN ${currTable.alterColumns[i].column_name} TYPE ${currTable.alterColumns[i].data_type}(${currTable.alterColumns[i].character_maximum_length}); `;
+        if (currTable.alterColumns[i].character_maximum_length !== null) {
+          alterMaxCharacterLengthString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} ALTER COLUMN ${currTable.alterColumns[i].column_name} TYPE varchar(${currTable.alterColumns[i].character_maximum_length}); `;
         }
       }
       return alterMaxCharacterLengthString;
@@ -174,7 +173,6 @@ function backendObjToQuery(backendObj) {
     const tablesToRename = Object.keys(tablesNames)
     for (let i = 0; i < tablesToRename.length; i++) {
       const currTable = tablesNames[tablesToRename[i]]
-      console.log(currTable)
       // only renames a table with the most recent name that was saved
       renameString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} RENAME TO ${currTable.new_table_name}; `;
     }

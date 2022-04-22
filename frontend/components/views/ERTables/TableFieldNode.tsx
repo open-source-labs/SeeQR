@@ -106,7 +106,7 @@ function TableField({ data }: TableFieldProps) {
     // create an alterColumns object
     const alterColumnsObj: AlterColumnsObjType = {
       column_name,
-      character_maximum_length,
+      character_maximum_length: null,
       new_column_name: null,
       add_constraint: [],
       data_type: null,
@@ -155,19 +155,19 @@ function TableField({ data }: TableFieldProps) {
             const columnMaxCharacterLengthInput = document.getElementById(
               `type-input-char_max_size-${tableColumn}`
             ) as HTMLSelectElement;
-            if (character_maximum_length !== parseInt(columnMaxCharacterLengthInput.value, 10)) {
-              alterColumnsObj.character_maximum_length = parseInt(columnMaxCharacterLengthInput.value, 10);
-              schemaStateCopy.tableList[i].columns[j].character_maximum_length =
-              parseInt(columnMaxCharacterLengthInput.value, 10);
+            if (columnMaxCharacterLengthInput) {
+              if (character_maximum_length !== parseInt(columnMaxCharacterLengthInput.value, 10)) {
+                alterColumnsObj.character_maximum_length = parseInt(columnMaxCharacterLengthInput.value, 10);
+                schemaStateCopy.tableList[i].columns[j].character_maximum_length =
+                  parseInt(columnMaxCharacterLengthInput.value, 10);
+              }
             }
 
             // handle data_type change
             const dataTypeInput = document.getElementById(
               `type-dd-${tableColumn}`
             ) as HTMLSelectElement;
-            console.log('data type: ',data_type)
-            console.log('data type input: ',dataTypeInput.value)
-            if (data_type !== dataTypeInput.value) {
+            if ((data_type === 'character varying' ? 'varchar' : data_type) !== dataTypeInput.value) {
               alterColumnsObj.data_type = dataTypeInput.value;
               schemaStateCopy.tableList[i].columns[j].data_type =
                 dataTypeInput.value;
@@ -191,14 +191,14 @@ function TableField({ data }: TableFieldProps) {
               alterColumnsObj.drop_constraint.push(`PK_${data.tableName + column_name}`);
             } // if constraint type is not in state but checkbox is checked, add the constraint 
             else if (constraint_type !== 'PRIMARY KEY' && pkCheckBox.checked === true) {
-                // create a copy in case multiple constraints are added
-                const addConstraintObjCopy = {...addConstraintObj};
-                // name the constraint PK_<column_name>
-                addConstraintObjCopy.constraint_name = `PK_${data.tableName + column_name}`;
-                // assign the constraint_type to 'PRIMARY KEY'
-                addConstraintObjCopy.constraint_type = 'PRIMARY KEY';
-                // add the constraint obj to the alter columns obj
-                alterColumnsObj.add_constraint.push(addConstraintObjCopy);
+              // create a copy in case multiple constraints are added
+              const addConstraintObjCopy = { ...addConstraintObj };
+              // name the constraint PK_<column_name>
+              addConstraintObjCopy.constraint_name = `PK_${data.tableName + column_name}`;
+              // assign the constraint_type to 'PRIMARY KEY'
+              addConstraintObjCopy.constraint_type = 'PRIMARY KEY';
+              // add the constraint obj to the alter columns obj
+              alterColumnsObj.add_constraint.push(addConstraintObjCopy);
             }
 
             // handle foreign key
@@ -209,7 +209,7 @@ function TableField({ data }: TableFieldProps) {
               alterColumnsObj.drop_constraint.push(`FK_${data.tableName + column_name}`);
             }
             else if (constraint_type !== 'FOREIGN KEY' && fkCheckBox.checked === true) {
-              const addConstraintObjCopy = {...addConstraintObj};
+              const addConstraintObjCopy = { ...addConstraintObj };
               // name the constraint FK_<Column_name>
               addConstraintObjCopy.constraint_name = `FK_${data.tableName + column_name}`;
               // assign the constraint type to 'FOREIGN KEY'
@@ -225,7 +225,7 @@ function TableField({ data }: TableFieldProps) {
               // add the constraint obj to the alter columns obj
               alterColumnsObj.add_constraint.push(addConstraintObjCopy);
             }
-        
+
             // add the alterTablesObj
             alterTablesObj.alterColumns.push(alterColumnsObj);
             // update the backendObj
@@ -322,6 +322,8 @@ function TableField({ data }: TableFieldProps) {
             defaultValue={data_type}
             otherTables={data.otherTables}
             options={['serial', 'varchar', 'bigint', 'integer', 'date']}
+            schemaStateCopy={schemaStateCopy}
+            setSchemaState={setSchemaState}
           />
           <TableFieldInput
             idName={`type-input-char_max_size-${tableColumn}`}
@@ -343,6 +345,8 @@ function TableField({ data }: TableFieldProps) {
             options={data.otherTables.map((table) => table.table_name)}
             setFkOptions={setFkOptions}
             otherTables={data.otherTables}
+            schemaStateCopy={schemaStateCopy}
+            setSchemaState={setSchemaState}
           />
           <TableFieldDropDown
             label="Field"
@@ -351,6 +355,8 @@ function TableField({ data }: TableFieldProps) {
             defaultValue={foreign_column}
             options={fkOptions}
             otherTables={data.otherTables}
+            schemaStateCopy={schemaStateCopy}
+            setSchemaState={setSchemaState}
           />
           <p />
           <TableFieldCheckBox
