@@ -27,7 +27,7 @@ import { sendFeedback } from '../../../lib/utils';
 
 // here is where we would update the styling of the page background
 const rfStyle = {
-  height: '100vh',
+  height: '60vh',
 };
 
 type ERTablingProps = {
