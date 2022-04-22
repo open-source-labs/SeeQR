@@ -237,15 +237,8 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
       }
     });
 
-    // const schemaStateString = JSON.stringify(schemaState);
-    // const schemaStateCopy = JSON.parse(schemaStateString);
-    // setSchemaState(schemaStateCopy);
   };
 
-  // function useForceUpdate(){
-  //   const [force, setValue] = useState(0); // integer state
-  //   return () => setValue(f => f + 1); // update the state to force render
-  // }
 
   const handleClickSave = () => {
     // #TODO: This function will send a message to the back end with
@@ -255,14 +248,6 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
       .then((data) => {
         // resets the backendObj
         handleSaveLayout();
-        // useForceUpdate();
-        // console.log(thissss)
-        // this.forceUpdate();
-        // setSchemaState({database: '', tableList: []});
-        // setSchemaState({database: selectedDb, tableList: tables})
-        // const schemaStateString = JSON.stringify(schemaState);
-        // const schemaStateCopy = JSON.parse(schemaStateString);
-        // console.log(schemaStateCopy)
         backendObj.current = {
           database: schemaState.database,
           updates,
@@ -279,10 +264,6 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
         console.log(err);
       });
     
-    // handleSaveLayout();
-    // const schemaStateString = JSON.stringify(schemaState);
-    // const schemaStateCopy = JSON.parse(schemaStateString);
-    // console.log(schemaStateCopy)
   };
 
   return (
