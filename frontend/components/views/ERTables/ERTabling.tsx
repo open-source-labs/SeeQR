@@ -60,9 +60,41 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
     database: schemaState.database,
     updates,
   });
+
+  const backendColumnObj = useRef({
+    database: schemaState.database,
+    updates,
+  });
+
   useEffect(() => {
     backendObj.current.database = selectedDb;
+    backendColumnObj.current.database = selectedDb;
   }, [selectedDb]);
+
+  const handleClickSave = () => {
+    // #TODO: This function will send a message to the back end with
+    // the data in backendObj.current
+    console.log('backendObj before sending to back', backendObj.current);
+    ipcRenderer
+      .invoke('ertable-schemaupdate', backendObj.current)
+      .then((data) => {
+        console.log('resetting backendObj');
+        // resets the backendObj
+        backendObj.current = {
+          database: schemaState.database,
+          updates,
+        };
+      })
+      .catch(() =>
+        sendFeedback({
+          type: 'error',
+          message: 'Query failed',
+        })
+      )
+      .catch((err: object) => {
+        console.log(err);
+      });
+  };
 
   // when SchemaState changes, convert the schema to react flow
   useEffect(() => {
@@ -82,6 +114,7 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
           schemaStateCopy,
           setSchemaState,
           backendObj,
+          handleClickSave
         },
       };
     });
@@ -125,30 +158,6 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
     // return;
   };
 
-  const handleClickSave = () => {
-    // #TODO: This function will send a message to the back end with
-    // the data in backendObj.current
-    console.log('backendObj before sending to back', backendObj.current);
-    ipcRenderer
-      .invoke('ertable-schemaupdate', backendObj.current)
-      .then((data) => {
-        console.log('resetting backendObj');
-        // resets the backendObj
-        backendObj.current = {
-          database: schemaState.database,
-          updates,
-        };
-      })
-      .catch(() =>
-        sendFeedback({
-          type: 'error',
-          message: 'Query failed',
-        })
-      )
-      .catch((err: object) => {
-        console.log(err);
-      });
-  };
   return (
     <div>
       <StyledViewButton

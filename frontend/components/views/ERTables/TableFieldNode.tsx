@@ -1,8 +1,8 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { Handle, Position } from 'react-flow-renderer';
-
 import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
-
+import styled from 'styled-components';
+import { Button } from '@material-ui/core';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
   ERTableColumnData,
@@ -29,11 +29,19 @@ type TableFieldProps = {
   data;
 };
 
+const StyledButton = styled(Button)`
+color: rgba(0, 0, 0, 0.87);
+background-color: rgb(203, 212, 214);
+margin: 1rem;
+margin-left: 0rem;
+padding: 0.5rem 1rem;
+`;
+
 function TableField({ data }: TableFieldProps) {
   const {
     schemaStateCopy,
     setSchemaState,
-    backendObj,
+    backendObj
   }: TableFieldDataObjectType = data;
   const {
     constraint_type,
@@ -156,7 +164,6 @@ function TableField({ data }: TableFieldProps) {
             // update the backendObj
             backendObj.current.updates.alterTables.push(alterTablesObj);
             setSchemaState(schemaStateCopy);
-            console.log('backendobj after update', backendObj.current);
             return;
           }
         }
@@ -303,13 +310,12 @@ function TableField({ data }: TableFieldProps) {
           />
           <p />
           <div>
-            <button id="update-btn" onClick={handleUpdateColumn}>
-              Update
-            </button>
-            <button id="cancel-btn">Cancel</button>
-            <button id="delete-btn" onClick={handleDropColumn}>
-              Delete
-            </button>
+            <StyledButton id="update-btn" onClick={handleUpdateColumn}>
+              SAVE
+            </StyledButton>
+            <StyledButton id="delete-btn" onClick={handleDropColumn}>
+              DELETE
+            </StyledButton>
           </div>
         </AccordionDetails>
       </Accordion>

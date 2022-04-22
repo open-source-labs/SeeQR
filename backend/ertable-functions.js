@@ -1,7 +1,8 @@
 function backendObjToQuery(backendObj) {
   const outputArray = [];
   const dbName = backendObj.database;
-
+  const columnsNames = {};
+  const tablesNames = {};
   function addTable(addTableArray) {
     for (let i = 0; i < addTableArray.length; i += 1) {
       const currTable = addTableArray[i];
@@ -122,14 +123,25 @@ function backendObjToQuery(backendObj) {
 
     function renameTable(currTable) {
       if (currTable.new_table_name) {
-        renameString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} RENAME TO ${currTable.new_table_name}; `;
+        tablesNames[currTable.table_name] = {
+          table_name: currTable.table_name,
+          table_schema: currTable.table_schema,
+          new_table_name: currTable.new_table_name
+        }
       }
     }
 
     function renameColumn(currTable) {
       for (let i = 0; i < currTable.alterColumns.length; i++) {
-        if (currTable.alterColumns[i].new_column_name) {
-          renameString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} RENAME COLUMN ${currTable.alterColumns[i].column_name} TO ${currTable.alterColumns[i].new_column_name}; `;
+        const currAlterColumn = currTable.alterColumns[i];
+        // populates an array of objects with all of the new column names
+        if (currAlterColumn.new_column_name) {
+          columnsNames[currAlterColumn.column_name] = {
+            column_name: currAlterColumn.column_name,
+            table_name: currTable.table_name,
+            table_schema: currTable.table_schema,
+            new_column_name: currAlterColumn.new_column_name
+          }
         }
       }
     }
@@ -138,6 +150,22 @@ function backendObjToQuery(backendObj) {
       renameColumn(currTable);
       renameTable(currTable);
     }
+
+    const columnsToRename = Object.keys(columnsNames)
+    for (let i = 0; i < columnsToRename.length; i++) {
+      const currColumn = columnsNames[columnsToRename[i]]
+      // only renames a column with the most recent name that was saved
+      renameString += `ALTER TABLE ${currColumn.table_schema}.${currColumn.table_name} RENAME COLUMN ${currColumn.column_name} TO ${currColumn.new_column_name}; `;
+    }
+
+    const tablesToRename = Object.keys(tablesNames)
+    for (let i = 0; i < tablesToRename.length; i++) {
+      const currTable = tablesNames[tablesToRename[i]]
+      console.log(currTable)
+      // only renames a table with the most recent name that was saved
+      renameString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} RENAME TO ${currTable.new_table_name}; `;
+    }
+
     outputArray.push(renameString);
   }
 
