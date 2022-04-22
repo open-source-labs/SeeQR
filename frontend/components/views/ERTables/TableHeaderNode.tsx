@@ -3,7 +3,6 @@ import Tooltip from '@mui/material/Tooltip';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import {
   BackendObjType,
   AlterTablesObjType,
@@ -26,6 +25,7 @@ type TableHeaderProps = {
 function TableHeader({ data }: TableHeaderProps) {
   const { table_name, schemaStateCopy, setSchemaState, backendObj } = data;
 
+  // This function handles the add column button on the table
   const handleAddColumn = () => {
     // iterate through the schema copy
     for (let i = 0; i < schemaStateCopy.tableList.length; i++) {
@@ -71,6 +71,7 @@ function TableHeader({ data }: TableHeaderProps) {
     }
   };
 
+  // This function handles the add delete button on the table
   const handleDeleteTable = () => {
     for (let i = 0; i < schemaStateCopy.tableList.length; i++) {
       if (schemaStateCopy.tableList[i].table_name === table_name) {
@@ -90,7 +91,7 @@ function TableHeader({ data }: TableHeaderProps) {
     }
   };
 
-  // updates the table name when the user hits enter on the submit form
+  // This function updates the table name when the user hits enter on the submit form
   const handleChangeTableName = (e) => {
     if (e.key === 'Enter') {
       for (let i = 0; i < schemaStateCopy.tableList.length; i++) {
