@@ -18,26 +18,31 @@ class Table {
   render() {
     const getTablePosition = () => {
       const location = remote.app.getAppPath().concat('/UserTableLayouts.json');
-      fs.readFile(location, 'utf8', (err, data) => {
+      try {
+        const data = fs.readFileSync(location, 'utf8');
         const parsedData = JSON.parse(data);
-        if (!err) {
-          parsedData.forEach((db) => {
-            if (db.db_name === this.database) {
-              // eslint-disable-next-line consistent-return
-              db.db_tables.forEach((table) => {
-                if (table.table_name === this.name) {
-                  console.log(table.table_position)
-                  return table.table_position;
-                }
-              });
+        for (let i = 0; i < parsedData.length; i++) {
+          const db = parsedData[i];
+          if (db.db_name === this.database) {
+            // eslint-disable-next-line consistent-return
+            for (let j = 0; j < db.db_tables.length; j++) {
+              const currTable = db.db_tables[j];
+              if (currTable.table_name === this.name) {
+                // console.log(
+                //   'tablename',
+                //   currTable.table_name,
+                //   '\nposition',
+                //   currTable.table_position
+                // );
+                return currTable.table_position;
+              }
             }
-          });
+          }
         }
-         // return generic positions if either no layout file or no
-         // layout for the db or no layout for the specifc table
-        // return { x: (this.id - 1) * 500, y: 0 };
-      });
-      return { x: (this.id - 1) * 500, y: 0 };
+        return { x: (this.id - 1) * 500, y: 0 };
+      } catch (error) {
+        return { x: (this.id - 1) * 500, y: 0 };
+      }
     };
 
     const nodes = [

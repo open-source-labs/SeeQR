@@ -48,7 +48,7 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
   // when tables (which is the database that is selected changes, update SchemaState)
   useEffect(() => {
     setSchemaState({database: selectedDb, tableList: tables});
-  }, [tables]);
+  }, [tables, selectedDb]);
   // define an object using the useRef hook to maintain its value throughout all rerenders
   // this object will hold the data that needs to get sent to the backend to update the
   // SQL database. Each node will have access to this backendObj
@@ -61,6 +61,9 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
     database: schemaState.database,
     updates,
   });
+  useEffect(() => {
+    backendObj.current.database = selectedDb;
+  }, [selectedDb]);
   // when SchemaState changes, convert the schema to react flow
   useEffect(() => {
     const initialState = stateToReactFlow.convert(schemaState);
@@ -191,35 +194,15 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
       }
     });
 
-    // // if file 'UserTableLayouts' exists
-    // if (UserTableLayouts) {
-    //   // iterate thru array of dbs
-    //     for (let i = 0; i < UserTableLayouts.length; i++) {
-    //     // if current db exists
-    //     if (UserTableLayouts[i].db_name === currDatabaseLayout.db_name) {
-    //       // set array[i] = currDatabaseLayout
-    //       UserTableLayouts[i] = currDatabaseLayout
-    //     } else {
-    //       // push curr db layout to array
-    //       UserTableLayouts.push(currDatabaseLayout);
-    //     }
-    //   }
-    // } else {
-    // // if file doesnt exist
-    //   // create file w db array data and append currDataBaseLayout
-    //   // fs.writeFileSync()
-    // }
-
-
-
-
-    // if there isnt a file, push in an object with info abt db
-
-    // fs.writeFileSync( file, databaseLayouts, options );
-    // // if there is a file
-    //   // if user has a saved layout for that db
-    //   // if user does NOT have a layout
+    // const schemaStateString = JSON.stringify(schemaState);
+    // const schemaStateCopy = JSON.parse(schemaStateString);
+    // setSchemaState(schemaStateCopy);
   };
+
+  // function useForceUpdate(){
+  //   const [force, setValue] = useState(0); // integer state
+  //   return () => setValue(f => f + 1); // update the state to force render
+  // }
 
   const handleClickSave = () => {
     // #TODO: This function will send a message to the back end with
@@ -228,12 +211,20 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
       .invoke('ertable-schemaupdate', backendObj.current)
       .then((data) => {
         // resets the backendObj
-        if (data === 'success') {
-          backendObj.current = {
-            database: schemaState.database,
-            updates,
-          };
-        }
+        handleSaveLayout();
+        // useForceUpdate();
+        // console.log(thissss)
+        // this.forceUpdate();
+        // setSchemaState({database: '', tableList: []});
+        // setSchemaState({database: selectedDb, tableList: tables})
+        // const schemaStateString = JSON.stringify(schemaState);
+        // const schemaStateCopy = JSON.parse(schemaStateString);
+        // console.log(schemaStateCopy)
+        backendObj.current = {
+          database: schemaState.database,
+          updates,
+        };
+
       })
       .catch(() =>
         sendFeedback({
@@ -244,8 +235,11 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
       .catch((err: object) => {
         console.log(err);
       });
-
-    handleSaveLayout();
+    
+    // handleSaveLayout();
+    // const schemaStateString = JSON.stringify(schemaState);
+    // const schemaStateCopy = JSON.parse(schemaStateString);
+    // console.log(schemaStateCopy)
   };
 
   return (
