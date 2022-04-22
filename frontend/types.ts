@@ -289,6 +289,7 @@ export type AlterTablesObjType = {
   dropColumns: DropColumnsObjType[];
   alterColumns: AlterColumnsObjType[];
 }
+
 export type UpdatesObjType = {
   addTables: AddTablesObjType[];
   dropTables: DropTablesObjType[];
@@ -307,6 +308,23 @@ export type SchemaStateObjType = {
   tableList: ERTableData[];
 }
 
+export type TableHeaderDataObjectType = {
+  table_name: string;
+  schemaStateCopy: any;
+  setSchemaState: (string) => {};
+  backendObj: BackendObjType;
+};
+
+export type TableHeaderNodeType = {
+  data: TableHeaderDataObjectType,
+  id: string,
+  position: {
+    x: number,
+    y: number
+  },
+  tableName: string,
+  type: string,
+}
 
 
 
