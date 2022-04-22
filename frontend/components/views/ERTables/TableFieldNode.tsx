@@ -168,13 +168,13 @@ function TableField({ data }: TableFieldProps) {
             // if constraint type is PK in state but checkbox is unchecked, drop the constraint
             if (constraint_type === 'PRIMARY KEY' && pkCheckBox.checked === false) {
               // add the PK constraint name to the drop constraint array
-              alterColumnsObj.drop_constraint.push(`PK_${column_name}`);
+              alterColumnsObj.drop_constraint.push(`PK_${data.tableName + column_name}`);
             } // if constraint type is not in state but checkbox is checked, add the constraint 
             else if (constraint_type !== 'PRIMARY KEY' && pkCheckBox.checked === true) {
                 // create a copy in case multiple constraints are added
                 const addConstraintObjCopy = {...addConstraintObj};
                 // name the constraint PK_<column_name>
-                addConstraintObjCopy.constraint_name = `PK_${column_name}`;
+                addConstraintObjCopy.constraint_name = `PK_${data.tableName + column_name}`;
                 // assign the constraint_type to 'PRIMARY KEY'
                 addConstraintObjCopy.constraint_type = 'PRIMARY KEY';
                 // add the constraint obj to the alter columns obj
@@ -186,12 +186,12 @@ function TableField({ data }: TableFieldProps) {
             // if constraint type is FK in state but checkbox is unchecked, drop the constraint
             if (constraint_type === 'FOREIGN KEY' && fkCheckBox.checked === false) {
               // add the fk constraint name to the drop constraint array
-              alterColumnsObj.drop_constraint.push(`FK_${column_name}`);
+              alterColumnsObj.drop_constraint.push(`FK_${data.tableName + column_name}`);
             }
             else if (constraint_type !== 'FOREIGN KEY' && fkCheckBox.checked === true) {
               const addConstraintObjCopy = {...addConstraintObj};
               // name the constraint FK_<Column_name>
-              addConstraintObjCopy.constraint_name = `FK_${column_name}`;
+              addConstraintObjCopy.constraint_name = `FK_${data.tableName + column_name}`;
               // assign the constraint type to 'FOREIGN KEY'
               addConstraintObjCopy.constraint_type = 'FOREIGN KEY';
               // get the value of the drop down for foreign table
