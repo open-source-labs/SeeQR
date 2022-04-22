@@ -1,14 +1,16 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { Handle, Position } from 'react-flow-renderer';
-
 import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
-
+import styled from 'styled-components';
+import { Button } from '@material-ui/core';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
   ERTableColumnData,
   BackendObjType,
   AlterTablesObjType,
   DropColumnsObjType,
+  AlterColumnsObjType,
+  AddConstraintObjType,
 } from '../../../types';
 
 import TableFieldCheckBox from './TableFieldCheckBox';
@@ -16,6 +18,8 @@ import TableFieldInput from './TableFieldInput';
 import TableFieldDropDown from './TableFieldDropDown';
 import TableFieldDropDownOption from './TableFieldDropDownOption';
 import './styles.css';
+import { ImportContactsOutlined } from '@mui/icons-material';
+import { sendFeedback } from '../../../lib/utils';
 
 type TableFieldDataObjectType = {
   table_name: string;
@@ -28,12 +32,19 @@ type TableFieldProps = {
   data;
 };
 
+const StyledButton = styled(Button)`
+color: rgba(0, 0, 0, 0.87);
+background-color: rgb(203, 212, 214);
+margin: 1rem;
+margin-left: 0rem;
+padding: 0.5rem 1rem;
+`;
+
 function TableField({ data }: TableFieldProps) {
   const {
-    table_name,
     schemaStateCopy,
     setSchemaState,
-    backendObj,
+    backendObj
   }: TableFieldDataObjectType = data;
   const {
     constraint_type,
@@ -56,7 +67,9 @@ function TableField({ data }: TableFieldProps) {
         let columnIndex;
         // iterate through columns
         for (let j = 0; j < schemaStateCopy.tableList[i].columns.length; j++) {
-          if (schemaStateCopy.tableList[i].columns[j].column_name === column_name) {
+          if (
+            schemaStateCopy.tableList[i].columns[j].column_name === column_name
+          ) {
             columnIndex = j;
 
             // create alterTablesObject with AlterTablesObjecttype
@@ -86,6 +99,132 @@ function TableField({ data }: TableFieldProps) {
           }
         }
       }
+    }
+  };
+
+  const handleUpdateColumn = () => {
+    // create an alterColumns object
+    const alterColumnsObj: AlterColumnsObjType = {
+      column_name,
+      character_maximum_length: null,
+      new_column_name: null,
+      add_constraint: [],
+      data_type: null,
+      is_nullable: null,
+      drop_constraint: [],
+    };
+
+    // // handle is_nullable change
+    // const isNullable = document.getElementById(
+    //   `allow-null-chkbox-${tableColumn}`
+    // ) as HTMLInputElement;
+    // const isNullableString = isNullable.checked ? 'yes' : 'no';
+    // alterColumnsObj.is_nullable =
+    //   isNull !== isNullableString ? isNullableString : null;
+
+    for (let i = 0; i < schemaStateCopy.tableList.length; i++) {
+      if (schemaStateCopy.tableList[i].table_name === data.tableName) {
+        let columnIndex;
+        // iterate through columns
+        for (let j = 0; j < schemaStateCopy.tableList[i].columns.length; j++) {
+          if (
+            schemaStateCopy.tableList[i].columns[j].column_name === column_name
+          ) {
+            const alterTablesObj: AlterTablesObjType = {
+              is_insertable_into: null,
+              table_catalog: schemaStateCopy.tableList[i].table_catalog,
+              table_name: data.tableName,
+              new_table_name: null,
+              table_schema: schemaStateCopy.tableList[i].table_schema,
+              addColumns: [],
+              dropColumns: [],
+              alterColumns: [],
+            };
+
+            // handle column_name change
+            const columnNameInput = document.getElementById(
+              `type-input-column_name-${tableColumn}`
+            ) as HTMLSelectElement;
+            if (column_name !== columnNameInput.value) {
+              alterColumnsObj.new_column_name = columnNameInput.value;
+              schemaStateCopy.tableList[i].columns[j].new_column_name =
+                columnNameInput.value;
+            }
+
+            // handle data_type change
+            const dataTypeInput = document.getElementById(
+              `type-dd-${tableColumn}`
+            ) as HTMLSelectElement;
+            if (data_type !== dataTypeInput.value) {
+              alterColumnsObj.data_type = dataTypeInput.value;
+              schemaStateCopy.tableList[i].columns[j].data_type =
+                dataTypeInput.value;
+            }
+
+            // handle add/Drop Constraint type
+
+            // create an empty AddConstraintObj 
+            const addConstraintObj: AddConstraintObjType = {
+              constraint_type: null,
+              constraint_name: '',
+              foreign_table: null,
+              foreign_column: null,
+            }
+            /* handle primary key */
+            // get the primary key checkmark value
+            const pkCheckBox = document.getElementById(`primary-key-chkbox-${tableColumn}`) as HTMLInputElement;
+            // if constraint type is PK in state but checkbox is unchecked, drop the constraint
+            if (constraint_type === 'PRIMARY KEY' && pkCheckBox.checked === false) {
+              // add the PK constraint name to the drop constraint array
+              alterColumnsObj.drop_constraint.push(`PK_${data.tableName + column_name}`);
+            } // if constraint type is not in state but checkbox is checked, add the constraint 
+            else if (constraint_type !== 'PRIMARY KEY' && pkCheckBox.checked === true) {
+                // create a copy in case multiple constraints are added
+                const addConstraintObjCopy = {...addConstraintObj};
+                // name the constraint PK_<column_name>
+                addConstraintObjCopy.constraint_name = `PK_${data.tableName + column_name}`;
+                // assign the constraint_type to 'PRIMARY KEY'
+                addConstraintObjCopy.constraint_type = 'PRIMARY KEY';
+                // add the constraint obj to the alter columns obj
+                alterColumnsObj.add_constraint.push(addConstraintObjCopy);
+            }
+
+            // handle foreign key
+            const fkCheckBox = document.getElementById(`foreign-key-chkbox-${tableColumn}`) as HTMLInputElement;
+            // if constraint type is FK in state but checkbox is unchecked, drop the constraint
+            if (constraint_type === 'FOREIGN KEY' && fkCheckBox.checked === false) {
+              // add the fk constraint name to the drop constraint array
+              alterColumnsObj.drop_constraint.push(`FK_${data.tableName + column_name}`);
+            }
+            else if (constraint_type !== 'FOREIGN KEY' && fkCheckBox.checked === true) {
+              const addConstraintObjCopy = {...addConstraintObj};
+              // name the constraint FK_<Column_name>
+              addConstraintObjCopy.constraint_name = `FK_${data.tableName + column_name}`;
+              // assign the constraint type to 'FOREIGN KEY'
+              addConstraintObjCopy.constraint_type = 'FOREIGN KEY';
+              // get the value of the drop down for foreign table
+              const foreignTableDD = document.getElementById(`foreign-key-table-dd-${tableColumn}`) as HTMLSelectElement;
+              // assign the constraintobjcopy to foreign table value
+              addConstraintObjCopy.foreign_table = foreignTableDD.value;
+              // get the value of the drop down for foreign column
+              const foreignColumnDD = document.getElementById(`foreign-key-field-dd-${tableColumn}`) as HTMLSelectElement;
+              // assign the constraintobjcopy to foreign column value
+              addConstraintObjCopy.foreign_column = foreignColumnDD.value;
+              // add the constraint obj to the alter columns obj
+              alterColumnsObj.add_constraint.push(addConstraintObjCopy);
+            }
+        
+            // add the alterTablesObj
+            alterTablesObj.alterColumns.push(alterColumnsObj);
+            // update the backendObj
+            backendObj.current.updates.alterTables.push(alterTablesObj);
+            setSchemaState(schemaStateCopy);
+            return;
+
+          }
+        }
+      }
+      // TODO: MAKE STATE CHANGE
     }
   };
 
@@ -130,8 +269,10 @@ function TableField({ data }: TableFieldProps) {
     const isFkChecked = fkCheckBox.checked;
 
     const allowNullID = `allow-null-chkbox-${tableColumn}`;
-    const allowNullCheckBox = document.getElementById(allowNullID) as HTMLSelectElement;
-    allowNullCheckBox.disabled = (isFkChecked || isPkChecked);
+    const allowNullCheckBox = document.getElementById(
+      allowNullID
+    ) as HTMLSelectElement;
+    allowNullCheckBox.disabled = isFkChecked || isPkChecked;
   };
 
   const [fkOptions, setFkOptions] = useState<string[]>(createFieldOptions());
@@ -152,13 +293,17 @@ function TableField({ data }: TableFieldProps) {
           <div className="field-summary-wrapper">
             <p id="column-name">{column_name}</p>
             <p id="data-type">
-              {(data_type === 'character varying') ? 'varchar' : data_type}
+              {data_type === 'character varying' ? 'varchar' : data_type}
             </p>
           </div>
         </AccordionSummary>
 
         <AccordionDetails>
-          <TableFieldInput label="Name" defaultValue={column_name} />
+          <TableFieldInput
+            idName={`type-input-column_name-${tableColumn}`}
+            label="Name"
+            defaultValue={column_name}
+          />
           <TableFieldDropDown
             label="Type"
             idName={`type-dd-${tableColumn}`}
@@ -167,6 +312,7 @@ function TableField({ data }: TableFieldProps) {
             options={['serial', 'varchar', 'bigint', 'integer', 'date']}
           />
           <TableFieldInput
+            idName={`type-input-char_max_size-${tableColumn}`}
             label="Size"
             defaultValue={character_maximum_length}
           />
@@ -204,7 +350,9 @@ function TableField({ data }: TableFieldProps) {
           <TableFieldCheckBox
             idName={`allow-null-chkbox-${tableColumn}`}
             label="Allow Null"
-            isChecked={!(constraint_type === 'PRIMARY KEY' || foreign_table == null) }
+            isChecked={
+              !(constraint_type === 'PRIMARY KEY' || foreign_table == null)
+            }
           />
           <TableFieldCheckBox // FIXME: MAKE FIXED TO PRIMARY KEY
             idName={`unique-chkbox-${tableColumn}`}
@@ -218,11 +366,12 @@ function TableField({ data }: TableFieldProps) {
           />
           <p />
           <div>
-            <button id="update-btn">Update</button>
-            <button id="cancel-btn">Cancel</button>
-            <button id="delete-btn" onClick={handleDropColumn}>
-              Delete
-            </button>
+            <StyledButton id="update-btn" onClick={handleUpdateColumn}>
+              SAVE
+            </StyledButton>
+            <StyledButton id="delete-btn" onClick={handleDropColumn}>
+              DELETE
+            </StyledButton>
           </div>
         </AccordionDetails>
       </Accordion>

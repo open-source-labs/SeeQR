@@ -9,6 +9,7 @@ import ReactFlow, {
   Background,
   Node,
   Edge,
+  MiniMap
 } from 'react-flow-renderer';
 import { Button } from '@material-ui/core';
 import styled from 'styled-components';
@@ -25,9 +26,35 @@ import {
 import { sendFeedback } from '../../../lib/utils';
 // import UserTableLayouts from '/UserTableLayouts.json';
 
-// here is where we would update the styling of the page background
+import { 
+  greenPrimary, 
+  greyPrimary,
+  bgColor,
+  greenLightest,
+} from '../../../style-variables';
+
+// defines the styling for the ERDiagram window
 const rfStyle = {
-  height: '60vh',
+  height: '65vh',
+};
+
+// defines the styling for the minimap
+const mmStyle = {
+  backgroundColor: bgColor,
+  border: `2px solid ${greenPrimary}`,
+  'border-radius': '0.3rem',
+}
+
+// defines the styling for the minimap nodes
+const nodeColor = (node) => {
+  switch (node.type) {
+    case 'tableHeader':
+      return greenPrimary;
+    case 'tableField':
+      return greyPrimary;
+    default:
+      return 'blue';
+  }
 };
 
 type ERTablingProps = {
@@ -36,12 +63,15 @@ type ERTablingProps = {
 };
 
 const StyledViewButton = styled(Button)`
-margin: 1rem;
-margin-left: 0rem;
+  margin: 1rem;
+  margin-left: 0rem;
 `;
 
 function ERTabling({ tables, selectedDb }: ERTablingProps) {
-  const [schemaState, setSchemaState] = useState<SchemaStateObjType>({database: 'initial', tableList: []});
+  const [schemaState, setSchemaState] = useState<SchemaStateObjType>({
+    database: 'initial',
+    tableList: [],
+  });
   const [nodes, setNodes] = useState<Node[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
 
@@ -64,6 +94,18 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
   useEffect(() => {
     backendObj.current.database = selectedDb;
   }, [selectedDb]);
+
+  const backendColumnObj = useRef({
+    database: schemaState.database,
+    updates,
+  });
+
+  useEffect(() => {
+    backendObj.current.database = selectedDb;
+    backendColumnObj.current.database = selectedDb;
+  }, [selectedDb]);
+
+
   // when SchemaState changes, convert the schema to react flow
   useEffect(() => {
     const initialState = stateToReactFlow.convert(schemaState);
@@ -82,6 +124,7 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
           schemaStateCopy,
           setSchemaState,
           backendObj,
+          handleClickSave
         },
       };
     });
@@ -108,11 +151,11 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
 
     // create an addColumnsType object
     const addTableObj: AddTablesObjType = {
-      is_insertable_into: "yes",
+      is_insertable_into: 'yes',
       table_name: `NewTable${schemaStateCopy.tableList.length + 1}`,
       table_schema: `public`,
       table_catalog: `${schemaStateCopy.database}`,
-      columns: []
+      columns: [],
     };
 
     // update the backendObj
@@ -269,6 +312,7 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
         onlyRenderVisibleElements={false}
         // attributionPosition="top-right"
       >
+        <MiniMap nodeColor={nodeColor}  style={mmStyle} nodeStrokeWidth={3} />
         <Background />
       </ReactFlow>
     </div>

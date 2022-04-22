@@ -48,12 +48,13 @@ function TableHeader({ data }: TableHeaderProps) {
         // push a new object with blank properties
         schemaStateCopy.tableList[i].columns.push({
           column_name: `NewColumn${schemaStateCopy.tableList[i].columns.length + 1}`,
+          new_column_name: `NewColumn${schemaStateCopy.tableList[i].columns.length + 1}`,
           constraint_name: null,
           constraint_type: null,
           data_type: 'varchar',
           character_maximum_length: null,
-          foreign_column: 'none',
-          foreign_table: 'none',
+          foreign_column: '',
+          foreign_table: '',
           is_nullable: 'no',
         });
         // set the state
@@ -105,7 +106,7 @@ function TableHeader({ data }: TableHeaderProps) {
 
           // update frontend
           if (tableInputField !== null) {
-            schemaStateCopy.tableList[i].table_name = tableInputField.value;
+            schemaStateCopy.tableList[i].new_table_name = tableInputField.value;
             setSchemaState(schemaStateCopy);
           }
 

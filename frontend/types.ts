@@ -226,21 +226,23 @@ export type ERTableData = {
   table_catalog: string;
   table_name: string;
   table_schema: string;
+  new_table_name: string | null;
 }
 
 export type ERTableColumnData = {
   column_name: string;
+  new_column_name: string | null;
   constraint_name: string | null;
   constraint_type: string | null;
   data_type: string;
   character_maximum_length: number | null;
-  foreign_column: string;
-  foreign_table: string;
+  foreign_column: string 
+  foreign_table: string
   is_nullable: 'yes' | 'no';
   unique?: boolean; // optional until implemented
   auto_increment?: boolean; // optional until implemented
 }
-export type DataTypes = 'integer' | 'bigint' | 'varchar' | 'serial' | 'date';
+export type DataTypes = 'integer' | 'bigint' | 'varchar' | 'serial' | 'date' | null;
 
 export type AddColumnsObjType = {
   column_name: string | null;
@@ -253,14 +255,14 @@ export type AlterColumnsObjType = {
   column_name: string;
   character_maximum_length: number | null;
   new_column_name: string | null;
-  add_constraint: AddConstraintObjType;
-  data_type: DataTypes;
+  add_constraint: AddConstraintObjType[];
+  data_type: string | null;
   is_nullable: "yes" | "no" | null;
   drop_constraint: string[];
 }
 
 export type AddConstraintObjType = {
-  constraint_type: 'PRIMARY KEY' | 'FOREIGN KEY' | 'UNIQUE';
+  constraint_type: 'PRIMARY KEY' | 'FOREIGN KEY' | 'UNIQUE' | null;
   constraint_name: string;
   foreign_table: string | null;
   foreign_column: string | null;
