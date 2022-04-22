@@ -1,6 +1,7 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { Handle, Position } from 'react-flow-renderer';
-import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
+import { AccordionSummary, AccordionDetails } from '@mui/material';
+import MuiAccordion, { AccordionProps } from '@mui/material/Accordion';
 import styled from 'styled-components';
 import { Button } from '@material-ui/core';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -12,14 +13,10 @@ import {
   AlterColumnsObjType,
   AddConstraintObjType,
 } from '../../../types';
-
 import TableFieldCheckBox from './TableFieldCheckBox';
 import TableFieldInput from './TableFieldInput';
 import TableFieldDropDown from './TableFieldDropDown';
-import TableFieldDropDownOption from './TableFieldDropDownOption';
 import './styles.css';
-import { ImportContactsOutlined } from '@mui/icons-material';
-import { sendFeedback } from '../../../lib/utils';
 
 type TableFieldDataObjectType = {
   table_name: string;
@@ -33,18 +30,30 @@ type TableFieldProps = {
 };
 
 const StyledButton = styled(Button)`
-color: rgba(0, 0, 0, 0.87);
-background-color: rgb(203, 212, 214);
-margin: 1rem;
-margin-left: 0rem;
-padding: 0.5rem 1rem;
+  color: rgba(0, 0, 0, 0.87);
+  background-color: rgb(203, 212, 214);
+  margin: 1rem;
+  margin-left: 0rem;
+  padding: 0.5rem 1rem;
 `;
+
+// Mui wrapper is used here to use the default styling
+// the imported MuiAccordion component comes with
+const Accordion = styled((props: AccordionProps) => (
+  <MuiAccordion
+    TransitionProps={{ unmountOnExit: true }}
+    disableGutters
+    square={false}
+    elevation={0}
+    {...props}
+  />
+))(() => ({}));
 
 function TableField({ data }: TableFieldProps) {
   const {
     schemaStateCopy,
     setSchemaState,
-    backendObj
+    backendObj,
   }: TableFieldDataObjectType = data;
   const {
     constraint_type,
@@ -59,6 +68,7 @@ function TableField({ data }: TableFieldProps) {
 
   const tableColumn = `${data.tableName}-${column_name}`;
 
+  // handles functionality of the drop down delete button
   const handleDropColumn = () => {
     // iterate through schema copy
     for (let i = 0; i < schemaStateCopy.tableList.length; i++) {
@@ -101,7 +111,7 @@ function TableField({ data }: TableFieldProps) {
       }
     }
   };
-
+  // handles functionality of the drop down update button
   const handleUpdateColumn = () => {
     // create an alterColumns object
     const alterColumnsObj: AlterColumnsObjType = {
@@ -163,64 +173,90 @@ function TableField({ data }: TableFieldProps) {
 
             // handle add/Drop Constraint type
 
-            // create an empty AddConstraintObj 
+            // create an empty AddConstraintObj
             const addConstraintObj: AddConstraintObjType = {
               constraint_type: null,
               constraint_name: '',
               foreign_table: null,
               foreign_column: null,
-            }
+            };
             /* handle primary key */
             // get the primary key checkmark value
-            const pkCheckBox = document.getElementById(`primary-key-chkbox-${tableColumn}`) as HTMLInputElement;
+            const pkCheckBox = document.getElementById(
+              `primary-key-chkbox-${tableColumn}`
+            ) as HTMLInputElement;
             // if constraint type is PK in state but checkbox is unchecked, drop the constraint
-            if (constraint_type === 'PRIMARY KEY' && pkCheckBox.checked === false) {
+            if (
+              constraint_type === 'PRIMARY KEY' &&
+              pkCheckBox.checked === false
+            ) {
               // add the PK constraint name to the drop constraint array
-              alterColumnsObj.drop_constraint.push(`PK_${data.tableName + column_name}`);
-            } // if constraint type is not in state but checkbox is checked, add the constraint 
-            else if (constraint_type !== 'PRIMARY KEY' && pkCheckBox.checked === true) {
-                // create a copy in case multiple constraints are added
-                const addConstraintObjCopy = {...addConstraintObj};
-                // name the constraint PK_<column_name>
-                addConstraintObjCopy.constraint_name = `PK_${data.tableName + column_name}`;
-                // assign the constraint_type to 'PRIMARY KEY'
-                addConstraintObjCopy.constraint_type = 'PRIMARY KEY';
-                // add the constraint obj to the alter columns obj
-                alterColumnsObj.add_constraint.push(addConstraintObjCopy);
+              alterColumnsObj.drop_constraint.push(
+                `PK_${data.tableName + column_name}`
+              );
+            } // if constraint type is not in state but checkbox is checked, add the constraint
+            else if (
+              constraint_type !== 'PRIMARY KEY' &&
+              pkCheckBox.checked === true
+            ) {
+              // create a copy in case multiple constraints are added
+              const addConstraintObjCopy = { ...addConstraintObj };
+              // name the constraint PK_<column_name>
+              addConstraintObjCopy.constraint_name = `PK_${
+                data.tableName + column_name
+              }`;
+              // assign the constraint_type to 'PRIMARY KEY'
+              addConstraintObjCopy.constraint_type = 'PRIMARY KEY';
+              // add the constraint obj to the alter columns obj
+              alterColumnsObj.add_constraint.push(addConstraintObjCopy);
             }
 
             // handle foreign key
-            const fkCheckBox = document.getElementById(`foreign-key-chkbox-${tableColumn}`) as HTMLInputElement;
+            const fkCheckBox = document.getElementById(
+              `foreign-key-chkbox-${tableColumn}`
+            ) as HTMLInputElement;
             // if constraint type is FK in state but checkbox is unchecked, drop the constraint
-            if (constraint_type === 'FOREIGN KEY' && fkCheckBox.checked === false) {
+            if (
+              constraint_type === 'FOREIGN KEY' &&
+              fkCheckBox.checked === false
+            ) {
               // add the fk constraint name to the drop constraint array
-              alterColumnsObj.drop_constraint.push(`FK_${data.tableName + column_name}`);
-            }
-            else if (constraint_type !== 'FOREIGN KEY' && fkCheckBox.checked === true) {
-              const addConstraintObjCopy = {...addConstraintObj};
+              alterColumnsObj.drop_constraint.push(
+                `FK_${data.tableName + column_name}`
+              );
+            } else if (
+              constraint_type !== 'FOREIGN KEY' &&
+              fkCheckBox.checked === true
+            ) {
+              const addConstraintObjCopy = { ...addConstraintObj };
               // name the constraint FK_<Column_name>
-              addConstraintObjCopy.constraint_name = `FK_${data.tableName + column_name}`;
+              addConstraintObjCopy.constraint_name = `FK_${
+                data.tableName + column_name
+              }`;
               // assign the constraint type to 'FOREIGN KEY'
               addConstraintObjCopy.constraint_type = 'FOREIGN KEY';
               // get the value of the drop down for foreign table
-              const foreignTableDD = document.getElementById(`foreign-key-table-dd-${tableColumn}`) as HTMLSelectElement;
+              const foreignTableDD = document.getElementById(
+                `foreign-key-table-dd-${tableColumn}`
+              ) as HTMLSelectElement;
               // assign the constraintobjcopy to foreign table value
               addConstraintObjCopy.foreign_table = foreignTableDD.value;
               // get the value of the drop down for foreign column
-              const foreignColumnDD = document.getElementById(`foreign-key-field-dd-${tableColumn}`) as HTMLSelectElement;
+              const foreignColumnDD = document.getElementById(
+                `foreign-key-field-dd-${tableColumn}`
+              ) as HTMLSelectElement;
               // assign the constraintobjcopy to foreign column value
               addConstraintObjCopy.foreign_column = foreignColumnDD.value;
               // add the constraint obj to the alter columns obj
               alterColumnsObj.add_constraint.push(addConstraintObjCopy);
             }
-        
+
             // add the alterTablesObj
             alterTablesObj.alterColumns.push(alterColumnsObj);
             // update the backendObj
             backendObj.current.updates.alterTables.push(alterTablesObj);
             setSchemaState(schemaStateCopy);
             return;
-
           }
         }
       }
@@ -259,6 +295,7 @@ function TableField({ data }: TableFieldProps) {
     fieldDD.disabled = !isChecked;
   };
 
+  // disable allow null checkbox when the column is either a foreign key or primary key
   const disableAllowNullHandler = () => {
     const pkID = `primary-key-chkbox-${tableColumn}`;
     const pkCheckBox = document.getElementById(pkID) as HTMLInputElement;
@@ -275,7 +312,20 @@ function TableField({ data }: TableFieldProps) {
     allowNullCheckBox.disabled = isFkChecked || isPkChecked;
   };
 
+  // create a state for the foreign key drop down options
   const [fkOptions, setFkOptions] = useState<string[]>(createFieldOptions());
+
+  const [isAccordionExpanded, setAccordionExpanded] = useState(false);
+
+  // This function handles the click functionality of clicking the accordion
+  const handleAccordionClick = () => {
+    setAccordionExpanded(!isAccordionExpanded);
+  };
+
+  // This function close the accordion expansion on mouse leave
+  const handleMouseLeave = () => {
+    setAccordionExpanded(false);
+  };
 
   return (
     <div>
@@ -288,8 +338,14 @@ function TableField({ data }: TableFieldProps) {
       ) : (
         <Handle type="source" position={Position.Right} />
       )}
-      <Accordion sx={{ width: 350 }}>
-        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+      <Accordion
+        expanded={isAccordionExpanded}
+        onMouseLeave={handleMouseLeave}
+        sx={{ width: 350 }}
+      >
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon onClick={handleAccordionClick} />}
+        >
           <div className="field-summary-wrapper">
             <p id="column-name">{column_name}</p>
             <p id="data-type">
@@ -297,7 +353,6 @@ function TableField({ data }: TableFieldProps) {
             </p>
           </div>
         </AccordionSummary>
-
         <AccordionDetails>
           <TableFieldInput
             idName={`type-input-column_name-${tableColumn}`}
@@ -316,7 +371,7 @@ function TableField({ data }: TableFieldProps) {
             label="Size"
             defaultValue={character_maximum_length}
           />
-          <p />
+          <br />
           <TableFieldCheckBox
             label="Foreign Key"
             idName={`foreign-key-chkbox-${tableColumn}`}
@@ -340,7 +395,7 @@ function TableField({ data }: TableFieldProps) {
             options={fkOptions}
             otherTables={data.otherTables}
           />
-          <p />
+          <br />
           <TableFieldCheckBox
             idName={`primary-key-chkbox-${tableColumn}`}
             label="Primary Key"
@@ -354,17 +409,17 @@ function TableField({ data }: TableFieldProps) {
               !(constraint_type === 'PRIMARY KEY' || foreign_table == null)
             }
           />
-          <TableFieldCheckBox // FIXME: MAKE FIXED TO PRIMARY KEY
+          <TableFieldCheckBox
             idName={`unique-chkbox-${tableColumn}`}
             label="Unique"
             isChecked={unique}
           />
-          <TableFieldCheckBox // FIXME: MAKE FIXED TO PRIMARY KEY
+          <TableFieldCheckBox
             idName={`auto-increment-chkbox-${tableColumn}`}
             label="Auto Increment"
             isChecked={auto_increment}
           />
-          <p />
+          <br />
           <div>
             <StyledButton id="update-btn" onClick={handleUpdateColumn}>
               SAVE
