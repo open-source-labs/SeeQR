@@ -247,9 +247,10 @@ export type DataTypes = 'integer' | 'bigint' | 'varchar' | 'serial' | 'date' | n
 export type AddColumnsObjType = {
   column_name: string | null;
   data_type: DataTypes;
+  character_maximum_length: number | null;
 }
 export type DropColumnsObjType = {
-  column_name: string
+  column_name: string;
 }
 export type AlterColumnsObjType = {
   column_name: string;

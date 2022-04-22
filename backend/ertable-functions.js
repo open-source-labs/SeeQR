@@ -22,11 +22,12 @@ function backendObjToQuery(backendObj) {
   }
 
   function alterTable(alterTableArray) {
+
     function addColumn(currTable) {
       let addColumnString = '';
       if (currTable.addColumns.length) {
         for (let i = 0; i < currTable.addColumns.length; i += 1) {
-          addColumnString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} ADD COLUMN ${currTable.addColumns[i].column_name} ${currTable.addColumns[i].data_type}; `;
+          addColumnString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} ADD COLUMN ${currTable.addColumns[i].column_name} ${currTable.addColumns[i].data_type}(${currTable.addColumns[i].character_maximum_length}); `;
         }
       }
       return addColumnString;
@@ -97,6 +98,7 @@ function backendObjToQuery(backendObj) {
     function alterType(currTable) {
       let alterTypeString = '';
       for (let i = 0; i < currTable.alterColumns.length; i += 1) {
+        console.log(currTable.alterColumns[i])
         if (currTable.alterColumns[i].data_type !== null) {
           if (currTable.alterColumns[i].data_type === 'date') {
             alterTypeString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} ALTER COLUMN ${currTable.alterColumns[i].column_name} TYPE date USING ${currTable.alterColumns[i].column_name}::text::date; `;
@@ -108,12 +110,23 @@ function backendObjToQuery(backendObj) {
       return alterTypeString;
     }
 
+    function alterMaxCharacterLength(currTable) {
+      let alterMaxCharacterLengthString = '';
+      for (let i = 0; i < currTable.alterColumns.length; i += 1) {
+        if (currTable.alterColumns[i].max_character_length !== null) {
+          alterMaxCharacterLengthString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} ALTER COLUMN ${currTable.alterColumns[i].column_name} TYPE ${currTable.alterColumns[i].data_type}(${currTable.alterColumns[i].character_maximum_length}); `;
+        }
+      }
+      return alterMaxCharacterLengthString;
+    }
+
+
     for (let i = 0; i < alterTableArray.length; i += 1) {
       const currTable = alterTableArray[i];
       outputArray.push(
         `${addColumn(currTable)}${dropColumn(currTable)}${alterTableConstraint(
           currTable
-        )}${alterNotNullConstraint(currTable)}${alterType(currTable)}`
+        )}${alterNotNullConstraint(currTable)}${alterType(currTable)}${alterMaxCharacterLength(currTable)}`
       );
     }
   }

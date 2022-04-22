@@ -106,7 +106,7 @@ function TableField({ data }: TableFieldProps) {
     // create an alterColumns object
     const alterColumnsObj: AlterColumnsObjType = {
       column_name,
-      character_maximum_length: null,
+      character_maximum_length,
       new_column_name: null,
       add_constraint: [],
       data_type: null,
@@ -151,10 +151,22 @@ function TableField({ data }: TableFieldProps) {
                 columnNameInput.value;
             }
 
+            // handle max_character_length change
+            const columnMaxCharacterLengthInput = document.getElementById(
+              `type-input-char_max_size-${tableColumn}`
+            ) as HTMLSelectElement;
+            if (character_maximum_length !== parseInt(columnMaxCharacterLengthInput.value, 10)) {
+              alterColumnsObj.character_maximum_length = parseInt(columnMaxCharacterLengthInput.value, 10);
+              schemaStateCopy.tableList[i].columns[j].character_maximum_length =
+              parseInt(columnMaxCharacterLengthInput.value, 10);
+            }
+
             // handle data_type change
             const dataTypeInput = document.getElementById(
               `type-dd-${tableColumn}`
             ) as HTMLSelectElement;
+            console.log('data type: ',data_type)
+            console.log('data type input: ',dataTypeInput.value)
             if (data_type !== dataTypeInput.value) {
               alterColumnsObj.data_type = dataTypeInput.value;
               schemaStateCopy.tableList[i].columns[j].data_type =
