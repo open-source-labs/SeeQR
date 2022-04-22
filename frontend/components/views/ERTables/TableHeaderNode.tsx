@@ -7,9 +7,11 @@ import {
   BackendObjType,
   AlterTablesObjType,
   AddColumnsObjType,
-  SchemaStateObjType
+  SchemaStateObjType,
+  DropTablesObjType,
 } from '../../../types';
 import './styles.css';
+import * as colors from '../../../style-variables';
 
 type TableHeaderDataObjectType = {
   table_name: string;
@@ -28,7 +30,7 @@ function TableHeader({ data }: TableHeaderProps) {
   // This function handles the add column button on the table
   const handleAddColumn = () => {
     // iterate through the schema copy
-    for (let i = 0; i < schemaStateCopy.tableList.length; i++) {
+    for (let i = 0; i < schemaStateCopy.tableList.length; i += 1) {
       // edit the schema table for this current table
       if (schemaStateCopy.tableList[i].table_name === table_name) {
         // create an alterTableObject with AlterTablesObjectType
@@ -45,7 +47,9 @@ function TableHeader({ data }: TableHeaderProps) {
 
         // create an addColumnsType object
         const addColumnsObj: AddColumnsObjType = {
-          column_name: `NewColumn${schemaStateCopy.tableList[i].columns.length + 1}`,
+          column_name: `NewColumn${
+            schemaStateCopy.tableList[i].columns.length + 1
+          }`,
           data_type: 'varchar',
         };
         // add the addColumnsObj to the alterTablesObj
@@ -54,8 +58,12 @@ function TableHeader({ data }: TableHeaderProps) {
         backendObj.current.updates.alterTables.push(alterTablesObj);
         // push a new object with blank properties
         schemaStateCopy.tableList[i].columns.push({
-          column_name: `NewColumn${schemaStateCopy.tableList[i].columns.length + 1}`,
-          new_column_name: `NewColumn${schemaStateCopy.tableList[i].columns.length + 1}`,
+          column_name: `NewColumn${
+            schemaStateCopy.tableList[i].columns.length + 1
+          }`,
+          new_column_name: `NewColumn${
+            schemaStateCopy.tableList[i].columns.length + 1
+          }`,
           constraint_name: null,
           constraint_type: null,
           data_type: 'varchar',
@@ -64,7 +72,7 @@ function TableHeader({ data }: TableHeaderProps) {
           foreign_table: '',
           is_nullable: 'no',
         });
-        // set the state
+        // set the state with the modified copy
         setSchemaState(schemaStateCopy);
         return;
       }
@@ -73,20 +81,19 @@ function TableHeader({ data }: TableHeaderProps) {
 
   // This function handles the add delete button on the table
   const handleDeleteTable = () => {
-    for (let i = 0; i < schemaStateCopy.tableList.length; i++) {
+    for (let i = 0; i < schemaStateCopy.tableList.length; i += 1) {
       if (schemaStateCopy.tableList[i].table_name === table_name) {
-        // update backend
-        const dropTablesObj = {
+        // create a dropTables Obj
+        const dropTablesObj: DropTablesObjType = {
           table_name,
           table_schema: schemaStateCopy.tableList[i].table_schema,
         };
+        // update backendObj
         backendObj.current.updates.dropTables.push(dropTablesObj);
-
         // update frontend
         schemaStateCopy.tableList.splice(i, 1);
+        // set the state with the modified copy
         setSchemaState(schemaStateCopy);
-
-        return;
       }
     }
   };
@@ -94,7 +101,7 @@ function TableHeader({ data }: TableHeaderProps) {
   // This function updates the table name when the user hits enter on the submit form
   const handleChangeTableName = (e) => {
     if (e.key === 'Enter') {
-      for (let i = 0; i < schemaStateCopy.tableList.length; i++) {
+      for (let i = 0; i < schemaStateCopy.tableList.length; i += 1) {
         if (schemaStateCopy.tableList[i].table_name === table_name) {
           const tableInputField = document.getElementById(
             `table-name-form-${data.table_name}`
@@ -117,7 +124,6 @@ function TableHeader({ data }: TableHeaderProps) {
             schemaStateCopy.tableList[i].new_table_name = tableInputField.value;
             setSchemaState(schemaStateCopy);
           }
-
           backendObj.current.updates.alterTables.push(alterTablesObj);
         }
       }
@@ -125,7 +131,10 @@ function TableHeader({ data }: TableHeaderProps) {
   };
 
   return (
-    <div className="table-header table">
+    <div
+      style={{ backgroundColor: colors.greyLightest }}
+      className="table-header table"
+    >
       <Tooltip title="Press ENTER to submit new table name">
         <TextField
           id={`table-name-form-${data.table_name}`}
@@ -133,15 +142,16 @@ function TableHeader({ data }: TableHeaderProps) {
           variant="outlined"
           defaultValue={data.table_name}
           onKeyPress={handleChangeTableName}
+          style={{ backgroundColor: 'white' }}
         />
+      </Tooltip>
+      <Tooltip title="Add Column">
+        <IconButton onClick={handleAddColumn}>Add Column</IconButton>
       </Tooltip>
       <Tooltip title="Delete Table">
         <IconButton onClick={handleDeleteTable}>
           <DeleteIcon />
         </IconButton>
-      </Tooltip>
-      <Tooltip title="Add Column">
-        <IconButton onClick={handleAddColumn}>Add Column</IconButton>
       </Tooltip>
     </div>
   );
