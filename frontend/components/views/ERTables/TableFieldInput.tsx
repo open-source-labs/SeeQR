@@ -1,14 +1,19 @@
 import React from 'react';
 
 type TableFieldInputProps = {
-  defaultValue: any
-  label: string
-}
-const TableFieldInput = ({defaultValue, label}: TableFieldInputProps) => {
+  defaultValue: any;
+  label: string;
+  idName: string;
+};
+const TableFieldInput = ({
+  defaultValue,
+  label,
+  idName,
+}: TableFieldInputProps) => {
   return (
-    <div className='field-info-input'>
+    <div className="field-info-input">
       {`${label}:`}
-      <input defaultValue={defaultValue} />
+      <input id={idName} defaultValue={defaultValue} />
     </div>
   );
 };
