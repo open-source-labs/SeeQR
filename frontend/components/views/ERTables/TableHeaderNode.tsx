@@ -63,7 +63,7 @@ function TableHeader({ data }: TableHeaderProps) {
           character_maximum_length: 255,
           foreign_column: null,
           foreign_table: null,
-          is_nullable: 'no',
+          is_nullable: 'NO',
         });
         // set the state with the modified copy
         setSchemaState(schemaStateCopy);
