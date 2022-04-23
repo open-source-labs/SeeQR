@@ -1,11 +1,14 @@
 import fs from 'fs';
 import { remote } from 'electron';
-
 import { MarkerType } from 'react-flow-renderer';
 import { greenPrimary } from '../style-variables';
-
 import * as types from '../constants/constants';
 
+/**
+ * This class creates a table instance which will get the data for
+ * the individual table and convert it to the form that react-flow is expecting
+ * for its nodes
+ */
 class Table {
   constructor(id, columns, name, otherTables, database) {
     this.id = id;
@@ -14,28 +17,22 @@ class Table {
     this.otherTables = otherTables;
     this.database = database;
   }
-
+  // the render method converts the data into the form of react flow
   render() {
+    // This method gets the table table position from the stored file
     const getTablePosition = () => {
       const location = remote.app.getAppPath().concat('/UserTableLayouts.json');
       try {
         const data = fs.readFileSync(location, 'utf8');
         const parsedData = JSON.parse(data);
-        for (let i = 0; i < parsedData.length; i++) {
+        for (let i = 0; i < parsedData.length; i += 1) {
           const db = parsedData[i];
           if (db.db_name === this.database) {
             // eslint-disable-next-line consistent-return
-            for (let j = 0; j < db.db_tables.length; j++) {
+            for (let j = 0; j < db.db_tables.length; j += 1) {
               const currTable = db.db_tables[j];
-              if (currTable.table_name === this.name) {
-                // console.log(
-                //   'tablename',
-                //   currTable.table_name,
-                //   '\nposition',
-                //   currTable.table_position
-                // );
+              if (currTable.table_name === this.name)
                 return currTable.table_position;
-              }
             }
           }
         }
@@ -44,7 +41,8 @@ class Table {
         return { x: (this.id - 1) * 500, y: 0 };
       }
     };
-
+    // create a nodes array for react flow, the first element will always be a
+    // TABLE_HEADER type of node
     const nodes = [
       {
         id: `table-${this.name}`,
@@ -58,8 +56,11 @@ class Table {
     ];
 
     const edges = [];
+    // iterate through the columns data for this data, create a node for each column
+    // create an edge (the connection line) for each column that has a designated
+    // foreign table and foreign column name
     this.columns.forEach((el, i) => {
-      // create a node for react-flow
+      // create a table field node for each column for react-flow
       nodes.push({
         id: `table-${this.name}_column-${el.column_name}`,
         type: types.TABLE_FIELD,
@@ -75,6 +76,7 @@ class Table {
 
       // if the element has a foregin_column and foreign_table create an edge
       if (el.foreign_column && el.foreign_table) {
+        // create an edge for react flow
         edges.push({
           source: `table-${this.name}_column-${el.column_name}`,
           target: `table-${el.foreign_table}_column-${el.foreign_column}`,
@@ -103,10 +105,10 @@ const convertStateToReactFlow = {
     const edges = [];
     const tableList = [];
     // iterate through the tableList
-    for (let i = 0; i < schema.tableList.length; i++) {
+    for (let i = 0; i < schema.tableList.length; i += 1) {
       const column_names = [];
       // get all the column names from the table
-      for (let j = 0; j < schema.tableList[i].columns.length; j++) {
+      for (let j = 0; j < schema.tableList[i].columns.length; j += 1) {
         column_names.push(schema.tableList[i].columns[j].column_name);
       }
       // push tablelsit an object with the table name and
@@ -115,7 +117,7 @@ const convertStateToReactFlow = {
         column_names,
       });
     }
-    for (let i = 0; i < schema.tableList.length; i++) {
+    for (let i = 0; i < schema.tableList.length; i += 1) {
       // make a deep copy so that modifying these values will not affect the data
       const copyString = JSON.stringify(schema.tableList[i]);
       const copy = JSON.parse(copyString);
