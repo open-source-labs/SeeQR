@@ -95,7 +95,7 @@ const generateDummyData: GenerateDummyData = async (tableInfo: ColumnObj[], numR
           const foreignTable = tableInfo[j].foreign_table;
           const getForeignKeyQuery = `
             SELECT ${foreignColumn}
-            FROM ${foreignTable} TABLESAMPLE BERNOULLI(50)
+            FROM ${foreignTable} TABLESAMPLE BERNOULLI(100)
             LIMIT 1
           `;
           const foreignKey = await db.query(getForeignKeyQuery);
