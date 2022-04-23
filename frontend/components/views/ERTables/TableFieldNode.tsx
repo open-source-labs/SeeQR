@@ -119,6 +119,7 @@ function TableField({ data }: TableFieldProps) {
       character_maximum_length: null,
       new_column_name: null,
       add_constraint: [],
+      current_data_type: data_type,
       data_type: null,
       is_nullable: null,
       drop_constraint: [],

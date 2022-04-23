@@ -71,7 +71,8 @@ type GenerateDummyData = (tableInfo: ColumnObj[], numRows: number) => Promise<Du
 const generateDummyData: GenerateDummyData = async (tableInfo: ColumnObj[], numRows: number) => {
   // assuming primary key is serial, get all the column names except for the column with the primary key
   const columnNames = tableInfo.reduce((acc: string[], curr: ColumnObj) => {
-    if (curr.constraint_type !== 'PRIMARY KEY') acc.push(curr.column_name);
+    // if (curr.constraint_type !== 'PRIMARY KEY') 
+    acc.push(curr.column_name);
     return acc;
   }, []);
   const dummyRecords: DummyRecords = [columnNames];
@@ -83,8 +84,8 @@ const generateDummyData: GenerateDummyData = async (tableInfo: ColumnObj[], numR
     for (let j = 0; j < tableInfo.length; j += 1) {
       // if column has no foreign key constraint, then generate dummy data based on data type
       if (
-        tableInfo[j].constraint_type !== 'FOREIGN KEY' &&
-        tableInfo[j].constraint_type !== 'PRIMARY KEY'
+        tableInfo[j].constraint_type !== 'FOREIGN KEY' 
+        // && tableInfo[j].constraint_type !== 'PRIMARY KEY'
       ) row.push(generateDataByType(tableInfo[j]));
       
       // if there is a foreign key constraint, grab random key from foreign table 
@@ -98,7 +99,11 @@ const generateDummyData: GenerateDummyData = async (tableInfo: ColumnObj[], numR
             LIMIT 1
           `;
           const foreignKey = await db.query(getForeignKeyQuery);
-          if (foreignKey.rows.length) row.push(foreignKey.rows[0]['_id']);
+          const chosenPrimaryValue = foreignKey.rows[0][Object.keys(foreignKey.rows[0])[0]]
+          if (foreignKey.rows.length) {
+            if (typeof chosenPrimaryValue === 'string') row.push(`'${chosenPrimaryValue}'`);
+            else row.push(chosenPrimaryValue);
+          }
           else return new Error('There was an error while retrieving a valid foreign key.');
         } catch(err) {
           return err;

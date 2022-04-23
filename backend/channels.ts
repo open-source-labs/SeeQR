@@ -312,7 +312,9 @@ ipcMain.handle(
         tableInfo,
         data.rows
       );
-
+      console.log('tableInfo: ', tableInfo);
+      console.log('data.rows: ',data.rows);
+      console.log('dummyArray: ',dummyArray);
       // generate insert query string to insert dummy records
       const columnsStringified = '('
         .concat(dummyArray[0].join(', '))
@@ -328,7 +330,7 @@ ipcMain.handle(
         .concat(dummyArray[dummyArray.length - 1].join(', '))
         .concat(');');
       insertQuery = insertQuery.concat(lastRecordStringified);
-
+      console.log('insertQuery: ',insertQuery)
       // insert dummy records into DB
       await db.query('Begin;');
       await db.query(insertQuery);
