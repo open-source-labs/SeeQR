@@ -46,7 +46,10 @@ function backendObjToQuery(backendObj) {
       let alterTableConstraintString = '';
       // Add a primary key constraint to column
       function addPrimaryKey(currConstraint, currColumn) {
-        alterTableConstraintString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} ADD CONSTRAINT ${currConstraint.constraint_name} PRIMARY KEY (${currColumn.column_name}); `;
+        let defaultRowValue;
+        if(currColumn.current_data_type === 'character varying') defaultRowValue = 'A';
+        else defaultRowValue = 1;
+        alterTableConstraintString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} ADD CONSTRAINT ${currConstraint.constraint_name} PRIMARY KEY (${currColumn.column_name}); INSERT INTO ${currTable.table_schema}.${currTable.table_name} (${currColumn.column_name}) VALUES ('${defaultRowValue}'); `;
       }
       // Add a foreign key constraint to column
       function addForeignKey(currConstraint, currColumn) {
@@ -121,11 +124,9 @@ function backendObjToQuery(backendObj) {
     for (let i = 0; i < alterTableArray.length; i += 1) {
       const currTable = alterTableArray[i];
       outputArray.push(
-        `${addColumn(currTable)}${dropColumn(currTable)}${alterTableConstraint(
+        `${addColumn(currTable)}${dropColumn(currTable)}${alterType(currTable)}${alterTableConstraint(
           currTable
-        )}${alterNotNullConstraint(currTable)}${alterType(
-          currTable
-        )}${alterMaxCharacterLength(currTable)}`
+        )}${alterNotNullConstraint(currTable)}${alterMaxCharacterLength(currTable)}`
       );
     }
   }

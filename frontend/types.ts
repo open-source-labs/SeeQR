@@ -266,6 +266,7 @@ export type AlterColumnsObjType = {
   character_maximum_length: number | null;
   new_column_name: string | null;
   add_constraint: AddConstraintObjType[];
+  current_data_type: string | null;
   data_type: string | null;
   is_nullable: 'YES' | 'NO' | null;
   drop_constraint: string[];
