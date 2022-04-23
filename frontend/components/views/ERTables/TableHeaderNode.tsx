@@ -61,8 +61,8 @@ function TableHeader({ data }: TableHeaderProps) {
           constraint_type: null,
           data_type: 'varchar',
           character_maximum_length: 255,
-          foreign_column: '',
-          foreign_table: '',
+          foreign_column: null,
+          foreign_table: null,
           is_nullable: 'no',
         });
         // set the state with the modified copy

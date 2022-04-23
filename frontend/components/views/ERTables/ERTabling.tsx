@@ -73,7 +73,7 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
   });
   const [nodes, setNodes] = useState<Node[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
-
+  const [newLayout, setNewLayout] = useState(false);
   // when tables (which is the database that is selected changes, update SchemaState)
   useEffect(() => {
     setSchemaState({ database: selectedDb, tableList: tables });
@@ -129,7 +129,7 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
     });
     setNodes(nodesArray);
     setEdges(initialState.edges);
-  }, [schemaState]);
+  }, [schemaState, newLayout]);
 
   // whenever the node changes, this callback gets invoked
   const onNodesChange = useCallback(
@@ -234,13 +234,12 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
       }
     });
   };
-
   const handleClickSave = () => {
     // This function sends a message to the back end with
     // the data in backendObj.current
     ipcRenderer
       .invoke('ertable-schemaupdate', backendObj.current)
-      .then(() => {
+      .then(async () => {
         // resets the backendObj
         handleSaveLayout();
         backendObj.current = {
