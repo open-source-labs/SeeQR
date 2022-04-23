@@ -439,7 +439,7 @@ function TableField({ data }: TableFieldProps) {
             idName={`allow-null-chkbox-${tableColumn}`}
             label="Allow Null"
             isChecked={
-              !(constraint_type === 'PRIMARY KEY' || foreign_table == null)
+              !(constraint_type === 'PRIMARY KEY' || foreign_table === null)
             }
           />
           <TableFieldCheckBox
