@@ -4,21 +4,13 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
 import {
-  BackendObjType,
   AlterTablesObjType,
   AddColumnsObjType,
-  SchemaStateObjType,
   DropTablesObjType,
+  TableHeaderDataObjectType,
 } from '../../../types';
 import './styles.css';
 import * as colors from '../../../style-variables';
-
-type TableHeaderDataObjectType = {
-  table_name: string;
-  schemaStateCopy: SchemaStateObjType;
-  setSchemaState: (string) => {};
-  backendObj: BackendObjType;
-};
 
 type TableHeaderProps = {
   data: TableHeaderDataObjectType;
@@ -51,6 +43,7 @@ function TableHeader({ data }: TableHeaderProps) {
             schemaStateCopy.tableList[i].columns.length + 1
           }`,
           data_type: 'varchar',
+          character_maximum_length: 255,
         };
         // add the addColumnsObj to the alterTablesObj
         alterTablesObj.addColumns.push(addColumnsObj);
@@ -67,7 +60,7 @@ function TableHeader({ data }: TableHeaderProps) {
           constraint_name: null,
           constraint_type: null,
           data_type: 'varchar',
-          character_maximum_length: null,
+          character_maximum_length: 255,
           foreign_column: '',
           foreign_table: '',
           is_nullable: 'no',

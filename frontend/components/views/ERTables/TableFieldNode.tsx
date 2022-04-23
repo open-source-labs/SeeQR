@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Handle, Position } from 'react-flow-renderer';
 import { AccordionSummary, AccordionDetails } from '@mui/material';
 import MuiAccordion, { AccordionProps } from '@mui/material/Accordion';
@@ -132,11 +132,14 @@ function TableField({ data }: TableFieldProps) {
     // alterColumnsObj.is_nullable =
     //   isNull !== isNullableString ? isNullableString : null;
 
-    for (let i = 0; i < schemaStateCopy.tableList.length; i++) {
+    for (let i = 0; i < schemaStateCopy.tableList.length; i += 1) {
       if (schemaStateCopy.tableList[i].table_name === data.tableName) {
-        let columnIndex;
         // iterate through columns
-        for (let j = 0; j < schemaStateCopy.tableList[i].columns.length; j++) {
+        for (
+          let j = 0;
+          j < schemaStateCopy.tableList[i].columns.length;
+          j += 1
+        ) {
           if (
             schemaStateCopy.tableList[i].columns[j].column_name === column_name
           ) {
@@ -161,11 +164,36 @@ function TableField({ data }: TableFieldProps) {
                 columnNameInput.value;
             }
 
+            // handle max_character_length change
+            const columnMaxCharacterLengthInput = document.getElementById(
+              `type-input-char_max_size-${tableColumn}`
+            ) as HTMLSelectElement;
+            if (columnMaxCharacterLengthInput) {
+              if (
+                character_maximum_length !==
+                parseInt(columnMaxCharacterLengthInput.value, 10)
+              ) {
+                alterColumnsObj.character_maximum_length = parseInt(
+                  columnMaxCharacterLengthInput.value,
+                  10
+                );
+                schemaStateCopy.tableList[i].columns[
+                  j
+                ].character_maximum_length = parseInt(
+                  columnMaxCharacterLengthInput.value,
+                  10
+                );
+              }
+            }
+
             // handle data_type change
             const dataTypeInput = document.getElementById(
               `type-dd-${tableColumn}`
             ) as HTMLSelectElement;
-            if (data_type !== dataTypeInput.value) {
+            if (
+              (data_type === 'character varying' ? 'varchar' : data_type) !==
+              dataTypeInput.value
+            ) {
               alterColumnsObj.data_type = dataTypeInput.value;
               schemaStateCopy.tableList[i].columns[j].data_type =
                 dataTypeInput.value;
@@ -260,7 +288,6 @@ function TableField({ data }: TableFieldProps) {
           }
         }
       }
-      // TODO: MAKE STATE CHANGE
     }
   };
 
@@ -365,6 +392,8 @@ function TableField({ data }: TableFieldProps) {
             defaultValue={data_type}
             otherTables={data.otherTables}
             options={['serial', 'varchar', 'bigint', 'integer', 'date']}
+            schemaStateCopy={schemaStateCopy}
+            setSchemaState={setSchemaState}
           />
           <TableFieldInput
             idName={`type-input-char_max_size-${tableColumn}`}
@@ -386,6 +415,8 @@ function TableField({ data }: TableFieldProps) {
             options={data.otherTables.map((table) => table.table_name)}
             setFkOptions={setFkOptions}
             otherTables={data.otherTables}
+            schemaStateCopy={schemaStateCopy}
+            setSchemaState={setSchemaState}
           />
           <TableFieldDropDown
             label="Field"
@@ -394,6 +425,8 @@ function TableField({ data }: TableFieldProps) {
             defaultValue={foreign_column}
             options={fkOptions}
             otherTables={data.otherTables}
+            schemaStateCopy={schemaStateCopy}
+            setSchemaState={setSchemaState}
           />
           <br />
           <TableFieldCheckBox

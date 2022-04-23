@@ -247,9 +247,10 @@ export type DataTypes = 'integer' | 'bigint' | 'varchar' | 'serial' | 'date' | n
 export type AddColumnsObjType = {
   column_name: string | null;
   data_type: DataTypes;
+  character_maximum_length: number | null;
 }
 export type DropColumnsObjType = {
-  column_name: string
+  column_name: string;
 }
 export type AlterColumnsObjType = {
   column_name: string;
@@ -289,6 +290,7 @@ export type AlterTablesObjType = {
   dropColumns: DropColumnsObjType[];
   alterColumns: AlterColumnsObjType[];
 }
+
 export type UpdatesObjType = {
   addTables: AddTablesObjType[];
   dropTables: DropTablesObjType[];
@@ -307,6 +309,23 @@ export type SchemaStateObjType = {
   tableList: ERTableData[];
 }
 
+export type TableHeaderDataObjectType = {
+  table_name: string;
+  schemaStateCopy: any;
+  setSchemaState: (string) => {};
+  backendObj: BackendObjType;
+};
+
+export type TableHeaderNodeType = {
+  data: TableHeaderDataObjectType,
+  id: string,
+  position: {
+    x: number,
+    y: number
+  },
+  tableName: string,
+  type: string,
+}
 
 
 
