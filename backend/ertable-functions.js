@@ -118,13 +118,14 @@ function backendObjToQuery(backendObj) {
       return alterMaxCharacterLengthString;
     }
 
-
     for (let i = 0; i < alterTableArray.length; i += 1) {
       const currTable = alterTableArray[i];
       outputArray.push(
         `${addColumn(currTable)}${dropColumn(currTable)}${alterTableConstraint(
           currTable
-        )}${alterNotNullConstraint(currTable)}${alterType(currTable)}${alterMaxCharacterLength(currTable)}`
+        )}${alterNotNullConstraint(currTable)}${alterType(
+          currTable
+        )}${alterMaxCharacterLength(currTable)}`
       );
     }
   }
@@ -139,8 +140,8 @@ function backendObjToQuery(backendObj) {
         tablesNames[currTable.table_name] = {
           table_name: currTable.table_name,
           table_schema: currTable.table_schema,
-          new_table_name: currTable.new_table_name
-        }
+          new_table_name: currTable.new_table_name,
+        };
       }
     }
     // Populates the columnsNames object with new column names
@@ -153,8 +154,8 @@ function backendObjToQuery(backendObj) {
             column_name: currAlterColumn.column_name,
             table_name: currTable.table_name,
             table_schema: currTable.table_schema,
-            new_column_name: currAlterColumn.new_column_name
-          }
+            new_column_name: currAlterColumn.new_column_name,
+          };
         }
       }
     }
@@ -165,16 +166,16 @@ function backendObjToQuery(backendObj) {
       renameTable(currTable);
     }
     // Goes through the columnsNames object and adds the query for renaming
-    const columnsToRename = Object.keys(columnsNames)
+    const columnsToRename = Object.keys(columnsNames);
     for (let i = 0; i < columnsToRename.length; i++) {
-      const currColumn = columnsNames[columnsToRename[i]]
+      const currColumn = columnsNames[columnsToRename[i]];
       // only renames a column with the most recent name that was saved
       renameString += `ALTER TABLE ${currColumn.table_schema}.${currColumn.table_name} RENAME COLUMN ${currColumn.column_name} TO ${currColumn.new_column_name}; `;
     }
     // Goes through the tablesNames object and adds the query for renaming
-    const tablesToRename = Object.keys(tablesNames)
+    const tablesToRename = Object.keys(tablesNames);
     for (let i = 0; i < tablesToRename.length; i++) {
-      const currTable = tablesNames[tablesToRename[i]]
+      const currTable = tablesNames[tablesToRename[i]];
       // only renames a table with the most recent name that was saved
       renameString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} RENAME TO ${currTable.new_table_name}; `;
     }
