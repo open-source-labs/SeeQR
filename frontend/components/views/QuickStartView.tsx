@@ -30,10 +30,10 @@ const useStyles = makeStyles((theme: Theme) =>
       marginBottom: theme.spacing(3),
     },
     image: {
-      marginTop: theme.spacing(10),
-      marginBottom: theme.spacing(-2),
-      width: '30vh',
-      height: '30vh',
+      marginTop: theme.spacing(2),
+      marginBottom: theme.spacing(-4),
+      width: '20vh',
+      height: '20vh',
       maxHeight: '300px',
       maxWidth: '300px',
     },
@@ -49,7 +49,7 @@ const PageContainer = styled.a`
   align-items: center;
   justify-content: center;
   height: auto;
-  width: 100%;
+  width: auto;
 `;
 
 const StyledStepper = styled(Stepper)`
@@ -58,14 +58,14 @@ const StyledStepper = styled(Stepper)`
 `;
 
 const StyledStepLabel = styled(StepLabel)`
-  width: 20vw;
+  width: 14vw;
   & .MuiStepLabel-label {
-    font-size: clamp(1rem, 2vw, 1.5rem);
+    font-size: clamp(1rem, 1.28vw, 1.5rem);
   }
 `;
 
 const StyledTypographyInstructions = styled.div`
-  font-size: clamp(1rem, 2vw, 1.3rem);
+  font-size: clamp(1rem, 2.2vw, 1.3rem);
   text-align: center;
 `;
 
@@ -74,7 +74,7 @@ const StyledTypographyTitle = styled(Typography)`
 `;
 
 const NavButtons = styled.div`
-  margin: 20px auto;
+  margin: 15px auto;
 `;
 
 const StepContent = styled.div`
@@ -89,7 +89,7 @@ const StepList = styled.ul`
   font-size: 0.9em;
 
   & li {
-    margin-top: 8px;
+    margin-top: 7px;
   }
 `;
 
@@ -105,13 +105,13 @@ function getStepContent(step: number) {
           <strong>Step 1:</strong>
           <StepList>
             <li>To import a database, select the + icon in the sidebar.</li>
-            <li>A modal will appear where you can enter a database name.</li>
+            <li>Enter a name for your database.</li>
             <li>
               Click the green &quot;Import File&quot; button and select a .sql
               file.
             </li>
-            <li>The imported database will now appear on the sidebar.</li>
-            <li>You can select a database to view table information.</li>
+            <li>Select your imported database on the sidebar to view table information.</li>
+        
             <li>
               To view each table, click the name of the table in the top tabs
               bar.
@@ -162,8 +162,8 @@ function getStepContent(step: number) {
         <StyledTypographyInstructions>
           <strong>Step 3:</strong>
           <StepList>
-            <li>To save a query, first you must declare a file location by clicking the &quot;Designate Save Location&quot; button in the queries tab</li>
-            <li>Then you can save your queries individually by clicking the &quot;Save Query&quot; button</li>
+            <li>To save a query, declare a file location by clicking the &quot;Designate Save Location&quot; button in the queries tab</li>
+            <li>Then, save queries individually by clicking the &quot;Save Query&quot; button</li>
             <li>To load data into SeeQR just click the &quot;Import Query&quot; button, select the file you wish to upload in your local file system and click &quot;Upload&quot;</li>
           </StepList>
         </StyledTypographyInstructions>
@@ -173,8 +173,8 @@ function getStepContent(step: number) {
         <StyledTypographyInstructions>
           <strong>Step 4:</strong>
           <StepList>
-            <li>To compare queries, select the checkbox of the queries inside the groups you would like to compare.</li>
-            <li>Then select the Chart Icon at the top of the sidebar.</li>
+            <li>Select the checkbox of the queries inside the groups you would like to compare.</li>
+            <li>Then, click the Chart Icon at the top of the sidebar.</li>
             <li>Feel free to continually select and deselect queries to compare.</li>
           </StepList>
         </StyledTypographyInstructions>

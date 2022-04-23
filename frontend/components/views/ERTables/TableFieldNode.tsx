@@ -168,7 +168,7 @@ function TableField({ data }: TableFieldProps) {
             const columnMaxCharacterLengthInput = document.getElementById(
               `type-input-char_max_size-${tableColumn}`
             ) as HTMLSelectElement;
-            if (columnMaxCharacterLengthInput) {
+            if (columnMaxCharacterLengthInput.value) {
               if (
                 character_maximum_length !==
                 parseInt(columnMaxCharacterLengthInput.value, 10)

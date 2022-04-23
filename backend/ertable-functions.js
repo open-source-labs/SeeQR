@@ -111,7 +111,7 @@ function backendObjToQuery(backendObj) {
     function alterMaxCharacterLength(currTable) {
       let alterMaxCharacterLengthString = '';
       for (let i = 0; i < currTable.alterColumns.length; i += 1) {
-        if (currTable.alterColumns[i].character_maximum_length !== null) {
+        if (currTable.alterColumns[i].character_maximum_length) {
           alterMaxCharacterLengthString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} ALTER COLUMN ${currTable.alterColumns[i].column_name} TYPE varchar(${currTable.alterColumns[i].character_maximum_length}); `;
         }
       }
