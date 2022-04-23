@@ -83,8 +83,7 @@ class Table {
             type: MarkerType.Arrow,
             color: greenPrimary,
           },
-          animated: true,
-          style: { strokeWidth: 7, stroke: greenPrimary },
+          style: { strokeWidth: 6, stroke: greenPrimary },
         });
       }
     });

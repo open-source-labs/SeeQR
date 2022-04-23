@@ -52,7 +52,7 @@ const TablesTabs = ({
   tables,
   selectTable,
   selectedTable,
-  selectedDb
+  selectedDb,
 }: TablesTabBarProps) => {
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     selectTable(tables[newValue]);
@@ -109,7 +109,7 @@ const TablesTabs = ({
         color="primary"
         onClick={() => SetView(true)}
       >
-        ER
+        ER DIAGRAM
       </StyledViewButton>
       <StyledViewButton
         variant="contained"
