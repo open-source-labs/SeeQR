@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Handle, Position } from 'react-flow-renderer';
 import { AccordionSummary, AccordionDetails } from '@mui/material';
 import MuiAccordion, { AccordionProps } from '@mui/material/Accordion';
@@ -56,6 +56,7 @@ function TableField({ data }: TableFieldProps) {
     backendObj,
   }: TableFieldDataObjectType = data;
   const {
+    is_nullable,
     constraint_type,
     column_name,
     data_type,
@@ -67,16 +68,22 @@ function TableField({ data }: TableFieldProps) {
   }: ERTableColumnData = data.columnData;
 
   const tableColumn = `${data.tableName}-${column_name}`;
+  const isNull = is_nullable;
+  let setTimeoutVariable;
 
   // handles functionality of the drop down delete button
   const handleDropColumn = () => {
     // iterate through schema copy
-    for (let i = 0; i < schemaStateCopy.tableList.length; i++) {
+    for (let i = 0; i < schemaStateCopy.tableList.length; i += 1) {
       // edit schema table for this current table
       if (schemaStateCopy.tableList[i].table_name === data.tableName) {
         let columnIndex;
         // iterate through columns
-        for (let j = 0; j < schemaStateCopy.tableList[i].columns.length; j++) {
+        for (
+          let j = 0;
+          j < schemaStateCopy.tableList[i].columns.length;
+          j += 1
+        ) {
           if (
             schemaStateCopy.tableList[i].columns[j].column_name === column_name
           ) {
@@ -125,14 +132,6 @@ function TableField({ data }: TableFieldProps) {
       drop_constraint: [],
     };
 
-    // // handle is_nullable change
-    // const isNullable = document.getElementById(
-    //   `allow-null-chkbox-${tableColumn}`
-    // ) as HTMLInputElement;
-    // const isNullableString = isNullable.checked ? 'yes' : 'no';
-    // alterColumnsObj.is_nullable =
-    //   isNull !== isNullableString ? isNullableString : null;
-
     for (let i = 0; i < schemaStateCopy.tableList.length; i += 1) {
       if (schemaStateCopy.tableList[i].table_name === data.tableName) {
         // iterate through columns
@@ -164,6 +163,16 @@ function TableField({ data }: TableFieldProps) {
               schemaStateCopy.tableList[i].columns[j].new_column_name =
                 columnNameInput.value;
             }
+
+            // handle isNullable change
+            const isNullable = document.getElementById(
+              `allow-null-chkbox-${tableColumn}`
+            ) as HTMLInputElement;
+            const isNullableString = isNullable.checked ? 'YES' : 'NO';
+            console.log('isNull', isNull);
+            console.log('isNullableString', isNullableString);
+            alterColumnsObj.is_nullable =
+              isNull !== isNullableString ? isNullableString : null;
 
             // handle max_character_length change
             const columnMaxCharacterLengthInput = document.getElementById(
@@ -350,9 +359,18 @@ function TableField({ data }: TableFieldProps) {
     setAccordionExpanded(!isAccordionExpanded);
   };
 
-  // This function close the accordion expansion on mouse leave
+  // This function closes the accordion expansion on mouse leave
   const handleMouseLeave = () => {
-    setAccordionExpanded(false);
+    setTimeoutVariable = setTimeout(() => {
+      setAccordionExpanded(false);
+    }, 700);
+  };
+  // This function clears the timeout if the mouse reenters
+  // within the timeout time
+  const handleMouseEnter = () => {
+    if (setTimeoutVariable) {
+      clearTimeout(setTimeoutVariable);
+    }
   };
 
   return (
@@ -369,6 +387,7 @@ function TableField({ data }: TableFieldProps) {
       <Accordion
         expanded={isAccordionExpanded}
         onMouseLeave={handleMouseLeave}
+        onMouseEnter={handleMouseEnter}
         sx={{ width: 350 }}
       >
         <AccordionSummary
@@ -439,19 +458,12 @@ function TableField({ data }: TableFieldProps) {
           <TableFieldCheckBox
             idName={`allow-null-chkbox-${tableColumn}`}
             label="Allow Null"
-            isChecked={
-              !(constraint_type === 'PRIMARY KEY' || foreign_table == null)
-            }
+            isChecked={isNull === 'YES'}
           />
           <TableFieldCheckBox
             idName={`unique-chkbox-${tableColumn}`}
             label="Unique"
             isChecked={unique}
-          />
-          <TableFieldCheckBox
-            idName={`auto-increment-chkbox-${tableColumn}`}
-            label="Auto Increment"
-            isChecked={auto_increment}
           />
           <br />
           <div>
