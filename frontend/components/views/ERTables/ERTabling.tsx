@@ -1,6 +1,5 @@
-import * as path from 'path';
 import fs from 'fs';
-import { app, ipcRenderer, remote } from 'electron';
+import { ipcRenderer, remote } from 'electron';
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 import ReactFlow, {
   applyEdgeChanges,
@@ -22,14 +21,10 @@ import {
   SchemaStateObjType,
 } from '../../../types';
 
-import { sendFeedback } from '../../../lib/utils';
-// import UserTableLayouts from '/UserTableLayouts.json';
-
 import {
   greenPrimary,
   greyPrimary,
   bgColor,
-  greenLightest,
 } from '../../../style-variables';
 
 // defines the styling for the ERDiagram window
@@ -41,7 +36,7 @@ const rfStyle = {
 const mmStyle = {
   backgroundColor: bgColor,
   border: `2px solid ${greenPrimary}`,
-  'border-radius': '0.3rem',
+  'borderRadius': '0.3rem',
 };
 
 // defines the styling for the minimap nodes
@@ -161,10 +156,6 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
     setSchemaState(schemaStateCopy);
   };
 
-  const StyledViewButton = styled(Button)`
-    margin: 1rem;
-    margin-left: 0rem;
-  `;
 
   const handleSaveLayout = () => {
     // get the array of header nodes
