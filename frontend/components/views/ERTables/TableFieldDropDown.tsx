@@ -28,7 +28,7 @@ const TableFieldDropDown = (props: TableFieldDropDownProps) => {
     otherTables,
     setFkOptions,
     schemaStateCopy,
-    setSchemaState
+    setSchemaState,
   } = props;
 
   const optionsArray = options.map((option, i) => (
@@ -53,7 +53,7 @@ const TableFieldDropDown = (props: TableFieldDropDownProps) => {
         setFkOptions(newTableFkOptions.column_names);
       }
     }
-    setSchemaState(schemaStateCopy)
+    // setSchemaState(schemaStateCopy)
   };
 
   return (
