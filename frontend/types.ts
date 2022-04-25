@@ -244,14 +244,8 @@ export type ERTableColumnData = {
   is_nullable: 'YES' | 'NO';
   unique?: boolean; // optional until implemented
   auto_increment?: boolean; // optional until implemented
-};
-export type DataTypes =
-  | 'integer'
-  | 'bigint'
-  | 'varchar'
-  | 'serial'
-  | 'date'
-  | null;
+}
+export type DataTypes = 'integer' | 'bigint' | 'varchar' | 'date' | null;
 
 export type AddColumnsObjType = {
   column_name: string | null;
