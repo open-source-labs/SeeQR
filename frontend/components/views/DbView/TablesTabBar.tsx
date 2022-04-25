@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Tabs, Tab, Button } from '@material-ui/core';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import styled from 'styled-components';
 import TableDetails from './TableDetails';
 import { AppState, TableInfo } from '../../../types';
@@ -71,7 +73,7 @@ const TablesTabs = ({
 
   const ErView = () => (
     <div>
-      {active ? (
+      { active ? (
         <ERTables tables={tables} selectedDb={selectedDb} />
       ) : (
         <>
@@ -106,7 +108,7 @@ const TablesTabs = ({
 
   return (
     <div>
-      <StyledViewButton
+<StyledViewButton
         variant="contained"
         color="primary"
         onClick={() => {
@@ -114,7 +116,7 @@ const TablesTabs = ({
           if(setERView) setERView(true)
         }}
       >
-        ER
+        ER DIAGRAM
       </StyledViewButton>
       <StyledViewButton
         variant="contained"

@@ -17,8 +17,7 @@ const DatabaseDetails = ({ db }: DatabaseDetailsProps) => {
   if (!db) return null;
   return (
     <Container>
-      <Typography variant="h2">{`${db.db_name}`}</Typography>
-      <Typography variant="h2">{`${db.db_size}`}</Typography>
+      <Typography variant="h4">{`${db.db_name}`} {`${db.db_size}`} </Typography>
     </Container>
   );
 };
