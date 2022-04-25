@@ -123,6 +123,10 @@ function TableHeader({ data }: TableHeaderProps) {
               alterColumnsObj.rename_constraint = `fk_${schemaStateCopy.tableList[i].table_name}${schemaStateCopy.tableList[i].columns[j].column_name}`;
               alterColumnsArray.push(alterColumnsObj);
             }
+            if (schemaStateCopy.tableList[i].columns[j].constraint_type === 'UNIQUE') {
+              alterColumnsObj.rename_constraint = `unique_${schemaStateCopy.tableList[i].table_name}${schemaStateCopy.tableList[i].columns[j].column_name}`;
+              alterColumnsArray.push(alterColumnsObj);
+            }
           }
           const alterTablesObj: AlterTablesObjType = {
             is_insertable_into: schemaStateCopy.tableList[i].is_insertable_into,

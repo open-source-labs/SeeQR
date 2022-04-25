@@ -163,6 +163,7 @@ function TableField({ data }: TableFieldProps) {
                 columnNameInput.value;
               if (constraint_type === 'PRIMARY KEY') alterColumnsObj.rename_constraint = `pk_${alterTablesObj.table_name}${column_name}`;
               if (constraint_type === 'FOREIGN KEY') alterColumnsObj.rename_constraint = `fk_${alterTablesObj.table_name}${column_name}`;
+              if (constraint_type === 'UNIQUE') alterColumnsObj.rename_constraint = `unique_${alterTablesObj.table_name}${column_name}`;
             }
 
             // handle isNullable change
@@ -238,7 +239,7 @@ function TableField({ data }: TableFieldProps) {
               // create a copy in case multiple constraints are added
               const addConstraintObjCopy = { ...addConstraintObj };
               // name the constraint PK_<tableNamecolumn_name>
-              addConstraintObjCopy.constraint_name = `PK_${data.tableName + column_name
+              addConstraintObjCopy.constraint_name = `pk_${data.tableName + column_name
                 }`;
               // assign the constraint_type to 'PRIMARY KEY'
               addConstraintObjCopy.constraint_type = 'PRIMARY KEY';
@@ -265,7 +266,7 @@ function TableField({ data }: TableFieldProps) {
             ) {
               const addConstraintObjCopy = { ...addConstraintObj };
               // name the constraint FK_<tableNameColumn_name>
-              addConstraintObjCopy.constraint_name = `FK_${data.tableName + column_name
+              addConstraintObjCopy.constraint_name = `fk_${data.tableName + column_name
                 }`;
               // assign the constraint type to 'FOREIGN KEY'
               addConstraintObjCopy.constraint_type = 'FOREIGN KEY';
@@ -290,14 +291,14 @@ function TableField({ data }: TableFieldProps) {
             if (constraint_type === 'UNIQUE' && uniqueCheckBox.checked === false) {
               // add the unique constraint name to the drop constraint array
               alterColumnsObj.drop_constraint.push(
-                `UNIQUE_${data.tableName + column_name}`
+                `unique_${data.tableName + column_name}`
               );
             }
             else if (constraint_type !== 'UNIQUE' && uniqueCheckBox.checked === true) {
               // create a copy in case multiple constraints are added
               const addConstraintObjCopy = { ...addConstraintObj };
               // name the constraint PK_<tableNamecolumn_name>
-              addConstraintObjCopy.constraint_name = `UNIQUE_${data.tableName + column_name
+              addConstraintObjCopy.constraint_name = `unique_${data.tableName + column_name
                 }`;
               // assign the constraint_type to 'UNIQUE'
               addConstraintObjCopy.constraint_type = 'UNIQUE';

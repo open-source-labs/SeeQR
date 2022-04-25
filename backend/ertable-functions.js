@@ -169,7 +169,7 @@ function backendObjToQuery(backendObj) {
         // populates an array of objects with all of the new constraint names
         if (currAlterColumn.rename_constraint) {
           constraintsNames[currAlterColumn.rename_constraint] = {
-            constraint_type: currAlterColumn.rename_constraint[0] === 'p' ? 'pk' : 'fk',
+            constraint_type: currAlterColumn.rename_constraint[0] === 'p' ? 'pk' : 'f' ? 'fk' : 'unique',
             column_name: currAlterColumn.new_column_name ? currAlterColumn.new_column_name : currAlterColumn.column_name,
             table_name: renameConstraintCache[currTable.table_name] ? renameConstraintCache[currTable.table_name] : currTable.table_name,
             table_schema: currTable.table_schema,
@@ -204,10 +204,8 @@ function backendObjToQuery(backendObj) {
     }
     // Goes through the constraintsNames object and adds the query for renaming
     const constraintsToRename = Object.keys(constraintsNames);
-    console.log('constraintsToRename: ', constraintsToRename)
     for (let i = 0; i < constraintsToRename.length; i++) {
       const currColumn = constraintsNames[constraintsToRename[i]];
-      console.log('currColumn: ',currColumn)
       renameString += `ALTER TABLE ${currColumn.table_schema}.${currColumn.table_name} RENAME CONSTRAINT ${constraintsToRename[i]} TO ${currColumn.constraint_type}_${currColumn.table_name}${currColumn.column_name}; `;
     }
     outputArray.push(renameString);
