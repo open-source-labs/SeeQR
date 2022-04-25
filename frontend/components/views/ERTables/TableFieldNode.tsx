@@ -427,7 +427,7 @@ function TableField({ data }: TableFieldProps) {
             idName={`type-dd-${tableColumn}`}
             defaultValue={data_type}
             otherTables={data.otherTables}
-            options={['serial', 'varchar', 'bigint', 'integer', 'date']}
+            options={['varchar', 'bigint', 'integer', 'date']}
             schemaStateCopy={schemaStateCopy}
             setSchemaState={setSchemaState}
           />
