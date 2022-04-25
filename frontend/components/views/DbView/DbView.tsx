@@ -14,6 +14,8 @@ const requestDbListOnce = once(() => ipcRenderer.send('return-db-list'));
 interface DbViewProps {
   selectedDb: AppState['selectedDb'];
   show: boolean;
+  setERView: (boolean) => void;
+  ERView: boolean;
 }
 
 const StyledDummyButton = styled(Button)`
@@ -22,7 +24,7 @@ const StyledDummyButton = styled(Button)`
   right: ${sidebarShowButtonSize};
 `;
 
-const DbView = ({ selectedDb, show }: DbViewProps) => {
+const DbView = ({ selectedDb, show, setERView, ERView}: DbViewProps) => {
   const [dbTables, setTables] = useState<TableInfo[]>([]);
   const [selectedTable, setSelectedTable] = useState<TableInfo>();
   const [databases, setDatabases] = useState<DatabaseInfo[]>([]);
@@ -45,8 +47,6 @@ const DbView = ({ selectedDb, show }: DbViewProps) => {
     };
   });
 
-  
-
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -68,10 +68,11 @@ const DbView = ({ selectedDb, show }: DbViewProps) => {
         selectTable={(table: TableInfo) => setSelectedTable(table)}
         selectedTable={selectedTable}
         selectedDb={selectedDb}
+        setERView={setERView}
       />
       <br />
       <br />
-      {selectedTable ? (
+      {(selectedTable && !ERView) ? (
         <StyledDummyButton
           variant="contained"
           color="primary"

@@ -43,6 +43,7 @@ interface TablesTabBarProps {
   selectTable: (table: TableInfo) => void;
   selectedTable: TableInfo | undefined;
   selectedDb: AppState['selectedDb'];
+  setERView?: (boolean) => void;
 }
 
 const StyledViewButton = styled(Button)`
@@ -50,11 +51,12 @@ const StyledViewButton = styled(Button)`
   margin-left: 0rem;
 `;
 
-const TablesTabs = ({
+const TablesTabs = ({ 
   tables,
   selectTable,
   selectedTable,
   selectedDb,
+  setERView
 }: TablesTabBarProps) => {
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     selectTable(tables[newValue]);
@@ -109,14 +111,20 @@ const TablesTabs = ({
 <StyledViewButton
         variant="contained"
         color="primary"
-        onClick={() => SetView(true)}
+        onClick={() => {
+          SetView(true)
+          if(setERView) setERView(true)
+        }}
       >
         ER DIAGRAM
       </StyledViewButton>
       <StyledViewButton
         variant="contained"
         color="primary"
-        onClick={() => SetView(false)}
+        onClick={() => {
+          SetView(false)
+          if(setERView) setERView(false)
+        }}
       >
         TABLE
       </StyledViewButton>
