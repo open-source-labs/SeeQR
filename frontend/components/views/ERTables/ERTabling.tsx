@@ -171,6 +171,8 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
   const StyledViewButton = styled(Button)`
     margin: 1rem;
     margin-left: 0rem;
+    font-size: .78em;
+    padding: .45em;
   `;
 
   const handleSaveLayout = () => {
