@@ -156,6 +156,12 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
     setSchemaState(schemaStateCopy);
   };
 
+  const StyledViewButton = styled(Button)`
+    margin: 1rem;
+    margin-left: 0rem;
+    font-size: .78em;
+    padding: .45em;
+  `;
 
   const handleSaveLayout = () => {
     // get the array of header nodes
