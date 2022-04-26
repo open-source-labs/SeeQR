@@ -264,6 +264,7 @@ export type AlterColumnsObjType = {
   data_type: string | null;
   is_nullable: 'YES' | 'NO' | null;
   drop_constraint: string[];
+  rename_constraint: string | null;
 };
 
 export type AddConstraintObjType = {
