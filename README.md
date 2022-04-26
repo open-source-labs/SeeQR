@@ -12,7 +12,7 @@
 
 [SeeQR.info](http://www.seeqr.info)
 
-<p><b>SeeQR: </b>A database analytic tool to compare the efficiency of different schemas and queries on a granular level so that developers/architects can make better informed architectural decisions regarding SQL databases at various scales.</p>
+<p>SeeQR is a <b>convenient one-stop shop</b> for efficient SQL database manipulation and performance testing. SeeQR can be used through-out the database life-cycle, from creation to testing.</p>
 
 </div>
 
