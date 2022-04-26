@@ -31,7 +31,18 @@ To get started on contributing to this project:
 
 1. Download and install [Postgres.app](https://postgresapp.com/)(Mac)/[PGAdmin](https://www.pgadmin.org/download)(Windows) and start it before opening up SeeQR
 2. Ensure that psql is available in the `$PATH`
+     - Open a new terminal
+     - Use command: 
+        export PATH="/Applications/Postgres.app/Contents/Versions/9.5/bin:$PATH"
 3. Ensure that a 'postgres' role exists
+     - Open a database in Postgres
+     - Use command: 
+        SET ROLE postgres
+4. Ensure that your Postgres instance is running on port 5432
+     - If there is currently an instance running on port 5432
+        - Open a new terminal
+        - Use command to end all: 
+            sudo pkill -u postgres
 4. Download the latest version of [SeeQR](https://github.com/open-source-labs/seeqr/releases/latest)
 
 ## Built With
@@ -59,23 +70,25 @@ To get started on contributing to this project:
       - Copying an existing database (with or without original data)
   - Users can export any database onto their local machine
   - Users can toggle between the 'DATABASES' view and the 'QUERIES' view
+  - Users can toggle between an 'ER DIAGRAM' view and the 'TABLES' view for each database
 
 <div align="center">
-  <img src="./assets/readmeImages/gifs/quick_start.gif" width=800/>
+  <img src="./assets/readmeImages/gifs/1ImportDB.gif" width=800/>
+  <img src="./assets/readmeImages/gifs/2VisualizeDB.gif" width=800/>
 </div>
 
 - Databases
-
-  - In the 'DATABASES' view, users can select a table from a list of all the tables in the schema of the currently selected database
-  - Information about the selected table is then displayed
-  - The name and size of the selected database are also displayed at the top of the page
-  - Users can also generate large amounts of foreign-key compliant dummy data for the selected table in the current database. Currently supported data types are:
-    - INT
-    - SMALLINT
-    - BIGINT
-    - VARCHAR
-    - BOOLEAN
-    - DATE
+  - In the 'DATABASES' view, an interactive Entity Relationship Diagram is displayed for the selected database
+    - Users can edit can view/edit table and column data with these diagrams as well as change the layout of the diagram by dragging and clicking save
+  - Users can select a table from a list of all the tables in the schema of the currently selected database
+    - Information about the selected table is then displayed
+    - The name and size of the selected database are also displayed at the top of the page
+    - Users can also generate large amounts of foreign-key compliant dummy data for the selected table in the current database. Currently supported data types are:
+      - INT
+      - BIGINT
+      - VARCHAR
+      - BOOLEAN
+      - DATE
   
   <br>
   <div align="center">
