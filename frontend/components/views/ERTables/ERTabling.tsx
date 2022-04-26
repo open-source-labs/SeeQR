@@ -105,7 +105,7 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
     // create a deep copy of the state, to ensure the state is not directly modified
     const schemaStateString = JSON.stringify(schemaState);
     const schemaStateCopy = JSON.parse(schemaStateString);
-    // initialize the backendobj with the current database
+    // create a nodesArray with the initialState data
     const nodesArray = initialState.nodes.map((currentNode) => {
       // add the schemaStateCopy and setSchemaState to the nodes data so that each node
       // has reference to the current state and can modify the state to cause rerenders
@@ -233,11 +233,11 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
   const handleClickSave = () => {
     // This function sends a message to the back end with
     // the data in backendObj.current
+    handleSaveLayout();
     ipcRenderer
       .invoke('ertable-schemaupdate', backendObj.current)
       .then(async () => {
         // resets the backendObj
-        handleSaveLayout();
         backendObj.current = {
           database: schemaState.database,
           updates,
