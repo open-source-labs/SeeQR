@@ -21,11 +21,7 @@ import {
   SchemaStateObjType,
 } from '../../../types';
 
-import {
-  greenPrimary,
-  greyPrimary,
-  bgColor,
-} from '../../../style-variables';
+import * as colors from '../../../style-variables';
 
 // defines the styling for the ERDiagram window
 const rfStyle = {
@@ -34,8 +30,8 @@ const rfStyle = {
 
 // defines the styling for the minimap
 const mmStyle = {
-  backgroundColor: bgColor,
-  border: `2px solid ${greenPrimary}`,
+  backgroundColor: colors.bgColor,
+  border: `2px solid ${colors.greenPrimary}`,
   'borderRadius': '0.3rem',
 };
 
@@ -43,11 +39,11 @@ const mmStyle = {
 const nodeColor = (node) => {
   switch (node.type) {
     case 'tableHeader':
-      return greenPrimary;
+      return colors.greyLightest;
     case 'tableField':
-      return greyPrimary;
+      return 'white';
     default:
-      return 'blue';
+      return 'red';
   }
 };
 
