@@ -5,7 +5,7 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import styled from 'styled-components';
 import TableDetails from './TableDetails';
 import { AppState, TableInfo } from '../../../types';
-import { greyPrimary, greenPrimary } from '../../../style-variables';
+import { greyPrimary, greenPrimary, textColor } from '../../../style-variables';
 import ERTables from '../ERTables/ERTabling';
 import updateSchema from './sample-updateschema';
 import { sendFeedback } from '../../../lib/utils';
@@ -45,12 +45,6 @@ interface TablesTabBarProps {
   selectedDb: AppState['selectedDb'];
 }
 
-const StyledToggleButtonGroup = styled(ToggleButtonGroup)`
-  background-color: ${greenPrimary};
-  margin-bottom: 10px;
-  `;
-
-
 const TablesTabs = ({
   tables,
   selectTable,
@@ -64,11 +58,8 @@ const TablesTabs = ({
   const tableIndex = tables.findIndex(
     ({ table_name }) => table_name === selectedTable?.table_name
   );
-
+  
   const [active, setActive] = useState(true);
-  const SetView = (active) => {
-    setActive(active);
-  };
 
   const ErView = () => (
     <div>
@@ -105,17 +96,28 @@ const TablesTabs = ({
     </div>
   );
 
+
+  const handleView = () => {
+    setActive(!active);
+  };
+
+  const StyledToggleButtonGroup = styled(ToggleButtonGroup)`
+  background-color: ${greenPrimary};
+  margin-bottom: 10px;
+  `;
+
   return (
     <div>
       <StyledToggleButtonGroup
         value={active}
         exclusive
+        onChange={handleView}
         aria-label="active-view"
       >
-        <ToggleButton value="true" aria-label="er" onClick= {() => SetView(true)}>
-          ER
+        <ToggleButton value="true" aria-label="er">
+          ER diagram
         </ToggleButton>
-        <ToggleButton value="false" aria-label="table" onClick= {() => SetView(false)}>
+        <ToggleButton value="false" aria-label="table">
           Table
         </ToggleButton>
       </StyledToggleButtonGroup>
