@@ -52,7 +52,6 @@ const TablesTabs = ({
   selectedTable,
   selectedDb,
   setERView,
-  ERView
 }: TablesTabBarProps) => {
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     selectTable(tables[newValue]);
@@ -123,7 +122,7 @@ const TablesTabs = ({
         onChange={handleView}
         aria-label="active-view"
       >
-        <ToggleButton value="true" aria-label="er" >
+        <ToggleButton value="true" aria-label="er">
           ER diagram
         </ToggleButton>
         <ToggleButton value="false" aria-label="table">
