@@ -31,9 +31,6 @@ To get started on contributing to this project:
 
 1. Download and install [Postgres.app](https://postgresapp.com/)(Mac)/[PGAdmin](https://www.pgadmin.org/download)(Windows) and start it before opening up SeeQR
 2. Ensure that psql is available in the `$PATH`
-     - Open a new terminal
-     - Use command: 
-        - `export PATH="/Applications/Postgres.app/Contents/Versions/9.5/bin:$PATH"`
 3. Ensure that a 'postgres' role exists
      - Open a database in Postgres
      - Use command: 
