@@ -5,7 +5,7 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import styled from 'styled-components';
 import TableDetails from './TableDetails';
 import { AppState, TableInfo } from '../../../types';
-import { greyPrimary } from '../../../style-variables';
+import { greyPrimary, greenPrimary, textColor } from '../../../style-variables';
 import ERTables from '../ERTables/ERTabling';
 import updateSchema from './sample-updateschema';
 import { sendFeedback } from '../../../lib/utils';
@@ -44,19 +44,16 @@ interface TablesTabBarProps {
   selectedTable: TableInfo | undefined;
   selectedDb: AppState['selectedDb'];
   setERView?: (boolean) => void;
+  ERView?: boolean;
 }
 
-const StyledViewButton = styled(Button)`
-  margin: 1rem;
-  margin-left: 0rem;
-`;
-
-const TablesTabs = ({ 
+const TablesTabs = ({
   tables,
   selectTable,
   selectedTable,
   selectedDb,
-  setERView
+  setERView,
+  ERView
 }: TablesTabBarProps) => {
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     selectTable(tables[newValue]);
@@ -65,11 +62,8 @@ const TablesTabs = ({
   const tableIndex = tables.findIndex(
     ({ table_name }) => table_name === selectedTable?.table_name
   );
-
+  
   const [active, setActive] = useState(true);
-  const SetView = (active) => {
-    setActive(active);
-  };
 
   const ErView = () => (
     <div>
@@ -106,28 +100,37 @@ const TablesTabs = ({
     </div>
   );
 
+
+  const handleView = () => {
+    setActive(!active);
+
+    // disable the dummy data button when in ER View
+    if (setERView) {
+      if (active) setERView(false);
+      else setERView(true);
+    };
+  };
+
+  const StyledToggleButtonGroup = styled(ToggleButtonGroup)`
+  background-color: ${greenPrimary};
+  margin-bottom: 10px;
+  `;
+
   return (
     <div>
-      <StyledViewButton
-        variant="contained"
-        color="primary"
-        onClick={() => {
-          SetView(true)
-          if(setERView) setERView(true)
-        }}
+      <StyledToggleButtonGroup
+        value={active}
+        exclusive
+        onChange={handleView}
+        aria-label="active-view"
       >
-        ER DIAGRAM
-      </StyledViewButton>
-      <StyledViewButton
-        variant="contained"
-        color="primary"
-        onClick={() => {
-          SetView(false)
-          if(setERView) setERView(false)
-        }}
-      >
-        TABLE
-      </StyledViewButton>
+        <ToggleButton value="true" aria-label="er" >
+          ER diagram
+        </ToggleButton>
+        <ToggleButton value="false" aria-label="table">
+          Table
+        </ToggleButton>
+      </StyledToggleButtonGroup>
       {ErView()}
     </div>
   );

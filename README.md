@@ -3,16 +3,15 @@
 <img src="./assets/readmeImages/logo_readme.png" height=300/>
 
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/oslabs-beta/SeeQR)
-![Release: 6.0.1](https://img.shields.io/badge/Release-6.0.1-red)
+![Release: 7.0.1](https://img.shields.io/badge/Release-7.0.0-red)
 ![License: MIT](https://img.shields.io/badge/License-MIT-orange.svg)
 ![Contributions Welcome](https://img.shields.io/badge/Contributions-welcome-blue.svg)
 [![Twitter](https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Ftwitter.com%2Ftheseeqr)](https://twitter.com/theseeqr)
 [![Github stars](https://img.shields.io/github/stars/open-source-labs/SeeQR?style=social)](https://github.com/open-source-labs/SeeQR)
-[![Tests](https://github.com/open-source-labs/SeeQR/actions/workflows/test.yml/badge.svg)](https://github.com/open-source-labs/SeeQR/actions/workflows/test.yml)
 
 [SeeQR.info](http://www.seeqr.info)
 
-<p><b>SeeQR: </b>A database analytic tool to compare the efficiency of different schemas and queries on a granular level so that developers/architects can make better informed architectural decisions regarding SQL databases at various scales.</p>
+<p>SeeQR is a <b>convenient one-stop shop</b> for efficient SQL database manipulation and performance testing. SeeQR can be used throughout the database life-cycle, from creation to testing.</p>
 
 </div>
 
@@ -33,6 +32,15 @@ To get started on contributing to this project:
 1. Download and install [Postgres.app](https://postgresapp.com/)(Mac)/[PGAdmin](https://www.pgadmin.org/download)(Windows) and start it before opening up SeeQR
 2. Ensure that psql is available in the `$PATH`
 3. Ensure that a 'postgres' role exists
+     - Open a database in Postgres
+     - Use command: 
+        - `SET ROLE postgres`
+4. Ensure that your Postgres instance is running on port 5432
+     - If there is currently an instance running on port 5432
+        - Open a new terminal
+        - Use command to end all: 
+          - `sudo pkill -u postgres`
+        - Start Postgres instance on port 5432
 4. Download the latest version of [SeeQR](https://github.com/open-source-labs/seeqr/releases/latest)
 
 ## Built With
@@ -60,23 +68,24 @@ To get started on contributing to this project:
       - Copying an existing database (with or without original data)
   - Users can export any database onto their local machine
   - Users can toggle between the 'DATABASES' view and the 'QUERIES' view
+  - Users can toggle between an 'ER DIAGRAM' view and the 'TABLES' view for each database
 
 <div align="center">
   <img src="./assets/readmeImages/gifs/quick_start.gif" width=800/>
 </div>
 
 - Databases
-
-  - In the 'DATABASES' view, users can select a table from a list of all the tables in the schema of the currently selected database
-  - Information about the selected table is then displayed
-  - The name and size of the selected database are also displayed at the top of the page
-  - Users can also generate large amounts of foreign-key compliant dummy data for the selected table in the current database. Currently supported data types are:
-    - INT
-    - SMALLINT
-    - BIGINT
-    - VARCHAR
-    - BOOLEAN
-    - DATE
+  - In the 'DATABASES' view, an interactive Entity Relationship Diagram (`ER DIAGRAM`) is displayed for the selected database
+  - Users can select `TABLE` to see selected database in tabular form
+    - Users can select a table from a list of all the tables in the schema of the currently selected database
+      - Information about the selected table is then displayed
+      - The name and size of the selected database are also displayed at the top of the page
+      - Users can also generate large amounts of foreign-key compliant dummy data for the selected table in the current database. Currently supported data types are:
+        - INT
+        - BIGINT
+        - VARCHAR
+        - BOOLEAN
+        - DATE
   
   <br>
   <div align="center">
@@ -86,14 +95,15 @@ To get started on contributing to this project:
 
   - Users can create a new database from scratch by clicking the `Create New Database` button at the bottom of the sidebar
   - Once a the database is given a name, hitting the `Initialize Database` button will create new database on the users PostgreSQL instance
-  - Users can then input SQL commands and click `Update Database` to create and drop tables in the database
-  - Users have the option to alter any existing databases as well by selecting the database on the sidebar and running any SQL commands they would like. 
+  - Users can modify the newly created database as well as any existing databases using the `ER Diagram` to create/change/delete tables and columns
+  - Users also have the option to alter any newly created / existing databases by inputting SQL commands and click `Update Database`
   - The `Export` button will write a .sql file on the user's desktop of the selected database
 
 
 <br>
 <div align="center">
     <img src="./assets/readmeImages/gifs/create_db.gif" width=800/>
+    <img src="./assets/readmeImages/gifs/modify_db.gif" width=800/>
   </div>
 - Queries
 
@@ -164,7 +174,7 @@ We've released SeeQR because it's a useful tool to help optimize SQL databases. 
 
 ## Core Team
 
-[Allison Le](https://github.com/allisonle1) | [Brandon Lee](https://github.com/BrandonW-Lee) | [Casey Escovedo](https://github.com/caseyescovedo) | [Casey Walker](https://github.com/cwalker3011) | [Catherine Chiu](https://github.com/catherinechiu) | [Chris Akinrinade](https://github.com/chrisakinrinade) | [Cindy Chau](https://github.com/cindychau) | [Claudio Santos](https://github.com/Claudiohbsantos) | [Eric Han](https://github.com/ericJH92) | [Faraz Akhtar](https://github.com/faraza22) | [Frank Norton](https://github.com/FrankNorton32) | [Harrison Nam](https://github.com/harrynam07) | [James Kolotouros](https://github.com/dkolotouros) | [Jennifer Courtner](https://github.com/jcourtner) | [John Wagner](https://github.com/jwagner988) | [Justin Dury-Agri](https://github.com/justinD-A) | [Justin Hicks](https://github.com/JuiceBawks) | [Katie Klochan](https://github.com/kklochan) | [May Wirapa Boonyasurat](https://github.com/mimiwrp) | [Mercer Stronck](https://github.com/mercerstronck) | [Muhammad Trad](https://github.com/muhammadtrad) | [Richard Guo](https://github.com/richardguoo) | [Richard Lam](https://github.com/rlam108) | [Sam Frakes](https://github.com/frakes413) | [Serena Kuo](https://github.com/serenackuo) | [Timothy Sin](https://github.com/timothysin) | [Vincent Trang](https://github.com/vincentt114)
+[Michelle Chang](https://github.com/mkchang168) | [Jake Bradbeer](https://github.com/JBradbeer) | [Bryan Santos](https://github.com/santosb93) | [William Trey Lewis](https://github.com/treyfrog128) | [Brandon Lee](https://github.com/BrandonW-Lee) | [Casey Escovedo](https://github.com/caseyescovedo) | [Casey Walker](https://github.com/cwalker3011) | [Catherine Chiu](https://github.com/catherinechiu) | [Chris Akinrinade](https://github.com/chrisakinrinade) | [Cindy Chau](https://github.com/cindychau) | [Claudio Santos](https://github.com/Claudiohbsantos) | [Eric Han](https://github.com/ericJH92) | [Faraz Akhtar](https://github.com/faraza22) | [Frank Norton](https://github.com/FrankNorton32) | [Harrison Nam](https://github.com/harrynam07) | [James Kolotouros](https://github.com/dkolotouros) | [Jennifer Courtner](https://github.com/jcourtner) | [John Wagner](https://github.com/jwagner988) | [Justin Dury-Agri](https://github.com/justinD-A) | [Justin Hicks](https://github.com/JuiceBawks) | [Katie Klochan](https://github.com/kklochan) | [May Wirapa Boonyasurat](https://github.com/mimiwrp) | [Mercer Stronck](https://github.com/mercerstronck) | [Muhammad Trad](https://github.com/muhammadtrad) | [Richard Guo](https://github.com/richardguoo) | [Richard Lam](https://github.com/rlam108) | [Sam Frakes](https://github.com/frakes413) | [Serena Kuo](https://github.com/serenackuo) | [Timothy Sin](https://github.com/timothysin) | [Vincent Trang](https://github.com/vincentt114)
 
 
 ## License

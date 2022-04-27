@@ -65,20 +65,20 @@ function TableField({ data }: TableFieldProps) {
     foreign_table,
   }: ERTableColumnData = data.columnData;
 
-  const tableColumn = `${data.tableName}-${column_name}`;
-  const isNull = is_nullable;
+  const tableColumn: string = `${data.tableName}-${column_name}`;
+  const isNull: string = is_nullable;
   let setTimeoutVariable;
 
   // handles functionality of the drop down delete button
-  const handleDropColumn = () => {
+  const handleDropColumn = (): void => {
     // iterate through schema copy
     for (let i = 0; i < schemaStateCopy.tableList.length; i += 1) {
       // edit schema table for this current table
       if (schemaStateCopy.tableList[i].table_name === data.tableName) {
-        let columnIndex;
+        let columnIndex: number;
         // iterate through columns
         for (
-          let j = 0;
+          let j: number = 0;
           j < schemaStateCopy.tableList[i].columns.length;
           j += 1
         ) {
@@ -117,7 +117,7 @@ function TableField({ data }: TableFieldProps) {
     }
   };
   // handles functionality of the drop down update button
-  const handleUpdateColumn = () => {
+  const handleUpdateColumn = (): void => {
     // create an alterColumns object
     const alterColumnsObj: AlterColumnsObjType = {
       column_name,
@@ -129,13 +129,16 @@ function TableField({ data }: TableFieldProps) {
       is_nullable: null,
       drop_constraint: [],
       rename_constraint: null,
+      table_schema: null,
+      table_name: null,
+      constraint_type: null
     };
 
     for (let i = 0; i < schemaStateCopy.tableList.length; i += 1) {
       if (schemaStateCopy.tableList[i].table_name === data.tableName) {
         // iterate through columns
         for (
-          let j = 0;
+          let j: number = 0;
           j < schemaStateCopy.tableList[i].columns.length;
           j += 1
         ) {
@@ -170,7 +173,7 @@ function TableField({ data }: TableFieldProps) {
             const isNullable = document.getElementById(
               `allow-null-chkbox-${tableColumn}`
             ) as HTMLInputElement;
-            const isNullableString = isNullable.checked ? 'YES' : 'NO';
+            const isNullableString: 'YES' | 'NO' = isNullable.checked ? 'YES' : 'NO';
             alterColumnsObj.is_nullable =
               isNull !== isNullableString ? isNullableString : null;
 
@@ -237,7 +240,7 @@ function TableField({ data }: TableFieldProps) {
               pkCheckBox.checked === true
             ) {
               // create a copy in case multiple constraints are added
-              const addConstraintObjCopy = { ...addConstraintObj };
+              const addConstraintObjCopy: AddConstraintObjType = { ...addConstraintObj };
               // name the constraint PK_<tableNamecolumn_name>
               addConstraintObjCopy.constraint_name = `pk_${data.tableName + column_name
                 }`;
@@ -296,7 +299,7 @@ function TableField({ data }: TableFieldProps) {
             }
             else if (constraint_type !== 'UNIQUE' && uniqueCheckBox.checked === true) {
               // create a copy in case multiple constraints are added
-              const addConstraintObjCopy = { ...addConstraintObj };
+              const addConstraintObjCopy: AddConstraintObjType = { ...addConstraintObj };
               // name the constraint PK_<tableNamecolumn_name>
               addConstraintObjCopy.constraint_name = `unique_${data.tableName + column_name
                 }`;
@@ -319,7 +322,7 @@ function TableField({ data }: TableFieldProps) {
   };
 
   // autopopulates the fk field options from state
-  const createFieldOptions = () => {
+  const createFieldOptions = (): string[] => {
     const options: string[] = [];
 
     // if foreign_table is NOT provided return column names of first table in otherTables
@@ -339,8 +342,8 @@ function TableField({ data }: TableFieldProps) {
 
   // disable the dropdown menus for fk table and field when fk checkbox is not checked
   const disableForeignKeyMenuHandler = (isChecked) => {
-    const tableID = `foreign-key-table-dd-${tableColumn}`;
-    const fieldID = `foreign-key-field-dd-${tableColumn}`;
+    const tableID: string = `foreign-key-table-dd-${tableColumn}`;
+    const fieldID: string = `foreign-key-field-dd-${tableColumn}`;
 
     const tableDD = document.getElementById(tableID) as HTMLSelectElement;
     const fieldDD = document.getElementById(fieldID) as HTMLSelectElement;
@@ -351,15 +354,15 @@ function TableField({ data }: TableFieldProps) {
 
   // disable allow null checkbox when the column is either a foreign key or primary key
   const disableAllowNullHandler = () => {
-    const pkID = `primary-key-chkbox-${tableColumn}`;
+    const pkID: string = `primary-key-chkbox-${tableColumn}`;
     const pkCheckBox = document.getElementById(pkID) as HTMLInputElement;
-    const isPkChecked = pkCheckBox.checked;
+    const isPkChecked: boolean = pkCheckBox.checked;
 
-    const fkID = `foreign-key-chkbox-${tableColumn}`;
+    const fkID: string = `foreign-key-chkbox-${tableColumn}`;
     const fkCheckBox = document.getElementById(fkID) as HTMLInputElement;
-    const isFkChecked = fkCheckBox.checked;
+    const isFkChecked: boolean = fkCheckBox.checked;
 
-    const allowNullID = `allow-null-chkbox-${tableColumn}`;
+    const allowNullID: string = `allow-null-chkbox-${tableColumn}`;
     const allowNullCheckBox = document.getElementById(
       allowNullID
     ) as HTMLSelectElement;
@@ -372,19 +375,19 @@ function TableField({ data }: TableFieldProps) {
   const [isAccordionExpanded, setAccordionExpanded] = useState(false);
 
   // This function handles the click functionality of clicking the accordion
-  const handleAccordionClick = () => {
+  const handleAccordionClick = (): void => {
     setAccordionExpanded(!isAccordionExpanded);
   };
 
   // This function closes the accordion expansion on mouse leave
-  const handleMouseLeave = () => {
+  const handleMouseLeave = (): void => {
     setTimeoutVariable = setTimeout(() => {
       setAccordionExpanded(false);
     }, 1000);
   };
   // This function clears the timeout if the mouse reenters
   // within the timeout time
-  const handleMouseEnter = () => {
+  const handleMouseEnter = (): void => {
     if (setTimeoutVariable) {
       clearTimeout(setTimeoutVariable);
     }

@@ -21,7 +21,7 @@ function TableHeader({ data }: TableHeaderProps) {
   const { table_name, schemaStateCopy, setSchemaState, backendObj } = data;
 
   // This function handles the add column button on the table
-  const handleAddColumn = () => {
+  const handleAddColumn = (): void => {
     // iterate through the schema copy
     for (let i = 0; i < schemaStateCopy.tableList.length; i += 1) {
       // edit the schema table for this current table
@@ -74,7 +74,7 @@ function TableHeader({ data }: TableHeaderProps) {
   };
 
   // This function handles the add delete button on the table
-  const handleDeleteTable = () => {
+  const handleDeleteTable = (): void => {
     for (let i = 0; i < schemaStateCopy.tableList.length; i += 1) {
       if (schemaStateCopy.tableList[i].table_name === table_name) {
         // create a dropTables Obj
@@ -93,7 +93,7 @@ function TableHeader({ data }: TableHeaderProps) {
   };
 
   // This function updates the table name when the user hits enter on the submit form
-  const handleChangeTableName = (e) => {
+  const handleChangeTableName = (e): void => {
     if (e.key === 'Enter') {
       for (let i = 0; i < schemaStateCopy.tableList.length; i += 1) {
         if (schemaStateCopy.tableList[i].table_name === table_name) {
@@ -113,7 +113,10 @@ function TableHeader({ data }: TableHeaderProps) {
               data_type: null,
               is_nullable: null,
               drop_constraint: [],
-              rename_constraint: null
+              rename_constraint: null,
+              table_schema: null,
+              table_name: null,
+              constraint_type: null
             }
             if (schemaStateCopy.tableList[i].columns[j].constraint_type === 'PRIMARY KEY') {
               alterColumnsObj.rename_constraint = `pk_${schemaStateCopy.tableList[i].table_name}${schemaStateCopy.tableList[i].columns[j].column_name}`;
