@@ -44,7 +44,6 @@ interface TablesTabBarProps {
   selectedTable: TableInfo | undefined;
   selectedDb: AppState['selectedDb'];
   setERView?: (boolean) => void;
-  ERView?: boolean;
 }
 
 const TablesTabs = ({

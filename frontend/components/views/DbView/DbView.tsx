@@ -69,7 +69,6 @@ const DbView = ({ selectedDb, show, setERView, ERView}: DbViewProps) => {
         selectedTable={selectedTable}
         selectedDb={selectedDb}
         setERView={setERView}
-        ERView={ERView}
       />
       <br />
       <br />
