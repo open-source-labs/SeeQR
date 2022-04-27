@@ -24,19 +24,19 @@ import {
 import * as colors from '../../../style-variables';
 
 // defines the styling for the ERDiagram window
-const rfStyle = {
+const rfStyle: object = {
   height: '65vh',
 };
 
 // defines the styling for the minimap
-const mmStyle = {
+const mmStyle: object = {
   backgroundColor: colors.bgColor,
   border: `2px solid ${colors.greenPrimary}`,
   'borderRadius': '0.3rem',
 };
 
 // defines the styling for the minimap nodes
-const nodeColor = (node) => {
+const nodeColor = (node): string => {
   switch (node.type) {
     case 'tableHeader':
       return colors.greyLightest;
@@ -55,6 +55,8 @@ type ERTablingProps = {
 const StyledViewButton = styled(Button)`
   margin: 1rem;
   margin-left: 0rem;
+  font-size: .78em;
+  padding: .45em;
 `;
 
 function ERTabling({ tables, selectedDb }: ERTablingProps) {
@@ -133,7 +135,7 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
   );
 
   // This function handles the add table button on the ER Diagram view
-  const handleAddTable = () => {
+  const handleAddTable = (): void => {
     const schemaStateString = JSON.stringify(schemaState);
     const schemaStateCopy = JSON.parse(schemaStateString);
     // create an addTablesType object with AddTablesObjType
@@ -152,14 +154,7 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
     setSchemaState(schemaStateCopy);
   };
 
-  const StyledViewButton = styled(Button)`
-    margin: 1rem;
-    margin-left: 0rem;
-    font-size: .78em;
-    padding: .45em;
-  `;
-
-  const handleSaveLayout = () => {
+  const handleSaveLayout = (): void => {
     // get the array of header nodes
     const headerNodes = nodes.filter(
       (node) => node.type === 'tableHeader'
@@ -193,7 +188,7 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
       currDatabaseLayout.db_tables.push(tablePosObj);
     });
 
-    const location = remote.app.getAppPath().concat('/UserTableLayouts.json');
+    const location: string = remote.app.getAppPath().concat('/UserTableLayouts.json');
     fs.readFile(location, 'utf-8', (err, data) => {
       // check if error exists (no file found)
       if (err) {
@@ -226,7 +221,7 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
       }
     });
   };
-  const handleClickSave = () => {
+  const handleClickSave = (): void => {
     // This function sends a message to the back end with
     // the data in backendObj.current
     handleSaveLayout();
