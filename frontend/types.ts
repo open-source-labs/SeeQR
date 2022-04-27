@@ -26,6 +26,7 @@ export interface AppState {
   sidebarIsHidden: boolean;
   setFilePath: (filePath: string) => void;
   newFilePath: string;
+  setERView?: (boolean) => void;
 }
 
 export interface FilePath {

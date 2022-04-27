@@ -108,7 +108,7 @@ const TablesTabs = ({
 
   return (
     <div>
-<StyledViewButton
+      <StyledViewButton
         variant="contained"
         color="primary"
         onClick={() => {

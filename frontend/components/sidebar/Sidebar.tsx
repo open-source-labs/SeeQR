@@ -63,6 +63,7 @@ const Sidebar = ({
   sidebarIsHidden,
   setFilePath,
   newFilePath,
+  setERView
 }: AppState) => {
 
   const toggleOpen = () => setSidebarHidden(!sidebarIsHidden);
@@ -88,7 +89,7 @@ const Sidebar = ({
           setSelectedView={setSelectedView}
           toggleOpen={toggleOpen}
         />
-        <ViewSelector {...{ selectedView, setSelectedView }} />
+        <ViewSelector {...{ selectedView, setSelectedView, setERView }} />
         <DbList
           selectedDb={selectedDb}
           setSelectedDb={setSelectedDb}

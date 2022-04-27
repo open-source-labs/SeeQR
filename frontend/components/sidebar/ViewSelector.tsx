@@ -21,12 +21,12 @@ const ViewButton = styled(Button)`
   }
 `;
 
-type ViewSelectorProps = Pick<AppState, 'selectedView' | 'setSelectedView'>;
+type ViewSelectorProps = Pick<AppState, 'selectedView' | 'setSelectedView' | 'setERView' >;
 
 /**
  * Selector for view on sidebar. Updates App state with selected view
  */
-const ViewSelector = ({ selectedView, setSelectedView }: ViewSelectorProps) => (
+const ViewSelector = ({ selectedView, setSelectedView, setERView }: ViewSelectorProps) => (
   <ViewBtnGroup variant="contained" fullWidth>
     <ViewButton
       onClick={() => setSelectedView('queryView')}
@@ -37,7 +37,10 @@ const ViewSelector = ({ selectedView, setSelectedView }: ViewSelectorProps) => (
       Queries
     </ViewButton>
     <ViewButton
-      onClick={() => setSelectedView('dbView')}
+      onClick={() => {
+        setSelectedView('dbView')
+        if (setERView) setERView(true)
+      }}
       $isSelected={
         selectedView === 'dbView' || selectedView === 'quickStartView'
       }
