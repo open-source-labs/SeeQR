@@ -188,7 +188,7 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
       currDatabaseLayout.db_tables.push(tablePosObj);
     });
 
-    const location: string = remote.app.getAppPath().concat('/UserTableLayouts.json');
+    const location: string = remote.app.getPath('temp').concat('/UserTableLayouts.json');
     fs.readFile(location, 'utf-8', (err, data) => {
       // check if error exists (no file found)
       if (err) {

@@ -21,7 +21,7 @@ class Table {
   render() {
     // This method gets the table table position from the stored file
     const getTablePosition = () => {
-      const location = remote.app.getAppPath().concat('/UserTableLayouts.json');
+      const location = remote.app.getPath('temp').concat('/UserTableLayouts.json');
       try {
         const data = fs.readFileSync(location, 'utf8');
         const parsedData = JSON.parse(data);
