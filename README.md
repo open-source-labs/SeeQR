@@ -33,16 +33,17 @@ To get started on contributing to this project:
 2. Ensure that psql is available in the `$PATH`
      - Open a new terminal
      - Use command: 
-        export PATH="/Applications/Postgres.app/Contents/Versions/9.5/bin:$PATH"
+        - `export PATH="/Applications/Postgres.app/Contents/Versions/9.5/bin:$PATH"`
 3. Ensure that a 'postgres' role exists
      - Open a database in Postgres
      - Use command: 
-        SET ROLE postgres
+        - `SET ROLE postgres`
 4. Ensure that your Postgres instance is running on port 5432
      - If there is currently an instance running on port 5432
         - Open a new terminal
         - Use command to end all: 
-            sudo pkill -u postgres
+          - `sudo pkill -u postgres`
+        - Start Postgres instance on port 5432
 4. Download the latest version of [SeeQR](https://github.com/open-source-labs/seeqr/releases/latest)
 
 ## Built With
@@ -73,22 +74,21 @@ To get started on contributing to this project:
   - Users can toggle between an 'ER DIAGRAM' view and the 'TABLES' view for each database
 
 <div align="center">
-  <img src="./assets/readmeImages/gifs/1ImportDB.gif" width=800/>
-  <img src="./assets/readmeImages/gifs/2VisualizeDB.gif" width=800/>
+  <img src="./assets/readmeImages/gifs/QuickStartReadme.gif" width=800/>
 </div>
 
 - Databases
-  - In the 'DATABASES' view, an interactive Entity Relationship Diagram is displayed for the selected database
-    - Users can edit can view/edit table and column data with these diagrams as well as change the layout of the diagram by dragging and clicking save
-  - Users can select a table from a list of all the tables in the schema of the currently selected database
-    - Information about the selected table is then displayed
-    - The name and size of the selected database are also displayed at the top of the page
-    - Users can also generate large amounts of foreign-key compliant dummy data for the selected table in the current database. Currently supported data types are:
-      - INT
-      - BIGINT
-      - VARCHAR
-      - BOOLEAN
-      - DATE
+  - In the 'DATABASES' view, an interactive Entity Relationship Diagram (`ER DIAGRAM`) is displayed for the selected database
+  - Users can select `TABLE` to see selected database in tabular form
+    - Users can select a table from a list of all the tables in the schema of the currently selected database
+      - Information about the selected table is then displayed
+      - The name and size of the selected database are also displayed at the top of the page
+      - Users can also generate large amounts of foreign-key compliant dummy data for the selected table in the current database. Currently supported data types are:
+        - INT
+        - BIGINT
+        - VARCHAR
+        - BOOLEAN
+        - DATE
   
   <br>
   <div align="center">
@@ -98,14 +98,15 @@ To get started on contributing to this project:
 
   - Users can create a new database from scratch by clicking the `Create New Database` button at the bottom of the sidebar
   - Once a the database is given a name, hitting the `Initialize Database` button will create new database on the users PostgreSQL instance
-  - Users can then input SQL commands and click `Update Database` to create and drop tables in the database
-  - Users have the option to alter any existing databases as well by selecting the database on the sidebar and running any SQL commands they would like. 
+  - Users can modify the newly created database as well as any existing databases using the `ER Diagram` to create/change/delete tables and columns
+  - Users also have the option to alter any newly created / existing databases by inputting SQL commands and click `Update Database`
   - The `Export` button will write a .sql file on the user's desktop of the selected database
 
 
 <br>
 <div align="center">
     <img src="./assets/readmeImages/gifs/create_db.gif" width=800/>
+    <img src="./assets/readmeImages/gifs/modify_db.gif" width=800/>
   </div>
 - Queries
 
