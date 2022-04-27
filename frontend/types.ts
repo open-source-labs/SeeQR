@@ -265,6 +265,9 @@ export type AlterColumnsObjType = {
   is_nullable: 'YES' | 'NO' | null;
   drop_constraint: string[];
   rename_constraint: string | null;
+  table_schema: string | null;
+  table_name: string | null;
+  constraint_type: 'PRIMARY KEY' | 'FOREIGN KEY' | 'UNIQUE' | null;
 };
 
 export type AddConstraintObjType = {
@@ -288,7 +291,7 @@ export type DropTablesObjType = {
 export type AlterTablesObjType = {
   is_insertable_into: 'yes' | 'no' | null;
   table_catalog: string | null;
-  table_name: string | null;
+  table_name: string;
   new_table_name: string | null;
   table_schema: string | null;
   addColumns: AddColumnsObjType[];
