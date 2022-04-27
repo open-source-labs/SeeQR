@@ -8,6 +8,7 @@ import {
   AddColumnsObjType,
   DropTablesObjType,
   TableHeaderDataObjectType,
+  AlterColumnsObjType,
 } from '../../../types';
 import './styles.css';
 import * as colors from '../../../style-variables';
@@ -101,6 +102,32 @@ function TableHeader({ data }: TableHeaderProps) {
           ) as HTMLInputElement;
 
           // update backend
+          const alterColumnsArray: AlterColumnsObjType[] = [];
+          for (let j = 0; j < schemaStateCopy.tableList[i].columns.length; j += 1) {
+            const alterColumnsObj: AlterColumnsObjType = {
+              column_name: schemaStateCopy.tableList[i].columns[j].column_name,
+              character_maximum_length: null,
+              new_column_name: null,
+              add_constraint: [],
+              current_data_type: null,
+              data_type: null,
+              is_nullable: null,
+              drop_constraint: [],
+              rename_constraint: null
+            }
+            if (schemaStateCopy.tableList[i].columns[j].constraint_type === 'PRIMARY KEY') {
+              alterColumnsObj.rename_constraint = `pk_${schemaStateCopy.tableList[i].table_name}${schemaStateCopy.tableList[i].columns[j].column_name}`;
+              alterColumnsArray.push(alterColumnsObj);
+            }
+            if (schemaStateCopy.tableList[i].columns[j].constraint_type === 'FOREIGN KEY') {
+              alterColumnsObj.rename_constraint = `fk_${schemaStateCopy.tableList[i].table_name}${schemaStateCopy.tableList[i].columns[j].column_name}`;
+              alterColumnsArray.push(alterColumnsObj);
+            }
+            if (schemaStateCopy.tableList[i].columns[j].constraint_type === 'UNIQUE') {
+              alterColumnsObj.rename_constraint = `unique_${schemaStateCopy.tableList[i].table_name}${schemaStateCopy.tableList[i].columns[j].column_name}`;
+              alterColumnsArray.push(alterColumnsObj);
+            }
+          }
           const alterTablesObj: AlterTablesObjType = {
             is_insertable_into: schemaStateCopy.tableList[i].is_insertable_into,
             table_catalog: schemaStateCopy.tableList[i].table_catalog,
@@ -109,7 +136,7 @@ function TableHeader({ data }: TableHeaderProps) {
             table_schema: schemaStateCopy.tableList[i].table_schema,
             addColumns: [],
             dropColumns: [],
-            alterColumns: [],
+            alterColumns: alterColumnsArray,
           };
 
           // update frontend

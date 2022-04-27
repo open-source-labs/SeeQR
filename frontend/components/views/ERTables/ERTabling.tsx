@@ -1,6 +1,5 @@
-import * as path from 'path';
 import fs from 'fs';
-import { app, ipcRenderer, remote } from 'electron';
+import { ipcRenderer, remote } from 'electron';
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 import ReactFlow, {
   applyEdgeChanges,
@@ -22,15 +21,7 @@ import {
   SchemaStateObjType,
 } from '../../../types';
 
-import { sendFeedback } from '../../../lib/utils';
-// import UserTableLayouts from '/UserTableLayouts.json';
-
-import {
-  greenPrimary,
-  greyPrimary,
-  bgColor,
-  greenLightest,
-} from '../../../style-variables';
+import * as colors from '../../../style-variables';
 
 // defines the styling for the ERDiagram window
 const rfStyle = {
@@ -39,20 +30,20 @@ const rfStyle = {
 
 // defines the styling for the minimap
 const mmStyle = {
-  backgroundColor: bgColor,
-  border: `2px solid ${greenPrimary}`,
-  'border-radius': '0.3rem',
+  backgroundColor: colors.bgColor,
+  border: `2px solid ${colors.greenPrimary}`,
+  'borderRadius': '0.3rem',
 };
 
 // defines the styling for the minimap nodes
 const nodeColor = (node) => {
   switch (node.type) {
     case 'tableHeader':
-      return greenPrimary;
+      return colors.greyLightest;
     case 'tableField':
-      return greyPrimary;
+      return 'white';
     default:
-      return 'blue';
+      return 'red';
   }
 };
 
@@ -110,7 +101,7 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
     // create a deep copy of the state, to ensure the state is not directly modified
     const schemaStateString = JSON.stringify(schemaState);
     const schemaStateCopy = JSON.parse(schemaStateString);
-    // initialize the backendobj with the current database
+    // create a nodesArray with the initialState data
     const nodesArray = initialState.nodes.map((currentNode) => {
       // add the schemaStateCopy and setSchemaState to the nodes data so that each node
       // has reference to the current state and can modify the state to cause rerenders
@@ -238,11 +229,11 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
   const handleClickSave = () => {
     // This function sends a message to the back end with
     // the data in backendObj.current
+    handleSaveLayout();
     ipcRenderer
       .invoke('ertable-schemaupdate', backendObj.current)
       .then(async () => {
         // resets the backendObj
-        handleSaveLayout();
         backendObj.current = {
           database: schemaState.database,
           updates,

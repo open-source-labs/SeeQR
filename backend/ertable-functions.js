@@ -46,7 +46,10 @@ function backendObjToQuery(backendObj) {
       let alterTableConstraintString = '';
       // Add a primary key constraint to column
       function addPrimaryKey(currConstraint, currColumn) {
-        alterTableConstraintString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} ADD CONSTRAINT ${currConstraint.constraint_name} PRIMARY KEY (${currColumn.column_name}); `;
+        let defaultRowValue;
+        if(currColumn.current_data_type === 'character varying') defaultRowValue = 'A';
+        else defaultRowValue = 1;
+        alterTableConstraintString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} ADD CONSTRAINT ${currConstraint.constraint_name} PRIMARY KEY (${currColumn.column_name}); INSERT INTO ${currTable.table_schema}.${currTable.table_name} (${currColumn.column_name}) VALUES ('${defaultRowValue}'); `;
       }
       // Add a foreign key constraint to column
       function addForeignKey(currConstraint, currColumn) {
@@ -121,11 +124,9 @@ function backendObjToQuery(backendObj) {
     for (let i = 0; i < alterTableArray.length; i += 1) {
       const currTable = alterTableArray[i];
       outputArray.push(
-        `${addColumn(currTable)}${dropColumn(currTable)}${alterTableConstraint(
+        `${addColumn(currTable)}${dropColumn(currTable)}${alterType(currTable)}${alterTableConstraint(
           currTable
-        )}${alterNotNullConstraint(currTable)}${alterType(
-          currTable
-        )}${alterMaxCharacterLength(currTable)}`
+        )}${alterNotNullConstraint(currTable)}${alterMaxCharacterLength(currTable)}`
       );
     }
   }
@@ -134,6 +135,7 @@ function backendObjToQuery(backendObj) {
     let renameString = '';
     const columnsNames = {};
     const tablesNames = {};
+    const constraintsNames = {};
     // Populates the tablesNames object with new table names
     function renameTable(currTable) {
       if (currTable.new_table_name) {
@@ -159,9 +161,30 @@ function backendObjToQuery(backendObj) {
         }
       }
     }
+    const renameConstraintCache = {}
+    // Populates the constraintsNAmes object with new constraint names
+    function renameConstraint(currTable) {
+      for (let i = 0; i < currTable.alterColumns.length; i++) {
+        const currAlterColumn = currTable.alterColumns[i];
+        // populates an array of objects with all of the new constraint names
+        if (currAlterColumn.rename_constraint) {
+          constraintsNames[currAlterColumn.rename_constraint] = {
+            constraint_type: currAlterColumn.rename_constraint[0] === 'p' ? 'pk' : 'f' ? 'fk' : 'unique',
+            column_name: currAlterColumn.new_column_name ? currAlterColumn.new_column_name : currAlterColumn.column_name,
+            table_name: renameConstraintCache[currTable.table_name] ? renameConstraintCache[currTable.table_name] : currTable.table_name,
+            table_schema: currTable.table_schema,
+          };
+        }
+      }
+    }
+
+    for (let i = 0; i < renameTableArray.length; i++) {
+      if (renameTableArray[i].new_table_name) renameConstraintCache[renameTableArray[i].table_name] = renameTableArray[i].new_table_name;
+    }
 
     for (let i = 0; i < renameTableArray.length; i++) {
       const currTable = renameTableArray[i];
+      renameConstraint(currTable);
       renameColumn(currTable);
       renameTable(currTable);
     }
@@ -179,7 +202,12 @@ function backendObjToQuery(backendObj) {
       // only renames a table with the most recent name that was saved
       renameString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} RENAME TO ${currTable.new_table_name}; `;
     }
-
+    // Goes through the constraintsNames object and adds the query for renaming
+    const constraintsToRename = Object.keys(constraintsNames);
+    for (let i = 0; i < constraintsToRename.length; i++) {
+      const currColumn = constraintsNames[constraintsToRename[i]];
+      renameString += `ALTER TABLE ${currColumn.table_schema}.${currColumn.table_name} RENAME CONSTRAINT ${constraintsToRename[i]} TO ${currColumn.constraint_type}_${currColumn.table_name}${currColumn.column_name}; `;
+    }
     outputArray.push(renameString);
   }
 

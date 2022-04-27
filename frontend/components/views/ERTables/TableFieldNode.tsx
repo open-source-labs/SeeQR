@@ -61,8 +61,6 @@ function TableField({ data }: TableFieldProps) {
     column_name,
     data_type,
     character_maximum_length,
-    unique,
-    auto_increment,
     foreign_column,
     foreign_table,
   }: ERTableColumnData = data.columnData;
@@ -126,9 +124,11 @@ function TableField({ data }: TableFieldProps) {
       character_maximum_length: null,
       new_column_name: null,
       add_constraint: [],
+      current_data_type: data_type,
       data_type: null,
       is_nullable: null,
       drop_constraint: [],
+      rename_constraint: null,
     };
 
     for (let i = 0; i < schemaStateCopy.tableList.length; i += 1) {
@@ -161,6 +161,9 @@ function TableField({ data }: TableFieldProps) {
               alterColumnsObj.new_column_name = columnNameInput.value;
               schemaStateCopy.tableList[i].columns[j].new_column_name =
                 columnNameInput.value;
+              if (constraint_type === 'PRIMARY KEY') alterColumnsObj.rename_constraint = `pk_${alterTablesObj.table_name}${column_name}`;
+              if (constraint_type === 'FOREIGN KEY') alterColumnsObj.rename_constraint = `fk_${alterTablesObj.table_name}${column_name}`;
+              if (constraint_type === 'UNIQUE') alterColumnsObj.rename_constraint = `unique_${alterTablesObj.table_name}${column_name}`;
             }
 
             // handle isNullable change
@@ -168,8 +171,6 @@ function TableField({ data }: TableFieldProps) {
               `allow-null-chkbox-${tableColumn}`
             ) as HTMLInputElement;
             const isNullableString = isNullable.checked ? 'YES' : 'NO';
-            console.log('isNull', isNull);
-            console.log('isNullableString', isNullableString);
             alterColumnsObj.is_nullable =
               isNull !== isNullableString ? isNullableString : null;
 
@@ -209,7 +210,6 @@ function TableField({ data }: TableFieldProps) {
             }
 
             // handle add/Drop Constraint type
-
             // create an empty AddConstraintObj
             const addConstraintObj: AddConstraintObjType = {
               constraint_type: null,
@@ -238,10 +238,9 @@ function TableField({ data }: TableFieldProps) {
             ) {
               // create a copy in case multiple constraints are added
               const addConstraintObjCopy = { ...addConstraintObj };
-              // name the constraint PK_<column_name>
-              addConstraintObjCopy.constraint_name = `PK_${
-                data.tableName + column_name
-              }`;
+              // name the constraint PK_<tableNamecolumn_name>
+              addConstraintObjCopy.constraint_name = `pk_${data.tableName + column_name
+                }`;
               // assign the constraint_type to 'PRIMARY KEY'
               addConstraintObjCopy.constraint_type = 'PRIMARY KEY';
               // add the constraint obj to the alter columns obj
@@ -266,10 +265,9 @@ function TableField({ data }: TableFieldProps) {
               fkCheckBox.checked === true
             ) {
               const addConstraintObjCopy = { ...addConstraintObj };
-              // name the constraint FK_<Column_name>
-              addConstraintObjCopy.constraint_name = `FK_${
-                data.tableName + column_name
-              }`;
+              // name the constraint FK_<tableNameColumn_name>
+              addConstraintObjCopy.constraint_name = `fk_${data.tableName + column_name
+                }`;
               // assign the constraint type to 'FOREIGN KEY'
               addConstraintObjCopy.constraint_type = 'FOREIGN KEY';
               // get the value of the drop down for foreign table
@@ -285,6 +283,26 @@ function TableField({ data }: TableFieldProps) {
               // assign the constraintobjcopy to foreign column value
               addConstraintObjCopy.foreign_column = foreignColumnDD.value;
               // add the constraint obj to the alter columns obj
+              alterColumnsObj.add_constraint.push(addConstraintObjCopy);
+            }
+
+            // handle unique constraint
+            const uniqueCheckBox = document.getElementById(`unique-chkbox-${tableColumn}`) as HTMLInputElement;
+            if (constraint_type === 'UNIQUE' && uniqueCheckBox.checked === false) {
+              // add the unique constraint name to the drop constraint array
+              alterColumnsObj.drop_constraint.push(
+                `unique_${data.tableName + column_name}`
+              );
+            }
+            else if (constraint_type !== 'UNIQUE' && uniqueCheckBox.checked === true) {
+              // create a copy in case multiple constraints are added
+              const addConstraintObjCopy = { ...addConstraintObj };
+              // name the constraint PK_<tableNamecolumn_name>
+              addConstraintObjCopy.constraint_name = `unique_${data.tableName + column_name
+                }`;
+              // assign the constraint_type to 'UNIQUE'
+              addConstraintObjCopy.constraint_type = 'UNIQUE';
+              // add the constraint obj to the alter columns obj add_constraint array
               alterColumnsObj.add_constraint.push(addConstraintObjCopy);
             }
 
@@ -362,7 +380,7 @@ function TableField({ data }: TableFieldProps) {
   const handleMouseLeave = () => {
     setTimeoutVariable = setTimeout(() => {
       setAccordionExpanded(false);
-    }, 700);
+    }, 1000);
   };
   // This function clears the timeout if the mouse reenters
   // within the timeout time
@@ -462,7 +480,7 @@ function TableField({ data }: TableFieldProps) {
           <TableFieldCheckBox
             idName={`unique-chkbox-${tableColumn}`}
             label="Unique"
-            isChecked={unique}
+            isChecked={constraint_type === 'UNIQUE'}
           />
           <br />
           <div>

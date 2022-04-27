@@ -312,7 +312,6 @@ ipcMain.handle(
         tableInfo,
         data.rows
       );
-
       // generate insert query string to insert dummy records
       const columnsStringified = '('
         .concat(dummyArray[0].join(', '))
@@ -328,7 +327,6 @@ ipcMain.handle(
         .concat(dummyArray[dummyArray.length - 1].join(', '))
         .concat(');');
       insertQuery = insertQuery.concat(lastRecordStringified);
-
       // insert dummy records into DB
       await db.query('Begin;');
       await db.query(insertQuery);
