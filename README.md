@@ -74,7 +74,7 @@ To get started on contributing to this project:
   - Users can toggle between an 'ER DIAGRAM' view and the 'TABLES' view for each database
 
 <div align="center">
-  <img src="./assets/readmeImages/gifs/QuickStartReadme.gif" width=800/>
+  <img src="./assets/readmeImages/gifs/quick_start.gif" width=800/>
 </div>
 
 - Databases
