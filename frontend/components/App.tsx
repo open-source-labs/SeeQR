@@ -119,7 +119,8 @@ const App = () => {
               setSidebarHidden,
               sidebarIsHidden,
               setFilePath,
-              newFilePath
+              newFilePath,
+              setERView
             }}
           />
           <Main $fullwidth={sidebarIsHidden}>

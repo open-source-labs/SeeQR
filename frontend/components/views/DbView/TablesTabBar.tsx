@@ -50,7 +50,8 @@ const TablesTabs = ({
   tables,
   selectTable,
   selectedTable,
-  selectedDb
+  selectedDb,
+  setERView,
 }: TablesTabBarProps) => {
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     selectTable(tables[newValue]);
@@ -98,8 +99,18 @@ const TablesTabs = ({
   );
 
 
-  const handleView = () => {
-    setActive(!active);
+  const handleView = (e ,newActive) => {
+    // force at least one selected view
+    if (newActive !== null) {
+      // set the new view to the currect view
+      setActive(newActive);
+    
+      // disable the dummy data button when in ER View
+      if (setERView) {
+        if (active) setERView(newActive);
+        else setERView(newActive);
+      };
+    }
   };
 
   const StyledToggleButtonGroup = styled(ToggleButtonGroup)`
@@ -115,10 +126,10 @@ const TablesTabs = ({
         onChange={handleView}
         aria-label="active-view"
       >
-        <ToggleButton value="true" aria-label="er">
+        <ToggleButton value={true} aria-label="er">
           ER diagram
         </ToggleButton>
-        <ToggleButton value="false" aria-label="table">
+        <ToggleButton value={false} aria-label="table">
           Table
         </ToggleButton>
       </StyledToggleButtonGroup>
