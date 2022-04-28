@@ -33,7 +33,7 @@ const Main = styled.main<{ $fullwidth: boolean }>`
   grid-area: ${({ $fullwidth }) => ($fullwidth ? '1 / 1 / -1 / -1' : 'main')};
   background: ${bgColor};
   height: calc(100vh - (2 * ${defaultMargin}));
-  max-width: ${({ $fullwidth }) => ($fullwidth ? '' : `calc(100vw - ${sidebarWidth} )`)};
+  max-width: ${({ $fullwidth }) => ($fullwidth ? '' : `calc(90vw - ${sidebarWidth} )`)};
   padding: ${defaultMargin} ${sidebarShowButtonSize};
   margin: 0;
 `;
@@ -51,6 +51,8 @@ const App = () => {
   const [selectedDb, setSelectedDb] = useState<AppState['selectedDb']>('');
   const [sidebarIsHidden, setSidebarHidden] = useState(false);
   const [newFilePath, setFilePath] = useState<AppState['newFilePath']>('');
+  const [ERView, setERView] = useState(true);
+
 
   /**
    * Hook to create new Query from data
@@ -117,7 +119,8 @@ const App = () => {
               setSidebarHidden,
               sidebarIsHidden,
               setFilePath,
-              newFilePath
+              newFilePath,
+              setERView
             }}
           />
           <Main $fullwidth={sidebarIsHidden}>
@@ -125,7 +128,12 @@ const App = () => {
               queries={comparedQueries}
               show={shownView === 'compareView'}
             />
-            <DbView selectedDb={selectedDb} show={shownView === 'dbView'} />
+            <DbView 
+              selectedDb={selectedDb} 
+              show={shownView === 'dbView'}
+              setERView={setERView} 
+              ERView={ERView}
+            />
             <QueryView
               query={workingQuery}
               setQuery={setWorkingQuery}

@@ -29,7 +29,7 @@ const DbList = ({
   setSelectedDb,
   setSelectedView,
   show,
-}: DbListProps) => {
+}: DbListProps) => {  
   const [databases, setDatabases] = useState<string[]>([]);
   const [openAdd, setOpenAdd] = useState(false);
   const [openDupe, setOpenDupe] = useState(false);

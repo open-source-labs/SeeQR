@@ -1,8 +1,8 @@
 {
   "name": "seeqr",
   "productName": "SeeQR App",
-  "version": "6.0.1",
-  "description": "SQL toolbox - Execution Plan visualizer and Comparison tool",
+  "version": "7.0.0",
+  "description": "SQL Toolbox - Model Implementer, Execution Plan Visualizer and Query Comparison Tool",
   "main": "./tsCompiled/backend/main.js",
   "babel": {
     "presets": [
@@ -46,7 +46,6 @@
     "cross-env": "^7.0.3",
     "dagre": "^0.8.5",
     "debounce": "^1.2.0",
-    "electron-devtools-installer": "^3.1.1",
     "faker": "^5.1.0",
     "fix-path": "^3.0.0",
     "fontsource-roboto": "^4.0.0",
@@ -59,7 +58,7 @@
     "react-chartjs-2": "^2.11.1",
     "react-codemirror": "^1.0.0",
     "react-dom": "^17.0.1",
-    "react-flow-renderer": "^9.0.1",
+    "react-flow-renderer": "^10.0.8",
     "react-loading": "^2.0.3",
     "react-router-dom": "^5.2.0",
     "sql-formatter": "^4.0.2",

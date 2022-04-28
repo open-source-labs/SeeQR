@@ -213,6 +213,7 @@ return (
       tables={dbTables}
       selectTable={(table: TableInfo) => setSelectedTable(table)}
       selectedTable={selectedTable}
+      selectedDb={selectedDb}
     />
   </NewSchemaViewContainer>
 );
