@@ -1,6 +1,9 @@
 /**
  * This file contains common types that need to be used across the backend
  */
+ import {
+  UpdatesObjType
+} from '../frontend/types';
 
 export interface ColumnObj {
   column_name: string;
@@ -28,3 +31,8 @@ export interface DBList {
 }
 
 export type DummyRecords = [string[], ...Array<(string | number)[]>];
+
+export type BackendObjType = {
+  database: string;
+  updates: UpdatesObjType;
+};

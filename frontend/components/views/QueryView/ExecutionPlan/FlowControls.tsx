@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useZoomPanHelper } from 'react-flow-renderer';
+import { useReactFlow } from 'react-flow-renderer';
 import { ButtonGroup, Button, Tooltip } from '@material-ui/core';
 import FullscreenIcon from '@material-ui/icons/Fullscreen';
 import FullscreenExitIcon from '@material-ui/icons/FullscreenExit';
@@ -36,7 +36,7 @@ const FlowControls = ({
   setThresholds,
 }: FlowControlsProps) => {
   const [showThresholdsDialog, setShowThresholdsDialog] = useState(false);
-  const { fitView, zoomIn, zoomOut } = useZoomPanHelper();
+  const { fitView, zoomIn, zoomOut } = useReactFlow();
   const tooltipDelay = 1000;
 
   return (

@@ -5,6 +5,7 @@ import os from 'os';
 import helperFunctions from './helperFunctions';
 import generateDummyData from './DummyD/dummyDataMain';
 import { ColumnObj, DBList, DummyRecords } from './BE_types';
+import backendObjToQuery from './ertable-functions';
 
 const db = require('./models');
 
@@ -59,23 +60,26 @@ ipcMain.handle(
 );
 
 // Deletes the DB that is passed from the front end and returns an updated DB List
-ipcMain.handle('drop-db', async (event, dbName: string, currDB: boolean): Promise<void> => {
-  event.sender.send('async-started');
-  try {
-    // if deleting currently connected db, disconnect from db
-    if (currDB) await db.connectToDB('');
+ipcMain.handle(
+  'drop-db',
+  async (event, dbName: string, currDB: boolean): Promise<void> => {
+    event.sender.send('async-started');
+    try {
+      // if deleting currently connected db, disconnect from db
+      if (currDB) await db.connectToDB('');
 
-    // drop db
-    const dropDBScript = dropDBFunc(dbName);
-    await db.query(dropDBScript);
+      // drop db
+      const dropDBScript = dropDBFunc(dbName);
+      await db.query(dropDBScript);
 
-    // send updated db info
-    const dbsAndTables: DBList = await db.getLists();
-    event.sender.send('db-lists', dbsAndTables);
-  } finally {
-    event.sender.send('async-complete');
+      // send updated db info
+      const dbsAndTables: DBList = await db.getLists();
+      event.sender.send('db-lists', dbsAndTables);
+    } finally {
+      event.sender.send('async-complete');
+    }
   }
-});
+);
 
 interface DuplicatePayload {
   newName: string;
@@ -134,7 +138,7 @@ ipcMain.handle(
       const dbsAndTableInfo: DBList = await db.getLists();
       event.sender.send('db-lists', dbsAndTableInfo);
     } finally {
-    //  //cleanup temp file
+      //  //cleanup temp file
       try {
         fs.unlinkSync(tempFilePath);
       } catch (e) {
@@ -201,7 +205,7 @@ interface QueryPayload {
   selectedDb: string;
 }
 
-// Run query passed from the front-end, and send back an updated DB List 
+// Run query passed from the front-end, and send back an updated DB List
 // DB will rollback if query is unsuccessful
 ipcMain.handle(
   'run-query',
@@ -251,48 +255,38 @@ ipcMain.handle(
   }
 );
 
-interface ExportPayload { 
+interface ExportPayload {
   sourceDb: string;
 }
 
-ipcMain.handle(
-  'export-db',
-  async (event, { sourceDb }: ExportPayload) => {
-    event.sender.send('async-started');
-    // store temporary file in user desktop     
-    const FilePath = path.resolve(
-      os.homedir(),
-      'desktop',
-      `${sourceDb}.sql`
-    );
+ipcMain.handle('export-db', async (event, { sourceDb }: ExportPayload) => {
+  event.sender.send('async-started');
+  // store temporary file in user desktop
+  const FilePath = path.resolve(os.homedir(), 'desktop', `${sourceDb}.sql`);
 
   let feedback: Feedback = {
-      type: '',
-      message: '',
-    };
+    type: '',
+    message: '',
+  };
 
   try {
     // dump database to new file
     const dumpCmd = runFullCopyFunc(sourceDb, FilePath);
-    
+
     try {
       await promExecute(dumpCmd);
       feedback = {
         type: 'success',
-        message: `${sourceDb} Schema successfully exported to ${FilePath}`
-      }
+        message: `${sourceDb} Schema successfully exported to ${FilePath}`,
+      };
       event.sender.send('feedback', feedback);
     } catch (e) {
-      throw new Error(
-        `Failed to dump ${sourceDb} to a file at ${FilePath}`
-        );
-      }
+      throw new Error(`Failed to dump ${sourceDb} to a file at ${FilePath}`);
     }
-      finally {
-        event.sender.send('async-complete');
-      }
-    }
-);
+  } finally {
+    event.sender.send('async-complete');
+  }
+});
 
 interface dummyDataRequestPayload {
   dbName: string;
@@ -314,8 +308,10 @@ ipcMain.handle(
       const tableInfo: ColumnObj[] = await db.getTableInfo(data.tableName);
 
       // generate dummy data
-      const dummyArray: DummyRecords = await generateDummyData(tableInfo, data.rows);
-
+      const dummyArray: DummyRecords = await generateDummyData(
+        tableInfo,
+        data.rows
+      );
       // generate insert query string to insert dummy records
       const columnsStringified = '('
         .concat(dummyArray[0].join(', '))
@@ -331,7 +327,6 @@ ipcMain.handle(
         .concat(dummyArray[dummyArray.length - 1].join(', '))
         .concat(');');
       insertQuery = insertQuery.concat(lastRecordStringified);
-
       // insert dummy records into DB
       await db.query('Begin;');
       await db.query(insertQuery);
@@ -354,7 +349,7 @@ ipcMain.handle(
 
       // send feedback back to FE
       event.sender.send('feedback', feedback);
-      
+
       // send notice to FE that DD generation has been completed
       event.sender.send('async-complete');
     }
@@ -380,13 +375,11 @@ ipcMain.handle(
       // update DBList in the sidebar to show this new db
       const dbsAndTableInfo: DBList = await db.getLists();
       event.sender.send('db-lists', dbsAndTableInfo);
-
     } catch (e) {
       // in the case of an error, delete the created db
       const dropDBScript = dropDBFunc(newDbName);
       await db.query(dropDBScript);
       throw new Error('Failed to initialize new database');
-      
     } finally {
       event.sender.send('async-complete');
     }
@@ -400,7 +393,7 @@ interface UpdatePayload {
   selectedDb: string;
 }
 
-// Run query passed from the front-end, and send back an updated DB List 
+// Run query passed from the front-end, and send back an updated DB List
 // DB will rollback if query is unsuccessful
 ipcMain.handle(
   'update-db',
@@ -414,15 +407,11 @@ ipcMain.handle(
       // Run Query
       // let returnedRows;
       try {
-
         await db.query(sqlString);
-        
       } catch (e) {
         if (e) throw new Error('Failed to update schema');
       }
-
     } finally {
-
       // send updated db info in case query affected table or database information
       // must be run after we connect back to the originally selected so tables information is accurate
       const dbsAndTables: DBList = await db.getLists();
@@ -432,3 +421,45 @@ ipcMain.handle(
     }
   }
 );
+
+// Generate and run query from react-flow ER diagram
+ipcMain.handle('ertable-schemaupdate', async (event, backendObj) => {
+  // send notice to front end that schema update has started
+  event.sender.send('async-started');
+  let feedback: Feedback = {
+    type: '',
+    message: '',
+  };
+  try {
+    // Generates query from backendObj
+    const query = backendObjToQuery(backendObj);
+    // run sql command
+    await db.query('Begin;');
+    await db.query(query);
+    await db.query('Commit;');
+    feedback = {
+      type: 'success',
+      message: 'Database updated successfully.',
+    };
+    return 'success';
+  } catch (err) {
+    // rollback transaction if there's an error in update and send back feedback to FE
+    await db.query('Rollback;');
+  
+    feedback = {
+      type: 'error',
+      message: err,
+    };
+  } finally {
+    // send updated db info
+    const updatedDb: DBList = await db.getLists();
+    event.sender.send('db-lists', updatedDb);
+
+    // send feedback back to FE
+    event.sender.send('feedback', feedback);
+
+    // send notice to FE that schema update has been completed
+    event.sender.send('async-complete');
+   
+  }
+});

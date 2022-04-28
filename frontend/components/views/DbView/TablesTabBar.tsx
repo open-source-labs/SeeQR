@@ -1,9 +1,14 @@
-import React, { useEffect }from 'react';
-import { Tabs, Tab } from '@material-ui/core';
+import React, { useState } from 'react';
+import { Tabs, Tab, Button } from '@material-ui/core';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import styled from 'styled-components';
 import TableDetails from './TableDetails';
-import { TableInfo } from '../../../types';
-import { greyPrimary } from '../../../style-variables';
+import { AppState, TableInfo } from '../../../types';
+import { greyPrimary, greenPrimary, textColor } from '../../../style-variables';
+import ERTables from '../ERTables/ERTabling';
+import updateSchema from './sample-updateschema';
+import { sendFeedback } from '../../../lib/utils';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -33,22 +38,21 @@ const a11yProps = (index: any) => ({
   'aria-controls': `scrollable-auto-tabpanel-${index}`,
 });
 
-interface TablesTabBarProps { 
-
+interface TablesTabBarProps {
   tables: TableInfo[];
   selectTable: (table: TableInfo) => void;
   selectedTable: TableInfo | undefined;
+  selectedDb: AppState['selectedDb'];
+  setERView?: (boolean) => void;
 }
 
 const TablesTabs = ({
   tables,
   selectTable,
   selectedTable,
+  selectedDb,
+  setERView,
 }: TablesTabBarProps) => {
-
- 
-
-  
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     selectTable(tables[newValue]);
   };
@@ -56,30 +60,81 @@ const TablesTabs = ({
   const tableIndex = tables.findIndex(
     ({ table_name }) => table_name === selectedTable?.table_name
   );
+  
+  const [active, setActive] = useState(true);
+
+  const ErView = () => (
+    <div>
+      { active ? (
+        <ERTables tables={tables} selectedDb={selectedDb} />
+      ) : (
+        <>
+          <StyledTabs
+            value={tableIndex}
+            onChange={handleChange}
+            indicatorColor="primary"
+            variant="scrollable"
+            scrollButtons="auto"
+            aria-label="scrollable auto tabs example"
+          >
+            {tables.map(({ table_name: name }, index) => (
+              <Tab label={name} {...a11yProps(index)} key={name} />
+            ))}
+            ;
+          </StyledTabs>
+          <br />
+          <br />
+          {tables.map((tableMap, index) => (
+            <TabPanel
+              value={tableIndex}
+              index={index}
+              key={tableMap.table_name}
+            >
+              <TableDetails table={tableMap} />
+            </TabPanel>
+          ))}
+        </>
+      )}
+    </div>
+  );
+
+
+  const handleView = (e ,newActive) => {
+    // force at least one selected view
+    if (newActive !== null) {
+      // set the new view to the currect view
+      setActive(newActive);
+    
+      // disable the dummy data button when in ER View
+      if (setERView) {
+        if (active) setERView(newActive);
+        else setERView(newActive);
+      };
+    }
+  };
+
+  const StyledToggleButtonGroup = styled(ToggleButtonGroup)`
+  background-color: ${greenPrimary};
+  margin-bottom: 10px;
+  `;
 
   return (
-    <>
-      <StyledTabs
-        value={tableIndex}
-        onChange={handleChange}
-        indicatorColor="primary"
-        variant="scrollable"
-        scrollButtons="auto"
-        aria-label="scrollable auto tabs example"
+    <div>
+      <StyledToggleButtonGroup
+        value={active}
+        exclusive
+        onChange={handleView}
+        aria-label="active-view"
       >
-        {tables.map(({ table_name: name }, index) => (
-          <Tab label={name} {...a11yProps(index)} key={name} />
-        ))}
-        ;
-      </StyledTabs>
-      <br />
-      <br />
-      {tables.map((tableMap, index) => (
-        <TabPanel value={tableIndex} index={index} key={tableMap.table_name}>
-          <TableDetails table={tableMap} />
-        </TabPanel>
-      ))}
-    </>
+        <ToggleButton value={true} aria-label="er">
+          ER diagram
+        </ToggleButton>
+        <ToggleButton value={false} aria-label="table">
+          Table
+        </ToggleButton>
+      </StyledToggleButtonGroup>
+      {ErView()}
+    </div>
   );
 };
 

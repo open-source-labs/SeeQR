@@ -1,8 +1,15 @@
+import { TABLE_HEADER, TABLE_FIELD } from './constants/constants';
+
 /**
  * This file contains common types that need to be used across the frontend
  */
 
-type ViewName = 'compareView' | 'dbView' | 'queryView' | 'quickStartView' | 'newSchemaView';
+type ViewName =
+  | 'compareView'
+  | 'dbView'
+  | 'queryView'
+  | 'quickStartView'
+  | 'newSchemaView';
 
 export interface AppState {
   selectedView: ViewName;
@@ -18,12 +25,13 @@ export interface AppState {
   setSidebarHidden: (isHidden: boolean) => void;
   sidebarIsHidden: boolean;
   setFilePath: (filePath: string) => void;
-  newFilePath: string
+  newFilePath: string;
+  setERView?: (boolean) => void;
 }
 
 export interface FilePath {
-  cancelled: boolean,
-  filePath: string
+  cancelled: boolean;
+  filePath: string;
 }
 
 export type CreateNewQuery = (query: QueryData) => void;
@@ -52,10 +60,9 @@ export interface QueryData {
   /**
    * User given group for acordian grouping
    */
-  group: string
+  group: string;
 
   // flag: boolean
-
 }
 
 export type ValidTabs = 'Results' | 'Execution Plan';
@@ -111,7 +118,7 @@ export interface TableColumn {
   /**
    * Can this column receive Null values or not?
    */
-  is_nullable: 'yes' | 'no';
+  is_nullable: 'YES' | 'NO';
 }
 
 export interface TableInfo {
@@ -138,7 +145,6 @@ export interface DbLists {
   databaseList: DatabaseInfo[];
   tableList: TableInfo[];
 }
-
 
 /**
  * Type guard that checks if obj is compatible with type DbLists
@@ -204,5 +210,128 @@ export interface ExplainJson {
   'Execution Time': number;
 }
 
+/**
+ *
+ * This section contains the types used for ER Tabling
+ *
+ *
+ */
 
+export type ERTablingConstants = { TABLE_HEADER } | { TABLE_FIELD };
 
+export type NodeTypes = {
+  tableHeader: JSX.Element;
+  tableField: JSX.Element;
+};
+
+export type ERTableData = {
+  columns: ERTableColumnData[];
+  is_insertable_into: 'yes' | 'no';
+  table_catalog: string;
+  table_name: string;
+  table_schema: string;
+  new_table_name: string | null;
+};
+
+export type ERTableColumnData = {
+  column_name: string;
+  new_column_name: string | null;
+  constraint_name: string | null;
+  constraint_type: string | null;
+  data_type: string;
+  character_maximum_length: number | null;
+  foreign_column: string;
+  foreign_table: string;
+  is_nullable: 'YES' | 'NO';
+  unique?: boolean; // optional until implemented
+  auto_increment?: boolean; // optional until implemented
+}
+export type DataTypes = 'integer' | 'bigint' | 'varchar' | 'date' | null;
+
+export type AddColumnsObjType = {
+  column_name: string | null;
+  data_type: DataTypes;
+  character_maximum_length: number | null;
+};
+export type DropColumnsObjType = {
+  column_name: string;
+};
+export type AlterColumnsObjType = {
+  column_name: string;
+  character_maximum_length: number | null;
+  new_column_name: string | null;
+  add_constraint: AddConstraintObjType[];
+  current_data_type: string | null;
+  data_type: string | null;
+  is_nullable: 'YES' | 'NO' | null;
+  drop_constraint: string[];
+  rename_constraint: string | null;
+  table_schema: string | null;
+  table_name: string | null;
+  constraint_type: 'PRIMARY KEY' | 'FOREIGN KEY' | 'UNIQUE' | null;
+};
+
+export type AddConstraintObjType = {
+  constraint_type: 'PRIMARY KEY' | 'FOREIGN KEY' | 'UNIQUE' | null;
+  constraint_name: string;
+  foreign_table: string | null;
+  foreign_column: string | null;
+};
+
+export type AddTablesObjType = {
+  is_insertable_into: 'yes' | 'no';
+  table_catalog: string;
+  table_name: string;
+  table_schema: string;
+  columns: ERTableColumnData[];
+};
+export type DropTablesObjType = {
+  table_name: string;
+  table_schema: string;
+};
+export type AlterTablesObjType = {
+  is_insertable_into: 'yes' | 'no' | null;
+  table_catalog: string | null;
+  table_name: string;
+  new_table_name: string | null;
+  table_schema: string | null;
+  addColumns: AddColumnsObjType[];
+  dropColumns: DropColumnsObjType[];
+  alterColumns: AlterColumnsObjType[];
+};
+
+export type UpdatesObjType = {
+  addTables: AddTablesObjType[];
+  dropTables: DropTablesObjType[];
+  alterTables: AlterTablesObjType[];
+};
+
+export type BackendObjType = {
+  current: {
+    database: string;
+    updates: UpdatesObjType;
+  };
+};
+
+export type SchemaStateObjType = {
+  database: string;
+  tableList: ERTableData[];
+};
+
+export type TableHeaderDataObjectType = {
+  table_name: string;
+  schemaStateCopy: any;
+  setSchemaState: (string) => {};
+  backendObj: BackendObjType;
+};
+
+export type TableHeaderNodeType = {
+  data: TableHeaderDataObjectType;
+  id: string;
+  position: {
+    x: number;
+    y: number;
+  };
+  tableName: string;
+  type: string;
+};

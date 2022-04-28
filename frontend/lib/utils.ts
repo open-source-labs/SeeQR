@@ -33,3 +33,4 @@ export const sendFeedback = (feedback: Feedback) => {
   const rendererId = window.require('electron').remote.getCurrentWebContents().id;
   ipcRenderer.sendTo(rendererId, 'feedback', feedback)
 } 
+
