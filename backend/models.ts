@@ -2,6 +2,7 @@
 import { ColumnObj, dbDetails, TableDetails, DBList, DBType } from './BE_types';
 
 const { Pool } = require('pg');
+const mysql = require('mysql2');
 
 // commented out because queries are no longer being used but good to keep as a reference
 // const { getPrimaryKeys, getForeignKeys } = require('./DummyD/primaryAndForeignKeyQueries');
@@ -12,6 +13,10 @@ const { Pool } = require('pg');
 // URI Format: postgres://username:password@hostname:port/databasename
 // Note: User must have a 'postgres' role set-up prior to initializing this connection. https://www.postgresql.org/docs/13/database-roles.html
 const PG_URI: string = 'postgres://postgres:postgres@localhost:5432';
+
+// URI Format: mysql://user:pass1@mysql:3306/databasename
+const MSQL_URI: string = 'mysql://user:pass1@mysql:3306';
+
 let pool = new Pool({ connectionString: PG_URI });
 
 
@@ -149,7 +154,28 @@ const getDBLists = function (dbType: DBType): Promise<TableDetails[]> {
     }
     
     });
-  }
+  };
+
+
+// *********************************************************** POSTGRES/MYSQL ************************************************* //
+const PG_DBConnect = async function (db: string) {
+  const newURI = `postgres://postgres:postgres@localhost:5432/${db}`;
+  const newPool = new Pool({ connectionString: newURI });
+  await pool.end();
+  pool = newPool;
+};
+
+const MSQL_DBConnect = function (db: string) {
+  pool = mysql.createPool({
+    host: 'localhost',
+    user: 'root',
+    password: 'lynt4lyfe',
+    database: db,
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
+  });
+};
 
 // *********************************************************** MAIN QUERY FUNCTIONS ************************************************* //
 interface MyObj {
@@ -163,24 +189,19 @@ interface MyObj {
 const myObj: MyObj = {
   // Run any query
   query: function(text, params, callback, dbType: DBType) {
-    if(dbType === DBType.Postgres) {
-      return pool.query(text, params, callback)
-    }
-    else if (dbType === DBType.MySQL) {
-      // stuff
-    }
+    //They end up being the same
+    return pool.query(text, params, callback);
   },
 
   // Change current Db
   connectToDB: async function (db: string, dbType: DBType) { 
+    console.log('testing testing');
     if(dbType === DBType.Postgres) {
-      const newURI = `postgres://postgres:postgres@localhost:5432/${db}`;
-      const newPool = new Pool({ connectionString: newURI });
-      await pool.end();
-      pool = newPool;
+      await PG_DBConnect(db);
     }
     else if (dbType === DBType.MySQL) {
-      // stuff
+      console.log('Attempting connection...');
+      await MSQL_DBConnect(db);
     }
   },
 
