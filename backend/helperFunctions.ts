@@ -1,16 +1,16 @@
 const { exec } = require('child_process'); // Child_Process: Importing Node.js' child_process API
 const { dialog } = require('electron'); // Dialog: display native system dialogs for opening and saving files, alerting, etc
-
+import { DBType } from './BE_types';
 // ************************************** CLI COMMANDS & SQL Queries TO CREATE, DELETE, COPY DB SCHEMA, etc. ************************************** //
 
 // Generate SQL queries & CLI commands to be executed in pg and child process respectively
 // The electron app will access your terminal to execute the postgres commands via Node's execute function
 
 interface CreateSQLQuery {
-  (string: string): string;
+  (string: string, dbType: DBType): string;
 }
 interface CreateCommand {
-  (dbName: string, file: string): string;
+  (dbName: string, file: string, dbType: DBType): string;
 }
 interface HelperFunctions {
   createDBFunc: CreateSQLQuery;
@@ -24,25 +24,39 @@ interface HelperFunctions {
 }
 const helperFunctions:HelperFunctions = {
   // create a database
-  createDBFunc: (name) => `CREATE DATABASE "${name}"`,
+  createDBFunc: function (name, dbType: DBType) { 
+    return `CREATE DATABASE "${name}"`;
+},
 
   // drop provided database
-  dropDBFunc: (dbName) => `DROP DATABASE "${dbName}"`,
+  dropDBFunc: function (dbName, dbType: DBType) {
+    return `DROP DATABASE "${dbName}"`;
+  },
 
   // run explain on query
-  explainQuery: (sqlString) => `BEGIN; EXPLAIN (FORMAT JSON, ANALYZE, VERBOSE, BUFFERS) ${sqlString}; ROLLBACK;`,
+  explainQuery: function (sqlString, dbType: DBType) {
+     return `BEGIN; EXPLAIN (FORMAT JSON, ANALYZE, VERBOSE, BUFFERS) ${sqlString}; ROLLBACK;`;
+  },
 
   // import SQL file into new DB created
-  runSQLFunc: (dbName, file) => `psql -U postgres -d ${dbName} -f "${file}"`,
+  runSQLFunc: function (dbName, file, dbType: DBType){
+    return `psql -U postgres -d ${dbName} -f "${file}"`;
+  },
 
   // import TAR file into new DB created
-  runTARFunc: (dbName, file) => `pg_restore -U postgres -d ${dbName} "${file}"`,
+  runTARFunc: function (dbName, file, dbType: DBType) {
+    return `pg_restore -U postgres -d ${dbName} "${file}"`
+  },
 
   // make a full copy of the schema
-  runFullCopyFunc: (dbCopyName, newFile) => `pg_dump -U postgres -F p -d ${dbCopyName} > "${newFile}"`,
+  runFullCopyFunc: function (dbCopyName, newFile, dbType: DBType) {
+    return `pg_dump -U postgres -F p -d ${dbCopyName} > "${newFile}"`
+  },
 
   // make a hollow copy of the schema
-  runHollowCopyFunc: (dbCopyName, file) => `pg_dump -s -U postgres -F p -d ${dbCopyName} > "${file}"`,
+  runHollowCopyFunc: function (dbCopyName, file, dbType: DBType) {
+    return  `pg_dump -s -U postgres -F p -d ${dbCopyName} > "${file}"`
+  },
 
   // promisified execute to execute commands in the child process
   promExecute: (cmd: string) =>

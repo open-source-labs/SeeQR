@@ -4,7 +4,7 @@ import fs from 'fs';
 import os from 'os';
 import helperFunctions from './helperFunctions';
 import generateDummyData from './DummyD/dummyDataMain';
-import { ColumnObj, DBList, DummyRecords } from './BE_types';
+import { ColumnObj, DBList, DummyRecords, DBType } from './BE_types';
 import backendObjToQuery from './ertable-functions';
 
 const db = require('./models');
@@ -27,8 +27,8 @@ interface Feedback {
 }
 
 // Listen for request from front-end and send back the DB List upon request
-ipcMain.on('return-db-list', (event) => {
-  db.getLists()
+ipcMain.on('return-db-list', (event, dbType: DBType) => {
+  db.getLists(dbType)
     .then((data: DBList) => {
       event.sender.send('db-lists', data);
     })
@@ -45,7 +45,7 @@ ipcMain.on('return-db-list', (event) => {
 // and send back an updated DB List
 ipcMain.handle(
   'select-db',
-  async (event, dbName: string): Promise<void> => {
+  async (event, dbName: string, dbType: DBType): Promise<void> => {
     event.sender.send('async-started');
     try {
       await db.connectToDB(dbName);
@@ -62,14 +62,14 @@ ipcMain.handle(
 // Deletes the DB that is passed from the front end and returns an updated DB List
 ipcMain.handle(
   'drop-db',
-  async (event, dbName: string, currDB: boolean): Promise<void> => {
+  async (event, dbName: string, currDB: boolean, dbType: DBType): Promise<void> => {
     event.sender.send('async-started');
     try {
       // if deleting currently connected db, disconnect from db
       if (currDB) await db.connectToDB('');
 
       // drop db
-      const dropDBScript = dropDBFunc(dbName);
+      const dropDBScript = dropDBFunc(dbName, dbType);
       await db.query(dropDBScript);
 
       // send updated db info
@@ -93,7 +93,7 @@ interface DuplicatePayload {
  */
 ipcMain.handle(
   'duplicate-db',
-  async (event, { newName, sourceDb, withData }: DuplicatePayload) => {
+  async (event, { newName, sourceDb, withData }: DuplicatePayload, dbType: DBType) => {
     event.sender.send('async-started');
 
     // store temporary file in user desktop
@@ -106,8 +106,8 @@ ipcMain.handle(
     try {
       // dump database to temp file
       const dumpCmd = withData
-        ? runFullCopyFunc(sourceDb, tempFilePath)
-        : runHollowCopyFunc(sourceDb, tempFilePath);
+        ? runFullCopyFunc(sourceDb, tempFilePath, dbType)
+        : runHollowCopyFunc(sourceDb, tempFilePath, dbType);
       try {
         await promExecute(dumpCmd);
       } catch (e) {
@@ -118,17 +118,17 @@ ipcMain.handle(
 
       // create new empty database
       try {
-        await db.query(createDBFunc(newName));
+        await db.query(createDBFunc(newName, dbType));
       } catch (e) {
         throw new Error(`Failed to create Database`);
       }
 
       // run temp sql file on new database
       try {
-        await promExecute(runSQLFunc(newName, tempFilePath));
+        await promExecute(runSQLFunc(newName, tempFilePath, dbType));
       } catch (e) {
         // cleanup: drop created db
-        const dropDBScript = dropDBFunc(newName);
+        const dropDBScript = dropDBFunc(newName, dbType);
         await db.query(dropDBScript);
 
         throw new Error('Failed to populate newly created database');
@@ -164,11 +164,11 @@ interface ImportPayload {
  */
 ipcMain.handle(
   'import-db',
-  async (event, { newDbName, filePath }: ImportPayload) => {
+  async (event, { newDbName, filePath }: ImportPayload, dbType: DBType) => {
     event.sender.send('async-started');
     try {
       // create new empty db
-      await db.query(createDBFunc(newDbName));
+      await db.query(createDBFunc(newDbName, dbType));
 
       const ext = path.extname(filePath).toLowerCase();
       if (ext !== '.sql' && ext !== '.tar')
@@ -176,15 +176,15 @@ ipcMain.handle(
 
       const restoreCmd =
         ext === '.sql'
-          ? runSQLFunc(newDbName, filePath)
-          : runTARFunc(newDbName, filePath);
+          ? runSQLFunc(newDbName, filePath, dbType)
+          : runTARFunc(newDbName, filePath, dbType);
 
       try {
         // populate new db with data from file
         await promExecute(restoreCmd);
       } catch (e) {
         // cleanup: drop created db
-        const dropDBScript = dropDBFunc(newDbName);
+        const dropDBScript = dropDBFunc(newDbName, dbType);
         await db.query(dropDBScript);
 
         throw new Error('Failed to populate database');
@@ -209,7 +209,7 @@ interface QueryPayload {
 // DB will rollback if query is unsuccessful
 ipcMain.handle(
   'run-query',
-  async (event, { targetDb, sqlString, selectedDb }: QueryPayload) => {
+  async (event, { targetDb, sqlString, selectedDb }: QueryPayload, dbType: DBType) => {
     event.sender.send('async-started');
     try {
       let error: string | undefined;
@@ -219,7 +219,7 @@ ipcMain.handle(
       // Run Explain
       let explainResults;
       try {
-        const results = await db.query(explainQuery(sqlString));
+        const results = await db.query(explainQuery(sqlString, dbType));
         explainResults = results[1].rows;
       } catch (e) {
         error = `Failed to get Execution Plan. EXPLAIN might not support this query.`;
@@ -230,7 +230,7 @@ ipcMain.handle(
       try {
         const results = await db.query(sqlString);
         returnedRows = results.rows;
-      } catch (e) {
+      } catch (e: any) {
         error = e.toString();
       }
 
@@ -259,7 +259,7 @@ interface ExportPayload {
   sourceDb: string;
 }
 
-ipcMain.handle('export-db', async (event, { sourceDb }: ExportPayload) => {
+ipcMain.handle('export-db', async (event, { sourceDb }: ExportPayload, dbType: DBType) => {
   event.sender.send('async-started');
   // store temporary file in user desktop
   const FilePath = path.resolve(os.homedir(), 'desktop', `${sourceDb}.sql`);
@@ -271,7 +271,7 @@ ipcMain.handle('export-db', async (event, { sourceDb }: ExportPayload) => {
 
   try {
     // dump database to new file
-    const dumpCmd = runFullCopyFunc(sourceDb, FilePath);
+    const dumpCmd = runFullCopyFunc(sourceDb, FilePath, dbType);
 
     try {
       await promExecute(dumpCmd);
@@ -296,7 +296,7 @@ interface dummyDataRequestPayload {
 
 ipcMain.handle(
   'generate-dummy-data',
-  async (event, data: dummyDataRequestPayload) => {
+  async (event, data: dummyDataRequestPayload, dbType: DBType) => {
     // send notice to front end that DD generation has been started
     event.sender.send('async-started');
     let feedback: Feedback = {
@@ -335,7 +335,7 @@ ipcMain.handle(
         type: 'success',
         message: 'Dummy data successfully generated.',
       };
-    } catch (err) {
+    } catch (err: any) {
       // rollback transaction if there's an error in insertion and send back feedback to FE
       await db.query('Rollback;');
       feedback = {
@@ -363,11 +363,11 @@ interface InitializePayload {
 
 ipcMain.handle(
   'initialize-db',
-  async (event, { newDbName }: InitializePayload) => {
+  async (event, { newDbName }: InitializePayload, dbType: DBType  ) => {
     event.sender.send('async-started');
     try {
       // create new empty db
-      await db.query(createDBFunc(newDbName));
+      await db.query(createDBFunc(newDbName, dbType));
 
       // connect to initialized db
       await db.connectToDB(newDbName);
@@ -377,7 +377,7 @@ ipcMain.handle(
       event.sender.send('db-lists', dbsAndTableInfo);
     } catch (e) {
       // in the case of an error, delete the created db
-      const dropDBScript = dropDBFunc(newDbName);
+      const dropDBScript = dropDBFunc(newDbName, dbType);
       await db.query(dropDBScript);
       throw new Error('Failed to initialize new database');
     } finally {
@@ -397,7 +397,7 @@ interface UpdatePayload {
 // DB will rollback if query is unsuccessful
 ipcMain.handle(
   'update-db',
-  async (event, { sqlString, selectedDb }: UpdatePayload) => {
+  async (event, { sqlString, selectedDb }: UpdatePayload, dbType: DBType) => {
     event.sender.send('async-started');
     try {
       let error: string | undefined;
@@ -423,7 +423,8 @@ ipcMain.handle(
 );
 
 // Generate and run query from react-flow ER diagram
-ipcMain.handle('ertable-schemaupdate', async (event, backendObj) => {
+ipcMain.handle('ertable-schemaupdate',
+async (event, backendObj, dbType: DBType) => {
   // send notice to front end that schema update has started
   event.sender.send('async-started');
   let feedback: Feedback = {
@@ -442,7 +443,7 @@ ipcMain.handle('ertable-schemaupdate', async (event, backendObj) => {
       message: 'Database updated successfully.',
     };
     return 'success';
-  } catch (err) {
+  } catch (err: any) {
     // rollback transaction if there's an error in update and send back feedback to FE
     await db.query('Rollback;');
   
