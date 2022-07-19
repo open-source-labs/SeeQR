@@ -36,3 +36,10 @@ export type BackendObjType = {
   database: string;
   updates: UpdatesObjType;
 };
+
+export enum DBType {
+  Postgres = 'pg',
+  MySQL = 'mysql',
+  MongoDB = 'mgdb' //For future seeqr, good luck
+}
+
