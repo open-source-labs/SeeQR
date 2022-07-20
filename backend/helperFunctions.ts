@@ -56,7 +56,7 @@ const helperFunctions: HelperFunctions = {
     const PG = `BEGIN; EXPLAIN (FORMAT JSON, ANALYZE, VERBOSE, BUFFERS) "${sqlString}"; ROLLBACK;`;
 
     // this should work but is limited to only select, update, delete and table statements
-    const MYSQL = `explain format=json ${sqlString}`;
+    const MYSQL = `EXPLAIN FORMAT=JSON ${sqlString}`;
 
     return dbType === DBType.Postgres ? PG : MYSQL;
     // return `BEGIN; EXPLAIN (FORMAT JSON, ANALYZE, VERBOSE, BUFFERS) ${sqlString}; ROLLBACK;`;
