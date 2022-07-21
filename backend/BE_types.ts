@@ -17,6 +17,7 @@ export interface ColumnObj {
 export interface dbDetails {
   db_name: string;
   db_size: string;
+  db_type: DBType;
 }
 export interface TableDetails {
   table_catalog: string;
@@ -39,7 +40,6 @@ export type BackendObjType = {
 
 export enum DBType {
   Postgres = 'pg',
-  MySQL = 'mysql',
-  MongoDB = 'mgdb' //For future seeqr, good luck
+  MySQL = 'mysql'
 }
 

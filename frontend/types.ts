@@ -102,6 +102,9 @@ export interface DatabaseInfo {
    * Pretty string of database size
    */
   db_size: string;
+
+  //Origin of this DB
+  db_type: DBType;
 }
 
 export interface TableColumn {
@@ -340,6 +343,5 @@ export type TableHeaderNodeType = {
 
 export enum DBType {
   Postgres = 'pg',
-  MySQL = 'mysql',
-  MongoDB = 'mgdb' //For future seeqr, good luck
+  MySQL = 'mysql'
 }
