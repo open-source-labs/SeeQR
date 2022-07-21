@@ -73,7 +73,7 @@ const DbList = ({
     setOpenDupe(false);
   };
 
-  const selectHandler = (dbName: string) => {
+  const selectHandler = (dbName: string, dbType: DBType) => {
     // setSelectedView('dbView');
     if (dbName === selectedDb) return;
     ipcRenderer

@@ -339,7 +339,7 @@ const myObj: MyObj = {
   //      databaseList: { db_name: 'name', db_size: '1000kB' }
   //      tableList: { table_name: 'name', data_type: 'type', columns: [ colObj ], ...etc. }
   //   }
-  getLists(): Promise<DBList> {
+  getLists(dbType?: DBType): Promise<DBList> {
     return new Promise((resolve, reject) => {
       const listObj: DBList = {
         databaseList: [],
@@ -362,7 +362,16 @@ const myObj: MyObj = {
               listObj.databaseList = pgDBList;
             })
             .finally(() => {
-              resolve(listObj);
+              if(dbType) {
+                getDBLists(dbType)
+                .then((data) => {
+                  listObj.tableList = data;
+                  resolve(listObj);
+                })
+              }
+              else {
+                resolve(listObj);
+              }
             })
         })
         .catch((err) => {//If PG fails, try just sending MySQL i guess??
@@ -375,7 +384,16 @@ const myObj: MyObj = {
               console.log('Nothing is working! Cant connect to any DB?', err);
             })
             .finally(() => {
-              resolve(listObj);
+              if(dbType) {
+                getDBLists(dbType)
+                .then((data) => {
+                  listObj.tableList = data;
+                  resolve(listObj);
+                })
+              }
+              else {
+                resolve(listObj);
+              }
             })
         })
 
