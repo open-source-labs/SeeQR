@@ -198,12 +198,11 @@ const myObj: MyObj = {
   },
 
   // Change current Db
-  async connectToDB(db: string, dbType: DBType) {
-    console.log('testing testing');
-    if (dbType === DBType.Postgres) {
+  connectToDB: async function (db: string, dbType: DBType) { 
+    if(dbType === DBType.Postgres) {
       await PG_DBConnect(db);
-    } else if (dbType === DBType.MySQL) {
-      console.log('Attempting connection...');
+    }
+    else if (dbType === DBType.MySQL) {
       await MSQL_DBConnect(db);
     }
   },
