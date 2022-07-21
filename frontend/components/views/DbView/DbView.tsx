@@ -2,7 +2,7 @@ import { IpcRendererEvent, ipcRenderer } from 'electron';
 import React, { useState, useEffect } from 'react';
 import { Button } from '@material-ui/core';
 import styled from 'styled-components';
-import { AppState, isDbLists, DatabaseInfo, TableInfo } from '../../../types';
+import { AppState, isDbLists, DatabaseInfo, TableInfo, DBType } from '../../../types';
 import TablesTabs from './TablesTabBar';
 import DatabaseDetails from './DatabaseDetails';
 import { once } from '../../../lib/utils';
@@ -16,6 +16,7 @@ interface DbViewProps {
   show: boolean;
   setERView: (boolean) => void;
   ERView: boolean;
+  dbType: DBType;
 }
 
 const StyledDummyButton = styled(Button)`
@@ -24,7 +25,7 @@ const StyledDummyButton = styled(Button)`
   right: ${sidebarShowButtonSize};
 `;
 
-const DbView = ({ selectedDb, show, setERView, ERView}: DbViewProps) => {
+const DbView = ({ selectedDb, show, setERView, ERView, dbType}: DbViewProps) => {
   const [dbTables, setTables] = useState<TableInfo[]>([]);
   const [selectedTable, setSelectedTable] = useState<TableInfo>();
   const [databases, setDatabases] = useState<DatabaseInfo[]>([]);
@@ -69,6 +70,7 @@ const DbView = ({ selectedDb, show, setERView, ERView}: DbViewProps) => {
         selectedTable={selectedTable}
         selectedDb={selectedDb}
         setERView={setERView}
+        dbType={dbType}
       />
       <br />
       <br />
@@ -86,6 +88,7 @@ const DbView = ({ selectedDb, show, setERView, ERView}: DbViewProps) => {
         onClose={handleClose}
         dbName={db?.db_name}
         tableName={selectedTable?.table_name}
+        dbType={dbType}
       />
     </>
   );

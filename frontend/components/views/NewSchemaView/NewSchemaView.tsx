@@ -8,7 +8,8 @@ import {
   AppState,
   TableInfo,
   DatabaseInfo,
-  isDbLists
+  isDbLists,
+  DBType
 } from '../../../types';
 import { defaultMargin } from '../../../style-variables';
 
@@ -78,6 +79,7 @@ interface NewSchemaViewProps {
     setSelectedDb: AppState['setSelectedDb'];
     selectedDb: AppState['selectedDb'];
     show: boolean;
+    dbType: DBType;
 }
 
 const NewSchemaView = ({
@@ -87,6 +89,7 @@ const NewSchemaView = ({
     setSelectedDb,
     selectedDb,
     show,
+    dbType
 }: NewSchemaViewProps) => {
   // additional local state properties using hooks
   const [dbTables, setTables] = useState<TableInfo[]>([]);
@@ -143,7 +146,7 @@ const NewSchemaView = ({
     ipcRenderer.invoke(
       'initialize-db', {
         newDbName: localQuery.db,
-      })
+      }, dbType)
       .catch((err) => {
         sendFeedback({
           type: 'error',
@@ -157,7 +160,7 @@ const NewSchemaView = ({
      ipcRenderer.invoke(
        'export-db', {
           sourceDb: selectedDb
-       })
+       }, dbType)
        .catch((err) => {
         sendFeedback({
           type: 'error',
@@ -176,7 +179,7 @@ const NewSchemaView = ({
       .invoke('update-db', {
         sqlString: localQuery.sqlString,
         selectedDb
-      })
+      }, dbType)
       .then(() => {setCurrentSql('');})
       .catch((err) => {
         sendFeedback({
@@ -214,6 +217,7 @@ return (
       selectTable={(table: TableInfo) => setSelectedTable(table)}
       selectedTable={selectedTable}
       selectedDb={selectedDb}
+      dbType={dbType}
     />
   </NewSchemaViewContainer>
 );

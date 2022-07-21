@@ -15,6 +15,7 @@ import {
   MuiTheme,
   StyledDialogTitle,
 } from '../../style-variables';
+import { DBType } from '../../types';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -29,6 +30,7 @@ type copyDbModalProps = {
   onClose: () => void;
   dbCopyName: string;
   databases: string[];
+  dbType: DBType;
 };
 
 const handleDBName = (dbCopyName, databases) => {
@@ -51,6 +53,7 @@ const DuplicateDbModal = ({
   onClose,
   dbCopyName,
   databases,
+  dbType
 }: copyDbModalProps) => {
   const [checked, setChecked] = useState(true);
   const [newSchemaName, setNewSchemaName] = useState(
@@ -109,7 +112,7 @@ const DuplicateDbModal = ({
       withData: checked,
     };
     ipcRenderer
-      .invoke('duplicate-db', schemaObj)
+      .invoke('duplicate-db', schemaObj, dbType)
       .catch(() => {
         sendFeedback({
           type: 'error',

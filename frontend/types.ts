@@ -27,6 +27,8 @@ export interface AppState {
   setFilePath: (filePath: string) => void;
   newFilePath: string;
   setERView?: (boolean) => void;
+  dbType: DBType;
+  setDBType: (DBType) => void;
 }
 
 export interface FilePath {
@@ -335,3 +337,9 @@ export type TableHeaderNodeType = {
   tableName: string;
   type: string;
 };
+
+export enum DBType {
+  Postgres = 'pg',
+  MySQL = 'mysql',
+  MongoDB = 'mgdb' //For future seeqr, good luck
+}

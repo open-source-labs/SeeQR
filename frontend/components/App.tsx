@@ -11,7 +11,7 @@ import {
   sidebarShowButtonSize,
 } from '../style-variables';
 import GlobalStyle from '../GlobalStyle';
-import { AppState, CreateNewQuery, QueryData } from '../types';
+import { AppState, CreateNewQuery, QueryData, DBType } from '../types';
 import { createQuery, key } from '../lib/queries';
 import Sidebar from './sidebar/Sidebar';
 import QueryView from './views/QueryView/QueryView';
@@ -53,6 +53,7 @@ const App = () => {
   const [newFilePath, setFilePath] = useState<AppState['newFilePath']>('');
   const [ERView, setERView] = useState(true);
 
+  const [dbType, setDBType] = useState(DBType.Postgres);
 
   /**
    * Hook to create new Query from data
@@ -120,7 +121,9 @@ const App = () => {
               sidebarIsHidden,
               setFilePath,
               newFilePath,
-              setERView
+              setERView,
+              dbType,
+              setDBType
             }}
           />
           <Main $fullwidth={sidebarIsHidden}>
@@ -133,6 +136,7 @@ const App = () => {
               show={shownView === 'dbView'}
               setERView={setERView} 
               ERView={ERView}
+              dbType={dbType}
             />
             <QueryView
               query={workingQuery}
@@ -142,6 +146,7 @@ const App = () => {
               createNewQuery={createNewQuery}
               show={shownView === 'queryView'}
               queries={queries}
+              dbType={dbType}
             />
             <QuickStartView show={shownView === 'quickStartView'} />
             <NewSchemaView 
@@ -151,6 +156,7 @@ const App = () => {
               setSelectedDb={setSelectedDb}
               createNewQuery={createNewQuery}
               show={shownView === 'newSchemaView'} 
+              dbType={dbType}
             />
           </Main>
           <FeedbackModal />

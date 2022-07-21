@@ -9,6 +9,7 @@ import {
   StyledButton,
   StyledTextField,
 } from '../../style-variables';
+import { DBType } from '../../types';
 
 const { dialog } = remote;
 
@@ -21,9 +22,10 @@ type AddNewDbModalProps = {
   open: boolean;
   onClose: () => void;
   databases: string[];
+  dbType: DBType;
 };
 
-const AddNewDbModal = ({ open, onClose, databases }: AddNewDbModalProps) => {
+const AddNewDbModal = ({ open, onClose, databases, dbType }: AddNewDbModalProps) => {
   const [newDbName, setNewDbName] = useState('');
   const [isError, setIsError] = useState(false);
   const [isEmpty, setIsEmpty] = useState(true);
@@ -90,7 +92,7 @@ const AddNewDbModal = ({ open, onClose, databases }: AddNewDbModalProps) => {
           filePath: result.filePaths[0],
         };
 
-        ipcRenderer.invoke('import-db', payload).catch(() =>
+        ipcRenderer.invoke('import-db', payload, dbType).catch(() =>
           sendFeedback({
             type: 'error',
             message: 'Failed to import database',

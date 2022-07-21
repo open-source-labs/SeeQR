@@ -9,6 +9,7 @@ import {
   StyledDialogTitle,
 } from '../../style-variables';
 import { sendFeedback } from '../../lib/utils';
+import { DBType } from '../../types';
 
 interface DummyPayload {
   dbName: string;
@@ -21,6 +22,7 @@ type DummyDataModalProps = {
   onClose: () => void;
   dbName: string | undefined;
   tableName: string | undefined;
+  dbType: DBType;
 };
 
 const DummyDataModal = ({
@@ -28,6 +30,7 @@ const DummyDataModal = ({
   onClose,
   dbName,
   tableName,
+  dbType
 }: DummyDataModalProps) => {
   const [rowNum, setRowNum] = useState(0);
   const [isError, setIsError] = useState(false);
@@ -91,7 +94,7 @@ const DummyDataModal = ({
     };
 
     ipcRenderer
-      .invoke('generate-dummy-data', payload)
+      .invoke('generate-dummy-data', payload, dbType)
       .catch(() =>
         sendFeedback({
           type: 'error',

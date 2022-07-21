@@ -19,6 +19,7 @@ import {
   TableHeaderNodeType,
   AppState,
   SchemaStateObjType,
+  DBType,
 } from '../../../types';
 
 import * as colors from '../../../style-variables';
@@ -26,13 +27,15 @@ import * as colors from '../../../style-variables';
 // defines the styling for the ERDiagram window
 const rfStyle: object = {
   height: '65vh',
+  border: `2px solid ${colors.greenPrimary}`,
+  borderRadius: '0.3rem',
 };
 
 // defines the styling for the minimap
 const mmStyle: object = {
   backgroundColor: colors.bgColor,
   border: `2px solid ${colors.greenPrimary}`,
-  'borderRadius': '0.3rem',
+  borderRadius: '0.3rem',
 };
 
 // defines the styling for the minimap nodes
@@ -50,16 +53,17 @@ const nodeColor = (node): string => {
 type ERTablingProps = {
   tables;
   selectedDb: AppState['selectedDb'];
+  dbType: DBType;
 };
 
 const StyledViewButton = styled(Button)`
   margin: 1rem;
   margin-left: 0rem;
-  font-size: .78em;
-  padding: .45em;
+  font-size: 0.78em;
+  padding: 0.45em;
 `;
 
-function ERTabling({ tables, selectedDb }: ERTablingProps) {
+function ERTabling({ tables, selectedDb, dbType }: ERTablingProps) {
   const [schemaState, setSchemaState] = useState<SchemaStateObjType>({
     database: 'initial',
     tableList: [],
@@ -95,33 +99,6 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
     backendObj.current.database = selectedDb;
     backendColumnObj.current.database = selectedDb;
   }, [selectedDb]);
-
-  // This useEffect fires when schemaState changes and will convert the state to a form react flow requires
-  useEffect(() => {
-    // send the schema state to the convert method to convert the schema to the form react flow requires
-    const initialState = stateToReactFlow.convert(schemaState);
-    // create a deep copy of the state, to ensure the state is not directly modified
-    const schemaStateString = JSON.stringify(schemaState);
-    const schemaStateCopy = JSON.parse(schemaStateString);
-    // create a nodesArray with the initialState data
-    const nodesArray = initialState.nodes.map((currentNode) => {
-      // add the schemaStateCopy and setSchemaState to the nodes data so that each node
-      // has reference to the current state and can modify the state to cause rerenders
-      const { data } = currentNode;
-      return {
-        ...currentNode,
-        data: {
-          ...data,
-          schemaStateCopy,
-          setSchemaState,
-          backendObj,
-          handleClickSave,
-        },
-      };
-    });
-    setNodes(nodesArray);
-    setEdges(initialState.edges);
-  }, [schemaState]);
 
   // whenever the node changes, this callback gets invoked
   const onNodesChange = useCallback(
@@ -188,7 +165,9 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
       currDatabaseLayout.db_tables.push(tablePosObj);
     });
 
-    const location: string = remote.app.getPath('temp').concat('/UserTableLayouts.json');
+    const location: string = remote.app
+      .getPath('temp')
+      .concat('/UserTableLayouts.json');
     fs.readFile(location, 'utf-8', (err, data) => {
       // check if error exists (no file found)
       if (err) {
@@ -221,12 +200,12 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
       }
     });
   };
-  const handleClickSave = (): void => {
+  function handleClickSave(): void {
     // This function sends a message to the back end with
     // the data in backendObj.current
     handleSaveLayout();
     ipcRenderer
-      .invoke('ertable-schemaupdate', backendObj.current)
+      .invoke('ertable-schemaupdate', backendObj.current, dbType)
       .then(async () => {
         // resets the backendObj
         backendObj.current = {
@@ -237,7 +216,34 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
       .catch((err: object) => {
         console.log(err);
       });
-  };
+  }
+
+  // This useEffect fires when schemaState changes and will convert the state to a form react flow requires
+  useEffect(() => {
+    // send the schema state to the convert method to convert the schema to the form react flow requires
+    const initialState = stateToReactFlow.convert(schemaState);
+    // create a deep copy of the state, to ensure the state is not directly modified
+    const schemaStateString = JSON.stringify(schemaState);
+    const schemaStateCopy = JSON.parse(schemaStateString);
+    // create a nodesArray with the initialState data
+    const nodesArray = initialState.nodes.map((currentNode) => {
+      // add the schemaStateCopy and setSchemaState to the nodes data so that each node
+      // has reference to the current state and can modify the state to cause rerenders
+      const { data } = currentNode;
+      return {
+        ...currentNode,
+        data: {
+          ...data,
+          schemaStateCopy,
+          setSchemaState,
+          backendObj,
+          handleClickSave,
+        },
+      };
+    });
+    setNodes(nodesArray);
+    setEdges(initialState.edges);
+  }, [schemaState]);
 
   return (
     <div>
