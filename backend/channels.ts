@@ -28,7 +28,7 @@ interface Feedback {
 
 // Listen for request from front-end and send back the DB List upon request
 ipcMain.on('return-db-list', (event, dbType: DBType = DBType.Postgres) => {
-  db.getLists(dbType)
+  db.getLists()
     .then((data: DBList) => {
       event.sender.send('db-lists', data);
     })
@@ -54,7 +54,7 @@ ipcMain.handle(
       await db.connectToDB(dbName, dbType);
 
       // send updated db info
-      const dbsAndTables: DBList = await db.getLists(dbType);
+      const dbsAndTables: DBList = await db.getLists();
       event.sender.send('db-lists', dbsAndTables);
     } finally {
       event.sender.send('async-complete');
@@ -76,7 +76,7 @@ ipcMain.handle(
       await db.query(dropDBScript);
 
       // send updated db info
-      const dbsAndTables: DBList = await db.getLists(dbType);
+      const dbsAndTables: DBList = await db.getLists();
       event.sender.send('db-lists', dbsAndTables);
     } finally {
       event.sender.send('async-complete');
@@ -138,7 +138,7 @@ ipcMain.handle(
       }
 
       // update frontend with new db list
-      const dbsAndTableInfo: DBList = await db.getLists(dbType);
+      const dbsAndTableInfo: DBList = await db.getLists();
       event.sender.send('db-lists', dbsAndTableInfo);
     } finally {
       //  //cleanup temp file
@@ -194,7 +194,7 @@ ipcMain.handle(
       }
 
       // update frontend with new db list
-      const dbsAndTableInfo: DBList = await db.getLists(dbType);
+      const dbsAndTableInfo: DBList = await db.getLists();
       event.sender.send('db-lists', dbsAndTableInfo);
     } finally {
       event.sender.send('async-complete');
@@ -250,7 +250,7 @@ ipcMain.handle(
 
       // send updated db info in case query affected table or database information
       // must be run after we connect back to the originally selected so tables information is accurate
-      const dbsAndTables: DBList = await db.getLists(dbType);
+      const dbsAndTables: DBList = await db.getLists();
       event.sender.send('db-lists', dbsAndTables);
 
       event.sender.send('async-complete');
@@ -347,7 +347,7 @@ ipcMain.handle(
       };
     } finally {
       // send updated db info in case query affected table or database information
-      const dbsAndTables: DBList = await db.getLists(dbType);
+      const dbsAndTables: DBList = await db.getLists();
       event.sender.send('db-lists', dbsAndTables);
 
       // send feedback back to FE
@@ -376,7 +376,7 @@ ipcMain.handle(
       await db.connectToDB(newDbName, dbType);
 
       // update DBList in the sidebar to show this new db
-      const dbsAndTableInfo: DBList = await db.getLists(dbType);
+      const dbsAndTableInfo: DBList = await db.getLists();
       event.sender.send('db-lists', dbsAndTableInfo);
     } catch (e) {
       // in the case of an error, delete the created db
@@ -417,7 +417,7 @@ ipcMain.handle(
     } finally {
       // send updated db info in case query affected table or database information
       // must be run after we connect back to the originally selected so tables information is accurate
-      const dbsAndTables: DBList = await db.getLists(dbType);
+      const dbsAndTables: DBList = await db.getLists();
       event.sender.send('db-lists', dbsAndTables);
 
       event.sender.send('async-complete');
@@ -456,7 +456,7 @@ async (event, backendObj, dbType: DBType) => {
     };
   } finally {
     // send updated db info
-    const updatedDb: DBList = await db.getLists(dbType);
+    const updatedDb: DBList = await db.getLists();
     event.sender.send('db-lists', updatedDb);
 
     // send feedback back to FE
