@@ -136,6 +136,7 @@ const App = () => {
               show={shownView === 'dbView'}
               setERView={setERView} 
               ERView={ERView}
+              dbType={dbType}
             />
             <QueryView
               query={workingQuery}
@@ -145,6 +146,7 @@ const App = () => {
               createNewQuery={createNewQuery}
               show={shownView === 'queryView'}
               queries={queries}
+              dbType={dbType}
             />
             <QuickStartView show={shownView === 'quickStartView'} />
             <NewSchemaView 
@@ -154,6 +156,7 @@ const App = () => {
               setSelectedDb={setSelectedDb}
               createNewQuery={createNewQuery}
               show={shownView === 'newSchemaView'} 
+              dbType={dbType}
             />
           </Main>
           <FeedbackModal />

@@ -19,6 +19,7 @@ import {
   TableHeaderNodeType,
   AppState,
   SchemaStateObjType,
+  DBType,
 } from '../../../types';
 
 import * as colors from '../../../style-variables';
@@ -52,6 +53,7 @@ const nodeColor = (node): string => {
 type ERTablingProps = {
   tables;
   selectedDb: AppState['selectedDb'];
+  dbType: DBType;
 };
 
 const StyledViewButton = styled(Button)`
@@ -61,7 +63,7 @@ const StyledViewButton = styled(Button)`
   padding: 0.45em;
 `;
 
-function ERTabling({ tables, selectedDb }: ERTablingProps) {
+function ERTabling({ tables, selectedDb, dbType }: ERTablingProps) {
   const [schemaState, setSchemaState] = useState<SchemaStateObjType>({
     database: 'initial',
     tableList: [],
@@ -203,7 +205,7 @@ function ERTabling({ tables, selectedDb }: ERTablingProps) {
     // the data in backendObj.current
     handleSaveLayout();
     ipcRenderer
-      .invoke('ertable-schemaupdate', backendObj.current)
+      .invoke('ertable-schemaupdate', backendObj.current, dbType)
       .then(async () => {
         // resets the backendObj
         backendObj.current = {

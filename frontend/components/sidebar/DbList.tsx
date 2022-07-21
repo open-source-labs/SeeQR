@@ -103,6 +103,7 @@ const DbList = ({
             isSelected={selectedDb === dbName}
             select={selectHandler}
             duplicate={() => handleClickOpenDupe(dbName)}
+            dbType={dbType}
           />
         ))}
         {openDupe ? (
@@ -111,6 +112,7 @@ const DbList = ({
             onClose={handleCloseDupe}
             dbCopyName={dbToDupe}
             databases={databases}
+            dbType={dbType}
           />
         ) : null}
       </StyledSidebarList> 
@@ -118,6 +120,7 @@ const DbList = ({
         open={openAdd}
         onClose={handleCloseAdd}
         databases={databases}
+        dbType={dbType}
       />
     </>
   );

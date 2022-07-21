@@ -7,6 +7,7 @@ import {
   CreateNewQuery,
   AppState,
   isDbLists,
+  DBType,
 } from '../../../types';
 import { defaultMargin } from '../../../style-variables';
 import { getPrettyTime } from '../../../lib/queries';
@@ -52,6 +53,7 @@ interface QueryViewProps {
   setQuery: AppState['setWorkingQuery'];
   show: boolean;
   queries: Record<string, QueryData>;
+  dbType: DBType;
 }
 
 const QueryView = ({
@@ -61,7 +63,8 @@ const QueryView = ({
   setSelectedDb,
   setQuery,
   show,
-  queries
+  queries,
+  dbType
 }: QueryViewProps) => {
   const [databases, setDatabases] = useState<string[]>([]);
 
@@ -102,7 +105,7 @@ const QueryView = ({
     // request updates for db and table information. Otherwise database view tab
     // will show wrong informatio
     ipcRenderer
-      .invoke('select-db', newDb)
+      .invoke('select-db', newDb, dbType)
       .then(() => {
         setQuery({ ...localQuery, db: newDb });
         setSelectedDb(newDb);
@@ -142,7 +145,7 @@ const QueryView = ({
         targetDb: localQuery.db,
         sqlString: localQuery.sqlString,
         selectedDb,
-      })
+      }, dbType)
       .then(({ db, sqlString, returnedRows, explainResults, error }) => {
         if (error) {
           throw error

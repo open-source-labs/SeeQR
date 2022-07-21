@@ -2,7 +2,7 @@ import React from 'react';
 import { ButtonGroup, Button } from '@material-ui/core/';
 import styled from 'styled-components';
 import { ipcRenderer } from 'electron';
-import { AppState } from '../../types';
+import { AppState, DBType } from '../../types';
 import { selectedColor, textColor, defaultMargin } from '../../style-variables';
 import { sendFeedback } from '../../lib/utils';
 
@@ -24,12 +24,12 @@ const ViewButton = styled(Button)`
 `;
 
 
-type ViewSelectorProps = Pick<AppState, 'selectedView' | 'setSelectedView' | 'setSelectedDb' | 'selectedDb'>;
+type ViewSelectorProps = Pick<AppState, 'selectedView' | 'setSelectedView' | 'setSelectedDb' | 'selectedDb'> & {dbType: DBType;};
 
 /**
  * Selector for view on sidebar. Updates App state with selected view
  */
-const BottomButtons = ({ selectedView, setSelectedView, setSelectedDb, selectedDb}: ViewSelectorProps) => (
+const BottomButtons = ({ selectedView, setSelectedView, setSelectedDb, selectedDb, dbType}: ViewSelectorProps) => (
   <ViewBtnGroup variant="contained" fullWidth>
     <ViewButton
       onClick={() => {
@@ -37,7 +37,7 @@ const BottomButtons = ({ selectedView, setSelectedView, setSelectedDb, selectedD
         setSelectedDb('');
         
         ipcRenderer
-          .invoke('select-db', '')
+          .invoke('select-db', dbType)
           .catch(() => 
             sendFeedback({
               type: 'error',

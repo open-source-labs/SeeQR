@@ -117,6 +117,7 @@ const Sidebar = ({
           selectedView={selectedView}
           setSelectedView={setSelectedView}
           setSelectedDb={setSelectedDb}
+          dbType={dbType}
         />
         <Logo src={logo} alt="Logo" />
       </StyledDrawer>
