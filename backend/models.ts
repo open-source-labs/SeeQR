@@ -27,30 +27,37 @@ const getColumnObjects = function (
   dbType: DBType
 ): Promise<ColumnObj[]> {
   let queryString;
+
+  console.log('Trying to get columnObj of: ' + tableName + ' with a dbType of ', dbType);
+
   if (dbType === DBType.Postgres) {
+    console.log('===========TRYING TO USE PG TO GET COLUMN OBJECTS!!!');
+
     // query string to get constraints and table references as well
     queryString =
-      `SELECT cols.column_name,` + // Gets column name
-      `cols.data_type,` + // Gets data type
-      `cols.character_maximum_length,` + // Gets max char length
-      `cols.is_nullable,` + // Gets is_nullable
-      `kcu.constraint_name,` + // Gets constraint_name
-      `cons.constraint_type,` + // Gets constraint_type
-      `rel_kcu.table_name AS foreign_table,` + // Gets rel_kcu.table_name AS foreign_table
-      `rel_kcu.column_name AS foreign_column` + // Gets kcu.column_name AS foreign_column
-      `FROM information_schema.columns cols` + // Gets all this data from information_schema.columns (cols) (lists all columns in the database)
-      // This
-      `LEFT JOIN information_schema.key_column_usage kcu` + // Left join will return all data from (cols) and matching records from information_schema.key_column_usage (kcu) where...
-      `ON cols.column_name = kcu.column_name` + // cols.column_name is equal to kcu.column name AND (has to meet the condition below as well)...
-      `AND cols.table_name = kcu.table_name` + // cols.table_name = kcu.table_name
-      `LEFT JOIN information_schema.table_constraints cons` + // Left join all data from (cons) where... (cons lists all constraints from tables in this database)
-      `ON kcu.constraint_name = cons.constraint_name` + // kcu.constraint_name is equal to cons.constraint_name
-      `LEFT JOIN information_schema.referential_constraints rco` + // rco lists all foreign keys in database
-      `ON rco.constraint_name = cons.constraint_name` +
-      `LEFT JOIN information_schema.key_column_usage rel_kcu` + // key_column_usage lists all columns in the database restricted by primary,unique, foreign or check constraint
-      `ON rco.unique_constraint_name = rel_kcu.constraint_name` +
-      `WHERE cols.table_name = $1`; // parameterized query will equal tableName down below
-  } else if (dbType === DBType.MySQL) {
+      `SELECT cols.column_name,
+      cols.data_type,
+      cols.character_maximum_length,
+      cols.is_nullable,
+      kcu.constraint_name,
+      cons.constraint_type,
+      rel_kcu.table_name AS foreign_table,
+      rel_kcu.column_name AS foreign_column
+      FROM information_schema.columns cols
+      LEFT JOIN information_schema.key_column_usage kcu
+      ON cols.column_name = kcu.column_name
+      AND cols.table_name = kcu.table_name
+      LEFT JOIN information_schema.table_constraints cons
+      ON kcu.constraint_name = cons.constraint_name
+      LEFT JOIN information_schema.referential_constraints rco
+      ON rco.constraint_name = cons.constraint_name
+      LEFT JOIN information_schema.key_column_usage rel_kcu
+      ON rco.unique_constraint_name = rel_kcu.constraint_name
+      WHERE cols.table_name = $1`; 
+  }
+  else if (dbType === DBType.MySQL) {
+    console.log('===========TRYING TO USE MYSQL GETCOLUMNOBJ???');
+
     queryString = `SELECT cols.column_name, cols.data_type, cols.character_maximum_length, cols.is_nullable, kcu.constraint_name, cons.constraint_type, rel_kcu.table_name AS foreign_table, rel_kcu.column_name AS foreign_column
       FROM information_schema.columns cols
       LEFT JOIN information_schema.key_column_usage kcu
@@ -159,9 +166,17 @@ const getDBLists = function (dbType: DBType): Promise<TableDetails[]> {
 // *********************************************************** POSTGRES/MYSQL ************************************************* //
 const PG_DBConnect = async function (db: string) {
   const newURI = `postgres://postgres:postgres@localhost:5432/${db}`;
+
+  console.log('Trying URI: ', newURI);
+
   const newPool = new Pool({ connectionString: newURI });
   await pool.end();
+
+  console.log('Ended connection. Trying to connect now.');
+
   pool = newPool;
+
+  console.log('New pool set.');
 };
 
 const MSQL_DBConnect = function (db: string) {
@@ -199,10 +214,14 @@ const myObj: MyObj = {
 
   // Change current Db
   connectToDB: async function (db: string, dbType: DBType) { 
+    console.log('Starting connect to DB: ' + db + ' with a dbType of ', dbType);
+
     if(dbType === DBType.Postgres) {
+      console.log('Attempting Postgres connection.');
       await PG_DBConnect(db);
     }
     else if (dbType === DBType.MySQL) {
+      console.log('Attempting MSQL connection');
       await MSQL_DBConnect(db);
     }
   },
