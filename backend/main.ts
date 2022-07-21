@@ -18,7 +18,6 @@ fixPath();
 // Keep a global reference of the window objects, if you don't, the window will be closed automatically when the JavaScript object is garbage collected.
 let mainWindow: BrowserWindow | null;
 
-
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1800,
