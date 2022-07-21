@@ -37,7 +37,7 @@ const BottomButtons = ({ selectedView, setSelectedView, setSelectedDb, selectedD
         setSelectedDb('');
         
         ipcRenderer
-          .invoke('select-db', dbType)
+          .invoke('select-db', '', dbType)
           .catch(() => 
             sendFeedback({
               type: 'error',
