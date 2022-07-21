@@ -38,7 +38,7 @@ const DbEntry = ({ db, isSelected, select, duplicate, dbType }: DbEntryProps) =>
       $customSelected={isSelected}
       onClick={() => select(db)}
     >
-      <StyledListItemText primary={db} />
+      <StyledListItemText primary={db + `[${dbType}]`} />
       <ListItemSecondaryAction>
         <Tooltip title="Copy Database">
           <IconButton edge="end" onClick={duplicate}>
