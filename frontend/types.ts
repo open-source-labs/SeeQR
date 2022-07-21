@@ -102,6 +102,9 @@ export interface DatabaseInfo {
    * Pretty string of database size
    */
   db_size: string;
+
+  //Origin of this DB
+  db_type: DBType;
 }
 
 export interface TableColumn {
