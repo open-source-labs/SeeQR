@@ -4,7 +4,7 @@ import { IpcRendererEvent, ipcRenderer } from 'electron';
 import { IconButton, Tooltip } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import AddNewDbModal from '../modal/AddNewDbModalCorrect';
-import { AppState, isDbLists } from '../../types';
+import { AppState, isDbLists, DBType } from '../../types';
 import { once, sendFeedback } from '../../lib/utils';
 import DuplicateDbModal from '../modal/DuplicateDbModal';
 import DbEntry from './DbEntry';
@@ -22,6 +22,8 @@ type DbListProps = Pick<
   'selectedDb' | 'setSelectedDb' | 'setSelectedView'
 > & {
   show: boolean;
+  dbType: DBType;
+  setDBType: (DBType) => void;
 };
 
 const DbList = ({
@@ -29,6 +31,8 @@ const DbList = ({
   setSelectedDb,
   setSelectedView,
   show,
+  dbType,
+  setDBType
 }: DbListProps) => {  
   const [databases, setDatabases] = useState<string[]>([]);
   const [openAdd, setOpenAdd] = useState(false);
@@ -71,7 +75,7 @@ const DbList = ({
     // setSelectedView('dbView');
     if (dbName === selectedDb) return;
     ipcRenderer
-      .invoke('select-db', dbName)
+      .invoke('select-db', dbName, dbType)
       .then(() => {
         setSelectedDb(dbName);
       })
