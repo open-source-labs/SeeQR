@@ -340,6 +340,5 @@ export type TableHeaderNodeType = {
 
 export enum DBType {
   Postgres = 'pg',
-  MySQL = 'mysql',
-  MongoDB = 'mgdb' //For future seeqr, good luck
+  MySQL = 'mysql'
 }
