@@ -27,7 +27,7 @@ interface Feedback {
 }
 
 // Listen for request from front-end and send back the DB List upon request
-ipcMain.on('return-db-list', (event, dbType: DBType) => {
+ipcMain.on('return-db-list', (event, dbType: DBType = DBType.Postgres) => {
   db.getLists(dbType)
     .then((data: DBList) => {
       event.sender.send('db-lists', data);
