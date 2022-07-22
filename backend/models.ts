@@ -11,7 +11,7 @@ const mysql = require('mysql2/promise');
 
 // URI Format: postgres://username:password@hostname:port/databasename
 // Note: User must have a 'postgres' role set-up prior to initializing this connection. https://www.postgresql.org/docs/13/database-roles.html
-const PG_URI: string = 'postgres://postgres:charm1ander@localhost:5432';
+const PG_URI: string = 'postgres://postgres:postgres@localhost:5432';
 
 // URI Format: mysql://user:pass1@mysql:3306/databasename
 const MSQL_URI: string = 'mysql://user:pass1@mysql:3306';
@@ -156,7 +156,7 @@ const getDBNames = function (dbType: DBType): Promise<dbDetails[]> {
     else if (dbType === DBType.MySQL) {
       query = `SELECT
       table_schema AS db_name,
-      ROUND(SUM(data_length + index_length) / 1024 / 1024, 1) AS 'db_size'
+      ROUND(SUM(data_length + index_length) / 1024 / 1024, 1) AS db_size
       FROM information_schema.tables
       WHERE table_schema NOT IN("information_schema", "performance_schema", "mysql") GROUP BY table_schema
       AND table_schema != "sys";`;
@@ -185,14 +185,18 @@ const getDBNames = function (dbType: DBType): Promise<dbDetails[]> {
 };
 
 // function that gets all tablenames and their columns from current schema
-const getDBLists = function (dbType: DBType): Promise<TableDetails[]> {
+const getDBLists = function (dbType: DBType, dbName: string): Promise<TableDetails[]> {
   return new Promise((resolve, reject) => {
     let query;
     const tableList: TableDetails[] = [];
     const promiseArray: Promise<ColumnObj[]>[] = [];
 
     if (dbType === DBType.Postgres) {
-      query = `SELECT table_catalog, table_schema, table_name, is_insertable_into
+      query = `SELECT
+      table_catalog,
+      table_schema,
+      table_name,
+      is_insertable_into
       FROM information_schema.tables
       WHERE table_schema = 'public' or table_schema = 'base'
       ORDER BY table_name;`;
@@ -219,7 +223,6 @@ const getDBLists = function (dbType: DBType): Promise<TableDetails[]> {
             .catch(reject);
         })
         .catch(reject);
-
     }
     else if (dbType === DBType.MySQL) {
       query = `SELECT
@@ -229,6 +232,7 @@ const getDBLists = function (dbType: DBType): Promise<TableDetails[]> {
       FROM information_schema.tables
       WHERE table_schema NOT IN("information_schema", "performance_schema", "mysql")
       AND table_schema != "sys"
+      AND table_name = "${dbName}"
       ORDER BY table_name;`;
 
       msql_pool
@@ -264,7 +268,7 @@ const getDBLists = function (dbType: DBType): Promise<TableDetails[]> {
 
 // *********************************************************** POSTGRES/MYSQL ************************************************* //
 const PG_DBConnect = async function (db: string) {
-  const newURI = `postgres://postgres:charm1ander@localhost:5432/${db}`;
+  const newURI = `postgres://postgres:postgres@localhost:5432/${db}`;
 
   console.log('Trying URI: ', newURI);
 
@@ -339,7 +343,7 @@ const myObj: MyObj = {
   //      databaseList: { db_name: 'name', db_size: '1000kB' }
   //      tableList: { table_name: 'name', data_type: 'type', columns: [ colObj ], ...etc. }
   //   }
-  getLists(dbType?: DBType): Promise<DBList> {
+  getLists(dbName: string = '', dbType?: DBType): Promise<DBList> {
     return new Promise((resolve, reject) => {
       const listObj: DBList = {
         databaseList: [],
@@ -349,12 +353,12 @@ const myObj: MyObj = {
       //Get initial postgres dbs
       getDBNames(DBType.Postgres)
         .then((pgdata) => {
-          let pgDBList = pgdata;
+          const pgDBList = pgdata;
 
           //Get MySQL DBs
           getDBNames(DBType.MySQL)
             .then((msdata) => {
-              let msqlDBList = msdata;
+              const msqlDBList = msdata;
 
               listObj.databaseList = [...pgDBList, ...msqlDBList];
             })
@@ -363,7 +367,7 @@ const myObj: MyObj = {
             })
             .finally(() => {
               if(dbType) {
-                getDBLists(dbType)
+                getDBLists(dbType, dbName)
                 .then((data) => {
                   listObj.tableList = data;
                   resolve(listObj);
@@ -380,12 +384,12 @@ const myObj: MyObj = {
             .then((msdata) => {
               listObj.databaseList = msdata;
             })
-            .catch((err) => {  //We are fucked
+            .catch((err) => { // Bad
               console.log('Nothing is working! Cant connect to any DB?', err);
             })
             .finally(() => {
               if(dbType) {
-                getDBLists(dbType)
+                getDBLists(dbType, dbName)
                 .then((data) => {
                   listObj.tableList = data;
                   resolve(listObj);
