@@ -2,7 +2,7 @@ import { LogType } from "../BE_types";
 
 
 interface Logger {
-    log: (message: string, logType?: LogType) => void;
+    log: (message: string, logType?: LogType, opt1?: any, opt2?: any) => void;
 }
 
 //Helper functions!
@@ -12,7 +12,7 @@ const saveLogMessage = (message) => {
 }
 
 //Export
-const logger = function(message: string, logType: LogType = LogType.NORMAL) {
+const logger = function(message: string, logType: LogType = LogType.NORMAL, opt1?, opt2?) {
     //Code for the log color
     let colorCode = 0;
 
@@ -52,7 +52,12 @@ const logger = function(message: string, logType: LogType = LogType.NORMAL) {
             break;
     }
 
-    console.log( `\u001b[1;${colorCode}m ${`[${logType}] ${message}`}` );
+    let moreText = '';
+
+    if(opt1) moreText += JSON.stringify(opt1);
+    if(opt2) moreText += JSON.stringify(opt2);
+
+    console.log( `\u001b[1;${colorCode}m ${`[${logType}] ${message + moreText}`}` );
     resetLogColor();
     saveLogMessage(`[${logType}] ${message}`);
 }
