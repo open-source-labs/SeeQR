@@ -54,7 +54,7 @@ ipcMain.handle(
       await db.connectToDB(dbName, dbType);
 
       // send updated db info
-      const dbsAndTables: DBList = await db.getLists(dbType);
+      const dbsAndTables: DBList = await db.getLists(dbName, dbType);
       event.sender.send('db-lists', dbsAndTables);
     } finally {
       event.sender.send('async-complete');
