@@ -32,12 +32,14 @@ const logger = function(message: string, logType: LogType = LogType.NORMAL) {
             colorCode = 33;
             break;
         
-        case LogType.SEND: //BLUE
+        case LogType.RECEIVE: //BLUE
             colorCode = 34;
+            logString = 'SERVER_IPC_RECEIVE';
             break;
 
         case LogType.SEND: //MAGENTA
             colorCode = 35;
+            logString = 'SERVER_IPC_SEND';
             break;
 
         case LogType.NORMAL: //WHITE (And change logType string)
