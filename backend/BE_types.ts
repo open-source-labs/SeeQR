@@ -43,3 +43,9 @@ export enum DBType {
   MySQL = 'mysql'
 }
 
+export enum LogType {
+  SUCCESS = 'SUCCESS',
+  ERROR = 'ERROR',
+  WARNING = 'WARNING',
+  NORMAL = 'NORMAL'
+}
