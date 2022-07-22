@@ -6,7 +6,6 @@ interface Logger {
 }
 
 //Helper functions!
-const resetLogColor = () => console.log(`\u001b[1;0m`)
 const saveLogMessage = (message) => {
     const time = new Date().toLocaleDateString('en-US', {timeZone: 'UTC'});
 }
@@ -58,7 +57,6 @@ const logger = function(message: string, logType: LogType = LogType.NORMAL, opt1
     if(opt2) moreText += JSON.stringify(opt2);
 
     console.log( `\u001b[1;${colorCode}m ${`[${logType}] ${message + moreText}`}` + `\u001b[1;0m`);
-    // resetLogColor();
     saveLogMessage(`[${logType}] ${message}`);
 }
   
