@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 import DbList from '../frontend/components/sidebar/DbList';
-import { ColumnObj, dbDetails, TableDetails, DBList, DBType } from './BE_types';
+import { ColumnObj, dbDetails, TableDetails, DBList, DBType, LogType } from './BE_types';
+import logger from './Logging/masterlog';
 
 const { Pool } = require('pg');
 const mysql = require('mysql2/promise');
@@ -119,6 +120,7 @@ const getColumnObjects = function (
     });
   }
   else {
+    logger('Trying to use unknown DB Type: ', LogType.ERROR, dbType);
     throw 'Unknown db type';
   }
 };
@@ -149,7 +151,7 @@ const getDBNames = function (dbType: DBType): Promise<dbDetails[]> {
           }
         }
 
-        console.log('PG DBNAME RESOLVE ', dbList);
+        logger('PG \'getDBNames\' resolved to: \n', LogType.SUCCESS, dbList);
         // resolve with array of db names
         resolve(dbList);
       })
@@ -164,21 +166,8 @@ const getDBNames = function (dbType: DBType): Promise<dbDetails[]> {
       ROUND(SUM(data_length + index_length) / 1024, 1) db_size
 
       FROM information_schema.tables
-      WHERE table_schema NOT IN("information_schema", "performance_schema", "mysql")
-      GROUP BY table_schema
-
-      AND table_schema != "sys";`;
-
-      /* Fryer fix:
-      SELECT table_schema db_name,
-      ROUND(SUM(data_length + index_length) / 1024, 1) db_size
-      
-      FROM information_schema.tables 
       WHERE table_schema NOT IN("information_schema", "performance_schema", "mysql", "sys")
-      GROUP BY table_schema;
-
-      AND table_schema != "sys";
-      */
+      GROUP BY table_schema;`;
       
       msql_pool
       .query(query)
@@ -194,7 +183,7 @@ const getDBNames = function (dbType: DBType): Promise<dbDetails[]> {
           }
         }
 
-        console.log('MYSQL DBNAME RESOLVE ', dbList);
+        logger('MySQL \'getDBNames\' resolved to: \n', LogType.SUCCESS, dbList);
         // resolve with array of db names
         resolve(dbList);
       })
@@ -238,7 +227,7 @@ const getDBLists = function (dbType: DBType, dbName: string): Promise<TableDetai
                 tableList[i].columns = columnInfo[i];
               }
 
-              console.log('PG DBLISTS RESOLVE ', tableList);
+              logger('PG \'getDBLists\' resolved to: \n', LogType.SUCCESS, tableList);
               resolve(tableList);
             })
             .catch((err) => {
@@ -262,18 +251,6 @@ const getDBLists = function (dbType: DBType, dbName: string): Promise<TableDetai
       AND TABLE_SCHEMA = "${dbName}"
       ORDER BY table_name;`;
 
-      console.log('Attempting to get DBLists with this query: ', query);
-      /*
-      SELECT
-      TABLE_CATALOG as table_schema,
-      TABLE_SCHEMA as table_catalog,
-      TABLE_NAME as table_name
-      FROM information_schema.tables
-      WHERE TABLE_SCHEMA NOT IN("information_schema", "performance_schema", "mysql")
-      AND TABLE_SCHEMA = "seeqr"
-      ORDER BY table_name;
-      */
-
       msql_pool
         .query(query)
         .then((tables) => {
@@ -293,7 +270,7 @@ const getDBLists = function (dbType: DBType, dbName: string): Promise<TableDetai
                 tableList[i].columns = columnInfo[i];
               }
 
-              console.log('MYSQL DBLISTS RESOLVE ', tableList);
+              logger('MySQL \'getDBLists\' resolved to: \n', LogType.SUCCESS, tableList);
               resolve(tableList);
             })
             .catch((err) => {
@@ -310,17 +287,11 @@ const getDBLists = function (dbType: DBType, dbName: string): Promise<TableDetai
 // *********************************************************** POSTGRES/MYSQL ************************************************* //
 const PG_DBConnect = async function (db: string) {
   const newURI = `postgres://postgres:charm1ander@localhost:5432/${db}`;
-
-  console.log('Trying URI: ', newURI);
-
   const newPool = new Pool({ connectionString: newURI });
   await pg_pool.end();
-
-  console.log('Ended connection. Trying to connect now.');
-
   pg_pool = newPool;
 
-  console.log('New pool set.');
+  logger('New pool URI set: ' + newURI, LogType.SUCCESS);
 };
 
 const MSQL_DBConnect = function (db: string) {
@@ -336,10 +307,10 @@ const MSQL_DBConnect = function (db: string) {
 
   msql_pool.query(`USE ${db};`)
     .then(() => {
-      console.log('Connected to MSQL DB: ' + db);
+      logger('Connected to MSQL DB: ' + db, LogType.SUCCESS);
     })
     .catch((err) => {
-      console.log('Couldnt connect to MSQL DB: ' + db);
+      logger('Couldnt connect to MSQL DB: ' + db, LogType.ERROR);
     });
 };
 
@@ -360,7 +331,7 @@ interface MyObj {
 const myObj: MyObj = {
   // Run any query
   query(text, params, callback, dbType: DBType) {
-    
+    logger('Attempting to run query: \n' + text);
     if(dbType === DBType.Postgres) {
       return pg_pool.query(text, params, callback);
     }
@@ -374,14 +345,12 @@ const myObj: MyObj = {
 
   // Change current Db
   connectToDB: async function (db: string, dbType: DBType) { 
-    console.log('Starting connect to DB: ' + db + ' with a dbType of ', dbType);
+    logger('Starting connect to DB: ' + db + ' With a dbType of: ' + dbType.toString());
 
     if(dbType === DBType.Postgres) {
-      console.log('Attempting Postgres connection.');
       await PG_DBConnect(db);
     }
     else if (dbType === DBType.MySQL) {
-      console.log('Attempting MSQL connection');
       await MSQL_DBConnect(db);
     }
   },
@@ -410,61 +379,60 @@ const myObj: MyObj = {
           getDBNames(DBType.MySQL)
             .then((msdata) => {
               const msqlDBList = msdata;
-              console.log('==== GOT DB NAMES FOR PG AND MSQL ==== SUCCESS');
-
+              logger('Got DB Names for both PG and MySQL!', LogType.SUCCESS);
               listObj.databaseList = [...pgDBList, ...msqlDBList];
             })
             .catch((err) => {  //MySQL fails... Just get PG!
-              console.log('==== Couldnt connect to MySQL. Sending only PG Instead! ====');
+              logger('Couldn\'t connect to MySQL. Sending only PG Data!', LogType.ERROR);
               listObj.databaseList = pgDBList;
             })
             .finally(() => {
               if(dbType) {
-                console.log('==== Sending table data along with DB-Lists for DBType: ' + dbType + ' and DB: ' + dbName + ' ====');
-
                 getDBLists(dbType, dbName)
                 .then((data) => {
+                  logger('RESOLVING DB DETAILS: Fetched DB names along with Table List for DBType: ' + dbType + ' and DB: ' + dbName, LogType.SUCCESS);
                   listObj.tableList = data;
                   resolve(listObj);
                 })
+                .catch((err) => {
+                  logger('Error getting tableList details: ' + err.message, LogType.ERROR);
+                }); 
               }
               else {
+                logger('RESOLVING DB DETAILS: Only DB Names', LogType.SUCCESS);
                 resolve(listObj);
               }
             })
         })
         .catch((err) => {//If PG fails, try just sending MySQL i guess??
-          console.log('==== Couldnt connect to PG. Attempting to get MySQL Instead! ====');
+          logger('Couldn\'t connect to PG. Attempting to connect to MySQL instead!', LogType.ERROR);
           //Get MySQL DBs
           getDBNames(DBType.MySQL)
             .then((msdata) => {
               listObj.databaseList = msdata;
-            })
-            .catch((err) => { // Bad
-              console.log('==== Failed to connect to either MySQL OR PG! ====');
-            })
-            .finally(() => {
+              
+              //This is not in a .finally block because if getting MySQL data fails here we're all dead anyway
               if(dbType) {
-                console.log('==== Sending table data along with DB-Lists for DBType: ' + dbType + ' and DB: ' + dbName + ' ====');
-
                 getDBLists(dbType, dbName)
                 .then((data) => {
+                  logger('RESOLVING DB DETAILS: Fetched DB names along with Table List for DBType: ' + dbType + ' and DB: ' + dbName, LogType.SUCCESS);
                   listObj.tableList = data;
                   resolve(listObj);
                 })
+                .catch((err) => {
+                  logger('Error getting tableList details: ' + err.message, LogType.ERROR);
+                });
               }
               else {
+                logger('RESOLVING DB DETAILS: Only DB Names', LogType.SUCCESS);
                 resolve(listObj);
               }
             })
+            .catch((err) => { // Bad
+              logger('Could not connect to either PG or MySQL: ' + err.message, LogType.ERROR);
+              throw err;
+            });
         })
-
-        //Only get what tableList you need! Right now we get nothing...
-        //But when you need it it looks like this!
-        //  getDBLists(DBType.Postgres)
-        //   .then((data) => {
-        //     listObj.tableList = data;
-        //   })
     });
   },
 
