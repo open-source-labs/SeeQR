@@ -7,19 +7,45 @@ interface Logger {
 
 //Helper functions!
 const resetLogColor = () => console.log(`\u001b[1;0m`)
-  
+const saveLogMessage = (message) => {
+    const time = new Date().toLocaleDateString('en-US', {timeZone: 'UTC'});
+}
+
+//Export
 const logger: Logger = {
     log(message: string, logType: LogType = LogType.NORMAL) {
+        //Code for the log color
+        let colorCode = 0;
 
-        console.log( `\u001b[1;31m ${`[${logType}] ${message}`}` ); //RED
-        console.log( `\u001b[1;32m ${`[${logType}] ${message}`}` ); //GREEN
-        console.log( `\u001b[1;33m ${`[${logType}] ${message}`}` ); //YELLOW
-        console.log( `\u001b[1;34m ${`[${logType}] ${message}`}` ); //BLUE
-        console.log( `\u001b[1;35m ${`[${logType}] ${message}`}` ); //PURPLE
-        console.log( `\u001b[1;36m ${`[${logType}] ${message}`}` ); //CYAN
-        //console.log( `\u001b[1;0m ${`[${logType}] ${message}`}` ); //DEFAULT
+        //Prefix for the message
+        let logString: any = logType;
 
+        switch(logType) {
+            case LogType.ERROR: //RED
+                colorCode = 31;
+                break;
+            
+            case LogType.SUCCESS: //GREEN
+                colorCode = 32;
+                break;
+            
+            case LogType.WARNING: //YELLOW
+                colorCode = 33;
+                break;
+
+            case LogType.NORMAL: //WHITE (And change logType string)
+                colorCode = 0;
+                logString = 'LOG';
+                break;
+
+            default:
+                colorCode = 0;
+                break;
+        }
+
+        console.log( `\u001b[1;${colorCode}m ${`[${logType}] ${message}`}` );
         resetLogColor();
+        saveLogMessage(`[${logType}] ${message}`);
     }
 }
   

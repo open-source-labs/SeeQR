@@ -47,5 +47,7 @@ export enum LogType {
   SUCCESS = 'SUCCESS',
   ERROR = 'ERROR',
   WARNING = 'WARNING',
-  NORMAL = 'NORMAL'
+  NORMAL = 'NORMAL',
+  SEND = 'SEND',
+  RECEIVE = 'RECEIVE'
 }
