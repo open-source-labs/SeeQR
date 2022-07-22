@@ -16,7 +16,7 @@ const { ipcRenderer } = window.require('electron');
 interface DbEntryProps {
   db: string;
   isSelected: boolean;
-  select: (db: string) => void;
+  select: (db: string, dbt: DBType) => void;
   duplicate: () => void;
   dbType: DBType;
 }
@@ -25,7 +25,7 @@ const DbEntry = ({ db, isSelected, select, duplicate, dbType }: DbEntryProps) =>
     ipcRenderer
       .invoke('drop-db', db, isSelected, dbType)
       .then(() => {
-        if (isSelected) select('');
+        if (isSelected) select('', dbType);
       })
       .catch(() =>
         sendFeedback({ type: 'error', message: `Failed to delete ${db}` })
@@ -36,9 +36,9 @@ const DbEntry = ({ db, isSelected, select, duplicate, dbType }: DbEntryProps) =>
     <SidebarListItem
       button
       $customSelected={isSelected}
-      onClick={() => select(db)}
+      onClick={() => select(db, dbType)}
     >
-      <StyledListItemText primary={db} />
+      <StyledListItemText primary={db + ` [${dbType}]`} />
       <ListItemSecondaryAction>
         <Tooltip title="Copy Database">
           <IconButton edge="end" onClick={duplicate}>

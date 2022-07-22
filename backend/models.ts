@@ -11,7 +11,7 @@ const mysql = require('mysql2/promise');
 
 // URI Format: postgres://username:password@hostname:port/databasename
 // Note: User must have a 'postgres' role set-up prior to initializing this connection. https://www.postgresql.org/docs/13/database-roles.html
-const PG_URI: string = 'postgres://postgres:postgres@localhost:5432';
+const PG_URI: string = 'postgres://postgres:charm1ander@localhost:5432';
 
 // URI Format: mysql://user:pass1@mysql:3306/databasename
 const MSQL_URI: string = 'mysql://user:pass1@mysql:3306';
@@ -21,7 +21,7 @@ let msql_pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
   password: 'lynt4lyfe',
-  database: 'seeqr',
+  database: '',
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
@@ -104,7 +104,7 @@ const getColumnObjects = function (
         const columnInfoArray: ColumnObj[] = [];
 
         for (let i = 0; i < result[0].length; i++) {
-          columnInfoArray.push(result[0]);
+          columnInfoArray.push(result[0][i]);
         }
 
         resolve(columnInfoArray);
@@ -222,9 +222,8 @@ const getDBLists = function (dbType: DBType): Promise<TableDetails[]> {
 
     }
     else if (dbType === DBType.MySQL) {
-
-      //For some reason, mysql's table_schema is what table_catalog is for PG
       query = `SELECT
+      TABLE_CATALOG as table_schema,
       TABLE_SCHEMA as table_catalog,
       TABLE_NAME as table_name
       FROM information_schema.tables
@@ -265,7 +264,7 @@ const getDBLists = function (dbType: DBType): Promise<TableDetails[]> {
 
 // *********************************************************** POSTGRES/MYSQL ************************************************* //
 const PG_DBConnect = async function (db: string) {
-  const newURI = `postgres://postgres:postgres@localhost:5432/${db}`;
+  const newURI = `postgres://postgres:charm1ander@localhost:5432/${db}`;
 
   console.log('Trying URI: ', newURI);
 
@@ -340,51 +339,70 @@ const myObj: MyObj = {
   //      databaseList: { db_name: 'name', db_size: '1000kB' }
   //      tableList: { table_name: 'name', data_type: 'type', columns: [ colObj ], ...etc. }
   //   }
-  getLists(): Promise<DBList> {
+  getLists(dbType?: DBType): Promise<DBList> {
     return new Promise((resolve, reject) => {
       const listObj: DBList = {
         databaseList: [],
         tableList: [], // current database's tables
       };
 
-      //Get initial Postgres DBs
-      Promise.all([getDBNames(DBType.Postgres), getDBLists(DBType.Postgres)])
-        .then((data) => {
-          let [pgDBList, pgTableList] = data;
-          
-          //Get MySQL DBs
-          Promise.all([getDBNames(DBType.MySQL), getDBLists(DBType.MySQL)])
-            .then((data) => {
-              let [msqlDBList, msqlTableList] = data;
-              
-              //Both work so we're gonna spread them.
-              listObj.databaseList = [...msqlDBList, ...pgDBList];
-              listObj.tableList = [...msqlTableList, ...pgTableList];
+      //Get initial postgres dbs
+      getDBNames(DBType.Postgres)
+        .then((pgdata) => {
+          let pgDBList = pgdata;
 
-              console.log('ALL DATABASE LIST: ', listObj.databaseList);
-              console.log('ALL TABLE LIST: ', listObj.tableList);
-              resolve(listObj);
+          //Get MySQL DBs
+          getDBNames(DBType.MySQL)
+            .then((msdata) => {
+              let msqlDBList = msdata;
+
+              listObj.databaseList = [...pgDBList, ...msqlDBList];
             })
-            .catch((err) => { //If MySQL fails, just send PG
+            .catch((err) => {  //MySQL fails... Just get PG!
               listObj.databaseList = pgDBList;
-              listObj.tableList = pgTableList;
-              resolve(listObj);
-            });
-        })
-        .catch((err) => { //If PG fails, try just sending MySQL i guess??
-          //Get MySQL DBs
-          console.log('Couldnt get pg, just getting mysql', err);
-
-          Promise.all([getDBNames(DBType.MySQL), getDBLists(DBType.MySQL)])
-            .then((data) => {
-              [listObj.databaseList, listObj.tableList] = data;
-              resolve(listObj);
             })
-            .catch((err) => {
-              console.log('Everything broke: ', err);
-              reject();
-            }) //Ok nothing works you can properly reject here
-        }); 
+            .finally(() => {
+              if(dbType) {
+                getDBLists(dbType)
+                .then((data) => {
+                  listObj.tableList = data;
+                  resolve(listObj);
+                })
+              }
+              else {
+                resolve(listObj);
+              }
+            })
+        })
+        .catch((err) => {//If PG fails, try just sending MySQL i guess??
+          //Get MySQL DBs
+          getDBNames(DBType.MySQL)
+            .then((msdata) => {
+              listObj.databaseList = msdata;
+            })
+            .catch((err) => {  //We are fucked
+              console.log('Nothing is working! Cant connect to any DB?', err);
+            })
+            .finally(() => {
+              if(dbType) {
+                getDBLists(dbType)
+                .then((data) => {
+                  listObj.tableList = data;
+                  resolve(listObj);
+                })
+              }
+              else {
+                resolve(listObj);
+              }
+            })
+        })
+
+        //Only get what tableList you need! Right now we get nothing...
+        //But when you need it it looks like this!
+        //  getDBLists(DBType.Postgres)
+        //   .then((data) => {
+        //     listObj.tableList = data;
+        //   })
     });
   },
 

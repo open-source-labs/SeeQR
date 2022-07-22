@@ -35,6 +35,7 @@ const DbList = ({
   setDBType
 }: DbListProps) => {  
   const [databases, setDatabases] = useState<string[]>([]);
+  const [dbTypes, setDBTypes] = useState<DBType[]>([]);
   const [openAdd, setOpenAdd] = useState(false);
   const [openDupe, setOpenDupe] = useState(false);
   const [dbToDupe, setDbToDupe] = useState('');
@@ -44,6 +45,7 @@ const DbList = ({
     const dbListFromBackend = (evt: IpcRendererEvent, dbLists: unknown) => {
       if (isDbLists(dbLists)) {
         setDatabases(dbLists.databaseList.map((db) => db.db_name));
+        setDBTypes(dbLists.databaseList.map((db) => db.db_type));
       }
     };
     ipcRenderer.on('db-lists', dbListFromBackend);
@@ -71,7 +73,7 @@ const DbList = ({
     setOpenDupe(false);
   };
 
-  const selectHandler = (dbName: string) => {
+  const selectHandler = (dbName: string, dbType: DBType) => {
     // setSelectedView('dbView');
     if (dbName === selectedDb) return;
     ipcRenderer
@@ -103,7 +105,7 @@ const DbList = ({
             isSelected={selectedDb === dbName}
             select={selectHandler}
             duplicate={() => handleClickOpenDupe(dbName)}
-            dbType={dbType}
+            dbType={dbTypes[databases.indexOf(dbName)]}
           />
         ))}
         {openDupe ? (
