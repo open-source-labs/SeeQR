@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+import DbList from '../frontend/components/sidebar/DbList';
 import { ColumnObj, dbDetails, TableDetails, DBList, DBType } from './BE_types';
 
 const { Pool } = require('pg');
@@ -11,7 +12,7 @@ const mysql = require('mysql2/promise');
 
 // URI Format: postgres://username:password@hostname:port/databasename
 // Note: User must have a 'postgres' role set-up prior to initializing this connection. https://www.postgresql.org/docs/13/database-roles.html
-const PG_URI: string = 'postgres://postgres:postgres@localhost:5432';
+const PG_URI: string = 'postgres://postgres:charm1ander@localhost:5432';
 
 // URI Format: mysql://user:pass1@mysql:3306/databasename
 const MSQL_URI: string = 'mysql://user:pass1@mysql:3306';
@@ -153,25 +154,30 @@ const getDBNames = function (dbType: DBType): Promise<dbDetails[]> {
         resolve(dbList);
       })
       .catch((err) => {
+        console.log('POSTGRES CONNECTION ERR: ', err);
         reject(err);
       });
     }
     else if (dbType === DBType.MySQL) {
-      query = `SELECT
-      table_schema AS db_name,
-      ROUND(SUM(data_length + index_length) / 1024 / 1024, 1) AS db_size
+      query = `
+      SELECT table_schema db_name,
+      ROUND(SUM(data_length + index_length) / 1024, 1) db_size
+
       FROM information_schema.tables
-      WHERE table_schema NOT IN("information_schema", "performance_schema", "mysql") GROUP BY table_schema
+      WHERE table_schema NOT IN("information_schema", "performance_schema", "mysql")
+      GROUP BY table_schema
+
       AND table_schema != "sys";`;
 
-      //Fryer fix:
-      /*
+      /* Fryer fix:
       SELECT table_schema db_name,
-      ROUND(SUM(data_length + index_length) / 1024 / 1024, 1) db_size
+      ROUND(SUM(data_length + index_length) / 1024, 1) db_size
       
       FROM information_schema.tables 
       WHERE table_schema NOT IN("information_schema", "performance_schema", "mysql", "sys")
       GROUP BY table_schema;
+
+      AND table_schema != "sys";
       */
       
       msql_pool
@@ -244,15 +250,29 @@ const getDBLists = function (dbType: DBType, dbName: string): Promise<TableDetai
         });
     }
     else if (dbType === DBType.MySQL) {
+      //Notice that TABLE_CATALOG is set to table_schema
+      //And that TABLE_SCHEMA is set to table_catalog
+      //This is because PG and MySQL have these flipped (For whatever reason)
       query = `SELECT
       TABLE_CATALOG as table_schema,
       TABLE_SCHEMA as table_catalog,
       TABLE_NAME as table_name
       FROM information_schema.tables
-      WHERE table_schema NOT IN("information_schema", "performance_schema", "mysql")
-      AND table_schema != "sys"
-      AND table_name = "${dbName}"
+      WHERE TABLE_SCHEMA NOT IN("information_schema", "performance_schema", "mysql")
+      AND TABLE_SCHEMA = "${dbName}"
       ORDER BY table_name;`;
+
+      console.log('Attempting to get DBLists with this query: ', query);
+      /*
+      SELECT
+      TABLE_CATALOG as table_schema,
+      TABLE_SCHEMA as table_catalog,
+      TABLE_NAME as table_name
+      FROM information_schema.tables
+      WHERE TABLE_SCHEMA NOT IN("information_schema", "performance_schema", "mysql")
+      AND TABLE_SCHEMA = "seeqr"
+      ORDER BY table_name;
+      */
 
       msql_pool
         .query(query)
@@ -289,7 +309,7 @@ const getDBLists = function (dbType: DBType, dbName: string): Promise<TableDetai
 
 // *********************************************************** POSTGRES/MYSQL ************************************************* //
 const PG_DBConnect = async function (db: string) {
-  const newURI = `postgres://postgres:postgres@localhost:5432/${db}`;
+  const newURI = `postgres://postgres:charm1ander@localhost:5432/${db}`;
 
   console.log('Trying URI: ', newURI);
 
