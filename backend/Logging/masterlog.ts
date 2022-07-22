@@ -32,6 +32,14 @@ const logger: Logger = {
             case LogType.WARNING: //YELLOW
                 colorCode = 33;
                 break;
+            
+            case LogType.SEND: //BLUE
+                colorCode = 34;
+                break;
+
+            case LogType.SEND: //MAGENTA
+                colorCode = 35;
+                break;
 
             case LogType.NORMAL: //WHITE (And change logType string)
                 colorCode = 0;
