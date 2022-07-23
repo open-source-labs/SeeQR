@@ -24,7 +24,7 @@ const mysql = require('mysql2/promise');
 
 // URI Format: postgres://username:password@hostname:port/databasename
 // Note: User must have a 'postgres' role set-up prior to initializing this connection. https://www.postgresql.org/docs/13/database-roles.html
-const PG_URI: string = 'postgres://postgres:charm1ander@localhost:5432';
+const PG_URI: string = 'postgres://postgres:woot@localhost:5432';
 
 // URI Format: mysql://user:pass1@mysql:3306/databasename
 const MSQL_URI: string = 'mysql://user:pass1@mysql:3306';
