@@ -151,7 +151,7 @@ const getDBNames = function (dbType: DBType): Promise<dbDetails[]> {
           }
         }
 
-        logger('PG \'getDBNames\' resolved to: ', LogType.SUCCESS, dbList);
+        logger('PG \'getDBNames\' resolved.', LogType.SUCCESS);
         // resolve with array of db names
         resolve(dbList);
       })
@@ -182,7 +182,7 @@ const getDBNames = function (dbType: DBType): Promise<dbDetails[]> {
           }
         }
 
-        logger('MySQL \'getDBNames\' resolved to: ', LogType.SUCCESS, dbList);
+        logger('MySQL \'getDBNames\' resolved.', LogType.SUCCESS);
         // resolve with array of db names
         resolve(dbList);
       })
@@ -226,7 +226,7 @@ const getDBLists = function (dbType: DBType, dbName: string): Promise<TableDetai
                 tableList[i].columns = columnInfo[i];
               }
 
-              logger('PG \'getDBLists\' resolved to: ', LogType.SUCCESS, tableList);
+              logger('PG \'getDBLists\' resolved.', LogType.SUCCESS);
               resolve(tableList);
             })
             .catch((err) => {
@@ -269,7 +269,7 @@ const getDBLists = function (dbType: DBType, dbName: string): Promise<TableDetai
                 tableList[i].columns = columnInfo[i];
               }
 
-              logger('MySQL \'getDBLists\' resolved to: ', LogType.SUCCESS, tableList);
+              logger('MySQL \'getDBLists\' resolved.', LogType.SUCCESS);
               resolve(tableList);
             })
             .catch((err) => {

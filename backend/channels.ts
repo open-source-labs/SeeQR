@@ -56,9 +56,6 @@ ipcMain.handle(
 
     event.sender.send('async-started');
     try {
-
-      console.log('Trying to connect to: ' + dbName + ' with DBType of ', dbType);
-
       await db.connectToDB(dbName, dbType);
 
       // send updated db info
