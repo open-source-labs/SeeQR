@@ -1,3 +1,6 @@
+/* eslint-disable func-names */
+/* eslint-disable no-plusplus */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-else-return */
 /* eslint-disable no-console */
 import DbList from '../frontend/components/sidebar/DbList';
@@ -125,6 +128,7 @@ const getColumnObjects = function (
     });
   } else {
     logger('Trying to use unknown DB Type: ', LogType.ERROR, dbType);
+    // eslint-disable-next-line no-throw-literal
     throw 'Unknown db type';
   }
 };
@@ -307,32 +311,32 @@ const getDBLists = function (
 
 // *********************************************************** POSTGRES/MYSQL ************************************************* //
 const PG_DBConnect = async function (db: string) {
-  const newURI = `postgres://postgres:charm1ander@localhost:5432/${db}`;
+  const newURI = `postgres://postgres:postgres@localhost:5432/${db}`;
   const newPool = new Pool({ connectionString: newURI });
   await pg_pool.end();
   pg_pool = newPool;
 
-  logger('New pool URI set: ' + newURI, LogType.SUCCESS);
+  logger(`New pool URI set: ${newURI}`, LogType.SUCCESS);
 };
 
 const MSQL_DBConnect = function (db: string) {
-  // msql_pool = mysql.createPool({
-  //   host: 'localhost',
-  //   user: 'root',
-  //   password: 'Hello123!',
-  //   database: db,
-  //   waitForConnections: true,
-  //   connectionLimit: 10,
-  //   queueLimit: 0,
-  // });
+  msql_pool = mysql.createPool({
+    host: 'localhost',
+    user: 'root',
+    password: 'Hello123!',
+    database: db,
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0,
+  });
 
   msql_pool
     .query(`USE ${db};`)
     .then(() => {
-      logger('Connected to MSQL DB: ' + db, LogType.SUCCESS);
+      logger(`Connected to MSQL DB: ${db}`, LogType.SUCCESS);
     })
     .catch((err) => {
-      logger('Couldnt connect to MSQL DB: ' + db, LogType.ERROR);
+      logger(`Couldnt connect to MSQL DB: ${db}`, LogType.ERROR);
     });
 };
 
@@ -353,7 +357,7 @@ interface MyObj {
 const myObj: MyObj = {
   // Run any query
   query(text, params, callback, dbType: DBType) {
-    logger('Attempting to run query: \n' + text);
+    logger(`Attempting to run query: \n${text}`);
     if (dbType === DBType.Postgres) {
       return pg_pool.query(text, params, callback);
     } else {
@@ -364,12 +368,9 @@ const myObj: MyObj = {
   },
 
   // Change current Db
-  connectToDB: async function (db: string, dbType: DBType) {
+  async connectToDB(db: string, dbType: DBType) {
     logger(
-      'Starting connect to DB: ' +
-        db +
-        ' With a dbType of: ' +
-        dbType.toString()
+      `Starting connect to DB: ${db} With a dbType of: ${dbType.toString()}`
     );
 
     if (dbType === DBType.Postgres) {
@@ -419,10 +420,7 @@ const myObj: MyObj = {
                 getDBLists(dbType, dbName)
                   .then((data) => {
                     logger(
-                      'RESOLVING DB DETAILS: Fetched DB names along with Table List for DBType: ' +
-                        dbType +
-                        ' and DB: ' +
-                        dbName,
+                      `RESOLVING DB DETAILS: Fetched DB names along with Table List for DBType: ${dbType} and DB: ${dbName}`,
                       LogType.SUCCESS
                     );
                     listObj.tableList = data;
@@ -430,7 +428,7 @@ const myObj: MyObj = {
                   })
                   .catch((err) => {
                     logger(
-                      'Error getting tableList details: ' + err.message,
+                      `Error getting tableList details: ${err.message}`,
                       LogType.ERROR
                     );
                   });
@@ -456,10 +454,7 @@ const myObj: MyObj = {
                 getDBLists(dbType, dbName)
                   .then((data) => {
                     logger(
-                      'RESOLVING DB DETAILS: Fetched DB names along with Table List for DBType: ' +
-                        dbType +
-                        ' and DB: ' +
-                        dbName,
+                      `RESOLVING DB DETAILS: Fetched DB names along with Table List for DBType: ${dbType} and DB: ${dbName}`,
                       LogType.SUCCESS
                     );
                     listObj.tableList = data;
@@ -467,7 +462,7 @@ const myObj: MyObj = {
                   })
                   .catch((err) => {
                     logger(
-                      'Error getting tableList details: ' + err.message,
+                      `Error getting tableList details: ${err.message}`,
                       LogType.ERROR
                     );
                   });
@@ -479,7 +474,7 @@ const myObj: MyObj = {
             .catch((err) => {
               // Bad
               logger(
-                'Could not connect to either PG or MySQL: ' + err.message,
+                `Could not connect to either PG or MySQL: ${err.message}`,
                 LogType.ERROR
               );
               throw err;
