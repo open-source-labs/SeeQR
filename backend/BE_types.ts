@@ -51,3 +51,10 @@ export enum LogType {
   SEND = 'SEND',
   RECEIVE = 'RECEIVE'
 }
+
+export interface DocConfigFile {
+  mysql_user: string,
+  mysql_pass: string,
+  pg_user: string,
+  pg_pass: string
+}
