@@ -345,3 +345,10 @@ export enum DBType {
   Postgres = 'pg',
   MySQL = 'mysql'
 }
+
+export interface DocConfigFile {
+  mysql_user: string,
+  mysql_pass: string,
+  pg_user: string,
+  pg_pass: string
+}
