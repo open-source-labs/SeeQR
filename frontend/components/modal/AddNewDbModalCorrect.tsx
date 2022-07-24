@@ -21,11 +21,11 @@ interface ImportPayload {
 type AddNewDbModalProps = {
   open: boolean;
   onClose: () => void;
-  databases: string[];
-  dbType: DBType;
+  dbNames: string[] | undefined;
+  curDBType: DBType | undefined;
 };
 
-const AddNewDbModal = ({ open, onClose, databases, dbType }: AddNewDbModalProps) => {
+const AddNewDbModal = ({ open, onClose, dbNames, curDBType }: AddNewDbModalProps) => {
   const [newDbName, setNewDbName] = useState('');
   const [isError, setIsError] = useState(false);
   const [isEmpty, setIsEmpty] = useState(true);
@@ -60,7 +60,7 @@ const AddNewDbModal = ({ open, onClose, databases, dbType }: AddNewDbModalProps)
     let dbSafeName = dbNameInput;
     // convert input label name to lowercase only with no spacing to comply with db naming convention.
     dbSafeName = dbSafeName.replace(/[^\w-]/gi, '');
-    if (databases.includes(dbSafeName)) {
+    if (dbNames?.includes(dbSafeName)) {
       setIsError(true);
     } else {
       setIsError(false);
@@ -92,7 +92,7 @@ const AddNewDbModal = ({ open, onClose, databases, dbType }: AddNewDbModalProps)
           filePath: result.filePaths[0],
         };
 
-        ipcRenderer.invoke('import-db', payload, dbType).catch(() =>
+        ipcRenderer.invoke('import-db', payload, curDBType).catch(() =>
           sendFeedback({
             type: 'error',
             message: 'Failed to import database',

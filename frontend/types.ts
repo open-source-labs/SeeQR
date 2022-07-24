@@ -27,8 +27,14 @@ export interface AppState {
   setFilePath: (filePath: string) => void;
   newFilePath: string;
   setERView?: (boolean) => void;
-  dbType: DBType;
-  setDBType: (DBType) => void;
+  curDBType: DBType | undefined;
+  setDBType: (dbType: DBType | undefined) => void;
+  DBInfo: DatabaseInfo[] | undefined;
+  setDBInfo: (dbInfo: DatabaseInfo[] | undefined) => void;
+  dbTables: TableInfo[];
+  setTables: (tableInfo: TableInfo[]) => void;
+  selectedTable: TableInfo | undefined;
+  setSelectedTable: (tableInfo: TableInfo | undefined) => void;
 }
 
 export interface FilePath {

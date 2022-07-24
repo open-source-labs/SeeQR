@@ -64,8 +64,14 @@ const Sidebar = ({
   setFilePath,
   newFilePath,
   setERView,
-  dbType,
-  setDBType
+  curDBType,
+  setDBType,
+  DBInfo,
+  setDBInfo,
+  dbTables,
+  setTables,
+  selectedTable,
+  setSelectedTable,
 }: AppState) => {
 
   const toggleOpen = () => setSidebarHidden(!sidebarIsHidden);
@@ -97,8 +103,14 @@ const Sidebar = ({
           setSelectedDb={setSelectedDb}
           show={selectedView === 'dbView' || selectedView === 'quickStartView' || selectedView === 'newSchemaView'}
           setSelectedView={setSelectedView}
-          dbType={dbType}
+          curDBType={curDBType}
           setDBType={setDBType}
+          DBInfo={DBInfo}
+          setDBInfo={setDBInfo}
+          dbTables={dbTables}
+          setTables={setTables}
+          selectedTable={selectedTable}
+          setSelectedTable={setSelectedTable}
         />
         <QueryList
           setComparedQueries={setComparedQueries}
@@ -117,7 +129,10 @@ const Sidebar = ({
           selectedView={selectedView}
           setSelectedView={setSelectedView}
           setSelectedDb={setSelectedDb}
-          dbType={dbType}
+          curDBType={curDBType}
+          setDBType={setDBType}
+          DBInfo={DBInfo}
+          setDBInfo={setDBInfo}
         />
         <Logo src={logo} alt="Logo" />
       </StyledDrawer>
