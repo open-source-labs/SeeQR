@@ -525,6 +525,7 @@ ipcMain.handle(
 );
 
 // Generate and run query from react-flow ER diagram
+<<<<<<< HEAD
 ipcMain.handle(
   'ertable-schemaupdate',
   async (event, backendObj, dbType: DBType) => {
@@ -551,6 +552,44 @@ ipcMain.handle(
     } catch (err: any) {
       // rollback transaction if there's an error in update and send back feedback to FE
       await db.query('Rollback;');
+=======
+ipcMain.handle('ertable-schemaupdate',
+async (event, backendObj, dbName: string, dbType: DBType) => {
+  logger('Received \'ertable-schemaupdate\' with dbType: ' + dbType + ', dbName: ' + dbName + ', and backendObj: ', LogType.RECEIVE, backendObj);
+  // send notice to front end that schema update has started
+  event.sender.send('async-started');
+
+  let feedback: Feedback = {
+    type: '',
+    message: '',
+  };
+  try {
+    // Generates query from backendObj
+    const query = backendObjToQuery(backendObj);
+    // run sql command
+    await db.query('Begin;', null, dbType);
+    await db.query(query, null, dbType);
+    await db.query('Commit;', null, dbType);
+    feedback = {
+      type: 'success',
+      message: 'Database updated successfully.',
+    };
+    return 'success';
+  }
+  catch (err: any) {
+    // rollback transaction if there's an error in update and send back feedback to FE
+    await db.query('Rollback;', null, dbType);
+  
+    feedback = {
+      type: 'error',
+      message: err,
+    };
+  }
+  finally {
+    // send updated db info
+    const updatedDb: DBList = await db.getLists(dbName, dbType);
+    event.sender.send('db-lists', updatedDb);
+>>>>>>> dev
 
       feedback = {
         type: 'error',

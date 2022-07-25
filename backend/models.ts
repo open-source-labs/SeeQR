@@ -330,7 +330,6 @@ interface MyObj {
   query: (
     text: string,
     params: (string | number)[],
-    callback: Function,
     dbType: DBType
   ) => Function;
   connectToDB: (db: string, dbType: DBType) => Promise<void>;
@@ -371,6 +370,7 @@ const myObj: MyObj = {
   },
 
   // Run any query
+<<<<<<< HEAD
   query(text, params, callback, dbType: DBType) {
     logger(`Attempting to run query: \n${text}`);
     if (dbType === DBType.Postgres) {
@@ -379,6 +379,15 @@ const myObj: MyObj = {
       return msql_pool.query(text, params).then((data) => {
         callback(data);
       });
+=======
+  query(text, params, dbType: DBType) {
+    logger('Attempting to run query: \n' + text);
+    if(dbType === DBType.Postgres) {
+      return pg_pool.query(text, params);
+    }
+    else if(dbType === DBType.MySQL) {
+      return msql_pool.query(text, params);
+>>>>>>> dev
     }
   },
 
