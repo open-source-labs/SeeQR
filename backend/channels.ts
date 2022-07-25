@@ -114,7 +114,7 @@ ipcMain.handle(
 
       // drop db
       const dropDBScript = dropDBFunc(dbName, dbType);
-      await db.query(dropDBScript);
+      await db.query(dropDBScript, null, dbType);
 
       // send updated db info
       const dbsAndTables: DBList = await db.getLists();
