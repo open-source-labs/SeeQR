@@ -110,6 +110,8 @@ const NewSchemaView = ({
   const [currentSql, setCurrentSql] = useState('');
   // const [open, setOpen] = useState(false);
   
+  const TEMP_DBTYPE = DBType.Postgres;
+
   const defaultQuery: QueryData = {
     label: '', // required by QueryData interface, but not necessary for this view
     db: '', // name that user inputs in SchemaName.tsx
@@ -138,7 +140,7 @@ const NewSchemaView = ({
     ipcRenderer.invoke(
       'initialize-db', {
         newDbName: localQuery.db,
-      }, curDBType)
+      }, TEMP_DBTYPE)
       .catch((err) => {
         sendFeedback({
           type: 'error',
