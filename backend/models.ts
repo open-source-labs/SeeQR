@@ -1,3 +1,4 @@
+/* eslint-disable no-shadow */
 /* eslint-disable func-names */
 /* eslint-disable no-plusplus */
 /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -343,8 +344,8 @@ const myObj: MyObj = {
   curPG_DB: '',
   curMSQL_DB: '',
 
-  //Setting starting connection
-  setBaseConnections: async function () {
+  // Setting starting connection
+  async setBaseConnections() {
     const PG_Cred = docConfig.getCredentials(DBType.Postgres);
     const MSQL_Cred = docConfig.getCredentials(DBType.MySQL);
 

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { ipcMain } from 'electron'; // IPCMain: Communicate asynchronously from the main process to renderer processes
 import path from 'path';
 import fs from 'fs';
@@ -473,11 +474,11 @@ ipcMain.handle(
       const dbsAndTableInfo: DBList = await db.getLists();
       event.sender.send('db-lists', dbsAndTableInfo);
       logger("Sent 'db-lists' from 'initialize-db'", LogType.SEND);
-    } catch (e) {
-      // in the case of an error, delete the created db
-      const dropDBScript = dropDBFunc(newDbName, dbType);
-      await db.query(dropDBScript);
-      throw new Error('Failed to initialize new database');
+      // } catch (e) {
+      //   // in the case of an error, delete the created db
+      //   const dropDBScript = dropDBFunc(newDbName, dbType);
+      //   await db.query(dropDBScript);
+      //   throw new Error('Failed to initialize new database');
     } finally {
       event.sender.send('async-complete');
     }

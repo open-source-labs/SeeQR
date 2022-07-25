@@ -1,7 +1,7 @@
 /* eslint-disable no-throw-literal */
 /* eslint-disable no-shadow */
 /* eslint-disable object-shorthand */
-import path from 'path';
+// import path from 'path';
 import fs from 'fs';
 import os from 'os';
 import { DBType, DocConfigFile, LogType } from './BE_types';
