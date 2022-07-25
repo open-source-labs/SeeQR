@@ -525,34 +525,6 @@ ipcMain.handle(
 );
 
 // Generate and run query from react-flow ER diagram
-<<<<<<< HEAD
-ipcMain.handle(
-  'ertable-schemaupdate',
-  async (event, backendObj, dbType: DBType) => {
-    logger("Received 'ertable-schemaupdate'", LogType.RECEIVE);
-    // send notice to front end that schema update has started
-    event.sender.send('async-started');
-
-    let feedback: Feedback = {
-      type: '',
-      message: '',
-    };
-    try {
-      // Generates query from backendObj
-      const query = backendObjToQuery(backendObj);
-      // run sql command
-      await db.query('Begin;');
-      await db.query(query);
-      await db.query('Commit;');
-      feedback = {
-        type: 'success',
-        message: 'Database updated successfully.',
-      };
-      return 'success';
-    } catch (err: any) {
-      // rollback transaction if there's an error in update and send back feedback to FE
-      await db.query('Rollback;');
-=======
 ipcMain.handle('ertable-schemaupdate',
 async (event, backendObj, dbName: string, dbType: DBType) => {
   logger('Received \'ertable-schemaupdate\' with dbType: ' + dbType + ', dbName: ' + dbName + ', and backendObj: ', LogType.RECEIVE, backendObj);
@@ -589,7 +561,6 @@ async (event, backendObj, dbName: string, dbType: DBType) => {
     // send updated db info
     const updatedDb: DBList = await db.getLists(dbName, dbType);
     event.sender.send('db-lists', updatedDb);
->>>>>>> dev
 
       feedback = {
         type: 'error',

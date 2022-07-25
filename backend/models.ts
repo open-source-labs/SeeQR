@@ -370,24 +370,12 @@ const myObj: MyObj = {
   },
 
   // Run any query
-<<<<<<< HEAD
-  query(text, params, callback, dbType: DBType) {
-    logger(`Attempting to run query: \n${text}`);
-    if (dbType === DBType.Postgres) {
-      return pg_pool.query(text, params, callback);
-    } else {
-      return msql_pool.query(text, params).then((data) => {
-        callback(data);
-      });
-=======
   query(text, params, dbType: DBType) {
     logger('Attempting to run query: \n' + text);
-    if(dbType === DBType.Postgres) {
+    if (dbType === DBType.Postgres) {
       return pg_pool.query(text, params);
-    }
-    else if(dbType === DBType.MySQL) {
+    } else if (dbType === DBType.MySQL) {
       return msql_pool.query(text, params);
->>>>>>> dev
     }
   },
 
