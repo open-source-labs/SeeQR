@@ -9,6 +9,7 @@ import backendObjToQuery from './ertable-functions';
 import logger from './Logging/masterlog';
 
 const db = require('./models');
+const docConfig = require('./_documentsConfig');
 
 const {
   createDBFunc,
@@ -144,11 +145,7 @@ ipcMain.handle(
     event.sender.send('async-started');
 
     // store temporary file in user desktop
-    const tempFilePath = path.resolve(
-      os.homedir(),
-      'desktop',
-      `temp_${newName}.sql`
-    );
+    const tempFilePath = path.resolve(docConfig.getConfigFolder() + '\\', `temp_${newName}.sql`);
 
     try {
       // dump database to temp file

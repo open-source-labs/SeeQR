@@ -47,7 +47,6 @@ const docConfig: DocConfig = {
     getConfigFolder: function() {
         if(fs.existsSync(home)) {
             logger('Found documents directory: ' + home, LogType.SUCCESS);
-            readConfigFile();
         }
         else {
             logger('Could not find documents directory. Creating at: ' + home, LogType.WARNING);
