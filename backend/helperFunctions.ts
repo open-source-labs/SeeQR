@@ -31,7 +31,7 @@ const helperFunctions: HelperFunctions = {
   createDBFunc: function (name, dbType: DBType) {
     const PG = `CREATE DATABASE "${name}"`;
     // might need to use the USE keyword after creating database
-    const MYSQL = `CREATE DATABASE "${name}"`;
+    const MYSQL = `CREATE DATABASE ${name}`;
     // const mySQLUse = `USE DATABASE "${name}"`;
 
     console.log('RETURNING DB: ', DBType.Postgres ? PG : MYSQL);
