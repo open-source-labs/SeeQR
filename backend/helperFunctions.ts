@@ -46,7 +46,7 @@ const helperFunctions: HelperFunctions = {
   // drop provided database
   dropDBFunc: function (dbName, dbType: DBType) {
     const PG = `DROP DATABASE "${dbName}"`;
-    const MYSQL = `DROP DATABASE "${dbName}"`;
+    const MYSQL = `DROP DATABASE ${dbName}`;
 
     return dbType === DBType.Postgres ? PG : MYSQL;
     // return `DROP DATABASE "${dbName}"`;
