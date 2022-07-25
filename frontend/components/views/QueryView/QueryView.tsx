@@ -8,6 +8,7 @@ import {
   AppState,
   isDbLists,
   DBType,
+  DatabaseInfo,
 } from '../../../types';
 import { defaultMargin } from '../../../style-variables';
 import { getPrettyTime } from '../../../lib/queries';
@@ -19,9 +20,6 @@ import QueryTopSummary from './QueryTopSummary';
 import QuerySqlInput from './QuerySqlInput';
 import QuerySummary from './QuerySummary';
 import QueryTabs from './QueryTabs';
-
-// emitting with no payload requests backend to send back a db-lists event with list of dbs
-const requestDbListOnce = once(() => ipcRenderer.send('return-db-list'));
 
 const TopRow = styled(Box)`
   display: flex;
@@ -53,7 +51,10 @@ interface QueryViewProps {
   setQuery: AppState['setWorkingQuery'];
   show: boolean;
   queries: Record<string, QueryData>;
-  dbType: DBType;
+  curDBType: DBType | undefined;
+  setDBType: (dbType: DBType | undefined) => void;
+  DBInfo: DatabaseInfo[] | undefined;
+  setDBInfo: (dbInfo: DatabaseInfo[] | undefined) => void;
 }
 
 const QueryView = ({
@@ -64,9 +65,15 @@ const QueryView = ({
   setQuery,
   show,
   queries,
-  dbType
+  curDBType,
+  setDBType,
+  DBInfo,
+  setDBInfo
 }: QueryViewProps) => {
-  const [databases, setDatabases] = useState<string[]>([]);
+  // const [databases, setDatabases] = useState<string[]>([]);
+
+  //I think this returns undefined if DBInfo is falsy idk lol
+  const dbNames = DBInfo?.map((dbi) => dbi.db_name);
 
   const defaultQuery: QueryData = {
     label: '',
@@ -76,21 +83,6 @@ const QueryView = ({
   };
 
   const localQuery = { ...defaultQuery, ...query };
-
-  // Register event listener that receives database list for db selector
-  useEffect(() => {
-    const receiveDbs = (evt: IpcRendererEvent, dbLists: unknown) => {
-      if (isDbLists(dbLists)) {
-        setDatabases(dbLists.databaseList.map((db) => db.db_name));
-      }
-    };
-    ipcRenderer.on('db-lists', receiveDbs);
-    requestDbListOnce();
-
-    return () => {
-      ipcRenderer.removeListener('db-lists', receiveDbs);
-    }
-  });
 
   const onLabelChange = (newLabel: string) => {
     setQuery({ ...localQuery, label: newLabel });
@@ -105,7 +97,7 @@ const QueryView = ({
     // request updates for db and table information. Otherwise database view tab
     // will show wrong informatio
     ipcRenderer
-      .invoke('select-db', newDb, dbType)
+      .invoke('select-db', newDb, curDBType)
       .then(() => {
         setQuery({ ...localQuery, db: newDb });
         setSelectedDb(newDb);
@@ -145,7 +137,7 @@ const QueryView = ({
         targetDb: localQuery.db,
         sqlString: localQuery.sqlString,
         selectedDb,
-      }, dbType)
+      }, curDBType)
       .then(({ db, sqlString, returnedRows, explainResults, error }) => {
         if (error) {
           throw error
@@ -193,7 +185,7 @@ const QueryView = ({
         <QueryDb
           db={localQuery.db}
           onChange={onDbChange}
-          databases={databases}
+          dbNames={dbNames}
         />
         <QueryTopSummary
           rows={query?.returnedRows?.length}

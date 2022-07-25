@@ -1,9 +1,12 @@
 /* eslint-disable no-console */
+import { rejects } from 'assert';
+import { resolve } from 'path';
 import DbList from '../frontend/components/sidebar/DbList';
 import { ColumnObj, dbDetails, TableDetails, DBList, DBType, LogType } from './BE_types';
 import logger from './Logging/masterlog';
 
 const { Pool } = require('pg');
+const docConfig = require('./_documentsConfig');
 const mysql = require('mysql2/promise');
 
 // commented out because queries are no longer being used but good to keep as a reference
@@ -11,23 +14,8 @@ const mysql = require('mysql2/promise');
 
 // *********************************************************** INITIALIZE TO DEFAULT DB ************************************************* //
 
-// URI Format: postgres://username:password@hostname:port/databasename
-// Note: User must have a 'postgres' role set-up prior to initializing this connection. https://www.postgresql.org/docs/13/database-roles.html
-const PG_URI: string = 'postgres://postgres:charm1ander@localhost:5432';
-
-// URI Format: mysql://user:pass1@mysql:3306/databasename
-const MSQL_URI: string = 'mysql://user:pass1@mysql:3306';
-
-let pg_pool = new Pool({ connectionString: PG_URI });
-let msql_pool = mysql.createPool({
-  host: 'localhost',
-  user: 'root',
-  password: 'lynt4lyfe',
-  database: '',
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
-});
+let pg_pool;
+let msql_pool;
 
 // *********************************************************** HELPER FUNCTIONS ************************************************* //
 
@@ -284,12 +272,11 @@ const getDBLists = function (dbType: DBType, dbName: string): Promise<TableDetai
 };
 
 // *********************************************************** POSTGRES/MYSQL ************************************************* //
-const PG_DBConnect = async function (db: string) {
-  const newURI = `postgres://postgres:charm1ander@localhost:5432/${db}`;
+const PG_DBConnect = async function (pg_uri: string, db: string) {
+  const newURI = `${pg_uri}${db}`;
   const newPool = new Pool({ connectionString: newURI });
-  await pg_pool.end();
+  if(pg_pool) await pg_pool.end();
   pg_pool = newPool;
-
   logger('New pool URI set: ' + newURI, LogType.SUCCESS);
 };
 
@@ -315,6 +302,10 @@ const MSQL_DBConnect = function (db: string) {
 
 // *********************************************************** MAIN QUERY FUNCTIONS ************************************************* //
 interface MyObj {
+  pg_uri: string;
+  curPG_DB: string;
+  curMSQL_DB: string;
+  setBaseConnections: () => Promise<void>;
   query: (
     text: string,
     params: (string | number)[],
@@ -328,6 +319,36 @@ interface MyObj {
 
 // eslint-disable-next-line prefer-const
 const myObj: MyObj = {
+  pg_uri: '',
+  curPG_DB: '',
+  curMSQL_DB: '',
+
+  //Setting starting connection
+  setBaseConnections: async function() {
+    const PG_Cred = docConfig.getCredentials(DBType.Postgres);
+    const MSQL_Cred = docConfig.getCredentials(DBType.MySQL);
+
+    // URI Format: postgres://username:password@hostname:port/databasename
+    // Note: User must have a 'postgres' role set-up prior to initializing this connection. https://www.postgresql.org/docs/13/database-roles.html
+    // ^Unknown if this rule is still true
+    if(pg_pool) await pg_pool.end();
+
+    this.pg_uri = `postgres://${PG_Cred.user}:${PG_Cred.pass}@localhost:5432/${this.curPG_DB}`;
+    pg_pool = new Pool({ connectionString: this.pg_uri })
+
+    if(msql_pool) await msql_pool.end();
+
+    msql_pool = mysql.createPool({
+      host: 'localhost',
+      user: MSQL_Cred.user,
+      password: MSQL_Cred.pass,
+      database: this.curMSQL_DB,
+      waitForConnections: true,
+      connectionLimit: 10,
+      queueLimit: 0,
+    });
+  },  
+
   // Run any query
   query(text, params, callback, dbType: DBType) {
     logger('Attempting to run query: \n' + text);
@@ -347,9 +368,11 @@ const myObj: MyObj = {
     logger('Starting connect to DB: ' + db + ' With a dbType of: ' + dbType.toString());
 
     if(dbType === DBType.Postgres) {
-      await PG_DBConnect(db);
+      this.curPG_DB = db;
+      await PG_DBConnect(this.pg_uri, db);
     }
     else if (dbType === DBType.MySQL) {
+      this.curMSQL_DB = db;
       await MSQL_DBConnect(db);
     }
   },
@@ -365,6 +388,7 @@ const myObj: MyObj = {
   getLists(dbName: string = '', dbType?: DBType): Promise<DBList> {
     return new Promise((resolve, reject) => {
       const listObj: DBList = {
+        databaseConnected: [false, false],
         databaseList: [],
         tableList: [], // current database's tables
       };
@@ -373,11 +397,14 @@ const myObj: MyObj = {
       getDBNames(DBType.Postgres)
         .then((pgdata) => {
           const pgDBList = pgdata;
+          listObj.databaseConnected[0] = true;
 
           //Get MySQL DBs
           getDBNames(DBType.MySQL)
             .then((msdata) => {
               const msqlDBList = msdata;
+              listObj.databaseConnected[1] = true;
+
               logger('Got DB Names for both PG and MySQL!', LogType.SUCCESS);
               listObj.databaseList = [...pgDBList, ...msqlDBList];
             })

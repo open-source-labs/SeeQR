@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { MuiThemeProvider } from '@material-ui/core/';
 import { StylesProvider } from '@material-ui/core/styles';
@@ -11,7 +11,7 @@ import {
   sidebarShowButtonSize,
 } from '../style-variables';
 import GlobalStyle from '../GlobalStyle';
-import { AppState, CreateNewQuery, QueryData, DBType } from '../types';
+import { AppState, CreateNewQuery, QueryData, DBType, isDbLists, DatabaseInfo, TableInfo, DbLists } from '../types';
 import { createQuery, key } from '../lib/queries';
 import Sidebar from './sidebar/Sidebar';
 import QueryView from './views/QueryView/QueryView';
@@ -21,6 +21,8 @@ import QuickStartView from './views/QuickStartView';
 import NewSchemaView from './views/NewSchemaView/NewSchemaView';
 import FeedbackModal from './modal/FeedbackModal';
 import Spinner from './modal/Spinner';
+import { once, } from './../lib/utils';
+import { IpcRendererEvent, ipcRenderer } from 'electron';
 
 const AppContainer = styled.div`
   display: grid;
@@ -38,6 +40,9 @@ const Main = styled.main<{ $fullwidth: boolean }>`
   margin: 0;
 `;
 
+// emitting with no payload requests backend to send back a db-lists event with list of dbs
+const requestDbListOnce = once(() => ipcRenderer.send('return-db-list'));
+
 const App = () => {
   const [queries, setQueries] = useState<AppState['queries']>({});
   const [comparedQueries, setComparedQueries] = useState<AppState['queries']>(
@@ -53,7 +58,34 @@ const App = () => {
   const [newFilePath, setFilePath] = useState<AppState['newFilePath']>('');
   const [ERView, setERView] = useState(true);
 
-  const [dbType, setDBType] = useState(DBType.Postgres);
+  const [DBInfo, setDBInfo] = useState<DatabaseInfo[]>();
+  const [curDBType, setDBType] = useState<DBType>();
+
+  const [dbTables, setTables] = useState<TableInfo[]>([]);
+  const [selectedTable, setSelectedTable] = useState<TableInfo | undefined>();
+
+  const [PG_isConnected, setPGStatus] = useState(false);
+  const [MYSQL_isConnected, setMYSQLStatus] = useState(false);
+  
+  useEffect(() => {
+    // Listen to backend for updates to list of available databases
+    const dbListFromBackend = (evt: IpcRendererEvent, dbLists: DbLists) => {
+      if (isDbLists(dbLists)) {
+        setDBInfo(dbLists.databaseList);
+        setTables(dbLists.tableList);
+        setPGStatus(dbLists.databaseConnected[0]);
+        setMYSQLStatus(dbLists.databaseConnected[1]);
+
+        setSelectedTable(selectedTable? selectedTable : dbTables[0]);
+      }
+    };
+    ipcRenderer.on('db-lists', dbListFromBackend);
+    requestDbListOnce();
+    // return cleanup function
+    return () => {
+      ipcRenderer.removeListener('db-lists', dbListFromBackend);
+    };
+  });
 
   /**
    * Hook to create new Query from data
@@ -122,8 +154,14 @@ const App = () => {
               setFilePath,
               newFilePath,
               setERView,
-              dbType,
-              setDBType
+              curDBType,
+              setDBType,
+              DBInfo,
+              setDBInfo,
+              dbTables,
+              setTables,
+              selectedTable,
+              setSelectedTable
             }}
           />
           <Main $fullwidth={sidebarIsHidden}>
@@ -136,7 +174,14 @@ const App = () => {
               show={shownView === 'dbView'}
               setERView={setERView} 
               ERView={ERView}
-              dbType={dbType}
+              curDBType={curDBType}
+              setDBType={setDBType}
+              DBInfo={DBInfo}
+              setDBInfo={setDBInfo}
+              dbTables={dbTables}
+              setTables={setTables}
+              selectedTable={selectedTable}
+              setSelectedTable={setSelectedTable}
             />
             <QueryView
               query={workingQuery}
@@ -146,7 +191,10 @@ const App = () => {
               createNewQuery={createNewQuery}
               show={shownView === 'queryView'}
               queries={queries}
-              dbType={dbType}
+              curDBType={curDBType}
+              setDBType={setDBType}
+              DBInfo={DBInfo}
+              setDBInfo={setDBInfo}
             />
             <QuickStartView show={shownView === 'quickStartView'} />
             <NewSchemaView 
@@ -156,7 +204,14 @@ const App = () => {
               setSelectedDb={setSelectedDb}
               createNewQuery={createNewQuery}
               show={shownView === 'newSchemaView'} 
-              dbType={dbType}
+              curDBType={curDBType}
+              setDBType={setDBType}
+              DBInfo={DBInfo}
+              setDBInfo={setDBInfo}
+              dbTables={dbTables}
+              setTables={setTables}
+              selectedTable={selectedTable}
+              setSelectedTable={setSelectedTable}
             />
           </Main>
           <FeedbackModal />

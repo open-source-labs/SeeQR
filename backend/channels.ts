@@ -9,6 +9,7 @@ import backendObjToQuery from './ertable-functions';
 import logger from './Logging/masterlog';
 
 const db = require('./models');
+const docConfig = require('./_documentsConfig');
 
 const {
   createDBFunc,
@@ -27,23 +28,54 @@ interface Feedback {
   message: string;
 }
 
-// Listen for request from front-end and send back the DB List upon request
-ipcMain.on('return-db-list',
-(event, dbType: DBType = DBType.Postgres) => {
-  logger('Received \'return-db-list\' (Note: No Async being sent here)', LogType.RECEIVE);
-
-  db.getLists()
-    .then((data: DBList) => {
-      event.sender.send('db-lists', data);
-      logger('Sent \'db-lists\' from \'return-db-list\'', LogType.SEND);
+//This isn't being used for anything ATM
+ipcMain.handle('reset-connection',
+async (event) => {
+  db.setBaseConnections()
+    .then(() => {
+      logger('Successfully reset base connections', LogType.SUCCESS);
     })
     .catch((err) => {
+      logger('Error trying to set base connections on \'reset-connection\': ' + err.message, LogType.ERROR);
       const feedback: Feedback = {
         type: 'error',
         message: err,
       };
       event.sender.send('feedback', feedback);
-      logger('Sent \'feedback\' from \'update-db\' (Note: This is an ERROR!)' , LogType.SEND);
+      logger('Sent \'feedback\' from \'reset-connection\' (Note: This is an ERROR!)' , LogType.SEND);
+    });
+});
+
+// Listen for request from front-end and send back the DB List upon request
+ipcMain.on('return-db-list',
+(event, dbType: DBType = DBType.Postgres) => {
+  logger('Received \'return-db-list\' (Note: No Async being sent here)', LogType.RECEIVE);
+
+  db.setBaseConnections()
+    .then(() => {
+      db.getLists()
+        .then((data: DBList) => {
+          event.sender.send('db-lists', data);
+          logger('Sent \'db-lists\' from \'return-db-list\'', LogType.SEND);
+        })
+        .catch((err) => {
+          logger('Error trying to get lists on \'return-db-list\': ' + err.message, LogType.ERROR);
+          const feedback: Feedback = {
+            type: 'error',
+            message: err,
+          };
+          event.sender.send('feedback', feedback);
+          logger('Sent \'feedback\' from \'return-db-list\' (Note: This is an ERROR!)' , LogType.SEND);
+        });
+    })
+    .catch((err) => {
+      logger('Error trying to set base connections on \'return-db-list\': ' + err.message, LogType.ERROR);
+      const feedback: Feedback = {
+        type: 'error',
+        message: err,
+      };
+      event.sender.send('feedback', feedback);
+      logger('Sent \'feedback\' from \'return-db-list\' (Note: This is an ERROR!)' , LogType.SEND);
     });
 });
 
@@ -113,11 +145,7 @@ ipcMain.handle(
     event.sender.send('async-started');
 
     // store temporary file in user desktop
-    const tempFilePath = path.resolve(
-      os.homedir(),
-      'desktop',
-      `temp_${newName}.sql`
-    );
+    const tempFilePath = path.resolve(docConfig.getConfigFolder() + '\\', `temp_${newName}.sql`);
 
     try {
       // dump database to temp file

@@ -27,6 +27,7 @@ export interface TableDetails {
   columns?: ColumnObj[];
 }
 export interface DBList {
+  databaseConnected: boolean[];
   databaseList: dbDetails[];
   tableList: TableDetails[];
 }
@@ -50,4 +51,11 @@ export enum LogType {
   NORMAL = 'NORMAL',
   SEND = 'SEND',
   RECEIVE = 'RECEIVE'
+}
+
+export interface DocConfigFile {
+  mysql_user: string,
+  mysql_pass: string,
+  pg_user: string,
+  pg_pass: string
 }
