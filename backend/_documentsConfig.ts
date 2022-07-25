@@ -56,6 +56,8 @@ const docConfig: DocConfig = {
     },
 
     getCredentials: function(dbType: DBType) {
+        this.getConfigFolder();
+
         let configFile: DocConfigFile;
         try {
             configFile = readConfigFile();
