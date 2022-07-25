@@ -27,8 +27,14 @@ export interface AppState {
   setFilePath: (filePath: string) => void;
   newFilePath: string;
   setERView?: (boolean) => void;
-  dbType: DBType;
-  setDBType: (DBType) => void;
+  curDBType: DBType | undefined;
+  setDBType: (dbType: DBType | undefined) => void;
+  DBInfo: DatabaseInfo[] | undefined;
+  setDBInfo: (dbInfo: DatabaseInfo[] | undefined) => void;
+  dbTables: TableInfo[];
+  setTables: (tableInfo: TableInfo[]) => void;
+  selectedTable: TableInfo | undefined;
+  setSelectedTable: (tableInfo: TableInfo | undefined) => void;
 }
 
 export interface FilePath {
@@ -147,6 +153,7 @@ export interface TableInfo {
 }
 
 export interface DbLists {
+  databaseConnected: boolean[];
   databaseList: DatabaseInfo[];
   tableList: TableInfo[];
 }
@@ -344,4 +351,11 @@ export type TableHeaderNodeType = {
 export enum DBType {
   Postgres = 'pg',
   MySQL = 'mysql'
+}
+
+export interface DocConfigFile {
+  mysql_user: string,
+  mysql_pass: string,
+  pg_user: string,
+  pg_pass: string
 }

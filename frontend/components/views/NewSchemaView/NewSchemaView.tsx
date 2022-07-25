@@ -21,9 +21,6 @@ import SchemaName from './SchemaName';
 import TablesTabs from '../DbView/TablesTabBar';
 import SchemaSqlInput from './SchemaSqlInput';
 
-// emitting with no payload requests backend to send back a db-lists event with list of dbs
-const requestDbListOnce = once(() => ipcRenderer.send('return-db-list'));
-
 // top row container
 const TopRow = styled(Box)`
   display: flex;
@@ -79,7 +76,14 @@ interface NewSchemaViewProps {
     setSelectedDb: AppState['setSelectedDb'];
     selectedDb: AppState['selectedDb'];
     show: boolean;
-    dbType: DBType;
+    curDBType: DBType | undefined;
+    setDBType: (dbType: DBType | undefined) => void;
+    DBInfo: DatabaseInfo[] | undefined;
+    setDBInfo: (dbInfo: DatabaseInfo[] | undefined) => void;
+    dbTables: TableInfo[];
+    setTables: (tableInfo: TableInfo[]) => void;
+    selectedTable: TableInfo | undefined;
+    setSelectedTable: (tableInfo: TableInfo | undefined) => void;
 }
 
 const NewSchemaView = ({
@@ -89,15 +93,22 @@ const NewSchemaView = ({
     setSelectedDb,
     selectedDb,
     show,
-    dbType
+    curDBType,
+    setDBType,
+    DBInfo,
+    setDBInfo,
+    dbTables,
+    setTables,
+    selectedTable,
+    setSelectedTable
 }: NewSchemaViewProps) => {
   // additional local state properties using hooks
-  const [dbTables, setTables] = useState<TableInfo[]>([]);
-  const [selectedTable, setSelectedTable] = useState<TableInfo>();
+  // const [dbTables, setTables] = useState<TableInfo[]>([]);
+  // const [selectedTable, setSelectedTable] = useState<TableInfo>();
+  // const [databases, setDatabases] = useState<DatabaseInfo[]>([]);
+  
   const [currentSql, setCurrentSql] = useState('');
-  const [databases, setDatabases] = useState<DatabaseInfo[]>([]);
-  const [open, setOpen] = useState(false);
-
+  // const [open, setOpen] = useState(false);
   
   const defaultQuery: QueryData = {
     label: '', // required by QueryData interface, but not necessary for this view
@@ -107,25 +118,6 @@ const NewSchemaView = ({
   };
 
   const localQuery = { ...defaultQuery, ...query };
-
-  useEffect(() => {
-    
-    // Listen to backend for updates to list of tables on current db
-    const tablesFromBackend = (evt: IpcRendererEvent, dbLists: unknown) => {
-      
-      if (isDbLists(dbLists)) {
-        setDatabases(dbLists.databaseList);
-        setTables(dbLists.tableList);
-        setSelectedTable(selectedTable || dbLists.tableList[0]);
-      } 
-    };
-    ipcRenderer.on('db-lists', tablesFromBackend);
-    requestDbListOnce();
-    // return cleanup function
-    return () => {
-      ipcRenderer.removeListener('db-lists', tablesFromBackend);
-    };
-  });
 
   // handles naming of schema
   const onNameChange = (newName: string) => {
@@ -146,7 +138,7 @@ const NewSchemaView = ({
     ipcRenderer.invoke(
       'initialize-db', {
         newDbName: localQuery.db,
-      }, dbType)
+      }, curDBType)
       .catch((err) => {
         sendFeedback({
           type: 'error',
@@ -160,7 +152,7 @@ const NewSchemaView = ({
      ipcRenderer.invoke(
        'export-db', {
           sourceDb: selectedDb
-       }, dbType)
+       }, curDBType)
        .catch((err) => {
         sendFeedback({
           type: 'error',
@@ -179,7 +171,7 @@ const NewSchemaView = ({
       .invoke('update-db', {
         sqlString: localQuery.sqlString,
         selectedDb
-      }, dbType)
+      }, curDBType)
       .then(() => {setCurrentSql('');})
       .catch((err) => {
         sendFeedback({
@@ -217,7 +209,7 @@ return (
       selectTable={(table: TableInfo) => setSelectedTable(table)}
       selectedTable={selectedTable}
       selectedDb={selectedDb}
-      dbType={dbType}
+      curDBType={curDBType}
     />
   </NewSchemaViewContainer>
 );

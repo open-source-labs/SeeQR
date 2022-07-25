@@ -15,10 +15,10 @@ const StyledMenuItem = styled(MenuItem)`
 interface QueryDbProps {
   db: string;
   onChange: (newDb: string) => void;
-  databases: string[];
+  dbNames: string[] | undefined;
 }
 
-const QueryDb = ({ db, onChange, databases }: QueryDbProps) => (
+const QueryDb = ({ db, onChange, dbNames }: QueryDbProps) => (
   <SpacedBox>
     <InputLabel id="queryView-db-label">Database</InputLabel>
     <Select
@@ -26,7 +26,7 @@ const QueryDb = ({ db, onChange, databases }: QueryDbProps) => (
       onChange={(evt) => onChange(evt.target.value as string)}
       labelId="queryView-db-label"
     >
-      {databases.map((dbName) => (
+      {dbNames?.map((dbName) => (
         <StyledMenuItem value={dbName} key={`queryview_dbselect_${dbName}`}>
           {dbName}
         </StyledMenuItem>
