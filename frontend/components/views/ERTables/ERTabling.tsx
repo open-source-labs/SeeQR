@@ -205,7 +205,7 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
     // the data in backendObj.current
     handleSaveLayout();
     ipcRenderer
-      .invoke('ertable-schemaupdate', backendObj.current, curDBType)
+      .invoke('ertable-schemaupdate', backendObj.current, selectedDb, curDBType)
       .then(async () => {
         // resets the backendObj
         backendObj.current = {
