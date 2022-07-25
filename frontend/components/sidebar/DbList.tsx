@@ -74,6 +74,7 @@ const DbList = ({
       .invoke('select-db', dbName, cdbt)
       .then(() => {
         setSelectedDb(dbName);
+        setDBType(cdbt);
       })
       .catch(() =>
         sendFeedback({
