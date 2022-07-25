@@ -17,8 +17,8 @@ import {
 import logger from './Logging/masterlog';
 
 const { Pool } = require('pg');
-const docConfig = require('./_documentsConfig');
 const mysql = require('mysql2/promise');
+const docConfig = require('./_documentsConfig');
 
 // commented out because queries are no longer being used but good to keep as a reference
 // const { getPrimaryKeys, getForeignKeys } = require('./DummyD/primaryAndForeignKeyQueries');
