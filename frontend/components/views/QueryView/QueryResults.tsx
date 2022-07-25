@@ -100,7 +100,7 @@ const QueryResults = ({ results }: QueryResultsProps) => {
         count={results.length}
         rowsPerPage={rowsPerPage}
         page={page}
-        onPageChange={handleChangePage}
+        onChangePage={handleChangePage}
       />
     </DarkPaperFull>
   );
