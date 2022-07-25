@@ -433,13 +433,15 @@ interface InitializePayload {
 
 ipcMain.handle(
   'initialize-db',
-  async (event, { newDbName }: InitializePayload, dbType: DBType  ) => {
-    logger('Received \'initialize-db\'', LogType.RECEIVE);
+  async (event, payload: InitializePayload, dbType: DBType  ) => {
+    logger('Received \'initialize-db\' of dbType: ' + dbType + ' and: ', LogType.RECEIVE, payload);
     event.sender.send('async-started');
 
+    const { newDbName } = payload;
+    
     try {
       // create new empty db
-      await db.query(createDBFunc(newDbName, dbType));
+      await db.query(createDBFunc(newDbName, dbType), null, dbType);
 
       // connect to initialized db
       await db.connectToDB(newDbName, dbType);
