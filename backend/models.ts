@@ -371,9 +371,11 @@ const myObj: MyObj = {
 
   // Run any query
   query(text, params, dbType: DBType) {
-    logger(`Attempting to run query: \n${text}`);
+    logger('Attempting to run query: \n ' + text + ' for: \n ' + dbType);
     if (dbType === DBType.Postgres) {
-      return pg_pool.query(text, params, DBType.Postgres);
+      return pg_pool.query(text, params).catch((err) => {
+        logger(err.message, LogType.WARNING);
+      });
     }
     if (dbType === DBType.MySQL) {
       return msql_pool.query(text, params, DBType.MySQL);
