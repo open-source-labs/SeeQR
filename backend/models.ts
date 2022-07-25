@@ -1,4 +1,6 @@
 /* eslint-disable no-console */
+import { rejects } from 'assert';
+import { resolve } from 'path';
 import DbList from '../frontend/components/sidebar/DbList';
 import { ColumnObj, dbDetails, TableDetails, DBList, DBType, LogType } from './BE_types';
 import logger from './Logging/masterlog';
@@ -345,8 +347,6 @@ const myObj: MyObj = {
       connectionLimit: 10,
       queueLimit: 0,
     });
-
-    logger('Set base connections.', LogType.SUCCESS);
   },  
 
   // Run any query
@@ -388,6 +388,7 @@ const myObj: MyObj = {
   getLists(dbName: string = '', dbType?: DBType): Promise<DBList> {
     return new Promise((resolve, reject) => {
       const listObj: DBList = {
+        databaseConnected: [false, false],
         databaseList: [],
         tableList: [], // current database's tables
       };
@@ -396,11 +397,14 @@ const myObj: MyObj = {
       getDBNames(DBType.Postgres)
         .then((pgdata) => {
           const pgDBList = pgdata;
+          listObj.databaseConnected[0] = true;
 
           //Get MySQL DBs
           getDBNames(DBType.MySQL)
             .then((msdata) => {
               const msqlDBList = msdata;
+              listObj.databaseConnected[1] = true;
+
               logger('Got DB Names for both PG and MySQL!', LogType.SUCCESS);
               listObj.databaseList = [...pgDBList, ...msqlDBList];
             })

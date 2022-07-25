@@ -153,6 +153,7 @@ export interface TableInfo {
 }
 
 export interface DbLists {
+  databaseConnected: boolean[];
   databaseList: DatabaseInfo[];
   tableList: TableInfo[];
 }

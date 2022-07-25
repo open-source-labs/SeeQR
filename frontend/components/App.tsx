@@ -64,12 +64,20 @@ const App = () => {
   const [dbTables, setTables] = useState<TableInfo[]>([]);
   const [selectedTable, setSelectedTable] = useState<TableInfo | undefined>();
 
+  const [PG_isConnected, setPGStatus] = useState(false);
+  const [MYSQL_isConnected, setMYSQLStatus] = useState(false);
+
   useEffect(() => {
     // Listen to backend for updates to list of available databases
     const dbListFromBackend = (evt: IpcRendererEvent, dbLists: DbLists) => {
       if (isDbLists(dbLists)) {
         setDBInfo(dbLists.databaseList);
         setTables(dbLists.tableList);
+        setPGStatus(dbLists.databaseConnected[0]);
+        setMYSQLStatus(dbLists.databaseConnected[1]);
+
+        console.log('Connection status of PG: ', PG_isConnected);
+        console.log('Connection status of MySQL: ', MYSQL_isConnected);
         setSelectedTable(selectedTable? selectedTable : dbTables[0]);
       }
     };

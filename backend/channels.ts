@@ -27,6 +27,7 @@ interface Feedback {
   message: string;
 }
 
+//This isn't being used for anything ATM
 ipcMain.handle('reset-connection',
 async (event) => {
   db.setBaseConnections()
