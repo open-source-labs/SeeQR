@@ -4,9 +4,9 @@ import fs from 'fs';
 import os from 'os';
 import logger from './Logging/masterlog';
 
-const home = `${os.homedir()}\\Documents\\SeeQR`;
+const home = `${os.homedir()}/Documents/SeeQR`;
 const configFile = `config.json`;
-const configPath = `${home}\\${configFile}`;
+const configPath = `${home}/${configFile}`;
 
 const readConfigFile = function(): DocConfigFile {
     if(fs.existsSync(configPath)) {
