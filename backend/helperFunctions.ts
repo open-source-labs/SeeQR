@@ -32,23 +32,24 @@ const helperFunctions: HelperFunctions = {
   // might need to use the USE keyword after creating database
   // const mySQLUse = `USE DATABASE "${name}"`;
   createDBFunc: function (name, dbType: DBType) {
-    const PG = `CREATE DATABASE ${name}`;
+    const PG = `CREATE DATABASE "${name}"`;
     const MYSQL = `CREATE DATABASE ${name}`;
 
     console.log('RETURNING DB: ', DBType.Postgres ? PG : MYSQL);
-
+    console.log(dbType);
+    return dbType === DBType.Postgres ? PG : MYSQL;
     // if (dbType === DBType.Postgres) {
     //   return `CREATE DATABASE "${name}"`;
     // }
     // if (dbType === DBType.MySQL) {
     //   return `CREATE DATABASE "${name}"`;
     // }
-    return PG;
+    // return PG;
   },
 
   // drop provided database
   dropDBFunc: function (dbName, dbType: DBType) {
-    const PG = `DROP DATABASE ${dbName}`;
+    const PG = `DROP DATABASE "${dbName}"`;
     const MYSQL = `DROP DATABASE ${dbName}`;
 
     return dbType === DBType.Postgres ? PG : MYSQL;

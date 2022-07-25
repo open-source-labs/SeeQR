@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { ipcMain } from 'electron'; // IPCMain: Communicate asynchronously from the main process to renderer processes
 import path from 'path';
 import fs from 'fs';
@@ -119,7 +118,7 @@ ipcMain.handle(
     }
   }
 );
-
+// await db.query(dropDBScript, null, dbType);
 // Deletes the DB that is passed from the front end and returns an updated DB List
 ipcMain.handle(
   'drop-db',
@@ -138,7 +137,7 @@ ipcMain.handle(
 
       // drop db
       const dropDBScript = dropDBFunc(dbName, dbType);
-      await db.query(dropDBScript);
+      await db.query(dropDBScript, null, dbType);
 
       // send updated db info
       const dbsAndTables: DBList = await db.getLists();
@@ -474,11 +473,11 @@ ipcMain.handle(
       const dbsAndTableInfo: DBList = await db.getLists();
       event.sender.send('db-lists', dbsAndTableInfo);
       logger("Sent 'db-lists' from 'initialize-db'", LogType.SEND);
-      // } catch (e) {
-      //   // in the case of an error, delete the created db
-      //   const dropDBScript = dropDBFunc(newDbName, dbType);
-      //   await db.query(dropDBScript);
-      //   throw new Error('Failed to initialize new database');
+    } catch (e) {
+      // in the case of an error, delete the created db
+      const dropDBScript = dropDBFunc(newDbName, dbType);
+      await db.query(dropDBScript);
+      throw new Error('Failed to initialize new database');
     } finally {
       event.sender.send('async-complete');
     }
@@ -525,42 +524,36 @@ ipcMain.handle(
 );
 
 // Generate and run query from react-flow ER diagram
-ipcMain.handle('ertable-schemaupdate',
-async (event, backendObj, dbName: string, dbType: DBType) => {
-  logger('Received \'ertable-schemaupdate\' with dbType: ' + dbType + ', dbName: ' + dbName + ', and backendObj: ', LogType.RECEIVE, backendObj);
-  // send notice to front end that schema update has started
-  event.sender.send('async-started');
+ipcMain.handle(
+  'ertable-schemaupdate',
+  async (event, backendObj, dbName: string, dbType: DBType) => {
+    logger(
+      `Received 'ertable-schemaupdate' with dbType: ${dbType}, dbName: ${dbName}, and backendObj: `,
+      LogType.RECEIVE,
+      backendObj
+    );
+    // send notice to front end that schema update has started
+    event.sender.send('async-started');
 
-  let feedback: Feedback = {
-    type: '',
-    message: '',
-  };
-  try {
-    // Generates query from backendObj
-    const query = backendObjToQuery(backendObj);
-    // run sql command
-    await db.query('Begin;', null, dbType);
-    await db.query(query, null, dbType);
-    await db.query('Commit;', null, dbType);
-    feedback = {
-      type: 'success',
-      message: 'Database updated successfully.',
+    let feedback: Feedback = {
+      type: '',
+      message: '',
     };
-    return 'success';
-  }
-  catch (err: any) {
-    // rollback transaction if there's an error in update and send back feedback to FE
-    await db.query('Rollback;', null, dbType);
-  
-    feedback = {
-      type: 'error',
-      message: err,
-    };
-  }
-  finally {
-    // send updated db info
-    const updatedDb: DBList = await db.getLists(dbName, dbType);
-    event.sender.send('db-lists', updatedDb);
+    try {
+      // Generates query from backendObj
+      const query = backendObjToQuery(backendObj);
+      // run sql command
+      await db.query('Begin;', null, dbType);
+      await db.query(query, null, dbType);
+      await db.query('Commit;', null, dbType);
+      feedback = {
+        type: 'success',
+        message: 'Database updated successfully.',
+      };
+      return 'success';
+    } catch (err: any) {
+      // rollback transaction if there's an error in update and send back feedback to FE
+      await db.query('Rollback;', null, dbType);
 
       feedback = {
         type: 'error',
@@ -568,7 +561,7 @@ async (event, backendObj, dbName: string, dbType: DBType) => {
       };
     } finally {
       // send updated db info
-      const updatedDb: DBList = await db.getLists();
+      const updatedDb: DBList = await db.getLists(dbName, dbType);
       event.sender.send('db-lists', updatedDb);
 
       // send feedback back to FE
@@ -584,3 +577,31 @@ async (event, backendObj, dbName: string, dbType: DBType) => {
     }
   }
 );
+
+// ipcMain.handle(
+//   'initialize-db',
+//   async (event, { newDbName }: InitializePayload, dbType: DBType) => {
+//     logger("Received 'initialize-db'", LogType.RECEIVE);
+//     event.sender.send('async-started');
+
+//     try {
+//       // create new empty db
+//       await db.query(createDBFunc(newDbName, dbType));
+
+//       // connect to initialized db
+//       await db.connectToDB(newDbName, dbType);
+
+//       // update DBList in the sidebar to show this new db
+//       const dbsAndTableInfo: DBList = await db.getLists();
+//       event.sender.send('db-lists', dbsAndTableInfo);
+//       logger("Sent 'db-lists' from 'initialize-db'", LogType.SEND);
+//       // } catch (e) {
+//       //   // in the case of an error, delete the created db
+//       //   const dropDBScript = dropDBFunc(newDbName, dbType);
+//       //   await db.query(dropDBScript);
+//       //   throw new Error('Failed to initialize new database');
+//     } finally {
+//       event.sender.send('async-complete');
+//     }
+//   }
+// );
