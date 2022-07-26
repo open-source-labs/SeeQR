@@ -28,19 +28,23 @@ interface HelperFunctions {
 const helperFunctions: HelperFunctions = {
   // create a database
 
+  // return dbType === DBType.Postgres ? PG : MYSQL;
+  // might need to use the USE keyword after creating database
+  // const mySQLUse = `USE DATABASE "${name}"`;
   createDBFunc: function (name, dbType: DBType) {
     const PG = `CREATE DATABASE "${name}"`;
-    // might need to use the USE keyword after creating database
-    const MYSQL = `CREATE DATABASE "${name}"`;
-    // const mySQLUse = `USE DATABASE "${name}"`;
+    const MYSQL = `CREATE DATABASE ${name}`;
 
     console.log('RETURNING DB: ', DBType.Postgres ? PG : MYSQL);
+    console.log(dbType);
     return dbType === DBType.Postgres ? PG : MYSQL;
     // if (dbType === DBType.Postgres) {
     //   return `CREATE DATABASE "${name}"`;
     // }
     // if (dbType === DBType.MySQL) {
     //   return `CREATE DATABASE "${name}"`;
+    // }
+    // return PG;
   },
 
   // drop provided database

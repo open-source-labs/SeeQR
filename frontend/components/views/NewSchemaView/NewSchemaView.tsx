@@ -2,14 +2,14 @@ import { IpcRendererEvent, ipcRenderer } from 'electron';
 import React, { useEffect, useState } from 'react';
 import { Box, Button, Typography } from '@material-ui/core/';
 import styled from 'styled-components';
-import { 
+import {
   QueryData,
   CreateNewQuery,
   AppState,
   TableInfo,
   DatabaseInfo,
   isDbLists,
-  DBType
+  DBType,
 } from '../../../types';
 import { defaultMargin } from '../../../style-variables';
 
@@ -70,53 +70,53 @@ const NewSchemaViewContainer = styled.div`
 
 // props interface
 interface NewSchemaViewProps {
-    query?: AppState['workingQuery'];
-    setQuery: AppState['setWorkingQuery'];
-    createNewQuery: CreateNewQuery;
-    setSelectedDb: AppState['setSelectedDb'];
-    selectedDb: AppState['selectedDb'];
-    show: boolean;
-    curDBType: DBType | undefined;
-    setDBType: (dbType: DBType | undefined) => void;
-    DBInfo: DatabaseInfo[] | undefined;
-    setDBInfo: (dbInfo: DatabaseInfo[] | undefined) => void;
-    dbTables: TableInfo[];
-    setTables: (tableInfo: TableInfo[]) => void;
-    selectedTable: TableInfo | undefined;
-    setSelectedTable: (tableInfo: TableInfo | undefined) => void;
+  query?: AppState['workingQuery'];
+  setQuery: AppState['setWorkingQuery'];
+  createNewQuery: CreateNewQuery;
+  setSelectedDb: AppState['setSelectedDb'];
+  selectedDb: AppState['selectedDb'];
+  show: boolean;
+  curDBType: DBType | undefined;
+  setDBType: (dbType: DBType | undefined) => void;
+  DBInfo: DatabaseInfo[] | undefined;
+  setDBInfo: (dbInfo: DatabaseInfo[] | undefined) => void;
+  dbTables: TableInfo[];
+  setTables: (tableInfo: TableInfo[]) => void;
+  selectedTable: TableInfo | undefined;
+  setSelectedTable: (tableInfo: TableInfo | undefined) => void;
 }
 
 const NewSchemaView = ({
-    query,
-    setQuery,
-    createNewQuery,
-    setSelectedDb,
-    selectedDb,
-    show,
-    curDBType,
-    setDBType,
-    DBInfo,
-    setDBInfo,
-    dbTables,
-    setTables,
-    selectedTable,
-    setSelectedTable
+  query,
+  setQuery,
+  createNewQuery,
+  setSelectedDb,
+  selectedDb,
+  show,
+  curDBType,
+  setDBType,
+  DBInfo,
+  setDBInfo,
+  dbTables,
+  setTables,
+  selectedTable,
+  setSelectedTable,
 }: NewSchemaViewProps) => {
   // additional local state properties using hooks
   // const [dbTables, setTables] = useState<TableInfo[]>([]);
   // const [selectedTable, setSelectedTable] = useState<TableInfo>();
   // const [databases, setDatabases] = useState<DatabaseInfo[]>([]);
-  
+
   const [currentSql, setCurrentSql] = useState('');
   // const [open, setOpen] = useState(false);
-  
+
   const TEMP_DBTYPE = DBType.Postgres;
 
   const defaultQuery: QueryData = {
     label: '', // required by QueryData interface, but not necessary for this view
     db: '', // name that user inputs in SchemaName.tsx
     sqlString: '', // sql string that user inputs in SchemaSqlInput.tsx
-    group: '' // group string for sorting queries in accordians
+    group: '', // group string for sorting queries in accordians
   };
 
   const localQuery = { ...defaultQuery, ...query };
@@ -126,55 +126,66 @@ const NewSchemaView = ({
     setQuery({ ...localQuery, db: newName });
     setSelectedDb(newName);
   };
-  
+
   // handles sql string input
   const onSqlChange = (newSql: string) => {
     // because App's workingQuery changes ref
     setCurrentSql(newSql);
     setQuery({ ...localQuery, sqlString: newSql });
   };
-  
+
   // handle intializing new schema
   const onInitialize = () => {
-
-    ipcRenderer.invoke(
-      'initialize-db', {
-        newDbName: localQuery.db,
-      }, TEMP_DBTYPE)
+    ipcRenderer
+      .invoke(
+        'initialize-db',
+        {
+          newDbName: localQuery.db,
+        },
+        TEMP_DBTYPE
+      )
       .catch((err) => {
         sendFeedback({
           type: 'error',
           message: err ?? 'Failed to initialize db',
         });
       });
-  }
+  };
 
-  // handle exporting 
+  // handle exporting
   const onExport = () => {
-     ipcRenderer.invoke(
-       'export-db', {
-          sourceDb: selectedDb
-       }, curDBType)
-       .catch((err) => {
+    ipcRenderer
+      .invoke(
+        'export-db',
+        {
+          sourceDb: selectedDb,
+        },
+        curDBType
+      )
+      .catch((err) => {
         sendFeedback({
           type: 'error',
           message: err ?? 'Failed to export db',
         });
       });
-   }
-
+  };
 
   // onRun function to handle when user submits sql string to update schema
   const onRun = () => {
-    
     setSelectedDb(localQuery.db);
     // // request backend to run query
     ipcRenderer
-      .invoke('update-db', {
-        sqlString: localQuery.sqlString,
-        selectedDb
-      }, curDBType)
-      .then(() => {setCurrentSql('');})
+      .invoke(
+        'update-db',
+        {
+          sqlString: localQuery.sqlString,
+          selectedDb,
+        },
+        curDBType
+      )
+      .then(() => {
+        setCurrentSql('');
+      })
       .catch((err) => {
         sendFeedback({
           type: 'error',
@@ -183,37 +194,40 @@ const NewSchemaView = ({
       });
   };
 
-
-if (!show) return null;
-return (
-  <NewSchemaViewContainer>
-    <TopRow>
-      <SchemaName name={selectedDb} onChange={onNameChange}/>
-      <InitButton variant="contained" onClick={onInitialize}>Initialize Database</InitButton>
-      <ExportButton variant="contained" onClick={onExport}>Export</ExportButton>
-    </TopRow>
-    <SchemaSqlInput  
-      sql={currentSql}
-      onChange={onSqlChange}
-      runQuery={onRun}
-    />
+  if (!show) return null;
+  return (
+    <NewSchemaViewContainer>
+      <TopRow>
+        <SchemaName name={selectedDb} onChange={onNameChange} />
+        <InitButton variant="contained" onClick={onInitialize}>
+          Initialize Database
+        </InitButton>
+        <ExportButton variant="contained" onClick={onExport}>
+          Export
+        </ExportButton>
+      </TopRow>
+      <SchemaSqlInput
+        sql={currentSql}
+        onChange={onSqlChange}
+        runQuery={onRun}
+      />
       <CenterButton>
         <RunButton variant="contained" onClick={onRun}>
           Update Database
         </RunButton>
       </CenterButton>
-    <Container>
-      <Typography variant="h4">{`${selectedDb}`}</Typography>
-    </Container>
-    <TablesTabs
-      // setTables={setTables}
-      tables={dbTables}
-      selectTable={(table: TableInfo) => setSelectedTable(table)}
-      selectedTable={selectedTable}
-      selectedDb={selectedDb}
-      curDBType={curDBType}
-    />
-  </NewSchemaViewContainer>
-);
+      <Container>
+        <Typography variant="h4">{`${selectedDb}`}</Typography>
+      </Container>
+      <TablesTabs
+        // setTables={setTables}
+        tables={dbTables}
+        selectTable={(table: TableInfo) => setSelectedTable(table)}
+        selectedTable={selectedTable}
+        selectedDb={selectedDb}
+        curDBType={curDBType}
+      />
+    </NewSchemaViewContainer>
+  );
 };
 export default NewSchemaView;

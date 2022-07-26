@@ -20,7 +20,13 @@ interface DbEntryProps {
   duplicate: () => void;
   dbType: DBType;
 }
-const DbEntry = ({ db, isSelected, select, duplicate, dbType }: DbEntryProps) => {
+const DbEntry = ({
+  db,
+  isSelected,
+  select,
+  duplicate,
+  dbType,
+}: DbEntryProps) => {
   const handleDelete = () => {
     ipcRenderer
       .invoke('drop-db', db, isSelected, dbType)
@@ -38,7 +44,7 @@ const DbEntry = ({ db, isSelected, select, duplicate, dbType }: DbEntryProps) =>
       $customSelected={isSelected}
       onClick={() => select(db, dbType)}
     >
-      <StyledListItemText primary={db + ` [${dbType}]`} />
+      <StyledListItemText primary={`${db} [${dbType}]`} />
       <ListItemSecondaryAction>
         <Tooltip title="Copy Database">
           <IconButton edge="end" onClick={duplicate}>
