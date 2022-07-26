@@ -166,16 +166,19 @@ ipcMain.handle(
     { newName, sourceDb, withData }: DuplicatePayload,
     dbType: DBType
   ) => {
-    logger("Received 'duplicate-db'", LogType.RECEIVE);
+    logger(
+      `Received 'duplicate-db'" of dbType: ${dbType} and: `,
+      LogType.RECEIVE
+    );
 
     event.sender.send('async-started');
 
     // store temporary file in user desktop
     const tempFilePath = path.resolve(
-      `${docConfig.getConfigFolder()}\\`,
+      `${docConfig.getConfigFolder()}/`,
       `temp_${newName}.sql`
     );
-
+    console.log(tempFilePath);
     try {
       // dump database to temp file
       const dumpCmd = withData
@@ -191,7 +194,7 @@ ipcMain.handle(
 
       // create new empty database
       try {
-        await db.query(createDBFunc(newName, dbType));
+        await db.query(createDBFunc(newName, dbType), null, dbType);
       } catch (e) {
         throw new Error(`Failed to create Database`);
       }
@@ -239,11 +242,12 @@ interface ImportPayload {
 ipcMain.handle(
   'import-db',
   async (event, { newDbName, filePath }: ImportPayload, dbType: DBType) => {
-    logger("Received 'import-db'", LogType.RECEIVE);
+    logger(`Received 'import-db'" of dbType: ${dbType} and: `, LogType.RECEIVE);
     event.sender.send('async-started');
+
     try {
       // create new empty db
-      await db.query(createDBFunc(newDbName, dbType));
+      await db.query(createDBFunc(newDbName, dbType), null, dbType);
 
       const ext = path.extname(filePath).toLowerCase();
       if (ext !== '.sql' && ext !== '.tar')
@@ -460,7 +464,7 @@ ipcMain.handle(
   'initialize-db',
   async (event, payload: InitializePayload, dbType: DBType) => {
     logger(
-      "Received 'initialize-db' of dbType: " + dbType + ' and: ',
+      `Received 'initialize-db' of dbType: ${dbType} and: `,
       LogType.RECEIVE,
       payload
     );
@@ -583,31 +587,3 @@ ipcMain.handle(
     }
   }
 );
-
-// ipcMain.handle(
-//   'initialize-db',
-//   async (event, { newDbName }: InitializePayload, dbType: DBType) => {
-//     logger("Received 'initialize-db'", LogType.RECEIVE);
-//     event.sender.send('async-started');
-
-//     try {
-//       // create new empty db
-//       await db.query(createDBFunc(newDbName, dbType));
-
-//       // connect to initialized db
-//       await db.connectToDB(newDbName, dbType);
-
-//       // update DBList in the sidebar to show this new db
-//       const dbsAndTableInfo: DBList = await db.getLists();
-//       event.sender.send('db-lists', dbsAndTableInfo);
-//       logger("Sent 'db-lists' from 'initialize-db'", LogType.SEND);
-//       // } catch (e) {
-//       //   // in the case of an error, delete the created db
-//       //   const dropDBScript = dropDBFunc(newDbName, dbType);
-//       //   await db.query(dropDBScript);
-//       //   throw new Error('Failed to initialize new database');
-//     } finally {
-//       event.sender.send('async-complete');
-//     }
-//   }
-// );
