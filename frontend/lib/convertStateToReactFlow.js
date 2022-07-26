@@ -16,15 +16,42 @@ class Table {
     this.name = name;
     this.otherTables = otherTables;
     this.database = database;
+    this.genCoords = setCoords();
+  }
+
+  setCoords() {
+    const coordinates = {
+      x: 0, 
+      y: 0,
+    }
+    let rowLength = 0;
+    let rowNumber = 0;
+    return () => {
+      const tablesArea = Math.floor(Math.sqrt(db_tables.length))
+      console.log(tablesArea)
+      if (rowLength <= tablesArea) {
+        coordinates.x = rowLength * 250;
+        coordinates.y = rowNumber * 250;
+        rowLength++;
+      }
+      else {
+        rowLength = 0;
+        coordinates.x = rowLength;
+        rowNumber++;
+      }
+      console.log(coordinates)
+      return coordinates;
+    }
   }
   // the render method converts the data into the form of react flow
   render() {
     // This method gets the table table position from the stored file
     const getTablePosition = () => {
       const location = remote.app.getPath('temp').concat('/UserTableLayouts.json');
+      // console.log(location)
       try {
         const data = fs.readFileSync(location, 'utf8');
-        const parsedData = JSON.parse(data);
+        // console.log(data)
         for (let i = 0; i < parsedData.length; i += 1) {
           const db = parsedData[i];
           if (db.db_name === this.database) {
@@ -36,8 +63,11 @@ class Table {
             }
           }
         }
-        return { x: (this.id - 1) * 500, y: 0 };
-      } catch (error) {
+  
+        
+        return { x: genCoords().x, y: genCoords().y };
+      } 
+      catch (error) {
         return { x: (this.id - 1) * 500, y: 0 };
       }
     };

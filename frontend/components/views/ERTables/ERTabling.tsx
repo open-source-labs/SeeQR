@@ -158,6 +158,7 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
 
     // populate the db_tables property for the database
     headerNodes.forEach((node) => {
+      console.log(node);
       const tablePosObj: TablePosObjType = {
         table_name: node.tableName,
         table_position: { x: node.position.x, y: node.position.y },
