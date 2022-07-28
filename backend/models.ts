@@ -291,6 +291,8 @@ const getDBLists = function (
 };
 
 // *********************************************************** POSTGRES/MYSQL ************************************************* //
+let lastDBType: DBType | undefined;
+
 const PG_DBConnect = async function (pg_uri: string, db: string) {
   const newURI = `${pg_uri}${db}`;
   const newPool = new Pool({ connectionString: newURI });
@@ -384,9 +386,15 @@ const myObj: MyObj = {
 
   // Change current Db
   async connectToDB(db: string, dbType: DBType | undefined) {
-    logger(
-      `Starting connect to DB: ${db} With a dbType of: ${dbType?.toString()}`
-    );
+    logger(`Starting connect to DB: ${db} With a dbType of: ${dbType?.toString()}`);
+
+    if(!dbType) {
+      if(!lastDBType) {
+        logger(`Attempted to connect to a dbType when no dbType or lastDBType is defined.`, LogType.WARNING);
+        return;
+      }
+      dbType = lastDBType;  
+    }
 
     if (dbType === DBType.Postgres) {
       this.curPG_DB = db;
