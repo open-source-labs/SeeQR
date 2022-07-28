@@ -17,7 +17,7 @@ const SquareBtn = styled(Button)`
 
 const Toolbar = styled.div`
   position: absolute;
-  z-index: 1000;
+  z-index: 2000;
   bottom: 5px;
   left: 5px;
 `;
@@ -38,7 +38,6 @@ const FlowControls = ({
   const [showThresholdsDialog, setShowThresholdsDialog] = useState(false);
   const { fitView, zoomIn, zoomOut } = useReactFlow();
   const tooltipDelay = 1000;
-
   return (
     <>
       <Toolbar>

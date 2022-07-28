@@ -12,7 +12,7 @@ import * as types from '../constants/constants';
 
   // if you delete a table, it should decrement x and y coordinates by 250;
 class Table {
-  constructor(id, columns, name, otherTables, database, coordinates, rowCounter, rowNumber) {
+  constructor(id, columns, name, otherTables, database) {
     this.id = id;
     this.columns = columns;
     this.name = name;
@@ -49,8 +49,9 @@ class Table {
   // the render method converts the data into the form of react flow
   render() {
     
-    // This method gets the table table position from the stored file
+    // This method gets the table positions from the stored file
     const getTablePosition = () => {
+      // remote lets you access main-process-only objects as if they were available in the renderer process.
       const location = remote.app.getPath('temp').concat('/UserTableLayouts.json');
       console.log(location);
       try {
@@ -63,8 +64,7 @@ class Table {
             // eslint-disable-next-line consistent-return
             for (let j = 0; j < db.db_tables.length; j += 1) {
               const currTable = db.db_tables[j];
-              if (currTable.table_name === this.name)
-                this.setCoords();
+              // if (currTable.table_name === this.name)
                 return currTable.table_position;
             }
           }
@@ -73,7 +73,7 @@ class Table {
         console.log(this.coordinates.y)
         
         
-        return { x: this.coordinates.x, y: this.coordinates.y };
+        return { x: (this.id - 1) * 500, y: 0 };
       } 
       catch (error) {
         return { x: (this.id - 1) * 500, y: 0 };
@@ -137,44 +137,60 @@ class Table {
       nodes,
       edges,
     };
-   
+   // => END OF RENDER FUNCTION.
   }
-  // => END OF RENDER FUNCTION.
+  // => END OF TABLE CLASS.
 }
 
+// =============
+// CONVERT STATE
+// =============
+
 const convertStateToReactFlow = {
+  // convert property, because this is an object for some godforsaken reason. 
   convert: (schema) => {
-    // declare
+    
+    // probably hold nodes that are converted to reactflow syntax
     const nodes = [];
     const edges = [];
     const tableList = [];
-    // iterate through the tableList
+    // iterate through the tableList in the current schema(database?);
     for (let i = 0; i < schema.tableList.length; i += 1) {
       const column_names = [];
-      // get all the column names from the table
+      // get all the column names from the table and collect them in column_names
       for (let j = 0; j < schema.tableList[i].columns.length; j += 1) {
         column_names.push(schema.tableList[i].columns[j].column_name);
       }
-      // push tablelsit an object with the table name and
+      // push a table object containing the current table_name and the column_names for that table into the tableList array.
       tableList.push({
         table_name: schema.tableList[i].table_name,
         column_names,
       });
     }
+    // iterate through the tableList array of table objects.
     for (let i = 0; i < schema.tableList.length; i += 1) {
-      // make a deep copy so that modifying these values will not affect the data
+      // make a deep copy of each table object so that modifying these values will not affect the data.
       const copyString = JSON.stringify(schema.tableList[i]);
       const copy = JSON.parse(copyString);
-      // filter the table that is the same from the tableList
+
+      // declare OtherTableList, assign it to result of tablelist filter op. 
+      // Used to pass into table instance below. 
       const otherTableList = tableList.filter(
+        // filter out every table in table_list which doesn't match the current table being iterated over via line 171.  
         (el) => el.table_name !== schema.tableList[i].table_name
       );
-      // create a new instance of Table, push into table array
+
+      // create a new instance of Table
       const table = new Table(
+        // id
         i + 1,
+        // columns
         copy.columns,
+        // name
         schema.tableList[i].table_name,
+        // otherTables
         otherTableList,
+        // database
         schema.database
       );
       // assign the evaluated result of rendering the table into tablesNodesEdges

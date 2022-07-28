@@ -131,8 +131,12 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
     setSchemaState(schemaStateCopy);
   };
 
+
+  // ==============
+  // save ER layout
+  // ==============
   const handleSaveLayout = (): void => {
-    // get the array of header nodes
+    // get the array of header nodes.
     const headerNodes = nodes.filter(
       (node) => node.type === 'tableHeader'
     ) as TableHeaderNodeType[];
@@ -151,14 +155,17 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
       db_tables: TablePosObjType[];
     };
 
+
     const currDatabaseLayout: DatabaseLayoutObjType = {
+      // gets database name and tables from backendObj. 
       db_name: backendObj.current.database,
       db_tables: [],
     };
 
     // populate the db_tables property for the database
+
+    // These nodes 
     headerNodes.forEach((node) => {
-      console.log(node);
       const tablePosObj: TablePosObjType = {
         table_name: node.tableName,
         table_position: { x: node.position.x, y: node.position.y },
@@ -166,12 +173,17 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
       currDatabaseLayout.db_tables.push(tablePosObj);
     });
 
+
+    // ======================================
+    // Location file which saves table state.
+    // ======================================
     const location: string = remote.app
       .getPath('temp')
       .concat('/UserTableLayouts.json');
     fs.readFile(location, 'utf-8', (err, data) => {
-      // check if error exists (no file found)
+      // check if error exists when getting location (no file found)
       if (err) {
+        // if no file exists, write one, passing in an array of the currDatabaseLayout
         fs.writeFile(
           location,
           JSON.stringify([currDatabaseLayout], null, 2),
@@ -179,8 +191,6 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
             if (error) console.log(error);
           }
         );
-
-        // check if file exists
       } else {
         const dbLayouts = JSON.parse(data) as DatabaseLayoutObjType[];
         let dbExists = false;
@@ -226,7 +236,7 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
     // create a deep copy of the state, to ensure the state is not directly modified
     const schemaStateString = JSON.stringify(schemaState);
     const schemaStateCopy = JSON.parse(schemaStateString);
-    // create a nodesArray with the initialState data
+    // create a nodesArray with array of nodes created by stateToReactFlow.convert
     const nodesArray = initialState.nodes.map((currentNode) => {
       // add the schemaStateCopy and setSchemaState to the nodes data so that each node
       // has reference to the current state and can modify the state to cause rerenders
