@@ -79,7 +79,7 @@ class Table {
         return { x: (this.id - 1) * 500, y: 0 };
       }
     };
-    // create a nodes array for react flow, the first element will always be a
+    // create a nodes array for react flow, the first node will always be automatically created. 
     // TABLE_HEADER type of node
     const nodes = [
       {
@@ -112,13 +112,17 @@ class Table {
         },
       });
 
-      // if the element has a foregin_column and foreign_table create an edge
+      // if the element has a foreign_column which matches a foreign_table create an edge
       if (el.foreign_column && el.foreign_table) {
-        // create an edge for react flow
+        // push edge object into edges array.   
         edges.push({
+          // source: the current element, which possessses the foreign column named table-(name)_column-(column_name)
           source: `table-${this.name}_column-${el.column_name}`,
+          // target: the foreign table which matches the name of the source table element.    
           target: `table-${el.foreign_table}_column-${el.foreign_column}`,
+          // the unique id of the edge object, composed of the names of the source and target properties. 
           id: `table-${this.name}_column${el.column_name}__table-${el.foreign_table}_column-${el.foreign_column}`,
+          // the visual marker which attaches to a table node from the edge object. 
           markerEnd: {
             type: MarkerType.Arrow,
             color: greenPrimary,
@@ -128,12 +132,14 @@ class Table {
       }
     });
 
-    // return an object with nodes and edges
+    // return an object containing the array of nodes and edges to be rendered. 
     return {
       nodes,
       edges,
     };
+   
   }
+  // => END OF RENDER FUNCTION.
 }
 
 const convertStateToReactFlow = {
