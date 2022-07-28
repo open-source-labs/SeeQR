@@ -383,9 +383,9 @@ const myObj: MyObj = {
   },
 
   // Change current Db
-  async connectToDB(db: string, dbType: DBType) {
+  async connectToDB(db: string, dbType: DBType | undefined) {
     logger(
-      `Starting connect to DB: ${db} With a dbType of: ${dbType.toString()}`
+      `Starting connect to DB: ${db} With a dbType of: ${dbType?.toString()}`
     );
 
     if (dbType === DBType.Postgres) {
