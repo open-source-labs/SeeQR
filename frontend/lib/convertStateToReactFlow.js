@@ -9,49 +9,54 @@ import * as types from '../constants/constants';
  * the individual table and convert it to the form that react-flow is expecting
  * for its nodes
  */
+
+  // if you delete a table, it should decrement x and y coordinates by 250;
 class Table {
-  constructor(id, columns, name, otherTables, database) {
+  constructor(id, columns, name, otherTables, database, coordinates, rowCounter, rowNumber) {
     this.id = id;
     this.columns = columns;
     this.name = name;
     this.otherTables = otherTables;
     this.database = database;
-    this.genCoords = setCoords();
+    this.coordinates = {
+      x: 0,
+      y: 0
+    };
+    this.rowCounter = 0;
+    this.rowNumber = 0;
+    // this.genCoords = setCoords();
   }
 
-  setCoords() {
-    const coordinates = {
-      x: 0, 
-      y: 0,
-    }
-    let rowLength = 0;
-    let rowNumber = 0;
-    return () => {
-      const tablesArea = Math.floor(Math.sqrt(db_tables.length))
-      console.log(tablesArea)
-      if (rowLength <= tablesArea) {
-        coordinates.x = rowLength * 250;
-        coordinates.y = rowNumber * 250;
-        rowLength++;
+  setCoords () {
+      const tablesArea = Math.floor(Math.sqrt(9))
+      // console.log(tablesArea)
+      if (this.rowLength <= tablesArea) {
+        this.coordinates.x = this.rowLength * 250;
+        this.coordinates.y = this.rowNumber * 250;
+        console.log(this.rowLength)
+        this.rowLength++;
       }
       else {
-        rowLength = 0;
-        coordinates.x = rowLength;
-        rowNumber++;
+        this.rowLength = 0;
+        this.coordinates.x = this.rowLength;
+        console.log(this.rowNumber)
+        this.rowNumber++;
       }
-      console.log(coordinates)
-      return coordinates;
     }
-  }
+  
+
+  
   // the render method converts the data into the form of react flow
   render() {
+    
     // This method gets the table table position from the stored file
     const getTablePosition = () => {
       const location = remote.app.getPath('temp').concat('/UserTableLayouts.json');
-      // console.log(location)
+      console.log(location);
       try {
         const data = fs.readFileSync(location, 'utf8');
-        // console.log(data)
+        // console.log(data);
+        const parsedData = JSON.parse(data);
         for (let i = 0; i < parsedData.length; i += 1) {
           const db = parsedData[i];
           if (db.db_name === this.database) {
@@ -59,13 +64,16 @@ class Table {
             for (let j = 0; j < db.db_tables.length; j += 1) {
               const currTable = db.db_tables[j];
               if (currTable.table_name === this.name)
+                this.setCoords();
                 return currTable.table_position;
             }
           }
         }
-  
+        console.log(this.coordinates.x)
+        console.log(this.coordinates.y)
         
-        return { x: genCoords().x, y: genCoords().y };
+        
+        return { x: this.coordinates.x, y: this.coordinates.y };
       } 
       catch (error) {
         return { x: (this.id - 1) * 500, y: 0 };
