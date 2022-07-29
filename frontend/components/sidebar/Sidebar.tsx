@@ -72,6 +72,8 @@ const Sidebar = ({
   setTables,
   selectedTable,
   setSelectedTable,
+  showCreateDialog,
+  setCreateDialog
 }: AppState) => {
 
   const toggleOpen = () => setSidebarHidden(!sidebarIsHidden);
@@ -133,6 +135,8 @@ const Sidebar = ({
           setDBType={setDBType}
           DBInfo={DBInfo}
           setDBInfo={setDBInfo}
+          showCreateDialog={showCreateDialog}
+          setCreateDialog={setCreateDialog}
         />
         <Logo src={logo} alt="Logo" />
       </StyledDrawer>

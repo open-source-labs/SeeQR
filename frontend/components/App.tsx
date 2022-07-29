@@ -23,6 +23,7 @@ import FeedbackModal from './modal/FeedbackModal';
 import Spinner from './modal/Spinner';
 import { once, } from './../lib/utils';
 import { IpcRendererEvent, ipcRenderer } from 'electron';
+import CreateDBDialog from './Dialog/CreateDBDialog';
 
 const AppContainer = styled.div`
   display: grid;
@@ -66,7 +67,8 @@ const App = () => {
 
   const [PG_isConnected, setPGStatus] = useState(false);
   const [MYSQL_isConnected, setMYSQLStatus] = useState(false);
-  
+  const [showCreateDialog, setCreateDialog] = useState(false);
+
   useEffect(() => {
     // Listen to backend for updates to list of available databases
     const dbListFromBackend = (evt: IpcRendererEvent, dbLists: DbLists) => {
@@ -161,7 +163,9 @@ const App = () => {
               dbTables,
               setTables,
               selectedTable,
-              setSelectedTable
+              setSelectedTable,
+              showCreateDialog,
+              setCreateDialog
             }}
           />
           <Main $fullwidth={sidebarIsHidden}>
@@ -212,6 +216,12 @@ const App = () => {
               setTables={setTables}
               selectedTable={selectedTable}
               setSelectedTable={setSelectedTable}
+            />
+
+            <CreateDBDialog
+            show={showCreateDialog}
+            DBInfo={DBInfo}
+            onClose={() => setCreateDialog(false)}
             />
           </Main>
           <FeedbackModal />
