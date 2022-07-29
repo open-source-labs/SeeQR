@@ -301,15 +301,15 @@ const PG_DBConnect = async function (pg_uri: string, db: string) {
 };
 
 const MSQL_DBConnect = function (db: string) {
-  msql_pool = mysql.createPool({
-    host: 'localhost',
-    user: 'root',
-    password: 'Hello123!',
-    database: db,
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0,
-  });
+  // msql_pool = mysql.createPool({
+  //   host: 'localhost',
+  //   user: 'root',
+  //   password: 'Hello123!',
+  //   database: db,
+  //   waitForConnections: true,
+  //   connectionLimit: 10,
+  //   queueLimit: 0,
+  // });
 
   msql_pool
     .query(`USE ${db};`)
