@@ -4,7 +4,13 @@ import { IpcRendererEvent, ipcRenderer } from 'electron';
 import { IconButton, Tooltip } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import AddNewDbModal from '../modal/AddNewDbModalCorrect';
-import { AppState, isDbLists, DBType, DatabaseInfo, TableInfo } from '../../types';
+import {
+  AppState,
+  isDbLists,
+  DBType,
+  DatabaseInfo,
+  TableInfo,
+} from '../../types';
 import { sendFeedback } from '../../lib/utils';
 import DuplicateDbModal from '../modal/DuplicateDbModal';
 import DbEntry from './DbEntry';
@@ -41,13 +47,13 @@ const DbList = ({
   dbTables,
   setTables,
   selectedTable,
-  setSelectedTable
+  setSelectedTable,
 }: DbListProps) => {
   const [openAdd, setOpenAdd] = useState(false);
   const [openDupe, setOpenDupe] = useState(false);
   const [dbToDupe, setDbToDupe] = useState('');
 
-  //I think this returns undefined if DBInfo is falsy idk lol
+  // I think this returns undefined if DBInfo is falsy idk lol
   const dbNames = DBInfo?.map((dbi) => dbi.db_name);
 
   const handleClickOpenAdd = () => {
@@ -67,7 +73,7 @@ const DbList = ({
     setOpenDupe(false);
   };
 
-  const selectHandler = (dbName: string, cdbt: DBType|undefined) => {
+  const selectHandler = (dbName: string, cdbt: DBType | undefined) => {
     // setSelectedView('dbView');
     if (dbName === selectedDb) return;
     ipcRenderer
@@ -93,9 +99,8 @@ const DbList = ({
         </IconButton>
       </Tooltip>
       <StyledSidebarList>
-        {
-          DBInfo?.map((dbi) => (
-            <DbEntry
+        {DBInfo?.map((dbi) => (
+          <DbEntry
             key={`dbList_${dbi.db_name}`}
             db={dbi.db_name}
             isSelected={selectedDb === dbi.db_name}
@@ -103,7 +108,7 @@ const DbList = ({
             duplicate={() => handleClickOpenDupe(dbi.db_name)}
             dbType={dbi.db_type}
           />
-          ))}
+        ))}
         {openDupe ? (
           <DuplicateDbModal
             open={openDupe}
@@ -113,7 +118,7 @@ const DbList = ({
             curDBType={curDBType}
           />
         ) : null}
-      </StyledSidebarList> 
+      </StyledSidebarList>
       <AddNewDbModal
         open={openAdd}
         onClose={handleCloseAdd}
