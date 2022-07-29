@@ -27,10 +27,6 @@ interface HelperFunctions {
 // MYSQL = MySQL - Query necessary to run MySQL Query/Command
 const helperFunctions: HelperFunctions = {
   // create a database
-
-  // return dbType === DBType.Postgres ? PG : MYSQL;
-  // might need to use the USE keyword after creating database
-  // const mySQLUse = `USE DATABASE "${name}"`;
   createDBFunc: function (name, dbType: DBType) {
     const PG = `CREATE DATABASE "${name}"`;
     const MYSQL = `CREATE DATABASE ${name}`;
@@ -38,13 +34,6 @@ const helperFunctions: HelperFunctions = {
     console.log('RETURNING DB: ', DBType.Postgres ? PG : MYSQL);
     console.log(dbType);
     return dbType === DBType.Postgres ? PG : MYSQL;
-    // if (dbType === DBType.Postgres) {
-    //   return `CREATE DATABASE "${name}"`;
-    // }
-    // if (dbType === DBType.MySQL) {
-    //   return `CREATE DATABASE "${name}"`;
-    // }
-    // return PG;
   },
 
   // drop provided database
@@ -53,12 +42,11 @@ const helperFunctions: HelperFunctions = {
     const MYSQL = `DROP DATABASE ${dbName}`;
 
     return dbType === DBType.Postgres ? PG : MYSQL;
-    // return `DROP DATABASE "${dbName}"`;
   },
 
   // run explain on query
   explainQuery: function (sqlString, dbType: DBType) {
-    const PG = `BEGIN; EXPLAIN (FORMAT JSON, ANALYZE, VERBOSE, BUFFERS) "${sqlString}"; ROLLBACK;`;
+    const PG = `BEGIN; EXPLAIN (FORMAT JSON, ANALYZE, VERBOSE, BUFFERS) ${sqlString}; ROLLBACK;`;
 
     // this should work but is limited to only select, update, delete and table statements
     const MYSQL = `EXPLAIN FORMAT=JSON ${sqlString}`;
@@ -96,7 +84,7 @@ const helperFunctions: HelperFunctions = {
   // make a hollow copy of the schema
   runHollowCopyFunc: function (dbCopyName, file, dbType: DBType) {
     const PG = `pg_dump -s -U postgres -F p -d "${dbCopyName}" > "${file}"`;
-    const MYSQL = `mysqldump -h localhost -u root -p --no-data "${dbCopyName}" > "${file}"`;
+    const MYSQL = `mysqldump -h localhost -u root -p --no-data ${dbCopyName} > "${file}"`;
 
     return dbType === DBType.Postgres ? PG : MYSQL;
   },

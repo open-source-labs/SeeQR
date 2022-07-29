@@ -372,13 +372,26 @@ const myObj: MyObj = {
   // Run any query
   query(text, params, dbType: DBType) {
     logger(`Attempting to run query: \n ${text} for: \n ${dbType}`);
+
+    // const PG = pg_pool.query(text, params).catch((err) => {
+    //   logger(err.message, LogType.WARNING);
+    // });
+
+    // const MySQL = msql_pool.query(text, params).catch((err) => {
+    //   logger(err.message, LogType.WARNING);
+    // });
+
+    // return dbType === DBType.Postgres ? PG : MySQL;
+
     if (dbType === DBType.Postgres) {
       return pg_pool.query(text, params).catch((err) => {
         logger(err.message, LogType.WARNING);
       });
     }
     if (dbType === DBType.MySQL) {
-      return msql_pool.query(text, params, DBType.MySQL);
+      return msql_pool.query(text, params, DBType.MySQL).catch((err) => {
+        logger(err.message, LogType.WARNING);
+      });
     }
   },
 
