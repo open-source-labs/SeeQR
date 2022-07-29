@@ -13,7 +13,7 @@ import {
 import { defaultMargin } from '../../../style-variables';
 import { getPrettyTime } from '../../../lib/queries';
 import { once, sendFeedback } from '../../../lib/utils';
-import QueryGroup from './QueryGroup'
+import QueryGroup from './QueryGroup';
 import QueryLabel from './QueryLabel';
 import QueryDb from './QueryDb';
 import QueryTopSummary from './QueryTopSummary';
@@ -68,7 +68,7 @@ const QueryView = ({
   curDBType,
   setDBType,
   DBInfo,
-  setDBInfo
+  setDBInfo,
 }: QueryViewProps) => {
   // const [databases, setDatabases] = useState<string[]>([]);
 
@@ -83,6 +83,10 @@ const QueryView = ({
   };
 
   const localQuery = { ...defaultQuery, ...query };
+  console.log('local query', localQuery);
+  console.log('query', query);
+  console.log('query', defaultQuery);
+  console.log(curDBType);
 
   const onLabelChange = (newLabel: string) => {
     setQuery({ ...localQuery, label: newLabel });
@@ -130,17 +134,20 @@ const QueryView = ({
       });
     }
 
-
     // request backend to run query
     ipcRenderer
-      .invoke('run-query', {
-        targetDb: localQuery.db,
-        sqlString: localQuery.sqlString,
-        selectedDb,
-      }, curDBType)
+      .invoke(
+        'run-query',
+        {
+          targetDb: localQuery.db,
+          sqlString: localQuery.sqlString,
+          selectedDb,
+        },
+        curDBType
+      )
       .then(({ db, sqlString, returnedRows, explainResults, error }) => {
         if (error) {
-          throw error
+          throw error;
         }
 
         const transformedData = {
@@ -152,17 +159,17 @@ const QueryView = ({
           group: localQuery.group,
         };
 
-        const keys:string[] = Object.keys(queries);
-        for (let i = 0; i < keys.length; i++){
-          if (keys[i].includes(`db:${localQuery.db} group:${localQuery.group}`)) {
-           return sendFeedback({
+        const keys: string[] = Object.keys(queries);
+        for (let i = 0; i < keys.length; i++) {
+          if (
+            keys[i].includes(`db:${localQuery.db} group:${localQuery.group}`)
+          ) {
+            return sendFeedback({
               type: 'info',
               message: `${localQuery.db} already exists in ${localQuery.group}`,
             });
-          };
-          
-
-        };
+          }
+        }
         createNewQuery(transformedData);
       })
       .then(() => {
@@ -182,11 +189,7 @@ const QueryView = ({
       <TopRow>
         <QueryLabel label={localQuery.label} onChange={onLabelChange} />
         <QueryGroup group={localQuery.group} onChange={onGroupChange} />
-        <QueryDb
-          db={localQuery.db}
-          onChange={onDbChange}
-          dbNames={dbNames}
-        />
+        <QueryDb db={localQuery.db} onChange={onDbChange} dbNames={dbNames} />
         <QueryTopSummary
           rows={query?.returnedRows?.length}
           totalTime={getPrettyTime(query)}
