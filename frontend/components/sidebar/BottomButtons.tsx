@@ -19,7 +19,7 @@ interface ViewButtonProps {
 
 const ViewButton = styled(Button)`
   background: ${({ $isSelected }: ViewButtonProps) =>
-    $isSelected ? selectedColor : textColor};
+    $isSelected ? textColor : selectedColor};
 
 `;
 
@@ -30,30 +30,20 @@ type ViewSelectorProps = Pick<AppState, 'selectedView' | 'setSelectedView' | 'se
   setDBType: (dbType: DBType | undefined) => void;
   DBInfo: DatabaseInfo[] | undefined;
   setDBInfo: (dbInfo: DatabaseInfo[] | undefined) => void;
+  showCreateDialog: boolean;
+  setCreateDialog: (show: boolean) => void;
 };
 
 /**
  * Selector for view on sidebar. Updates App state with selected view
  */
-const BottomButtons = ({ selectedView, setSelectedView, setSelectedDb, selectedDb, curDBType, setDBType, DBInfo, setDBInfo}: ViewSelectorProps) => (
+const BottomButtons = ({ selectedView, setSelectedView, setSelectedDb, selectedDb, curDBType, setDBType, DBInfo, setDBInfo, showCreateDialog, setCreateDialog}: ViewSelectorProps) => (
   <ViewBtnGroup variant="contained" fullWidth>
     <ViewButton
       onClick={() => {
-        setSelectedView('newSchemaView');
-        setSelectedDb('');
-        
-        ipcRenderer
-          .invoke('select-db', '', curDBType)
-          .catch(() => 
-            sendFeedback({
-              type: 'error',
-              message: `Database connection error`
-            })
-          )
+        setCreateDialog(true);
       }}
-      $isSelected={
-        selectedView === 'newSchemaView' || selectedView === 'compareView'
-      }
+      $isSelected={showCreateDialog}
     >
       Create New Database
     </ViewButton>
