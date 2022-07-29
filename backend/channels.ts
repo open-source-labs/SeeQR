@@ -305,7 +305,11 @@ ipcMain.handle(
       // Run Explain
       let explainResults;
       try {
-        const results = await db.query(explainQuery(sqlString, dbType));
+        const results = await db.query(
+          explainQuery(sqlString, dbType),
+          null,
+          dbType
+        );
         explainResults = results[1].rows;
       } catch (e) {
         error = `Failed to get Execution Plan. EXPLAIN might not support this query.`;
@@ -314,7 +318,7 @@ ipcMain.handle(
       // Run Query
       let returnedRows;
       try {
-        const results = await db.query(sqlString);
+        const results = await db.query(sqlString, null, dbType);
         returnedRows = results.rows;
       } catch (e: any) {
         error = e.toString();
@@ -486,7 +490,7 @@ ipcMain.handle(
     } catch (e) {
       // in the case of an error, delete the created db
       const dropDBScript = dropDBFunc(newDbName, dbType);
-      await db.query(dropDBScript);
+      await db.query(dropDBScript, null, dbType);
       throw new Error('Failed to initialize new database');
     } finally {
       event.sender.send('async-complete');
@@ -517,7 +521,7 @@ ipcMain.handle(
       // Run Query
       // let returnedRows;
       try {
-        await db.query(sqlString);
+        await db.query(sqlString, null, dbType);
       } catch (e) {
         if (e) throw new Error('Failed to update schema');
       }
