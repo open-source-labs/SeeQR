@@ -83,10 +83,10 @@ const QueryView = ({
   };
 
   const localQuery = { ...defaultQuery, ...query };
-  console.log('local query', localQuery);
-  console.log('query', query);
-  console.log('query', defaultQuery);
-  console.log(curDBType);
+  // console.log('local query', localQuery);
+  // console.log('query', query);
+  // console.log('defaultQuery', defaultQuery);
+  // console.log('curDBType', curDBType);
 
   const onLabelChange = (newLabel: string) => {
     setQuery({ ...localQuery, label: newLabel });
@@ -99,7 +99,10 @@ const QueryView = ({
   const onDbChange = (newDb: string) => {
     // when db is changed we must change selected db state on app, as well as
     // request updates for db and table information. Otherwise database view tab
-    // will show wrong informatio
+    // will show wrong information
+    console.log('when selecting a database from the dropdown menu, we first go here in queryview')
+    console.log('curDBType in QueryView', curDBType)
+    console.log('newDB in Query View', newDb)
     ipcRenderer
       .invoke('select-db', newDb, curDBType)
       .then(() => {

@@ -61,6 +61,7 @@ const App = () => {
 
   const [DBInfo, setDBInfo] = useState<DatabaseInfo[]>();
   const [curDBType, setDBType] = useState<DBType>();
+  const [cdbt, setcdbt] = useState<DBType>();
 
   const [dbTables, setTables] = useState<TableInfo[]>([]);
   const [selectedTable, setSelectedTable] = useState<TableInfo | undefined>();
@@ -158,6 +159,8 @@ const App = () => {
               setERView,
               curDBType,
               setDBType,
+              cdbt,
+              setcdbt,
               DBInfo,
               setDBInfo,
               dbTables,

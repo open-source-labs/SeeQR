@@ -107,12 +107,32 @@ ipcMain.handle(
 
     event.sender.send('async-started');
     try {
+      console.log('dbName from backend', dbName, 'dbType from backend', dbType)
       await db.connectToDB(dbName, dbType);
 
       // send updated db info
       const dbsAndTables: DBList = await db.getLists(dbName, dbType);
       event.sender.send('db-lists', dbsAndTables);
       logger("Sent 'db-lists' from 'select-db'", LogType.SEND);
+    } finally {
+      event.sender.send('async-complete');
+    }
+  }
+);
+ipcMain.handle(
+  'select-db-from-dbList',
+  async (event, dbName: string, cdbt: DBType): Promise<void> => {
+    logger("Received 'select-db-from-dbList'", LogType.RECEIVE);
+
+    event.sender.send('async-started');
+    try {
+      console.log('dbName from backend', dbName, 'dbType from backend', cdbt)
+      await db.connectToDB(dbName, cdbt);
+
+      // send updated db info
+      const dbsAndTables: DBList = await db.getLists(dbName, cdbt);
+      event.sender.send('db-lists', dbsAndTables);
+      logger("Sent 'db-lists-from-dbList' from 'select-db-from-dbList'", LogType.SEND);
     } finally {
       event.sender.send('async-complete');
     }

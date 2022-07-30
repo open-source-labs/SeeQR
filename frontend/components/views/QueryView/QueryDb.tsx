@@ -2,6 +2,7 @@ import React from 'react';
 import { Select, MenuItem, InputLabel, Box } from '@material-ui/core/';
 import styled from 'styled-components';
 import { defaultMargin, greyPrimary } from '../../../style-variables';
+import { DBType } from '../../../types';
 
 const SpacedBox = styled(Box)`
   margin-left: ${defaultMargin};
