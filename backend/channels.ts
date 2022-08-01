@@ -102,16 +102,16 @@ ipcMain.on('return-db-list', (event, dbType: DBType = DBType.Postgres) => {
 // and send back an updated DB List
 ipcMain.handle(
   'select-db',
-  async (event, dbName: string, dbType: DBType): Promise<void> => {
+  async (event, dbName: string, curDBType: DBType): Promise<void> => {
     logger("Received 'select-db'", LogType.RECEIVE);
 
     event.sender.send('async-started');
     try {
-      console.log('dbName from backend', dbName, 'dbType from backend', dbType)
-      await db.connectToDB(dbName, dbType);
+      console.log('dbName from backend', dbName, 'dbType from backend', curDBType)
+      await db.connectToDB(dbName, curDBType);
 
       // send updated db info
-      const dbsAndTables: DBList = await db.getLists(dbName, dbType);
+      const dbsAndTables: DBList = await db.getLists(dbName, curDBType);
       event.sender.send('db-lists', dbsAndTables);
       logger("Sent 'db-lists' from 'select-db'", LogType.SEND);
     } finally {
@@ -119,25 +119,7 @@ ipcMain.handle(
     }
   }
 );
-ipcMain.handle(
-  'select-db-from-dbList',
-  async (event, dbName: string, cdbt: DBType): Promise<void> => {
-    logger("Received 'select-db-from-dbList'", LogType.RECEIVE);
 
-    event.sender.send('async-started');
-    try {
-      console.log('dbName from backend', dbName, 'dbType from backend', cdbt)
-      await db.connectToDB(dbName, cdbt);
-
-      // send updated db info
-      const dbsAndTables: DBList = await db.getLists(dbName, cdbt);
-      event.sender.send('db-lists', dbsAndTables);
-      logger("Sent 'db-lists-from-dbList' from 'select-db-from-dbList'", LogType.SEND);
-    } finally {
-      event.sender.send('async-complete');
-    }
-  }
-);
 // await db.query(dropDBScript, null, dbType);
 // Deletes the DB that is passed from the front end and returns an updated DB List
 ipcMain.handle(
@@ -330,7 +312,14 @@ ipcMain.handle(
           null,
           dbType
         );
-        explainResults = results[1].rows;
+
+        if(dbType === DBType.MySQL) {
+          explainResults = results[0][0];
+        }
+        if(dbType === DBType.Postgres) {
+          explainResults = results[1].rows;
+        }
+        
       } catch (e) {
         error = `Failed to get Execution Plan. EXPLAIN might not support this query.`;
       }

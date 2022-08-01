@@ -27,8 +27,6 @@ type DbListProps = Pick<
   show: boolean;
   curDBType: DBType | undefined;
   setDBType: (dbType: DBType | undefined) => void;
-  cdbt: DBType | undefined;
-  setcdbt: (dbType: DBType | undefined) => void;
   DBInfo: DatabaseInfo[] | undefined;
   setDBInfo: (dbInfo: DatabaseInfo[] | undefined) => void;
   dbTables: TableInfo[];
@@ -44,8 +42,6 @@ const DbList = ({
   show,
   curDBType,
   setDBType,
-  cdbt,
-  setcdbt,
   DBInfo,
   setDBInfo,
   dbTables,
@@ -80,13 +76,11 @@ const DbList = ({
   const selectHandler = (dbName: string, cdbt: DBType | undefined) => {
     // setSelectedView('dbView');
     if (dbName === selectedDb) return;
-    console.log('did we go in here for dblist?')
-    console.log('dbType from dbList', cdbt)
     ipcRenderer
-      .invoke('select-db-from-dbList', dbName, cdbt)
+      .invoke('select-db', dbName, cdbt)
       .then(() => {
         setSelectedDb(dbName);
-        setcdbt(cdbt);
+        setDBType(cdbt);
       })
       .catch(() =>
         sendFeedback({

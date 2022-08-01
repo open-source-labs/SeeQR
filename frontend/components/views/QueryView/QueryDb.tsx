@@ -15,25 +15,50 @@ const StyledMenuItem = styled(MenuItem)`
 
 interface QueryDbProps {
   db: string;
-  onChange: (newDb: string) => void;
+  onDbChange: (newDb: string, newDBType: DBType) => void;
   dbNames: string[] | undefined;
+  dbTypes: DBType[] | undefined;
 }
 
-const QueryDb = ({ db, onChange, dbNames }: QueryDbProps) => (
-  <SpacedBox>
-    <InputLabel id="queryView-db-label">Database</InputLabel>
-    <Select
-      value={db}
-      onChange={(evt) => onChange(evt.target.value as string)}
-      labelId="queryView-db-label"
-    >
-      {dbNames?.map((dbName) => (
-        <StyledMenuItem value={dbName} key={`queryview_dbselect_${dbName}`}>
-          {dbName}
+const QueryDb = ({ db, onDbChange, dbNames, dbTypes}: QueryDbProps) => {
+
+  const menuitems: any = [];
+  const values: any = {};
+  
+  if(dbNames && dbTypes) {
+    for (let i = 0; i < dbNames.length; i++) {
+      menuitems.push(
+        <StyledMenuItem value={dbNames[i]} key={`queryview_dbselect_${dbNames[i]}`}>
+          {dbNames[i]}
         </StyledMenuItem>
-      ))}
-    </Select>
-  </SpacedBox>
-);
+      )
+      values[dbNames[i]] = [dbNames[i], dbTypes[i]];
+    }
+  }
+
+
+  // const menuitems2 = dbNames?.map((dbName) => (
+  //   <StyledMenuItem value={dbName} key={`queryview_dbselect_${dbName}`}>
+  //     {dbName}
+  //   </StyledMenuItem>
+  // ));
+  return (
+    <SpacedBox>
+      <InputLabel id="queryView-db-label">Database</InputLabel>
+      <Select
+        value={db}
+        onChange={(evt) => onDbChange((values[evt.target.value as string] as Array<any>)[0], (values[evt.target.value as string] as Array<any>)[1])}
+        labelId="queryView-db-label"
+      >
+        {menuitems}
+      </Select>
+    </SpacedBox>
+  )
+
+  
+};
+
+// const arr1 = ['mk', 'fredjeong', 'mysql']  // ['mk', 'pg']
+// const arr2 = ['pg', 'pg', 'mysql']
 
 export default QueryDb;
