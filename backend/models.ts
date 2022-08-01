@@ -303,16 +303,6 @@ const PG_DBConnect = async function (pg_uri: string, db: string) {
 };
 
 const MSQL_DBConnect = function (db: string) {
-  // msql_pool = mysql.createPool({
-  //   host: 'localhost',
-  //   user: 'root',
-  //   password: 'Hello123!',
-  //   database: db,
-  //   waitForConnections: true,
-  //   connectionLimit: 10,
-  //   queueLimit: 0,
-  // });
-
   msql_pool
     .query(`USE ${db};`)
     .then(() => {
@@ -355,8 +345,8 @@ const myObj: MyObj = {
     // ^Unknown if this rule is still true
     if (pg_pool) await pg_pool.end();
 
-    this.pg_uri = `postgres://${PG_Cred.user}:${PG_Cred.pass}@localhost:5432/${this.curPG_DB}`;
-    pg_pool = new Pool({ connectionString: this.pg_uri });
+    this.pg_uri = `postgres://${PG_Cred.user}:${PG_Cred.pass}@localhost:5432/`;
+    pg_pool = new Pool({ connectionString: this.pg_uri + this.curPG_DB });
 
     if (msql_pool) await msql_pool.end();
 
