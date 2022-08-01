@@ -132,7 +132,7 @@ const CreateDBDialog = function({show, DBInfo, onClose}) {
             </Tooltip>
         </TextFieldContainer>
 
-        <DropdownContainer>
+          <DropdownContainer>
             <StyledInputLabel id="dbtype-select-label" variant="standard" htmlFor="uncontrolled-native">
                 Database Type
             </StyledInputLabel>
