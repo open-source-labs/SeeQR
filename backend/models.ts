@@ -381,7 +381,13 @@ const myObj: MyObj = {
       });
     }
     if (dbType === DBType.MySQL) {
-      return msql_pool.query(text, params, DBType.MySQL).catch((err) => {
+      msql_pool.query(`USE ${this.curMSQL_DB};`)
+      .then(() => {
+        return msql_pool.query(text, params, DBType.MySQL).catch((err) => {
+          logger(err.message, LogType.WARNING);
+        });
+      })
+      .catch((err) => {
         logger(err.message, LogType.WARNING);
       });
     }
