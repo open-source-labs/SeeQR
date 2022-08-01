@@ -59,12 +59,13 @@ const helperFunctions: HelperFunctions = {
   runSQLFunc: function (dbName, file, dbType: DBType) {
     const PG = `psql -U postgres -d "${dbName}" -f "${file}"`;
     // need variable to store username. Typed into comamnd line but none of options below worked for me.
+    // attemping to run query drop database for undefined...
 
     const MYSQL = `mysql -u username -p "${dbName}" < "${file}"`;
     // -u root -p DATABASENAME < FILETOBEIMPORTED.sql;
     // mysql -u root -p"Hello123!" dish < ~/Desktop/mysqlsamp.sql
     // SET autocommit=0 ; source d /Users/fryer/Downloads/mysqlsamp.sql  ; COMMIT ;
-
+    // sets dbType in channels. 
     return dbType === DBType.Postgres ? PG : MYSQL;
   },
 
