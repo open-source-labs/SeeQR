@@ -276,7 +276,7 @@ const getDBLists = function (
                 tableList[i].columns = columnInfo[i];
               }
 
-              logger("MySQL 'getDBLists' resolved.", LogType.SUCCESS);
+              logger("MySQL 'getDBLists' resolved.", LogType.SUCCESS, tableList);
               resolve(tableList);
             })
             .catch((err) => {
@@ -358,6 +358,7 @@ const myObj: MyObj = {
       waitForConnections: true,
       connectionLimit: 10,
       queueLimit: 0,
+      multipleStatements: true
     });
   },
 
