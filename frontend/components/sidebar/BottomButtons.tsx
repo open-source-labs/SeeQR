@@ -28,8 +28,8 @@ type ViewSelectorProps = Pick<AppState, 'selectedView' | 'setSelectedView' | 'se
 & {
   curDBType: DBType | undefined;
   setDBType: (dbType: DBType | undefined) => void;
-  cdbt: DBType | undefined;
-  setcdbt: (cdbt: DBType | undefined) => void;
+  // cdbt: DBType | undefined;
+  // setcdbt: (cdbt: DBType | undefined) => void;
   DBInfo: DatabaseInfo[] | undefined;
   setDBInfo: (dbInfo: DatabaseInfo[] | undefined) => void;
   showCreateDialog: boolean;
@@ -39,7 +39,7 @@ type ViewSelectorProps = Pick<AppState, 'selectedView' | 'setSelectedView' | 'se
 /**
  * Selector for view on sidebar. Updates App state with selected view
  */
-const BottomButtons = ({ selectedView, setSelectedView, setSelectedDb, selectedDb, curDBType, setDBType, cdbt, setcdbt, DBInfo, setDBInfo, showCreateDialog, setCreateDialog}: ViewSelectorProps) => (
+const BottomButtons = ({ selectedView, setSelectedView, setSelectedDb, selectedDb, curDBType, setDBType, DBInfo, setDBInfo, showCreateDialog, setCreateDialog}: ViewSelectorProps) => (
   <ViewBtnGroup variant="contained" fullWidth>
     <ViewButton
       onClick={() => {

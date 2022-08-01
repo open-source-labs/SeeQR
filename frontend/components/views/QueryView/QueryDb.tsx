@@ -36,12 +36,16 @@ const QueryDb = ({ db, onDbChange, dbNames, dbTypes}: QueryDbProps) => {
     }
   }
 
+  // const arr1 = ['mk', 'fredjeong', 'mysql']  // ['mk', 'pg']
+  // const arr2 = ['pg', 'pg', 'mysql']
+
 
   // const menuitems2 = dbNames?.map((dbName) => (
   //   <StyledMenuItem value={dbName} key={`queryview_dbselect_${dbName}`}>
   //     {dbName}
   //   </StyledMenuItem>
   // ));
+
   return (
     <SpacedBox>
       <InputLabel id="queryView-db-label">Database</InputLabel>
@@ -58,7 +62,5 @@ const QueryDb = ({ db, onDbChange, dbNames, dbTypes}: QueryDbProps) => {
   
 };
 
-// const arr1 = ['mk', 'fredjeong', 'mysql']  // ['mk', 'pg']
-// const arr2 = ['pg', 'pg', 'mysql']
 
 export default QueryDb;

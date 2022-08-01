@@ -66,8 +66,8 @@ const Sidebar = ({
   setERView,
   curDBType,
   setDBType,
-  cdbt,
-  setcdbt,
+  // cdbt,
+  // setcdbt,
   DBInfo,
   setDBInfo,
   dbTables,
@@ -135,8 +135,8 @@ const Sidebar = ({
           setSelectedDb={setSelectedDb}
           curDBType={curDBType}
           setDBType={setDBType}
-          cdbt={cdbt}
-          setcdbt={setcdbt}
+          // cdbt={cdbt}
+          // setcdbt={setcdbt}
           DBInfo={DBInfo}
           setDBInfo={setDBInfo}
           showCreateDialog={showCreateDialog}
