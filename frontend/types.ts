@@ -29,6 +29,8 @@ export interface AppState {
   setERView?: (boolean) => void;
   curDBType: DBType | undefined;
   setDBType: (dbType: DBType | undefined) => void;
+  // cdbt: DBType | undefined;
+  // setcdbt: (cdbt: DBType | undefined) => void;
   DBInfo: DatabaseInfo[] | undefined;
   setDBInfo: (dbInfo: DatabaseInfo[] | undefined) => void;
   dbTables: TableInfo[];

@@ -324,7 +324,7 @@ interface MyObj {
     params: (string | number)[],
     dbType: DBType
   ) => Function;
-  connectToDB: (db: string, dbType: DBType) => Promise<void>;
+  connectToDB: (db: string, dbType?: DBType) => Promise<void>;
   getLists: () => Promise<DBList>;
   getTableInfo: (tableName: string, dbType: DBType) => Promise<ColumnObj[]>;
 }
@@ -394,7 +394,7 @@ const myObj: MyObj = {
   },
 
   // Change current Db
-  async connectToDB(db: string, dbType: DBType | undefined) {
+  async connectToDB(db: string, dbType?: DBType | undefined) {
     logger(`Starting connect to DB: ${db} With a dbType of: ${dbType?.toString()}`);
 
     if(!dbType) {

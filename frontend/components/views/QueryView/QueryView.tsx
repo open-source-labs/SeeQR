@@ -72,8 +72,10 @@ const QueryView = ({
 }: QueryViewProps) => {
   // const [databases, setDatabases] = useState<string[]>([]);
 
-  //I think this returns undefined if DBInfo is falsy idk lol
+  // I think this returns undefined if DBInfo is falsy idk lol
   const dbNames = DBInfo?.map((dbi) => dbi.db_name);
+  const dbTypes = DBInfo?.map((dbi) => dbi.db_type);
+  
 
   const defaultQuery: QueryData = {
     label: '',
@@ -83,10 +85,10 @@ const QueryView = ({
   };
 
   const localQuery = { ...defaultQuery, ...query };
-  console.log('local query', localQuery);
-  console.log('query', query);
-  console.log('query', defaultQuery);
-  console.log(curDBType);
+  // console.log('local query', localQuery);
+  // console.log('query', query);
+  // console.log('defaultQuery', defaultQuery);
+  // console.log('curDBType', curDBType);
 
   const onLabelChange = (newLabel: string) => {
     setQuery({ ...localQuery, label: newLabel });
@@ -96,15 +98,22 @@ const QueryView = ({
     setQuery({ ...localQuery, group: newGroup });
   };
 
-  const onDbChange = (newDb: string) => {
+  const onDbChange = (newDb: string, nextDBType: DBType) => {
     // when db is changed we must change selected db state on app, as well as
     // request updates for db and table information. Otherwise database view tab
-    // will show wrong informatio
+    // will show wrong information
+
+    console.log('when selecting a database from the dropdown menu, we first go here in queryview')
+    console.log('nextDBType in QueryView', nextDBType)
+    console.log('newDB in Query View', newDb)
+
+    setSelectedDb(newDb);
+    setDBType(nextDBType);
+
     ipcRenderer
-      .invoke('select-db', newDb, curDBType)
+      .invoke('select-db', newDb, nextDBType)
       .then(() => {
         setQuery({ ...localQuery, db: newDb });
-        setSelectedDb(newDb);
       })
 
       .catch(() =>
@@ -189,7 +198,7 @@ const QueryView = ({
       <TopRow>
         <QueryLabel label={localQuery.label} onChange={onLabelChange} />
         <QueryGroup group={localQuery.group} onChange={onGroupChange} />
-        <QueryDb db={localQuery.db} onChange={onDbChange} dbNames={dbNames} />
+        <QueryDb db={localQuery.db} onDbChange={onDbChange} dbNames={dbNames} dbTypes={dbTypes} />
         <QueryTopSummary
           rows={query?.returnedRows?.length}
           totalTime={getPrettyTime(query)}
