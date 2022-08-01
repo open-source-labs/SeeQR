@@ -7,30 +7,30 @@ import {
 } from '../frontend/types';
 
 import {
-  BackendObjType,
+  BackendObjType, DBType,
 } from './BE_types';
 
-function backendObjToQuery(backendObj: BackendObjType): string {
+function backendObjToQuery(backendObj: BackendObjType, dbType: DBType): string {
   const outputArray: string[] = [];
 
   // Add table to database
   function addTable(addTableArray: AddTablesObjType[]): void {
     for (let i = 0; i < addTableArray.length; i += 1) {
       const currTable: AddTablesObjType = addTableArray[i];
-      outputArray.push(
-        `CREATE TABLE ${currTable.table_schema}.${currTable.table_name}(); `
-      );
+      if(dbType === DBType.Postgres) outputArray.push(`CREATE TABLE ${currTable.table_schema}.${currTable.table_name}(); `);
+      if(dbType === DBType.MySQL) outputArray.push(`CREATE TABLE ${currTable.table_name} (_id VARCHAR(20)); `);
     }
   }
+
   // Remove table from database
   function dropTable(dropTableArray: DropTablesObjType[]): void {
     for (let i = 0; i < dropTableArray.length; i += 1) {
       const currTable: DropTablesObjType = dropTableArray[i];
-      outputArray.push(
-        `DROP TABLE ${currTable.table_schema}.${currTable.table_name}; `
-      );
+      if(dbType === DBType.Postgres) outputArray.push(`DROP TABLE ${currTable.table_schema}.${currTable.table_name}; `);
+      if(dbType === DBType.MySQL) outputArray.push(`DROP TABLE ${currTable.table_name}; `);
     }
   }
+
   // Alter existing table in database. All column functions reside under this function
   function alterTable(alterTableArray: AlterTablesObjType[]): void {
     // Add column to table
@@ -38,21 +38,31 @@ function backendObjToQuery(backendObj: BackendObjType): string {
       let addColumnString: string = '';
       if (currTable.addColumns.length) {
         for (let i = 0; i < currTable.addColumns.length; i += 1) {
-          addColumnString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} ADD COLUMN ${currTable.addColumns[i].column_name} ${currTable.addColumns[i].data_type}(${currTable.addColumns[i].character_maximum_length}); `;
+          if(dbType === DBType.Postgres) addColumnString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} ADD COLUMN ${currTable.addColumns[i].column_name} ${currTable.addColumns[i].data_type}(${currTable.addColumns[i].character_maximum_length}); `;
+          if(dbType === DBType.MySQL) {
+            let lengthOfData = '';
+            if(currTable.addColumns[i].character_maximum_length != null) {
+              lengthOfData = `(${currTable.addColumns[i].character_maximum_length})`;
+            }
+            addColumnString += `ALTER TABLE ${currTable.table_name} ADD COLUMN ${currTable.addColumns[i].column_name} ${currTable.addColumns[i].data_type} ${lengthOfData}; `;
+          }
         }
       }
       return addColumnString;
     }
+
     // Remove column from table
     function dropColumn(currTable: AlterTablesObjType): string {
       let dropColumnString: string = '';
       if (currTable.dropColumns.length) {
         for (let i = 0; i < currTable.dropColumns.length; i += 1) {
-          dropColumnString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} DROP COLUMN ${currTable.dropColumns[i].column_name}; `;
+          if(dbType === DBType.Postgres) dropColumnString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} DROP COLUMN ${currTable.dropColumns[i].column_name}; `;
+          if(dbType === DBType.MySQL) dropColumnString += `ALTER TABLE ${currTable.table_name} DROP COLUMN ${currTable.dropColumns[i].column_name}; `;
         }
       }
       return dropColumnString;
     }
+
     // Add/remove constraints from column
     function alterTableConstraint(currTable: AlterTablesObjType): string {
       let alterTableConstraintString: string = '';
@@ -61,7 +71,9 @@ function backendObjToQuery(backendObj: BackendObjType): string {
         let defaultRowValue: number | string;
         if(currColumn.current_data_type === 'character varying') defaultRowValue = 'A';
         else defaultRowValue = 1;
-        alterTableConstraintString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} ADD CONSTRAINT ${currConstraint.constraint_name} PRIMARY KEY (${currColumn.column_name}); INSERT INTO ${currTable.table_schema}.${currTable.table_name} (${currColumn.column_name}) VALUES ('${defaultRowValue}'); `;
+
+        if(dbType === DBType.Postgres)  alterTableConstraintString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} ADD CONSTRAINT ${currConstraint.constraint_name} PRIMARY KEY (${currColumn.column_name}); INSERT INTO ${currTable.table_schema}.${currTable.table_name} (${currColumn.column_name}) VALUES ('${defaultRowValue}'); `;
+        if(dbType === DBType.MySQL) alterTableConstraintString += `ALTER TABLE ${currTable.table_name} ADD CONSTRAINT ${currConstraint.constraint_name} PRIMARY KEY (${currColumn.column_name}); INSERT INTO ${currTable.table_schema}.${currTable.table_name} (${currColumn.column_name}) VALUES ('${defaultRowValue}'); `;
       }
       // Add a foreign key constraint to column
       function addForeignKey(currConstraint: AddConstraintObjType, currColumn: AlterColumnsObjType): void {
@@ -95,6 +107,7 @@ function backendObjToQuery(backendObj: BackendObjType): string {
       }
       return alterTableConstraintString;
     }
+
     // Add/remove not null constraint from column
     function alterNotNullConstraint(currTable: AlterTablesObjType): string {
       let notNullConstraintString: string = '';
@@ -108,6 +121,7 @@ function backendObjToQuery(backendObj: BackendObjType): string {
       }
       return notNullConstraintString;
     }
+
     // Change the data type of the column
     function alterType(currTable: AlterTablesObjType): string {
       let alterTypeString: string = '';
@@ -122,6 +136,7 @@ function backendObjToQuery(backendObj: BackendObjType): string {
       }
       return alterTypeString;
     }
+
     // Change the max character length of a varchar
     function alterMaxCharacterLength(currTable: AlterTablesObjType): string {
       let alterMaxCharacterLengthString: string = '';
@@ -142,6 +157,7 @@ function backendObjToQuery(backendObj: BackendObjType): string {
       );
     }
   }
+
   // Outer function to rename tables and columns. Will rename columns first, then rename tables
   function renameTablesColumns(renameTableArray: AlterTablesObjType[]): void {
     let renameString: string = '';
@@ -227,6 +243,7 @@ function backendObjToQuery(backendObj: BackendObjType): string {
   dropTable(backendObj.updates.dropTables);
   alterTable(backendObj.updates.alterTables);
   renameTablesColumns(backendObj.updates.alterTables);
+
   return outputArray.join('');
 }
 

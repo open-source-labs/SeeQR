@@ -175,12 +175,11 @@ ipcMain.handle(
 
     event.sender.send('async-started');
 
-    // store temporary file in user desktop
     const tempFilePath = path.resolve(
       `${docConfig.getConfigFolder()}/`,
       `temp_${newName}.sql`
     );
-    console.log(tempFilePath);
+
     try {
       // dump database to temp file
       const dumpCmd = withData
@@ -204,8 +203,9 @@ ipcMain.handle(
       // run temp sql file on new database
       try {
         await promExecute(runSQLFunc(newName, tempFilePath, dbType));
-      } catch (e) {
+      } catch (e: any) {
         // cleanup: drop created db
+        logger('Dropping duplicate db because: ' + e.message, LogType.WARNING);
         const dropDBScript = dropDBFunc(newName, dbType);
         await db.query(dropDBScript);
 
@@ -263,8 +263,9 @@ ipcMain.handle(
       try {
         // populate new db with data from file
         await promExecute(restoreCmd);
-      } catch (e) {
+      } catch (e: any) {
         // cleanup: drop created db
+        logger('Dropping imported db because: ' + e.message, LogType.WARNING);
         const dropDBScript = dropDBFunc(newDbName, dbType);
         await db.query(dropDBScript);
 
@@ -564,7 +565,7 @@ ipcMain.handle(
     };
     try {
       // Generates query from backendObj
-      const query = backendObjToQuery(backendObj);
+      const query = backendObjToQuery(backendObj, dbType);
       // run sql command
       await db.query('Begin;', null, dbType);
       await db.query(query, null, dbType);
