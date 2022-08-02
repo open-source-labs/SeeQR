@@ -72,20 +72,23 @@ function backendObjToQuery(backendObj: BackendObjType, dbType: DBType): string {
         if(currColumn.current_data_type === 'character varying') defaultRowValue = 'A';
         else defaultRowValue = 1;
 
-        if(dbType === DBType.Postgres)  alterTableConstraintString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} ADD CONSTRAINT ${currConstraint.constraint_name} PRIMARY KEY (${currColumn.column_name}); INSERT INTO ${currTable.table_schema}.${currTable.table_name} (${currColumn.column_name}) VALUES ('${defaultRowValue}'); `;
+        if(dbType === DBType.Postgres) alterTableConstraintString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} ADD CONSTRAINT ${currConstraint.constraint_name} PRIMARY KEY (${currColumn.column_name}); INSERT INTO ${currTable.table_schema}.${currTable.table_name} (${currColumn.column_name}) VALUES ('${defaultRowValue}'); `;
         if(dbType === DBType.MySQL) alterTableConstraintString += `ALTER TABLE ${currTable.table_name} ADD CONSTRAINT ${currConstraint.constraint_name} PRIMARY KEY (${currColumn.column_name}); INSERT INTO ${currTable.table_schema}.${currTable.table_name} (${currColumn.column_name}) VALUES ('${defaultRowValue}'); `;
       }
       // Add a foreign key constraint to column
       function addForeignKey(currConstraint: AddConstraintObjType, currColumn: AlterColumnsObjType): void {
-        alterTableConstraintString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} ADD CONSTRAINT ${currConstraint.constraint_name} FOREIGN KEY ("${currColumn.column_name}") REFERENCES ${currConstraint.foreign_table}(${currConstraint.foreign_column}); `;
+        if(dbType === DBType.Postgres) alterTableConstraintString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} ADD CONSTRAINT ${currConstraint.constraint_name} FOREIGN KEY ("${currColumn.column_name}") REFERENCES ${currConstraint.foreign_table}(${currConstraint.foreign_column}); `;
+        if(dbType === DBType.MySQL) alterTableConstraintString += `ALTER TABLE ${currTable.table_name} ADD CONSTRAINT ${currConstraint.constraint_name} FOREIGN KEY ("${currColumn.column_name}") REFERENCES ${currConstraint.foreign_table}(${currConstraint.foreign_column}); `;
       }
       // Add a unique constraint to column
       function addUnique(currConstraint: AddConstraintObjType, currColumn: AlterColumnsObjType): void {
-        alterTableConstraintString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} ADD CONSTRAINT ${currConstraint.constraint_name} UNIQUE (${currColumn.column_name}); `;
+        if(dbType === DBType.Postgres) alterTableConstraintString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} ADD CONSTRAINT ${currConstraint.constraint_name} UNIQUE (${currColumn.column_name}); `;
+        if(dbType === DBType.MySQL) alterTableConstraintString += `ALTER TABLE ${currTable.table_name} ADD CONSTRAINT ${currConstraint.constraint_name} UNIQUE (${currColumn.column_name}); `;
       }
       // Remove constraint from column
       function dropConstraint(currDrop): void {
-        alterTableConstraintString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} DROP CONSTRAINT ${currDrop}; `;
+        if(dbType === DBType.Postgres) alterTableConstraintString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} DROP CONSTRAINT ${currDrop}; `;
+        if(dbType === DBType.Postgres) alterTableConstraintString += `ALTER TABLE ${currTable.table_name} DROP CONSTRAINT ${currDrop}; `;
       }
 
       for (let i = 0; i < currTable.alterColumns.length; i += 1) {
@@ -221,20 +224,23 @@ function backendObjToQuery(backendObj: BackendObjType, dbType: DBType): string {
     for (let i = 0; i < columnsToRename.length; i+=1) {
       const currColumn: AlterColumnsObjType = columnsNames[columnsToRename[i]];
       // only renames a column with the most recent name that was saved
-      renameString += `ALTER TABLE ${currColumn.table_schema}.${currColumn.table_name} RENAME COLUMN ${currColumn.column_name} TO ${currColumn.new_column_name}; `;
+      if(dbType === DBType.Postgres) renameString += `ALTER TABLE ${currColumn.table_schema}.${currColumn.table_name} RENAME COLUMN ${currColumn.column_name} TO ${currColumn.new_column_name}; `;
+      if(dbType === DBType.MySQL) renameString += `ALTER TABLE ${currColumn.table_name} RENAME COLUMN ${currColumn.column_name} TO ${currColumn.new_column_name}; `;
     }
     // Goes through the tablesNames object and adds the query for renaming
     const tablesToRename: string[] = Object.keys(tablesNames);
     for (let i = 0; i < tablesToRename.length; i+=1) {
       const currTable: AlterTablesObjType = tablesNames[tablesToRename[i]];
       // only renames a table with the most recent name that was saved
-      renameString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} RENAME TO ${currTable.new_table_name}; `;
+      if(dbType === DBType.Postgres) renameString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} RENAME TO ${currTable.new_table_name}; `;
+      if(dbType === DBType.MySQL) `ALTER TABLE ${currTable.table_name} RENAME ${currTable.new_table_name}; `;
     }
     // Goes through the constraintsNames object and adds the query for renaming
     const constraintsToRename: string[] = Object.keys(constraintsNames);
     for (let i = 0; i < constraintsToRename.length; i+=1) {
       const currColumn: AlterColumnsObjType = constraintsNames[constraintsToRename[i]];
-      renameString += `ALTER TABLE ${currColumn.table_schema}.${currColumn.table_name} RENAME CONSTRAINT ${constraintsToRename[i]} TO ${currColumn.constraint_type}_${currColumn.table_name}${currColumn.column_name}; `;
+      if(dbType === DBType.Postgres) renameString += `ALTER TABLE ${currColumn.table_schema}.${currColumn.table_name} RENAME CONSTRAINT ${constraintsToRename[i]} TO ${currColumn.constraint_type}_${currColumn.table_name}${currColumn.column_name}; `;
+      if(dbType === DBType.MySQL) renameString += `ALTER TABLE ${currColumn.table_name} RENAME CONSTRAINT ${constraintsToRename[i]} TO ${currColumn.constraint_type}_${currColumn.table_name}${currColumn.column_name}; `;
     }
     outputArray.push(renameString);
   }
