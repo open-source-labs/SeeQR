@@ -276,7 +276,7 @@ const getDBLists = function (
                 tableList[i].columns = columnInfo[i];
               }
 
-              logger("MySQL 'getDBLists' resolved.", LogType.SUCCESS, tableList);
+              logger("MySQL 'getDBLists' resolved.", LogType.SUCCESS);
               resolve(tableList);
             })
             .catch((err) => {
@@ -382,15 +382,24 @@ const myObj: MyObj = {
       });
     }
     if (dbType === DBType.MySQL) {
-      msql_pool.query(`USE ${this.curMSQL_DB};`)
-      .then(() => {
-        return msql_pool.query(text, params, DBType.MySQL).catch((err) => {
+      return new Promise((resolve, reject) => {
+        msql_pool.query(`USE ${this.curMSQL_DB};`)
+        .then(() => {
+          msql_pool.query(text, params, DBType.MySQL)
+          .then((data) => {
+            resolve(data);
+          })
+          .catch((err) => {
+            logger(err.message, LogType.WARNING);
+            reject(err);
+          });
+        })
+        .catch((err) => {
           logger(err.message, LogType.WARNING);
+          reject(err);
         });
-      })
-      .catch((err) => {
-        logger(err.message, LogType.WARNING);
       });
+      
     }
   },
 
