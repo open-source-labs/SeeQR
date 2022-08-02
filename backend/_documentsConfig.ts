@@ -69,7 +69,6 @@ const docConfig: DocConfig = {
       logger(err.message, LogType.WARNING);
       return { user: 'none', pass: 'none' };
     }
-
     if (dbType === DBType.Postgres) {
       return { user: configFile.pg_user, pass: configFile.pg_pass };
     }
