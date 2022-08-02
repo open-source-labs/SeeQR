@@ -11,9 +11,12 @@ import {
   Button,
   TextField,
   ListItemText,
+  Select,
+  NativeSelect,
 } from '@material-ui/core';
 import { createMuiTheme } from '@material-ui/core/styles';
 import styled from 'styled-components';
+import { FormControl, InputLabel, MenuItem } from '@mui/material';
 
 // previous
 export const bgColor = '#2b2d35';
@@ -160,12 +163,48 @@ export const TextFieldContainer = styled.a`
   justify-content: center;
 `;
 
+// export const DropdownContainer = styled.a`
+//   margins: 5px;
+//   padding-left: 25px;
+// `;
+
+export const DropdownContainer = styled.a`
+  margins: 5px;
+  padding-left: 25px;
+`;
+
 export const StyledButton = styled(Button)`
   margin: 10px 20px 20px 0px;
   min-width: 25%;
   height: 10%;
   size: small;
 `;
+
+export const StyledInputLabel = styled(InputLabel)`
+  padding-left: 25px;
+  color: #171616;
+`
+
+export const StyledDropdown = styled(Select)`
+  width: 90%;
+  margin: 10px;
+  color: #171616;
+`;
+
+export const StyledNativeDropdown = styled(NativeSelect)`
+  width: 90%;
+  margin: 10px;
+  color: #171616;
+`;
+
+export const StyledNativeOption = styled.option`
+  color: #171616;
+  background-color: '#2b2d35';
+`
+
+export const StyledMenuItem = styled(MenuItem)`
+  color: #171616;
+`
 
 export const StyledTextField = styled(TextField)`
   width: 80%;

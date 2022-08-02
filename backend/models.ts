@@ -160,13 +160,26 @@ const getDBNames = function (dbType: DBType): Promise<dbDetails[]> {
           reject(err);
         });
     } else if (dbType === DBType.MySQL) {
-      query = `
-      SELECT table_schema db_name,
-      ROUND(SUM(data_length + index_length) / 1024, 1) db_size
+      // query = `
+      // SELECT table_schema db_name,
+      // ROUND(SUM(data_length + index_length) / 1024, 1) db_size
 
-      FROM information_schema.tables
-      WHERE table_schema NOT IN("information_schema", "performance_schema", "mysql", "sys")
-      GROUP BY table_schema;`;
+      // FROM information_schema.tables
+      // WHERE table_schema NOT IN("information_schema", "performance_schema", "mysql", "sys")
+      // GROUP BY table_schema;`;
+
+      query = `
+      SELECT 
+        S.SCHEMA_NAME db_name,
+        ROUND(SUM(data_length + index_length) / 1024, 1) db_size
+      FROM
+        INFORMATION_SCHEMA.SCHEMATA S
+          LEFT OUTER JOIN
+            INFORMATION_SCHEMA.TABLES T ON S.SCHEMA_NAME = T.TABLE_SCHEMA
+      WHERE
+        S.SCHEMA_NAME NOT IN ('information_schema' , 'mysql', 'performance_schema', 'sys')
+      GROUP BY S.SCHEMA_NAME
+      ORDER BY db_name ASC;`;
 
       msql_pool
         .query(query)
@@ -291,6 +304,8 @@ const getDBLists = function (
 };
 
 // *********************************************************** POSTGRES/MYSQL ************************************************* //
+let lastDBType: DBType | undefined;
+
 const PG_DBConnect = async function (pg_uri: string, db: string) {
   const newURI = `${pg_uri}${db}`;
   const newPool = new Pool({ connectionString: newURI });
@@ -301,16 +316,6 @@ const PG_DBConnect = async function (pg_uri: string, db: string) {
 };
 
 const MSQL_DBConnect = function (db: string) {
-  msql_pool = mysql.createPool({
-    host: 'localhost',
-    user: 'root',
-    password: 'Hello123!',
-    database: db,
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0,
-  });
-
   msql_pool
     .query(`USE ${db};`)
     .then(() => {
@@ -332,7 +337,7 @@ interface MyObj {
     params: (string | number)[],
     dbType: DBType
   ) => Function;
-  connectToDB: (db: string, dbType: DBType) => Promise<void>;
+  connectToDB: (db: string, dbType?: DBType) => Promise<void>;
   getLists: () => Promise<DBList>;
   getTableInfo: (tableName: string, dbType: DBType) => Promise<ColumnObj[]>;
 }
@@ -353,8 +358,8 @@ const myObj: MyObj = {
     // ^Unknown if this rule is still true
     if (pg_pool) await pg_pool.end();
 
-    this.pg_uri = `postgres://${PG_Cred.user}:${PG_Cred.pass}@localhost:5432/${this.curPG_DB}`;
-    pg_pool = new Pool({ connectionString: this.pg_uri });
+    this.pg_uri = `postgres://${PG_Cred.user}:${PG_Cred.pass}@localhost:5432/`;
+    pg_pool = new Pool({ connectionString: this.pg_uri + this.curPG_DB });
 
     if (msql_pool) await msql_pool.end();
 
@@ -366,27 +371,62 @@ const myObj: MyObj = {
       waitForConnections: true,
       connectionLimit: 10,
       queueLimit: 0,
+      multipleStatements: true
     });
   },
 
   // Run any query
   query(text, params, dbType: DBType) {
     logger(`Attempting to run query: \n ${text} for: \n ${dbType}`);
+
+    // const PG = pg_pool.query(text, params).catch((err) => {
+    //   logger(err.message, LogType.WARNING);
+    // });
+
+    // const MySQL = msql_pool.query(text, params).catch((err) => {
+    //   logger(err.message, LogType.WARNING);
+    // });
+
+    // return dbType === DBType.Postgres ? PG : MySQL;
+
     if (dbType === DBType.Postgres) {
       return pg_pool.query(text, params).catch((err) => {
         logger(err.message, LogType.WARNING);
       });
     }
     if (dbType === DBType.MySQL) {
-      return msql_pool.query(text, params, DBType.MySQL);
+      return new Promise((resolve, reject) => {
+        msql_pool.query(`USE ${this.curMSQL_DB};`)
+        .then(() => {
+          msql_pool.query(text, params, DBType.MySQL)
+          .then((data) => {
+            resolve(data);
+          })
+          .catch((err) => {
+            logger(err.message, LogType.WARNING);
+            reject(err);
+          });
+        })
+        .catch((err) => {
+          logger(err.message, LogType.WARNING);
+          reject(err);
+        });
+      });
+      
     }
   },
 
   // Change current Db
-  async connectToDB(db: string, dbType: DBType) {
-    logger(
-      `Starting connect to DB: ${db} With a dbType of: ${dbType.toString()}`
-    );
+  async connectToDB(db: string, dbType?: DBType | undefined) {
+    logger(`Starting connect to DB: ${db} With a dbType of: ${dbType?.toString()}`);
+
+    if(!dbType) {
+      if(!lastDBType) {
+        logger(`Attempted to connect to a dbType when no dbType or lastDBType is defined.`, LogType.WARNING);
+        return;
+      }
+      dbType = lastDBType;  
+    }
 
     if (dbType === DBType.Postgres) {
       this.curPG_DB = db;

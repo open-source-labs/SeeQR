@@ -66,12 +66,16 @@ const Sidebar = ({
   setERView,
   curDBType,
   setDBType,
+  // cdbt,
+  // setcdbt,
   DBInfo,
   setDBInfo,
   dbTables,
   setTables,
   selectedTable,
   setSelectedTable,
+  showCreateDialog,
+  setCreateDialog
 }: AppState) => {
 
   const toggleOpen = () => setSidebarHidden(!sidebarIsHidden);
@@ -131,8 +135,12 @@ const Sidebar = ({
           setSelectedDb={setSelectedDb}
           curDBType={curDBType}
           setDBType={setDBType}
+          // cdbt={cdbt}
+          // setcdbt={setcdbt}
           DBInfo={DBInfo}
           setDBInfo={setDBInfo}
+          showCreateDialog={showCreateDialog}
+          setCreateDialog={setCreateDialog}
         />
         <Logo src={logo} alt="Logo" />
       </StyledDrawer>

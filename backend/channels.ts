@@ -173,17 +173,17 @@ ipcMain.handle(
 
     event.sender.send('async-started');
 
-    // store temporary file in user desktop
     const tempFilePath = path.resolve(
       `${docConfig.getConfigFolder()}/`,
       `temp_${newName}.sql`
     );
-    console.log(tempFilePath);
+
     try {
       // dump database to temp file
       const dumpCmd = withData
         ? runFullCopyFunc(sourceDb, tempFilePath, dbType)
         : runHollowCopyFunc(sourceDb, tempFilePath, dbType);
+      console.log('dbType for importing a database', dbType)
       try {
         await promExecute(dumpCmd);
       } catch (e) {
@@ -202,8 +202,9 @@ ipcMain.handle(
       // run temp sql file on new database
       try {
         await promExecute(runSQLFunc(newName, tempFilePath, dbType));
-      } catch (e) {
+      } catch (e: any) {
         // cleanup: drop created db
+        logger('Dropping duplicate db because: ' + e.message, LogType.WARNING);
         const dropDBScript = dropDBFunc(newName, dbType);
         await db.query(dropDBScript);
 
@@ -261,8 +262,9 @@ ipcMain.handle(
       try {
         // populate new db with data from file
         await promExecute(restoreCmd);
-      } catch (e) {
+      } catch (e: any) {
         // cleanup: drop created db
+        logger('Dropping imported db because: ' + e.message, LogType.WARNING);
         const dropDBScript = dropDBFunc(newDbName, dbType);
         await db.query(dropDBScript);
 
@@ -305,8 +307,26 @@ ipcMain.handle(
       // Run Explain
       let explainResults;
       try {
-        const results = await db.query(explainQuery(sqlString, dbType));
-        explainResults = results[1].rows;
+        if(dbType === DBType.Postgres) {
+          const results = await db.query(
+            explainQuery(sqlString, dbType),
+            null,
+            dbType
+          );
+  
+          console.log('================', LogType.WARNING, results);
+          explainResults = results[1].rows;
+          console.log('explainResults in channels for POSTGRES', explainResults)
+        }
+        else if(dbType === DBType.MySQL) {
+          const results = await db.query(
+            explainQuery(sqlString, dbType),
+            null,
+            dbType
+          );
+  
+          console.log('================', LogType.WARNING, results);
+        }
       } catch (e) {
         error = `Failed to get Execution Plan. EXPLAIN might not support this query.`;
       }
@@ -314,8 +334,17 @@ ipcMain.handle(
       // Run Query
       let returnedRows;
       try {
-        const results = await db.query(sqlString);
-        returnedRows = results.rows;
+        const results = await db.query(sqlString, null, dbType);
+        if (dbType === DBType.MySQL) {
+          console.log('results in channels for MySQL', results)
+          returnedRows = results[1][0].name;
+          console.log('returnedRows in channels for MySQL', returnedRows)
+        }
+        if (dbType === DBType.Postgres) {
+          console.log('results in channels for Postgres', results)
+          returnedRows = results.rows;
+          console.log('returnedRows in channels for Postgres', returnedRows)
+        }
       } catch (e: any) {
         error = e.toString();
       }
@@ -486,7 +515,7 @@ ipcMain.handle(
     } catch (e) {
       // in the case of an error, delete the created db
       const dropDBScript = dropDBFunc(newDbName, dbType);
-      await db.query(dropDBScript);
+      await db.query(dropDBScript, null, dbType);
       throw new Error('Failed to initialize new database');
     } finally {
       event.sender.send('async-complete');
@@ -517,7 +546,7 @@ ipcMain.handle(
       // Run Query
       // let returnedRows;
       try {
-        await db.query(sqlString);
+        await db.query(sqlString, null, dbType);
       } catch (e) {
         if (e) throw new Error('Failed to update schema');
       }
@@ -551,7 +580,7 @@ ipcMain.handle(
     };
     try {
       // Generates query from backendObj
-      const query = backendObjToQuery(backendObj);
+      const query = backendObjToQuery(backendObj, dbType);
       // run sql command
       await db.query('Begin;', null, dbType);
       await db.query(query, null, dbType);
