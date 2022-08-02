@@ -266,7 +266,7 @@ ipcMain.handle(
         // cleanup: drop created db
         logger('Dropping imported db because: ' + e.message, LogType.WARNING);
         const dropDBScript = dropDBFunc(newDbName, dbType);
-        await db.query(dropDBScript);
+        await db.query(dropDBScript, dbType);
 
         throw new Error('Failed to populate database');
       }
