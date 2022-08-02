@@ -63,7 +63,7 @@ const helperFunctions: HelperFunctions = {
   runSQLFunc: function (dbName, file, dbType: DBType) {
     const PG = `psql -U postgres -d "${dbName}" -f "${file}"`;
     // const MYSQL = `mysql -u root -p ${dbName} < ${file}`;
-    const MYSQL = `mysql -uroot -pHello123!; use ${dbName}; source ${file}`;
+    const MYSQL = `mysql -uroot -p; use ${dbName}; source ${file}`;
 
     console.log(`runSQLFunc MySQL: ${MYSQL}, ${dbType}`);
     console.log(`runSQLFunc PG: ${PG}, ${dbType}`);
@@ -78,7 +78,7 @@ const helperFunctions: HelperFunctions = {
   // import TAR file into new DB created
   runTARFunc: function (dbName, file, dbType: DBType) {
     const PG = `pg_restore -U postgres -d "${dbName}" "${file}"`;
-    const MYSQL = `mysqldump -u username -p ${dbName} > "${file}"`;
+    const MYSQL = `mysqldump -u root -p ${dbName} > ${file}`;
 
     console.log(`runTARFunc MySQL: ${MYSQL}, ${dbType}`);
     console.log(`runTARFunc PG: ${PG}, ${dbType}`);
@@ -100,7 +100,7 @@ const helperFunctions: HelperFunctions = {
   // make a hollow copy of the schema
   runHollowCopyFunc: function (dbCopyName, file, dbType: DBType) {
     const PG = `pg_dump -s -U postgres -F p -d "${dbCopyName}" > "${file}"`;
-    const MYSQL = `mysqldump -h localhost -u root -p --no-data ${dbCopyName} > "${file}"`;
+    const MYSQL = `mysqldump -h localhost -u root -p --no-data ${dbCopyName} > ${file}`;
 
     console.log(`runHollowCopyFunc MySQL: ${MYSQL}, ${dbType}`);
     console.log(`runHollowCopyFunc PG: ${PG}, ${dbType}`);

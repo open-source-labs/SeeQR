@@ -103,21 +103,17 @@ ipcMain.on('return-db-list', (event, dbType: DBType = DBType.Postgres) => {
 // and send back an updated DB List
 ipcMain.handle(
   'select-db',
-  async (event, dbName: string, curDBType: DBType): Promise<void> => {
+  async (event, dbName: string, dbType: DBType): Promise<void> => {
     logger("Received 'select-db'", LogType.RECEIVE);
 
     event.sender.send('async-started');
     try {
-      console.log(
-        'dbName from backend',
-        dbName,
-        'dbType from backend',
-        curDBType
-      );
-      await db.connectToDB(dbName, curDBType);
+      console.log('dbName from backend', dbName, 'dbType from backend');
+
+      await db.connectToDB(dbName, dbType);
 
       // send updated db info
-      const dbsAndTables: DBList = await db.getLists(dbName, curDBType);
+      const dbsAndTables: DBList = await db.getLists(dbName, dbType);
       event.sender.send('db-lists', dbsAndTables);
       logger("Sent 'db-lists' from 'select-db'", LogType.SEND);
     } finally {
@@ -125,7 +121,6 @@ ipcMain.handle(
     }
   }
 );
-
 // await db.query(dropDBScript, null, dbType);
 // Deletes the DB that is passed from the front end and returns an updated DB List
 ipcMain.handle(
@@ -314,23 +309,23 @@ ipcMain.handle(
       // Run Explain
       let explainResults;
       try {
-        console.log('explain');
-        const results = await db.query(
-          explainQuery(sqlString, dbType),
-          null,
-          dbType
-        );
-
-        if (dbType === DBType.MySQL) {
-          explainResults = results[0][0];
-          console.log(`TargetDb: ${targetDb}`);
-          console.log(`SelectedDB: ${selectedDb}`);
-          console.log(`SQL String: ${sqlString}`);
-          console.log(`ExplainResults: ${results}`);
-          console.log(`dbType: ${dbType}`);
-        }
         if (dbType === DBType.Postgres) {
+          const results = await db.query(
+            explainQuery(sqlString, dbType),
+            null,
+            dbType
+          );
+
+          console.log('================', LogType.WARNING, results);
           explainResults = results[1].rows;
+        } else if (dbType === DBType.MySQL) {
+          const results = await db.query(
+            explainQuery(sqlString, dbType),
+            null,
+            dbType
+          );
+
+          console.log('================', LogType.WARNING, results);
         }
       } catch (e) {
         error = `Failed to get Execution Plan. EXPLAIN might not support this query.`;
