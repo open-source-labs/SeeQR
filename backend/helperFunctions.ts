@@ -62,13 +62,15 @@ const helperFunctions: HelperFunctions = {
   // import SQL file into new DB created
   runSQLFunc: function (dbName, file, dbType: DBType) {
     const PG = `psql -U postgres -d "${dbName}" -f "${file}"`;
-    const MYSQL = `mysql -u root -p Hello123! ${dbName} < ${file}`;
+    // const MYSQL = `mysql -u root -p ${dbName} < ${file}`;
+    const MYSQL = `mysql -uroot -pHello123!; use ${dbName}; source ${file}`;
 
     console.log(`runSQLFunc MySQL: ${MYSQL}, ${dbType}`);
     console.log(`runSQLFunc PG: ${PG}, ${dbType}`);
     // -u root -p DATABASENAME < FILETOBEIMPORTED.sql;
     // mysql -u root -p"Hello123!" dish < ~/Desktop/mysqlsamp.sql
     // SET autocommit=0 ; source d /Users/fryer/Downloads/mysqlsamp.sql  ; COMMIT ;
+    // `mysql -uroot -pHello123!; use ${dbName}; source ${file}`
 
     return dbType === DBType.Postgres ? PG : MYSQL;
   },
@@ -87,7 +89,7 @@ const helperFunctions: HelperFunctions = {
   // make a full copy of the schema
   runFullCopyFunc: function (dbCopyName, newFile, dbType: DBType) {
     const PG = `pg_dump -U postgres -F p -d "${dbCopyName}" > "${newFile}"`;
-    const MYSQL = `mysqldump -h localhost -u root -p --no-data ${dbCopyName} > "${newFile}"`;
+    const MYSQL = `mysqldump -h localhost -u root -p --no-data ${dbCopyName} > ${newFile}`;
 
     console.log(`runFullCopyFunc MySQL: ${MYSQL}, ${dbType}`);
     console.log(`runFullCopyFunc PG: ${PG}, ${dbType}`);
