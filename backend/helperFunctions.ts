@@ -1,5 +1,5 @@
 /* eslint-disable object-shorthand */
-import { DBType } from './BE_types';
+import { DBType, DocConfigFile } from './BE_types';
 const { exec } = require('child_process'); // Child_Process: Importing Node.js' child_process API
 const { dialog } = require('electron'); // Dialog: display native system dialogs for opening and saving files, alerting, etc
 // ************************************** CLI COMMANDS & SQL Queries TO CREATE, DELETE, COPY DB SCHEMA, etc. ************************************** //
@@ -13,16 +13,22 @@ interface CreateSQLQuery {
 interface CreateCommand {
   (dbName: string, file: string, dbType: DBType): string;
 }
+
+interface ImportMsDb {
+  (dbname: string, un: string, pw: string, file: string, dbType: DBType): string;
+}
+
 interface HelperFunctions {
   createDBFunc: CreateSQLQuery;
   dropDBFunc: CreateSQLQuery;
   explainQuery: CreateSQLQuery;
-  runSQLFunc: CreateCommand;
+  runSQLFunc: ImportMsDb;
   runTARFunc: CreateCommand;
   runFullCopyFunc: CreateCommand;
   runHollowCopyFunc: CreateCommand;
   promExecute: (cmd: string) => Promise<{ stdout: string; stderr: string }>;
 }
+
 // PG = Postgres - Query necessary to run PG Query/Command
 // MYSQL = MySQL - Query necessary to run MySQL Query/Command
 const helperFunctions: HelperFunctions = {
@@ -56,11 +62,19 @@ const helperFunctions: HelperFunctions = {
   },
 
   // import SQL file into new DB created
-  runSQLFunc: function (dbName, file, dbType: DBType) {
+  runSQLFunc: function (dbName, un, pw, file, dbType: DBType) {
     const PG = `psql -U postgres -d "${dbName}" -f "${file}"`;
     // need variable to store username. Typed into comamnd line but none of options below worked for me.
+    // attemping to run query drop database for undefined...
+    // should be different state from dbview state.
+    // need to have: mysql server, 
 
-    const MYSQL = `mysql -u username -p "${dbName}" < "${file}"`;
+    // works: 
+    // 1. updated mysql using brew (installed everything including client);
+    // 2. changed username to root. 
+    // 3. changed singlequotes back to double around dbname and file.
+    console.log(`un:${un} pw:${pw}`);
+    const MYSQL = `mysql -u ${un} -p${pw} ${dbName} < ${file}`;
     // -u root -p DATABASENAME < FILETOBEIMPORTED.sql;
     // mysql -u root -p"Hello123!" dish < ~/Desktop/mysqlsamp.sql
     // SET autocommit=0 ; source d /Users/fryer/Downloads/mysqlsamp.sql  ; COMMIT ;
@@ -71,10 +85,9 @@ const helperFunctions: HelperFunctions = {
   // import TAR file into new DB created
   runTARFunc: function (dbName, file, dbType: DBType) {
     const PG = `pg_restore -U postgres -d "${dbName}" "${file}"`;
-    const MYSQL = `mysqldump -u username -p "${dbName}" > "${file}"`;
-
+    const MYSQL = `mysqldump -u root -phansgruber "${dbName}" > "${file}"`;
     return dbType === DBType.Postgres ? PG : MYSQL;
-  },
+  }, 
 
   // make a full copy of the schema
   runFullCopyFunc: function (dbCopyName, newFile, dbType: DBType) {

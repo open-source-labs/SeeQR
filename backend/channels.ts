@@ -26,7 +26,7 @@ const {
 interface Feedback {
   type: string;
   message: string;
-}
+};
 
 // This isn't being used for anything ATM
 ipcMain.handle('reset-connection', async (event) => {
@@ -178,6 +178,10 @@ ipcMain.handle(
       `temp_${newName}.sql`
     );
 
+    const msCreds = docConfig.getCredentials(dbType);
+    const un =  msCreds.user;
+    const pw = msCreds.pass;
+
     try {
       // dump database to temp file
       const dumpCmd = withData
@@ -201,7 +205,7 @@ ipcMain.handle(
 
       // run temp sql file on new database
       try {
-        await promExecute(runSQLFunc(newName, tempFilePath, dbType));
+        await promExecute(runSQLFunc(newName, un, pw, tempFilePath, dbType));
       } catch (e: any) {
         // cleanup: drop created db
         logger('Dropping duplicate db because: ' + e.message, LogType.WARNING);
@@ -253,10 +257,14 @@ ipcMain.handle(
       const ext = path.extname(filePath).toLowerCase();
       if (ext !== '.sql' && ext !== '.tar')
         throw new Error('Invalid file extension');
+      
+      const msCreds = docConfig.getCredentials(dbType);
+      const un =  msCreds.user;
+      const pw = msCreds.pass;
 
       const restoreCmd =
         ext === '.sql'
-          ? runSQLFunc(newDbName, filePath, dbType)
+          ? runSQLFunc(newDbName, un, pw, filePath, dbType)
           : runTARFunc(newDbName, filePath, dbType);
 
       try {
