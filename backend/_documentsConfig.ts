@@ -43,7 +43,7 @@ const readConfigFile = function (): DocConfigFile {
 
 interface DocConfig {
   getConfigFolder: () => string;
-  getCredentials: (dbType: DBType) => { user: string; pass: string };
+  getCredentials: (dbType: DBType) => { user: string; pass: string, port: number | string };
 }
 
 const docConfig: DocConfig = {
@@ -69,17 +69,17 @@ const docConfig: DocConfig = {
       logger('Got config file: ', LogType.SUCCESS, configFile);
     } catch (err: any) {
       logger(err.message, LogType.WARNING);
-      return { user: 'none', pass: 'none' };
+      return { user: 'none', pass: 'none', port: 1 };
     }
 
     if (dbType === DBType.Postgres) {
-      return { user: configFile.pg_user, pass: configFile.pg_pass };
+      return { user: configFile.pg_user, pass: configFile.pg_pass, port: configFile.pg_port };
     }
     if (dbType === DBType.MySQL) {
-      return { user: configFile.mysql_user, pass: configFile.mysql_pass };
+      return { user: configFile.mysql_user, pass: configFile.mysql_pass, port: configFile.mysql_port };
     }
     logger('Could not get credentials of DBType: ', LogType.ERROR, dbType);
-    return { user: 'none', pass: 'none' };
+    return { user: 'none', pass: 'none', port: 1 };
   },
 };
 
