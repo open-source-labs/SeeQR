@@ -183,6 +183,7 @@ ipcMain.handle(
       const dumpCmd = withData
         ? runFullCopyFunc(sourceDb, tempFilePath, dbType)
         : runHollowCopyFunc(sourceDb, tempFilePath, dbType);
+      console.log('dbType for importing a database', dbType)
       try {
         await promExecute(dumpCmd);
       } catch (e) {
@@ -315,6 +316,7 @@ ipcMain.handle(
   
           console.log('================', LogType.WARNING, results);
           explainResults = results[1].rows;
+          console.log('explainResults in channels for POSTGRES', explainResults)
         }
         else if(dbType === DBType.MySQL) {
           const results = await db.query(
@@ -333,7 +335,16 @@ ipcMain.handle(
       let returnedRows;
       try {
         const results = await db.query(sqlString, null, dbType);
-        returnedRows = results.rows;
+        if (dbType === DBType.MySQL) {
+          console.log('results in channels for MySQL', results)
+          returnedRows = results[1][0].name;
+          console.log('returnedRows in channels for MySQL', returnedRows)
+        }
+        if (dbType === DBType.Postgres) {
+          console.log('results in channels for Postgres', results)
+          returnedRows = results.rows;
+          console.log('returnedRows in channels for Postgres', returnedRows)
+        }
       } catch (e: any) {
         error = e.toString();
       }

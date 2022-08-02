@@ -160,13 +160,26 @@ const getDBNames = function (dbType: DBType): Promise<dbDetails[]> {
           reject(err);
         });
     } else if (dbType === DBType.MySQL) {
-      query = `
-      SELECT table_schema db_name,
-      ROUND(SUM(data_length + index_length) / 1024, 1) db_size
+      // query = `
+      // SELECT table_schema db_name,
+      // ROUND(SUM(data_length + index_length) / 1024, 1) db_size
 
-      FROM information_schema.tables
-      WHERE table_schema NOT IN("information_schema", "performance_schema", "mysql", "sys")
-      GROUP BY table_schema;`;
+      // FROM information_schema.tables
+      // WHERE table_schema NOT IN("information_schema", "performance_schema", "mysql", "sys")
+      // GROUP BY table_schema;`;
+
+      query = `
+      SELECT 
+        S.SCHEMA_NAME db_name,
+        ROUND(SUM(data_length + index_length) / 1024, 1) db_size
+      FROM
+        INFORMATION_SCHEMA.SCHEMATA S
+          LEFT OUTER JOIN
+            INFORMATION_SCHEMA.TABLES T ON S.SCHEMA_NAME = T.TABLE_SCHEMA
+      WHERE
+        S.SCHEMA_NAME NOT IN ('information_schema' , 'mysql', 'performance_schema', 'sys')
+      GROUP BY S.SCHEMA_NAME
+      ORDER BY db_name ASC;`;
 
       msql_pool
         .query(query)
