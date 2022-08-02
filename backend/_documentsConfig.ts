@@ -17,8 +17,10 @@ const writeConfigDefault = function (): DocConfigFile {
   const defaultFile: DocConfigFile = {
     mysql_user: 'mysql',
     mysql_pass: 'mysql',
+    mysql_port: 3306,
     pg_user: 'postgres',
     pg_pass: 'postgres',
+    pg_port: 5432
   };
 
   fs.writeFileSync(configPath, JSON.stringify(defaultFile));
