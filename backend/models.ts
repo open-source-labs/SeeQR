@@ -345,13 +345,14 @@ const myObj: MyObj = {
     // ^Unknown if this rule is still true
     if (pg_pool) await pg_pool.end();
 
-    this.pg_uri = `postgres://${PG_Cred.user}:${PG_Cred.pass}@localhost:5432/`;
+    this.pg_uri = `postgres://${PG_Cred.user}:${PG_Cred.pass}@localhost:${PG_Cred.port}/`;
     pg_pool = new Pool({ connectionString: this.pg_uri + this.curPG_DB });
 
     if (msql_pool) await msql_pool.end();
 
     msql_pool = mysql.createPool({
-      host: 'localhost',
+      host: `localhost`,
+      port: MSQL_Cred.port,
       user: MSQL_Cred.user,
       password: MSQL_Cred.pass,
       database: this.curMSQL_DB,
