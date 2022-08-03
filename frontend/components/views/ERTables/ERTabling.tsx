@@ -266,7 +266,10 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
         nodesConnectable={false}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
-        fitView
+        minZoom={0.1}
+        maxZoom={5}
+        defaultPosition={[0, 0]}
+        // fitView
         style={rfStyle}
         onlyRenderVisibleElements={false}
       >
