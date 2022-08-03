@@ -10,10 +10,11 @@ import * as types from '../constants/constants';
  * for its nodes
  */
 class Table {
-  constructor(id, columns, name, otherTables, database) {
+  constructor(id, columns, name, tableCoordinates, otherTables, database) {
     this.id = id;
     this.columns = columns;
     this.name = name;
+    this.tableCoordinates = tableCoordinates;
     this.otherTables = otherTables;
     this.database = database;
   }
@@ -21,22 +22,22 @@ class Table {
   render() {
     // This method gets the table table position from the stored file
     const getTablePosition = () => {
-      const location = remote.app.getPath('temp').concat('/UserTableLayouts.json');
+      // const location = remote.app.getPath('temp').concat('/UserTableLayouts.json');
       try {
-        const data = fs.readFileSync(location, 'utf8');
-        const parsedData = JSON.parse(data);
-        for (let i = 0; i < parsedData.length; i += 1) {
-          const db = parsedData[i];
-          if (db.db_name === this.database) {
-            // eslint-disable-next-line consistent-return
-            for (let j = 0; j < db.db_tables.length; j += 1) {
-              const currTable = db.db_tables[j];
-              if (currTable.table_name === this.name)
-                return currTable.table_position;
-            }
-          }
-        }
-        return { x: (this.id - 1) * 500, y: 0 };
+      //   const data = fs.readFileSync(location, 'utf8');
+      //   const parsedData = JSON.parse(data);
+      //   for (let i = 0; i < parsedData.length; i += 1) {
+      //     const db = parsedData[i];
+      //     if (db.db_name === this.database) {
+      //       // eslint-disable-next-line consistent-return
+      //       for (let j = 0; j < db.db_tables.length; j += 1) {
+      //         const currTable = db.db_tables[j];
+      //         if (currTable.table_name === this.name)
+      //           return currTable.table_position;
+      //       }
+      //     }
+        
+        return { x: this.tableCoordinates.x, y: this.tableCoordinates.y };
       } catch (error) {
         return { x: (this.id - 1) * 500, y: 0 };
       }
@@ -104,19 +105,31 @@ const convertStateToReactFlow = {
     const nodes = [];
     const edges = [];
     const tableList = [];
+    const tableCoordinates = {
+      x: 0,
+      y: 0
+    };
+
+    // create a columnGap variable, which calculates the y coordinate for any table in that row. 
+    // each time a column is added, increase column gap by 74. 
+    // each time a column is added, increase the y coordinate by the column gap  
+    // when a new row is reached, reset column gap to 0.
+
+    let columnGap = 0;
     // iterate through the tableList
     for (let i = 0; i < schema.tableList.length; i += 1) {
+    
       const column_names = [];
       // get all the column names from the table
       for (let j = 0; j < schema.tableList[i].columns.length; j += 1) {
         column_names.push(schema.tableList[i].columns[j].column_name);
-      }
-      // push tablelsit an object with the table name and
+      };
       tableList.push({
         table_name: schema.tableList[i].table_name,
         column_names,
-      });
+      });  
     }
+
     for (let i = 0; i < schema.tableList.length; i += 1) {
       // make a deep copy so that modifying these values will not affect the data
       const copyString = JSON.stringify(schema.tableList[i]);
@@ -125,14 +138,40 @@ const convertStateToReactFlow = {
       const otherTableList = tableList.filter(
         (el) => el.table_name !== schema.tableList[i].table_name
       );
+      
+      // check the current index of the table in tableList against the length of the list. 
+      // on each loop.
+      const tables = schema.tableList;
+      const columns = tables[i].columns.length;
+      const localColumnGap = columns * 74; 
+      if (localColumnGap > columnGap) columnGap = localColumnGap;
+
+      const rowLength = Math.floor(Math.sqrt(tables.length));
+      // if index is divisible by length of list, start a new row of tables. 
+      if (i % rowLength === 0) {
+        // set x, y coordinates for new row to 0 and +250 respectively; 
+        tableCoordinates.x = 0;
+        tableCoordinates.y += 250 + columnGap;
+        columnGap = 0;
+      } else {
+        // otherwise increment tables position horizontally in current row. 
+        tableCoordinates.x += 500;
+      };
+
+      // else increment x coordinate by + 250  
+
+
+      // position tables in dynamic grid formation. 
       // create a new instance of Table, push into table array
       const table = new Table(
         i + 1,
         copy.columns,
         schema.tableList[i].table_name,
+        tableCoordinates,
         otherTableList,
         schema.database
       );
+
       // assign the evaluated result of rendering the table into tablesNodesEdges
       const tableNodesAndEdges = table.render();
       // each table will return an array of its nodes/edges
