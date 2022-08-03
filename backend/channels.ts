@@ -31,10 +31,15 @@ interface Feedback {
 }
 
 // This isn't being used for anything ATM
-ipcMain.handle('reset-connection', async (event) => {
+ipcMain.handle('set-config', async (event, configObj) => {
+  docConfig.saveConfig(configObj);
+
   db.setBaseConnections()
     .then(() => {
       logger('Successfully reset base connections', LogType.SUCCESS);
+      db.getLists().then((data: DBList) => {
+        event.sender.send('db-lists', data);
+      });
     })
     .catch((err) => {
       logger(
@@ -50,7 +55,14 @@ ipcMain.handle('reset-connection', async (event) => {
         "Sent 'feedback' from 'reset-connection' (Note: This is an ERROR!)",
         LogType.SEND
       );
+    })
+    .finally(() => {
+      event.sender.send('get-config', docConfig.getFullConfig());
     });
+});
+
+ipcMain.handle('get-config', async (event, configObj) => {
+  event.sender.send('get-config', docConfig.getFullConfig());
 });
 
 // Listen for request from front-end and send back the DB List upon request
@@ -307,11 +319,6 @@ ipcMain.handle(
     );
     event.sender.send('async-started');
 
-    // if (dbType === DBType.MySQL) {
-    //   await db.connectToDB(targetDb, dbType);
-    //   await db.query(`USE ${targetDb}`, null, dbType);
-    // }
-
     try {
       let error: string | undefined;
       // connect to db to run query
@@ -364,7 +371,6 @@ ipcMain.handle(
 
       return {
         db: targetDb,
-        selectedDb,
         sqlString,
         returnedRows,
         explainResults,

@@ -24,6 +24,7 @@ import Spinner from './modal/Spinner';
 import { once, } from './../lib/utils';
 import { IpcRendererEvent, ipcRenderer } from 'electron';
 import CreateDBDialog from './Dialog/CreateDBDialog';
+import ConfigView from './Dialog/ConfigView';
 
 const AppContainer = styled.div`
   display: grid;
@@ -69,6 +70,7 @@ const App = () => {
   const [PG_isConnected, setPGStatus] = useState(false);
   const [MYSQL_isConnected, setMYSQLStatus] = useState(false);
   const [showCreateDialog, setCreateDialog] = useState(false);
+  const [showConfigDialog, setConfigDialog] = useState(false);
 
   useEffect(() => {
     // Listen to backend for updates to list of available databases
@@ -127,6 +129,7 @@ const App = () => {
     case 'newSchemaView': 
       shownView = 'newSchemaView';
       break;
+      break;
     case 'quickStartView':
     default:
       shownView = 'quickStartView';
@@ -168,7 +171,8 @@ const App = () => {
               selectedTable,
               setSelectedTable,
               showCreateDialog,
-              setCreateDialog
+              setCreateDialog,
+              setConfigDialog
             }}
           />
           <Main $fullwidth={sidebarIsHidden}>
@@ -204,6 +208,7 @@ const App = () => {
               setDBInfo={setDBInfo}
             />
             <QuickStartView show={shownView === 'quickStartView'} />
+            
             <NewSchemaView 
               query={workingQuery}
               setQuery={setWorkingQuery}
@@ -221,6 +226,10 @@ const App = () => {
               setSelectedTable={setSelectedTable}
             />
 
+            <ConfigView
+            show={showConfigDialog}
+            onClose={() => setConfigDialog(false)}
+            />
             <CreateDBDialog
             show={showCreateDialog}
             DBInfo={DBInfo}
