@@ -307,39 +307,29 @@ ipcMain.handle(
     );
     event.sender.send('async-started');
 
+    // if (dbType === DBType.MySQL) {
+    //   await db.connectToDB(targetDb, dbType);
+    //   await db.query(`USE ${targetDb}`, null, dbType);
+    // }
+
     try {
       let error: string | undefined;
       // connect to db to run query
-      console.log(
-        ` =============== 313 CHANNELS EXPLAIN ------ selectedDb: ${selectedDb} -- targetDb: ${targetDb} -- dbType: ${dbType}`
-      );
+
       if (selectedDb !== targetDb) await db.connectToDB(targetDb, dbType);
-      console.log(
-        ` =============== PRE CHANNELS EXPLAIN ------ selectedDb: ${selectedDb} -- targetDb: ${targetDb} -- dbType: ${dbType}`
-      );
 
       // Run Explain
       let explainResults;
       try {
         if (dbType === DBType.Postgres) {
-          console.log(
-            ` ================ PG CHANNELS EXPLAIN START ------ selectedDb: ${selectedDb} -- targetDb: ${targetDb} -- dbType: ${dbType}`
-          );
           const results = await db.query(
             explainQuery(sqlString, dbType),
             null,
             dbType
           );
-          console.log(
-            `================ PG CHANNELS EXPLAIN END ------ selectedDb: ${selectedDb} -- targetDb: ${targetDb} -- dbType: ${dbType}`,
-            LogType.WARNING,
-            results
-          );
+          console.log(LogType.WARNING, results);
           explainResults = results[1].rows;
         } else if (dbType === DBType.MySQL) {
-          console.log(
-            `================ MY CHANNELS EXPLAIN START ------ selectedDb: ${selectedDb} -- targetDb: ${targetDb} -- dbType: ${dbType}`
-          );
           const results = await db.query(
             explainQuery(sqlString, dbType),
             null,
@@ -348,31 +338,19 @@ ipcMain.handle(
           explainResults = results[0][0];
           console.log('mysql explain results', explainResults);
 
-          console.log(
-            `================ MY CHANNELS EXPLAIN END ------ selectedDb: ${selectedDb} -- targetDb: ${targetDb} -- dbType: ${dbType}`,
-            LogType.WARNING,
-            results
-          );
+          console.log(LogType.WARNING, results);
         }
       } catch (e) {
         error = `Failed to get Execution Plan. EXPLAIN might not support this query.`;
       }
-      console.log(
-        `================ PRE QUERY ------ selectedDb: ${selectedDb} -- targetDb: ${targetDb} -- dbType: ${dbType}`
-      );
 
       // Run Query
       let returnedRows;
       try {
         const results = await db.query(sqlString, null, dbType);
         if (dbType === DBType.MySQL) {
-          console.log(
-            `================ MY CHANNELS QUERY START ------ selectedDb: ${selectedDb} -- targetDb: ${targetDb} -- dbType: ${dbType}`
-          );
           returnedRows = results[0];
-          console.log(
-            `============ MY CHANNELS QUERY END ------ selectedDb: ${selectedDb} -- targetDb: ${targetDb} -- dbType: ${dbType}`
-          );
+
           console.log('returnedRows in channels for MySQL', returnedRows);
         }
         if (dbType === DBType.Postgres) {
@@ -384,9 +362,6 @@ ipcMain.handle(
         error = e.toString();
       }
 
-      console.log(
-        `================ END ------ selectedDb: ${selectedDb} -- targetDb: ${targetDb} -- dbType: ${dbType}`
-      );
       return {
         db: targetDb,
         selectedDb,
@@ -397,14 +372,8 @@ ipcMain.handle(
       };
     } finally {
       // connect back to initialDb
-      console.log(
-        `================ FINALLY CHANNELS ------ selectedDb: ${selectedDb} -- targetDb: ${targetDb} -- dbType: ${dbType}`
-      );
-      console.log('pre', selectedDb, targetDb, dbType);
+
       if (selectedDb !== targetDb) await db.connectToDB(selectedDb, dbType);
-      console.log(
-        `================ Finally END ------ selectedDb: ${selectedDb} -- targetDb: ${targetDb} -- dbType: ${dbType}`
-      );
 
       // send updated db info in case query affected table or database information
       // must be run after we connect back to the originally selected so tables information is accurate

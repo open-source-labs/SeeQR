@@ -42,6 +42,7 @@ const helperFunctions: HelperFunctions = {
   dropDBFunc: function (dbName, dbType: DBType) {
     const PG = `DROP DATABASE "${dbName}"`;
     const MYSQL = `DROP DATABASE ${dbName}`;
+
     console.log(`dropDBFunc MySQL: ${MYSQL}, ${dbType}`);
     console.log(`dropDBFunc PG: ${MYSQL}, ${dbType}`);
 
@@ -50,8 +51,8 @@ const helperFunctions: HelperFunctions = {
 
   // run explain on query
   explainQuery: function (sqlString, dbType: DBType) {
-    const PG = `BEGIN; EXPLAIN (FORMAT JSON, ANALYZE, VERBOSE, BUFFERS) ${sqlString}; ROLLBACK;`;
-    const MYSQL = `EXPLAIN FORMAT=JSON ${sqlString}`;
+    const PG = `BEGIN; EXPLAIN (FORMAT JSON, ANALYZE, VERBOSE, BUFFERS) ${sqlString}; ROLLBACK`;
+    const MYSQL = `BEGIN; EXPLAIN ANALYZE ${sqlString}`;
 
     console.log(`explainQuery MySQL: ${MYSQL}, ${dbType}`);
     console.log(`explainQuery PG: ${MYSQL}, ${dbType}`);
@@ -67,10 +68,6 @@ const helperFunctions: HelperFunctions = {
 
     console.log(`runSQLFunc MySQL: ${MYSQL}, ${dbType}`);
     console.log(`runSQLFunc PG: ${PG}, ${dbType}`);
-    // -u root -p DATABASENAME < FILETOBEIMPORTED.sql;
-    // mysql -u root -p"Hello123!" dish < ~/Desktop/mysqlsamp.sql
-    // SET autocommit=0 ; source d /Users/fryer/Downloads/mysqlsamp.sql  ; COMMIT ;
-    // `mysql -uroot -pHello123!; use ${dbName}; source ${file}`
 
     return dbType === DBType.Postgres ? PG : MYSQL;
   },
