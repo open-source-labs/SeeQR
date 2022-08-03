@@ -66,10 +66,10 @@ const ConfigView = ({ show, onClose }: ConfigViewProps) => {
     {
       mysql_user,
       mysql_pass,
-      mysql_port,
+      mysql_port: parseInt(mysql_port),
       pg_user,
       pg_pass,
-      pg_port
+      pg_port: parseInt(pg_port)
     })
     .then(() => {
         handleClose();
