@@ -3,7 +3,7 @@ import { DatabaseInfo, DBType } from '../../types';
 import { IpcRendererEvent, ipcRenderer } from 'electron';
 import styled from 'styled-components';
 import { TextField, Box, InputLabel, Select, DialogTitle } from '@material-ui/core/';
-import { Button, Dialog, FormControl, MenuItem, Tooltip } from '@mui/material';
+import { Button, Dialog, FormControl, IconButton, InputAdornment, MenuItem, Tooltip } from '@mui/material';
 import { sendFeedback } from '../../lib/utils';
 import {
     ButtonContainer,
@@ -18,6 +18,7 @@ import {
     StyledNativeOption,
   } from '../../style-variables';
 import { once } from '../../lib/utils';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 const requestConfig = once(() => ipcRenderer.invoke('get-config'));
 
 interface ConfigViewProps {
@@ -33,6 +34,9 @@ const ConfigView = ({ show, onClose }: ConfigViewProps) => {
   const [pg_user, setPG_User] = useState('');
   const [pg_pass, setPG_Pass] = useState('');
   const [pg_port, setPG_Port] = useState('');
+
+  const [mysql_showpass, setMySQL_ShowPass] = useState(false);
+  const [pg_showpass, setPG_ShowPass] = useState(false);
 
   useEffect(() => {
     // Listen to backend for updates to list of available databases
@@ -114,9 +118,21 @@ const ConfigView = ({ show, onClose }: ConfigViewProps) => {
                 label="MySQL Password"
                 size="small"
                 variant="outlined"
+                type={mysql_showpass ? "text" : "password"}
                 onChange={(event) => {setMySQL_Pass(event.target.value)}}
                 InputProps={{
                 style: { color: '#575151' },
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={() => setMySQL_ShowPass(!mysql_showpass)}
+                      onMouseDown={() => setMySQL_ShowPass(!mysql_showpass)}
+                    >
+                      {mysql_showpass ? <Visibility /> : <VisibilityOff />}
+                    </IconButton>
+                  </InputAdornment>
+                )
                 }}
                 defaultValue={mysql_pass}
               />
@@ -153,9 +169,21 @@ const ConfigView = ({ show, onClose }: ConfigViewProps) => {
                 label="Postgres Password"
                 size="small"
                 variant="outlined"
+                type={pg_showpass ? "text" : "password"}
                 onChange={(event) => {setPG_Pass(event.target.value)}}
                 InputProps={{
                 style: { color: '#575151' },
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={() => setPG_ShowPass(!pg_showpass)}
+                      onMouseDown={() => setPG_ShowPass(!pg_showpass)}
+                    >
+                      {pg_showpass ? <Visibility /> : <VisibilityOff />}
+                    </IconButton>
+                  </InputAdornment>
+                )
                 }}
                 defaultValue={pg_pass}
               />
