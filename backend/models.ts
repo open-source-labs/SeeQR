@@ -393,16 +393,24 @@ const myObj: MyObj = {
     if (dbType === DBType.MySQL) {
       return new Promise((resolve, reject) => {
         if (this.curMSQL_DB) {
+          // MySQL requires you to use the USE query in order to connect to a db and run
           msql_pool
-            // MySQL requires you to use the USE query in order to connect to a db and run
             .query(`USE ${this.curMSQL_DB}; ${text}`, params, dbType)
             .then((data) => {
               resolve(data);
             })
             .catch((err) => {
-              console.log(`Double: ${this.curMSQL_DB}`);
-              logger(err.message, LogType.WARNING, 'dbQuery1');
-              reject(err);
+              // Trying query without the use statement for things like drop DB
+              msql_pool
+                .query(text, params, dbType)
+                .then((data) => {
+                  resolve(data);
+                })
+                .catch((err) => {
+                  console.log(`Double: ${this.curMSQL_DB}`);
+                  logger(err.message, LogType.WARNING, 'dbQuery1');
+                  reject(err);
+                });
             });
         } else {
           msql_pool

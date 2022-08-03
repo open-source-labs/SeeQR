@@ -23,6 +23,7 @@ interface HelperFunctions {
   runHollowCopyFunc: CreateCommand;
   promExecute: (cmd: string) => Promise<{ stdout: string; stderr: string }>;
 }
+
 // PG = Postgres - Query necessary to run PG Query/Command
 // MYSQL = MySQL - Query necessary to run MySQL Query/Command
 

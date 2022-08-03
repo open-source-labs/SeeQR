@@ -356,7 +356,7 @@ ipcMain.handle(
       try {
         const results = await db.query(sqlString, null, dbType);
         if (dbType === DBType.MySQL) {
-          returnedRows = results[0];
+          returnedRows = results[0][1];
 
           console.log('returnedRows in channels for MySQL', returnedRows);
         }
