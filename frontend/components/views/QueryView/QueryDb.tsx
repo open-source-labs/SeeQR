@@ -27,11 +27,13 @@ const QueryDb = ({ db, onDbChange, dbNames, dbTypes }: QueryDbProps) => {
   if (dbNames && dbTypes) {
     for (let i = 0; i < dbNames.length; i++) {
       menuitems.push(
+        <StyledMenuItem value={dbNames[i]} key={`queryview_dbselect_${dbNames[i]}`}>
+          {`${dbNames[i]} [${dbTypes[i]}]`}
         <StyledMenuItem
           value={dbNames[i]}
           key={`queryview_dbselect_${dbNames[i]}`}
         >
-          {dbNames[i]}
+          {`${dbNames[i]} [${dbTypes[i]}]`}
         </StyledMenuItem>
       );
       values[dbNames[i]] = [dbNames[i], dbTypes[i]];
