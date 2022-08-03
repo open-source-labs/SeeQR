@@ -29,10 +29,16 @@ interface Feedback {
 }
 
 // This isn't being used for anything ATM
-ipcMain.handle('reset-connection', async (event) => {
+ipcMain.handle('set-config', async (event, configObj) => {
+  docConfig.saveConfig(configObj);
+
   db.setBaseConnections()
     .then(() => {
       logger('Successfully reset base connections', LogType.SUCCESS);
+      db.getLists()
+        .then((data: DBList) => {
+          event.sender.send('db-lists', data);
+      })
     })
     .catch((err) => {
       logger(
@@ -48,7 +54,14 @@ ipcMain.handle('reset-connection', async (event) => {
         "Sent 'feedback' from 'reset-connection' (Note: This is an ERROR!)",
         LogType.SEND
       );
-    });
+  })
+  .finally(() => {
+    event.sender.send('get-config', docConfig.getFullConfig());
+  });
+});
+
+ipcMain.handle('get-config', async (event, configObj) => {
+  event.sender.send('get-config', docConfig.getFullConfig());
 });
 
 // Listen for request from front-end and send back the DB List upon request
@@ -266,7 +279,7 @@ ipcMain.handle(
         // cleanup: drop created db
         logger('Dropping imported db because: ' + e.message, LogType.WARNING);
         const dropDBScript = dropDBFunc(newDbName, dbType);
-        await db.query(dropDBScript);
+        await db.query(dropDBScript, dbType);
 
         throw new Error('Failed to populate database');
       }

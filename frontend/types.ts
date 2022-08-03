@@ -39,6 +39,7 @@ export interface AppState {
   setSelectedTable: (tableInfo: TableInfo | undefined) => void;
   showCreateDialog: boolean;
   setCreateDialog: (show: boolean) => void;
+  setConfigDialog: (show: boolean) => void;
 }
 
 export interface FilePath {
