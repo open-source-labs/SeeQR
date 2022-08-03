@@ -36,8 +36,14 @@ const ConfigView = ({ show, onClose }: ConfigViewProps) => {
 
   useEffect(() => {
     // Listen to backend for updates to list of available databases
-    const configFromBackend = (evt: IpcRendererEvent, msg) => {
-      console.log('AAAAAAAAAAAAAAAAA', msg);
+    const configFromBackend = (evt: IpcRendererEvent, config) => {
+      setMySQL_User(config.mysql_user);
+      setMySQL_Pass(config.mysql_pass);
+      setMySQL_Port(config.mysql_port);
+
+      setPG_User(config.pg_user);
+      setPG_Pass(config.pg_pass);
+      setPG_Port(config.pg_port);
     };
     ipcRenderer.on('get-config', configFromBackend);
     requestConfig();
@@ -58,12 +64,12 @@ const ConfigView = ({ show, onClose }: ConfigViewProps) => {
     ipcRenderer
     .invoke('set-config', 
     {
-      mysql_user: "root",
-      mysql_pass: "lynt4lyfe",
-      mysql_port: 3306,
-      pg_user: "postgres",
-      pg_pass: "charm1ander",
-      pg_port: 5432
+      mysql_user,
+      mysql_pass,
+      mysql_port,
+      pg_user,
+      pg_pass,
+      pg_port
     })
     .then(() => {
         handleClose();
