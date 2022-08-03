@@ -35,6 +35,10 @@ ipcMain.handle('set-config', async (event, configObj) => {
   db.setBaseConnections()
     .then(() => {
       logger('Successfully reset base connections', LogType.SUCCESS);
+      db.getLists()
+        .then((data: DBList) => {
+          event.sender.send('db-lists', data);
+      })
     })
     .catch((err) => {
       logger(
