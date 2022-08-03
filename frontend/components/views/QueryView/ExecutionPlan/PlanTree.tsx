@@ -10,7 +10,7 @@ import nodeTypes from './ExecutionPlanNodeTypes';
 interface FlowTreeProps {
   data: ExplainJson;
   thresholds: Thresholds;
-}
+};
 
 const FlowTree = ({ data, thresholds }: FlowTreeProps) => {
   const result = buildFlowGraph(data,thresholds,'flowNode','smoothstep');
