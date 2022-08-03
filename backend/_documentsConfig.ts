@@ -44,6 +44,8 @@ const readConfigFile = function (): DocConfigFile {
 interface DocConfig {
   getConfigFolder: () => string;
   getCredentials: (dbType: DBType) => { user: string; pass: string, port: number | string };
+  getFullConfig: () => Object;
+  saveConfig: (config: Object) => void;
 }
 
 const docConfig: DocConfig = {
@@ -66,7 +68,6 @@ const docConfig: DocConfig = {
     let configFile: DocConfigFile;
     try {
       configFile = readConfigFile();
-      logger('Got config file: ', LogType.SUCCESS, configFile);
     } catch (err: any) {
       logger(err.message, LogType.WARNING);
       return { user: 'none', pass: 'none', port: 1 };
@@ -81,6 +82,31 @@ const docConfig: DocConfig = {
     logger('Could not get credentials of DBType: ', LogType.ERROR, dbType);
     return { user: 'none', pass: 'none', port: 1 };
   },
+
+  getFullConfig: function() {
+    this.getConfigFolder();
+    let configFile: DocConfigFile;
+    try {
+      configFile = readConfigFile();
+      return configFile;
+    } catch (err: any) {
+      logger(err.message, LogType.WARNING);
+      return {
+        mysql_user: 'Failed to retrieve data.', mysql_pass: 'Failed to retrieve data.', mysql_port: 'Failed to retrieve data.',
+        pg_user: 'Failed to retrieve data.', pg_pass: 'Failed to retrieve data.', pg_port: 'Failed to retrieve data.'
+      };
+    }
+  },
+
+  saveConfig: function(config: Object) {
+    try {
+      fs.writeFileSync(configPath, JSON.stringify(config));
+      logger('Saved new config: ', LogType.NORMAL, config);
+    } catch(err: any) {
+      logger(err.message, LogType.WARNING);
+    }
+    
+  }
 };
 
 module.exports = docConfig;

@@ -29,7 +29,9 @@ interface Feedback {
 }
 
 // This isn't being used for anything ATM
-ipcMain.handle('reset-connection', async (event) => {
+ipcMain.handle('set-config', async (event, configObj) => {
+  docConfig.saveConfig(configObj);
+
   db.setBaseConnections()
     .then(() => {
       logger('Successfully reset base connections', LogType.SUCCESS);
@@ -48,7 +50,14 @@ ipcMain.handle('reset-connection', async (event) => {
         "Sent 'feedback' from 'reset-connection' (Note: This is an ERROR!)",
         LogType.SEND
       );
-    });
+  })
+  .finaly(() => {
+    event.sender.send('get-config', docConfig.getFullConfig());
+  });
+});
+
+ipcMain.handle('get-config', async (event, configObj) => {
+  event.sender.send('get-config', docConfig.getFullConfig());
 });
 
 // Listen for request from front-end and send back the DB List upon request
