@@ -21,7 +21,8 @@ const FlowTree = ({ data, thresholds }: FlowTreeProps) => {
       nodesDraggable={false}
       nodesConnectable={false}
       nodeTypes={nodeTypes}
-      minZoom={0.1}
+      minZoom={0.01}
+      maxZoom={4}
       fitView
       // onLoad={(instance) => instance.fitView({ padding: 0.2 })}
       // improves performance on pan by preventing contant rerenders at the
@@ -41,7 +42,7 @@ ${({$fullscreen}) => $fullscreen ? `
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 1200;
+  z-index: 100;
   width: 100vw;
   height: 100vh;
 ` : `
