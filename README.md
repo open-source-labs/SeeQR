@@ -30,8 +30,8 @@
 To get started on contributing to this project:
 
 1. Download and install [Postgres](https://www.postgresql.org/download/) to access SeeQR's Postgres features and/or [MySQL](https://dev.mysql.com/downloads/mysql/) to access it's MySQL features.
-2. Ensure that psql and/or mysql are available in the `$PATH`
-3. Download the latest version of [SeeQR](https://github.com/open-source-labs/seeqr/releases/latest)
+2. Ensure that psql and/or mysql are available in the `$PATH`.
+3. Download the latest version of [SeeQR](https://github.com/open-source-labs/seeqr/releases/latest).
 
 ## Built With
 
@@ -54,23 +54,23 @@ To get started on contributing to this project:
   - Upon application launch, nabigate to the config menu by clicking on the gear icon on the top left.
   - Ensure that your usernames, passwords, and ports are accurate in the SeeQR config.
   - Besides using the existing databases, the application also provides various options to create new databases:
-      - Importing `.sql` or `.tar` files
-      - Navigating to the `Create Database` view at bottom of sidebar
-      - Copying an existing database (with or without original data)
-  - Users can export any database onto their local machine
-  - Users can toggle between the 'DATABASES' view and the 'QUERIES' view
-  - Users can toggle between an 'ER DIAGRAM' view and the 'TABLES' view for each database
+      - Importing `.sql` or `.tar` files.
+      - Navigating to the `Create Database` view at bottom of sidebar.
+      - Copying an existing database (with or without original data).
+  - Users can export any database onto their local machine.
+  - Users can toggle between the 'DATABASES' view and the 'QUERIES' view.
+  - Users can toggle between an 'ER DIAGRAM' view and the 'TABLES' view for each database.
 
 <div align="center">
   <img src="./assets/readmeImages/gifs/quick_start.gif" width=800/>
 </div>
 
 - Databases
-  - In the 'DATABASES' view, an interactive Entity Relationship Diagram (`ER DIAGRAM`) is displayed for the selected database
-  - Users can select `TABLE` to see selected database in tabular form
-    - Users can select a table from a list of all the tables in the schema of the currently selected database
-      - Information about the selected table is then displayed
-      - The name and size of the selected database are also displayed at the top of the page
+  - In the 'DATABASES' view, an interactive Entity Relationship Diagram (`ER DIAGRAM`) is displayed for the selected database.
+  - Users can select `TABLE` to see selected database in tabular form.
+    - Users can select a table from a list of all the tables in the schema of the currently selected database.
+      - Information about the selected table is then displayed.
+      - The name and size of the selected database are also displayed at the top of the page.
       - Users can also generate large amounts of foreign-key compliant dummy data for the selected table in the current database. Currently supported data types are:
         - INT
         - BIGINT
@@ -84,9 +84,9 @@ To get started on contributing to this project:
   </div>
 - Create/Edit Database <i>(currently in beta)</i>
 
-  - Users can create a new database from scratch by clicking the `Create New Database` button at the bottom of the sidebar
-  - Users can modify the newly created database as well as any existing databases using the `ER Diagram` to create/change/delete tables and columns
-  - The `Export` button will write a .sql file on the user's desktop of the selected database
+  - Users can create a new database from scratch by clicking the `Create New Database` button at the bottom of the sidebar.
+  - Users can modify the newly created database as well as any existing databases using the `ER Diagram` to create/change/delete tables and columns.
+  - The `Export` button will write a .sql file on the user's desktop of the selected database.
 
 
 <br>
@@ -96,11 +96,11 @@ To get started on contributing to this project:
   </div>
 - Queries
 
-  - In the 'QUERIES' view, the main panel is where the query input text field is located, utilizing CodeMirror. The paint button in the top right corner of the panel auto-formats the inputted query
-  - Users can select the database to use in the 'Database' dropdown above the main panel
-  - Users also have the option to execute a labelled/grouped or unlabelled/ungrouped query — simply provide a label/group in the 'Label'/'Group' field above the main panel to identify the query in later comparisons against other queries
-    - Please note that only labelled queries will be saved in the current session for future references
-  - To execute the query, simply select the 'RUN QUERY' button at the bottom of the panel or press 'Ctrl-Enter' on the keyboard
+  - In the 'QUERIES' view, the main panel is where the query input text field is located, utilizing CodeMirror. The paint button in the top right corner of the panel auto-formats the inputted query.
+  - Users can select the database to use in the 'Database' dropdown above the main panel.
+  - Users also have the option to execute a labelled/grouped or unlabelled/ungrouped query — simply provide a label/group in the 'Label'/'Group' field above the main panel to identify the query in later comparisons against other queries.
+    - Please note that only labelled queries will be saved in the current session for future references.
+  - To execute the query, simply select the 'RUN QUERY' button at the bottom of the panel or press 'Ctrl-Enter' on the keyboard.
 
    <br />
   <div align="center">
@@ -109,9 +109,9 @@ To get started on contributing to this project:
 
 - Save/Load Queries
 
-  - In the 'QUERIES' view, the file upload icon will open a file explorer window to select a .JSON to import query data from
-  - The file icon to the right of the upload icon will designate the file path to save query data to if you press the save button on the queries
-  - To save individual query data press the save icon on the individual queries in the dropdowns 
+  - In the 'QUERIES' view, the file upload icon will open a file explorer window to select a .JSON to import query data from.
+  - The file icon to the right of the upload icon will designate the file path to save query data to if you press the save button on the queries.
+  - To save individual query data press the save icon on the individual queries in the dropdowns.
 
   <br />
   <div align="center">
@@ -120,16 +120,16 @@ To get started on contributing to this project:
 
 - Data
 
-  - Once executed, the query's output will be displayed. In addition, for eligible queries, users will be able to view the queries' planning time, execution time, total run time, and plan of execution
-    - Eligible queries include any `SELECT`, `INSERT`, `UPDATE`, `DELETE`, `VALUES`, `EXECUTE`, `DECLARE`, `CREATE TABLE AS`, or `CREATE MATERIALIZED VIEW AS` statement
-  - Users can toggle between the executed query's 'RESULTS' and 'EXECUTION PLAN'
-  - The 'RESULTS' view displays the executed query's returned results
-  - The 'EXECUTION PLAN' view displays the executed query's plan of execution
-    - Within the 'EXECUTION PLAN', users can adjust the thresholds of 'Percentage of Total Duration' and the 'Planner Rows Accuracy' that are used to highlight certain nodes in the tree
-      - The 'Percentage of Total Duration' threshold is used to highlight the nodes whose durations are higher than the set limit, indicating that these nodes may be areas of improvement
-      - The 'Planner Rows Accuracy' threshold is used to highlight the nodes for which the planner's estimate number of rows differs from the actual number of rows, indicating that the database might need vacuuming
-    - Clicking on a node will display additional details regarding that action as well
-  - To execute a new query, simply select the '+' button in the sidebar. To go back to a previously saved query, just select it in the sidebar
+  - Once executed, the query's output will be displayed. In addition, for eligible queries, users will be able to view the queries' planning time, execution time, total run time, and plan of execution.
+    - Eligible queries include any `SELECT`, `INSERT`, `UPDATE`, `DELETE`, `VALUES`, `EXECUTE`, `DECLARE`, `CREATE TABLE AS`, or `CREATE MATERIALIZED VIEW AS` statement.
+  - Users can toggle between the executed query's 'RESULTS' and 'EXECUTION PLAN'.
+  - The 'RESULTS' view displays the executed query's returned results.
+  - The 'EXECUTION PLAN' view displays the executed query's plan of execution.
+    - Within the 'EXECUTION PLAN', users can adjust the thresholds of 'Percentage of Total Duration' and the 'Planner Rows Accuracy' that are used to highlight certain nodes in the tree.
+      - The 'Percentage of Total Duration' threshold is used to highlight the nodes whose durations are higher than the set limit, indicating that these nodes may be areas of improvement.
+      - The 'Planner Rows Accuracy' threshold is used to highlight the nodes for which the planner's estimate number of rows differs from the actual number of rows, indicating that the database might need vacuuming.
+    - Clicking on a node will display additional details regarding that action as well.
+  - To execute a new query, simply select the '+' button in the sidebar. To go back to a previously saved query, just select it in the sidebar.
 
 
   <br />
@@ -139,11 +139,11 @@ To get started on contributing to this project:
 
 - Compare
 
-  - Click on the 'bar graph' icon at the top of the sidebar to get to the 'Compare Queries' view
-  - The comparison table is flexible to the user’s preferences as the user selects which queries to compare side by side
-  - Simply check or uncheck the box next to each saved query to add or remove the query from the graph
-  - Graph will be organized along the x-axis by group, and colored by schema
-  - Aside from the visualized performance comparison of the selected queries, a table will display information about each selected query, including its total run time and performance relative to other queries with the same label, with the most performant query highlighted 
+  - Click on the 'bar graph' icon at the top of the sidebar to get to the 'Compare Queries' view.
+  - The comparison table is flexible to the user’s preferences as the user selects which queries to compare side by side.
+  - Simply check or uncheck the box next to each saved query to add or remove the query from the graph.
+  - Graph will be organized along the x-axis by group, and colored by schema.
+  - Aside from the visualized performance comparison of the selected queries, a table will display information about each selected query, including its total run time and performance relative to other queries with the same label, with the most performant query highlighted.
 
 <div align="center">
   <img src="./assets/readmeImages/gifs/Comparing_Queries.gif" width=800/>
