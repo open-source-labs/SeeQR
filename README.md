@@ -29,19 +29,9 @@
 
 To get started on contributing to this project:
 
-1. Download and install [Postgres.app](https://postgresapp.com/)(Mac)/[PGAdmin](https://www.pgadmin.org/download)(Windows) and start it before opening up SeeQR
+1. Download and install [Postgres](https://www.postgresql.org/download/) to access SeeQR's Postgres features and/or [MySQL](https://dev.mysql.com/downloads/mysql/) to access it's MySQL features.
 2. Ensure that psql is available in the `$PATH`
-3. Ensure that a 'postgres' role exists
-     - Open a database in Postgres
-     - Use command: 
-        - `SET ROLE postgres`
-4. Ensure that your Postgres instance is running on port 5432
-     - If there is currently an instance running on port 5432
-        - Open a new terminal
-        - Use command to end all: 
-          - `sudo pkill -u postgres`
-        - Start Postgres instance on port 5432
-4. Download the latest version of [SeeQR](https://github.com/open-source-labs/seeqr/releases/latest)
+3. Download the latest version of [SeeQR](https://github.com/open-source-labs/seeqr/releases/latest)
 
 ## Built With
 
@@ -49,6 +39,7 @@ To get started on contributing to this project:
 - [React](https://reactjs.org/)
 - [Typescript](https://www.typescriptlang.org/)
 - [PostgreSQL](https://www.postgresql.org/)
+- [MySQL](https://www.mysql.com/)
 - [styled-components](https://styled-components.com/)
 - [Material-UI](https://material-ui.com/)
 - [React-Flow](https://reactflow.dev/)
@@ -60,8 +51,8 @@ To get started on contributing to this project:
 
 - Overview
 
-  - Upon application launch, select the desired database to connect to or follow the quick-start guide to get started
-  - The application connects to the local instance of PostgreSQL using the role 'postgres', so all databases that 'postgres' has access to are available
+  - Upon application launch, nabigate to the config menu by clicking on the gear icon on the top left.
+  - Ensure that your usernames, passwords, and ports are accurate in the SeeQR config.
   - Besides using the existing databases, the application also provides various options to create new databases:
       - Importing `.sql` or `.tar` files
       - Navigating to the `Create Database` view at bottom of sidebar
@@ -94,9 +85,7 @@ To get started on contributing to this project:
 - Create/Edit Database <i>(currently in beta)</i>
 
   - Users can create a new database from scratch by clicking the `Create New Database` button at the bottom of the sidebar
-  - Once a the database is given a name, hitting the `Initialize Database` button will create new database on the users PostgreSQL instance
   - Users can modify the newly created database as well as any existing databases using the `ER Diagram` to create/change/delete tables and columns
-  - Users also have the option to alter any newly created / existing databases by inputting SQL commands and click `Update Database`
   - The `Export` button will write a .sql file on the user's desktop of the selected database
 
 
@@ -174,7 +163,7 @@ We've released SeeQR because it's a useful tool to help optimize SQL databases. 
 
 ## Core Team
 
-[Michelle Chang](https://github.com/mkchang168) | [Jake Bradbeer](https://github.com/JBradbeer) | [Bryan Santos](https://github.com/santosb93) | [William Trey Lewis](https://github.com/treyfrog128) | [Brandon Lee](https://github.com/BrandonW-Lee) | [Casey Escovedo](https://github.com/caseyescovedo) | [Casey Walker](https://github.com/cwalker3011) | [Catherine Chiu](https://github.com/catherinechiu) | [Chris Akinrinade](https://github.com/chrisakinrinade) | [Cindy Chau](https://github.com/cindychau) | [Claudio Santos](https://github.com/Claudiohbsantos) | [Eric Han](https://github.com/ericJH92) | [Faraz Akhtar](https://github.com/faraza22) | [Frank Norton](https://github.com/FrankNorton32) | [Harrison Nam](https://github.com/harrynam07) | [James Kolotouros](https://github.com/dkolotouros) | [Jennifer Courtner](https://github.com/jcourtner) | [John Wagner](https://github.com/jwagner988) | [Justin Dury-Agri](https://github.com/justinD-A) | [Justin Hicks](https://github.com/JuiceBawks) | [Katie Klochan](https://github.com/kklochan) | [May Wirapa Boonyasurat](https://github.com/mimiwrp) | [Mercer Stronck](https://github.com/mercerstronck) | [Muhammad Trad](https://github.com/muhammadtrad) | [Richard Guo](https://github.com/richardguoo) | [Richard Lam](https://github.com/rlam108) | [Sam Frakes](https://github.com/frakes413) | [Serena Kuo](https://github.com/serenackuo) | [Timothy Sin](https://github.com/timothysin) | [Vincent Trang](https://github.com/vincentt114)
+[Fred Jeong](https://github.com/fred-jeong) | [Gabriel Kime](https://github.com/wizardbusiness) | (Chris Fryer)[github.com/frynoceros] | [Ian Grepo](https://github.com/RadiantGH) | [Michelle Chang](https://github.com/mkchang168) | [Jake Bradbeer](https://github.com/JBradbeer) | [Bryan Santos](https://github.com/santosb93) | [William Trey Lewis](https://github.com/treyfrog128) | [Brandon Lee](https://github.com/BrandonW-Lee) | [Casey Escovedo](https://github.com/caseyescovedo) | [Casey Walker](https://github.com/cwalker3011) | [Catherine Chiu](https://github.com/catherinechiu) | [Chris Akinrinade](https://github.com/chrisakinrinade) | [Cindy Chau](https://github.com/cindychau) | [Claudio Santos](https://github.com/Claudiohbsantos) | [Eric Han](https://github.com/ericJH92) | [Faraz Akhtar](https://github.com/faraza22) | [Frank Norton](https://github.com/FrankNorton32) | [Harrison Nam](https://github.com/harrynam07) | [James Kolotouros](https://github.com/dkolotouros) | [Jennifer Courtner](https://github.com/jcourtner) | [John Wagner](https://github.com/jwagner988) | [Justin Dury-Agri](https://github.com/justinD-A) | [Justin Hicks](https://github.com/JuiceBawks) | [Katie Klochan](https://github.com/kklochan) | [May Wirapa Boonyasurat](https://github.com/mimiwrp) | [Mercer Stronck](https://github.com/mercerstronck) | [Muhammad Trad](https://github.com/muhammadtrad) | [Richard Guo](https://github.com/richardguoo) | [Richard Lam](https://github.com/rlam108) | [Sam Frakes](https://github.com/frakes413) | [Serena Kuo](https://github.com/serenackuo) | [Timothy Sin](https://github.com/timothysin) | [Vincent Trang](https://github.com/vincentt114)
 
 
 ## License
