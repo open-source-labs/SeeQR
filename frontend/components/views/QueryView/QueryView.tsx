@@ -75,7 +75,6 @@ const QueryView = ({
   // I think this returns undefined if DBInfo is falsy idk lol
   const dbNames = DBInfo?.map((dbi) => dbi.db_name);
   const dbTypes = DBInfo?.map((dbi) => dbi.db_type);
-  
 
   const defaultQuery: QueryData = {
     label: '',
@@ -103,9 +102,11 @@ const QueryView = ({
     // request updates for db and table information. Otherwise database view tab
     // will show wrong information
 
-    console.log('when selecting a database from the dropdown menu, we first go here in queryview')
-    console.log('nextDBType in QueryView', nextDBType)
-    console.log('newDB in Query View', newDb)
+    console.log(
+      'when selecting a database from the dropdown menu, we first go here in queryview'
+    );
+    console.log('nextDBType in QueryView', nextDBType);
+    console.log('newDB in Query View', newDb);
 
     setSelectedDb(newDb);
     setDBType(nextDBType);
@@ -158,15 +159,31 @@ const QueryView = ({
         if (error) {
           throw error;
         }
+        let transformedData;
+        console.log('returnedRows after .then method', returnedRows);
+        console.log('explainResult after .then method', explainResults);
 
-        const transformedData = {
-          sqlString,
-          returnedRows,
-          executionPlan: explainResults[0]['QUERY PLAN'][0],
-          label: localQuery.label,
-          db,
-          group: localQuery.group,
-        };
+        console.log('curDBType in QueryView', curDBType);
+
+        if (curDBType === DBType.Postgres) {
+          transformedData = {
+            sqlString,
+            returnedRows,
+            executionPlan: explainResults[0]['QUERY PLAN'][0],
+            label: localQuery.label,
+            db,
+            group: localQuery.group,
+          };
+        }
+        if (curDBType === DBType.MySQL) {
+          transformedData = {
+            sqlString,
+            returnedRows,
+            label: localQuery.label,
+            db,
+            group: localQuery.group,
+          };
+        }
 
         const keys: string[] = Object.keys(queries);
         for (let i = 0; i < keys.length; i++) {
@@ -198,7 +215,12 @@ const QueryView = ({
       <TopRow>
         <QueryLabel label={localQuery.label} onChange={onLabelChange} />
         <QueryGroup group={localQuery.group} onChange={onGroupChange} />
-        <QueryDb db={localQuery.db} onDbChange={onDbChange} dbNames={dbNames} dbTypes={dbTypes} />
+        <QueryDb
+          db={localQuery.db}
+          onDbChange={onDbChange}
+          dbNames={dbNames}
+          dbTypes={dbTypes}
+        />
         <QueryTopSummary
           rows={query?.returnedRows?.length}
           totalTime={getPrettyTime(query)}
