@@ -75,7 +75,8 @@ const Sidebar = ({
   selectedTable,
   setSelectedTable,
   showCreateDialog,
-  setCreateDialog
+  setCreateDialog,
+  setConfigDialog
 }: AppState) => {
 
   const toggleOpen = () => setSidebarHidden(!sidebarIsHidden);
@@ -100,6 +101,7 @@ const Sidebar = ({
           selectedView={selectedView}
           setSelectedView={setSelectedView}
           toggleOpen={toggleOpen}
+          setConfigDialog={setConfigDialog}
         />
         <ViewSelector {...{ selectedView, setSelectedView, setERView }} />
         <DbList
