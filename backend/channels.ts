@@ -51,7 +51,7 @@ ipcMain.handle('set-config', async (event, configObj) => {
         LogType.SEND
       );
   })
-  .finaly(() => {
+  .finally(() => {
     event.sender.send('get-config', docConfig.getFullConfig());
   });
 });
