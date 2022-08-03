@@ -20,47 +20,43 @@ interface QueryDbProps {
   dbTypes: DBType[] | undefined;
 }
 
-const QueryDb = ({ db, onDbChange, dbNames, dbTypes}: QueryDbProps) => {
-
+const QueryDb = ({ db, onDbChange, dbNames, dbTypes }: QueryDbProps) => {
   const menuitems: any = [];
   const values: any = {};
-  
-  if(dbNames && dbTypes) {
+
+  if (dbNames && dbTypes) {
     for (let i = 0; i < dbNames.length; i++) {
       menuitems.push(
         <StyledMenuItem value={dbNames[i]} key={`queryview_dbselect_${dbNames[i]}`}>
           {`${dbNames[i]} [${dbTypes[i]}]`}
+        <StyledMenuItem
+          value={dbNames[i]}
+          key={`queryview_dbselect_${dbNames[i]}`}
+        >
+          {`${dbNames[i]} [${dbTypes[i]}]`}
         </StyledMenuItem>
-      )
+      );
       values[dbNames[i]] = [dbNames[i], dbTypes[i]];
     }
   }
-
-  // const arr1 = ['mk', 'fredjeong', 'mysql']  // ['mk', 'pg']
-  // const arr2 = ['pg', 'pg', 'mysql']
-
-
-  // const menuitems2 = dbNames?.map((dbName) => (
-  //   <StyledMenuItem value={dbName} key={`queryview_dbselect_${dbName}`}>
-  //     {dbName}
-  //   </StyledMenuItem>
-  // ));
 
   return (
     <SpacedBox>
       <InputLabel id="queryView-db-label">Database</InputLabel>
       <Select
         value={db}
-        onChange={(evt) => onDbChange((values[evt.target.value as string] as Array<any>)[0], (values[evt.target.value as string] as Array<any>)[1])}
+        onChange={(evt) =>
+          onDbChange(
+            (values[evt.target.value as string] as Array<any>)[0],
+            (values[evt.target.value as string] as Array<any>)[1]
+          )
+        }
         labelId="queryView-db-label"
       >
         {menuitems}
       </Select>
     </SpacedBox>
-  )
-
-  
+  );
 };
-
 
 export default QueryDb;

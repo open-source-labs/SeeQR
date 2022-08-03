@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+/* eslint-disable prefer-destructuring */
 import { ipcMain } from 'electron'; // IPCMain: Communicate asynchronously from the main process to renderer processes
 import path from 'path';
 import fs from 'fs';
@@ -35,10 +37,9 @@ ipcMain.handle('set-config', async (event, configObj) => {
   db.setBaseConnections()
     .then(() => {
       logger('Successfully reset base connections', LogType.SUCCESS);
-      db.getLists()
-        .then((data: DBList) => {
-          event.sender.send('db-lists', data);
-      })
+      db.getLists().then((data: DBList) => {
+        event.sender.send('db-lists', data);
+      });
     })
     .catch((err) => {
       logger(
@@ -54,10 +55,10 @@ ipcMain.handle('set-config', async (event, configObj) => {
         "Sent 'feedback' from 'reset-connection' (Note: This is an ERROR!)",
         LogType.SEND
       );
-  })
-  .finally(() => {
-    event.sender.send('get-config', docConfig.getFullConfig());
-  });
+    })
+    .finally(() => {
+      event.sender.send('get-config', docConfig.getFullConfig());
+    });
 });
 
 ipcMain.handle('get-config', async (event, configObj) => {
@@ -120,6 +121,8 @@ ipcMain.handle(
 
     event.sender.send('async-started');
     try {
+      console.log('dbName from backend', dbName, 'dbType from backend');
+
       await db.connectToDB(dbName, dbType);
 
       // send updated db info
@@ -196,6 +199,7 @@ ipcMain.handle(
       const dumpCmd = withData
         ? runFullCopyFunc(sourceDb, tempFilePath, dbType)
         : runHollowCopyFunc(sourceDb, tempFilePath, dbType);
+      console.log('dbType for importing a database', dbType);
       try {
         await promExecute(dumpCmd);
       } catch (e) {
@@ -216,9 +220,9 @@ ipcMain.handle(
         await promExecute(runSQLFunc(newName, tempFilePath, dbType));
       } catch (e: any) {
         // cleanup: drop created db
-        logger('Dropping duplicate db because: ' + e.message, LogType.WARNING);
+        logger(`Dropping duplicate db because: ${e.message}`, LogType.WARNING);
         const dropDBScript = dropDBFunc(newName, dbType);
-        await db.query(dropDBScript);
+        await db.query(dropDBScript, null, dbType);
 
         throw new Error('Failed to populate newly created database');
       }
@@ -276,9 +280,9 @@ ipcMain.handle(
         await promExecute(restoreCmd);
       } catch (e: any) {
         // cleanup: drop created db
-        logger('Dropping imported db because: ' + e.message, LogType.WARNING);
+        logger(`Dropping imported db because: ${e.message}`, LogType.WARNING);
         const dropDBScript = dropDBFunc(newDbName, dbType);
-        await db.query(dropDBScript, dbType);
+        await db.query(dropDBScript, null, dbType);
 
         throw new Error('Failed to populate database');
       }
@@ -308,35 +312,40 @@ ipcMain.handle(
     { targetDb, sqlString, selectedDb }: QueryPayload,
     dbType: DBType
   ) => {
-    logger("Received 'run-query'", LogType.RECEIVE);
+    logger(
+      "Received 'run-query'",
+      LogType.RECEIVE,
+      `selectedDb: ${selectedDb} and dbType: ${dbType}`
+    );
     event.sender.send('async-started');
 
     try {
       let error: string | undefined;
       // connect to db to run query
+
       if (selectedDb !== targetDb) await db.connectToDB(targetDb, dbType);
 
       // Run Explain
       let explainResults;
       try {
-        if(dbType === DBType.Postgres) {
+        if (dbType === DBType.Postgres) {
           const results = await db.query(
             explainQuery(sqlString, dbType),
             null,
             dbType
           );
-  
-          console.log('================', LogType.WARNING, results);
+          console.log(LogType.WARNING, results);
           explainResults = results[1].rows;
-        }
-        else if(dbType === DBType.MySQL) {
+        } else if (dbType === DBType.MySQL) {
           const results = await db.query(
             explainQuery(sqlString, dbType),
             null,
             dbType
           );
-  
-          console.log('================', LogType.WARNING, results);
+          explainResults = results[0][0];
+          console.log('mysql explain results', explainResults);
+
+          console.log(LogType.WARNING, results);
         }
       } catch (e) {
         error = `Failed to get Execution Plan. EXPLAIN might not support this query.`;
@@ -346,7 +355,16 @@ ipcMain.handle(
       let returnedRows;
       try {
         const results = await db.query(sqlString, null, dbType);
-        returnedRows = results.rows;
+        if (dbType === DBType.MySQL) {
+          returnedRows = results[0][1];
+
+          console.log('returnedRows in channels for MySQL', returnedRows);
+        }
+        if (dbType === DBType.Postgres) {
+          console.log('results in channels for Postgres', results);
+          returnedRows = results.rows;
+          console.log('returnedRows in channels for Postgres', returnedRows);
+        }
       } catch (e: any) {
         error = e.toString();
       }
@@ -360,13 +378,18 @@ ipcMain.handle(
       };
     } finally {
       // connect back to initialDb
+
       if (selectedDb !== targetDb) await db.connectToDB(selectedDb, dbType);
 
       // send updated db info in case query affected table or database information
       // must be run after we connect back to the originally selected so tables information is accurate
       const dbsAndTables: DBList = await db.getLists();
       event.sender.send('db-lists', dbsAndTables);
-      logger("Sent 'db-lists' from 'run-query'", LogType.SEND);
+      logger(
+        "Sent 'db-lists' from 'run-query'",
+        LogType.SEND,
+        `selectedDb: ${selectedDb} -- targetDb: ${targetDb} -- dbType: ${dbType}`
+      );
       event.sender.send('async-complete');
     }
   }
@@ -453,16 +476,16 @@ ipcMain.handle(
         .concat(');');
       insertQuery = insertQuery.concat(lastRecordStringified);
       // insert dummy records into DB
-      await db.query('Begin;');
-      await db.query(insertQuery);
-      await db.query('Commit;');
+      await db.query('Begin;', null, dbType);
+      await db.query(insertQuery, null, dbType);
+      await db.query('Commit;', null, dbType);
       feedback = {
         type: 'success',
         message: 'Dummy data successfully generated.',
       };
     } catch (err: any) {
       // rollback transaction if there's an error in insertion and send back feedback to FE
-      await db.query('Rollback;');
+      await db.query('Rollback;', null, dbType);
       feedback = {
         type: 'error',
         message: err,

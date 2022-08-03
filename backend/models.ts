@@ -160,13 +160,26 @@ const getDBNames = function (dbType: DBType): Promise<dbDetails[]> {
           reject(err);
         });
     } else if (dbType === DBType.MySQL) {
-      query = `
-      SELECT table_schema db_name,
-      ROUND(SUM(data_length + index_length) / 1024, 1) db_size
+      // query = `
+      // SELECT table_schema db_name,
+      // ROUND(SUM(data_length + index_length) / 1024, 1) db_size
 
-      FROM information_schema.tables
-      WHERE table_schema NOT IN("information_schema", "performance_schema", "mysql", "sys")
-      GROUP BY table_schema;`;
+      // FROM information_schema.tables
+      // WHERE table_schema NOT IN("information_schema", "performance_schema", "mysql", "sys")
+      // GROUP BY table_schema;`;
+
+      query = `
+      SELECT 
+        S.SCHEMA_NAME db_name,
+        ROUND(SUM(data_length + index_length) / 1024, 1) db_size
+      FROM
+        INFORMATION_SCHEMA.SCHEMATA S
+          LEFT OUTER JOIN
+            INFORMATION_SCHEMA.TABLES T ON S.SCHEMA_NAME = T.TABLE_SCHEMA
+      WHERE
+        S.SCHEMA_NAME NOT IN ('information_schema' , 'mysql', 'performance_schema', 'sys')
+      GROUP BY S.SCHEMA_NAME
+      ORDER BY db_name ASC;`;
 
       msql_pool
         .query(query)
@@ -303,6 +316,7 @@ const PG_DBConnect = async function (pg_uri: string, db: string) {
 };
 
 const MSQL_DBConnect = function (db: string) {
+  console.log(`mysql dbconnect ${db}`);
   msql_pool
     .query(`USE ${db};`)
     .then(() => {
@@ -341,7 +355,7 @@ const myObj: MyObj = {
     const MSQL_Cred = docConfig.getCredentials(DBType.MySQL);
 
     // URI Format: postgres://username:password@hostname:port/databasename
-    // Note: User must have a 'postgres' role set-up prior to initializing this connection. https://www.postgresql.org/docs/13/database-roles.html
+    // Note User must have a 'postgres'role set-up prior to initializing this connection. https://www.postgresql.org/docs/13/database-roles.html
     // ^Unknown if this rule is still true
     if (pg_pool) await pg_pool.end();
 
@@ -359,67 +373,84 @@ const myObj: MyObj = {
       waitForConnections: true,
       connectionLimit: 10,
       queueLimit: 0,
-      multipleStatements: true
+      multipleStatements: true,
     });
   },
 
-  // Run any query
+  // RUN ANY QUERY - function that will run query on database that is passed in.
+
   query(text, params, dbType: DBType) {
     logger(`Attempting to run query: \n ${text} for: \n ${dbType}`);
 
-    // const PG = pg_pool.query(text, params).catch((err) => {
-    //   logger(err.message, LogType.WARNING);
-    // });
-
-    // const MySQL = msql_pool.query(text, params).catch((err) => {
-    //   logger(err.message, LogType.WARNING);
-    // });
-
-    // return dbType === DBType.Postgres ? PG : MySQL;
-
+    // Checking if database type (dbType) is Postgres
     if (dbType === DBType.Postgres) {
       return pg_pool.query(text, params).catch((err) => {
         logger(err.message, LogType.WARNING);
       });
     }
+
+    // Checking if database type (dbType) is MySQL
     if (dbType === DBType.MySQL) {
       return new Promise((resolve, reject) => {
-        msql_pool.query(`USE ${this.curMSQL_DB};`)
-        .then(() => {
-          msql_pool.query(text, params, DBType.MySQL)
-          .then((data) => {
-            resolve(data);
-          })
-          .catch((err) => {
-            logger(err.message, LogType.WARNING);
-            reject(err);
-          });
-        })
-        .catch((err) => {
-          logger(err.message, LogType.WARNING);
-          reject(err);
-        });
+        if (this.curMSQL_DB) {
+          // MySQL requires you to use the USE query in order to connect to a db and run
+          msql_pool
+            .query(`USE ${this.curMSQL_DB}; ${text}`, params, dbType)
+            .then((data) => {
+              resolve(data);
+            })
+            .catch((err) => {
+              // Trying query without the use statement for things like drop DB
+              msql_pool
+                .query(text, params, dbType)
+                .then((data) => {
+                  resolve(data);
+                })
+                .catch((err) => {
+                  console.log(`Double: ${this.curMSQL_DB}`);
+                  logger(err.message, LogType.WARNING, 'dbQuery1');
+                  reject(err);
+                });
+            });
+        } else {
+          msql_pool
+            // MySQL requires you to use the USE query in order to connect to a db and run
+            .query(text, params, dbType)
+            .then((data) => {
+              resolve(data);
+            })
+            .catch((err) => {
+              console.log(`Double none: ${this.curMSQL_DB}`);
+              logger(err.message, LogType.WARNING, 'mysql caught');
+              reject(err);
+            });
+        }
       });
-      
     }
   },
 
   // Change current Db
   async connectToDB(db: string, dbType?: DBType | undefined) {
-    logger(`Starting connect to DB: ${db} With a dbType of: ${dbType?.toString()}`);
+    logger(
+      `Starting connect to DB: ${db} With a dbType of: ${dbType?.toString()} and lastDBType is ${lastDBType}`
+    );
 
-    if(!dbType) {
-      if(!lastDBType) {
-        logger(`Attempted to connect to a dbType when no dbType or lastDBType is defined.`, LogType.WARNING);
+    if (!dbType) {
+      if (!lastDBType) {
+        logger(
+          `Attempted to connect to a dbType when no dbType or lastDBType is defined.`,
+          LogType.WARNING
+        );
         return;
       }
-      dbType = lastDBType;  
+      dbType = lastDBType;
     }
 
     if (dbType === DBType.Postgres) {
       this.curPG_DB = db;
       await PG_DBConnect(this.pg_uri, db);
     } else if (dbType === DBType.MySQL) {
+      console.log(`connectToDB -- : ${this.curMSQL_DB}`);
       this.curMSQL_DB = db;
       await MSQL_DBConnect(db);
     }
@@ -488,7 +519,7 @@ const myObj: MyObj = {
             });
         })
         .catch((err) => {
-          // If PG fails, try just sending MySQL i guess??
+          // If PG fails, try just sending MySQL.
           logger(
             "Couldn't connect to PG. Attempting to connect to MySQL instead!",
             LogType.ERROR
@@ -498,7 +529,7 @@ const myObj: MyObj = {
             .then((msdata) => {
               listObj.databaseList = msdata;
 
-              // This is not in a .finally block because if getting MySQL data fails here we're all dead anyway
+              // This is not in a .finally block because if getting MySQL data fails then nothing returns.
               if (dbType) {
                 getDBLists(dbType, dbName)
                   .then((data) => {
@@ -521,7 +552,6 @@ const myObj: MyObj = {
               }
             })
             .catch((err) => {
-              // Bad
               logger(
                 `Could not connect to either PG or MySQL: ${err.message}`,
                 LogType.ERROR
