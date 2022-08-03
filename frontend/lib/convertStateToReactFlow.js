@@ -12,10 +12,11 @@ import * as types from '../constants/constants';
 
   // if you delete a table, it should decrement x and y coordinates by 250;
 class Table {
-  constructor(id, columns, name, otherTables, database) {
+  constructor(id, columns, name, tableCoordinates, otherTables, database) {
     this.id = id;
     this.columns = columns;
     this.name = name;
+    this.tableCoordinates = tableCoordinates;
     this.otherTables = otherTables;
     this.database = database;
     this.coordinates = {
@@ -51,31 +52,23 @@ class Table {
     
     // This method gets the table positions from the stored file
     const getTablePosition = () => {
-      // remote lets you access main-process-only objects as if they were available in the renderer process.
-      const location = remote.app.getPath('temp').concat('/UserTableLayouts.json');
-      console.log(location);
+      // const location = remote.app.getPath('temp').concat('/UserTableLayouts.json');
       try {
-        const data = fs.readFileSync(location, 'utf8');
-        // console.log(data);
-        const parsedData = JSON.parse(data);
-        for (let i = 0; i < parsedData.length; i += 1) {
-          const db = parsedData[i];
-          if (db.db_name === this.database) {
-            // eslint-disable-next-line consistent-return
-            for (let j = 0; j < db.db_tables.length; j += 1) {
-              const currTable = db.db_tables[j];
-              // if (currTable.table_name === this.name)
-                return currTable.table_position;
-            }
-          }
-        }
-        console.log(this.coordinates.x)
-        console.log(this.coordinates.y)
+      //   const data = fs.readFileSync(location, 'utf8');
+      //   const parsedData = JSON.parse(data);
+      //   for (let i = 0; i < parsedData.length; i += 1) {
+      //     const db = parsedData[i];
+      //     if (db.db_name === this.database) {
+      //       // eslint-disable-next-line consistent-return
+      //       for (let j = 0; j < db.db_tables.length; j += 1) {
+      //         const currTable = db.db_tables[j];
+      //         if (currTable.table_name === this.name)
+      //           return currTable.table_position;
+      //       }
+      //     }
         
-        
-        return { x: (this.id - 1) * 500, y: 0 };
-      } 
-      catch (error) {
+        return { x: this.tableCoordinates.x, y: this.tableCoordinates.y };
+      } catch (error) {
         return { x: (this.id - 1) * 500, y: 0 };
       }
     };
@@ -154,20 +147,30 @@ const convertStateToReactFlow = {
     const nodes = [];
     const edges = [];
     const tableList = [];
-    // iterate through the tableList in the current schema(database?);
+    const tableCoordinates = {
+      x: 0,
+      y: 0
+    };
+
+    // create a columnGap variable, which calculates the y coordinate for any table in that row. 
+    // each time a column is added, increase column gap by 74. 
+    // each time a column is added, increase the y coordinate by the column gap  
+    // when a new row is reached, reset column gap to 0.
+
+    let columnGap = 0;
+    // iterate through the tableList
     for (let i = 0; i < schema.tableList.length; i += 1) {
+    
       const column_names = [];
       // get all the column names from the table and collect them in column_names
       for (let j = 0; j < schema.tableList[i].columns.length; j += 1) {
         column_names.push(schema.tableList[i].columns[j].column_name);
-      }
-      // push a table object containing the current table_name and the column_names for that table into the tableList array.
+      };
       tableList.push({
         table_name: schema.tableList[i].table_name,
         column_names,
-      });
+      });  
     }
-    // iterate through the tableList array of table objects.
     for (let i = 0; i < schema.tableList.length; i += 1) {
       // make a deep copy of each table object so that modifying these values will not affect the data.
       const copyString = JSON.stringify(schema.tableList[i]);
@@ -179,8 +182,31 @@ const convertStateToReactFlow = {
         // filter out every table in table_list which doesn't match the current table being iterated over via line 171.  
         (el) => el.table_name !== schema.tableList[i].table_name
       );
+      
+      // check the current index of the table in tableList against the length of the list. 
+      // on each loop.
+      const tables = schema.tableList;
+      const columns = tables[i].columns.length;
+      const localColumnGap = columns * 74; 
+      if (localColumnGap > columnGap) columnGap = localColumnGap;
 
-      // create a new instance of Table
+      const rowLength = Math.floor(Math.sqrt(tables.length));
+      // if index is divisible by length of list, start a new row of tables. 
+      if (i % rowLength === 0) {
+        // set x, y coordinates for new row to 0 and +250 respectively; 
+        tableCoordinates.x = 0;
+        tableCoordinates.y += 250 + columnGap;
+        columnGap = 0;
+      } else {
+        // otherwise increment tables position horizontally in current row. 
+        tableCoordinates.x += 500;
+      };
+
+      // else increment x coordinate by + 250  
+
+
+      // position tables in dynamic grid formation. 
+      // create a new instance of Table, push into table array
       const table = new Table(
         // id
         i + 1,
@@ -188,11 +214,12 @@ const convertStateToReactFlow = {
         copy.columns,
         // name
         schema.tableList[i].table_name,
-        // otherTables
+        tableCoordinates,
         otherTableList,
         // database
         schema.database
       );
+
       // assign the evaluated result of rendering the table into tablesNodesEdges
       const tableNodesAndEdges = table.render();
       // each table will return an array of its nodes/edges

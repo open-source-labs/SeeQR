@@ -16,7 +16,7 @@ const writeConfigDefault = function (): DocConfigFile {
 
   const defaultFile: DocConfigFile = {
     mysql_user: 'mysql',
-    mysql_pass: 'mysql',
+    mysql_pass: 'natural21factors',
     pg_user: 'postgres',
     pg_pass: 'postgres',
   };
