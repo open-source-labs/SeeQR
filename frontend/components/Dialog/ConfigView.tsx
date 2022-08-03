@@ -59,8 +59,6 @@ const ConfigView = ({ show, onClose }: ConfigViewProps) => {
 
   const handleSubmit = () => {
     //it needs to be as any because otherwise typescript thinks it doesn't have a 'value' param idk why
-    const dbt: DBType = (document.getElementById('dbTypeDropdown') as any).value;
-    
     ipcRenderer
     .invoke('set-config', 
     {
