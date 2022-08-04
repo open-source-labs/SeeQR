@@ -22,21 +22,21 @@ class Table {
   render() {
     // This method gets the table table position from the stored file
     const getTablePosition = () => {
-      // const location = remote.app.getPath('temp').concat('/UserTableLayouts.json');
+      const location = remote.app.getPath('temp').concat('/UserTableLayouts.json');
       try {
-        // const data = fs.readFileSync(location, 'utf8');
-        // const parsedData = JSON.parse(data);
-        // for (let i = 0; i < parsedData.length; i += 1) {
-        //   const db = parsedData[i];
-        //   if (db.db_name === this.database) {
-        //     // eslint-disable-next-line consistent-return
-        //     for (let j = 0; j < db.db_tables.length; j += 1) {
-        //       const currTable = db.db_tables[j];
-        //       if (currTable.table_name === this.name)
-        //         return currTable.table_position;
-        //     };
-        //   };
-        // };
+        const data = fs.readFileSync(location, 'utf8');
+        const parsedData = JSON.parse(data);
+        for (let i = 0; i < parsedData.length; i += 1) {
+          const db = parsedData[i];
+          if (db.db_name === this.database) {
+            // eslint-disable-next-line consistent-return
+            for (let j = 0; j < db.db_tables.length; j += 1) {
+              const currTable = db.db_tables[j];
+              if (currTable.table_name === this.name)
+                return currTable.table_position;
+            };
+          };
+        };
         
         return { x: this.tableCoordinates.x, y: this.tableCoordinates.y };
       } catch (error) {
