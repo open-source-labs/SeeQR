@@ -8,6 +8,12 @@ import {
   TextFieldContainer,
   StyledButton,
   StyledTextField,
+  DropdownContainer,
+  StyledDropdown,
+  StyledMenuItem,
+  StyledInputLabel,
+  StyledNativeDropdown,
+  StyledNativeOption,
 } from '../../style-variables';
 import { DBType } from '../../types';
 
@@ -21,14 +27,20 @@ interface ImportPayload {
 type AddNewDbModalProps = {
   open: boolean;
   onClose: () => void;
-  databases: string[];
-  dbType: DBType;
+  dbNames: string[] | undefined;
+  curDBType: DBType | undefined;
 };
 
-const AddNewDbModal = ({ open, onClose, databases, dbType }: AddNewDbModalProps) => {
+const AddNewDbModal = ({
+  open,
+  onClose,
+  dbNames,
+  curDBType,
+}: AddNewDbModalProps) => {
   const [newDbName, setNewDbName] = useState('');
   const [isError, setIsError] = useState(false);
   const [isEmpty, setIsEmpty] = useState(true);
+  // const [curDBType, setDBType] = useState<DBType>();
 
   // Resets state for error messages
   const handleClose = () => {
@@ -60,7 +72,7 @@ const AddNewDbModal = ({ open, onClose, databases, dbType }: AddNewDbModalProps)
     let dbSafeName = dbNameInput;
     // convert input label name to lowercase only with no spacing to comply with db naming convention.
     dbSafeName = dbSafeName.replace(/[^\w-]/gi, '');
-    if (databases.includes(dbSafeName)) {
+    if (dbNames?.includes(dbSafeName)) {
       setIsError(true);
     } else {
       setIsError(false);
@@ -70,6 +82,10 @@ const AddNewDbModal = ({ open, onClose, databases, dbType }: AddNewDbModalProps)
 
   // Opens modal to select file and sends the selected file to backend
   const handleFileClick = () => {
+    const dbt: DBType = (document.getElementById('dbTypeDropdown') as any).value;
+    console.log('curDBType in addnewdbmodalcorrect', curDBType)
+    console.log('newdbName in addnewdbmodalcorrect', newDbName)
+    console.log('dbt in addnewdbmodalcorrect', dbt)
     dialog
       .showOpenDialog({
         properties: ['openFile'],
@@ -92,7 +108,8 @@ const AddNewDbModal = ({ open, onClose, databases, dbType }: AddNewDbModalProps)
           filePath: result.filePaths[0],
         };
 
-        ipcRenderer.invoke('import-db', payload, dbType).catch(() =>
+
+        ipcRenderer.invoke('import-db', payload, dbt).catch(() =>
           sendFeedback({
             type: 'error',
             message: 'Failed to import database',
@@ -134,6 +151,18 @@ const AddNewDbModal = ({ open, onClose, databases, dbType }: AddNewDbModalProps)
             />
           </Tooltip>
         </TextFieldContainer>
+        <DropdownContainer>
+          <StyledInputLabel id="dbtype-select-label" variant="standard" htmlFor="uncontrolled-native">
+            Database Type
+          </StyledInputLabel>
+          <StyledNativeDropdown
+            id='dbTypeDropdown'
+            defaultValue={DBType.Postgres}
+          >
+            <StyledNativeOption value={DBType.Postgres}>Postgres</StyledNativeOption>
+            <StyledNativeOption value={DBType.MySQL}>MySQL</StyledNativeOption>
+          </StyledNativeDropdown>
+        </DropdownContainer>
         <ButtonContainer>
           <StyledButton
             variant="contained"

@@ -53,7 +53,7 @@ const nodeColor = (node): string => {
 type ERTablingProps = {
   tables;
   selectedDb: AppState['selectedDb'];
-  dbType: DBType;
+  curDBType: DBType | undefined;
 };
 
 const StyledViewButton = styled(Button)`
@@ -63,7 +63,7 @@ const StyledViewButton = styled(Button)`
   padding: 0.45em;
 `;
 
-function ERTabling({ tables, selectedDb, dbType }: ERTablingProps) {
+function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
   const [schemaState, setSchemaState] = useState<SchemaStateObjType>({
     database: 'initial',
     tableList: [],
@@ -205,7 +205,7 @@ function ERTabling({ tables, selectedDb, dbType }: ERTablingProps) {
     // the data in backendObj.current
     handleSaveLayout();
     ipcRenderer
-      .invoke('ertable-schemaupdate', backendObj.current, dbType)
+      .invoke('ertable-schemaupdate', backendObj.current, selectedDb, curDBType)
       .then(async () => {
         // resets the backendObj
         backendObj.current = {
@@ -266,7 +266,10 @@ function ERTabling({ tables, selectedDb, dbType }: ERTablingProps) {
         nodesConnectable={false}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
-        fitView
+        minZoom={0.1}
+        maxZoom={5}
+        defaultPosition={[0, 0]}
+        // fitView
         style={rfStyle}
         onlyRenderVisibleElements={false}
       >

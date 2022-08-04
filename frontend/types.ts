@@ -27,8 +27,19 @@ export interface AppState {
   setFilePath: (filePath: string) => void;
   newFilePath: string;
   setERView?: (boolean) => void;
-  dbType: DBType;
-  setDBType: (DBType) => void;
+  curDBType: DBType | undefined;
+  setDBType: (dbType: DBType | undefined) => void;
+  // cdbt: DBType | undefined;
+  // setcdbt: (cdbt: DBType | undefined) => void;
+  DBInfo: DatabaseInfo[] | undefined;
+  setDBInfo: (dbInfo: DatabaseInfo[] | undefined) => void;
+  dbTables: TableInfo[];
+  setTables: (tableInfo: TableInfo[]) => void;
+  selectedTable: TableInfo | undefined;
+  setSelectedTable: (tableInfo: TableInfo | undefined) => void;
+  showCreateDialog: boolean;
+  setCreateDialog: (show: boolean) => void;
+  setConfigDialog: (show: boolean) => void;
 }
 
 export interface FilePath {
@@ -103,7 +114,7 @@ export interface DatabaseInfo {
    */
   db_size: string;
 
-  //Origin of this DB
+  // Origin of this DB
   db_type: DBType;
 }
 
@@ -147,8 +158,10 @@ export interface TableInfo {
 }
 
 export interface DbLists {
+  databaseConnected: boolean[];
   databaseList: DatabaseInfo[];
   tableList: TableInfo[];
+  dbType: DBType;
 }
 
 /**
@@ -250,7 +263,7 @@ export type ERTableColumnData = {
   is_nullable: 'YES' | 'NO';
   unique?: boolean; // optional until implemented
   auto_increment?: boolean; // optional until implemented
-}
+};
 export type DataTypes = 'integer' | 'bigint' | 'varchar' | 'date' | null;
 
 export type AddColumnsObjType = {
@@ -343,5 +356,12 @@ export type TableHeaderNodeType = {
 
 export enum DBType {
   Postgres = 'pg',
-  MySQL = 'mysql'
+  MySQL = 'mysql',
+}
+
+export interface DocConfigFile {
+  mysql_user: string;
+  mysql_pass: string;
+  pg_user: string;
+  pg_pass: string;
 }

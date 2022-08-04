@@ -313,14 +313,14 @@ const QuickStartView = ({ show }: QuickStartViewProps) => {
               >
                 Back
               </Button>
-              <Button
+              {/* <Button
                 variant="contained"
                 color="primary"
                 onClick={handleNext}
                 className={classes.button}
               >
                 Next
-              </Button>
+              </Button> */}
               {isStepOptional(activeStep) && !completed.has(activeStep) && (
                 <Button
                   variant="contained"

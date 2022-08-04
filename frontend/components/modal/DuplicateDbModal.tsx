@@ -29,16 +29,16 @@ type copyDbModalProps = {
   open: boolean;
   onClose: () => void;
   dbCopyName: string;
-  databases: string[];
-  dbType: DBType;
+  dbNames: string[] | undefined;
+  curDBType: DBType | undefined;
 };
 
-const handleDBName = (dbCopyName, databases) => {
+const handleDBName = (dbCopyName, dbNames) => {
   // use regex to separate the number
   // increment only the digit
   let dbName = dbCopyName;
   for (let i = 1; i < Infinity; i += 1) {
-    if (databases.includes(dbName)) {
+    if (dbNames.includes(dbName)) {
       dbName = dbCopyName;
       dbName = dbName.concat(`_${i}`);
     } else {
@@ -52,12 +52,12 @@ const DuplicateDbModal = ({
   open,
   onClose,
   dbCopyName,
-  databases,
-  dbType
+  dbNames,
+  curDBType
 }: copyDbModalProps) => {
   const [checked, setChecked] = useState(true);
   const [newSchemaName, setNewSchemaName] = useState(
-    handleDBName(dbCopyName, databases)
+    handleDBName(dbCopyName, dbNames)
   );
   const [isError, setIsError] = useState(false);
   const [isEmpty, setIsEmpty] = useState(false);
@@ -91,9 +91,10 @@ const DuplicateDbModal = ({
     let dbSafeName = schemaNameInput;
     // convert input label name to lowercase only with no spacing to comply with db naming convention.
     dbSafeName = dbSafeName.replace(/[^\w-]/gi, '');
-    if (databases.includes(dbSafeName)) {
+    if (dbNames?.includes(dbSafeName)) {
       setIsError(true);
-    } else {
+    }
+    else {
       setIsError(false);
     }
     // dbSafeName = dbSafeName.replace(/[^A-Z0-9]/gi, '');
@@ -112,7 +113,7 @@ const DuplicateDbModal = ({
       withData: checked,
     };
     ipcRenderer
-      .invoke('duplicate-db', schemaObj, dbType)
+      .invoke('duplicate-db', schemaObj, curDBType)
       .catch(() => {
         sendFeedback({
           type: 'error',

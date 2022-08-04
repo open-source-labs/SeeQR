@@ -22,7 +22,7 @@ type DummyDataModalProps = {
   onClose: () => void;
   dbName: string | undefined;
   tableName: string | undefined;
-  dbType: DBType;
+  curDBType: DBType | undefined;
 };
 
 const DummyDataModal = ({
@@ -30,7 +30,7 @@ const DummyDataModal = ({
   onClose,
   dbName,
   tableName,
-  dbType
+  curDBType
 }: DummyDataModalProps) => {
   const [rowNum, setRowNum] = useState(0);
   const [isError, setIsError] = useState(false);
@@ -94,7 +94,7 @@ const DummyDataModal = ({
     };
 
     ipcRenderer
-      .invoke('generate-dummy-data', payload, dbType)
+      .invoke('generate-dummy-data', payload, curDBType)
       .catch(() =>
         sendFeedback({
           type: 'error',

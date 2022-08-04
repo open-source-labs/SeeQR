@@ -14,7 +14,7 @@ interface TabPanelProps {
   children?: React.ReactNode;
   index: any;
   value: any;
-  dbType: DBType;
+  curDBType: DBType | undefined;
 }
 
 const StyledTabs = styled(Tabs)`
@@ -23,7 +23,7 @@ const StyledTabs = styled(Tabs)`
   border-radius: 5px;
 `;
 
-const TabPanel = ({ children, value, index, dbType }: TabPanelProps) => (
+const TabPanel = ({ children, value, index, curDBType }: TabPanelProps) => (
   <div
     role="tabpanel"
     hidden={value !== index}
@@ -45,7 +45,7 @@ interface TablesTabBarProps {
   selectedTable: TableInfo | undefined;
   selectedDb: AppState['selectedDb'];
   setERView?: (boolean) => void;
-  dbType: DBType;
+  curDBType: DBType | undefined;
 }
 
 const TablesTabs = ({
@@ -54,7 +54,7 @@ const TablesTabs = ({
   selectedTable,
   selectedDb,
   setERView,
-  dbType
+  curDBType
 }: TablesTabBarProps) => {
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     selectTable(tables[newValue]);
@@ -69,7 +69,7 @@ const TablesTabs = ({
   const ErView = () => (
     <div>
       { active ? (
-        <ERTables tables={tables} selectedDb={selectedDb} dbType={dbType}/>
+        <ERTables tables={tables} selectedDb={selectedDb} curDBType={curDBType}/>
       ) : (
         <>
           <StyledTabs
@@ -92,7 +92,7 @@ const TablesTabs = ({
               value={tableIndex}
               index={index}
               key={tableMap.table_name}
-              dbType={dbType}
+              curDBType={curDBType}
             >
               <TableDetails table={tableMap} />
             </TabPanel>

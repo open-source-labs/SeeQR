@@ -8,20 +8,18 @@ import {
   AppState,
   isDbLists,
   DBType,
+  DatabaseInfo,
 } from '../../../types';
 import { defaultMargin } from '../../../style-variables';
 import { getPrettyTime } from '../../../lib/queries';
 import { once, sendFeedback } from '../../../lib/utils';
-import QueryGroup from './QueryGroup'
+import QueryGroup from './QueryGroup';
 import QueryLabel from './QueryLabel';
 import QueryDb from './QueryDb';
 import QueryTopSummary from './QueryTopSummary';
 import QuerySqlInput from './QuerySqlInput';
 import QuerySummary from './QuerySummary';
 import QueryTabs from './QueryTabs';
-
-// emitting with no payload requests backend to send back a db-lists event with list of dbs
-const requestDbListOnce = once(() => ipcRenderer.send('return-db-list'));
 
 const TopRow = styled(Box)`
   display: flex;
@@ -53,7 +51,10 @@ interface QueryViewProps {
   setQuery: AppState['setWorkingQuery'];
   show: boolean;
   queries: Record<string, QueryData>;
-  dbType: DBType;
+  curDBType: DBType | undefined;
+  setDBType: (dbType: DBType | undefined) => void;
+  DBInfo: DatabaseInfo[] | undefined;
+  setDBInfo: (dbInfo: DatabaseInfo[] | undefined) => void;
 }
 
 const QueryView = ({
@@ -64,9 +65,16 @@ const QueryView = ({
   setQuery,
   show,
   queries,
-  dbType
+  curDBType,
+  setDBType,
+  DBInfo,
+  setDBInfo,
 }: QueryViewProps) => {
-  const [databases, setDatabases] = useState<string[]>([]);
+  // const [databases, setDatabases] = useState<string[]>([]);
+
+  // I think this returns undefined if DBInfo is falsy idk lol
+  const dbNames = DBInfo?.map((dbi) => dbi.db_name);
+  const dbTypes = DBInfo?.map((dbi) => dbi.db_type);
 
   const defaultQuery: QueryData = {
     label: '',
@@ -76,21 +84,10 @@ const QueryView = ({
   };
 
   const localQuery = { ...defaultQuery, ...query };
-
-  // Register event listener that receives database list for db selector
-  useEffect(() => {
-    const receiveDbs = (evt: IpcRendererEvent, dbLists: unknown) => {
-      if (isDbLists(dbLists)) {
-        setDatabases(dbLists.databaseList.map((db) => db.db_name));
-      }
-    };
-    ipcRenderer.on('db-lists', receiveDbs);
-    requestDbListOnce();
-
-    return () => {
-      ipcRenderer.removeListener('db-lists', receiveDbs);
-    }
-  });
+  // console.log('local query', localQuery);
+  // console.log('query', query);
+  // console.log('defaultQuery', defaultQuery);
+  // console.log('curDBType', curDBType);
 
   const onLabelChange = (newLabel: string) => {
     setQuery({ ...localQuery, label: newLabel });
@@ -100,15 +97,24 @@ const QueryView = ({
     setQuery({ ...localQuery, group: newGroup });
   };
 
-  const onDbChange = (newDb: string) => {
+  const onDbChange = (newDb: string, nextDBType: DBType) => {
     // when db is changed we must change selected db state on app, as well as
     // request updates for db and table information. Otherwise database view tab
-    // will show wrong informatio
+    // will show wrong information
+
+    console.log(
+      'when selecting a database from the dropdown menu, we first go here in queryview'
+    );
+    console.log('nextDBType in QueryView', nextDBType);
+    console.log('newDB in Query View', newDb);
+
+    setSelectedDb(newDb);
+    setDBType(nextDBType);
+
     ipcRenderer
-      .invoke('select-db', newDb, dbType)
+      .invoke('select-db', newDb, nextDBType)
       .then(() => {
         setQuery({ ...localQuery, db: newDb });
-        setSelectedDb(newDb);
       })
 
       .catch(() =>
@@ -138,39 +144,58 @@ const QueryView = ({
       });
     }
 
-
     // request backend to run query
     ipcRenderer
-      .invoke('run-query', {
-        targetDb: localQuery.db,
-        sqlString: localQuery.sqlString,
-        selectedDb,
-      }, dbType)
+      .invoke(
+        'run-query',
+        {
+          targetDb: localQuery.db,
+          sqlString: localQuery.sqlString,
+          selectedDb,
+        },
+        curDBType
+      )
       .then(({ db, sqlString, returnedRows, explainResults, error }) => {
         if (error) {
-          throw error
+          throw error;
+        }
+        let transformedData;
+        console.log('returnedRows after .then method', returnedRows);
+        console.log('explainResult after .then method', explainResults);
+
+        console.log('curDBType in QueryView', curDBType);
+
+        if (curDBType === DBType.Postgres) {
+          transformedData = {
+            sqlString,
+            returnedRows,
+            executionPlan: explainResults[0]['QUERY PLAN'][0],
+            label: localQuery.label,
+            db,
+            group: localQuery.group,
+          };
+        }
+        if (curDBType === DBType.MySQL) {
+          transformedData = {
+            sqlString,
+            returnedRows,
+            label: localQuery.label,
+            db,
+            group: localQuery.group,
+          };
         }
 
-        const transformedData = {
-          sqlString,
-          returnedRows,
-          executionPlan: explainResults[0]['QUERY PLAN'][0],
-          label: localQuery.label,
-          db,
-          group: localQuery.group,
-        };
-
-        const keys:string[] = Object.keys(queries);
-        for (let i = 0; i < keys.length; i++){
-          if (keys[i].includes(`db:${localQuery.db} group:${localQuery.group}`)) {
-           return sendFeedback({
+        const keys: string[] = Object.keys(queries);
+        for (let i = 0; i < keys.length; i++) {
+          if (
+            keys[i].includes(`db:${localQuery.db} group:${localQuery.group}`)
+          ) {
+            return sendFeedback({
               type: 'info',
               message: `${localQuery.db} already exists in ${localQuery.group}`,
             });
-          };
-          
-
-        };
+          }
+        }
         createNewQuery(transformedData);
       })
       .then(() => {
@@ -192,8 +217,9 @@ const QueryView = ({
         <QueryGroup group={localQuery.group} onChange={onGroupChange} />
         <QueryDb
           db={localQuery.db}
-          onChange={onDbChange}
-          databases={databases}
+          onDbChange={onDbChange}
+          dbNames={dbNames}
+          dbTypes={dbTypes}
         />
         <QueryTopSummary
           rows={query?.returnedRows?.length}

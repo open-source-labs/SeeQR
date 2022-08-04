@@ -23,55 +23,52 @@ interface HelperFunctions {
   runHollowCopyFunc: CreateCommand;
   promExecute: (cmd: string) => Promise<{ stdout: string; stderr: string }>;
 }
+
 // PG = Postgres - Query necessary to run PG Query/Command
 // MYSQL = MySQL - Query necessary to run MySQL Query/Command
+
 const helperFunctions: HelperFunctions = {
   // create a database
-
   createDBFunc: function (name, dbType: DBType) {
     const PG = `CREATE DATABASE "${name}"`;
-    // might need to use the USE keyword after creating database
-    const MYSQL = `CREATE DATABASE "${name}"`;
-    // const mySQLUse = `USE DATABASE "${name}"`;
+    const MYSQL = `CREATE DATABASE ${name}`;
 
     console.log('RETURNING DB: ', DBType.Postgres ? PG : MYSQL);
+    console.log(dbType);
+
     return dbType === DBType.Postgres ? PG : MYSQL;
-    // if (dbType === DBType.Postgres) {
-    //   return `CREATE DATABASE "${name}"`;
-    // }
-    // if (dbType === DBType.MySQL) {
-    //   return `CREATE DATABASE "${name}"`;
   },
 
   // drop provided database
   dropDBFunc: function (dbName, dbType: DBType) {
     const PG = `DROP DATABASE "${dbName}"`;
-    const MYSQL = `DROP DATABASE "${dbName}"`;
+    const MYSQL = `DROP DATABASE ${dbName}`;
+
+    console.log(`dropDBFunc MySQL: ${MYSQL}, ${dbType}`);
+    console.log(`dropDBFunc PG: ${MYSQL}, ${dbType}`);
 
     return dbType === DBType.Postgres ? PG : MYSQL;
-    // return `DROP DATABASE "${dbName}"`;
   },
 
   // run explain on query
   explainQuery: function (sqlString, dbType: DBType) {
-    const PG = `BEGIN; EXPLAIN (FORMAT JSON, ANALYZE, VERBOSE, BUFFERS) "${sqlString}"; ROLLBACK;`;
+    const PG = `BEGIN; EXPLAIN (FORMAT JSON, ANALYZE, VERBOSE, BUFFERS) ${sqlString}; ROLLBACK`;
+    const MYSQL = `BEGIN; EXPLAIN ANALYZE ${sqlString}`;
 
-    // this should work but is limited to only select, update, delete and table statements
-    const MYSQL = `EXPLAIN FORMAT=JSON ${sqlString}`;
+    console.log(`explainQuery MySQL: ${MYSQL}, ${dbType}`);
+    console.log(`explainQuery PG: ${MYSQL}, ${dbType}`);
 
     return dbType === DBType.Postgres ? PG : MYSQL;
-    // return `BEGIN; EXPLAIN (FORMAT JSON, ANALYZE, VERBOSE, BUFFERS) ${sqlString}; ROLLBACK;`;
   },
 
   // import SQL file into new DB created
   runSQLFunc: function (dbName, file, dbType: DBType) {
     const PG = `psql -U postgres -d "${dbName}" -f "${file}"`;
-    // need variable to store username. Typed into comamnd line but none of options below worked for me.
+    // const MYSQL = `mysql -u root -p ${dbName} < ${file}`;
+    const MYSQL = `mysql -uroot -p; use ${dbName}; source ${file}`;
 
-    const MYSQL = `mysql -u username -p "${dbName}" < "${file}"`;
-    // -u root -p DATABASENAME < FILETOBEIMPORTED.sql;
-    // mysql -u root -p"Hello123!" dish < ~/Desktop/mysqlsamp.sql
-    // SET autocommit=0 ; source d /Users/fryer/Downloads/mysqlsamp.sql  ; COMMIT ;
+    console.log(`runSQLFunc MySQL: ${MYSQL}, ${dbType}`);
+    console.log(`runSQLFunc PG: ${PG}, ${dbType}`);
 
     return dbType === DBType.Postgres ? PG : MYSQL;
   },
@@ -79,20 +76,32 @@ const helperFunctions: HelperFunctions = {
   // import TAR file into new DB created
   runTARFunc: function (dbName, file, dbType: DBType) {
     const PG = `pg_restore -U postgres -d "${dbName}" "${file}"`;
-    const MYSQL = `mysqldump -u username -p "${dbName}" > "${file}"`;
+    const MYSQL = `mysqldump -u root -p ${dbName} > ${file}`;
+
+    console.log(`runTARFunc MySQL: ${MYSQL}, ${dbType}`);
+    console.log(`runTARFunc PG: ${PG}, ${dbType}`);
 
     return dbType === DBType.Postgres ? PG : MYSQL;
   },
 
   // make a full copy of the schema
   runFullCopyFunc: function (dbCopyName, newFile, dbType: DBType) {
-    return `pg_dump -U postgres -F p -d "${dbCopyName}" > "${newFile}"`;
+    const PG = `pg_dump -U postgres -F p -d "${dbCopyName}" > "${newFile}"`;
+    const MYSQL = `mysqldump -h localhost -u root -p --no-data ${dbCopyName} > ${newFile}`;
+
+    console.log(`runFullCopyFunc MySQL: ${MYSQL}, ${dbType}`);
+    console.log(`runFullCopyFunc PG: ${PG}, ${dbType}`);
+
+    return dbType === DBType.Postgres ? PG : MYSQL;
   },
 
   // make a hollow copy of the schema
   runHollowCopyFunc: function (dbCopyName, file, dbType: DBType) {
     const PG = `pg_dump -s -U postgres -F p -d "${dbCopyName}" > "${file}"`;
-    const MYSQL = `mysqldump -h localhost -u root -p --no-data "${dbCopyName}" > "${file}"`;
+    const MYSQL = `mysqldump -h localhost -u root -p --no-data ${dbCopyName} > ${file}`;
+
+    console.log(`runHollowCopyFunc MySQL: ${MYSQL}, ${dbType}`);
+    console.log(`runHollowCopyFunc PG: ${PG}, ${dbType}`);
 
     return dbType === DBType.Postgres ? PG : MYSQL;
   },
