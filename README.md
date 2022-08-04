@@ -48,7 +48,6 @@ To get started on contributing to this project:
 - [CodeMirror](https://codemirror.net/)
 
 ## Interface & Features
-
 - Overview
   - Upon application launch, navigate to the config menu by clicking on the gear icon on the top left.
   - Ensure that your usernames, passwords, and ports are accurate in the SeeQR config.
@@ -61,6 +60,7 @@ To get started on contributing to this project:
   - Users can toggle between an 'ER DIAGRAM' view and the 'TABLES' view for each database.
 
 <div align="center">
+  <img src="./assets/readmeImages/config_demo.gif" width=600/>
   <img src="./assets/readmeImages/gifs/quick_start.gif" width=600/>
 </div>
 
