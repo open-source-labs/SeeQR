@@ -50,9 +50,6 @@ To get started on contributing to this project:
 ## Interface & Features
 
 - Overview
-<div align="center">
-  <img src="./assets/readmeImages/config_demo.gif" width=800/>
-</div>
   - Upon application launch, navigate to the config menu by clicking on the gear icon on the top left.
   - Ensure that your usernames, passwords, and ports are accurate in the SeeQR config.
   - Besides using the existing databases, the application also provides various options to create new databases:
