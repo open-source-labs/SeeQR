@@ -61,7 +61,7 @@ To get started on contributing to this project:
   - Users can toggle between an 'ER DIAGRAM' view and the 'TABLES' view for each database.
 
 <div align="center">
-  <img src="./assets/readmeImages/gifs/quick_start.gif" width=800/>
+  <img src="./assets/readmeImages/gifs/quick_start.gif" width=600/>
 </div>
 
 - Databases
@@ -79,7 +79,7 @@ To get started on contributing to this project:
   
   <br>
   <div align="center">
-    <img src="./assets/readmeImages/gifs/dummy_data.gif" width=800/>
+    <img src="./assets/readmeImages/gifs/dummy_data.gif" width=600/>
   </div>
 - Create/Edit Database <i>(currently in beta)</i>
 
@@ -90,8 +90,8 @@ To get started on contributing to this project:
 
 <br>
 <div align="center">
-    <img src="./assets/readmeImages/gifs/create_db2.gif" width=800/>
-    <img src="./assets/readmeImages/gifs/modify_db.gif" width=800/>
+    <img src="./assets/readmeImages/gifs/create_db2.gif" width=600/>
+    <img src="./assets/readmeImages/gifs/modify_db.gif" width=600/>
   </div>
 - Queries
 
@@ -103,7 +103,7 @@ To get started on contributing to this project:
 
    <br />
   <div align="center">
-    <img src="./assets/readmeImages/gifs/Query_Execution.gif" width=800/>
+    <img src="./assets/readmeImages/gifs/Query_Execution.gif" width=600/>
   </div>
 
 - Save/Load Queries
@@ -114,7 +114,7 @@ To get started on contributing to this project:
 
   <br />
   <div align="center">
-    <img src="./assets/readmeImages/gifs/Save_Load_Queries.gif" width=800/>
+    <img src="./assets/readmeImages/gifs/Save_Load_Queries.gif" width=600/>
   </div>
 
 - Data
@@ -133,7 +133,7 @@ To get started on contributing to this project:
 
   <br />
   <div align="center">
-    <img src="./assets/readmeImages/gifs/Query_Exec_Plan.gif" width=800/>
+    <img src="./assets/readmeImages/gifs/Query_Exec_Plan.gif" width=600/>
   </div>
 
 - Compare
@@ -145,7 +145,7 @@ To get started on contributing to this project:
   - Aside from the visualized performance comparison of the selected queries, a table will display information about each selected query, including its total run time and performance relative to other queries with the same label, with the most performant query highlighted.
 
 <div align="center">
-  <img src="./assets/readmeImages/gifs/Comparing_Queries.gif" width=800/>
+  <img src="./assets/readmeImages/gifs/Comparing_Queries.gif" width=600/>
 </div>
 
 ## Application Architecture and Logic
