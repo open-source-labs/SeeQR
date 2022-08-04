@@ -17,6 +17,7 @@ export interface ColumnObj {
 export interface dbDetails {
   db_name: string;
   db_size: string;
+  db_type: DBType;
 }
 export interface TableDetails {
   table_catalog: string;
@@ -26,6 +27,7 @@ export interface TableDetails {
   columns?: ColumnObj[];
 }
 export interface DBList {
+  databaseConnected: boolean[];
   databaseList: dbDetails[];
   tableList: TableDetails[];
 }
@@ -36,3 +38,26 @@ export type BackendObjType = {
   database: string;
   updates: UpdatesObjType;
 };
+
+export enum DBType {
+  Postgres = 'pg',
+  MySQL = 'mysql'
+}
+
+export enum LogType {
+  SUCCESS = 'SUCCESS',
+  ERROR = 'ERROR',
+  WARNING = 'WARNING',
+  NORMAL = 'NORMAL',
+  SEND = 'SEND',
+  RECEIVE = 'RECEIVE'
+}
+
+export interface DocConfigFile {
+  mysql_user: string,
+  mysql_pass: string,
+  mysql_port: number | string,
+  pg_user: string,
+  pg_pass: string,
+  pg_port: number | string
+}

@@ -5,6 +5,7 @@ import { HelpOutline, ArrowBackIos, Equalizer } from '@material-ui/icons';
 import { AppState } from '../../types';
 
 import { textColor, hoverColor, selectedColor } from '../../style-variables';
+import { Settings } from '@mui/icons-material';
 
 const Container = styled.div`
   display: flex;
@@ -29,12 +30,14 @@ const StyledCompareIcon = styled(Equalizer)<StyledCompareButtonProps>`
 
 type TopButtonsProps = Pick<AppState, 'selectedView' | 'setSelectedView'> & {
   toggleOpen: () => void;
+  setConfigDialog: (show: boolean) => void;
 };
 
 const TopButtons = ({
   selectedView,
   setSelectedView,
   toggleOpen,
+  setConfigDialog,
 }: TopButtonsProps) => {
   const toggleCompareView = () => {
     if (selectedView === 'compareView') return setSelectedView('queryView');
@@ -43,11 +46,18 @@ const TopButtons = ({
 
   return (
     <Container>
+      <Tooltip title="Config">
+        <StyledIconButton onClick={() => setConfigDialog(true)}>
+          <Settings fontSize="large" />
+        </StyledIconButton>
+      </Tooltip>
+
       <Tooltip title="Help">
         <StyledIconButton onClick={() => setSelectedView('quickStartView')}>
           <HelpOutline fontSize="large" />
         </StyledIconButton>
       </Tooltip>
+      
       <Tooltip title="Compare Queries">
         <StyledIconButton onClick={toggleCompareView}>
           <StyledCompareIcon
@@ -56,6 +66,7 @@ const TopButtons = ({
           />
         </StyledIconButton>
       </Tooltip>
+
       <Tooltip title="Hide Sidebar">
         <StyledIconButton onClick={toggleOpen}>
           <ArrowBackIos fontSize="large" />

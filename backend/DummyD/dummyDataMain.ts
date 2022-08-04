@@ -1,5 +1,6 @@
 import faker from 'faker';
-import { ColumnObj, DummyRecords } from '../BE_types';
+import { ColumnObj, DummyRecords, LogType } from '../BE_types';
+import logger from '../Logging/masterlog';
 
 const db = require('../models');
 
@@ -70,11 +71,11 @@ type GenerateDummyData = (tableInfo: ColumnObj[], numRows: number) => Promise<Du
 
 const generateDummyData: GenerateDummyData = async (tableInfo: ColumnObj[], numRows: number) => {
   // assuming primary key is serial, get all the column names except for the column with the primary key
-  const columnNames = tableInfo.reduce((acc: string[], curr: ColumnObj) => {
-    // if (curr.constraint_type !== 'PRIMARY KEY') 
-    acc.push(curr.column_name);
-    return acc;
-  }, []);
+  const columnNames: Array<string> = [];
+  for(let i = 0; i < tableInfo.length; i++) {
+    columnNames.push(tableInfo[i].column_name);
+  }
+  
   const dummyRecords: DummyRecords = [columnNames];
 
   // generate dummy records for each row
@@ -104,9 +105,13 @@ const generateDummyData: GenerateDummyData = async (tableInfo: ColumnObj[], numR
             if (typeof chosenPrimaryValue === 'string') row.push(`'${chosenPrimaryValue}'`);
             else row.push(chosenPrimaryValue);
           }
-          else return new Error('There was an error while retrieving a valid foreign key.');
-        } catch(err) {
-          return err;
+          else{
+            logger('There was an error while retrieving a valid foreign key while generating dummy data.', LogType.ERROR);
+            throw new Error('There was an error while retrieving a valid foreign key.');
+          }
+        }
+        catch(err) {
+          throw err;
         }
       }
     }

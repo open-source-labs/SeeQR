@@ -2,7 +2,7 @@ import { IpcRendererEvent, ipcRenderer } from 'electron';
 import React, { useState, useEffect } from 'react';
 import { Button } from '@material-ui/core';
 import styled from 'styled-components';
-import { AppState, isDbLists, DatabaseInfo, TableInfo } from '../../../types';
+import { AppState, isDbLists, DatabaseInfo, TableInfo, DBType } from '../../../types';
 import TablesTabs from './TablesTabBar';
 import DatabaseDetails from './DatabaseDetails';
 import { once } from '../../../lib/utils';
@@ -16,6 +16,14 @@ interface DbViewProps {
   show: boolean;
   setERView: (boolean) => void;
   ERView: boolean;
+  curDBType: DBType | undefined;
+  setDBType: (dbType: DBType | undefined) => void;
+  DBInfo: DatabaseInfo[] | undefined;
+  setDBInfo: (dbInfo: DatabaseInfo[] | undefined) => void;
+  dbTables: TableInfo[];
+  setTables: (tableInfo: TableInfo[]) => void;
+  selectedTable: TableInfo | undefined;
+  setSelectedTable: (tableInfo: TableInfo | undefined) => void;
 }
 
 const StyledDummyButton = styled(Button)`
@@ -24,28 +32,12 @@ const StyledDummyButton = styled(Button)`
   right: ${sidebarShowButtonSize};
 `;
 
-const DbView = ({ selectedDb, show, setERView, ERView}: DbViewProps) => {
-  const [dbTables, setTables] = useState<TableInfo[]>([]);
-  const [selectedTable, setSelectedTable] = useState<TableInfo>();
-  const [databases, setDatabases] = useState<DatabaseInfo[]>([]);
+const DbView = ({ selectedDb, show, setERView, ERView, curDBType, setDBType, DBInfo, setDBInfo, dbTables, setTables, selectedTable, setSelectedTable}: DbViewProps) => {
+  // const [databases, setDatabases] = useState<DatabaseInfo[]>([]);
+
   const [open, setOpen] = useState(false);
 
-  useEffect(() => {
-    // Listen to backend for updates to list of tables on current db
-    const tablesFromBackend = (evt: IpcRendererEvent, dbLists: unknown) => {
-      if (isDbLists(dbLists)) {
-        setDatabases(dbLists.databaseList);
-        setTables(dbLists.tableList);
-        setSelectedTable(selectedTable || dbLists.tableList[0]);
-      }
-    };
-    ipcRenderer.on('db-lists', tablesFromBackend);
-    requestDbListOnce();
-    // return cleanup function
-    return () => {
-      ipcRenderer.removeListener('db-lists', tablesFromBackend);
-    };
-  });
+  
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -55,7 +47,7 @@ const DbView = ({ selectedDb, show, setERView, ERView}: DbViewProps) => {
     setOpen(false);
   };
 
-  const db = databases.find((dbN) => dbN.db_name === selectedDb);
+  const db = DBInfo?.find((dbi) => dbi.db_name === selectedDb);
 
   if (!show) return null;
   return (
@@ -69,6 +61,7 @@ const DbView = ({ selectedDb, show, setERView, ERView}: DbViewProps) => {
         selectedTable={selectedTable}
         selectedDb={selectedDb}
         setERView={setERView}
+        curDBType={curDBType}
       />
       <br />
       <br />
@@ -86,6 +79,7 @@ const DbView = ({ selectedDb, show, setERView, ERView}: DbViewProps) => {
         onClose={handleClose}
         dbName={db?.db_name}
         tableName={selectedTable?.table_name}
+        curDBType={curDBType}
       />
     </>
   );

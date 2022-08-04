@@ -1,16 +1,17 @@
+/* eslint-disable object-shorthand */
+import { DBType } from './BE_types';
 const { exec } = require('child_process'); // Child_Process: Importing Node.js' child_process API
 const { dialog } = require('electron'); // Dialog: display native system dialogs for opening and saving files, alerting, etc
-
 // ************************************** CLI COMMANDS & SQL Queries TO CREATE, DELETE, COPY DB SCHEMA, etc. ************************************** //
 
 // Generate SQL queries & CLI commands to be executed in pg and child process respectively
 // The electron app will access your terminal to execute the postgres commands via Node's execute function
 
 interface CreateSQLQuery {
-  (string: string): string;
+  (string: string, dbType: DBType): string;
 }
 interface CreateCommand {
-  (dbName: string, file: string): string;
+  (dbName: string, file: string, dbType: DBType): string;
 }
 interface HelperFunctions {
   createDBFunc: CreateSQLQuery;
@@ -22,27 +23,88 @@ interface HelperFunctions {
   runHollowCopyFunc: CreateCommand;
   promExecute: (cmd: string) => Promise<{ stdout: string; stderr: string }>;
 }
-const helperFunctions:HelperFunctions = {
+
+// PG = Postgres - Query necessary to run PG Query/Command
+// MYSQL = MySQL - Query necessary to run MySQL Query/Command
+
+const helperFunctions: HelperFunctions = {
   // create a database
-  createDBFunc: (name) => `CREATE DATABASE "${name}"`,
+  createDBFunc: function (name, dbType: DBType) {
+    const PG = `CREATE DATABASE "${name}"`;
+    const MYSQL = `CREATE DATABASE ${name}`;
+
+    console.log('RETURNING DB: ', DBType.Postgres ? PG : MYSQL);
+    console.log(dbType);
+
+    return dbType === DBType.Postgres ? PG : MYSQL;
+  },
 
   // drop provided database
-  dropDBFunc: (dbName) => `DROP DATABASE "${dbName}"`,
+  dropDBFunc: function (dbName, dbType: DBType) {
+    const PG = `DROP DATABASE "${dbName}"`;
+    const MYSQL = `DROP DATABASE ${dbName}`;
+
+    console.log(`dropDBFunc MySQL: ${MYSQL}, ${dbType}`);
+    console.log(`dropDBFunc PG: ${MYSQL}, ${dbType}`);
+
+    return dbType === DBType.Postgres ? PG : MYSQL;
+  },
 
   // run explain on query
-  explainQuery: (sqlString) => `BEGIN; EXPLAIN (FORMAT JSON, ANALYZE, VERBOSE, BUFFERS) ${sqlString}; ROLLBACK;`,
+  explainQuery: function (sqlString, dbType: DBType) {
+    const PG = `BEGIN; EXPLAIN (FORMAT JSON, ANALYZE, VERBOSE, BUFFERS) ${sqlString}; ROLLBACK`;
+    const MYSQL = `BEGIN; EXPLAIN ANALYZE ${sqlString}`;
+
+    console.log(`explainQuery MySQL: ${MYSQL}, ${dbType}`);
+    console.log(`explainQuery PG: ${MYSQL}, ${dbType}`);
+
+    return dbType === DBType.Postgres ? PG : MYSQL;
+  },
 
   // import SQL file into new DB created
-  runSQLFunc: (dbName, file) => `psql -U postgres -d ${dbName} -f "${file}"`,
+  runSQLFunc: function (dbName, file, dbType: DBType) {
+    const PG = `psql -U postgres -d "${dbName}" -f "${file}"`;
+    // const MYSQL = `mysql -u root -p ${dbName} < ${file}`;
+    const MYSQL = `mysql -uroot -p; use ${dbName}; source ${file}`;
+
+    console.log(`runSQLFunc MySQL: ${MYSQL}, ${dbType}`);
+    console.log(`runSQLFunc PG: ${PG}, ${dbType}`);
+
+    return dbType === DBType.Postgres ? PG : MYSQL;
+  },
 
   // import TAR file into new DB created
-  runTARFunc: (dbName, file) => `pg_restore -U postgres -d ${dbName} "${file}"`,
+  runTARFunc: function (dbName, file, dbType: DBType) {
+    const PG = `pg_restore -U postgres -d "${dbName}" "${file}"`;
+    const MYSQL = `mysqldump -u root -p ${dbName} > ${file}`;
+
+    console.log(`runTARFunc MySQL: ${MYSQL}, ${dbType}`);
+    console.log(`runTARFunc PG: ${PG}, ${dbType}`);
+
+    return dbType === DBType.Postgres ? PG : MYSQL;
+  },
 
   // make a full copy of the schema
-  runFullCopyFunc: (dbCopyName, newFile) => `pg_dump -U postgres -F p -d ${dbCopyName} > "${newFile}"`,
+  runFullCopyFunc: function (dbCopyName, newFile, dbType: DBType) {
+    const PG = `pg_dump -U postgres -F p -d "${dbCopyName}" > "${newFile}"`;
+    const MYSQL = `mysqldump -h localhost -u root -p --no-data ${dbCopyName} > ${newFile}`;
+
+    console.log(`runFullCopyFunc MySQL: ${MYSQL}, ${dbType}`);
+    console.log(`runFullCopyFunc PG: ${PG}, ${dbType}`);
+
+    return dbType === DBType.Postgres ? PG : MYSQL;
+  },
 
   // make a hollow copy of the schema
-  runHollowCopyFunc: (dbCopyName, file) => `pg_dump -s -U postgres -F p -d ${dbCopyName} > "${file}"`,
+  runHollowCopyFunc: function (dbCopyName, file, dbType: DBType) {
+    const PG = `pg_dump -s -U postgres -F p -d "${dbCopyName}" > "${file}"`;
+    const MYSQL = `mysqldump -h localhost -u root -p --no-data ${dbCopyName} > ${file}`;
+
+    console.log(`runHollowCopyFunc MySQL: ${MYSQL}, ${dbType}`);
+    console.log(`runHollowCopyFunc PG: ${PG}, ${dbType}`);
+
+    return dbType === DBType.Postgres ? PG : MYSQL;
+  },
 
   // promisified execute to execute commands in the child process
   promExecute: (cmd: string) =>

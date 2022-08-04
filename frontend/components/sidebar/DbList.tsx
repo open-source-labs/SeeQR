@@ -4,14 +4,17 @@ import { IpcRendererEvent, ipcRenderer } from 'electron';
 import { IconButton, Tooltip } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import AddNewDbModal from '../modal/AddNewDbModalCorrect';
-import { AppState, isDbLists } from '../../types';
-import { once, sendFeedback } from '../../lib/utils';
+import {
+  AppState,
+  isDbLists,
+  DBType,
+  DatabaseInfo,
+  TableInfo,
+} from '../../types';
+import { sendFeedback } from '../../lib/utils';
 import DuplicateDbModal from '../modal/DuplicateDbModal';
 import DbEntry from './DbEntry';
 import { SidebarList, greyDarkest } from '../../style-variables';
-
-// emitting with no payload requests backend to send back a db-lists event with list of dbs
-const requestDbListOnce = once(() => ipcRenderer.send('return-db-list'));
 
 const StyledSidebarList = styled(SidebarList)`
   background-color: ${greyDarkest};
@@ -22,6 +25,14 @@ type DbListProps = Pick<
   'selectedDb' | 'setSelectedDb' | 'setSelectedView'
 > & {
   show: boolean;
+  curDBType: DBType | undefined;
+  setDBType: (dbType: DBType | undefined) => void;
+  DBInfo: DatabaseInfo[] | undefined;
+  setDBInfo: (dbInfo: DatabaseInfo[] | undefined) => void;
+  dbTables: TableInfo[];
+  setTables: (tableInfo: TableInfo[]) => void;
+  selectedTable: TableInfo | undefined;
+  setSelectedTable: (tableInfo: TableInfo | undefined) => void;
 };
 
 const DbList = ({
@@ -29,26 +40,21 @@ const DbList = ({
   setSelectedDb,
   setSelectedView,
   show,
-}: DbListProps) => {  
-  const [databases, setDatabases] = useState<string[]>([]);
+  curDBType,
+  setDBType,
+  DBInfo,
+  setDBInfo,
+  dbTables,
+  setTables,
+  selectedTable,
+  setSelectedTable,
+}: DbListProps) => {
   const [openAdd, setOpenAdd] = useState(false);
   const [openDupe, setOpenDupe] = useState(false);
   const [dbToDupe, setDbToDupe] = useState('');
 
-  useEffect(() => {
-    // Listen to backend for updates to list of available databases
-    const dbListFromBackend = (evt: IpcRendererEvent, dbLists: unknown) => {
-      if (isDbLists(dbLists)) {
-        setDatabases(dbLists.databaseList.map((db) => db.db_name));
-      }
-    };
-    ipcRenderer.on('db-lists', dbListFromBackend);
-    requestDbListOnce();
-    // return cleanup function
-    return () => {
-      ipcRenderer.removeListener('db-lists', dbListFromBackend);
-    };
-  });
+  // I think this returns undefined if DBInfo is falsy idk lol
+  const dbNames = DBInfo?.map((dbi) => dbi.db_name);
 
   const handleClickOpenAdd = () => {
     setOpenAdd(true);
@@ -67,13 +73,14 @@ const DbList = ({
     setOpenDupe(false);
   };
 
-  const selectHandler = (dbName: string) => {
+  const selectHandler = (dbName: string, cdbt: DBType | undefined) => {
     // setSelectedView('dbView');
     if (dbName === selectedDb) return;
     ipcRenderer
-      .invoke('select-db', dbName)
+      .invoke('select-db', dbName, cdbt)
       .then(() => {
         setSelectedDb(dbName);
+        setDBType(cdbt);
       })
       .catch(() =>
         sendFeedback({
@@ -92,13 +99,14 @@ const DbList = ({
         </IconButton>
       </Tooltip>
       <StyledSidebarList>
-        {databases.map((dbName) => (
+        {DBInfo?.map((dbi) => (
           <DbEntry
-            key={`dbList_${dbName}`}
-            db={dbName}
-            isSelected={selectedDb === dbName}
+            key={`dbList_${dbi.db_name}`}
+            db={dbi.db_name}
+            isSelected={selectedDb === dbi.db_name}
             select={selectHandler}
-            duplicate={() => handleClickOpenDupe(dbName)}
+            duplicate={() => handleClickOpenDupe(dbi.db_name)}
+            dbType={dbi.db_type}
           />
         ))}
         {openDupe ? (
@@ -106,14 +114,16 @@ const DbList = ({
             open={openDupe}
             onClose={handleCloseDupe}
             dbCopyName={dbToDupe}
-            databases={databases}
+            dbNames={dbNames}
+            curDBType={curDBType}
           />
         ) : null}
-      </StyledSidebarList> 
+      </StyledSidebarList>
       <AddNewDbModal
         open={openAdd}
         onClose={handleCloseAdd}
-        databases={databases}
+        dbNames={dbNames}
+        curDBType={curDBType}
       />
     </>
   );

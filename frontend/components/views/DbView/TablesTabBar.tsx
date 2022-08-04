@@ -4,7 +4,7 @@ import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import styled from 'styled-components';
 import TableDetails from './TableDetails';
-import { AppState, TableInfo } from '../../../types';
+import { AppState, DBType, TableInfo } from '../../../types';
 import { greyPrimary, greenPrimary, textColor } from '../../../style-variables';
 import ERTables from '../ERTables/ERTabling';
 import updateSchema from './sample-updateschema';
@@ -14,6 +14,7 @@ interface TabPanelProps {
   children?: React.ReactNode;
   index: any;
   value: any;
+  curDBType: DBType | undefined;
 }
 
 const StyledTabs = styled(Tabs)`
@@ -22,7 +23,7 @@ const StyledTabs = styled(Tabs)`
   border-radius: 5px;
 `;
 
-const TabPanel = ({ children, value, index }: TabPanelProps) => (
+const TabPanel = ({ children, value, index, curDBType }: TabPanelProps) => (
   <div
     role="tabpanel"
     hidden={value !== index}
@@ -44,6 +45,7 @@ interface TablesTabBarProps {
   selectedTable: TableInfo | undefined;
   selectedDb: AppState['selectedDb'];
   setERView?: (boolean) => void;
+  curDBType: DBType | undefined;
 }
 
 const TablesTabs = ({
@@ -52,6 +54,7 @@ const TablesTabs = ({
   selectedTable,
   selectedDb,
   setERView,
+  curDBType
 }: TablesTabBarProps) => {
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     selectTable(tables[newValue]);
@@ -66,7 +69,7 @@ const TablesTabs = ({
   const ErView = () => (
     <div>
       { active ? (
-        <ERTables tables={tables} selectedDb={selectedDb} />
+        <ERTables tables={tables} selectedDb={selectedDb} curDBType={curDBType}/>
       ) : (
         <>
           <StyledTabs
@@ -89,6 +92,7 @@ const TablesTabs = ({
               value={tableIndex}
               index={index}
               key={tableMap.table_name}
+              curDBType={curDBType}
             >
               <TableDetails table={tableMap} />
             </TabPanel>

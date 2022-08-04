@@ -2,7 +2,7 @@ import React from 'react';
 import { ButtonGroup, Button } from '@material-ui/core/';
 import styled from 'styled-components';
 import { ipcRenderer } from 'electron';
-import { AppState } from '../../types';
+import { AppState, DBType, DatabaseInfo } from '../../types';
 import { selectedColor, textColor, defaultMargin } from '../../style-variables';
 import { sendFeedback } from '../../lib/utils';
 
@@ -19,35 +19,33 @@ interface ViewButtonProps {
 
 const ViewButton = styled(Button)`
   background: ${({ $isSelected }: ViewButtonProps) =>
-    $isSelected ? selectedColor : textColor};
+    $isSelected ? textColor : selectedColor};
 
 `;
 
 
-type ViewSelectorProps = Pick<AppState, 'selectedView' | 'setSelectedView' | 'setSelectedDb' | 'selectedDb'>;
+type ViewSelectorProps = Pick<AppState, 'selectedView' | 'setSelectedView' | 'setSelectedDb' | 'selectedDb'>
+& {
+  curDBType: DBType | undefined;
+  setDBType: (dbType: DBType | undefined) => void;
+  // cdbt: DBType | undefined;
+  // setcdbt: (cdbt: DBType | undefined) => void;
+  DBInfo: DatabaseInfo[] | undefined;
+  setDBInfo: (dbInfo: DatabaseInfo[] | undefined) => void;
+  showCreateDialog: boolean;
+  setCreateDialog: (show: boolean) => void;
+};
 
 /**
  * Selector for view on sidebar. Updates App state with selected view
  */
-const BottomButtons = ({ selectedView, setSelectedView, setSelectedDb, selectedDb}: ViewSelectorProps) => (
+const BottomButtons = ({ selectedView, setSelectedView, setSelectedDb, selectedDb, curDBType, setDBType, DBInfo, setDBInfo, showCreateDialog, setCreateDialog}: ViewSelectorProps) => (
   <ViewBtnGroup variant="contained" fullWidth>
     <ViewButton
       onClick={() => {
-        setSelectedView('newSchemaView');
-        setSelectedDb('');
-        
-        ipcRenderer
-          .invoke('select-db', '')
-          .catch(() => 
-            sendFeedback({
-              type: 'error',
-              message: `Database connection error`
-            })
-          )
+        setCreateDialog(true);
       }}
-      $isSelected={
-        selectedView === 'newSchemaView' || selectedView === 'compareView'
-      }
+      $isSelected={showCreateDialog}
     >
       Create New Database
     </ViewButton>

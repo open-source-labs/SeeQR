@@ -63,7 +63,20 @@ const Sidebar = ({
   sidebarIsHidden,
   setFilePath,
   newFilePath,
-  setERView
+  setERView,
+  curDBType,
+  setDBType,
+  // cdbt,
+  // setcdbt,
+  DBInfo,
+  setDBInfo,
+  dbTables,
+  setTables,
+  selectedTable,
+  setSelectedTable,
+  showCreateDialog,
+  setCreateDialog,
+  setConfigDialog
 }: AppState) => {
 
   const toggleOpen = () => setSidebarHidden(!sidebarIsHidden);
@@ -88,6 +101,7 @@ const Sidebar = ({
           selectedView={selectedView}
           setSelectedView={setSelectedView}
           toggleOpen={toggleOpen}
+          setConfigDialog={setConfigDialog}
         />
         <ViewSelector {...{ selectedView, setSelectedView, setERView }} />
         <DbList
@@ -95,6 +109,14 @@ const Sidebar = ({
           setSelectedDb={setSelectedDb}
           show={selectedView === 'dbView' || selectedView === 'quickStartView' || selectedView === 'newSchemaView'}
           setSelectedView={setSelectedView}
+          curDBType={curDBType}
+          setDBType={setDBType}
+          DBInfo={DBInfo}
+          setDBInfo={setDBInfo}
+          dbTables={dbTables}
+          setTables={setTables}
+          selectedTable={selectedTable}
+          setSelectedTable={setSelectedTable}
         />
         <QueryList
           setComparedQueries={setComparedQueries}
@@ -113,6 +135,14 @@ const Sidebar = ({
           selectedView={selectedView}
           setSelectedView={setSelectedView}
           setSelectedDb={setSelectedDb}
+          curDBType={curDBType}
+          setDBType={setDBType}
+          // cdbt={cdbt}
+          // setcdbt={setcdbt}
+          DBInfo={DBInfo}
+          setDBInfo={setDBInfo}
+          showCreateDialog={showCreateDialog}
+          setCreateDialog={setCreateDialog}
         />
         <Logo src={logo} alt="Logo" />
       </StyledDrawer>
