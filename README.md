@@ -90,7 +90,7 @@ To get started on contributing to this project:
 
 <br>
 <div align="center">
-    <img src="./assets/readmeImages/gifs/create_db.gif" width=800/>
+    <img src="./assets/readmeImages/gifs/create_db2.gif" width=800/>
     <img src="./assets/readmeImages/gifs/modify_db.gif" width=800/>
   </div>
 - Queries
