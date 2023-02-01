@@ -1,7 +1,8 @@
 /* eslint-disable object-shorthand */
 import { DBType } from './BE_types';
 const { exec } = require('child_process'); // Child_Process: Importing Node.js' child_process API
-const { dialog } = require('electron'); // Dialog: display native system dialogs for opening and saving files, alerting, etc
+const { dialog } = require('electron'); // Dialog: display native system dialogs for opening and saving files, alerting, etcim
+const docConfig = require('./_documentsConfig')
 // ************************************** CLI COMMANDS & SQL Queries TO CREATE, DELETE, COPY DB SCHEMA, etc. ************************************** //
 
 // Generate SQL queries & CLI commands to be executed in pg and child process respectively
@@ -63,7 +64,9 @@ const helperFunctions: HelperFunctions = {
 
   // import SQL file into new DB created
   runSQLFunc: function (dbName, file, dbType: DBType) {
-    const PG = `psql -U postgres -d "${dbName}" -f "${file}"`;
+    const PG_data = docConfig.getFullConfig();
+    console.log(PG_data)
+    const PG = `psql -U postgres -d "${dbName}" -f "${file}" -p "${PG_data.pg_port}"`;
     // const MYSQL = `mysql -u root -p ${dbName} < ${file}`;
     const MYSQL = `mysql -uroot -p; use ${dbName}; source ${file}`;
 
