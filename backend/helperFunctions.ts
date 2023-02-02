@@ -27,6 +27,7 @@ interface HelperFunctions {
 
 // PG = Postgres - Query necessary to run PG Query/Command
 // MYSQL = MySQL - Query necessary to run MySQL Query/Command
+const SQL_data = docConfig.getFullConfig();
 
 const helperFunctions: HelperFunctions = {
   // create a database
@@ -64,9 +65,9 @@ const helperFunctions: HelperFunctions = {
 
   // import SQL file into new DB created
   runSQLFunc: function (dbName, file, dbType: DBType) {
-    const PG_data = docConfig.getFullConfig();
-    console.log(PG_data)
-    const PG = `psql -U postgres -d "${dbName}" -f "${file}" -p "${PG_data.pg_port}"`;
+    const SQL_data = docConfig.getFullConfig();
+    console.log(SQL_data)
+    const PG = `PGPASSWORD=${SQL_data.pg_pass} psql -U ${SQL_data.pg_user} -d "${dbName}" -f "${file}" -p ${SQL_data.pg_port}`;
     // const MYSQL = `mysql -u root -p ${dbName} < ${file}`;
     const MYSQL = `mysql -uroot -p; use ${dbName}; source ${file}`;
 
@@ -78,7 +79,8 @@ const helperFunctions: HelperFunctions = {
 
   // import TAR file into new DB created
   runTARFunc: function (dbName, file, dbType: DBType) {
-    const PG = `pg_restore -U postgres -d "${dbName}" "${file}"`;
+    const SQL_data = docConfig.getFullConfig();
+    const PG = `PGPASSWORD=${SQL_data.pg_pass} pg_restore -U ${SQL_data.pg_user} -p ${SQL_data.pg_port} -d "${dbName}" "${file}" `;
     const MYSQL = `mysqldump -u root -p ${dbName} > ${file}`;
 
     console.log(`runTARFunc MySQL: ${MYSQL}, ${dbType}`);
@@ -89,7 +91,8 @@ const helperFunctions: HelperFunctions = {
 
   // make a full copy of the schema
   runFullCopyFunc: function (dbCopyName, newFile, dbType: DBType) {
-    const PG = `pg_dump -U postgres -F p -d "${dbCopyName}" > "${newFile}"`;
+    const SQL_data = docConfig.getFullConfig();
+    const PG = `PGPASSWORD=${SQL_data.pg_pass} pg_dump -U ${SQL_data.pg_user} -F p -d "${dbCopyName}" > "${newFile}"`;
     const MYSQL = `mysqldump -h localhost -u root -p --no-data ${dbCopyName} > ${newFile}`;
 
     console.log(`runFullCopyFunc MySQL: ${MYSQL}, ${dbType}`);
@@ -100,7 +103,8 @@ const helperFunctions: HelperFunctions = {
 
   // make a hollow copy of the schema
   runHollowCopyFunc: function (dbCopyName, file, dbType: DBType) {
-    const PG = `pg_dump -s -U postgres -F p -d "${dbCopyName}" > "${file}"`;
+    const SQL_data = docConfig.getFullConfig();
+    const PG = `PGPASSWORD=${SQL_data.pg_pass} pg_dump -s -U ${SQL_data.pg_user} -F p -d "${dbCopyName}" > "${file}"`;
     const MYSQL = `mysqldump -h localhost -u root -p --no-data ${dbCopyName} > ${file}`;
 
     console.log(`runHollowCopyFunc MySQL: ${MYSQL}, ${dbType}`);
