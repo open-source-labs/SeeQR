@@ -27,7 +27,7 @@ interface HelperFunctions {
 
 // PG = Postgres - Query necessary to run PG Query/Command
 // MYSQL = MySQL - Query necessary to run MySQL Query/Command
-const SQL_data = docConfig.getFullConfig();
+// const SQL_data = docConfig.getFullConfig();
 
 const helperFunctions: HelperFunctions = {
   // create a database
