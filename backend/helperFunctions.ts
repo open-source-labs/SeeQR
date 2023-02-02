@@ -69,7 +69,7 @@ const helperFunctions: HelperFunctions = {
     console.log(SQL_data)
     const PG = `PGPASSWORD=${SQL_data.pg_pass} psql -U ${SQL_data.pg_user} -d "${dbName}" -f "${file}" -p ${SQL_data.pg_port}`;
     // const MYSQL = `mysql -u root -p ${dbName} < ${file}`;
-    const MYSQL = `mysql -u${SQL_data.mysql_user} -p'${SQL_data.mysql_pass}'  ${dbName} < ${file}`;
+    const MYSQL = `export MYSQL_PWD='${SQL_data.mysql_pass}'; mysql -u${SQL_data.mysql_user} ${dbName} < ${file}`;
 
     console.log(`runSQLFunc MySQL: ${MYSQL}, ${dbType}`);
     console.log(`runSQLFunc PG: ${PG}, ${dbType}`);
@@ -81,7 +81,7 @@ const helperFunctions: HelperFunctions = {
   runTARFunc: function (dbName, file, dbType: DBType) {
     const SQL_data = docConfig.getFullConfig();
     const PG = `PGPASSWORD=${SQL_data.pg_pass} pg_restore -U ${SQL_data.pg_user} -p ${SQL_data.pg_port} -d "${dbName}" "${file}" `;
-    const MYSQL = `mysqldump -u root -p ${dbName} > ${file}`;
+    const MYSQL = `export MYSQL_PWD='${SQL_data.mysql_pass}'; mysqldump -u ${SQL_data.mysql_user} ${dbName} > ${file}`;
 
     console.log(`runTARFunc MySQL: ${MYSQL}, ${dbType}`);
     console.log(`runTARFunc PG: ${PG}, ${dbType}`);
@@ -93,7 +93,7 @@ const helperFunctions: HelperFunctions = {
   runFullCopyFunc: function (dbCopyName, newFile, dbType: DBType) {
     const SQL_data = docConfig.getFullConfig();
     const PG = `PGPASSWORD=${SQL_data.pg_pass} pg_dump -U ${SQL_data.pg_user} -F p -d "${dbCopyName}" > "${newFile}"`;
-    const MYSQL = `mysqldump -h localhost -u root -p --no-data ${dbCopyName} > ${newFile}`;
+    const MYSQL = `export MYSQL_PWD='${SQL_data.mysql_pass}'; mysqldump -h localhost -u ${SQL_data.mysql_user} --no-data ${dbCopyName} > ${newFile}`;
 
     console.log(`runFullCopyFunc MySQL: ${MYSQL}, ${dbType}`);
     console.log(`runFullCopyFunc PG: ${PG}, ${dbType}`);
@@ -105,18 +105,17 @@ const helperFunctions: HelperFunctions = {
   runHollowCopyFunc: function (dbCopyName, file, dbType: DBType) {
     const SQL_data = docConfig.getFullConfig();
     const PG = `PGPASSWORD=${SQL_data.pg_pass} pg_dump -s -U ${SQL_data.pg_user} -F p -d "${dbCopyName}" > "${file}"`;
-    const MYSQL = `mysqldump -h localhost -u root -p --no-data ${dbCopyName} > ${file}`;
+    const MYSQL = `export MYSQL_PWD='${SQL_data.mysql_pass}'; mysqldump -h localhost -u ${SQL_data.mysql_user} --no-data ${dbCopyName} > ${file}`;
 
     console.log(`runHollowCopyFunc MySQL: ${MYSQL}, ${dbType}`);
     console.log(`runHollowCopyFunc PG: ${PG}, ${dbType}`);
-
     return dbType === DBType.Postgres ? PG : MYSQL;
   },
 
   // promisified execute to execute commands in the child process
   promExecute: (cmd: string) =>
     new Promise((resolve, reject) => {
-      exec(cmd, (error, stdout, stderr) => {
+      exec(cmd, {timeout: 5000}, (error, stdout, stderr) => {
         if (error) return reject(error);
         if (stderr) return reject(new Error(stderr));
         return resolve({ stdout, stderr });
