@@ -36,6 +36,9 @@ const DummyDataModal = ({
   const [isError, setIsError] = useState(false);
   const [isEmpty, setIsEmpty] = useState(true);
 
+  console.log('curDBType:', curDBType);
+
+
   const handleClose = () => {
     setIsError(false);
     setIsEmpty(true);
@@ -94,19 +97,19 @@ const DummyDataModal = ({
     };
 
     ipcRenderer
-      .invoke('generate-dummy-data', payload, curDBType)
-      .catch(() =>
-        sendFeedback({
-          type: 'error',
-          message: 'Failed to generate dummy data',
-        })
-      )
-      .catch((err: object) => {
-        console.log(err);
-      })
-      .finally(handleClose);
+    .invoke('generate-dummy-data', payload, curDBType)
+    .catch(() =>
+    sendFeedback({
+      type: 'error',
+      message: 'Failed to generate dummy data',
+    })
+    )
+    .catch((err: object) => {
+      console.log(err);
+    })
+    .finally(handleClose);
   };
-
+  
   return (
     <div>
       <Dialog

@@ -440,7 +440,7 @@ interface dummyDataRequestPayload {
   rows: number;
 }
 
-ipcMain.handle(
+ipcMain.handle( // generate dummy data
   'generate-dummy-data',
   async (event, data: dummyDataRequestPayload, dbType: DBType) => {
     logger("Received 'generate-dummy-data'", LogType.RECEIVE);
