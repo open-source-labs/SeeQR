@@ -27,7 +27,7 @@ interface HelperFunctions {
 
 // PG = Postgres - Query necessary to run PG Query/Command
 // MYSQL = MySQL - Query necessary to run MySQL Query/Command
-const SQL_data = docConfig.getFullConfig();
+
 
 const helperFunctions: HelperFunctions = {
   // create a database
@@ -69,7 +69,7 @@ const helperFunctions: HelperFunctions = {
     console.log(SQL_data)
     const PG = `PGPASSWORD=${SQL_data.pg_pass} psql -U ${SQL_data.pg_user} -d "${dbName}" -f "${file}" -p ${SQL_data.pg_port}`;
     // const MYSQL = `mysql -u root -p ${dbName} < ${file}`;
-    const MYSQL = `mysql -uroot -p; use ${dbName}; source ${file}`;
+    const MYSQL = `mysql -u${SQL_data.mysql_user} -p'${SQL_data.mysql_pass}'  ${dbName} < ${file}`;
 
     console.log(`runSQLFunc MySQL: ${MYSQL}, ${dbType}`);
     console.log(`runSQLFunc PG: ${PG}, ${dbType}`);
