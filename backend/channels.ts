@@ -452,6 +452,8 @@ ipcMain.handle( // generate dummy data
       message: '',
     };
     try {
+      console.log('data in generate-dummy-data', data);
+      
       // Retrieves the Primary Keys and Foreign Keys for all the tables
       const tableInfo: ColumnObj[] = await db.getTableInfo(data.tableName);
 

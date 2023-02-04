@@ -35,13 +35,15 @@ let msql_pool;
 // and returns a promise that resolves to an array of columnObjects
 const getColumnObjects = function (
   tableName: string,
-  dbType: DBType
-): Promise<ColumnObj[]> {
-  let queryString;
+  dbType: DBType // error?
+  ): Promise<ColumnObj[]> {
+    let queryString;
+    
+    const value = [tableName];
+    console.log('dbType - getColumnObjects: ', dbType);
+        
 
-  const value = [tableName];
-
-  if (dbType === DBType.Postgres) {
+  if (dbType === DBType.Postgres) { // causing dbtype issues
     // query string to get constraints and table references as well
     queryString = `SELECT cols.column_name,
       cols.data_type,
@@ -219,6 +221,9 @@ const getDBLists = function (
     let query;
     const tableList: TableDetails[] = [];
     const promiseArray: Promise<ColumnObj[]>[] = [];
+
+    console.log('dbType - getDBLists: ', dbType);
+    
 
     if (dbType === DBType.Postgres) {
       query = `SELECT
