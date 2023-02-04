@@ -9,6 +9,7 @@ import generateDummyData from './DummyD/dummyDataMain';
 import { ColumnObj, DBList, DummyRecords, DBType, LogType } from './BE_types';
 import backendObjToQuery from './ertable-functions';
 import logger from './Logging/masterlog';
+import { log } from 'console';
 
 const db = require('./models');
 const docConfig = require('./_documentsConfig');
@@ -452,11 +453,12 @@ ipcMain.handle( // generate dummy data
       message: '',
     };
     try {
-      console.log('data in generate-dummy-data', data);
+      console.log('data in generate-dummy-data', data); // gets here fine
       
       // Retrieves the Primary Keys and Foreign Keys for all the tables
-      const tableInfo: ColumnObj[] = await db.getTableInfo(data.tableName);
-
+      const tableInfo: ColumnObj[] = await db.getTableInfo(data.tableName, dbType); // maybe here?
+      console.log('tableInfo in generate-dummy-data', tableInfo); // working
+    
       // generate dummy data
       const dummyArray: DummyRecords = await generateDummyData(
         tableInfo,
@@ -487,6 +489,7 @@ ipcMain.handle( // generate dummy data
       };
     } catch (err: any) {
       // rollback transaction if there's an error in insertion and send back feedback to FE
+      console.log('err in generate-dummy-data', err)
       await db.query('Rollback;', null, dbType);
       feedback = {
         type: 'error',
