@@ -456,7 +456,7 @@ ipcMain.handle( // generate dummy data
       console.log('data in generate-dummy-data', data); // gets here fine
       
       // Retrieves the Primary Keys and Foreign Keys for all the tables
-      const tableInfo: ColumnObj[] = await db.getTableInfo(data.tableName, dbType); // maybe here?
+      const tableInfo: ColumnObj[] = await db.getTableInfo(data.tableName, dbType); // passed in dbType to second argument
       console.log('tableInfo in generate-dummy-data', tableInfo); // working
     
       // generate dummy data
@@ -489,7 +489,6 @@ ipcMain.handle( // generate dummy data
       };
     } catch (err: any) {
       // rollback transaction if there's an error in insertion and send back feedback to FE
-      console.log('err in generate-dummy-data', err)
       await db.query('Rollback;', null, dbType);
       feedback = {
         type: 'error',

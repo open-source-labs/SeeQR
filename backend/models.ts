@@ -43,7 +43,7 @@ const getColumnObjects = function (
     console.log('dbType - getColumnObjects: ', dbType);
         
 
-  if (dbType === DBType.Postgres) { // causing dbtype issues
+  if (dbType === DBType.Postgres) { 
     // query string to get constraints and table references as well
     queryString = `SELECT cols.column_name,
       cols.data_type,
@@ -476,7 +476,6 @@ const myObj: MyObj = {
         databaseList: [],
         tableList: [], // current database's tables
       };
-
       // Get initial postgres dbs
       getDBNames(DBType.Postgres)
         .then((pgdata) => {
