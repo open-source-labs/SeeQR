@@ -496,8 +496,9 @@ ipcMain.handle( // generate dummy data
       };
     } finally {
       // send updated db info in case query affected table or database information
-      const dbsAndTables: DBList = await db.getLists();
-      event.sender.send('db-lists', dbsAndTables);
+      const dbsAndTables: DBList = await db.getLists(); // dummy data clear error is from here
+
+      event.sender.send('db-lists', dbsAndTables); // dummy data clear error is from here
 
       // send feedback back to FE
       event.sender.send('feedback', feedback);

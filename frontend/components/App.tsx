@@ -82,9 +82,10 @@ const App = () => {
         setMYSQLStatus(dbLists.databaseConnected[1]);
 
         setSelectedTable(selectedTable? selectedTable : dbTables[0]);
+        
       }
     };
-    ipcRenderer.on('db-lists', dbListFromBackend);
+    ipcRenderer.on('db-lists', dbListFromBackend); // dummy data error here?
     requestDbListOnce();
     // return cleanup function
     return () => {
@@ -128,7 +129,6 @@ const App = () => {
       break;
     case 'newSchemaView': 
       shownView = 'newSchemaView';
-      break;
       break;
     case 'quickStartView':
     default:
