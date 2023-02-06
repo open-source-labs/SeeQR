@@ -495,9 +495,10 @@ ipcMain.handle( // generate dummy data
         message: err,
       };
     } finally {
+      console.log('dbType inside generate-dummy-data', dbType)
       // send updated db info in case query affected table or database information
-      const dbsAndTables: DBList = await db.getLists(); // dummy data clear error is from here
-
+      const dbsAndTables: DBList = await db.getLists('', dbType); // dummy data clear error is from here
+      console.log('dbsAndTables in generate-dummy-data', dbsAndTables)
       event.sender.send('db-lists', dbsAndTables); // dummy data clear error is from here
 
       // send feedback back to FE
@@ -630,6 +631,7 @@ ipcMain.handle(
       };
     } finally {
       // send updated db info
+
       const updatedDb: DBList = await db.getLists(dbName, dbType);
       event.sender.send('db-lists', updatedDb);
 

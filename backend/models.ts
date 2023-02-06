@@ -501,7 +501,8 @@ const myObj: MyObj = {
             })
             .finally(() => {
               if (dbType) {
-                getDBLists(dbType, dbName)
+                console.log('dbType is defined')
+                getDBLists(dbType, dbName) // dbLists returning empty array - DBType is not defined
                   .then((data) => {
                     logger(
                       `RESOLVING DB DETAILS: Fetched DB names along with Table List for DBType: ${dbType} and DB: ${dbName}`,
@@ -517,6 +518,7 @@ const myObj: MyObj = {
                     );
                   });
               } else {
+                console.log('dbType is not defined')
                 logger('RESOLVING DB DETAILS: Only DB Names', LogType.SUCCESS);
                 resolve(listObj);
               }
