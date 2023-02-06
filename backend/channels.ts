@@ -446,20 +446,22 @@ ipcMain.handle(
     logger("Received 'generate-dummy-data'", LogType.RECEIVE);
     // send notice to front end that DD generation has been started
     event.sender.send('async-started');
-
+    console.log('genereatedata ipcMain dbType: ', dbType)
     let feedback: Feedback = {
       type: '',
       message: '',
     };
     try {
       // Retrieves the Primary Keys and Foreign Keys for all the tables
-      const tableInfo: ColumnObj[] = await db.getTableInfo(data.tableName);
+      const tableInfo: ColumnObj[] = await db.getTableInfo(data.tableName, dbType);
+      console.log('table info before dummyArray', tableInfo);
 
       // generate dummy data
       const dummyArray: DummyRecords = await generateDummyData(
         tableInfo,
         data.rows
       );
+      console.log('dummyArray output: ', dummyArray)
       // generate insert query string to insert dummy records
       const columnsStringified = '('
         .concat(dummyArray[0].join(', '))

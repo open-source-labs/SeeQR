@@ -40,6 +40,7 @@ const getColumnObjects = function (
   let queryString;
 
   const value = [tableName];
+  console.log('DBType in line 36 getColumn: ', dbType);
 
   if (dbType === DBType.Postgres) {
     // query string to get constraints and table references as well
