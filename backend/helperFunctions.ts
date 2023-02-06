@@ -28,7 +28,6 @@ interface HelperFunctions {
 // PG = Postgres - Query necessary to run PG Query/Command
 // MYSQL = MySQL - Query necessary to run MySQL Query/Command
 
-
 const helperFunctions: HelperFunctions = {
   // create a database
   createDBFunc: function (name, dbType: DBType) {
