@@ -40,7 +40,7 @@ class Table {
         
         return { x: this.tableCoordinates.x, y: this.tableCoordinates.y };
       } catch (error) {
-        return { x: (this.id - 1) * 500, y: 0 };
+        return { x: (this.id - 1) * 300, y: 5 };
       }
     };
     // create a nodes array for react flow, the first element will always be a
@@ -68,7 +68,7 @@ class Table {
         type: types.TABLE_FIELD,
         parentNode: `table-${this.name}`,
         draggable: false,
-        position: { x: 0, y: (i + 1) * 78 },
+        position: { x: 0, y: (i + 1) * 78},
         data: {
           tableName: this.name,
           columnData: el,
@@ -91,6 +91,7 @@ class Table {
         });
       }
     });
+
 
     // return an object with nodes and edges
     return {
@@ -144,20 +145,20 @@ const convertStateToReactFlow = {
       // on each loop.
       const tables = schema.tableList;
       const columns = tables[i].columns.length;
-      const localColumnGap = columns * 74; 
-      if (localColumnGap > columnGap) columnGap = localColumnGap;
+      const localColumnGap = columns ; 
+      // if (localColumnGap > columnGap) columnGap = localColumnGap;
 
       const rowLength = Math.floor(Math.sqrt(tables.length));
       // if index is divisible by length of list, start a new row of tables. 
-      if (i % rowLength === 0) {
+      // if (i % rowLength === 0) {
         // set x, y coordinates for new row to 0 and +250 respectively; 
-        tableCoordinates.x = 0;
-        tableCoordinates.y += 250 + columnGap;
+        tableCoordinates.x += 400;
+        tableCoordinates.y += 0;
         columnGap = 0;
-      } else {
-        // otherwise increment tables position horizontally in current row. 
-        tableCoordinates.x += 500;
-      };
+      //} //else {
+      //   // otherwise increment tables position horizontally in current row. 
+      //   tableCoordinates.x += 300;
+      // };
 
       // else increment x coordinate by + 250  
 
