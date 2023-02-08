@@ -73,6 +73,7 @@ const App = () => {
   const [showConfigDialog, setConfigDialog] = useState(false);
 
   useEffect(() => {
+    console.log('dbTables:', dbTables, 'selectedTable: ', selectedTable, 'selectedDb: ', selectedDb, 'curDBType: ', curDBType, 'DBInfo: ', DBInfo, 'PG_isConnected: ', PG_isConnected, 'MYSQL_isConnected: ', MYSQL_isConnected);
     // Listen to backend for updates to list of available databases
     const dbListFromBackend = (evt: IpcRendererEvent, dbLists: DbLists) => {
       if (isDbLists(dbLists)) {
@@ -82,9 +83,10 @@ const App = () => {
         setMYSQLStatus(dbLists.databaseConnected[1]);
 
         setSelectedTable(selectedTable? selectedTable : dbTables[0]);
+        
       }
     };
-    ipcRenderer.on('db-lists', dbListFromBackend);
+    ipcRenderer.on('db-lists', dbListFromBackend); // dummy data error here?
     requestDbListOnce();
     // return cleanup function
     return () => {
@@ -128,7 +130,6 @@ const App = () => {
       break;
     case 'newSchemaView': 
       shownView = 'newSchemaView';
-      break;
       break;
     case 'quickStartView':
     default:

@@ -35,14 +35,15 @@ let msql_pool;
 // and returns a promise that resolves to an array of columnObjects
 const getColumnObjects = function (
   tableName: string,
-  dbType: DBType
-): Promise<ColumnObj[]> {
-  let queryString;
+  dbType: DBType // error?
+  ): Promise<ColumnObj[]> {
+    let queryString;
+    
+    const value = [tableName];
+    console.log('dbType - getColumnObjects: ', dbType);
+        
 
-  const value = [tableName];
-  console.log('DBType in line 36 getColumn: ', dbType);
-
-  if (dbType === DBType.Postgres) {
+  if (dbType === DBType.Postgres) { 
     // query string to get constraints and table references as well
     queryString = `SELECT cols.column_name,
       cols.data_type,
@@ -220,6 +221,9 @@ const getDBLists = function (
     let query;
     const tableList: TableDetails[] = [];
     const promiseArray: Promise<ColumnObj[]>[] = [];
+
+    console.log('dbType - getDBLists: ', dbType);
+    
 
     if (dbType === DBType.Postgres) {
       query = `SELECT
@@ -472,7 +476,6 @@ const myObj: MyObj = {
         databaseList: [],
         tableList: [], // current database's tables
       };
-
       // Get initial postgres dbs
       getDBNames(DBType.Postgres)
         .then((pgdata) => {
@@ -498,7 +501,8 @@ const myObj: MyObj = {
             })
             .finally(() => {
               if (dbType) {
-                getDBLists(dbType, dbName)
+                console.log('dbType is defined')
+                getDBLists(dbType, dbName) // dbLists returning empty array - DBType is not defined
                   .then((data) => {
                     logger(
                       `RESOLVING DB DETAILS: Fetched DB names along with Table List for DBType: ${dbType} and DB: ${dbName}`,
@@ -514,6 +518,7 @@ const myObj: MyObj = {
                     );
                   });
               } else {
+                console.log('dbType is not defined')
                 logger('RESOLVING DB DETAILS: Only DB Names', LogType.SUCCESS);
                 resolve(listObj);
               }
