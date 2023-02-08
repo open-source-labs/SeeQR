@@ -9,6 +9,7 @@ import generateDummyData from './DummyD/dummyDataMain';
 import { ColumnObj, DBList, DummyRecords, DBType, LogType } from './BE_types';
 import backendObjToQuery from './ertable-functions';
 import logger from './Logging/masterlog';
+import { log } from 'console';
 
 const db = require('./models');
 const docConfig = require('./_documentsConfig');
@@ -440,7 +441,7 @@ interface dummyDataRequestPayload {
   rows: number;
 }
 
-ipcMain.handle(
+ipcMain.handle( // generate dummy data
   'generate-dummy-data',
   async (event, data: dummyDataRequestPayload, dbType: DBType) => {
     logger("Received 'generate-dummy-data'", LogType.RECEIVE);
@@ -452,9 +453,12 @@ ipcMain.handle(
       message: '',
     };
     try {
+      console.log('data in generate-dummy-data', data); // gets here fine
+      
       // Retrieves the Primary Keys and Foreign Keys for all the tables
-      const tableInfo: ColumnObj[] = await db.getTableInfo(data.tableName);
-
+      const tableInfo: ColumnObj[] = await db.getTableInfo(data.tableName, dbType); // passed in dbType to second argument
+      console.log('tableInfo in generate-dummy-data', tableInfo); // working
+    
       // generate dummy data
       const dummyArray: DummyRecords = await generateDummyData(
         tableInfo,
@@ -491,9 +495,11 @@ ipcMain.handle(
         message: err,
       };
     } finally {
+      console.log('dbType inside generate-dummy-data', dbType)
       // send updated db info in case query affected table or database information
-      const dbsAndTables: DBList = await db.getLists();
-      event.sender.send('db-lists', dbsAndTables);
+      const dbsAndTables: DBList = await db.getLists('', dbType); // dummy data clear error is from here
+      console.log('dbsAndTables in generate-dummy-data', dbsAndTables)
+      event.sender.send('db-lists', dbsAndTables); // dummy data clear error is from here
 
       // send feedback back to FE
       event.sender.send('feedback', feedback);
@@ -625,6 +631,7 @@ ipcMain.handle(
       };
     } finally {
       // send updated db info
+
       const updatedDb: DBList = await db.getLists(dbName, dbType);
       event.sender.send('db-lists', updatedDb);
 
