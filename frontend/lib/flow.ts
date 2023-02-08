@@ -22,7 +22,7 @@ const dagreToFlow = (
     id: node.id,
     // NOTE: BREAKS IF  CIRCULAR STRUCTURES ARE PASSED IN
     data: { plan: node.nodeData, totals, thresholds },
-    position: { x: node.x, y: node.y },
+    position: { x: node.x , y: node.y },
     type: nodeType,
   }));
 
