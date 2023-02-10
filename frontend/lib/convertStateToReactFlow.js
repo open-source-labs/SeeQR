@@ -58,23 +58,31 @@ class Table {
     ];
 
     const edges = [];
+    
+    let num = -1;
     // iterate through the columns data for this data, create a node for each column
     // create an edge (the connection line) for each column that has a designated
     // foreign table and foreign column name
     this.columns.forEach((el, i) => {
+      const found = nodes.find(colEl => colEl.id === `table-${this.name}_column-${el.column_name}`);
+      console.log('render triggered', el, ' and ' , i, ' AND ' , num);
+      if (!found) {
+        num++;
       // create a table field node for each column for react-flow
-      nodes.push({
-        id: `table-${this.name}_column-${el.column_name}`,
-        type: types.TABLE_FIELD,
-        parentNode: `table-${this.name}`,
-        draggable: false,
-        position: { x: 0, y: (i + 1) * 78 },
-        data: {
-          tableName: this.name,
-          columnData: el,
-          otherTables: this.otherTables,
-        },
-      });
+        nodes.push({
+          id: `table-${this.name}_column-${el.column_name}`,
+          type: types.TABLE_FIELD,
+          parentNode: `table-${this.name}`,
+          draggable: true,
+          position: { x: 0, y: (num + 1) * 78 },
+          // position: { x: 0, y: (i + 1) * 78 }, !!!!!!!!!!!!!! this is the correct one
+          data: {
+            tableName: this.name,
+            columnData: el,
+            otherTables: this.otherTables,
+          },
+        }); console.log('columns is', this.columns);
+      }
 
       // if the element has a foregin_column and foreign_table create an edge
       if (el.foreign_column && el.foreign_table) {
