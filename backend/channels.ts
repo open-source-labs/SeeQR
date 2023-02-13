@@ -447,7 +447,7 @@ ipcMain.handle( // generate dummy data
     logger("Received 'generate-dummy-data'", LogType.RECEIVE);
     // send notice to front end that DD generation has been started
     event.sender.send('async-started');
-
+    console.log('genereatedata ipcMain dbType: ', dbType)
     let feedback: Feedback = {
       type: '',
       message: '',
@@ -464,6 +464,7 @@ ipcMain.handle( // generate dummy data
         tableInfo,
         data.rows
       );
+      console.log('dummyArray output: ', dummyArray)
       // generate insert query string to insert dummy records
       const columnsStringified = '('
         .concat(dummyArray[0].join(', '))
