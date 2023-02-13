@@ -456,15 +456,9 @@ ipcMain.handle( // generate dummy data
       console.log('data in generate-dummy-data', data); // gets here fine
       
       // Retrieves the Primary Keys and Foreign Keys for all the tables
-<<<<<<< HEAD
-      const tableInfo: ColumnObj[] = await db.getTableInfo(data.tableName, dbType);
-      console.log('table info before dummyArray', tableInfo);
-
-=======
       const tableInfo: ColumnObj[] = await db.getTableInfo(data.tableName, dbType); // passed in dbType to second argument
       console.log('tableInfo in generate-dummy-data', tableInfo); // working
     
->>>>>>> 72f13be38cd2786c57a3c2a221a134aa9158779f
       // generate dummy data
       const dummyArray: DummyRecords = await generateDummyData(
         tableInfo,
