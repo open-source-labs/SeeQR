@@ -179,6 +179,17 @@ function getStepContent(step: number) {
           </StepList>
         </StyledTypographyInstructions>
       );
+      case 4:
+        return (
+          <StyledTypographyInstructions>
+            <strong>Step 5:</strong>
+            <StepList>
+              <li>Select the checkbox of the queries inside the groups you would like to compare.</li>
+              <li>Then, click the Chart Icon at the top of the sidebar.</li>
+              <li>Feel free to continually select and deselect queries to compare.</li>
+            </StepList>
+          </StyledTypographyInstructions>
+        );
     default:
       return 'Unknown step';
   }
