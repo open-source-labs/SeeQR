@@ -58,14 +58,14 @@ class Table {
     ];
 
     const edges = [];
-    
+
     let num = -1;
     // iterate through the columns data for this data, create a node for each column
     // create an edge (the connection line) for each column that has a designated
     // foreign table and foreign column name
     this.columns.forEach((el, i) => {
+    // check if column exists in the nodes array so duplicate nodes arent created in case there are duplicate columns. nums variable on line 63 starts at 0 and upon first incrementation on line 72 increases nnuber to 0 for the first node positioning on line 79
       const found = nodes.find(colEl => colEl.id === `table-${this.name}_column-${el.column_name}`);
-      console.log('render triggered', el, ' and ' , i, ' AND ' , num);
       if (!found) {
         num++;
       // create a table field node for each column for react-flow
@@ -73,15 +73,14 @@ class Table {
           id: `table-${this.name}_column-${el.column_name}`,
           type: types.TABLE_FIELD,
           parentNode: `table-${this.name}`,
-          draggable: true,
+          draggable: false,
           position: { x: 0, y: (num + 1) * 78 },
-          // position: { x: 0, y: (i + 1) * 78 }, !!!!!!!!!!!!!! this is the correct one
           data: {
             tableName: this.name,
             columnData: el,
             otherTables: this.otherTables,
           },
-        }); console.log('columns is', this.columns);
+        }); 
       }
 
       // if the element has a foregin_column and foreign_table create an edge

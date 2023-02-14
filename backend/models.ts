@@ -45,7 +45,7 @@ const getColumnObjects = function (
 
   if (dbType === DBType.Postgres) { 
     // query string to get constraints and table references as well
-    queryString = `SELECT cols.column_name,
+    queryString = `SELECT DISTINCT cols.column_name,
       cols.data_type,
       cols.character_maximum_length,
       cols.is_nullable,
@@ -65,6 +65,10 @@ const getColumnObjects = function (
       ON rco.unique_constraint_name = rel_kcu.constraint_name
       WHERE cols.table_name = $1`;
 
+      //kcu = key column usage = describes which key columns have constraints
+      //tc = table constraints = shows if constraint is primary key or foreign key
+      //information_schema.table_constraints show the whole table constraints
+
     return new Promise((resolve, reject) => {
       pg_pool
         .query(queryString, value)
@@ -80,7 +84,7 @@ const getColumnObjects = function (
         });
     });
   } else if (dbType === DBType.MySQL) {
-    queryString = `SELECT
+    queryString = `SELECT DISTINCT
       cols.column_name AS column_name,
       cols.data_type AS data_type,
       cols.character_maximum_length AS character_maximum_length,
