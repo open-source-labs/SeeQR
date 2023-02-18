@@ -1,5 +1,4 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { FamilyRestroomRounded } from '@mui/icons-material';
 import { BrowserWindow, Menu } from 'electron';
 
 const { app } = require('electron');
