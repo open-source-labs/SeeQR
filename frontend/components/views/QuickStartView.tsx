@@ -94,7 +94,7 @@ const StepList = styled.ul`
 `;
 
 function getSteps() {
-  return ['Create Servers and Permissions', 'Import a Database', 'Create New Queries', 'Saving/Loading Queries', 'Compare Queries'];
+  return ['Set Up Servers and Permissions', 'Import a Database', 'Create New Queries', 'Saving/Loading Queries', 'Compare Queries'];
 }
 
 function getStepContent(step: number) {
@@ -106,12 +106,12 @@ function getStepContent(step: number) {
           <StepList>
             <li>Install PostgreSQL and/or MySQL servers (for Mac, use Homebrew). </li>
             <li> Ensure that PATH is enabled.</li>
-            <li> Set up a username, password, port and full permissions for database mainpulation. </li>
-            <li> PostgreSQL username, password, and port is defaulted to "postgres," "postgres," and "5432," respectively. Similarly, MySQL username, password, and port is defaulted to "mysql,"  "mysql," and "3306," respectively. </li>
-            <li> Set up username(s), password(s), and port(s) that match database server profiles. This can be done by clicking the gear on the top-left of the app. If you do not see your database(s), check that your information is correct. </li>
-            <li> Run server(s) in background. </li>
+            <li> Set up a username, password, port, and full permissions for database mainpulation. </li>
+            <li> PostgreSQL username, password, and port is defaulted to &quot;postgres,&quot; &quot;postgres,&quot; and &quot;5432,&quot; respectively. Similarly, MySQL username, password, and port is defaulted to &quot;mysql,&quot;  &quot;mysql,&quot; and &quot;3306,&quot; respectively. </li>
+            <li> Set up usernames, passwords, and ports that match database server profiles. This can be done by clicking the gear on the top-left of the app. If you do not see your database(s), check that your information is correct. </li>
+            <li> Run server(s) in the background. </li>
           </StepList>
-        </StyledTypographyInstructions>
+        </StyledTypographyInstructions> 
       );
     case 1:
       return (
