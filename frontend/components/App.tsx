@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-// import { MuiThemeProvider } from '@material-ui/core/'; // deprecated
-import { ThemeProvider } from '@material-ui/core/styles';
-// import { StylesProvider } from '@material-ui/core/styles'; // deprecated
-import { StylesProvider } from '@material-ui/styles';
+import { MuiThemeProvider } from '@material-ui/core/';
+import { StylesProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import {
   MuiTheme,
@@ -141,7 +139,7 @@ const App = () => {
   return (
     // Styled Components must be injected last in order to override Material UI style: https://material-ui.com/guides/interoperability/#controlling-priority-3
     <StylesProvider injectFirst>
-      <ThemeProvider theme={MuiTheme}>
+      <MuiThemeProvider theme={MuiTheme}>
         <Spinner />
         <AppContainer>
           <CssBaseline />
@@ -241,7 +239,7 @@ const App = () => {
           </Main>
           <FeedbackModal />
         </AppContainer>
-      </ThemeProvider>
+      </MuiThemeProvider>
     </StylesProvider>
   );
 };

@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import {
-  ThemeProvider,
+  MuiThemeProvider,
   Dialog,
   Checkbox,
   FormControlLabel,
   Tooltip,
-} from '@mui/material';
+} from '@material-ui/core/';
 import { sendFeedback } from '../../lib/utils';
 import {
   ButtonContainer,
@@ -128,7 +128,7 @@ const DuplicateDbModal = ({
 
   return (
     <div>
-      <ThemeProvider theme={MuiTheme}>
+      <MuiThemeProvider theme={MuiTheme}>
         <Dialog
           fullWidth
           maxWidth="xs"
@@ -188,7 +188,7 @@ const DuplicateDbModal = ({
             </StyledButton>
           </ButtonContainer>
         </Dialog>
-      </ThemeProvider>
+      </MuiThemeProvider>
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Dialog } from '@mui/material';
+import { Dialog } from '@material-ui/core/';
 import { ipcRenderer } from 'electron';
 import {
   ButtonContainer,

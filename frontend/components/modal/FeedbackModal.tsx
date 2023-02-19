@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { IpcRendererEvent, ipcRenderer } from 'electron';
 import { Snackbar } from '@material-ui/core';
-// import { Snackbar } from '@mui/material';
 import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
 
 import { readingTime } from '../../lib/utils';
