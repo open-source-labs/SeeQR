@@ -9,7 +9,6 @@ import generateDummyData from './DummyD/dummyDataMain';
 import { ColumnObj, DBList, DummyRecords, DBType, LogType } from './BE_types';
 import backendObjToQuery from './ertable-functions';
 import logger from './Logging/masterlog';
-import { log } from 'console';
 
 const db = require('./models');
 const docConfig = require('./_documentsConfig');
@@ -75,7 +74,7 @@ ipcMain.on('return-db-list', (event, dbType: DBType = DBType.Postgres) => {
 
   db.setBaseConnections()
     .then(() => {
-      db.getLists()
+      db.getLists('', dbType)
         .then((data: DBList) => {
           event.sender.send('db-lists', data);
           logger("Sent 'db-lists' from 'return-db-list'", LogType.SEND);
@@ -157,7 +156,7 @@ ipcMain.handle(
       await db.query(dropDBScript, null, dbType);
 
       // send updated db info
-      const dbsAndTables: DBList = await db.getLists();
+      const dbsAndTables: DBList = await db.getLists(dbName, dbType);
       event.sender.send('db-lists', dbsAndTables);
       logger("Sent 'db-lists' from 'drop-db'", LogType.SEND);
     } finally {
@@ -229,7 +228,7 @@ ipcMain.handle(
       }
 
       // update frontend with new db list
-      const dbsAndTableInfo: DBList = await db.getLists();
+      const dbsAndTableInfo: DBList = await db.getLists('', dbType);
       event.sender.send('db-lists', dbsAndTableInfo);
       logger("Sent 'db-lists' from 'duplicate-db'", LogType.SEND);
     } finally {
@@ -289,7 +288,7 @@ ipcMain.handle(
       }
 
       // update frontend with new db list
-      const dbsAndTableInfo: DBList = await db.getLists();
+      const dbsAndTableInfo: DBList = await db.getLists('', dbType);
       event.sender.send('db-lists', dbsAndTableInfo);
       logger("Sent 'db-lists' from 'import-db'", LogType.SEND);
     } finally {
@@ -384,7 +383,7 @@ ipcMain.handle(
 
       // send updated db info in case query affected table or database information
       // must be run after we connect back to the originally selected so tables information is accurate
-      const dbsAndTables: DBList = await db.getLists(); // error here
+      const dbsAndTables: DBList = await db.getLists('', dbType);
       event.sender.send('db-lists', dbsAndTables);
       logger(
         "Sent 'db-lists' from 'run-query'",
@@ -541,7 +540,7 @@ ipcMain.handle(
       await db.connectToDB(newDbName, dbType);
 
       // update DBList in the sidebar to show this new db
-      const dbsAndTableInfo: DBList = await db.getLists();
+      const dbsAndTableInfo: DBList = await db.getLists(newDbName, dbType);
       event.sender.send('db-lists', dbsAndTableInfo);
       logger("Sent 'db-lists' from 'initialize-db'", LogType.SEND);
     } catch (e) {
@@ -585,7 +584,7 @@ ipcMain.handle(
     } finally {
       // send updated db info in case query affected table or database information
       // must be run after we connect back to the originally selected so tables information is accurate
-      const dbsAndTables: DBList = await db.getLists();
+      const dbsAndTables: DBList = await db.getLists('', dbType);
       event.sender.send('db-lists', dbsAndTables);
       logger("Sent 'db-lists' from 'update-db'", LogType.SEND);
 
