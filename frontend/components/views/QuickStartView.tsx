@@ -4,12 +4,11 @@ import styled from 'styled-components';
 import {
   Stepper,
   Step,
-  // StepButton,
+  StepButton,
   StepLabel,
   Button,
   Typography,
-} from '@mui/material';
-import { StepButton } from '@material-ui/core';
+} from '@material-ui/core';
 import logo from '../../../assets/logo/seeqr_dock.png';
 
 interface QuickStartViewProps {
