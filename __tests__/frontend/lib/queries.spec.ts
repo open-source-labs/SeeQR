@@ -1,6 +1,6 @@
 window.require = ((str: string) => str) as any
 import * as queries from '../../../frontend/lib/queries';
-import type { QueryData, ExplainJson } from '../../../frontend/types';
+import type { QueryData } from '../../../frontend/types';
 
 const first: Partial<QueryData> = {
   label: 'firstQuery',
