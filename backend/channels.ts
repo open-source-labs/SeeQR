@@ -384,7 +384,7 @@ ipcMain.handle(
 
       // send updated db info in case query affected table or database information
       // must be run after we connect back to the originally selected so tables information is accurate
-      const dbsAndTables: DBList = await db.getLists();
+      const dbsAndTables: DBList = await db.getLists(); // error here
       event.sender.send('db-lists', dbsAndTables);
       logger(
         "Sent 'db-lists' from 'run-query'",
