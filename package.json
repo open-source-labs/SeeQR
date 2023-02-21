@@ -93,7 +93,7 @@
     "csp-html-webpack-plugin": "^5.1.0",
     "css-loader": "^5.2.7",
     "electron": "^11.5.0",
-    "electron-builder": "^22.9.1",
+    "electron-builder": "^23.6.0",
     "electron-packager": "^14.2.1",
     "electron-reloader": "^1.1.0",
     "electron-store": "^6.0.0",

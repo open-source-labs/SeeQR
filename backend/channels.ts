@@ -343,7 +343,7 @@ ipcMain.handle(
             dbType
           );
           explainResults = results[0][0];
-          console.log('mysql explain results', explainResults);
+          // console.log('mysql explain results', explainResults);
 
           console.log(LogType.WARNING, results);
         }
@@ -361,9 +361,9 @@ ipcMain.handle(
           console.log('returnedRows in channels for MySQL', returnedRows);
         }
         if (dbType === DBType.Postgres) {
-          console.log('results in channels for Postgres', results);
+          // console.log('results in channels for Postgres', results);
           returnedRows = results.rows;
-          console.log('returnedRows in channels for Postgres', returnedRows);
+          // console.log('returnedRows in channels for Postgres', returnedRows);
         }
       } catch (e: any) {
         error = e.toString();
