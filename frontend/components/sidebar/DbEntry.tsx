@@ -1,8 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   IconButton,
   ListItemSecondaryAction,
   Tooltip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Button,
 } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
@@ -20,6 +26,7 @@ interface DbEntryProps {
   duplicate: () => void;
   dbType: DBType;
 }
+
 const DbEntry = ({
   db,
   isSelected,
@@ -27,11 +34,14 @@ const DbEntry = ({
   duplicate,
   dbType,
 }: DbEntryProps) => {
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
   const handleDelete = () => {
     ipcRenderer
       .invoke('drop-db', db, isSelected, dbType)
       .then(() => {
         if (isSelected) select('', dbType);
+        setIsDeleteDialogOpen(false);
       })
       .catch(() =>
         sendFeedback({ type: 'error', message: `Failed to delete ${db}` })
@@ -52,10 +62,31 @@ const DbEntry = ({
           </IconButton>
         </Tooltip>
         <Tooltip title="Drop Database">
-          <IconButton edge="end" onClick={handleDelete}>
+          <IconButton edge="end" onClick={() => setIsDeleteDialogOpen(true)}>
             <DeleteIcon />
           </IconButton>
         </Tooltip>
+        <Dialog
+          open={isDeleteDialogOpen}
+          onClose={() => setIsDeleteDialogOpen(false)}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle style={{color:'black'}} id="alert-dialog-title">Confirm deletion</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              Are you sure you want to delete the database {db}?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setIsDeleteDialogOpen(false)} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={handleDelete} color="primary" autoFocus>
+              Delete
+            </Button>
+          </DialogActions>
+        </Dialog>
       </ListItemSecondaryAction>
     </SidebarListItem>
   );
