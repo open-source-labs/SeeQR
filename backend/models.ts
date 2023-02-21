@@ -40,7 +40,7 @@ const getColumnObjects = function (
     let queryString;
     
     const value = [tableName];
-    console.log('dbType - getColumnObjects: ', dbType);
+
         
 
   if (dbType === DBType.Postgres) { 
