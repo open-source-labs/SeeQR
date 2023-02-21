@@ -130,6 +130,7 @@ const QueryView = ({
   };
 
   const onRun = () => {
+    console.log('onRun is called');
     if (!localQuery.label.trim()) {
       sendFeedback({
         type: 'info',

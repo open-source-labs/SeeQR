@@ -58,7 +58,7 @@ const StyledStepper = styled(Stepper)`
 `;
 
 const StyledStepLabel = styled(StepLabel)`
-  width: 14vw;
+  width: 10vw;
   & .MuiStepLabel-label {
     font-size: clamp(1rem, 1.28vw, 1.5rem);
   }
@@ -94,7 +94,7 @@ const StepList = styled.ul`
 `;
 
 function getSteps() {
-  return ['Import a Database', 'Create New Queries', 'Saving/Loading Queries', 'Compare Queries'];
+  return ['Set Up Servers and Permissions', 'Import a Database', 'Create New Queries', 'Saving/Loading Queries', 'Compare Queries'];
 }
 
 function getStepContent(step: number) {
@@ -103,6 +103,20 @@ function getStepContent(step: number) {
       return (
         <StyledTypographyInstructions>
           <strong>Step 1:</strong>
+          <StepList>
+            <li>Install PostgreSQL and/or MySQL servers (for Mac, use Homebrew). </li>
+            <li> Ensure that PATH is enabled.</li>
+            <li> Set up a username, password, port, and full permissions for database mainpulation. </li>
+            <li> PostgreSQL username, password, and port is defaulted to &quot;postgres,&quot; &quot;postgres,&quot; and &quot;5432,&quot; respectively. Similarly, MySQL username, password, and port is defaulted to &quot;mysql,&quot;  &quot;mysql,&quot; and &quot;3306,&quot; respectively. </li>
+            <li> Set up usernames, passwords, and ports that match database server profiles. This can be done by clicking the gear on the top-left of the app. If you do not see your database(s), check that your information is correct. </li>
+            <li> Run server(s) in the background. </li>
+          </StepList>
+        </StyledTypographyInstructions> 
+      );
+    case 1:
+      return (
+        <StyledTypographyInstructions>
+          <strong>Step 2:</strong>
           <StepList>
             <li>To import a database, select the + icon in the sidebar.</li>
             <li>Enter a name for your database.</li>
@@ -123,10 +137,10 @@ function getStepContent(step: number) {
           </StepList>
         </StyledTypographyInstructions>
       );
-    case 1:
+    case 2:
       return (
         <StyledTypographyInstructions>
-          <strong>Step 2:</strong>
+          <strong>Step 3:</strong>
           <StepList>
             <li>Select which database you want to create a query in.</li>
             <li>
@@ -157,21 +171,21 @@ function getStepContent(step: number) {
           </StepList>
         </StyledTypographyInstructions>
       );
-      case 2: 
+      case 3: 
         return (
-        <StyledTypographyInstructions>
-          <strong>Step 3:</strong>
-          <StepList>
-            <li>To save a query, declare a file location by clicking the &quot;Designate Save Location&quot; button in the queries tab</li>
-            <li>Then, save queries individually by clicking the &quot;Save Query&quot; button</li>
-            <li>To load data into SeeQR just click the &quot;Import Query&quot; button, select the file you wish to upload in your local file system and click &quot;Upload&quot;</li>
-          </StepList>
-        </StyledTypographyInstructions>
+          <StyledTypographyInstructions>
+            <strong>Step 4:</strong>
+            <StepList>
+              <li>To save a query, declare a file location by clicking the &quot;Designate Save Location&quot; button in the queries tab</li>
+              <li>Then, save queries individually by clicking the &quot;Save Query&quot; button</li>
+              <li>To load data into SeeQR just click the &quot;Import Query&quot; button, select the file you wish to upload in your local file system and click &quot;Upload&quot;</li>
+            </StepList>
+          </StyledTypographyInstructions>
         )
-    case 3:
+    case 4:
       return (
         <StyledTypographyInstructions>
-          <strong>Step 4:</strong>
+          <strong>Step 5:</strong>
           <StepList>
             <li>Select the checkbox of the queries inside the groups you would like to compare.</li>
             <li>Then, click the Chart Icon at the top of the sidebar.</li>
@@ -179,17 +193,6 @@ function getStepContent(step: number) {
           </StepList>
         </StyledTypographyInstructions>
       );
-      case 4:
-        return (
-          <StyledTypographyInstructions>
-            <strong>Step 5:</strong>
-            <StepList>
-              <li>Select the checkbox of the queries inside the groups you would like to compare.</li>
-              <li>Then, click the Chart Icon at the top of the sidebar.</li>
-              <li>Feel free to continually select and deselect queries to compare.</li>
-            </StepList>
-          </StyledTypographyInstructions>
-        );
     default:
       return 'Unknown step';
   }
