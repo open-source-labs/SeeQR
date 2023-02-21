@@ -72,19 +72,14 @@ const DbEntry = ({
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
         >
-          <DialogTitle style={{ color: 'black' }} id="alert-dialog-title">
-            Confirm deletion
-          </DialogTitle>
+          <DialogTitle style={{color:'black'}} id="alert-dialog-title">Confirm deletion</DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
               Are you sure you want to delete the database {db}?
             </DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button
-              onClick={() => setIsDeleteDialogOpen(false)}
-              color="primary"
-            >
+            <Button onClick={() => setIsDeleteDialogOpen(false)} color="primary">
               Cancel
             </Button>
             <Button onClick={handleDelete} color="primary" autoFocus>
