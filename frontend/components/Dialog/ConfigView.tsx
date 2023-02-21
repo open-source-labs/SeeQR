@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-// import { DatabaseInfo, DBType } from '../../types';
+import { DatabaseInfo, DBType } from '../../types';
 import { IpcRendererEvent, ipcRenderer } from 'electron';
 import styled from 'styled-components';
-import { TextField, Box, InputLabel, Select, DialogTitle, Button, Dialog, FormControl, IconButton, InputAdornment, MenuItem, Tooltip } from '@mui/material';
+import { TextField, Box, InputLabel, Select, DialogTitle } from '@material-ui/core/';
+import { Button, Dialog, FormControl, IconButton, InputAdornment, MenuItem, Tooltip } from '@mui/material';
 import { sendFeedback } from '../../lib/utils';
 import {
     ButtonContainer,
