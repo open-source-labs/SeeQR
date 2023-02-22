@@ -1,7 +1,7 @@
 {
   "name": "seeqr",
   "productName": "SeeQR App",
-  "version": "8.0.1",
+  "version": "9.0.1",
   "description": "SQL Toolbox - Model Implementer, Execution Plan Visualizer and Query Comparison Tool",
   "main": "./tsCompiled/backend/main.js",
   "babel": {
@@ -92,8 +92,8 @@
     "babel-minify-webpack-plugin": "^0.3.1",
     "csp-html-webpack-plugin": "^5.1.0",
     "css-loader": "^5.2.7",
-    "electron": "^11.2.3",
-    "electron-builder": "^22.9.1",
+    "electron": "^11.5.0",
+    "electron-builder": "^23.6.0",
     "electron-packager": "^14.2.1",
     "electron-reloader": "^1.1.0",
     "electron-store": "^6.0.0",

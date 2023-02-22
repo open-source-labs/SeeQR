@@ -35,15 +35,17 @@ let msql_pool;
 // and returns a promise that resolves to an array of columnObjects
 const getColumnObjects = function (
   tableName: string,
-  dbType: DBType
-): Promise<ColumnObj[]> {
-  let queryString;
+  dbType: DBType // error?
+  ): Promise<ColumnObj[]> {
+    let queryString;
+    
+    const value = [tableName];
 
-  const value = [tableName];
+        
 
-  if (dbType === DBType.Postgres) {
+  if (dbType === DBType.Postgres) { 
     // query string to get constraints and table references as well
-    queryString = `SELECT cols.column_name,
+    queryString = `SELECT DISTINCT cols.column_name,
       cols.data_type,
       cols.character_maximum_length,
       cols.is_nullable,
@@ -63,6 +65,10 @@ const getColumnObjects = function (
       ON rco.unique_constraint_name = rel_kcu.constraint_name
       WHERE cols.table_name = $1`;
 
+      //kcu = key column usage = describes which key columns have constraints
+      //tc = table constraints = shows if constraint is primary key or foreign key
+      //information_schema.table_constraints show the whole table constraints
+
     return new Promise((resolve, reject) => {
       pg_pool
         .query(queryString, value)
@@ -78,7 +84,7 @@ const getColumnObjects = function (
         });
     });
   } else if (dbType === DBType.MySQL) {
-    queryString = `SELECT
+    queryString = `SELECT DISTINCT
       cols.column_name AS column_name,
       cols.data_type AS data_type,
       cols.character_maximum_length AS character_maximum_length,
@@ -219,6 +225,9 @@ const getDBLists = function (
     let query;
     const tableList: TableDetails[] = [];
     const promiseArray: Promise<ColumnObj[]>[] = [];
+
+    console.log('dbType - getDBLists: ', dbType);
+    
 
     if (dbType === DBType.Postgres) {
       query = `SELECT
@@ -471,7 +480,6 @@ const myObj: MyObj = {
         databaseList: [],
         tableList: [], // current database's tables
       };
-
       // Get initial postgres dbs
       getDBNames(DBType.Postgres)
         .then((pgdata) => {
@@ -497,7 +505,8 @@ const myObj: MyObj = {
             })
             .finally(() => {
               if (dbType) {
-                getDBLists(dbType, dbName)
+                console.log('dbType is defined')
+                getDBLists(dbType, dbName) // dbLists returning empty array - DBType is not defined
                   .then((data) => {
                     logger(
                       `RESOLVING DB DETAILS: Fetched DB names along with Table List for DBType: ${dbType} and DB: ${dbName}`,
@@ -513,6 +522,7 @@ const myObj: MyObj = {
                     );
                   });
               } else {
+                console.log('dbType is not defined')
                 logger('RESOLVING DB DETAILS: Only DB Names', LogType.SUCCESS);
                 resolve(listObj);
               }
