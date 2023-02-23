@@ -9,7 +9,7 @@
 [![Twitter](https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Ftwitter.com%2Ftheseeqr)](https://twitter.com/theseeqr)
 [![Github stars](https://img.shields.io/github/stars/open-source-labs/SeeQR?style=social)](https://github.com/open-source-labs/SeeQR)
 
-[SeeQR.info](http://www.seeqr.info)
+[SeeQRapp.com](http://www.seeqrapp.com)
 
 <p>SeeQR is a <b>convenient one-stop shop</b> for efficient SQL database manipulation and performance testing. SeeQR can be used throughout the database life-cycle, from creation to testing.</p>
 
