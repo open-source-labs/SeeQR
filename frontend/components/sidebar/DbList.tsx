@@ -74,7 +74,7 @@ const DbList = ({
   };
 
   const selectHandler = (dbName: string, cdbt: DBType | undefined) => {
-    // setSelectedView('dbView');
+    setSelectedView('dbView');
     if (dbName === selectedDb) return;
     ipcRenderer
       .invoke('select-db', dbName, cdbt)

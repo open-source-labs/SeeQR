@@ -74,7 +74,7 @@ ipcMain.on('return-db-list', (event, dbType: DBType = DBType.Postgres) => {
 
   db.setBaseConnections()
     .then(() => {
-      db.getLists()
+      db.getLists('', dbType)
         .then((data: DBList) => {
           event.sender.send('db-lists', data);
           logger("Sent 'db-lists' from 'return-db-list'", LogType.SEND);
@@ -156,7 +156,7 @@ ipcMain.handle(
       await db.query(dropDBScript, null, dbType);
 
       // send updated db info
-      const dbsAndTables: DBList = await db.getLists();
+      const dbsAndTables: DBList = await db.getLists(dbName, dbType);
       event.sender.send('db-lists', dbsAndTables);
       logger("Sent 'db-lists' from 'drop-db'", LogType.SEND);
     } finally {
@@ -228,7 +228,7 @@ ipcMain.handle(
       }
 
       // update frontend with new db list
-      const dbsAndTableInfo: DBList = await db.getLists();
+      const dbsAndTableInfo: DBList = await db.getLists('', dbType);
       event.sender.send('db-lists', dbsAndTableInfo);
       logger("Sent 'db-lists' from 'duplicate-db'", LogType.SEND);
     } finally {
@@ -288,7 +288,7 @@ ipcMain.handle(
       }
 
       // update frontend with new db list
-      const dbsAndTableInfo: DBList = await db.getLists();
+      const dbsAndTableInfo: DBList = await db.getLists('', dbType);
       event.sender.send('db-lists', dbsAndTableInfo);
       logger("Sent 'db-lists' from 'import-db'", LogType.SEND);
     } finally {
@@ -343,7 +343,7 @@ ipcMain.handle(
             dbType
           );
           explainResults = results[0][0];
-          console.log('mysql explain results', explainResults);
+          // console.log('mysql explain results', explainResults);
 
           console.log(LogType.WARNING, results);
         }
@@ -361,9 +361,9 @@ ipcMain.handle(
           console.log('returnedRows in channels for MySQL', returnedRows);
         }
         if (dbType === DBType.Postgres) {
-          console.log('results in channels for Postgres', results);
+          // console.log('results in channels for Postgres', results);
           returnedRows = results.rows;
-          console.log('returnedRows in channels for Postgres', returnedRows);
+          // console.log('returnedRows in channels for Postgres', returnedRows);
         }
       } catch (e: any) {
         error = e.toString();
@@ -383,7 +383,7 @@ ipcMain.handle(
 
       // send updated db info in case query affected table or database information
       // must be run after we connect back to the originally selected so tables information is accurate
-      const dbsAndTables: DBList = await db.getLists();
+      const dbsAndTables: DBList = await db.getLists('', dbType);
       event.sender.send('db-lists', dbsAndTables);
       logger(
         "Sent 'db-lists' from 'run-query'",
@@ -440,26 +440,30 @@ interface dummyDataRequestPayload {
   rows: number;
 }
 
-ipcMain.handle(
+ipcMain.handle( // generate dummy data
   'generate-dummy-data',
   async (event, data: dummyDataRequestPayload, dbType: DBType) => {
     logger("Received 'generate-dummy-data'", LogType.RECEIVE);
     // send notice to front end that DD generation has been started
     event.sender.send('async-started');
-
+    console.log('genereatedata ipcMain dbType: ', dbType)
     let feedback: Feedback = {
       type: '',
       message: '',
     };
     try {
+      console.log('data in generate-dummy-data', data); // gets here fine
+      
       // Retrieves the Primary Keys and Foreign Keys for all the tables
-      const tableInfo: ColumnObj[] = await db.getTableInfo(data.tableName);
-
+      const tableInfo: ColumnObj[] = await db.getTableInfo(data.tableName, dbType); // passed in dbType to second argument
+      console.log('tableInfo in generate-dummy-data', tableInfo); // working
+    
       // generate dummy data
       const dummyArray: DummyRecords = await generateDummyData(
         tableInfo,
         data.rows
       );
+      console.log('dummyArray output: ', dummyArray)
       // generate insert query string to insert dummy records
       const columnsStringified = '('
         .concat(dummyArray[0].join(', '))
@@ -491,9 +495,11 @@ ipcMain.handle(
         message: err,
       };
     } finally {
+      console.log('dbType inside generate-dummy-data', dbType)
       // send updated db info in case query affected table or database information
-      const dbsAndTables: DBList = await db.getLists();
-      event.sender.send('db-lists', dbsAndTables);
+      const dbsAndTables: DBList = await db.getLists('', dbType); // dummy data clear error is from here
+      console.log('dbsAndTables in generate-dummy-data', dbsAndTables)
+      event.sender.send('db-lists', dbsAndTables); // dummy data clear error is from here
 
       // send feedback back to FE
       event.sender.send('feedback', feedback);
@@ -534,7 +540,7 @@ ipcMain.handle(
       await db.connectToDB(newDbName, dbType);
 
       // update DBList in the sidebar to show this new db
-      const dbsAndTableInfo: DBList = await db.getLists();
+      const dbsAndTableInfo: DBList = await db.getLists(newDbName, dbType);
       event.sender.send('db-lists', dbsAndTableInfo);
       logger("Sent 'db-lists' from 'initialize-db'", LogType.SEND);
     } catch (e) {
@@ -578,7 +584,7 @@ ipcMain.handle(
     } finally {
       // send updated db info in case query affected table or database information
       // must be run after we connect back to the originally selected so tables information is accurate
-      const dbsAndTables: DBList = await db.getLists();
+      const dbsAndTables: DBList = await db.getLists('', dbType);
       event.sender.send('db-lists', dbsAndTables);
       logger("Sent 'db-lists' from 'update-db'", LogType.SEND);
 
@@ -625,6 +631,7 @@ ipcMain.handle(
       };
     } finally {
       // send updated db info
+
       const updatedDb: DBList = await db.getLists(dbName, dbType);
       event.sender.send('db-lists', updatedDb);
 

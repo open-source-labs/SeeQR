@@ -2,6 +2,7 @@ import fs from 'fs';
 import { ipcRenderer, remote } from 'electron';
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 import ReactFlow, {
+  Controls,
   applyEdgeChanges,
   applyNodeChanges,
   Background,
@@ -70,6 +71,7 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
   });
   const [nodes, setNodes] = useState<Node[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
+  // state for custom controls toggle
   // when tables (which is the database that is selected changes, update SchemaState)
   useEffect(() => {
     setSchemaState({ database: selectedDb, tableList: tables });
@@ -266,8 +268,9 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
         nodesConnectable={false}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
+        panOnScroll
         minZoom={0.1}
-        maxZoom={5}
+        maxZoom={10}
         defaultPosition={[0, 0]}
         // fitView
         style={rfStyle}
@@ -275,6 +278,7 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
       >
         <MiniMap nodeColor={nodeColor} style={mmStyle} nodeStrokeWidth={3} />
         <Background />
+        <Controls />
       </ReactFlow>
     </div>
   );
