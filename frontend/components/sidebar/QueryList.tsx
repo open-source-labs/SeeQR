@@ -123,7 +123,7 @@ const QueryList = ({
       }
       return undefined;
     }).catch((err: object | undefined) => {
-      console.log(err);
+      // console.log(err);
       return undefined;
     });
   }
@@ -149,7 +149,7 @@ const QueryList = ({
         }
         return undefined;
       }).catch((err: object) => {
-        console.log(err);
+        // console.log(err);
         return undefined;
       });
     }

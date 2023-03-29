@@ -36,7 +36,7 @@ const DummyDataModal = ({
   const [isError, setIsError] = useState(false);
   const [isEmpty, setIsEmpty] = useState(true);
 
-  console.log('curDBType:', curDBType);
+  // console.log('curDBType:', curDBType);
 
 
   const handleClose = () => {
@@ -105,7 +105,7 @@ const DummyDataModal = ({
     })
     )
     .catch((err: object) => {
-      console.log(err);
+      // console.log(err);
     })
     .finally(handleClose);
   };

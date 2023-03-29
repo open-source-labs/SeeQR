@@ -62,10 +62,10 @@ const logger = function (
   if (opt1) moreText += JSON.stringify(opt1);
   if (opt2) moreText += JSON.stringify(opt2);
 
-  console.log(
-    `\u001b[1;${colorCode}m ${`[${logType}] ${message + moreText}`}` +
-      `\u001b[1;0m`
-  );
+  // console.log(
+  //   `\u001b[1;${colorCode}m ${`[${logType}] ${message + moreText}`}` +
+  //     `\u001b[1;0m`
+  // );
   saveLogMessage(`[${logType}] ${message}`);
 };
 

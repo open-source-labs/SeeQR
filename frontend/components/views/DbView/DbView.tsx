@@ -37,7 +37,7 @@ const DbView = ({ selectedDb, show, setERView, ERView, curDBType, setDBType, DBI
 
   const [open, setOpen] = useState(false);
   
-console.log('DB props', curDBType, selectedDb)
+// console.log('DB props', curDBType, selectedDb)
   
 
   const handleClickOpen = () => {
