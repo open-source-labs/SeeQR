@@ -226,7 +226,7 @@ const getDBLists = function (
     const tableList: TableDetails[] = [];
     const promiseArray: Promise<ColumnObj[]>[] = [];
 
-    console.log('dbType - getDBLists: ', dbType);
+    // console.log('dbType - getDBLists: ', dbType);
     
 
     if (dbType === DBType.Postgres) {
@@ -325,7 +325,7 @@ const PG_DBConnect = async function (pg_uri: string, db: string) {
 };
 
 const MSQL_DBConnect = function (db: string) {
-  console.log(`mysql dbconnect ${db}`);
+  // console.log(`mysql dbconnect ${db}`);
   msql_pool
     .query(`USE ${db};`)
     .then(() => {
@@ -416,7 +416,7 @@ const myObj: MyObj = {
                   resolve(data);
                 })
                 .catch((err) => {
-                  console.log(`Double: ${this.curMSQL_DB}`);
+                  // console.log(`Double: ${this.curMSQL_DB}`);
                   logger(err.message, LogType.WARNING, 'dbQuery1');
                   reject(err);
                 });
@@ -429,7 +429,7 @@ const myObj: MyObj = {
               resolve(data);
             })
             .catch((err) => {
-              console.log(`Double none: ${this.curMSQL_DB}`);
+              // console.log(`Double none: ${this.curMSQL_DB}`);
               logger(err.message, LogType.WARNING, 'mysql caught');
               reject(err);
             });
@@ -459,7 +459,7 @@ const myObj: MyObj = {
       this.curPG_DB = db;
       await PG_DBConnect(this.pg_uri, db);
     } else if (dbType === DBType.MySQL) {
-      console.log(`connectToDB -- : ${this.curMSQL_DB}`);
+      // console.log(`connectToDB -- : ${this.curMSQL_DB}`);
       this.curMSQL_DB = db;
       await MSQL_DBConnect(db);
     }
@@ -505,7 +505,7 @@ const myObj: MyObj = {
             })
             .finally(() => {
               if (dbType) {
-                console.log('dbType is defined')
+                // console.log('dbType is defined')
                 getDBLists(dbType, dbName) // dbLists returning empty array - DBType is not defined
                   .then((data) => {
                     logger(
@@ -522,7 +522,7 @@ const myObj: MyObj = {
                     );
                   });
               } else {
-                console.log('dbType is not defined')
+                // console.log('dbType is not defined')
                 logger('RESOLVING DB DETAILS: Only DB Names', LogType.SUCCESS);
                 resolve(listObj);
               }

@@ -102,11 +102,11 @@ const QueryView = ({
     // request updates for db and table information. Otherwise database view tab
     // will show wrong information
 
-    console.log(
-      'when selecting a database from the dropdown menu, we first go here in queryview'
-    );
-    console.log('nextDBType in QueryView', nextDBType);
-    console.log('newDB in Query View', newDb);
+    // console.log(
+    //   'when selecting a database from the dropdown menu, we first go here in queryview'
+    // );
+    // console.log('nextDBType in QueryView', nextDBType);
+    // console.log('newDB in Query View', newDb);
 
     setSelectedDb(newDb);
     setDBType(nextDBType);
@@ -130,7 +130,7 @@ const QueryView = ({
   };
 
   const onRun = () => {
-    console.log('onRun is called');
+    // console.log('onRun is called');
     if (!localQuery.label.trim()) {
       sendFeedback({
         type: 'info',
@@ -161,10 +161,10 @@ const QueryView = ({
           throw error;
         }
         let transformedData;
-        console.log('returnedRows after .then method', returnedRows);
-        console.log('explainResult after .then method', explainResults);
+        // console.log('returnedRows after .then method', returnedRows);
+        // console.log('explainResult after .then method', explainResults);
 
-        console.log('curDBType in QueryView', curDBType);
+        // console.log('curDBType in QueryView', curDBType);
 
         if (curDBType === DBType.Postgres) {
           transformedData = {

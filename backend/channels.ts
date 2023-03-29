@@ -121,7 +121,7 @@ ipcMain.handle(
 
     event.sender.send('async-started');
     try {
-      console.log('dbName from backend', dbName, 'dbType from backend');
+      // console.log('dbName from backend', dbName, 'dbType from backend');
 
       await db.connectToDB(dbName, dbType);
 
@@ -199,7 +199,7 @@ ipcMain.handle(
       const dumpCmd = withData
         ? runFullCopyFunc(sourceDb, tempFilePath, dbType)
         : runHollowCopyFunc(sourceDb, tempFilePath, dbType);
-      console.log('dbType for importing a database', dbType);
+      // console.log('dbType for importing a database', dbType);
       try {
         await promExecute(dumpCmd);
       } catch (e) {
@@ -334,7 +334,7 @@ ipcMain.handle(
             null,
             dbType
           );
-          console.log(LogType.WARNING, results);
+          // console.log(LogType.WARNING, results);
           explainResults = results[1].rows;
         } else if (dbType === DBType.MySQL) {
           const results = await db.query(
@@ -345,7 +345,7 @@ ipcMain.handle(
           explainResults = results[0][0];
           // console.log('mysql explain results', explainResults);
 
-          console.log(LogType.WARNING, results);
+          // console.log(LogType.WARNING, results);
         }
       } catch (e) {
         error = `Failed to get Execution Plan. EXPLAIN might not support this query.`;
@@ -358,7 +358,7 @@ ipcMain.handle(
         if (dbType === DBType.MySQL) {
           returnedRows = results[0][1];
 
-          console.log('returnedRows in channels for MySQL', returnedRows);
+          // console.log('returnedRows in channels for MySQL', returnedRows);
         }
         if (dbType === DBType.Postgres) {
           // console.log('results in channels for Postgres', results);
@@ -446,24 +446,24 @@ ipcMain.handle( // generate dummy data
     logger("Received 'generate-dummy-data'", LogType.RECEIVE);
     // send notice to front end that DD generation has been started
     event.sender.send('async-started');
-    console.log('genereatedata ipcMain dbType: ', dbType)
+    // console.log('genereatedata ipcMain dbType: ', dbType)
     let feedback: Feedback = {
       type: '',
       message: '',
     };
     try {
-      console.log('data in generate-dummy-data', data); // gets here fine
+      // console.log('data in generate-dummy-data', data); // gets here fine
       
       // Retrieves the Primary Keys and Foreign Keys for all the tables
       const tableInfo: ColumnObj[] = await db.getTableInfo(data.tableName, dbType); // passed in dbType to second argument
-      console.log('tableInfo in generate-dummy-data', tableInfo); // working
+      // console.log('tableInfo in generate-dummy-data', tableInfo); // working
     
       // generate dummy data
       const dummyArray: DummyRecords = await generateDummyData(
         tableInfo,
         data.rows
       );
-      console.log('dummyArray output: ', dummyArray)
+      // console.log('dummyArray output: ', dummyArray)
       // generate insert query string to insert dummy records
       const columnsStringified = '('
         .concat(dummyArray[0].join(', '))
@@ -495,10 +495,10 @@ ipcMain.handle( // generate dummy data
         message: err,
       };
     } finally {
-      console.log('dbType inside generate-dummy-data', dbType)
+      // console.log('dbType inside generate-dummy-data', dbType)
       // send updated db info in case query affected table or database information
       const dbsAndTables: DBList = await db.getLists('', dbType); // dummy data clear error is from here
-      console.log('dbsAndTables in generate-dummy-data', dbsAndTables)
+      // console.log('dbsAndTables in generate-dummy-data', dbsAndTables)
       event.sender.send('db-lists', dbsAndTables); // dummy data clear error is from here
 
       // send feedback back to FE

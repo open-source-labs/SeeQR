@@ -29,7 +29,7 @@ const getRandomInt = (min: number, max: number) => {
 const generateDataByType = (columnObj: ColumnObj): string | number => {
   let length;
   // faker.js method to generate data by type
-  console.log('columnObj_datatype: ', columnObj.data_type)
+  // console.log('columnObj_datatype: ', columnObj.data_type)
   
   switch (columnObj.data_type) {
     case 'smallint':

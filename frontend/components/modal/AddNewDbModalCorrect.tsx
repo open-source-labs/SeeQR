@@ -83,9 +83,9 @@ const AddNewDbModal = ({
   // Opens modal to select file and sends the selected file to backend
   const handleFileClick = () => {
     const dbt: DBType = (document.getElementById('dbTypeDropdown') as any).value;
-    console.log('curDBType in addnewdbmodalcorrect', curDBType)
-    console.log('newdbName in addnewdbmodalcorrect', newDbName)
-    console.log('dbt in addnewdbmodalcorrect', dbt)
+    // console.log('curDBType in addnewdbmodalcorrect', curDBType)
+    // console.log('newdbName in addnewdbmodalcorrect', newDbName)
+    // console.log('dbt in addnewdbmodalcorrect', dbt)
     dialog
       .showOpenDialog({
         properties: ['openFile'],
@@ -117,7 +117,7 @@ const AddNewDbModal = ({
         );
       })
       .catch((err: object) => {
-        console.log(err);
+        // console.log(err);
       })
       .finally(handleClose);
   };
