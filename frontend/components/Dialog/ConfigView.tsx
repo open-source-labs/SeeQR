@@ -51,20 +51,29 @@ const ConfigView = ({ show, onClose }: ConfigViewProps) => {
   const [pg_user, setPG_User] = useState('');
   const [pg_pass, setPG_Pass] = useState('');
   const [pg_port, setPG_Port] = useState('');
+  const [rds_user, setRDS_User] = useState('');
+  const [rds_pass, setRDS_Pass] = useState('');
+  const [rds_host, setRDS_Host] = useState('');
+  const [rds_port, setRDS_Port] = useState('');
 
   const [mysql_showpass, setMySQL_ShowPass] = useState(false);
   const [pg_showpass, setPG_ShowPass] = useState(false);
+  const [rds_showpass, setRDS_ShowPass] = useState(false);
 
   useEffect(() => {
+    console.log(rds_port)
     // Listen to backend for updates to list of available databases
     const configFromBackend = (evt: IpcRendererEvent, config) => {
       setMySQL_User(config.mysql_user);
       setMySQL_Pass(config.mysql_pass);
       setMySQL_Port(config.mysql_port);
-
       setPG_User(config.pg_user);
       setPG_Pass(config.pg_pass);
       setPG_Port(config.pg_port);
+      setRDS_User(config.rds_user);
+      setRDS_Pass(config.rds_pass);
+      setRDS_Host(config.rds_host);
+      setRDS_Port(config.rds_port);
     };
     ipcRenderer.on('get-config', configFromBackend);
     requestConfig();
@@ -88,6 +97,10 @@ const ConfigView = ({ show, onClose }: ConfigViewProps) => {
         pg_user,
         pg_pass,
         pg_port: parseInt(pg_port),
+        rds_user,
+        rds_pass,
+        rds_host,
+        rds_port: parseInt(rds_port),
       })
       .then(() => {
         handleClose();
@@ -225,6 +238,74 @@ const ConfigView = ({ show, onClose }: ConfigViewProps) => {
               style: { color: '#575151' },
             }}
             defaultValue={pg_port}
+          />
+          <StyledTextField
+            required
+            id="filled-basic"
+            label="RDS User"
+            size="small"
+            variant="outlined"
+            onChange={(event) => {
+              setRDS_User(event.target.value);
+            }}
+            InputProps={{
+              style: { color: '#575151' },
+            }}
+            defaultValue={rds_user}
+          />
+          <StyledTextField
+            required
+            id="filled-basic"
+            label="RDS Password"
+            size="small"
+            variant="outlined"
+            type={rds_showpass ? 'text' : 'password'}
+            onChange={(event) => {
+              setRDS_Pass(event.target.value);
+            }}
+            InputProps={{
+              style: { color: '#575151' },
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={() => setRDS_ShowPass(!rds_showpass)}
+                    onMouseDown={() => setRDS_ShowPass(!rds_showpass)}
+                  >
+                    {rds_showpass ? <Visibility /> : <VisibilityOff />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+            defaultValue={rds_pass}
+          />
+          <StyledTextField
+            required
+            id="filled-basic"
+            label="RDS Hostname"
+            size="small"
+            variant="outlined"
+            onChange={(event) => {
+              setRDS_Host(event.target.value);
+            }}
+            InputProps={{
+              style: { color: '#575151' },
+            }}
+            defaultValue={rds_host}
+          />
+          <StyledTextField
+            required
+            id="filled-basic"
+            label="RDS Port"
+            size="small"
+            variant="outlined"
+            onChange={(event) => {
+              setRDS_Port(event.target.value);
+            }}
+            InputProps={{
+              style: { color: '#575151' },
+            }}
+            defaultValue={rds_port}
           />
         </TextFieldContainer>
 

@@ -1,9 +1,7 @@
 /**
  * This file contains common types that need to be used across the backend
  */
- import {
-  UpdatesObjType
-} from '../frontend/types';
+import { UpdatesObjType } from '../frontend/types';
 
 export interface ColumnObj {
   column_name: string;
@@ -41,7 +39,7 @@ export type BackendObjType = {
 
 export enum DBType {
   Postgres = 'pg',
-  MySQL = 'mysql'
+  MySQL = 'mysql',
 }
 
 export enum LogType {
@@ -50,14 +48,18 @@ export enum LogType {
   WARNING = 'WARNING',
   NORMAL = 'NORMAL',
   SEND = 'SEND',
-  RECEIVE = 'RECEIVE'
+  RECEIVE = 'RECEIVE',
 }
 
 export interface DocConfigFile {
-  mysql_user: string,
-  mysql_pass: string,
-  mysql_port: number | string,
-  pg_user: string,
-  pg_pass: string,
-  pg_port: number | string
+  mysql_user: string;
+  mysql_pass: string;
+  mysql_port: number | string;
+  pg_user: string;
+  pg_pass: string;
+  pg_port: number | string;
+  rds_host: string;
+  rds_user: string;
+  rds_pass: string;
+  rds_port: string | number;
 }
