@@ -20,7 +20,11 @@ const writeConfigDefault = function (): DocConfigFile {
     mysql_port: 3306,
     pg_user: 'postgres',
     pg_pass: 'postgres',
-    pg_port: 5432
+    pg_port: 5432,
+    rds_host: 'AWS RDS',
+    rds_user: 'RDS',
+    rds_pass: 'password',
+    rds_port: 'Port',
   };
 
   fs.writeFileSync(configPath, JSON.stringify(defaultFile));
@@ -43,7 +47,11 @@ const readConfigFile = function (): DocConfigFile {
 
 interface DocConfig {
   getConfigFolder: () => string;
-  getCredentials: (dbType: DBType) => { user: string; pass: string, port: number | string };
+  getCredentials: (dbType: DBType) => {
+    user: string;
+    pass: string;
+    port: number | string;
+  };
   getFullConfig: () => Object;
   saveConfig: (config: Object) => void;
 }
@@ -74,16 +82,24 @@ const docConfig: DocConfig = {
     }
 
     if (dbType === DBType.Postgres) {
-      return { user: configFile.pg_user, pass: configFile.pg_pass, port: configFile.pg_port };
+      return {
+        user: configFile.pg_user,
+        pass: configFile.pg_pass,
+        port: configFile.pg_port,
+      };
     }
     if (dbType === DBType.MySQL) {
-      return { user: configFile.mysql_user, pass: configFile.mysql_pass, port: configFile.mysql_port };
+      return {
+        user: configFile.mysql_user,
+        pass: configFile.mysql_pass,
+        port: configFile.mysql_port,
+      };
     }
     logger('Could not get credentials of DBType: ', LogType.ERROR, dbType);
     return { user: 'none', pass: 'none', port: 1 };
   },
 
-  getFullConfig: function() {
+  getFullConfig: function () {
     this.getConfigFolder();
     let configFile: DocConfigFile;
     try {
@@ -92,21 +108,24 @@ const docConfig: DocConfig = {
     } catch (err: any) {
       logger(err.message, LogType.WARNING);
       return {
-        mysql_user: 'Failed to retrieve data.', mysql_pass: 'Failed to retrieve data.', mysql_port: 'Failed to retrieve data.',
-        pg_user: 'Failed to retrieve data.', pg_pass: 'Failed to retrieve data.', pg_port: 'Failed to retrieve data.'
+        mysql_user: 'Failed to retrieve data.',
+        mysql_pass: 'Failed to retrieve data.',
+        mysql_port: 'Failed to retrieve data.',
+        pg_user: 'Failed to retrieve data.',
+        pg_pass: 'Failed to retrieve data.',
+        pg_port: 'Failed to retrieve data.',
       };
     }
   },
 
-  saveConfig: function(config: Object) {
+  saveConfig: function (config: Object) {
     try {
       fs.writeFileSync(configPath, JSON.stringify(config));
       logger('Saved new config: ', LogType.NORMAL, config);
-    } catch(err: any) {
+    } catch (err: any) {
       logger(err.message, LogType.WARNING);
     }
-    
-  }
+  },
 };
 
 module.exports = docConfig;
