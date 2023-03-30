@@ -21,10 +21,14 @@ const writeConfigDefault = function (): DocConfigFile {
     pg_user: 'postgres',
     pg_pass: 'postgres',
     pg_port: 5432,
-    rds_host: 'AWS RDS',
-    rds_user: 'RDS',
-    rds_pass: 'password',
-    rds_port: 'Port',
+    rds_mysql_host: 'AWS RDS',
+    rds_mysql_user: 'RDS',
+    rds_mysql_pass: 'password',
+    rds_mysql_port: 3306,
+    rds_pg_host: 'AWS RDS',
+    rds_pg_user: 'RDS',
+    rds_pg_pass: 'password',
+    rds_pg_port: 5432,
   };
 
   fs.writeFileSync(configPath, JSON.stringify(defaultFile));
@@ -95,6 +99,23 @@ const docConfig: DocConfig = {
         port: configFile.mysql_port,
       };
     }
+    if( dbType === DBType.RDSMySQL) { // added grabbing RDSMySQL credentials
+      return {
+        host: configFile.rds_mysql_host,
+        user: configFile.rds_mysql_user,
+        pass: configFile.rds_mysql_pass,
+        port: configFile.rds_mysql_port,
+      };
+    }
+    if( dbType === DBType.RDSPostgres) { // added grabbing RDSPG credentials
+      return {
+        host: configFile.rds_pg_host,
+        user: configFile.rds_pg_user,
+        pass: configFile.rds_pg_pass,
+        port: configFile.rds_pg_port,
+      };
+    }
+
     logger('Could not get credentials of DBType: ', LogType.ERROR, dbType);
     return { user: 'none', pass: 'none', port: 1 };
   },
