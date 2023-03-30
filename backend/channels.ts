@@ -440,7 +440,8 @@ interface dummyDataRequestPayload {
   rows: number;
 }
 
-ipcMain.handle( // generate dummy data
+ipcMain.handle(
+  // generate dummy data
   'generate-dummy-data',
   async (event, data: dummyDataRequestPayload, dbType: DBType) => {
     logger("Received 'generate-dummy-data'", LogType.RECEIVE);
@@ -453,11 +454,14 @@ ipcMain.handle( // generate dummy data
     };
     try {
       // console.log('data in generate-dummy-data', data); // gets here fine
-      
+
       // Retrieves the Primary Keys and Foreign Keys for all the tables
-      const tableInfo: ColumnObj[] = await db.getTableInfo(data.tableName, dbType); // passed in dbType to second argument
+      const tableInfo: ColumnObj[] = await db.getTableInfo(
+        data.tableName,
+        dbType
+      ); // passed in dbType to second argument
       // console.log('tableInfo in generate-dummy-data', tableInfo); // working
-    
+
       // generate dummy data
       const dummyArray: DummyRecords = await generateDummyData(
         tableInfo,
