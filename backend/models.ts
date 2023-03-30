@@ -392,6 +392,7 @@ const myObj: MyObj = {
     if (rds_pg_pool) {
       await rds_pg_pool.end();
     }
+    console.log(RDS_PG_Creds)
     rds_pg_pool = new Pool(RDS_PG_Creds);
     rds_pg_pool.connect((err) => {
       if (err) {
