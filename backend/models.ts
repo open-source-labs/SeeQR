@@ -584,6 +584,7 @@ const myObj: MyObj = {
               listObj.databaseConnected[1] = true;
               logger('Got DB Names for both PG and MySQL!', LogType.SUCCESS);
               listObj.databaseList = [...pgDBList, ...msqlDBList];
+              
             })
             .catch((err) => {
               // MySQL fails... Just get PG!
