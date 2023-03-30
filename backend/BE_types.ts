@@ -58,8 +58,12 @@ export interface DocConfigFile {
   pg_user: string;
   pg_pass: string;
   pg_port: number | string;
-  rds_host: string;
-  rds_user: string;
-  rds_pass: string;
-  rds_port: string | number;
+  rds_mysql_host: string;
+  rds_mysql_user: string;
+  rds_mysql_pass: string;
+  rds_mysql_port: string | number;
+  rds_pg_host: string;
+  rds_pg_user: string;
+  rds_pg_pass: string;
+  rds_pg_port: string | number;
 }

@@ -21,10 +21,14 @@ const writeConfigDefault = function (): DocConfigFile {
     pg_user: 'postgres',
     pg_pass: 'postgres',
     pg_port: 5432,
-    rds_host: 'AWS RDS',
-    rds_user: 'RDS',
-    rds_pass: 'password',
-    rds_port: 'Port',
+    rds_mysql_host: 'AWS RDS',
+    rds_mysql_user: 'RDS',
+    rds_mysql_pass: 'password',
+    rds_mysql_port: 3306,
+    rds_pg_host: 'AWS RDS',
+    rds_pg_user: 'RDS',
+    rds_pg_pass: 'password',
+    rds_pg_port: 5432,
   };
 
   fs.writeFileSync(configPath, JSON.stringify(defaultFile));

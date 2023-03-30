@@ -363,15 +363,28 @@ const myObj: MyObj = {
     const MSQL_Cred = docConfig.getCredentials(DBType.MySQL);
     //JUNAID
     //destructuring rds creds from docConfig.getFullConfig. Doing it this way for now so that i dont have to go back and change the types for the docConfig and create another method to send just the RDS Credentials. can refactor later.
-    const { rds_host, rds_user, rds_pass, rds_port } =
-      docConfig.getFullConfig();
-    const RDS_Creds = {
-      host: rds_host,
-      user: rds_user,
-      password: rds_pass,
-      port: rds_port,
+    const {
+      rds_mysql_host,
+      rds_mysql_user,
+      rds_mysql_pass,
+      rds_mysql_port,
+      rds_pg_host,
+      rds_pg_user,
+      rds_pg_pass,
+      rds_pg_port,
+    } = docConfig.getFullConfig();
+    const RDS_MySQL_Creds = {
+      host: rds_mysql_host,
+      user: rds_mysql_user,
+      password: rds_mysql_pass,
+      port: rds_mysql_port,
     };
-
+    const RDS_PG_Creds = {
+      host: rds_pg_host,
+      user: rds_pg_user,
+      password: rds_pg_pass,
+      port: rds_pg_port,
+    };
     //JUNAID
     //one is commented out rn bc we can only connect to one cloud db at a time since we only have one text field for the cloud. also we need to add new vars and types for the second cloud connection. both cloud connections can use the same format as the current RDS_CREDS var
 
@@ -379,25 +392,26 @@ const myObj: MyObj = {
     if (rds_pg_pool) {
       await rds_pg_pool.end();
     }
-    // rds_pg_pool = new Pool({ ...RDS_Creds });
-    // console.log(RDS_Creds);
-    // rds_pg_pool.connect((err) => {
-    //   if (err) {
-    //     console.log(err, 'ERR PG');
-    //   } else {
-    //     console.log('connected to db');
-    //   }
-    // });
+    rds_pg_pool = new Pool(RDS_PG_Creds);
+    rds_pg_pool.connect((err) => {
+      if (err) {
+        console.log(err, 'ERR PG');
+      } else {
+        console.log('connected to pg db');
+      }
+    });
 
     //rds msql pool conn
     if (rds_msql_pool) {
       await rds_msql_pool.end();
     }
-    rds_msql_pool = mysql.createPool({ ...RDS_Creds });
+    rds_msql_pool = mysql.createPool(RDS_MySQL_Creds);
 
     //just a test query to make sure were connected (it works, i tested with other queries creating tables too)
     const q = await rds_msql_pool.query('SHOW DATABASES;');
-    console.log(q, 'q');
+    console.log('-----mysqlrds query testing conn-------');
+    console.log(q[0]);
+    console.log('-----mysqlrds query testing conn-------');
 
     // URI Format: postgres://username:password@hostname:port/databasename
     // Note User must have a 'postgres'role set-up prior to initializing this connection. https://www.postgresql.org/docs/13/database-roles.html
