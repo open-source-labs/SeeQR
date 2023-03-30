@@ -28,6 +28,8 @@ const docConfig = require('./_documentsConfig');
 
 let pg_pool;
 let msql_pool;
+let rds_pg_pool;
+let rds_msql_pool;
 
 // *********************************************************** HELPER FUNCTIONS ************************************************* //
 
@@ -36,14 +38,12 @@ let msql_pool;
 const getColumnObjects = function (
   tableName: string,
   dbType: DBType // error?
-  ): Promise<ColumnObj[]> {
-    let queryString;
-    
-    const value = [tableName];
+): Promise<ColumnObj[]> {
+  let queryString;
 
-        
+  const value = [tableName];
 
-  if (dbType === DBType.Postgres) { 
+  if (dbType === DBType.Postgres) {
     // query string to get constraints and table references as well
     queryString = `SELECT DISTINCT cols.column_name,
       cols.data_type,
@@ -65,9 +65,9 @@ const getColumnObjects = function (
       ON rco.unique_constraint_name = rel_kcu.constraint_name
       WHERE cols.table_name = $1`;
 
-      //kcu = key column usage = describes which key columns have constraints
-      //tc = table constraints = shows if constraint is primary key or foreign key
-      //information_schema.table_constraints show the whole table constraints
+    //kcu = key column usage = describes which key columns have constraints
+    //tc = table constraints = shows if constraint is primary key or foreign key
+    //information_schema.table_constraints show the whole table constraints
 
     return new Promise((resolve, reject) => {
       pg_pool
@@ -227,7 +227,6 @@ const getDBLists = function (
     const promiseArray: Promise<ColumnObj[]>[] = [];
 
     // console.log('dbType - getDBLists: ', dbType);
-    
 
     if (dbType === DBType.Postgres) {
       query = `SELECT
@@ -362,6 +361,43 @@ const myObj: MyObj = {
   async setBaseConnections() {
     const PG_Cred = docConfig.getCredentials(DBType.Postgres);
     const MSQL_Cred = docConfig.getCredentials(DBType.MySQL);
+    //JUNAID
+    //destructuring rds creds from docConfig.getFullConfig. Doing it this way for now so that i dont have to go back and change the types for the docConfig and create another method to send just the RDS Credentials. can refactor later.
+    const { rds_host, rds_user, rds_pass, rds_port } =
+      docConfig.getFullConfig();
+    const RDS_Creds = {
+      host: rds_host,
+      user: rds_user,
+      password: rds_pass,
+      port: rds_port,
+    };
+
+    //JUNAID
+    //one is commented out rn bc we can only connect to one cloud db at a time since we only have one text field for the cloud. also we need to add new vars and types for the second cloud connection. both cloud connections can use the same format as the current RDS_CREDS var
+
+    //rds pg pool conn
+    if (rds_pg_pool) {
+      await rds_pg_pool.end();
+    }
+    // rds_pg_pool = new Pool({ ...RDS_Creds });
+    // console.log(RDS_Creds);
+    // rds_pg_pool.connect((err) => {
+    //   if (err) {
+    //     console.log(err, 'ERR PG');
+    //   } else {
+    //     console.log('connected to db');
+    //   }
+    // });
+
+    //rds msql pool conn
+    if (rds_msql_pool) {
+      await rds_msql_pool.end();
+    }
+    rds_msql_pool = mysql.createPool({ ...RDS_Creds });
+
+    //just a test query to make sure were connected (it works, i tested with other queries creating tables too)
+    const q = await rds_msql_pool.query('SHOW DATABASES;');
+    console.log(q, 'q');
 
     // URI Format: postgres://username:password@hostname:port/databasename
     // Note User must have a 'postgres'role set-up prior to initializing this connection. https://www.postgresql.org/docs/13/database-roles.html
