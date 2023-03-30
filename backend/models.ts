@@ -438,14 +438,14 @@ const myObj: MyObj = {
     rds_pg_pool = new Pool({ ...RDS_PG_INFO });
     rds_pg_pool.connect((err) => {
       if (err) console.log(err, 'ERR PG');
-      else console.log('connected to db');
+      else console.log('connected to pgdb');
       });
 
     //  RDS MSQL POOL
     if (rds_msql_pool) await rds_msql_pool.end();
     rds_msql_pool = mysql.createPool({ ...RDS_MSQL_INFO });
     const q = await rds_msql_pool.query('SHOW DATABASES;'); //  just a test query to make sure were connected (it works, i tested with other queries creating tables too)
-    console.log(q, 'q');
+    console.log(q[0], 'q');
 
     // URI Format: postgres://username:password@hostname:port/databasename
     // Note User must have a 'postgres'role set-up prior to initializing this connection. https://www.postgresql.org/docs/13/database-roles.html
