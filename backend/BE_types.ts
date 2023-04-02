@@ -25,7 +25,7 @@ export interface TableDetails {
   columns?: ColumnObj[];
 }
 export interface DBList {
-  databaseConnected: [boolean, boolean];
+  databaseConnected: [boolean, boolean, boolean, boolean];
   databaseList: dbDetails[];
   tableList: TableDetails[];
 }
