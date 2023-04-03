@@ -101,7 +101,7 @@ const DbList = ({
       <StyledSidebarList>
         {DBInfo?.map((dbi) => (
           <DbEntry
-            key={`dbList_${dbi.db_name}`}
+            key={`dbList_${dbi.db_name}_${dbi.db_type}`}
             db={dbi.db_name}
             isSelected={selectedDb === dbi.db_name}
             select={selectHandler}
