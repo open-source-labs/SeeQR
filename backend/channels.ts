@@ -66,7 +66,10 @@ ipcMain.handle('get-config', async (event, configObj) => {
 });
 
 // Listen for request from front-end and send back the DB List upon request
-ipcMain.on('return-db-list', (event, dbType: DBType = DBType.Postgres) => {
+//JUNAID AND CHASE
+//removed the parameters because it doesnt seem like they do anything here, and it prevents the other databses from rendering on the list if pg is passed in.
+// ipcMain.on('return-db-list', (event, dbType: DBType = DBType.Postgres) => {
+ipcMain.on('return-db-list', (event) => {
   logger(
     "Received 'return-db-list' (Note: No Async being sent here)",
     LogType.RECEIVE
@@ -74,7 +77,10 @@ ipcMain.on('return-db-list', (event, dbType: DBType = DBType.Postgres) => {
 
   db.setBaseConnections()
     .then(() => {
-      db.getLists('', dbType)
+      //JUNAID AND CHASE
+      //removed the parameters because it doesnt seem like they do anything here, and it prevents the other databses from rendering on the list if pg is passed in.
+      // db.getLists('', dbType)
+      db.getLists()
         .then((data: DBList) => {
           event.sender.send('db-lists', data);
           logger("Sent 'db-lists' from 'return-db-list'", LogType.SEND);
