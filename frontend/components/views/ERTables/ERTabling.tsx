@@ -67,8 +67,19 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
     database: 'initial',
     tableList: [],
   });
+  const [reactFlowCache, setReactFlowCache] = useState({});
   const [nodes, setNodes] = useState<Node[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
+  const [rfInstance, setRfInstance] = useState(null);
+  const onNodesChange = useCallback(
+    (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
+    [setNodes]
+  );
+  // whenever the edges changes, this callback gets invoked
+  const onEdgesChange = useCallback(
+    (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
+    [setEdges]
+  );
   // state for custom controls toggle
   const updates: UpdatesObjType = {
     addTables: [],
@@ -91,16 +102,29 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
   // whenever the selectedDb changes, reassign the backendObj to contain this selectedDb
 
   // whenever the node changes, this callback gets invoked
-  const onNodesChange = useCallback(
-    (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
-    [setNodes]
-  );
-  // whenever the edges changes, this callback gets invoked
-  const onEdgesChange = useCallback(
-    (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
-    [setEdges]
-  );
 
+  // const onSave = useCallback(() => {
+  //   if (rfInstance) {
+  //     const flow = rfInstance.toObject();
+  //     const reactFlowCacheCopy = JSON.parse(JSON.stringify(reactFlowCache));
+  //     reactFlowCacheCopy[selectedDb] = flow;
+  //     setReactFlowCache(reactFlowCacheCopy);
+  //   }
+  // }, [rfInstance]);
+  // const onRestore = useCallback(() => {
+  //   const restoreFlow = async () => {
+  //     const flow = reactFlowCache[selectedDb];
+  //     // JSON.parse(localStorage.getItem(flowKey));
+
+  //     if (flow) {
+  //       setNodes(flow.nodes || []);
+  //       setEdges(flow.edges || []);
+  //     }
+    };
+
+  //   restoreFlow();
+  // }, [setNodes]);
+  const onInitHandler = useCallback(() => setRfInstance, [setRfInstance]);
   // This function handles the add table button on the ER Diagram view
   const handleAddTable = (): void => {
     const schemaStateCopy = JSON.parse(JSON.stringify(schemaState));
@@ -145,9 +169,10 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
     const location: string = remote.app
       .getPath('home')
       .concat('/Documents/SeeQR/UserTableLayouts.json');
-    console.log(location);
+    const location2: string = remote.app
+      .getPath('home')
+      .concat('/Documents/SeeQR/SuperConsoleLog.json');
     fs.readFile(location, 'utf-8', (err, data) => {
-      console.log('in fsreadfile');
       // check if error exists (no file found)
       if (err) {
         fs.writeFile(
@@ -160,7 +185,6 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
 
         // check if file exists
       } else {
-        console.log('in else of fsreadfile');
         const dbLayouts = JSON.parse(data) as DatabaseLayoutObjType[];
         let dbExists = false;
         // if db has saved layout settings overwrite them
@@ -175,6 +199,28 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
 
         // write changes to the file
         fs.writeFile(location, JSON.stringify(dbLayouts, null, 2), (error) => {
+          if (error) console.log(error);
+        });
+      }
+    });
+    const out: any = {
+      backendObj,
+      selectedDb,
+      curDBType,
+      nodes,
+      edges,
+    };
+    fs.readFile(location2, 'utf-8', (err, data) => {
+      // check if error exists (no file found)
+      if (err) {
+        fs.writeFile(location2, JSON.stringify(out, null, 2), (error) => {
+          if (error) console.log(error);
+        });
+
+        // check if file exists
+      } else {
+        // write changes to the file
+        fs.writeFile(location2, JSON.stringify(out, null, 2), (error) => {
           if (error) console.log(error);
         });
       }
@@ -203,8 +249,7 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
     // send the schema state to the convert method to convert the schema to the form react flow requires
     const initialState = stateToReactFlow.convert(schemaState);
     // create a deep copy of the state, to ensure the state is not directly modified
-    const schemaStateString = JSON.stringify(schemaState);
-    const schemaStateCopy = JSON.parse(schemaStateString);
+    const schemaStateCopy = JSON.parse(JSON.stringify(schemaState));
     // create a nodesArray with the initialState data
     const nodesArray = initialState.nodes.map((currentNode) => {
       // add the schemaStateCopy and setSchemaState to the nodes data so that each node
@@ -239,6 +284,18 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
         {' '}
         Save{' '}
       </StyledViewButton>
+      <StyledViewButton variant="contained" id="testSave" onClick={onSave}>
+        {' '}
+        testReactFlowSave{' '}
+      </StyledViewButton>
+      <StyledViewButton
+        variant="contained"
+        id="testRestore"
+        onClick={onRestore}
+      >
+        {' '}
+        testReactFlowRestore{' '}
+      </StyledViewButton>
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -253,6 +310,7 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
         // fitView
         style={rfStyle}
         onlyRenderVisibleElements={false}
+        onInit={onInitHandler}
       >
         <MiniMap nodeColor={nodeColor} style={mmStyle} nodeStrokeWidth={3} />
         <Background />
