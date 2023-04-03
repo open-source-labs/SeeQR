@@ -15,16 +15,20 @@ const writeConfigDefault = function (): DocConfigFile {
   logger('Could not find config file. Creating default', LogType.WARNING);
 
   const defaultFile: DocConfigFile = {
-    mysql_user: 'mysql',
-    mysql_pass: 'mysql',
+    mysql_user: '',
+    mysql_pass: '',
     mysql_port: 3306,
-    pg_user: 'postgres',
-    pg_pass: 'postgres',
+    pg_user: '',
+    pg_pass: '',
     pg_port: 5432,
-    rds_host: 'AWS RDS',
-    rds_user: 'RDS',
-    rds_pass: 'password',
-    rds_port: 'Port',
+    rds_mysql_host: '',
+    rds_mysql_user: '',
+    rds_mysql_pass: '',
+    rds_mysql_port: 3306,
+    rds_pg_host: '',
+    rds_pg_user: '',
+    rds_pg_pass: '',
+    rds_pg_port: 5432,
   };
 
   fs.writeFileSync(configPath, JSON.stringify(defaultFile));
@@ -49,7 +53,8 @@ interface DocConfig {
   getConfigFolder: () => string;
   getCredentials: (dbType: DBType) => {
     user: string;
-    pass: string;
+    pass?: string;
+    password?: string;
     port: number | string;
   };
   getFullConfig: () => Object;
@@ -95,6 +100,23 @@ const docConfig: DocConfig = {
         port: configFile.mysql_port,
       };
     }
+    if( dbType === DBType.RDSMySQL) { // added grabbing RDSMySQL credentials
+      return {
+        host: configFile.rds_mysql_host,
+        user: configFile.rds_mysql_user,
+        password: configFile.rds_mysql_pass,
+        port: configFile.rds_mysql_port,
+      };
+    }
+    if( dbType === DBType.RDSPostgres) { // added grabbing RDSPG credentials
+      return {
+        host: configFile.rds_pg_host,
+        user: configFile.rds_pg_user,
+        password: configFile.rds_pg_pass,
+        port: configFile.rds_pg_port,
+      };
+    }
+
     logger('Could not get credentials of DBType: ', LogType.ERROR, dbType);
     return { user: 'none', pass: 'none', port: 1 };
   },

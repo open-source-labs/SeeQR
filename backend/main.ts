@@ -1,10 +1,10 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { BrowserWindow, Menu } from 'electron';
 
-const { app } = require('electron');
+const { app, session } = require('electron');
 
 const dev: boolean = process.env.NODE_ENV === 'development';
-
+const os = require('os');
 const path = require('path');
 const url = require('url');
 const fixPath = require('fix-path');
@@ -16,7 +16,10 @@ require('./channels');
 fixPath();
 // Keep a global reference of the window objects, if you don't, the window will be closed automatically when the JavaScript object is garbage collected.
 let mainWindow: BrowserWindow | null;
-
+const reactDevToolsPath = path.join(os.homedir(), '/Desktop/ReactDevTools');
+app.whenReady().then(async () => {
+  await session.defaultSession.loadExtension(reactDevToolsPath);
+});
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1800,
