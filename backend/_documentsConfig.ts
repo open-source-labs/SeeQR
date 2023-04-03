@@ -15,19 +15,19 @@ const writeConfigDefault = function (): DocConfigFile {
   logger('Could not find config file. Creating default', LogType.WARNING);
 
   const defaultFile: DocConfigFile = {
-    mysql_user: 'mysql',
-    mysql_pass: 'mysql',
+    mysql_user: '',
+    mysql_pass: '',
     mysql_port: 3306,
-    pg_user: 'postgres',
-    pg_pass: 'postgres',
+    pg_user: '',
+    pg_pass: '',
     pg_port: 5432,
-    rds_mysql_host: 'AWS RDS',
-    rds_mysql_user: 'RDS',
-    rds_mysql_pass: 'password',
+    rds_mysql_host: '',
+    rds_mysql_user: '',
+    rds_mysql_pass: '',
     rds_mysql_port: 3306,
-    rds_pg_host: 'AWS RDS',
-    rds_pg_user: 'RDS',
-    rds_pg_pass: 'password',
+    rds_pg_host: '',
+    rds_pg_user: '',
+    rds_pg_pass: '',
     rds_pg_port: 5432,
   };
 
@@ -53,7 +53,8 @@ interface DocConfig {
   getConfigFolder: () => string;
   getCredentials: (dbType: DBType) => {
     user: string;
-    pass: string;
+    pass?: string;
+    password?: string;
     port: number | string;
   };
   getFullConfig: () => Object;
@@ -103,7 +104,7 @@ const docConfig: DocConfig = {
       return {
         host: configFile.rds_mysql_host,
         user: configFile.rds_mysql_user,
-        pass: configFile.rds_mysql_pass,
+        password: configFile.rds_mysql_pass,
         port: configFile.rds_mysql_port,
       };
     }
@@ -111,7 +112,7 @@ const docConfig: DocConfig = {
       return {
         host: configFile.rds_pg_host,
         user: configFile.rds_pg_user,
-        pass: configFile.rds_pg_pass,
+        password: configFile.rds_pg_pass,
         port: configFile.rds_pg_port,
       };
     }
