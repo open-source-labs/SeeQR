@@ -1,12 +1,3 @@
-/* eslint-disable no-shadow */
-/* eslint-disable func-names */
-/* eslint-disable no-plusplus */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable no-else-return */
-/* eslint-disable no-console */
-import { rejects } from 'assert';
-import { resolve } from 'path';
-import DbList from '../frontend/components/sidebar/DbList';
 import {
   ColumnObj,
   dbDetails,
@@ -15,10 +6,18 @@ import {
   DBType,
   LogType,
 } from './BE_types';
-import logger from './Logging/masterlog';
-
+// const {
+//   PG_DBConnect,
+//   MSQL_DBConnect,
+//   MSQL_DBQuery,
+//   RDS_PG_DBConnect,
+//   RDS_MSQL_DBConnect,
+//   RDS_MSQL_DBQuery,
+// } = require('./databaseConnections');
 const { Pool } = require('pg');
 const mysql = require('mysql2/promise');
+import logger from './Logging/masterlog';
+
 const docConfig = require('./_documentsConfig');
 
 // commented out because queries are no longer being used but good to keep as a reference
@@ -28,6 +27,8 @@ const docConfig = require('./_documentsConfig');
 
 let pg_pool;
 let msql_pool;
+let rds_pg_pool;
+let rds_msql_pool;
 
 // *********************************************************** HELPER FUNCTIONS ************************************************* //
 
@@ -36,14 +37,17 @@ let msql_pool;
 const getColumnObjects = function (
   tableName: string,
   dbType: DBType // error?
-  ): Promise<ColumnObj[]> {
-    let queryString;
-    
-    const value = [tableName];
+): Promise<ColumnObj[]> {
+  let queryString;
 
-        
+  const value = [tableName];
 
-  if (dbType === DBType.Postgres) { 
+  if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) {
+    // added to check for RDS
+
+    let pool; // changes which pool is being queried based on dbType
+    if (dbType === DBType.Postgres) pool = pg_pool;
+    if (dbType === DBType.RDSPostgres) pool = rds_pg_pool;
     // query string to get constraints and table references as well
     queryString = `SELECT DISTINCT cols.column_name,
       cols.data_type,
@@ -65,12 +69,12 @@ const getColumnObjects = function (
       ON rco.unique_constraint_name = rel_kcu.constraint_name
       WHERE cols.table_name = $1`;
 
-      //kcu = key column usage = describes which key columns have constraints
-      //tc = table constraints = shows if constraint is primary key or foreign key
-      //information_schema.table_constraints show the whole table constraints
+    // kcu = key column usage = describes which key columns have constraints
+    // tc = table constraints = shows if constraint is primary key or foreign key
+    // information_schema.table_constraints show the whole table constraints
 
     return new Promise((resolve, reject) => {
-      pg_pool
+      pool
         .query(queryString, value)
         .then((result) => {
           const columnInfoArray: ColumnObj[] = [];
@@ -83,7 +87,12 @@ const getColumnObjects = function (
           reject(err);
         });
     });
-  } else if (dbType === DBType.MySQL) {
+  } else if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL) {
+    // added to check for RDS
+
+    let pool; // changes which pool is being queried based on dbType
+    if (dbType === DBType.MySQL) pool = msql_pool;
+    if (dbType === DBType.RDSMySQL) pool = rds_msql_pool;
     queryString = `SELECT DISTINCT
       cols.column_name AS column_name,
       cols.data_type AS data_type,
@@ -130,42 +139,54 @@ const getColumnObjects = function (
 
 // function that gets the name and size of each of the databases in the current postgres instance
 // ignoring the postgres, template0 and template1 DBs
+//JUNAID
+//function seems to run four times every time you launch electron or click on any db
 const getDBNames = function (dbType: DBType): Promise<dbDetails[]> {
   return new Promise((resolve, reject) => {
+    console.log('in get dbNames');
     let query;
-    if (dbType === DBType.Postgres) {
-      query = `SELECT dbs.datname AS db_name,
-      pg_size_pretty(pg_database_size(dbs.datname)) AS db_size
-      FROM pg_database dbs
-      ORDER BY db_name`;
+    if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) {
+      let pool; // changes which pool is being queried based on dbType
 
-      pg_pool
-        .query(query)
-        .then((databases) => {
-          const dbList: dbDetails[] = [];
+      if (dbType === DBType.Postgres) pool = pg_pool;
+      if (dbType === DBType.RDSPostgres) pool = rds_pg_pool;
+      const dbList: dbDetails[] = [];
 
-          for (let i = 0; i < databases.rows.length; i++) {
-            const data = databases.rows[i];
-            const { db_name } = data;
+      if (pool) {
+        query = `SELECT dbs.datname AS db_name,
+        pg_size_pretty(pg_database_size(dbs.datname)) AS db_size
+        FROM pg_database dbs
+        ORDER BY db_name`;
+        pool
+          .query(query)
+          .then((databases) => {
+            for (let i = 0; i < databases.rows.length; i++) {
+              const data = databases.rows[i];
+              const { db_name } = data;
 
-            if (
-              db_name !== 'postgres' &&
-              db_name !== 'template0' &&
-              db_name !== 'template1'
-            ) {
-              data.db_type = dbType;
-              dbList.push(data);
+              if (
+                db_name !== 'postgres' &&
+                db_name !== 'template0' &&
+                db_name !== 'template1'
+              ) {
+                data.db_type = dbType;
+                dbList.push(data);
+              }
             }
-          }
 
-          logger("PG 'getDBNames' resolved.", LogType.SUCCESS);
-          // resolve with array of db names
-          resolve(dbList);
-        })
-        .catch((err) => {
-          reject(err);
-        });
-    } else if (dbType === DBType.MySQL) {
+            logger("PG 'getDBNames' resolved.", LogType.SUCCESS);
+            // resolve with array of db names
+            resolve(dbList);
+          })
+          .catch((err) => {
+            reject(err);
+          });
+      } else {
+        console.log(dbList, 'in pg');
+        resolve(dbList);
+      }
+    } else if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL) {
+      // added to check for RDS
       // query = `
       // SELECT table_schema db_name,
       // ROUND(SUM(data_length + index_length) / 1024, 1) db_size
@@ -173,50 +194,60 @@ const getDBNames = function (dbType: DBType): Promise<dbDetails[]> {
       // FROM information_schema.tables
       // WHERE table_schema NOT IN("information_schema", "performance_schema", "mysql", "sys")
       // GROUP BY table_schema;`;
+      let pool;
+      if (dbType === DBType.MySQL) pool = msql_pool;
+      if (dbType === DBType.RDSMySQL) pool = rds_msql_pool;
+      const dbList: dbDetails[] = [];
 
-      query = `
-      SELECT 
-        S.SCHEMA_NAME db_name,
-        ROUND(SUM(data_length + index_length) / 1024, 1) db_size
-      FROM
-        INFORMATION_SCHEMA.SCHEMATA S
-          LEFT OUTER JOIN
-            INFORMATION_SCHEMA.TABLES T ON S.SCHEMA_NAME = T.TABLE_SCHEMA
-      WHERE
-        S.SCHEMA_NAME NOT IN ('information_schema' , 'mysql', 'performance_schema', 'sys')
-      GROUP BY S.SCHEMA_NAME
-      ORDER BY db_name ASC;`;
+      if (pool) {
+        query = `
+        SELECT 
+          S.SCHEMA_NAME db_name,
+          ROUND(SUM(data_length + index_length) / 1024, 1) db_size
+        FROM
+          INFORMATION_SCHEMA.SCHEMATA S
+            LEFT OUTER JOIN
+              INFORMATION_SCHEMA.TABLES T ON S.SCHEMA_NAME = T.TABLE_SCHEMA
+        WHERE
+          S.SCHEMA_NAME NOT IN ('information_schema' , 'mysql', 'performance_schema', 'sys')
+        GROUP BY S.SCHEMA_NAME
+        ORDER BY db_name ASC;`;
 
-      msql_pool
-        .query(query)
-        .then((databases) => {
-          const dbList: dbDetails[] = [];
-
-          for (let i = 0; i < databases[0].length; i++) {
-            const data = databases[0][i];
-            const { db_name } = data;
-            if (
-              db_name !== 'postgres' &&
-              db_name !== 'template0' &&
-              db_name !== 'template1'
-            ) {
-              data.db_type = dbType;
-              dbList.push(data);
+        pool
+          .query(query)
+          .then((databases) => {
+            for (let i = 0; i < databases[0].length; i++) {
+              const data = databases[0][i];
+              const { db_name } = data;
+              if (
+                db_name !== 'postgres' &&
+                db_name !== 'template0' &&
+                db_name !== 'template1'
+              ) {
+                data.db_type = dbType;
+                dbList.push(data);
+              }
             }
-          }
 
-          logger("MySQL 'getDBNames' resolved.", LogType.SUCCESS);
-          // resolve with array of db names
-          resolve(dbList);
-        })
-        .catch((err) => {
-          reject(err);
-        });
+            logger("MySQL 'getDBNames' resolved.", LogType.SUCCESS);
+            // resolve with array of db names
+
+            resolve(dbList);
+          })
+          .catch((err) => {
+            reject(err);
+          });
+      } else {
+        console.log(dbList, 'in mysql');
+        resolve(dbList);
+      }
     }
   });
 };
 
-// function that gets all tablenames and their columns from current schema
+//JUNAID
+//this runs when you click on a specific loaded db from the list.
+//this queries the db and gets all the info
 const getDBLists = function (
   dbType: DBType,
   dbName: string
@@ -226,20 +257,21 @@ const getDBLists = function (
     const tableList: TableDetails[] = [];
     const promiseArray: Promise<ColumnObj[]>[] = [];
 
-    // console.log('dbType - getDBLists: ', dbType);
-    
+    if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) {
+      let pool;
+      if (dbType === DBType.Postgres) pool = pg_pool;
+      if (dbType === DBType.RDSPostgres) pool = rds_pg_pool;
 
-    if (dbType === DBType.Postgres) {
+      // if (pool) {
       query = `SELECT
-      table_catalog,
-      table_schema,
-      table_name,
-      is_insertable_into
-      FROM information_schema.tables
-      WHERE table_schema = 'public' or table_schema = 'base'
-      ORDER BY table_name;`;
-
-      pg_pool
+        table_catalog,
+        table_schema,
+        table_name,
+        is_insertable_into
+        FROM information_schema.tables
+        WHERE table_schema = 'public' or table_schema = 'base'
+        ORDER BY table_name;`;
+      pool
         .query(query)
         .then((tables) => {
           for (let i = 0; i < tables.rows.length; i++) {
@@ -265,20 +297,27 @@ const getDBLists = function (
         .catch((err) => {
           reject(err);
         });
-    } else if (dbType === DBType.MySQL) {
+      // }
+    } else if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL) {
       // Notice that TABLE_CATALOG is set to table_schema
       // And that TABLE_SCHEMA is set to table_catalog
       // This is because PG and MySQL have these flipped (For whatever reason)
-      query = `SELECT
-      TABLE_CATALOG as table_schema,
-      TABLE_SCHEMA as table_catalog,
-      TABLE_NAME as table_name
-      FROM information_schema.tables
-      WHERE TABLE_SCHEMA NOT IN("information_schema", "performance_schema", "mysql")
-      AND TABLE_SCHEMA = "${dbName}"
-      ORDER BY table_name;`;
 
-      msql_pool
+      let pool;
+      if (dbType === DBType.MySQL) pool = msql_pool;
+      if (dbType === DBType.RDSMySQL) pool = rds_msql_pool;
+
+      // if (pool) {
+      query = `SELECT
+        TABLE_CATALOG as table_schema,
+        TABLE_SCHEMA as table_catalog,
+        TABLE_NAME as table_name
+        FROM information_schema.tables
+        WHERE TABLE_SCHEMA NOT IN("information_schema", "performance_schema", "mysql")
+        AND TABLE_SCHEMA = "${dbName}"
+        ORDER BY table_name;`;
+
+      pool
         .query(query)
         .then((tables) => {
           for (let i = 0; i < tables[0].length; i++) {
@@ -291,7 +330,6 @@ const getDBLists = function (
               );
             }
           }
-
           Promise.all(promiseArray)
             .then((columnInfo) => {
               for (let i = 0; i < columnInfo.length; i++) {
@@ -308,6 +346,7 @@ const getDBLists = function (
         .catch((err) => {
           reject(err);
         });
+      // }
     }
   });
 };
@@ -320,12 +359,15 @@ const PG_DBConnect = async function (pg_uri: string, db: string) {
   const newPool = new Pool({ connectionString: newURI });
   if (pg_pool) await pg_pool.end();
   pg_pool = newPool;
-
   logger(`New pool URI set: ${newURI}`, LogType.SUCCESS);
 };
 
-const MSQL_DBConnect = function (db: string) {
-  // console.log(`mysql dbconnect ${db}`);
+const MSQL_DBConnect = async function (MYSQL_CREDS: any) {
+  if (msql_pool) await msql_pool.end();
+  msql_pool = mysql.createPool({ ...MYSQL_CREDS });
+};
+
+const MSQL_DBQuery = function (db: string) {
   msql_pool
     .query(`USE ${db};`)
     .then(() => {
@@ -336,11 +378,48 @@ const MSQL_DBConnect = function (db: string) {
     });
 };
 
+const RDS_PG_DBConnect = async function (RDS_PG_INFO) {
+  rds_pg_pool = new Pool({ ...RDS_PG_INFO });
+  rds_pg_pool.connect((err) => {
+    if (err) console.log(err, 'ERR PG');
+    else console.log('CONNECTED TO RDS PG DATABASE!');
+  });
+};
+
+const RDS_MSQL_DBConnect = async function (RDS_MSQL_INFO) {
+  if (rds_msql_pool) await rds_msql_pool.end();
+  rds_msql_pool = mysql.createPool({ ...RDS_MSQL_INFO });
+  const testQuery = await rds_msql_pool.query('SHOW DATABASES;'); //  just a test query to make sure were connected (it works, i tested with other queries creating tables too)
+  console.log(
+    `CONNECTED TO RDS ${testQuery[0][1].Database.toUpperCase()} DATABASE!`
+  );
+};
+
+const RDS_MSQL_DBQuery = function (db: string) {
+  rds_msql_pool
+    .query(`USE ${db};`)
+    .then(() => {
+      logger(`Connected to MSQL DB: ${db}`, LogType.SUCCESS);
+    })
+    .catch((err) => {
+      logger(`Couldnt connect to MSQL DB: ${db}`, LogType.ERROR);
+    });
+};
+
 // *********************************************************** MAIN QUERY FUNCTIONS ************************************************* //
-interface MyObj {
+interface DBFunctions {
   pg_uri: string;
   curPG_DB: string;
   curMSQL_DB: string;
+  curRDS_MSQL_DB: any;
+  curRDS_PG_DB: any;
+  dbsInputted: {
+    pg: boolean;
+    msql: boolean;
+    rds_pg: boolean;
+    rds_msql: boolean;
+  };
+
   setBaseConnections: () => Promise<void>;
   query: (
     text: string,
@@ -353,44 +432,77 @@ interface MyObj {
 }
 
 // eslint-disable-next-line prefer-const
-const myObj: MyObj = {
+const DBFunctions: DBFunctions = {
   pg_uri: '',
   curPG_DB: '',
   curMSQL_DB: '',
-
-  // Setting starting connection
+  curRDS_MSQL_DB: '',
+  curRDS_PG_DB: '',
+  dbsInputted: {
+    pg: false,
+    msql: false,
+    rds_pg: false,
+    rds_msql: false,
+  },
+  // JUNAID
+  // start the initial connecttion for all four of our databases. want to extract to a seperate file later on, but not right now. will be a little tricky due to the pool variables that we use throughout the page
   async setBaseConnections() {
     const PG_Cred = docConfig.getCredentials(DBType.Postgres);
     const MSQL_Cred = docConfig.getCredentials(DBType.MySQL);
+    this.curRDS_PG_DB = docConfig.getCredentials(DBType.RDSPostgres);
+    this.curRDS_MSQL_DB = docConfig.getCredentials(DBType.RDSMySQL);
+
+    if (
+      this.curRDS_PG_DB.user &&
+      this.curRDS_PG_DB.password &&
+      this.curRDS_PG_DB.host
+    ) {
+      this.dbsInputted.rds_pg = true;
+      //  RDS PG POOL
+      await RDS_PG_DBConnect(this.curRDS_PG_DB);
+    }
+
+    if (
+      this.curRDS_MSQL_DB.user &&
+      this.curRDS_MSQL_DB.password &&
+      this.curRDS_MSQL_DB.host
+    ) {
+      //  RDS MSQL POOL
+      this.dbsInputted.rds_msql = true;
+      await RDS_MSQL_DBConnect(this.curRDS_MSQL_DB);
+    }
 
     // URI Format: postgres://username:password@hostname:port/databasename
     // Note User must have a 'postgres'role set-up prior to initializing this connection. https://www.postgresql.org/docs/13/database-roles.html
     // ^Unknown if this rule is still true
-    if (pg_pool) await pg_pool.end();
+    if (PG_Cred.user && PG_Cred.pass) {
+      this.dbsInputted.pg = true;
+      //  LOCAL PG POOL
+      this.pg_uri = `postgres://${PG_Cred.user}:${PG_Cred.pass}@localhost:${PG_Cred.port}/`;
+      await PG_DBConnect(this.pg_uri, this.curPG_DB);
+    }
 
-    this.pg_uri = `postgres://${PG_Cred.user}:${PG_Cred.pass}@localhost:${PG_Cred.port}/`;
-    pg_pool = new Pool({ connectionString: this.pg_uri + this.curPG_DB });
-
-    if (msql_pool) await msql_pool.end();
-
-    msql_pool = mysql.createPool({
-      host: `localhost`,
-      port: MSQL_Cred.port,
-      user: MSQL_Cred.user,
-      password: MSQL_Cred.pass,
-      database: this.curMSQL_DB,
-      waitForConnections: true,
-      connectionLimit: 10,
-      queueLimit: 0,
-      multipleStatements: true,
-    });
+    if (MSQL_Cred.user) {
+      this.dbsInputted.msql = true;
+      //  LOCAL MSQL POOL
+      await MSQL_DBConnect({
+        host: `localhost`,
+        port: MSQL_Cred.port,
+        user: MSQL_Cred.user,
+        password: MSQL_Cred.pass,
+        database: this.curMSQL_DB,
+        waitForConnections: true,
+        connectionLimit: 10,
+        queueLimit: 0,
+        multipleStatements: true,
+      });
+    }
   },
 
   // RUN ANY QUERY - function that will run query on database that is passed in.
 
   query(text, params, dbType: DBType) {
     logger(`Attempting to run query: \n ${text} for: \n ${dbType}`);
-
     // Checking if database type (dbType) is Postgres
     if (dbType === DBType.Postgres) {
       return pg_pool.query(text, params).catch((err) => {
@@ -439,11 +551,13 @@ const myObj: MyObj = {
   },
 
   // Change current Db
+  //JUNAID
+  //this seems to run when you click on a specific db in the list in electron
   async connectToDB(db: string, dbType?: DBType | undefined) {
+    console.log('in connectToDB', '  db => ', db, '  dbType -> ', dbType);
     logger(
       `Starting connect to DB: ${db} With a dbType of: ${dbType?.toString()} and lastDBType is ${lastDBType}`
     );
-
     if (!dbType) {
       if (!lastDBType) {
         logger(
@@ -454,14 +568,18 @@ const myObj: MyObj = {
       }
       dbType = lastDBType;
     }
-
     if (dbType === DBType.Postgres) {
       this.curPG_DB = db;
       await PG_DBConnect(this.pg_uri, db);
     } else if (dbType === DBType.MySQL) {
-      // console.log(`connectToDB -- : ${this.curMSQL_DB}`);
       this.curMSQL_DB = db;
-      await MSQL_DBConnect(db);
+      await MSQL_DBQuery(db);
+    } else if (dbType === DBType.RDSMySQL) {
+      this.curRDS_MSQL_DB = db;
+      await RDS_MSQL_DBQuery(db);
+    } else if (dbType === DBType.RDSPostgres) {
+      // if (rds_pg_pool) await rds_pg_pool.end();
+      await RDS_PG_DBConnect(this.curRDS_PG_DB);
     }
   },
 
@@ -473,109 +591,86 @@ const myObj: MyObj = {
   //      databaseList: { db_name: 'name', db_size: '1000kB' }
   //      tableList: { table_name: 'name', data_type: 'type', columns: [ colObj ], ...etc. }
   //   }
-  getLists(dbName: string = '', dbType?: DBType): Promise<DBList> {
-    return new Promise((resolve, reject) => {
-      const listObj: DBList = {
-        databaseConnected: [false, false],
-        databaseList: [],
-        tableList: [], // current database's tables
-      };
-      // Get initial postgres dbs
-      getDBNames(DBType.Postgres)
-        .then((pgdata) => {
-          const pgDBList = pgdata;
-          listObj.databaseConnected[0] = true;
+  
+  //JUNAID
+  // this seems to be the first function that runs when electron is launched
+  async getLists(dbName: string = '', dbType?: DBType): Promise<DBList> {
 
-          // Get MySQL DBs
-          getDBNames(DBType.MySQL)
-            .then((msdata) => {
-              const msqlDBList = msdata;
-              listObj.databaseConnected[1] = true;
+    const listObj: DBList = {
+      databaseConnected: [false, false, false, false],
+      databaseList: [],
+      tableList: []
+    };
 
-              logger('Got DB Names for both PG and MySQL!', LogType.SUCCESS);
-              listObj.databaseList = [...pgDBList, ...msqlDBList];
-            })
-            .catch((err) => {
-              // MySQL fails... Just get PG!
-              logger(
-                "Couldn't connect to MySQL. Sending only PG Data!",
-                LogType.ERROR
-              );
-              listObj.databaseList = pgDBList;
-            })
-            .finally(() => {
-              if (dbType) {
-                // console.log('dbType is defined')
-                getDBLists(dbType, dbName) // dbLists returning empty array - DBType is not defined
-                  .then((data) => {
-                    logger(
-                      `RESOLVING DB DETAILS: Fetched DB names along with Table List for DBType: ${dbType} and DB: ${dbName}`,
-                      LogType.SUCCESS
-                    );
-                    listObj.tableList = data;
-                    resolve(listObj);
-                  })
-                  .catch((err) => {
-                    logger(
-                      `Error getting tableList details: ${err.message}`,
-                      LogType.ERROR
-                    );
-                  });
-              } else {
-                // console.log('dbType is not defined')
-                logger('RESOLVING DB DETAILS: Only DB Names', LogType.SUCCESS);
-                resolve(listObj);
-              }
-            });
-        })
-        .catch((err) => {
-          // If PG fails, try just sending MySQL.
-          logger(
-            "Couldn't connect to PG. Attempting to connect to MySQL instead!",
-            LogType.ERROR
-          );
-          // Get MySQL DBs
-          getDBNames(DBType.MySQL)
-            .then((msdata) => {
-              listObj.databaseList = msdata;
+    if (this.dbsInputted.pg) {
+      try {
+        const pgDBList = await getDBNames(DBType.Postgres);
+        listObj.databaseConnected[0] = true;
+        listObj.databaseList = [...listObj.databaseList, ...pgDBList];
+      } catch (error) {
+        logger('COULDNT GET NAMES FROM LOCAL PG', LogType.ERROR);
+      }
+    }
 
-              // This is not in a .finally block because if getting MySQL data fails then nothing returns.
-              if (dbType) {
-                getDBLists(dbType, dbName)
-                  .then((data) => {
-                    logger(
-                      `RESOLVING DB DETAILS: Fetched DB names along with Table List for DBType: ${dbType} and DB: ${dbName}`,
-                      LogType.SUCCESS
-                    );
-                    listObj.tableList = data;
-                    resolve(listObj);
-                  })
-                  .catch((err) => {
-                    logger(
-                      `Error getting tableList details: ${err.message}`,
-                      LogType.ERROR
-                    );
-                  });
-              } else {
-                logger('RESOLVING DB DETAILS: Only DB Names', LogType.SUCCESS);
-                resolve(listObj);
-              }
-            })
-            .catch((err) => {
-              logger(
-                `Could not connect to either PG or MySQL: ${err.message}`,
-                LogType.ERROR
-              );
-              throw err;
-            });
-        });
-    });
+    if (this.dbsInputted.msql) {
+      try {
+        const msqlDBList = await getDBNames(DBType.MySQL);
+        listObj.databaseConnected[1] = true;
+        listObj.databaseList = [...listObj.databaseList, ...msqlDBList];
+      } catch (error) {
+        logger('COULDNT GET NAMES FROM LOCAL MSQL', LogType.ERROR);
+      }
+    }
+
+    if (this.dbsInputted.rds_msql) {
+      try {
+        const RDSmsqlDBList = await getDBNames(DBType.RDSMySQL);
+        listObj.databaseConnected[2] = true;
+        listObj.databaseList = [...listObj.databaseList, ...RDSmsqlDBList];
+      } catch (error) {
+        logger('COULDNT GET NAMES FROM RDS MSQL', LogType.ERROR);
+      }
+    }
+
+    if (this.dbsInputted.rds_pg) {
+      try {
+        const RDSpgDBList = await getDBNames(DBType.RDSPostgres);
+        listObj.databaseConnected[3] = true;
+        listObj.databaseList = [...listObj.databaseList, ...RDSpgDBList];
+      } catch (error) {
+        logger('COULDNT GET NAMES FROM RDS PG', LogType.ERROR);
+      }
+    }
+
+    if (dbType) {
+      try {
+        const listData = await getDBLists(dbType, dbName);
+        logger(
+          `RESOLVING DB DETAILS: Fetched DB names along with Table List for DBType: ${dbType} and DB: ${dbName}`,
+          LogType.SUCCESS
+        );
+        listObj.tableList = listData;
+      } catch (error) {
+        logger(
+          `COULNT GET DATABASE LIST FOR ${dbType} ${dbName} DATABASE`,
+          LogType.ERROR
+        );
+      }
+    }
+    return listObj;
   },
 
   // Returns an array of columnObj given a tableName
   getTableInfo(tableName, dbType: DBType) {
+    console.log('is gettableInfo first?');
     return getColumnObjects(tableName, dbType);
   },
 };
 
-module.exports = myObj;
+module.exports = DBFunctions;
+// module.exports.pools = {
+//   pg_pool,
+//   msql_pool,
+//   rds_pg_pool,
+//   rds_msql_pool,
+// };
