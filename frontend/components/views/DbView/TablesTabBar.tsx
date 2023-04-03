@@ -63,13 +63,13 @@ const TablesTabs = ({
   const tableIndex = tables.findIndex(
     ({ table_name }) => table_name === selectedTable?.table_name
   );
-  
+
   const [active, setActive] = useState(true);
 
   const ErView = () => (
     <div>
       { active ? (
-        <ERTables tables={tables} selectedDb={selectedDb} curDBType={curDBType}/>
+        <ERTables tables={tables} selectedDb={selectedDb} curDBType={curDBType} />
       ) : (
         <>
           <StyledTabs
@@ -108,7 +108,7 @@ const TablesTabs = ({
     if (newActive !== null) {
       // set the new view to the currect view
       setActive(newActive);
-    
+
       // disable the dummy data button when in ER View
       if (setERView) {
         if (active) setERView(newActive);
@@ -130,7 +130,7 @@ const TablesTabs = ({
         onChange={handleView}
         aria-label="active-view"
       >
-        <ToggleButton value={true} aria-label="er">
+        <ToggleButton value aria-label="er">
           ER diagram
         </ToggleButton>
         <ToggleButton value={false} aria-label="table">

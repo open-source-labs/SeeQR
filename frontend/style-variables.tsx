@@ -76,7 +76,7 @@ export const planNodeHeight = '100px';
 // theme to override Mui defaults
 export const MuiTheme = createMuiTheme({
   typography: {
-    fontSize: 17,
+    fontSize: 16,
   },
   palette: {
     primary: {
