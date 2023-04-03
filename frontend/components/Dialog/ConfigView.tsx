@@ -18,7 +18,7 @@ import {
   Tooltip,
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import "../../lib" // OSCAR test
+import "../../lib/style.scss" // OSCAR test adding style sheet
 import { sendFeedback , once } from '../../lib/utils';
 import {
   ButtonContainer,
