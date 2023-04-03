@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { DatabaseInfo, DBType } from '../../types';
 import { IpcRendererEvent, ipcRenderer } from 'electron';
 import styled from 'styled-components';
 import {
@@ -18,7 +17,9 @@ import {
   MenuItem,
   Tooltip,
 } from '@mui/material';
-import { sendFeedback } from '../../lib/utils';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
+import "../../lib" // OSCAR test
+import { sendFeedback , once } from '../../lib/utils';
 import {
   ButtonContainer,
   TextFieldContainer,
@@ -31,13 +32,12 @@ import {
   StyledNativeDropdown,
   StyledNativeOption,
 } from '../../style-variables';
-import { once } from '../../lib/utils';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { DatabaseInfo, DBType } from '../../types';
 
-const requestConfig = once(() => {
+const requestConfig = once(() =>
   // console.log('is this running once?');
-  return ipcRenderer.invoke('get-config');
-});
+   ipcRenderer.invoke('get-config')
+);
 
 interface ConfigViewProps {
   show: boolean;
@@ -88,7 +88,7 @@ const ConfigView = ({ show, onClose }: ConfigViewProps) => {
   };
 
   const handleSubmit = () => {
-    //it needs to be as any because otherwise typescript thinks it doesn't have a 'value' param idk why
+    // it needs to be as any because otherwise typescript thinks it doesn't have a 'value' param idk why
     ipcRenderer
       .invoke('set-config', {
         mysql_user,
@@ -124,6 +124,7 @@ const ConfigView = ({ show, onClose }: ConfigViewProps) => {
         open={show}
       >
         <TextFieldContainer>
+          <button type='button'>Press Me</button>
           <DialogTitle id="alert-dialog-title">Configure SeeQR</DialogTitle>
 
           <StyledTextField
