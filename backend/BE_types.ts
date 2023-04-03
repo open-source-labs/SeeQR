@@ -25,7 +25,7 @@ export interface TableDetails {
   columns?: ColumnObj[];
 }
 export interface DBList {
-  databaseConnected: boolean[];
+  databaseConnected: [boolean, boolean, boolean, boolean];
   databaseList: dbDetails[];
   tableList: TableDetails[];
 }
@@ -41,7 +41,7 @@ export enum DBType {
   Postgres = 'pg',
   MySQL = 'mysql',
   RDSPostgres = 'rds-pg',
-  RDSMySQL = 'rds-mysql'
+  RDSMySQL = 'rds-mysql',
 }
 
 export enum LogType {
