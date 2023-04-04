@@ -43,22 +43,16 @@ interface ConfigViewProps {
   show: boolean;
   onClose: () => void;
 }
+const initialConfigState = { user: '', pass: '', port: 1 };
 
 const ConfigView = ({ show, onClose }: ConfigViewProps) => {
-  const [mysql_user, setMySQL_User] = useState('');
-  const [mysql_pass, setMySQL_Pass] = useState('');
-  const [mysql_port, setMySQL_Port] = useState('');
-  const [pg_user, setPG_User] = useState('');
-  const [pg_pass, setPG_Pass] = useState('');
-  const [pg_port, setPG_Port] = useState('');
-  const [rds_mysql_user, setRDS_MySQL_User] = useState('');
-  const [rds_mysql_pass, setRDS_MySQL_Pass] = useState('');
-  const [rds_mysql_host, setRDS_MySQL_Host] = useState('');
-  const [rds_mysql_port, setRDS_MySQL_Port] = useState('');
-  const [rds_pg_user, setRDS_PG_User] = useState('');
-  const [rds_pg_pass, setRDS_PG_Pass] = useState('');
-  const [rds_pg_host, setRDS_PG_Host] = useState('');
-  const [rds_pg_port, setRDS_PG_Port] = useState('');
+  const [mysql, setmysql] = useState(initialConfigState);
+  const [pg, setpg] = useState(initialConfigState);
+  const [rds_mysql, setrds_mysql] = useState({
+    ...initialConfigState,
+    host: '',
+  });
+  const [rds_pg, setrds_pg] = useState({ ...initialConfigState, host: '' });
 
   const [mysql_showpass, setMySQL_ShowPass] = useState(false);
   const [pg_showpass, setPG_ShowPass] = useState(false);
@@ -68,20 +62,10 @@ const ConfigView = ({ show, onClose }: ConfigViewProps) => {
   useEffect(() => {
     // Listen to backend for updates to list of available databases
     const configFromBackend = (evt: IpcRendererEvent, config) => {
-      setMySQL_User(config.mysql_user);
-      setMySQL_Pass(config.mysql_pass);
-      setMySQL_Port(config.mysql_port);
-      setPG_User(config.pg_user);
-      setPG_Pass(config.pg_pass);
-      setPG_Port(config.pg_port);
-      setRDS_MySQL_User(config.rds_mysql_user);
-      setRDS_MySQL_Pass(config.rds_mysql_pass);
-      setRDS_MySQL_Host(config.rds_mysql_host);
-      setRDS_MySQL_Port(config.rds_mysql_port);
-      setRDS_PG_User(config.rds_pg_user);
-      setRDS_PG_Pass(config.rds_pg_pass);
-      setRDS_PG_Host(config.rds_pg_host);
-      setRDS_PG_Port(config.rds_pg_port);
+      setmysql({ ...config.mysql });
+      setpg({ ...config.pg });
+      setrds_mysql({ ...config.rds_mysql });
+      setrds_pg({ ...config.rds_pg });
     };
     ipcRenderer.on('get-config', configFromBackend);
     requestConfig();
@@ -99,20 +83,10 @@ const ConfigView = ({ show, onClose }: ConfigViewProps) => {
     //it needs to be as any because otherwise typescript thinks it doesn't have a 'value' param idk why
     ipcRenderer
       .invoke('set-config', {
-        mysql_user,
-        mysql_pass,
-        mysql_port: parseInt(mysql_port),
-        pg_user,
-        pg_pass,
-        pg_port: parseInt(pg_port),
-        rds_mysql_user,
-        rds_mysql_pass,
-        rds_mysql_host,
-        rds_mysql_port: parseInt(rds_mysql_port),
-        rds_pg_user,
-        rds_pg_pass,
-        rds_pg_host,
-        rds_pg_port: parseInt(rds_pg_port),
+        mysql: { ...mysql },
+        pg: { ...pg },
+        rds_mysql: { ...rds_mysql },
+        rds_pg: { ...rds_pg },
       })
       .then(() => {
         handleClose();
@@ -145,12 +119,12 @@ const ConfigView = ({ show, onClose }: ConfigViewProps) => {
             size="small"
             variant="outlined"
             onChange={(event) => {
-              setMySQL_User(event.target.value);
+              setmysql({ ...mysql, user: event.target.value });
             }}
             InputProps={{
               style: { color: '#575151' },
             }}
-            defaultValue={mysql_user}
+            defaultValue={mysql.user}
           />
 
           <StyledTextField
@@ -161,7 +135,7 @@ const ConfigView = ({ show, onClose }: ConfigViewProps) => {
             variant="outlined"
             type={mysql_showpass ? 'text' : 'password'}
             onChange={(event) => {
-              setMySQL_Pass(event.target.value);
+              setmysql({ ...mysql, pass: event.target.value });
             }}
             InputProps={{
               style: { color: '#575151' },
@@ -177,7 +151,7 @@ const ConfigView = ({ show, onClose }: ConfigViewProps) => {
                 </InputAdornment>
               ),
             }}
-            defaultValue={mysql_pass}
+            defaultValue={mysql.pass}
           />
 
           <StyledTextField
@@ -187,12 +161,12 @@ const ConfigView = ({ show, onClose }: ConfigViewProps) => {
             size="small"
             variant="outlined"
             onChange={(event) => {
-              setMySQL_Port(event.target.value);
+              setmysql({ ...mysql, port: parseInt(event.target.value) });
             }}
             InputProps={{
               style: { color: '#575151' },
             }}
-            defaultValue={mysql_port}
+            defaultValue={mysql.port}
           />
 
           <StyledTextField
@@ -202,12 +176,12 @@ const ConfigView = ({ show, onClose }: ConfigViewProps) => {
             size="small"
             variant="outlined"
             onChange={(event) => {
-              setPG_User(event.target.value);
+              setpg({ ...pg, user: event.target.value });
             }}
             InputProps={{
               style: { color: '#575151' },
             }}
-            defaultValue={pg_user}
+            defaultValue={pg.user}
           />
 
           <StyledTextField
@@ -218,7 +192,7 @@ const ConfigView = ({ show, onClose }: ConfigViewProps) => {
             variant="outlined"
             type={pg_showpass ? 'text' : 'password'}
             onChange={(event) => {
-              setPG_Pass(event.target.value);
+              setpg({ ...pg, password: event.target.value });
             }}
             InputProps={{
               style: { color: '#575151' },
@@ -234,7 +208,7 @@ const ConfigView = ({ show, onClose }: ConfigViewProps) => {
                 </InputAdornment>
               ),
             }}
-            defaultValue={pg_pass}
+            defaultValue={pg.pass}
           />
 
           <StyledTextField
@@ -244,12 +218,12 @@ const ConfigView = ({ show, onClose }: ConfigViewProps) => {
             size="small"
             variant="outlined"
             onChange={(event) => {
-              setPG_Port(event.target.value);
+              setpg({ ...pg, port: parseInt(event.target.value) });
             }}
             InputProps={{
               style: { color: '#575151' },
             }}
-            defaultValue={pg_port}
+            defaultValue={pg.port}
           />
           <StyledTextField
             required
@@ -258,12 +232,12 @@ const ConfigView = ({ show, onClose }: ConfigViewProps) => {
             size="small"
             variant="outlined"
             onChange={(event) => {
-              setRDS_MySQL_User(event.target.value);
+              setrds_mysql({ ...rds_mysql, user: event.target.value });
             }}
             InputProps={{
               style: { color: '#575151' },
             }}
-            defaultValue={rds_mysql_user}
+            defaultValue={rds_mysql.user}
           />
           <StyledTextField
             required
@@ -273,7 +247,7 @@ const ConfigView = ({ show, onClose }: ConfigViewProps) => {
             variant="outlined"
             type={rds_mysql_showpass ? 'text' : 'password'}
             onChange={(event) => {
-              setRDS_MySQL_Pass(event.target.value);
+              setrds_mysql({ ...rds_mysql, password: event.target.value });
             }}
             InputProps={{
               style: { color: '#575151' },
@@ -291,7 +265,7 @@ const ConfigView = ({ show, onClose }: ConfigViewProps) => {
                 </InputAdornment>
               ),
             }}
-            defaultValue={rds_mysql_pass}
+            defaultValue={rds_mysql.pass}
           />
           <StyledTextField
             required
@@ -300,12 +274,12 @@ const ConfigView = ({ show, onClose }: ConfigViewProps) => {
             size="small"
             variant="outlined"
             onChange={(event) => {
-              setRDS_MySQL_Host(event.target.value);
+              setrds_mysql({ ...rds_mysql, host: event.target.value });
             }}
             InputProps={{
               style: { color: '#575151' },
             }}
-            defaultValue={rds_mysql_host}
+            defaultValue={rds_mysql.host}
           />
           <StyledTextField
             required
@@ -314,12 +288,15 @@ const ConfigView = ({ show, onClose }: ConfigViewProps) => {
             size="small"
             variant="outlined"
             onChange={(event) => {
-              setRDS_MySQL_Port(event.target.value);
+              setrds_mysql({
+                ...rds_mysql,
+                port: parseInt(event.target.value),
+              });
             }}
             InputProps={{
               style: { color: '#575151' },
             }}
-            defaultValue={rds_mysql_port}
+            defaultValue={rds_mysql.port}
           />
           <StyledTextField
             required
@@ -328,12 +305,12 @@ const ConfigView = ({ show, onClose }: ConfigViewProps) => {
             size="small"
             variant="outlined"
             onChange={(event) => {
-              setRDS_PG_User(event.target.value);
+              setrds_pg({ ...rds_pg, user: event.target.value });
             }}
             InputProps={{
               style: { color: '#575151' },
             }}
-            defaultValue={rds_pg_user}
+            defaultValue={rds_pg.user}
           />
           <StyledTextField
             required
@@ -343,7 +320,7 @@ const ConfigView = ({ show, onClose }: ConfigViewProps) => {
             variant="outlined"
             type={rds_pg_showpass ? 'text' : 'password'}
             onChange={(event) => {
-              setRDS_PG_Pass(event.target.value);
+              setrds_pg({ ...rds_pg, password: event.target.value });
             }}
             InputProps={{
               style: { color: '#575151' },
@@ -359,7 +336,7 @@ const ConfigView = ({ show, onClose }: ConfigViewProps) => {
                 </InputAdornment>
               ),
             }}
-            defaultValue={rds_pg_pass}
+            defaultValue={rds_pg.pass}
           />
           <StyledTextField
             required
@@ -368,12 +345,12 @@ const ConfigView = ({ show, onClose }: ConfigViewProps) => {
             size="small"
             variant="outlined"
             onChange={(event) => {
-              setRDS_PG_Host(event.target.value);
+              setrds_pg({ ...rds_pg, host: event.target.value });
             }}
             InputProps={{
               style: { color: '#575151' },
             }}
-            defaultValue={rds_pg_host}
+            defaultValue={rds_pg.host}
           />
           <StyledTextField
             required
@@ -382,12 +359,12 @@ const ConfigView = ({ show, onClose }: ConfigViewProps) => {
             size="small"
             variant="outlined"
             onChange={(event) => {
-              setRDS_PG_Port(event.target.value);
+              setrds_pg({ ...rds_pg, port: parseInt(event.target.value) });
             }}
             InputProps={{
               style: { color: '#575151' },
             }}
-            defaultValue={rds_pg_port}
+            defaultValue={rds_pg.port}
           />
         </TextFieldContainer>
 

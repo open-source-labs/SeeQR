@@ -54,18 +54,8 @@ export enum LogType {
 }
 
 export interface DocConfigFile {
-  mysql_user: string;
-  mysql_pass: string;
-  mysql_port: number | string;
-  pg_user: string;
-  pg_pass: string;
-  pg_port: number | string;
-  rds_mysql_host: string;
-  rds_mysql_user: string;
-  rds_mysql_pass: string;
-  rds_mysql_port: number | string;
-  rds_pg_host: string;
-  rds_pg_user: string;
-  rds_pg_pass: string;
-  rds_pg_port: number | string;
+  mysql: { user: string; password: string; port: number };
+  pg: { user: string; password: string; port: number };
+  rds_mysql: { user: string; password: string; port: number; host: string };
+  rds_pg: { user: string; password: string; port: number; host: string };
 }
