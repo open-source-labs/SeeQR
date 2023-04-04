@@ -6,29 +6,13 @@ import {
   DBType,
   LogType,
 } from './BE_types';
-// const {
-//   PG_DBConnect,
-//   MSQL_DBConnect,
-//   MSQL_DBQuery,
-//   RDS_PG_DBConnect,
-//   RDS_MSQL_DBConnect,
-//   RDS_MSQL_DBQuery,
-// } = require('./databaseConnections');
-const { Pool } = require('pg');
-const mysql = require('mysql2/promise');
 import logger from './Logging/masterlog';
-
+import pools from './poolVariables';
+import connectionFunctions from './databaseConnections';
 const docConfig = require('./_documentsConfig');
 
 // commented out because queries are no longer being used but good to keep as a reference
 // const { getPrimaryKeys, getForeignKeys } = require('./DummyD/primaryAndForeignKeyQueries');
-
-// *********************************************************** INITIALIZE TO DEFAULT DB ************************************************* //
-
-let pg_pool;
-let msql_pool;
-let rds_pg_pool;
-let rds_msql_pool;
 
 // *********************************************************** HELPER FUNCTIONS ************************************************* //
 
@@ -46,8 +30,8 @@ const getColumnObjects = function (
     // added to check for RDS
 
     let pool; // changes which pool is being queried based on dbType
-    if (dbType === DBType.Postgres) pool = pg_pool;
-    if (dbType === DBType.RDSPostgres) pool = rds_pg_pool;
+    if (dbType === DBType.Postgres) pool = pools.pg_pool;
+    if (dbType === DBType.RDSPostgres) pool = pools.rds_pg_pool;
     // query string to get constraints and table references as well
     queryString = `SELECT DISTINCT cols.column_name,
       cols.data_type,
@@ -91,8 +75,8 @@ const getColumnObjects = function (
     // added to check for RDS
 
     let pool; // changes which pool is being queried based on dbType
-    if (dbType === DBType.MySQL) pool = msql_pool;
-    if (dbType === DBType.RDSMySQL) pool = rds_msql_pool;
+    if (dbType === DBType.MySQL) pool = pools.msql_pool;
+    if (dbType === DBType.RDSMySQL) pool = pools.rds_msql_pool;
     queryString = `SELECT DISTINCT
       cols.column_name AS column_name,
       cols.data_type AS data_type,
@@ -115,7 +99,7 @@ const getColumnObjects = function (
       WHERE cols.table_name = ?;`;
 
     return new Promise((resolve, reject) => {
-      msql_pool
+      pools.msql_pool
         .query(queryString, value)
         .then((result) => {
           const columnInfoArray: ColumnObj[] = [];
@@ -148,8 +132,8 @@ const getDBNames = function (dbType: DBType): Promise<dbDetails[]> {
     if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) {
       let pool; // changes which pool is being queried based on dbType
 
-      if (dbType === DBType.Postgres) pool = pg_pool;
-      if (dbType === DBType.RDSPostgres) pool = rds_pg_pool;
+      if (dbType === DBType.Postgres) pool = pools.pg_pool;
+      if (dbType === DBType.RDSPostgres) pool = pools.rds_pg_pool;
       const dbList: dbDetails[] = [];
 
       if (pool) {
@@ -182,7 +166,6 @@ const getDBNames = function (dbType: DBType): Promise<dbDetails[]> {
             reject(err);
           });
       } else {
-        console.log(dbList, 'in pg');
         resolve(dbList);
       }
     } else if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL) {
@@ -195,8 +178,8 @@ const getDBNames = function (dbType: DBType): Promise<dbDetails[]> {
       // WHERE table_schema NOT IN("information_schema", "performance_schema", "mysql", "sys")
       // GROUP BY table_schema;`;
       let pool;
-      if (dbType === DBType.MySQL) pool = msql_pool;
-      if (dbType === DBType.RDSMySQL) pool = rds_msql_pool;
+      if (dbType === DBType.MySQL) pool = pools.msql_pool;
+      if (dbType === DBType.RDSMySQL) pool = pools.rds_msql_pool;
       const dbList: dbDetails[] = [];
 
       if (pool) {
@@ -238,7 +221,6 @@ const getDBNames = function (dbType: DBType): Promise<dbDetails[]> {
             reject(err);
           });
       } else {
-        console.log(dbList, 'in mysql');
         resolve(dbList);
       }
     }
@@ -259,8 +241,8 @@ const getDBLists = function (
 
     if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) {
       let pool;
-      if (dbType === DBType.Postgres) pool = pg_pool;
-      if (dbType === DBType.RDSPostgres) pool = rds_pg_pool;
+      if (dbType === DBType.Postgres) pool = pools.pg_pool;
+      if (dbType === DBType.RDSPostgres) pool = pools.rds_pg_pool;
 
       // if (pool) {
       query = `SELECT
@@ -304,8 +286,8 @@ const getDBLists = function (
       // This is because PG and MySQL have these flipped (For whatever reason)
 
       let pool;
-      if (dbType === DBType.MySQL) pool = msql_pool;
-      if (dbType === DBType.RDSMySQL) pool = rds_msql_pool;
+      if (dbType === DBType.MySQL) pool = pools.msql_pool;
+      if (dbType === DBType.RDSMySQL) pool = pools.rds_msql_pool;
 
       // if (pool) {
       query = `SELECT
@@ -354,58 +336,6 @@ const getDBLists = function (
 // *********************************************************** POSTGRES/MYSQL ************************************************* //
 let lastDBType: DBType | undefined;
 
-const PG_DBConnect = async function (pg_uri: string, db: string) {
-  const newURI = `${pg_uri}${db}`;
-  const newPool = new Pool({ connectionString: newURI });
-  if (pg_pool) await pg_pool.end();
-  pg_pool = newPool;
-  logger(`New pool URI set: ${newURI}`, LogType.SUCCESS);
-};
-
-const MSQL_DBConnect = async function (MYSQL_CREDS: any) {
-  if (msql_pool) await msql_pool.end();
-  msql_pool = mysql.createPool({ ...MYSQL_CREDS });
-};
-
-const MSQL_DBQuery = function (db: string) {
-  msql_pool
-    .query(`USE ${db};`)
-    .then(() => {
-      logger(`Connected to MSQL DB: ${db}`, LogType.SUCCESS);
-    })
-    .catch((err) => {
-      logger(`Couldnt connect to MSQL DB: ${db}`, LogType.ERROR);
-    });
-};
-
-const RDS_PG_DBConnect = async function (RDS_PG_INFO) {
-  rds_pg_pool = new Pool({ ...RDS_PG_INFO });
-  rds_pg_pool.connect((err) => {
-    if (err) console.log(err, 'ERR PG');
-    else console.log('CONNECTED TO RDS PG DATABASE!');
-  });
-};
-
-const RDS_MSQL_DBConnect = async function (RDS_MSQL_INFO) {
-  if (rds_msql_pool) await rds_msql_pool.end();
-  rds_msql_pool = mysql.createPool({ ...RDS_MSQL_INFO });
-  const testQuery = await rds_msql_pool.query('SHOW DATABASES;'); //  just a test query to make sure were connected (it works, i tested with other queries creating tables too)
-  console.log(
-    `CONNECTED TO RDS ${testQuery[0][1].Database.toUpperCase()} DATABASE!`
-  );
-};
-
-const RDS_MSQL_DBQuery = function (db: string) {
-  rds_msql_pool
-    .query(`USE ${db};`)
-    .then(() => {
-      logger(`Connected to MSQL DB: ${db}`, LogType.SUCCESS);
-    })
-    .catch((err) => {
-      logger(`Couldnt connect to MSQL DB: ${db}`, LogType.ERROR);
-    });
-};
-
 // *********************************************************** MAIN QUERY FUNCTIONS ************************************************* //
 interface DBFunctions {
   pg_uri: string;
@@ -421,11 +351,7 @@ interface DBFunctions {
   };
 
   setBaseConnections: () => Promise<void>;
-  query: (
-    text: string,
-    params: (string | number)[],
-    dbType: DBType
-  ) => any;
+  query: (text: string, params: (string | number)[], dbType: DBType) => any;
   connectToDB: (db: string, dbType?: DBType) => Promise<void>;
   getLists: () => Promise<DBList>;
   getTableInfo: (tableName: string, dbType: DBType) => Promise<ColumnObj[]>;
@@ -460,7 +386,7 @@ const DBFunctions: DBFunctions = {
     ) {
       this.dbsInputted.rds_pg = true;
       //  RDS PG POOL
-      await RDS_PG_DBConnect(this.curRDS_PG_DB);
+      await connectionFunctions.RDS_PG_DBConnect(this.curRDS_PG_DB);
     }
 
     if (
@@ -470,7 +396,7 @@ const DBFunctions: DBFunctions = {
     ) {
       //  RDS MSQL POOL
       this.dbsInputted.rds_msql = true;
-      await RDS_MSQL_DBConnect(this.curRDS_MSQL_DB);
+      await connectionFunctions.RDS_MSQL_DBConnect(this.curRDS_MSQL_DB);
     }
 
     // URI Format: postgres://username:password@hostname:port/databasename
@@ -480,13 +406,13 @@ const DBFunctions: DBFunctions = {
       this.dbsInputted.pg = true;
       //  LOCAL PG POOL
       this.pg_uri = `postgres://${PG_Cred.user}:${PG_Cred.pass}@localhost:${PG_Cred.port}/`;
-      await PG_DBConnect(this.pg_uri, this.curPG_DB);
+      await connectionFunctions.PG_DBConnect(this.pg_uri, this.curPG_DB);
     }
 
     if (MSQL_Cred.user) {
       this.dbsInputted.msql = true;
       //  LOCAL MSQL POOL
-      await MSQL_DBConnect({
+      await connectionFunctions.MSQL_DBConnect({
         host: `localhost`,
         port: MSQL_Cred.port,
         user: MSQL_Cred.user,
@@ -504,26 +430,29 @@ const DBFunctions: DBFunctions = {
 
   query(text, params, dbType: DBType) {
     logger(`Attempting to run query: \n ${text} for: \n ${dbType}`);
-
     if (dbType === DBType.RDSPostgres) {
-      return rds_pg_pool.query(text, params).catch((err) => {
+      return pools.rds_pg_pool.query(text, params).catch((err) => {
         logger(err.message, LogType.WARNING);
       });
     }
 
     if (dbType === DBType.RDSMySQL) {
-      return rds_msql_pool.query(text, params, dbType);
+      return pools.rds_msql_pool.query(text, params, dbType);
     }
     // Checking if database type (dbType) is Postgres
     if (dbType === DBType.Postgres) {
-      return rds_pg_pool.query(text, params).catch((err) => {
+      return pools.pg_pool.query(text, params).catch((err) => {
         logger(err.message, LogType.WARNING);
       });
     }
 
     // Checking if database type (dbType) is MySQL
     if (dbType === DBType.MySQL) {
-      return msql_pool.query(`USE ${this.curMSQL_DB}; ${text}`, params, dbType);
+      return pools.msql_pool.query(
+        `USE ${this.curMSQL_DB}; ${text}`,
+        params,
+        dbType
+      );
     }
   },
 
@@ -547,16 +476,16 @@ const DBFunctions: DBFunctions = {
     }
     if (dbType === DBType.Postgres) {
       this.curPG_DB = db;
-      await PG_DBConnect(this.pg_uri, db);
+      await connectionFunctions.PG_DBConnect(this.pg_uri, db);
     } else if (dbType === DBType.MySQL) {
       this.curMSQL_DB = db;
-      await MSQL_DBQuery(db);
+      await connectionFunctions.MSQL_DBQuery(db);
     } else if (dbType === DBType.RDSMySQL) {
       this.curRDS_MSQL_DB = db;
-      await RDS_MSQL_DBQuery(db);
+      await connectionFunctions.RDS_MSQL_DBQuery(db);
     } else if (dbType === DBType.RDSPostgres) {
       // if (rds_pg_pool) await rds_pg_pool.end();
-      await RDS_PG_DBConnect(this.curRDS_PG_DB);
+      await connectionFunctions.RDS_PG_DBConnect(this.curRDS_PG_DB);
     }
   },
 
@@ -644,9 +573,3 @@ const DBFunctions: DBFunctions = {
 };
 
 module.exports = DBFunctions;
-// module.exports.pools = {
-//   pg_pool,
-//   msql_pool,
-//   rds_pg_pool,
-//   rds_msql_pool,
-// };
