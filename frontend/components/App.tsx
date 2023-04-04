@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { MuiThemeProvider } from '@material-ui/core/';
 import { StylesProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import { IpcRendererEvent, ipcRenderer } from 'electron';
 import {
   MuiTheme,
   bgColor,
@@ -21,8 +22,7 @@ import QuickStartView from './views/QuickStartView';
 import NewSchemaView from './views/NewSchemaView/NewSchemaView';
 import FeedbackModal from './modal/FeedbackModal';
 import Spinner from './modal/Spinner';
-import { once, } from './../lib/utils';
-import { IpcRendererEvent, ipcRenderer } from 'electron';
+import { once, } from "../lib/utils";
 import CreateDBDialog from './Dialog/CreateDBDialog';
 import ConfigView from './Dialog/ConfigView';
 
@@ -82,8 +82,8 @@ const App = () => {
         setPGStatus(dbLists.databaseConnected[0]);
         setMYSQLStatus(dbLists.databaseConnected[1]);
 
-        setSelectedTable(selectedTable? selectedTable : dbTables[0]);
-        
+        setSelectedTable(selectedTable || dbTables[0]);
+
       }
     };
     ipcRenderer.on('db-lists', dbListFromBackend); // dummy data error here?
@@ -128,7 +128,7 @@ const App = () => {
       }
       shownView = 'queryView';
       break;
-    case 'newSchemaView': 
+    case 'newSchemaView':
       shownView = 'newSchemaView';
       break;
     case 'quickStartView':
@@ -181,10 +181,10 @@ const App = () => {
               queries={comparedQueries}
               show={shownView === 'compareView'}
             />
-            <DbView 
-              selectedDb={selectedDb} 
+            <DbView
+              selectedDb={selectedDb}
               show={shownView === 'dbView'}
-              setERView={setERView} 
+              setERView={setERView}
               ERView={ERView}
               curDBType={curDBType}
               setDBType={setDBType}
@@ -209,14 +209,14 @@ const App = () => {
               setDBInfo={setDBInfo}
             />
             <QuickStartView show={shownView === 'quickStartView'} />
-            
-            <NewSchemaView 
+
+            <NewSchemaView
               query={workingQuery}
               setQuery={setWorkingQuery}
               selectedDb={selectedDb}
               setSelectedDb={setSelectedDb}
               createNewQuery={createNewQuery}
-              show={shownView === 'newSchemaView'} 
+              show={shownView === 'newSchemaView'}
               curDBType={curDBType}
               setDBType={setDBType}
               DBInfo={DBInfo}
@@ -228,13 +228,13 @@ const App = () => {
             />
 
             <ConfigView
-            show={showConfigDialog}
-            onClose={() => setConfigDialog(false)}
+              show={showConfigDialog}
+              onClose={() => setConfigDialog(false)}
             />
             <CreateDBDialog
-            show={showCreateDialog}
-            DBInfo={DBInfo}
-            onClose={() => setCreateDialog(false)}
+              show={showCreateDialog}
+              DBInfo={DBInfo}
+              onClose={() => setCreateDialog(false)}
             />
           </Main>
           <FeedbackModal />
