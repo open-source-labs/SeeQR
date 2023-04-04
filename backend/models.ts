@@ -90,8 +90,8 @@ const DBFunctions: DBFunctions = {
     }
 
     //  LOCAL PG POOL
-    if (PG_Cred.user && PG_Cred.pass) {
-      this.pg_uri = `postgres://${PG_Cred.user}:${PG_Cred.pass}@localhost:${PG_Cred.port}/`;
+    if (PG_Cred.user && PG_Cred.password) {
+      this.pg_uri = `postgres://${PG_Cred.user}:${PG_Cred.password}@localhost:${PG_Cred.port}/`;
       try {
         await connectionFunctions.PG_DBConnect(this.pg_uri, this.curPG_DB);
         console.log('CONNECTED TO LOCAL PG DATABASE');
@@ -105,13 +105,13 @@ const DBFunctions: DBFunctions = {
     }
 
     //  LOCAL MSQL POOL
-    if (MSQL_Cred.user && MSQL_Cred.pass) {
+    if (MSQL_Cred.user && MSQL_Cred.password) {
       try {
         await connectionFunctions.MSQL_DBConnect({
           host: `localhost`,
           port: MSQL_Cred.port,
           user: MSQL_Cred.user,
-          password: MSQL_Cred.pass,
+          password: MSQL_Cred.password,
           database: this.curMSQL_DB,
           waitForConnections: true,
           connectionLimit: 10,

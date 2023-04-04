@@ -43,7 +43,7 @@ interface ConfigViewProps {
   show: boolean;
   onClose: () => void;
 }
-const initialConfigState = { user: '', pass: '', port: 1 };
+const initialConfigState = { user: '', password: '', port: 1 };
 
 const ConfigView = ({ show, onClose }: ConfigViewProps) => {
   const [mysql, setmysql] = useState(initialConfigState);
@@ -53,11 +53,7 @@ const ConfigView = ({ show, onClose }: ConfigViewProps) => {
     host: '',
   });
   const [rds_pg, setrds_pg] = useState({ ...initialConfigState, host: '' });
-
-  const [mysql_showpass, setMySQL_ShowPass] = useState(false);
-  const [pg_showpass, setPG_ShowPass] = useState(false);
-  const [rds_mysql_showpass, setRDS_MySQL_ShowPass] = useState(false);
-  const [rds_pg_showpass, setRDS_PG_ShowPass] = useState(false);
+  const [showpass, setShowpass] = useState(false);
 
   useEffect(() => {
     // Listen to backend for updates to list of available databases
@@ -133,9 +129,9 @@ const ConfigView = ({ show, onClose }: ConfigViewProps) => {
             label="MySQL Password"
             size="small"
             variant="outlined"
-            type={mysql_showpass ? 'text' : 'password'}
+            type={showpass ? 'text' : 'password'}
             onChange={(event) => {
-              setmysql({ ...mysql, pass: event.target.value });
+              setmysql({ ...mysql, password: event.target.value });
             }}
             InputProps={{
               style: { color: '#575151' },
@@ -143,15 +139,15 @@ const ConfigView = ({ show, onClose }: ConfigViewProps) => {
                 <InputAdornment position="end">
                   <IconButton
                     aria-label="toggle password visibility"
-                    onClick={() => setMySQL_ShowPass(!mysql_showpass)}
-                    onMouseDown={() => setMySQL_ShowPass(!mysql_showpass)}
+                    onClick={() => setShowpass(!showpass)}
+                    onMouseDown={() => setShowpass(!showpass)}
                   >
-                    {mysql_showpass ? <Visibility /> : <VisibilityOff />}
+                    {showpass ? <Visibility /> : <VisibilityOff />}
                   </IconButton>
                 </InputAdornment>
               ),
             }}
-            defaultValue={mysql.pass}
+            defaultValue={mysql.password}
           />
 
           <StyledTextField
@@ -190,7 +186,7 @@ const ConfigView = ({ show, onClose }: ConfigViewProps) => {
             label="Postgres Password"
             size="small"
             variant="outlined"
-            type={pg_showpass ? 'text' : 'password'}
+            type={showpass ? 'text' : 'password'}
             onChange={(event) => {
               setpg({ ...pg, password: event.target.value });
             }}
@@ -200,15 +196,15 @@ const ConfigView = ({ show, onClose }: ConfigViewProps) => {
                 <InputAdornment position="end">
                   <IconButton
                     aria-label="toggle password visibility"
-                    onClick={() => setPG_ShowPass(!pg_showpass)}
-                    onMouseDown={() => setPG_ShowPass(!pg_showpass)}
+                    onClick={() => setShowpass(!showpass)}
+                    onMouseDown={() => setShowpass(!showpass)}
                   >
-                    {pg_showpass ? <Visibility /> : <VisibilityOff />}
+                    {showpass ? <Visibility /> : <VisibilityOff />}
                   </IconButton>
                 </InputAdornment>
               ),
             }}
-            defaultValue={pg.pass}
+            defaultValue={pg.password}
           />
 
           <StyledTextField
@@ -245,7 +241,7 @@ const ConfigView = ({ show, onClose }: ConfigViewProps) => {
             label="RDS MySQL Password"
             size="small"
             variant="outlined"
-            type={rds_mysql_showpass ? 'text' : 'password'}
+            type={showpass ? 'text' : 'password'}
             onChange={(event) => {
               setrds_mysql({ ...rds_mysql, password: event.target.value });
             }}
@@ -255,17 +251,15 @@ const ConfigView = ({ show, onClose }: ConfigViewProps) => {
                 <InputAdornment position="end">
                   <IconButton
                     aria-label="toggle password visibility"
-                    onClick={() => setRDS_MySQL_ShowPass(!rds_mysql_showpass)}
-                    onMouseDown={() =>
-                      setRDS_MySQL_ShowPass(!rds_mysql_showpass)
-                    }
+                    onClick={() => setShowpass(!showpass)}
+                    onMouseDown={() => setShowpass(!showpass)}
                   >
-                    {rds_mysql_showpass ? <Visibility /> : <VisibilityOff />}
+                    {showpass ? <Visibility /> : <VisibilityOff />}
                   </IconButton>
                 </InputAdornment>
               ),
             }}
-            defaultValue={rds_mysql.pass}
+            defaultValue={rds_mysql.password}
           />
           <StyledTextField
             required
@@ -318,7 +312,7 @@ const ConfigView = ({ show, onClose }: ConfigViewProps) => {
             label="RDS PG Password"
             size="small"
             variant="outlined"
-            type={rds_pg_showpass ? 'text' : 'password'}
+            type={showpass ? 'text' : 'password'}
             onChange={(event) => {
               setrds_pg({ ...rds_pg, password: event.target.value });
             }}
@@ -328,15 +322,15 @@ const ConfigView = ({ show, onClose }: ConfigViewProps) => {
                 <InputAdornment position="end">
                   <IconButton
                     aria-label="toggle password visibility"
-                    onClick={() => setRDS_PG_ShowPass(!rds_pg_showpass)}
-                    onMouseDown={() => setRDS_PG_ShowPass(!rds_pg_showpass)}
+                    onClick={() => setShowpass(!showpass)}
+                    onMouseDown={() => setShowpass(!showpass)}
                   >
-                    {rds_pg_showpass ? <Visibility /> : <VisibilityOff />}
+                    {showpass ? <Visibility /> : <VisibilityOff />}
                   </IconButton>
                 </InputAdornment>
               ),
             }}
-            defaultValue={rds_pg.pass}
+            defaultValue={rds_pg.password}
           />
           <StyledTextField
             required
