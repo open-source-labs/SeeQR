@@ -50,6 +50,7 @@ ipcMain.handle('set-config', async (event, configObj) => {
         type: 'error',
         message: err,
       };
+      console.log(feedback);
       event.sender.send('feedback', feedback);
       logger(
         "Sent 'feedback' from 'reset-connection' (Note: This is an ERROR!)",
