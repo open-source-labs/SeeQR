@@ -13,7 +13,7 @@ import ReactFlow, {
 import { Button } from '@material-ui/core';
 import styled from 'styled-components';
 import stateToReactFlow from '../../../lib/convertStateToReactFlow';
-import nodeTypes, { DatabaseLayoutObjType, TablePosObjType } from './NodeTypes';
+import nodeTypes from './NodeTypes';
 import {
   UpdatesObjType,
   AddTablesObjType,
@@ -51,36 +51,34 @@ const nodeColor = (node): string => {
   }
 };
 
+type ERTablingProps = {
+  tables;
+  selectedDb: AppState['selectedDb'];
+  curDBType: DBType | undefined;
+};
+
 const StyledViewButton = styled(Button)`
   margin: 1rem;
   margin-left: 0rem;
   font-size: 0.78em;
   padding: 0.45em;
 `;
-type ERTablingProps = {
-  tables;
-  selectedDb: AppState['selectedDb'];
-  curDBType: DBType | undefined;
-};
+
 function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
   const [schemaState, setSchemaState] = useState<SchemaStateObjType>({
     database: 'initial',
     tableList: [],
   });
-  const [reactFlowCache, setReactFlowCache] = useState({});
   const [nodes, setNodes] = useState<Node[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
-  const [rfInstance, setRfInstance] = useState(null);
-  const onNodesChange = useCallback(
-    (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
-    [setNodes]
-  );
-  // whenever the edges changes, this callback gets invoked
-  const onEdgesChange = useCallback(
-    (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
-    [setEdges]
-  );
   // state for custom controls toggle
+  // when tables (which is the database that is selected changes, update SchemaState)
+  useEffect(() => {
+    setSchemaState({ database: selectedDb, tableList: tables });
+  }, [tables, selectedDb]);
+  // define an object using the useRef hook to maintain its value throughout all rerenders
+  // this object will hold the data that needs to get sent to the backend to update the
+  // SQL database. Each node will have access to this backendObj
   const updates: UpdatesObjType = {
     addTables: [],
     dropTables: [],
@@ -90,44 +88,35 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
     database: schemaState.database,
     updates,
   });
-  // when tables (which is the database that is selected changes, update SchemaState)
   useEffect(() => {
-    setSchemaState({ database: selectedDb, tableList: tables });
     backendObj.current.database = selectedDb;
-  }, [tables, selectedDb]);
-  // define an object using the useRef hook to maintain its value throughout all rerenders
-  // this object will hold the data that needs to get sent to the backend to update the
-  // SQL database. Each node will have access to this backendObj
+  }, [selectedDb]);
 
+  const backendColumnObj = useRef({
+    database: schemaState.database,
+    updates,
+  });
   // whenever the selectedDb changes, reassign the backendObj to contain this selectedDb
+  useEffect(() => {
+    backendObj.current.database = selectedDb;
+    backendColumnObj.current.database = selectedDb;
+  }, [selectedDb]);
 
   // whenever the node changes, this callback gets invoked
+  const onNodesChange = useCallback(
+    (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
+    [setNodes]
+  );
+  // whenever the edges changes, this callback gets invoked
+  const onEdgesChange = useCallback(
+    (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
+    [setEdges]
+  );
 
-  // const onSave = useCallback(() => {
-  //   if (rfInstance) {
-  //     const flow = rfInstance.toObject();
-  //     const reactFlowCacheCopy = JSON.parse(JSON.stringify(reactFlowCache));
-  //     reactFlowCacheCopy[selectedDb] = flow;
-  //     setReactFlowCache(reactFlowCacheCopy);
-  //   }
-  // }, [rfInstance]);
-  // const onRestore = useCallback(() => {
-  //   const restoreFlow = async () => {
-  //     const flow = reactFlowCache[selectedDb];
-  //     // JSON.parse(localStorage.getItem(flowKey));
-
-  //     if (flow) {
-  //       setNodes(flow.nodes || []);
-  //       setEdges(flow.edges || []);
-  //     }
-    };
-
-  //   restoreFlow();
-  // }, [setNodes]);
-  const onInitHandler = useCallback(() => setRfInstance, [setRfInstance]);
   // This function handles the add table button on the ER Diagram view
   const handleAddTable = (): void => {
-    const schemaStateCopy = JSON.parse(JSON.stringify(schemaState));
+    const schemaStateString = JSON.stringify(schemaState);
+    const schemaStateCopy = JSON.parse(schemaStateString);
     // create an addTablesType object with AddTablesObjType
     const addTableObj: AddTablesObjType = {
       is_insertable_into: 'yes',
@@ -151,6 +140,18 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
     ) as TableHeaderNodeType[];
 
     // create object for the current database
+    type TablePosObjType = {
+      table_name: string;
+      table_position: {
+        x: number;
+        y: number;
+      };
+    };
+
+    type DatabaseLayoutObjType = {
+      db_name: string;
+      db_tables: TablePosObjType[];
+    };
 
     const currDatabaseLayout: DatabaseLayoutObjType = {
       db_name: backendObj.current.database,
@@ -167,11 +168,8 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
     });
 
     const location: string = remote.app
-      .getPath('home')
-      .concat('/Documents/SeeQR/UserTableLayouts.json');
-    const location2: string = remote.app
-      .getPath('home')
-      .concat('/Documents/SeeQR/SuperConsoleLog.json');
+      .getPath('temp')
+      .concat('/UserTableLayouts.json');
     fs.readFile(location, 'utf-8', (err, data) => {
       // check if error exists (no file found)
       if (err) {
@@ -203,28 +201,6 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
         });
       }
     });
-    const out: any = {
-      backendObj,
-      selectedDb,
-      curDBType,
-      nodes,
-      edges,
-    };
-    fs.readFile(location2, 'utf-8', (err, data) => {
-      // check if error exists (no file found)
-      if (err) {
-        fs.writeFile(location2, JSON.stringify(out, null, 2), (error) => {
-          if (error) console.log(error);
-        });
-
-        // check if file exists
-      } else {
-        // write changes to the file
-        fs.writeFile(location2, JSON.stringify(out, null, 2), (error) => {
-          if (error) console.log(error);
-        });
-      }
-    });
   };
   function handleClickSave(): void {
     // This function sends a message to the back end with
@@ -249,7 +225,8 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
     // send the schema state to the convert method to convert the schema to the form react flow requires
     const initialState = stateToReactFlow.convert(schemaState);
     // create a deep copy of the state, to ensure the state is not directly modified
-    const schemaStateCopy = JSON.parse(JSON.stringify(schemaState));
+    const schemaStateString = JSON.stringify(schemaState);
+    const schemaStateCopy = JSON.parse(schemaStateString);
     // create a nodesArray with the initialState data
     const nodesArray = initialState.nodes.map((currentNode) => {
       // add the schemaStateCopy and setSchemaState to the nodes data so that each node
@@ -284,18 +261,6 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
         {' '}
         Save{' '}
       </StyledViewButton>
-      <StyledViewButton variant="contained" id="testSave" onClick={onSave}>
-        {' '}
-        testReactFlowSave{' '}
-      </StyledViewButton>
-      <StyledViewButton
-        variant="contained"
-        id="testRestore"
-        onClick={onRestore}
-      >
-        {' '}
-        testReactFlowRestore{' '}
-      </StyledViewButton>
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -310,7 +275,6 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
         // fitView
         style={rfStyle}
         onlyRenderVisibleElements={false}
-        onInit={onInitHandler}
       >
         <MiniMap nodeColor={nodeColor} style={mmStyle} nodeStrokeWidth={3} />
         <Background />
