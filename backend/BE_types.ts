@@ -59,3 +59,30 @@ export interface DocConfigFile {
   rds_mysql: { user: string; password: string; port: number; host: string };
   rds_pg: { user: string; password: string; port: number; host: string };
 }
+
+export interface DBFunctions {
+  pg_uri: string;
+  curPG_DB: string;
+  curMSQL_DB: string;
+  curRDS_MSQL_DB: any;
+  curRDS_PG_DB: {
+    user: string;
+    password: string;
+    host: string;
+  };
+  dbsInputted: {
+    pg: boolean;
+    msql: boolean;
+    rds_pg: boolean;
+    rds_msql: boolean;
+  };
+
+  setBaseConnections: () => Promise<void>;
+  query: (text: string, params: (string | number)[], dbType: DBType) => void;
+  connectToDB: (db: string, dbType?: DBType) => Promise<void>;
+  getLists: (dbName: string, dbType?: DBType) => Promise<DBList>;
+  getTableInfo: (tableName: string, dbType: DBType) => Promise<ColumnObj[]>;
+  getDBNames: (dbType: DBType) => Promise<dbDetails[]>;
+  getColumnObjects: (tableName: string, dbType: DBType) => Promise<ColumnObj[]>;
+  getDBLists: (dbType: DBType, dbName: string) => Promise<TableDetails[]>;
+}
