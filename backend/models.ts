@@ -425,7 +425,7 @@ interface DBFunctions {
     text: string,
     params: (string | number)[],
     dbType: DBType
-  ) => Function;
+  ) => any;
   connectToDB: (db: string, dbType?: DBType) => Promise<void>;
   getLists: () => Promise<DBList>;
   getTableInfo: (tableName: string, dbType: DBType) => Promise<ColumnObj[]>;
@@ -438,6 +438,7 @@ const DBFunctions: DBFunctions = {
   curMSQL_DB: '',
   curRDS_MSQL_DB: '',
   curRDS_PG_DB: '',
+  //object to check to true if that db was logged into
   dbsInputted: {
     pg: false,
     msql: false,
@@ -503,50 +504,26 @@ const DBFunctions: DBFunctions = {
 
   query(text, params, dbType: DBType) {
     logger(`Attempting to run query: \n ${text} for: \n ${dbType}`);
+
+    if (dbType === DBType.RDSPostgres) {
+      return rds_pg_pool.query(text, params).catch((err) => {
+        logger(err.message, LogType.WARNING);
+      });
+    }
+
+    if (dbType === DBType.RDSMySQL) {
+      return rds_msql_pool.query(text, params, dbType);
+    }
     // Checking if database type (dbType) is Postgres
     if (dbType === DBType.Postgres) {
-      return pg_pool.query(text, params).catch((err) => {
+      return rds_pg_pool.query(text, params).catch((err) => {
         logger(err.message, LogType.WARNING);
       });
     }
 
     // Checking if database type (dbType) is MySQL
     if (dbType === DBType.MySQL) {
-      return new Promise((resolve, reject) => {
-        if (this.curMSQL_DB) {
-          // MySQL requires you to use the USE query in order to connect to a db and run
-          msql_pool
-            .query(`USE ${this.curMSQL_DB}; ${text}`, params, dbType)
-            .then((data) => {
-              resolve(data);
-            })
-            .catch((err) => {
-              // Trying query without the use statement for things like drop DB
-              msql_pool
-                .query(text, params, dbType)
-                .then((data) => {
-                  resolve(data);
-                })
-                .catch((err) => {
-                  // console.log(`Double: ${this.curMSQL_DB}`);
-                  logger(err.message, LogType.WARNING, 'dbQuery1');
-                  reject(err);
-                });
-            });
-        } else {
-          msql_pool
-            // MySQL requires you to use the USE query in order to connect to a db and run
-            .query(text, params, dbType)
-            .then((data) => {
-              resolve(data);
-            })
-            .catch((err) => {
-              // console.log(`Double none: ${this.curMSQL_DB}`);
-              logger(err.message, LogType.WARNING, 'mysql caught');
-              reject(err);
-            });
-        }
-      });
+      return msql_pool.query(`USE ${this.curMSQL_DB}; ${text}`, params, dbType);
     }
   },
 
@@ -591,15 +568,14 @@ const DBFunctions: DBFunctions = {
   //      databaseList: { db_name: 'name', db_size: '1000kB' }
   //      tableList: { table_name: 'name', data_type: 'type', columns: [ colObj ], ...etc. }
   //   }
-  
+
   //JUNAID
   // this seems to be the first function that runs when electron is launched
   async getLists(dbName: string = '', dbType?: DBType): Promise<DBList> {
-
     const listObj: DBList = {
       databaseConnected: [false, false, false, false],
       databaseList: [],
-      tableList: []
+      tableList: [],
     };
 
     if (this.dbsInputted.pg) {
