@@ -46,11 +46,7 @@ function TabPanel(props: TabPanelProps) {
       aria-labelledby={`simple-tab-${index}`}
       {...other}
     >
-      {value === index && (
-        <Box sx={{ p: 3, color: 'red' }}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
+      {value === index && <Box sx={{ p: 3, color: 'red' }}>{children}</Box>}
     </div>
   );
 }
@@ -61,35 +57,7 @@ function a11yProps(index: number) {
     'aria-controls': `simple-tabpanel-${index}`,
   };
 }
-const styledTextField = (
-  <StyledTextField
-    required
-    id="filled-basic"
-    size="small"
-    variant="outlined"
-    type={showpass ? 'text' : 'password'}
-    onChange={(event) => {
-      const newState = { ...dbTypeFromState };
-      newState[dbEntryKey] = event.target.value;
-      setDbTypeFromState(newState);
-    }}
-    InputProps={{
-      style: { color: '#575151' },
-      endAdornment: (
-        <InputAdornment position="end">
-          <IconButton
-            aria-label="toggle password visibility"
-            onClick={() => setShowpass(!showpass)}
-            onMouseDown={() => setShowpass(!showpass)}
-          >
-            {showpass ? <Visibility /> : <VisibilityOff />}
-          </IconButton>
-        </InputAdornment>
-      ),
-    }}
-    defaultValue={dbEntryValue}
-  />
-);
+
 const BasicTabs = ({ onClose }: BasicTabsProps) => {
   const [mysql, setmysql] = useState(initialConfigState);
   const [pg, setpg] = useState(initialConfigState);
@@ -98,11 +66,6 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
     host: '',
   });
   const [rds_pg, setrds_pg] = useState({ ...initialConfigState, host: '' });
-
-  const [mysql_showpass, setMySQL_ShowPass] = useState(false);
-  const [pg_showpass, setPG_ShowPass] = useState(false);
-  const [rds_mysql_showpass, setRDS_MySQL_ShowPass] = useState(false);
-  const [rds_pg_showpass, setRDS_PG_ShowPass] = useState(false);
   const [value, setValue] = useState(0);
   const [showpass, setShowpass] = useState(false);
   useEffect(() => {
@@ -148,72 +111,65 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
-  const inputFields = { mysql: [], pg: [], rds_mysql: [], rds_pg: [] };
-
+  // object to store StyledTextFields to render
+  const inputFieldsToRender = { mysql: [], pg: [], rds_mysql: [], rds_pg: [] };
+  // function to make StyledTextFields and store them in inputFields object
   function inputBoxMaker(dbTypeFromState, setDbTypeFromState, dbString) {
+    // get key value pairs from database info in state
     Object.entries(dbTypeFromState).forEach((entry) => {
-      const dbEntryKey = entry[0];
-      const dbEntryValue = entry[1];
-
-      if (dbEntryKey === 'password' || dbEntryKey === 'pass') {
-        inputFields[dbString].push(
-          <StyledTextField
-            required
-            id="filled-basic"
-            label={`${dbTypeFromState} Password`}
-            size="small"
-            variant="outlined"
-            type={showpass ? 'text' : 'password'}
-            onChange={(event) => {
-              const newState = { ...dbTypeFromState };
-              newState[dbEntryKey] = event.target.value;
-              setDbTypeFromState(newState);
-            }}
-            InputProps={{
-              style: { color: '#575151' },
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label="toggle password visibility"
-                    onClick={() => setShowpass(!showpass)}
-                    onMouseDown={() => setShowpass(!showpass)}
-                  >
-                    {showpass ? <Visibility /> : <VisibilityOff />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-            defaultValue={dbEntryValue}
-          />
-        );
-      } else {
-        inputFields[dbString].push(
-          <StyledTextField
-            required
-            id="filled-basic"
-            label={`MySQL ${dbEntryKey}`}
-            size="small"
-            variant="outlined"
-            onChange={(event) => {
-              const newState = { ...dbTypeFromState };
-              newState[dbEntryKey] = event.target.value;
-              setDbTypeFromState(newState);
-            }}
-            InputProps={{
-              style: { color: '#575151' },
-            }}
-            defaultValue={dbEntryValue}
-          />
-        );
-      }
+      const [dbEntryKey, dbEntryValue] = entry;
+      // if we are rendering a password StyledTextField, then add special props
+      const inputProps =
+        dbEntryKey === 'password' || dbEntryKey === 'pass'
+          ? {
+              type: showpass ? 'text' : 'password',
+              InputProps: {
+                style: { color: '#575151' },
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={() => setShowpass(!showpass)}
+                      onMouseDown={() => setShowpass(!showpass)}
+                    >
+                      {showpass ? <Visibility /> : <VisibilityOff />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              },
+            }
+          : {
+              InputProps: {
+                style: { color: '#575151' },
+              },
+            };
+      // push StyledTextField to render array
+      inputFieldsToRender[dbString].push(
+        <StyledTextField
+          required
+          id="filled-basic"
+          label={`${dbString} ${dbEntryKey}`}
+          size="small"
+          variant="outlined"
+          key={`${dbString} ${dbEntryKey}`}
+          onChange={(event) => {
+            const newState = { ...dbTypeFromState };
+            newState[dbEntryKey] = event.target.value;
+            setDbTypeFromState(newState);
+          }}
+          defaultValue={dbEntryValue}
+          {...inputProps}
+        />
+      );
     });
   }
+
+  // generate the StyledTextField arrays to render, passing in state
   inputBoxMaker(pg, setpg, 'pg');
   inputBoxMaker(mysql, setmysql, 'mysql');
   inputBoxMaker(rds_pg, setrds_pg, 'rds_pg');
   inputBoxMaker(rds_mysql, setrds_mysql, 'rds_mysql');
 
-  console.log(inputFields);
   return (
     <Box sx={{ width: '100%' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
@@ -229,16 +185,16 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
         </Tabs>
       </Box>
       <TabPanel value={value} index={0}>
-        {inputFields.mysql}
+        {inputFieldsToRender.mysql}
       </TabPanel>
       <TabPanel value={value} index={1}>
-        {inputFields.pg}
+        {inputFieldsToRender.pg}
       </TabPanel>
       <TabPanel value={value} index={2}>
-        {inputFields.rds_mysql}
+        {inputFieldsToRender.rds_mysql}
       </TabPanel>
       <TabPanel value={value} index={3}>
-        {inputFields.rds_pg}
+        {inputFieldsToRender.rds_pg}
       </TabPanel>
 
       <ButtonContainer>
@@ -249,7 +205,6 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
         >
           Cancel
         </StyledButton>
-
         <StyledButton
           variant="contained"
           color="primary"
@@ -262,7 +217,6 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
   );
 };
 // END OF TAB Feature
-
 interface ConfigViewProps {
   show: boolean;
   onClose: () => void;
