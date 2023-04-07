@@ -1,51 +1,96 @@
 import React, { useState, useEffect } from 'react';
-import { DatabaseInfo, DBType } from '../../types';
 import { IpcRendererEvent, ipcRenderer } from 'electron';
-import styled from 'styled-components';
+import { DialogTitle } from '@material-ui/core/';
 import {
-  TextField,
   Box,
-  InputLabel,
-  Select,
-  DialogTitle,
-} from '@material-ui/core/';
-import {
-  Button,
+  Tab,
+  Tabs,
   Dialog,
-  FormControl,
   IconButton,
   InputAdornment,
-  MenuItem,
-  Tooltip,
+  Typography,
 } from '@mui/material';
-import { sendFeedback } from '../../lib/utils';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { sendFeedback, once } from '../../lib/utils';
 import {
   ButtonContainer,
   TextFieldContainer,
   StyledButton,
   StyledTextField,
-  DropdownContainer,
-  StyledDropdown,
-  StyledMenuItem,
-  StyledInputLabel,
-  StyledNativeDropdown,
-  StyledNativeOption,
 } from '../../style-variables';
-import { once } from '../../lib/utils';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
+import '../../lib/style.scss'; // OSCAR test adding style sheet
 
-const requestConfig = once(() => {
-  // console.log('is this running once?');
-  return ipcRenderer.invoke('get-config');
-});
-
-interface ConfigViewProps {
-  show: boolean;
+/// START OF TAB FEATURE
+interface BasicTabsProps {
   onClose: () => void;
 }
 const initialConfigState = { user: '', password: '', port: 1 };
+const requestConfig = once(() =>
+  // console.log('is this running once?');
+  ipcRenderer.invoke('get-config')
+);
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
 
-const ConfigView = ({ show, onClose }: ConfigViewProps) => {
+function TabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box sx={{ p: 3, color: 'red' }}>
+          <Typography>{children}</Typography>
+        </Box>
+      )}
+    </div>
+  );
+}
+
+function a11yProps(index: number) {
+  return {
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`,
+  };
+}
+const styledTextField = (
+  <StyledTextField
+    required
+    id="filled-basic"
+    size="small"
+    variant="outlined"
+    type={showpass ? 'text' : 'password'}
+    onChange={(event) => {
+      const newState = { ...dbTypeFromState };
+      newState[dbEntryKey] = event.target.value;
+      setDbTypeFromState(newState);
+    }}
+    InputProps={{
+      style: { color: '#575151' },
+      endAdornment: (
+        <InputAdornment position="end">
+          <IconButton
+            aria-label="toggle password visibility"
+            onClick={() => setShowpass(!showpass)}
+            onMouseDown={() => setShowpass(!showpass)}
+          >
+            {showpass ? <Visibility /> : <VisibilityOff />}
+          </IconButton>
+        </InputAdornment>
+      ),
+    }}
+    defaultValue={dbEntryValue}
+  />
+);
+const BasicTabs = ({ onClose }: BasicTabsProps) => {
   const [mysql, setmysql] = useState(initialConfigState);
   const [pg, setpg] = useState(initialConfigState);
   const [rds_mysql, setrds_mysql] = useState({
@@ -53,8 +98,13 @@ const ConfigView = ({ show, onClose }: ConfigViewProps) => {
     host: '',
   });
   const [rds_pg, setrds_pg] = useState({ ...initialConfigState, host: '' });
-  const [showpass, setShowpass] = useState(false);
 
+  const [mysql_showpass, setMySQL_ShowPass] = useState(false);
+  const [pg_showpass, setPG_ShowPass] = useState(false);
+  const [rds_mysql_showpass, setRDS_MySQL_ShowPass] = useState(false);
+  const [rds_pg_showpass, setRDS_PG_ShowPass] = useState(false);
+  const [value, setValue] = useState(0);
+  const [showpass, setShowpass] = useState(false);
   useEffect(() => {
     // Listen to backend for updates to list of available databases
     const configFromBackend = (evt: IpcRendererEvent, config) => {
@@ -76,7 +126,7 @@ const ConfigView = ({ show, onClose }: ConfigViewProps) => {
   };
 
   const handleSubmit = () => {
-    //it needs to be as any because otherwise typescript thinks it doesn't have a 'value' param idk why
+    // it needs to be as any because otherwise typescript thinks it doesn't have a 'value' param idk why
     ipcRenderer
       .invoke('set-config', {
         mysql: { ...mysql },
@@ -95,6 +145,134 @@ const ConfigView = ({ show, onClose }: ConfigViewProps) => {
       });
   };
 
+  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+    setValue(newValue);
+  };
+  const inputFields = { mysql: [], pg: [], rds_mysql: [], rds_pg: [] };
+
+  function inputBoxMaker(dbTypeFromState, setDbTypeFromState, dbString) {
+    Object.entries(dbTypeFromState).forEach((entry) => {
+      const dbEntryKey = entry[0];
+      const dbEntryValue = entry[1];
+
+      if (dbEntryKey === 'password' || dbEntryKey === 'pass') {
+        inputFields[dbString].push(
+          <StyledTextField
+            required
+            id="filled-basic"
+            label={`${dbTypeFromState} Password`}
+            size="small"
+            variant="outlined"
+            type={showpass ? 'text' : 'password'}
+            onChange={(event) => {
+              const newState = { ...dbTypeFromState };
+              newState[dbEntryKey] = event.target.value;
+              setDbTypeFromState(newState);
+            }}
+            InputProps={{
+              style: { color: '#575151' },
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={() => setShowpass(!showpass)}
+                    onMouseDown={() => setShowpass(!showpass)}
+                  >
+                    {showpass ? <Visibility /> : <VisibilityOff />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+            defaultValue={dbEntryValue}
+          />
+        );
+      } else {
+        inputFields[dbString].push(
+          <StyledTextField
+            required
+            id="filled-basic"
+            label={`MySQL ${dbEntryKey}`}
+            size="small"
+            variant="outlined"
+            onChange={(event) => {
+              const newState = { ...dbTypeFromState };
+              newState[dbEntryKey] = event.target.value;
+              setDbTypeFromState(newState);
+            }}
+            InputProps={{
+              style: { color: '#575151' },
+            }}
+            defaultValue={dbEntryValue}
+          />
+        );
+      }
+    });
+  }
+  inputBoxMaker(pg, setpg, 'pg');
+  inputBoxMaker(mysql, setmysql, 'mysql');
+  inputBoxMaker(rds_pg, setrds_pg, 'rds_pg');
+  inputBoxMaker(rds_mysql, setrds_mysql, 'rds_mysql');
+
+  console.log(inputFields);
+  return (
+    <Box sx={{ width: '100%' }}>
+      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Tabs
+          value={value}
+          onChange={handleChange}
+          aria-label="wrapped label basic tabs example"
+        >
+          <Tab label="MySql" {...a11yProps(0)} />
+          <Tab label="Postgres" {...a11yProps(1)} />
+          <Tab label="RDS MySql" wrapped {...a11yProps(2)} />
+          <Tab label="RDS Postgres" wrapped />
+        </Tabs>
+      </Box>
+      <TabPanel value={value} index={0}>
+        {inputFields.mysql}
+      </TabPanel>
+      <TabPanel value={value} index={1}>
+        {inputFields.pg}
+      </TabPanel>
+      <TabPanel value={value} index={2}>
+        {inputFields.rds_mysql}
+      </TabPanel>
+      <TabPanel value={value} index={3}>
+        {inputFields.rds_pg}
+      </TabPanel>
+
+      <ButtonContainer>
+        <StyledButton
+          variant="contained"
+          color="secondary"
+          onClick={handleClose}
+        >
+          Cancel
+        </StyledButton>
+
+        <StyledButton
+          variant="contained"
+          color="primary"
+          onClick={handleSubmit}
+        >
+          Save
+        </StyledButton>
+      </ButtonContainer>
+    </Box>
+  );
+};
+// END OF TAB Feature
+
+interface ConfigViewProps {
+  show: boolean;
+  onClose: () => void;
+}
+
+const ConfigView = ({ show, onClose }: ConfigViewProps) => {
+  const handleClose = () => {
+    onClose();
+  };
+
   if (!show) return null;
   return (
     <div>
@@ -105,280 +283,7 @@ const ConfigView = ({ show, onClose }: ConfigViewProps) => {
         aria-labelledby="modal-title"
         open={show}
       >
-        <TextFieldContainer>
-          <DialogTitle id="alert-dialog-title">Configure SeeQR</DialogTitle>
-
-          <StyledTextField
-            required
-            id="filled-basic"
-            label="MySQL Username"
-            size="small"
-            variant="outlined"
-            onChange={(event) => {
-              setmysql({ ...mysql, user: event.target.value });
-            }}
-            InputProps={{
-              style: { color: '#575151' },
-            }}
-            defaultValue={mysql.user}
-          />
-
-          <StyledTextField
-            required
-            id="filled-basic"
-            label="MySQL Password"
-            size="small"
-            variant="outlined"
-            type={showpass ? 'text' : 'password'}
-            onChange={(event) => {
-              setmysql({ ...mysql, password: event.target.value });
-            }}
-            InputProps={{
-              style: { color: '#575151' },
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label="toggle password visibility"
-                    onClick={() => setShowpass(!showpass)}
-                    onMouseDown={() => setShowpass(!showpass)}
-                  >
-                    {showpass ? <Visibility /> : <VisibilityOff />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-            defaultValue={mysql.password}
-          />
-
-          <StyledTextField
-            required
-            id="filled-basic"
-            label="MySQL Port"
-            size="small"
-            variant="outlined"
-            onChange={(event) => {
-              setmysql({ ...mysql, port: parseInt(event.target.value) });
-            }}
-            InputProps={{
-              style: { color: '#575151' },
-            }}
-            defaultValue={mysql.port}
-          />
-
-          <StyledTextField
-            required
-            id="filled-basic"
-            label="Postgres Username"
-            size="small"
-            variant="outlined"
-            onChange={(event) => {
-              setpg({ ...pg, user: event.target.value });
-            }}
-            InputProps={{
-              style: { color: '#575151' },
-            }}
-            defaultValue={pg.user}
-          />
-
-          <StyledTextField
-            required
-            id="filled-basic"
-            label="Postgres Password"
-            size="small"
-            variant="outlined"
-            type={showpass ? 'text' : 'password'}
-            onChange={(event) => {
-              setpg({ ...pg, password: event.target.value });
-            }}
-            InputProps={{
-              style: { color: '#575151' },
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label="toggle password visibility"
-                    onClick={() => setShowpass(!showpass)}
-                    onMouseDown={() => setShowpass(!showpass)}
-                  >
-                    {showpass ? <Visibility /> : <VisibilityOff />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-            defaultValue={pg.password}
-          />
-
-          <StyledTextField
-            required
-            id="filled-basic"
-            label="Postgres Port"
-            size="small"
-            variant="outlined"
-            onChange={(event) => {
-              setpg({ ...pg, port: parseInt(event.target.value) });
-            }}
-            InputProps={{
-              style: { color: '#575151' },
-            }}
-            defaultValue={pg.port}
-          />
-          <StyledTextField
-            required
-            id="filled-basic"
-            label="RDS MySQL User"
-            size="small"
-            variant="outlined"
-            onChange={(event) => {
-              setrds_mysql({ ...rds_mysql, user: event.target.value });
-            }}
-            InputProps={{
-              style: { color: '#575151' },
-            }}
-            defaultValue={rds_mysql.user}
-          />
-          <StyledTextField
-            required
-            id="filled-basic"
-            label="RDS MySQL Password"
-            size="small"
-            variant="outlined"
-            type={showpass ? 'text' : 'password'}
-            onChange={(event) => {
-              setrds_mysql({ ...rds_mysql, password: event.target.value });
-            }}
-            InputProps={{
-              style: { color: '#575151' },
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label="toggle password visibility"
-                    onClick={() => setShowpass(!showpass)}
-                    onMouseDown={() => setShowpass(!showpass)}
-                  >
-                    {showpass ? <Visibility /> : <VisibilityOff />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-            defaultValue={rds_mysql.password}
-          />
-          <StyledTextField
-            required
-            id="filled-basic"
-            label="RDS MySQL Hostname"
-            size="small"
-            variant="outlined"
-            onChange={(event) => {
-              setrds_mysql({ ...rds_mysql, host: event.target.value });
-            }}
-            InputProps={{
-              style: { color: '#575151' },
-            }}
-            defaultValue={rds_mysql.host}
-          />
-          <StyledTextField
-            required
-            id="filled-basic"
-            label="RDS MySQL Port"
-            size="small"
-            variant="outlined"
-            onChange={(event) => {
-              setrds_mysql({
-                ...rds_mysql,
-                port: parseInt(event.target.value),
-              });
-            }}
-            InputProps={{
-              style: { color: '#575151' },
-            }}
-            defaultValue={rds_mysql.port}
-          />
-          <StyledTextField
-            required
-            id="filled-basic"
-            label="RDS PG User"
-            size="small"
-            variant="outlined"
-            onChange={(event) => {
-              setrds_pg({ ...rds_pg, user: event.target.value });
-            }}
-            InputProps={{
-              style: { color: '#575151' },
-            }}
-            defaultValue={rds_pg.user}
-          />
-          <StyledTextField
-            required
-            id="filled-basic"
-            label="RDS PG Password"
-            size="small"
-            variant="outlined"
-            type={showpass ? 'text' : 'password'}
-            onChange={(event) => {
-              setrds_pg({ ...rds_pg, password: event.target.value });
-            }}
-            InputProps={{
-              style: { color: '#575151' },
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label="toggle password visibility"
-                    onClick={() => setShowpass(!showpass)}
-                    onMouseDown={() => setShowpass(!showpass)}
-                  >
-                    {showpass ? <Visibility /> : <VisibilityOff />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-            defaultValue={rds_pg.password}
-          />
-          <StyledTextField
-            required
-            id="filled-basic"
-            label="RDS PG Hostname"
-            size="small"
-            variant="outlined"
-            onChange={(event) => {
-              setrds_pg({ ...rds_pg, host: event.target.value });
-            }}
-            InputProps={{
-              style: { color: '#575151' },
-            }}
-            defaultValue={rds_pg.host}
-          />
-          <StyledTextField
-            required
-            id="filled-basic"
-            label="RDS PG Port"
-            size="small"
-            variant="outlined"
-            onChange={(event) => {
-              setrds_pg({ ...rds_pg, port: parseInt(event.target.value) });
-            }}
-            InputProps={{
-              style: { color: '#575151' },
-            }}
-            defaultValue={rds_pg.port}
-          />
-        </TextFieldContainer>
-
-        <ButtonContainer>
-          <StyledButton
-            variant="contained"
-            color="secondary"
-            onClick={handleClose}
-          >
-            Cancel
-          </StyledButton>
-
-          <StyledButton
-            variant="contained"
-            color="primary"
-            onClick={handleSubmit}
-          >
-            Save
-          </StyledButton>
-        </ButtonContainer>
+        <BasicTabs onClose={onClose} />
       </Dialog>
     </div>
   );

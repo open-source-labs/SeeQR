@@ -400,7 +400,8 @@ const DBFunctions: DBFunctions = {
             reject(err);
           });
       });
-    } else if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL) {
+    }
+    if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL) {
       // added to check for RDS
 
       let pool; // changes which pool is being queried based on dbType
@@ -432,22 +433,19 @@ const DBFunctions: DBFunctions = {
           .query(queryString, value)
           .then((result) => {
             const columnInfoArray: ColumnObj[] = [];
-
-            for (let i = 0; i < result[0].length; i++) {
+            for (let i = 0; i < result[0].length; i += 1) {
               columnInfoArray.push(result[0][i]);
             }
-
             resolve(columnInfoArray);
           })
           .catch((err) => {
             reject(err);
           });
       });
-    } else {
-      logger('Trying to use unknown DB Type: ', LogType.ERROR, dbType);
-      // eslint-disable-next-line no-throw-literal
-      throw 'Unknown db type';
     }
+    logger('Trying to use unknown DB Type: ', LogType.ERROR, dbType);
+    // eslint-disable-next-line no-throw-literal
+    throw 'Unknown db type';
   },
 
   getDBLists(dbType, dbName) {
@@ -484,7 +482,6 @@ const DBFunctions: DBFunctions = {
                 for (let i = 0; i < columnInfo.length; i++) {
                   tableList[i].columns = columnInfo[i];
                 }
-
                 logger("PG 'getDBLists' resolved.", LogType.SUCCESS);
                 resolve(tableList);
               })
