@@ -46,7 +46,7 @@ const helperFunctions: HelperFunctions = {
     const MYSQL = `DROP DATABASE ${dbName}`;
 
     // console.log(`dropDBFunc MySQL: ${MYSQL}, ${dbType}`);
-    // console.log(`dropDBFunc PG: ${MYSQL}, ${dbType}`);
+    console.log(`dropDBFunc PG: ${MYSQL}, ${dbType}`);
 
     return dbType === DBType.Postgres ? PG : MYSQL;
   },
