@@ -35,9 +35,9 @@ const helperFunctions: HelperFunctions = {
     const MYSQL = `CREATE DATABASE ${name}`;
 
     // console.log('RETURNING DB: ', DBType.Postgres ? PG : MYSQL);
-    // console.log(dbType);
+    console.log(dbType);
 
-    return dbType === DBType.Postgres ? PG : MYSQL;
+    return dbType === DBType.Postgres || dbType === DBType.RDSPostgres ? PG : MYSQL;
   },
 
   // drop provided database

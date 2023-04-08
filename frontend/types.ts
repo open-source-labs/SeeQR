@@ -357,6 +357,8 @@ export type TableHeaderNodeType = {
 export enum DBType {
   Postgres = 'pg',
   MySQL = 'mysql',
+  RDSPostgres = 'rds-pg',
+  RDSMySQL = 'rds-mysql',
 }
 
 export interface DocConfigFile {
