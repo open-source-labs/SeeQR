@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { DatabaseInfo, DBType } from '../../types';
+import { DatabaseInfo } from '../../types';
+import { DBType } from '../../../backend/BE_types';
 import { IpcRendererEvent, ipcRenderer } from 'electron';
 import styled from 'styled-components';
 import {

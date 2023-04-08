@@ -9,8 +9,8 @@ import {
   TableInfo,
   DatabaseInfo,
   isDbLists,
-  DBType,
 } from '../../../types';
+import { DBType } from '../../../../backend/BE_types';
 import { defaultMargin } from '../../../style-variables';
 
 // not sure what this is yet...seems necessary for error message listeners

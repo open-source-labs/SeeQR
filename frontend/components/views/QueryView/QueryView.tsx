@@ -7,9 +7,9 @@ import {
   CreateNewQuery,
   AppState,
   isDbLists,
-  DBType,
   DatabaseInfo,
 } from '../../../types';
+import { DBType } from '../../../../backend/BE_types';
 import { defaultMargin } from '../../../style-variables';
 import { getPrettyTime } from '../../../lib/queries';
 import { once, sendFeedback } from '../../../lib/utils';
