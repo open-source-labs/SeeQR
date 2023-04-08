@@ -20,8 +20,8 @@ import {
   TableHeaderNodeType,
   AppState,
   SchemaStateObjType,
-  DBType,
 } from '../../../types';
+import { DBType } from '../../../../backend/BE_types';
 
 import * as colors from '../../../style-variables';
 

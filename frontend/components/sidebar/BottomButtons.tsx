@@ -2,7 +2,8 @@ import React from 'react';
 import { ButtonGroup, Button } from '@material-ui/core/';
 import styled from 'styled-components';
 import { ipcRenderer } from 'electron';
-import { AppState, DBType, DatabaseInfo } from '../../types';
+import { AppState, DatabaseInfo } from '../../types';
+import { DBType } from '../../../backend/BE_types';
 import { selectedColor, textColor, defaultMargin } from '../../style-variables';
 import { sendFeedback } from '../../lib/utils';
 
