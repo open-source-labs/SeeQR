@@ -15,11 +15,11 @@ function backendObjToQuery(backendObj: BackendObjType, dbType: DBType): string {
   function addTable(addTableArray: AddTablesObjType[]): void {
     for (let i = 0; i < addTableArray.length; i += 1) {
       const currTable: AddTablesObjType = addTableArray[i];
-      if (dbType === DBType.Postgres)
+      if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres)
         outputArray.push(
           `CREATE TABLE ${currTable.table_schema}.${currTable.table_name}(); `
         );
-      if (dbType === DBType.MySQL)
+      if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL)
         outputArray.push(
           `CREATE TABLE ${currTable.table_name} (_id VARCHAR(20)); `
         );
@@ -30,11 +30,11 @@ function backendObjToQuery(backendObj: BackendObjType, dbType: DBType): string {
   function dropTable(dropTableArray: DropTablesObjType[]): void {
     for (let i = 0; i < dropTableArray.length; i += 1) {
       const currTable: DropTablesObjType = dropTableArray[i];
-      if (dbType === DBType.Postgres)
+      if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres)
         outputArray.push(
           `DROP TABLE ${currTable.table_schema}.${currTable.table_name}; `
         );
-      if (dbType === DBType.MySQL)
+      if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL)
         outputArray.push(`DROP TABLE ${currTable.table_name}; `);
     }
   }
@@ -46,9 +46,9 @@ function backendObjToQuery(backendObj: BackendObjType, dbType: DBType): string {
       let addColumnString: string = '';
       if (currTable.addColumns.length) {
         for (let i = 0; i < currTable.addColumns.length; i += 1) {
-          if (dbType === DBType.Postgres)
+          if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres)
             addColumnString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} ADD COLUMN ${currTable.addColumns[i].column_name} ${currTable.addColumns[i].data_type}(${currTable.addColumns[i].character_maximum_length}); `;
-          if (dbType === DBType.MySQL) {
+          if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL) {
             let lengthOfData = '';
             if (currTable.addColumns[i].character_maximum_length != null) {
               lengthOfData = `(${currTable.addColumns[i].character_maximum_length})`;
@@ -65,9 +65,9 @@ function backendObjToQuery(backendObj: BackendObjType, dbType: DBType): string {
       let dropColumnString: string = '';
       if (currTable.dropColumns.length) {
         for (let i = 0; i < currTable.dropColumns.length; i += 1) {
-          if (dbType === DBType.Postgres)
+          if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres)
             dropColumnString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} DROP COLUMN ${currTable.dropColumns[i].column_name}; `;
-          if (dbType === DBType.MySQL)
+          if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL)
             dropColumnString += `ALTER TABLE ${currTable.table_name} DROP COLUMN ${currTable.dropColumns[i].column_name}; `;
         }
       }
@@ -87,9 +87,9 @@ function backendObjToQuery(backendObj: BackendObjType, dbType: DBType): string {
           defaultRowValue = 'A';
         else defaultRowValue = 1;
 
-        if (dbType === DBType.Postgres)
+        if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres)
           alterTableConstraintString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} ADD CONSTRAINT ${currConstraint.constraint_name} PRIMARY KEY (${currColumn.column_name}); INSERT INTO ${currTable.table_schema}.${currTable.table_name} (${currColumn.column_name}) VALUES ('${defaultRowValue}'); `;
-        if (dbType === DBType.MySQL)
+        if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL)
           alterTableConstraintString += `ALTER TABLE ${currTable.table_name} ADD CONSTRAINT ${currConstraint.constraint_name} PRIMARY KEY (${currColumn.column_name}); INSERT INTO ${currTable.table_schema}.${currTable.table_name} (${currColumn.column_name}) VALUES ('${defaultRowValue}'); `;
       }
       // Add a foreign key constraint to column
@@ -97,9 +97,9 @@ function backendObjToQuery(backendObj: BackendObjType, dbType: DBType): string {
         currConstraint: AddConstraintObjType,
         currColumn: AlterColumnsObjType
       ): void {
-        if (dbType === DBType.Postgres)
+        if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres)
           alterTableConstraintString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} ADD CONSTRAINT ${currConstraint.constraint_name} FOREIGN KEY ("${currColumn.column_name}") REFERENCES ${currConstraint.foreign_table}(${currConstraint.foreign_column}); `;
-        if (dbType === DBType.MySQL)
+        if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL)
           alterTableConstraintString += `ALTER TABLE ${currTable.table_name} ADD CONSTRAINT ${currConstraint.constraint_name} FOREIGN KEY ("${currColumn.column_name}") REFERENCES ${currConstraint.foreign_table}(${currConstraint.foreign_column}); `;
       }
       // Add a unique constraint to column
@@ -107,16 +107,16 @@ function backendObjToQuery(backendObj: BackendObjType, dbType: DBType): string {
         currConstraint: AddConstraintObjType,
         currColumn: AlterColumnsObjType
       ): void {
-        if (dbType === DBType.Postgres)
+        if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres)
           alterTableConstraintString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} ADD CONSTRAINT ${currConstraint.constraint_name} UNIQUE (${currColumn.column_name}); `;
-        if (dbType === DBType.MySQL)
+        if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL)
           alterTableConstraintString += `ALTER TABLE ${currTable.table_name} ADD CONSTRAINT ${currConstraint.constraint_name} UNIQUE (${currColumn.column_name}); `;
       }
       // Remove constraint from column
       function dropConstraint(currDrop): void {
-        if (dbType === DBType.Postgres)
+        if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres)
           alterTableConstraintString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} DROP CONSTRAINT ${currDrop}; `;
-        if (dbType === DBType.Postgres)
+        if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL)
           alterTableConstraintString += `ALTER TABLE ${currTable.table_name} DROP CONSTRAINT ${currDrop}; `;
       }
 
@@ -225,6 +225,7 @@ function backendObjToQuery(backendObj: BackendObjType, dbType: DBType): string {
         }
       }
     }
+
     const renameConstraintCache = {};
     // Populates the constraintsNAmes object with new constraint names
     function renameConstraint(currTable): void {
@@ -268,9 +269,9 @@ function backendObjToQuery(backendObj: BackendObjType, dbType: DBType): string {
     for (let i = 0; i < columnsToRename.length; i += 1) {
       const currColumn: AlterColumnsObjType = columnsNames[columnsToRename[i]];
       // only renames a column with the most recent name that was saved
-      if (dbType === DBType.Postgres)
+      if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres)
         renameString += `ALTER TABLE ${currColumn.table_schema}.${currColumn.table_name} RENAME COLUMN ${currColumn.column_name} TO ${currColumn.new_column_name}; `;
-      if (dbType === DBType.MySQL)
+      if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL)
         renameString += `ALTER TABLE ${currColumn.table_name} RENAME COLUMN ${currColumn.column_name} TO ${currColumn.new_column_name}; `;
     }
     // Goes through the tablesNames object and adds the query for renaming
@@ -278,14 +279,14 @@ function backendObjToQuery(backendObj: BackendObjType, dbType: DBType): string {
     for (let i = 0; i < tablesToRename.length; i += 1) {
       const currTable: AlterTablesObjType = tablesNames[tablesToRename[i]];
       // only renames a table with the most recent name that was saved
-      if (dbType === DBType.Postgres)
+      if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres)
         renameString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} RENAME TO ${currTable.new_table_name}; `;
-      if (dbType === DBType.MySQL)
+      if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL)
         `ALTER TABLE ${currTable.table_name} RENAME ${currTable.new_table_name}; `;
     }
+    // Constraint names might not be compatible with databases with other naming conventions and the query will fail
     // Goes through the constraintsNames object and adds the query for renaming
     const constraintsToRename: string[] = Object.keys(constraintsNames);
-    console.log(constraintsToRename);
     for (let i = 0; i < constraintsToRename.length; i += 1) {
       const currColumn: AlterColumnsObjType =
         constraintsNames[constraintsToRename[i]];

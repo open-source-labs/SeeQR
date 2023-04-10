@@ -39,7 +39,6 @@ class Table {
           ? foundCurrentTable.table_position
           : { x: this.tableCoordinates.x, y: this.tableCoordinates.y };
       } catch (error) {
-        console.log(error, 'i errored');
         return { x: (this.id - 1) * 500, y: 0 };
       }
     };
@@ -68,7 +67,7 @@ class Table {
           colEl.id === `table-${this.name}_column-${column.column_name}`
       );
       if (!found) {
-        num++;
+        num += 1;
         // create a table field node for each column for react-flow
         nodes.push({
           id: `table-${this.name}_column-${column.column_name}`,
@@ -83,7 +82,6 @@ class Table {
           },
         });
       }
-
       // if the element has a foregin_column and foreign_table create an edge
       if (column.foreign_column && column.foreign_table) {
         // create an edge for react flow
@@ -99,7 +97,6 @@ class Table {
         });
       }
     });
-
     // return an object with nodes and edges
     return {
       nodes,
@@ -120,13 +117,13 @@ const convertStateToReactFlow = {
       y: 0,
     };
     let columnGap = 0;
-
     // create a columnGap variable, which calculates the y coordinate for any table in that row.
     // each time a column is added, increase column gap by 74.
     // each time a column is added, increase the y coordinate by the column gap
     // when a new row is reached, reset column gap to 0.
 
     // populate localTableList array that is a simplified list of tables and columns
+    // in a separate loop so we can pass each new table instance a list of every other table
     tables.forEach((table) => {
       localTableList.push({
         table_name: table.table_name,
@@ -141,23 +138,17 @@ const convertStateToReactFlow = {
       const otherTableList = localTableList.filter(
         (localTable) => localTable.table_name !== tables[i].table_name
       );
-
       // if current table has more columns than any other in its row, set columnGap to new max number of columns * 74(px)
-      columnGap = Math.max(tables[i].columns.length * 74, columnGap);
-      console.log(
-        'columnGap',
-        columnGap,
-        'tablescolumnselength',
-        tables[i].columns.length,
-        tables[i].columns,
-        tables[i]
+      // filter for duplicate column names -- one imported test db was creating a new column for each constraint and this is a bandaid fix
+      const columnsGapSet = new Set();
+      tables[i].columns.forEach((column) =>
+        columnsGapSet.add(column.column_name)
       );
+      columnGap = Math.max(columnsGapSet.size * 74, columnGap);
       // calculate a default rowLength based on sqrt of number of tables
       const rowLength = Math.floor(Math.sqrt(tables.length));
       // if table should be the beginning of a new row...
-      console.log('indsqrt', i % rowLength);
       if (i % rowLength === 0) {
-        console.log('new row!');
         // set x, y coordinates for new row to 0 and +250 respectively;
         tableCoordinates.x = 0;
         tableCoordinates.y += 250 + columnGap;
@@ -166,7 +157,6 @@ const convertStateToReactFlow = {
         // ...otherwise increment tables position horizontally in current row.
         tableCoordinates.x += 500;
       }
-
       // create a new instance of Table, push into table array
       const table = new Table(
         i + 1,
@@ -176,7 +166,6 @@ const convertStateToReactFlow = {
         otherTableList,
         schema.database
       );
-
       // assign the evaluated result of rendering the table into tablesNodesEdges
       const tableNodesAndEdges = table.render();
       // each table will return an array of its nodes/edges

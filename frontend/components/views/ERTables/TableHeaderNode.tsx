@@ -12,7 +12,7 @@ import {
 } from '../../../types';
 import './styles.css';
 import * as colors from '../../../style-variables';
-
+import { sendFeedback } from '../../../lib/utils';
 type TableHeaderProps = {
   data: TableHeaderDataObjectType;
 };
@@ -79,11 +79,16 @@ function TableHeader({ data }: TableHeaderProps) {
     // set the state with the modified copy
     setSchemaState(schemaStateCopy);
   };
-
+  // Added a warning on click. It seems like changing table names is not a great idea. I don't think the app correctly renames constraints, so support of this feature should be limited for now.
+  const warnUser = (): void => {
+    sendFeedback({
+      type: 'error',
+      message: `WARNING: Changing table name will only rename constraints in fk_tableNameColumnName format. Use at your own discretion.`,
+    });
+  };
   // This function updates the table name when the user hits enter on the submit form
   const handleChangeTableName = (e): void => {
     if (e.key === 'Enter') {
-      console.log('trying to change table name');
       const tableInputField = document.getElementById(
         `table-name-form-${data.table_name}`
       ) as HTMLInputElement;
@@ -150,6 +155,7 @@ function TableHeader({ data }: TableHeaderProps) {
           variant="outlined"
           defaultValue={data.table_name}
           onKeyPress={handleChangeTableName}
+          onClick={warnUser}
           style={{ backgroundColor: 'white' }}
         />
       </Tooltip>

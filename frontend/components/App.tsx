@@ -11,21 +11,16 @@ import {
   sidebarShowButtonSize,
 } from '../style-variables';
 import GlobalStyle from '../GlobalStyle';
-<<<<<<< HEAD
 import {
   AppState,
   CreateNewQuery,
   QueryData,
-  DBType,
   isDbLists,
   DatabaseInfo,
   TableInfo,
   DbLists,
 } from '../types';
-=======
-import { AppState, CreateNewQuery, QueryData, isDbLists, DatabaseInfo, TableInfo, DbLists } from '../types';
 import { DBType } from '../../backend/BE_types';
->>>>>>> c3aeef018b95a9a2bef18645f82d02c77075cb8c
 import { createQuery, key } from '../lib/queries';
 import Sidebar from './sidebar/Sidebar';
 import QueryView from './views/QueryView/QueryView';
@@ -79,23 +74,23 @@ const App = () => {
 
   const [dbTables, setTables] = useState<TableInfo[]>([]);
   const [selectedTable, setSelectedTable] = useState<TableInfo | undefined>();
-  const [connectedDBs, setConnectedDBs] = useState({});
+
+  const [PG_isConnected, setPGStatus] = useState(false);
+  const [MYSQL_isConnected, setMYSQLStatus] = useState(false);
   const [showCreateDialog, setCreateDialog] = useState(false);
   const [showConfigDialog, setConfigDialog] = useState(false);
 
   useEffect(() => {
+    // console.log('dbTables:', dbTables, 'selectedTable: ', selectedTable, 'selectedDb: ', selectedDb, 'curDBType: ', curDBType, 'DBInfo: ', DBInfo, 'PG_isConnected: ', PG_isConnected, 'MYSQL_isConnected: ', MYSQL_isConnected);
     // Listen to backend for updates to list of available databases
     const dbListFromBackend = (evt: IpcRendererEvent, dbLists: DbLists) => {
       if (isDbLists(dbLists)) {
         setDBInfo(dbLists.databaseList);
         setTables(dbLists.tableList);
-        setConnectedDBs({
-          pg: dbLists.databaseConnected[0] || false,
-          mysql: dbLists.databaseConnected[1] || false,
-          rds_mysql: dbLists.databaseConnected[2] || false,
-          rds_pg: dbLists.databaseConnected[3] || false,
-        });
-        setSelectedTable(selectedTable || dbTables[0]);
+        setPGStatus(dbLists.databaseConnected[0]);
+        setMYSQLStatus(dbLists.databaseConnected[1]);
+
+        setSelectedTable(selectedTable ? selectedTable : dbTables[0]);
       }
     };
     ipcRenderer.on('db-lists', dbListFromBackend); // dummy data error here?
@@ -194,20 +189,18 @@ const App = () => {
               show={shownView === 'compareView'}
             />
             <DbView
-              {...{
-                selectedDb,
-                setERView,
-                ERView,
-                curDBType,
-                setDBType,
-                DBInfo,
-                setDBInfo,
-                dbTables,
-                setTables,
-                selectedTable,
-                setSelectedTable,
-              }}
+              selectedDb={selectedDb}
               show={shownView === 'dbView'}
+              setERView={setERView}
+              ERView={ERView}
+              curDBType={curDBType}
+              setDBType={setDBType}
+              DBInfo={DBInfo}
+              setDBInfo={setDBInfo}
+              dbTables={dbTables}
+              setTables={setTables}
+              selectedTable={selectedTable}
+              setSelectedTable={setSelectedTable}
             />
             <QueryView
               query={workingQuery}
