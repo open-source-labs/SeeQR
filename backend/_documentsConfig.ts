@@ -97,6 +97,7 @@ const docConfig: DocConfig = {
     let configFile: DocConfigFile;
     try {
       configFile = readConfigFile();
+      console.log(configFile);
       return configFile;
     } catch (err: any) {
       logger(err.message, LogType.WARNING);
