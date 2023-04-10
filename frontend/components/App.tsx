@@ -11,7 +11,15 @@ import {
   sidebarShowButtonSize,
 } from '../style-variables';
 import GlobalStyle from '../GlobalStyle';
-import { AppState, CreateNewQuery, QueryData, isDbLists, DatabaseInfo, TableInfo, DbLists } from '../types';
+import {
+  AppState,
+  CreateNewQuery,
+  QueryData,
+  isDbLists,
+  DatabaseInfo,
+  TableInfo,
+  DbLists,
+} from '../types';
 import { DBType } from '../../backend/BE_types';
 import { createQuery, key } from '../lib/queries';
 import Sidebar from './sidebar/Sidebar';
@@ -22,7 +30,7 @@ import QuickStartView from './views/QuickStartView';
 import NewSchemaView from './views/NewSchemaView/NewSchemaView';
 import FeedbackModal from './modal/FeedbackModal';
 import Spinner from './modal/Spinner';
-import { once, } from './../lib/utils';
+import { once } from './../lib/utils';
 import { IpcRendererEvent, ipcRenderer } from 'electron';
 import CreateDBDialog from './Dialog/CreateDBDialog';
 import ConfigView from './Dialog/ConfigView';
@@ -52,9 +60,8 @@ const App = () => {
     {}
   );
   const [workingQuery, setWorkingQuery] = useState<AppState['workingQuery']>();
-  const [selectedView, setSelectedView] = useState<AppState['selectedView']>(
-    'dbView'
-  );
+  const [selectedView, setSelectedView] =
+    useState<AppState['selectedView']>('dbView');
 
   const [selectedDb, setSelectedDb] = useState<AppState['selectedDb']>('');
   const [sidebarIsHidden, setSidebarHidden] = useState(false);
@@ -83,8 +90,7 @@ const App = () => {
         setPGStatus(dbLists.databaseConnected[0]);
         setMYSQLStatus(dbLists.databaseConnected[1]);
 
-        setSelectedTable(selectedTable? selectedTable : dbTables[0]);
-        
+        setSelectedTable(selectedTable ? selectedTable : dbTables[0]);
       }
     };
     ipcRenderer.on('db-lists', dbListFromBackend); // dummy data error here?
@@ -129,7 +135,7 @@ const App = () => {
       }
       shownView = 'queryView';
       break;
-    case 'newSchemaView': 
+    case 'newSchemaView':
       shownView = 'newSchemaView';
       break;
     case 'quickStartView':
@@ -174,7 +180,7 @@ const App = () => {
               setSelectedTable,
               showCreateDialog,
               setCreateDialog,
-              setConfigDialog
+              setConfigDialog,
             }}
           />
           <Main $fullwidth={sidebarIsHidden}>
@@ -182,10 +188,10 @@ const App = () => {
               queries={comparedQueries}
               show={shownView === 'compareView'}
             />
-            <DbView 
-              selectedDb={selectedDb} 
+            <DbView
+              selectedDb={selectedDb}
               show={shownView === 'dbView'}
-              setERView={setERView} 
+              setERView={setERView}
               ERView={ERView}
               curDBType={curDBType}
               setDBType={setDBType}
@@ -210,14 +216,14 @@ const App = () => {
               setDBInfo={setDBInfo}
             />
             <QuickStartView show={shownView === 'quickStartView'} />
-            
-            <NewSchemaView 
+
+            <NewSchemaView
               query={workingQuery}
               setQuery={setWorkingQuery}
               selectedDb={selectedDb}
               setSelectedDb={setSelectedDb}
               createNewQuery={createNewQuery}
-              show={shownView === 'newSchemaView'} 
+              show={shownView === 'newSchemaView'}
               curDBType={curDBType}
               setDBType={setDBType}
               DBInfo={DBInfo}
@@ -227,15 +233,14 @@ const App = () => {
               selectedTable={selectedTable}
               setSelectedTable={setSelectedTable}
             />
-
             <ConfigView
-            show={showConfigDialog}
-            onClose={() => setConfigDialog(false)}
+              show={showConfigDialog}
+              onClose={() => setConfigDialog(false)}
             />
             <CreateDBDialog
-            show={showCreateDialog}
-            DBInfo={DBInfo}
-            onClose={() => setCreateDialog(false)}
+              show={showCreateDialog}
+              DBInfo={DBInfo}
+              onClose={() => setCreateDialog(false)}
             />
           </Main>
           <FeedbackModal />
