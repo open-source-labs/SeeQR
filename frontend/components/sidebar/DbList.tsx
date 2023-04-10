@@ -7,10 +7,10 @@ import AddNewDbModal from '../modal/AddNewDbModalCorrect';
 import {
   AppState,
   isDbLists,
-  DBType,
   DatabaseInfo,
   TableInfo,
 } from '../../types';
+import { DBType } from '../../../backend/BE_types';
 import { sendFeedback } from '../../lib/utils';
 import DuplicateDbModal from '../modal/DuplicateDbModal';
 import DbEntry from './DbEntry';

@@ -15,7 +15,7 @@ import FileCopyIcon from '@material-ui/icons/FileCopy';
 
 import { SidebarListItem, StyledListItemText } from '../../style-variables';
 import { sendFeedback } from '../../lib/utils';
-import { DBType } from '../../types';
+import { DBType } from '../../../backend/BE_types';
 
 const { ipcRenderer } = window.require('electron');
 

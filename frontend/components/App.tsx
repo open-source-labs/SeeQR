@@ -11,6 +11,7 @@ import {
   sidebarShowButtonSize,
 } from '../style-variables';
 import GlobalStyle from '../GlobalStyle';
+<<<<<<< HEAD
 import {
   AppState,
   CreateNewQuery,
@@ -21,6 +22,10 @@ import {
   TableInfo,
   DbLists,
 } from '../types';
+=======
+import { AppState, CreateNewQuery, QueryData, isDbLists, DatabaseInfo, TableInfo, DbLists } from '../types';
+import { DBType } from '../../backend/BE_types';
+>>>>>>> c3aeef018b95a9a2bef18645f82d02c77075cb8c
 import { createQuery, key } from '../lib/queries';
 import Sidebar from './sidebar/Sidebar';
 import QueryView from './views/QueryView/QueryView';

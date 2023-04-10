@@ -29,13 +29,31 @@ interface Feedback {
   type: string;
   message: string;
 }
-
-// This isn't being used for anything ATM
+//JUNAID
+//THIS RUNS WHENEVER SAVE IS HIT ON THE MAIN ELECTRON APP.
 ipcMain.handle('set-config', async (event, configObj) => {
   docConfig.saveConfig(configObj);
 
   db.setBaseConnections()
-    .then(() => {
+    .then((dbsInputted) => {
+      /*
+      JUNAID
+      added error handling to display error message on frontend based on which dbs failed to login
+      */
+      let errorStr = '';
+      for (const dbs in dbsInputted) {
+        if (!dbsInputted[dbs]) {
+          errorStr += ` ${dbs}`;
+        }
+      }
+      if (errorStr.length) {
+        const err = `Unsuccessful login(s) for ${errorStr.toUpperCase()} database(s)`;
+        const feedback: Feedback = {
+          type: 'error',
+          message: err,
+        };
+        event.sender.send('feedback', feedback);
+      }
       logger('Successfully reset base connections', LogType.SUCCESS);
       db.getLists().then((data: DBList) => {
         event.sender.send('db-lists', data);
@@ -540,7 +558,7 @@ ipcMain.handle(
       payload
     );
     event.sender.send('async-started');
-
+    console.log(payload, dbType)
     const { newDbName } = payload;
 
     try {
@@ -555,10 +573,17 @@ ipcMain.handle(
       event.sender.send('db-lists', dbsAndTableInfo);
       logger("Sent 'db-lists' from 'initialize-db'", LogType.SEND);
     } catch (e) {
+      const err = `Unsuccessful DB Creation for ${newDbName} in ${dbType} database`;
+      const feedback: Feedback = {
+        type: 'error',
+        message: err,
+      };
+      event.sender.send('feedback', feedback);
       // in the case of an error, delete the created db
-      const dropDBScript = dropDBFunc(newDbName, dbType);
-      await db.query(dropDBScript, null, dbType);
-      throw new Error('Failed to initialize new database');
+      console.log(e);
+      // const dropDBScript = dropDBFunc(newDbName, dbType);
+      // await db.query(dropDBScript, null, dbType);
+      // throw new Error('Failed to initialize new database');
     } finally {
       event.sender.send('async-complete');
     }

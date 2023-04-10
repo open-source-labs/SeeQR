@@ -15,7 +15,7 @@ import {
   StyledNativeDropdown,
   StyledNativeOption,
 } from '../../style-variables';
-import { DBType } from '../../types';
+import { DBType } from '../../../backend/BE_types';
 
 const { dialog } = remote;
 

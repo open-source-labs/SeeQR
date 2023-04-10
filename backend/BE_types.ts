@@ -60,6 +60,13 @@ export interface DocConfigFile {
   rds_pg: { user: string; password: string; port: number; host: string };
 }
 
+type dbsInputted = {
+  pg: boolean;
+  msql: boolean;
+  rds_pg: boolean;
+  rds_msql: boolean;
+}
+
 export interface DBFunctions {
   pg_uri: string;
   curPG_DB: string;
@@ -70,14 +77,9 @@ export interface DBFunctions {
     password: string;
     host: string;
   };
-  dbsInputted: {
-    pg: boolean;
-    msql: boolean;
-    rds_pg: boolean;
-    rds_msql: boolean;
-  };
+  dbsInputted: dbsInputted ;
 
-  setBaseConnections: () => Promise<void>;
+  setBaseConnections: () => Promise<dbsInputted>;
   query: (text: string, params: (string | number)[], dbType: DBType) => void;
   connectToDB: (db: string, dbType?: DBType) => Promise<void>;
   getLists: (dbName: string, dbType?: DBType) => Promise<DBList>;
