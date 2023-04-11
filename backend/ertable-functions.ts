@@ -282,7 +282,7 @@ function backendObjToQuery(backendObj: BackendObjType, dbType: DBType): string {
       if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres)
         renameString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} RENAME TO ${currTable.new_table_name}; `;
       if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL)
-        `ALTER TABLE ${currTable.table_name} RENAME ${currTable.new_table_name}; `;
+        renameString += `ALTER TABLE ${currTable.table_name} RENAME ${currTable.new_table_name}; `;
     }
     // Constraint names might not be compatible with databases with other naming conventions and the query will fail
     // Goes through the constraintsNames object and adds the query for renaming
@@ -290,9 +290,9 @@ function backendObjToQuery(backendObj: BackendObjType, dbType: DBType): string {
     for (let i = 0; i < constraintsToRename.length; i += 1) {
       const currColumn: AlterColumnsObjType =
         constraintsNames[constraintsToRename[i]];
-      if (dbType === DBType.Postgres)
+      if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres)
         renameString += `ALTER TABLE ${currColumn.table_schema}.${currColumn.table_name} RENAME CONSTRAINT ${constraintsToRename[i]} TO ${currColumn.constraint_type}_${currColumn.table_name}${currColumn.column_name}; `;
-      if (dbType === DBType.MySQL)
+      if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL)
         renameString += `ALTER TABLE ${currColumn.table_name} RENAME CONSTRAINT ${constraintsToRename[i]} TO ${currColumn.constraint_type}_${currColumn.table_name}${currColumn.column_name}; `;
     }
     outputArray.push(renameString);

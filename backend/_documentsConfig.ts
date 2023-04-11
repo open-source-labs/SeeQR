@@ -43,7 +43,7 @@ interface DocConfig {
   getConfigFolder: () => string;
   getCredentials: (dbType: DBType) => {
     user: string;
-    password?: string;
+    password: string;
     host?: string;
     port: number | string;
   };
@@ -89,7 +89,7 @@ const docConfig: DocConfig = {
     }
 
     logger('Could not get credentials of DBType: ', LogType.ERROR, dbType);
-    return { user: '', pass: '', port: 1 };
+    return { user: '', password: '', port: 1 };
   },
 
   getFullConfig: function () {
@@ -97,7 +97,6 @@ const docConfig: DocConfig = {
     let configFile: DocConfigFile;
     try {
       configFile = readConfigFile();
-      console.log(configFile);
       return configFile;
     } catch (err: any) {
       logger(err.message, LogType.WARNING);
