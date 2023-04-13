@@ -1,7 +1,7 @@
 /* eslint-disable object-shorthand */
 import { DBType } from './BE_types';
+
 const { exec } = require('child_process'); // Child_Process: Importing Node.js' child_process API
-const { dialog } = require('electron'); // Dialog: display native system dialogs for opening and saving files, alerting, etcim
 const docConfig = require('./_documentsConfig');
 // ************************************** CLI COMMANDS & SQL Queries TO CREATE, DELETE, COPY DB SCHEMA, etc. ************************************** //
 
@@ -30,85 +30,78 @@ interface HelperFunctions {
 
 const helperFunctions: HelperFunctions = {
   // create a database
-  createDBFunc: function (name, dbType: DBType) {
+  createDBFunc: function createDBFunc(name, dbType: DBType) {
     const PG = `CREATE DATABASE "${name}"`;
     const MYSQL = `CREATE DATABASE ${name}`;
-
-    // console.log('RETURNING DB: ', DBType.Postgres ? PG : MYSQL);
-    console.log(dbType);
-
-    return dbType === DBType.Postgres || dbType === DBType.RDSPostgres ? PG : MYSQL;
+    return dbType === DBType.Postgres || dbType === DBType.RDSPostgres
+      ? PG
+      : MYSQL;
   },
 
   // drop provided database
-  dropDBFunc: function (dbName, dbType: DBType) {
+  dropDBFunc: function dropDBFunc(dbName, dbType: DBType) {
     const PG = `DROP DATABASE "${dbName}"`;
     const MYSQL = `DROP DATABASE ${dbName}`;
-
-    // console.log(`dropDBFunc MySQL: ${MYSQL}, ${dbType}`);
-    console.log(`dropDBFunc PG: ${MYSQL}, ${dbType}`);
-
-    return dbType === DBType.Postgres ? PG : MYSQL;
+    return dbType === DBType.Postgres || dbType === DBType.RDSPostgres
+      ? PG
+      : MYSQL;
   },
 
   // run explain on query
-  explainQuery: function (sqlString, dbType: DBType) {
+  explainQuery: function explainQuery(sqlString, dbType: DBType) {
     const PG = `BEGIN; EXPLAIN (FORMAT JSON, ANALYZE, VERBOSE, BUFFERS) ${sqlString}; ROLLBACK`;
     const MYSQL = `BEGIN; EXPLAIN ANALYZE ${sqlString}`;
-
-    // console.log(`explainQuery MySQL: ${MYSQL}, ${dbType}`);
-    // console.log(`explainQuery PG: ${MYSQL}, ${dbType}`);
-
-    return dbType === DBType.Postgres ? PG : MYSQL;
+    return dbType === DBType.Postgres || dbType === DBType.RDSPostgres
+      ? PG
+      : MYSQL;
   },
 
   // import SQL file into new DB created
-  runSQLFunc: function (dbName, file, dbType: DBType) {
+  runSQLFunc: function runSQLFunc(dbName, file, dbType: DBType) {
     const SQL_data = docConfig.getFullConfig();
-    // console.log(SQL_data)
-    const PG = `PGPASSWORD=${SQL_data.pg.pass} psql -U ${SQL_data.pg.user} -d "${dbName}" -f "${file}" -p ${SQL_data.pg.port}`;
-    // const MYSQL = `mysql -u root -p ${dbName} < ${file}`;
-    const MYSQL = `export MYSQL_PWD='${SQL_data.mysql.pass}'; mysql -u${SQL_data.mysql.user} --port=${SQL_data.mysql.port} ${dbName} < ${file}`;
-
-    // console.log(`runSQLFunc MySQL: ${MYSQL}, ${dbType}`);
-    // console.log(`runSQLFunc PG: ${PG}, ${dbType}`);
-
-    return dbType === DBType.Postgres ? PG : MYSQL;
+    const PG = `PGPASSWORD=${SQL_data.pg.password} psql -U ${SQL_data.pg.user} -d "${dbName}" -f "${file}" -p ${SQL_data.pg.port}`;
+    const MYSQL = `export MYSQL_PWD='${SQL_data.mysql.password}'; mysql -u${SQL_data.mysql.user} --port=${SQL_data.mysql.port} ${dbName} < ${file}`;
+    return dbType === DBType.Postgres || dbType === DBType.RDSPostgres
+      ? PG
+      : MYSQL;
   },
 
   // import TAR file into new DB created
-  runTARFunc: function (dbName, file, dbType: DBType) {
+  runTARFunc: function runTARFunc(dbName, file, dbType: DBType) {
     const SQL_data = docConfig.getFullConfig();
-    const PG = `PGPASSWORD=${SQL_data.pg.pass} pg_restore -U ${SQL_data.pg.user} -p ${SQL_data.pg.port} -d "${dbName}" "${file}" `;
-    const MYSQL = `export MYSQL_PWD='${SQL_data.mysql.pass}'; mysqldump -u ${SQL_data.mysql.user} --port=${SQL_data.mysql.port}  ${dbName} > ${file}`;
-
-    // console.log(`runTARFunc MySQL: ${MYSQL}, ${dbType}`);
-    // console.log(`runTARFunc PG: ${PG}, ${dbType}`);
-
-    return dbType === DBType.Postgres ? PG : MYSQL;
+    const PG = `PGPASSWORD=${SQL_data.pg.password} pg_restore -U ${SQL_data.pg.user} -p ${SQL_data.pg.port} -d "${dbName}" "${file}" `;
+    const MYSQL = `export MYSQL_PWD='${SQL_data.mysql.password}'; mysqldump -u ${SQL_data.mysql.user} --port=${SQL_data.mysql.port}  ${dbName} > ${file}`;
+    return dbType === DBType.Postgres || dbType === DBType.RDSPostgres
+      ? PG
+      : MYSQL;
   },
 
   // make a full copy of the schema
-  runFullCopyFunc: function (dbCopyName, newFile, dbType: DBType) {
+  runFullCopyFunc: function runFullCopyFunc(
+    dbCopyName,
+    newFile,
+    dbType: DBType
+  ) {
     const SQL_data = docConfig.getFullConfig();
-    const PG = `PGPASSWORD=${SQL_data.pg.pass} pg_dump -s -U ${SQL_data.pg.user}  -p ${SQL_data.pg.port} -Fp -d ${dbCopyName} > "${newFile}"`;
-    const MYSQL = `export MYSQL_PWD='${SQL_data.mysql.pass}'; mysqldump -h localhost -u ${SQL_data.mysql.user}  ${dbCopyName} > ${newFile}`;
-
-    // console.log(`runFullCopyFunc MySQL: ${MYSQL}, ${dbType}`);
-    // console.log(`runFullCopyFunc PG: ${PG}, ${dbType}`);
-
-    return dbType === DBType.Postgres ? PG : MYSQL;
+    const PG = `PGPASSWORD=${SQL_data.pg.password} pg_dump -s -U ${SQL_data.pg.user}  -p ${SQL_data.pg.port} -Fp -d ${dbCopyName} > "${newFile}"`;
+    const MYSQL = `export MYSQL_PWD='${SQL_data.mysql.password}'; mysqldump -h localhost -u ${SQL_data.mysql.user}  ${dbCopyName} > ${newFile}`;
+    return dbType === DBType.Postgres || dbType === DBType.RDSPostgres
+      ? PG
+      : MYSQL;
   },
 
   // make a hollow copy of the schema
-  runHollowCopyFunc: function (dbCopyName, file, dbType: DBType) {
+  runHollowCopyFunc: function runHollowCopyFunc(
+    dbCopyName,
+    file,
+    dbType: DBType
+  ) {
     const SQL_data = docConfig.getFullConfig();
-    const PG = ` PGPASSWORD=${SQL_data.pg.pass} pg_dump -s -U ${SQL_data.pg.user}  -p ${SQL_data.pg.port} -F p -d "${dbCopyName}" > "${file}"`;
-    const MYSQL = `export MYSQL_PWD='${SQL_data.mysql.pass}'; mysqldump -h localhost -u ${SQL_data.mysql.user} --port=${SQL_data.mysql.port}  ${dbCopyName} > ${file}`;
-
-    // console.log(`runHollowCopyFunc MySQL: ${MYSQL}, ${dbType}`);
-    // console.log(`runHollowCopyFunc PG: ${PG}, ${dbType}`);
-    return dbType === DBType.Postgres ? PG : MYSQL;
+    const PG = ` PGPASSWORD=${SQL_data.pg.password} pg_dump -s -U ${SQL_data.pg.user}  -p ${SQL_data.pg.port} -F p -d "${dbCopyName}" > "${file}"`;
+    const MYSQL = `export MYSQL_PWD='${SQL_data.mysql.password}'; mysqldump -h localhost -u ${SQL_data.mysql.user} --port=${SQL_data.mysql.port}  ${dbCopyName} > ${file}`;
+    return dbType === DBType.Postgres || dbType === DBType.RDSPostgres
+      ? PG
+      : MYSQL;
   },
 
   // promisified execute to execute commands in the child process

@@ -77,6 +77,7 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
     const arrayToRender: JSX.Element[] = [];
     // Get key value pairs from passed in database connection info from state
     Object.entries(dbTypeFromState).forEach((entry) => {
+      // entry looks like [user: 'username'] or [password: 'password]
       const [dbEntryKey, dbEntryValue] = entry;
       // If we are rendering a password StyledTextField, then add special props
       let styledTextFieldProps;
@@ -89,10 +90,10 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
                 <IconButton
                   aria-label="toggle password visibility"
                   onClick={() =>
-                    setShowpass((currShowpass) => ({
-                      ...currShowpass,
-                      [dbString]: !currShowpass[dbString],
-                    }))
+                    setShowpass({
+                      ...showpass,
+                      [dbString]: !showpass[dbString],
+                    })
                   }
                 >
                   {showpass[dbString] ? <Visibility /> : <VisibilityOff />}
