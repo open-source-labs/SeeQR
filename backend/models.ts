@@ -136,9 +136,9 @@ const DBFunctions: DBFunctions = {
   },
 
   query(text, params, dbType) {
-    console.log(text)
+    console.log(text);
     console.log(params);
-    console.log(dbType)
+    console.log(dbType);
     // RUN ANY QUERY - function that will run query on database that is passed in.
     logger(`Attempting to run query: \n ${text} for: \n ${dbType}`);
 
@@ -193,7 +193,6 @@ const DBFunctions: DBFunctions = {
       databaseList: [],
       tableList: [],
     };
-    console.log('in get lists')
     if (this.dbsInputted.pg) {
       try {
         const pgDBList = await this.getDBNames(DBType.Postgres);
