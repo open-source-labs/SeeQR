@@ -90,8 +90,8 @@ const DBFunctions: DBFunctions = {
     }
 
     //  LOCAL PG POOL
-    if (PG_Cred.user && PG_Cred.pass) {
-      this.pg_uri = `postgres://${PG_Cred.user}:${PG_Cred.pass}@localhost:${PG_Cred.port}/`;
+    if (PG_Cred.user && PG_Cred.password) {
+      this.pg_uri = `postgres://${PG_Cred.user}:${PG_Cred.password}@localhost:${PG_Cred.port}/`;
       try {
         await connectionFunctions.PG_DBConnect(this.pg_uri, this.curPG_DB);
         console.log('CONNECTED TO LOCAL PG DATABASE');
@@ -105,13 +105,13 @@ const DBFunctions: DBFunctions = {
     }
 
     //  LOCAL MSQL POOL
-    if (MSQL_Cred.user && MSQL_Cred.pass) {
+    if (MSQL_Cred.user && MSQL_Cred.password) {
       try {
         await connectionFunctions.MSQL_DBConnect({
           host: `localhost`,
           port: MSQL_Cred.port,
           user: MSQL_Cred.user,
-          password: MSQL_Cred.pass,
+          password: MSQL_Cred.password,
           database: this.curMSQL_DB,
           waitForConnections: true,
           connectionLimit: 10,
@@ -405,7 +405,8 @@ const DBFunctions: DBFunctions = {
             reject(err);
           });
       });
-    } else if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL) {
+    }
+    if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL) {
       // added to check for RDS
 
       let pool; // changes which pool is being queried based on dbType
@@ -437,22 +438,19 @@ const DBFunctions: DBFunctions = {
           .query(queryString, value)
           .then((result) => {
             const columnInfoArray: ColumnObj[] = [];
-
-            for (let i = 0; i < result[0].length; i++) {
+            for (let i = 0; i < result[0].length; i += 1) {
               columnInfoArray.push(result[0][i]);
             }
-
             resolve(columnInfoArray);
           })
           .catch((err) => {
             reject(err);
           });
       });
-    } else {
-      logger('Trying to use unknown DB Type: ', LogType.ERROR, dbType);
-      // eslint-disable-next-line no-throw-literal
-      throw 'Unknown db type';
     }
+    logger('Trying to use unknown DB Type: ', LogType.ERROR, dbType);
+    // eslint-disable-next-line no-throw-literal
+    throw 'Unknown db type';
   },
 
   getDBLists(dbType, dbName) {
@@ -489,7 +487,6 @@ const DBFunctions: DBFunctions = {
                 for (let i = 0; i < columnInfo.length; i++) {
                   tableList[i].columns = columnInfo[i];
                 }
-
                 logger("PG 'getDBLists' resolved.", LogType.SUCCESS);
                 resolve(tableList);
               })
