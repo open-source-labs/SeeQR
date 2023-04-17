@@ -70,11 +70,10 @@ ipcMain.handle('set-config', async (event, configObj) => {
         type: 'error',
         message: err,
       };
-      console.log(feedback);
       event.sender.send('feedback', feedback);
       logger(
         "Sent 'feedback' from 'reset-connection' (Note: This is an ERROR!)",
-        LogType.SEND
+        LogType.ERROR
       );
     })
     .finally(() => {
@@ -567,7 +566,6 @@ ipcMain.handle(
       payload
     );
     event.sender.send('async-started');
-    console.log(payload, dbType);
     const { newDbName } = payload;
 
     try {
@@ -589,7 +587,6 @@ ipcMain.handle(
       };
       event.sender.send('feedback', feedback);
       // in the case of an error, delete the created db
-      console.log(e);
       // const dropDBScript = dropDBFunc(newDbName, dbType);
       // await db.query(dropDBScript, null, dbType);
       // throw new Error('Failed to initialize new database');
