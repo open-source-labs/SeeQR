@@ -29,15 +29,17 @@ interface Feedback {
   type: string;
   message: string;
 }
-//JUNAID
-//THIS RUNS WHENEVER SAVE IS HIT ON THE MAIN ELECTRON APP.
+/*
+junaid
+this runs whenever save is hit on the main app
+*/
 ipcMain.handle('set-config', async (event, configObj) => {
   docConfig.saveConfig(configObj);
 
   db.setBaseConnections()
     .then((dbsInputted) => {
       /*
-      JUNAID
+      junaid
       added error handling to display error message on frontend based on which dbs failed to login
       */
       let errorStr = '';
@@ -68,11 +70,10 @@ ipcMain.handle('set-config', async (event, configObj) => {
         type: 'error',
         message: err,
       };
-      console.log(feedback);
       event.sender.send('feedback', feedback);
       logger(
         "Sent 'feedback' from 'reset-connection' (Note: This is an ERROR!)",
-        LogType.SEND
+        LogType.ERROR
       );
     })
     .finally(() => {
@@ -85,8 +86,11 @@ ipcMain.handle('get-config', async (event, configObj) => {
 });
 
 // Listen for request from front-end and send back the DB List upon request
-//JUNAID AND CHASE
-//removed the parameters because it doesnt seem like they do anything here, and it prevents the other databses from rendering on the list if pg is passed in.
+/*
+junaid and chase
+removed the parameters because it doesnt seem like they do anything here, and it prevents the other databses from rendering on the list if pg is passed in
+*/
+
 // ipcMain.on('return-db-list', (event, dbType: DBType = DBType.Postgres) => {
 ipcMain.on('return-db-list', (event) => {
   logger(
@@ -96,8 +100,11 @@ ipcMain.on('return-db-list', (event) => {
 
   db.setBaseConnections()
     .then(() => {
-      //JUNAID AND CHASE
-      //removed the parameters because it doesnt seem like they do anything here, and it prevents the other databses from rendering on the list if pg is passed in.
+      /*
+      junaid and chase
+      removed the parameters because it doesnt seem like they do anything here, and it prevents the other databses from rendering on the list if pg is passed in
+      */
+
       // db.getLists('', dbType)
       db.getLists()
         .then((data: DBList) => {
@@ -146,8 +153,6 @@ ipcMain.handle(
 
     event.sender.send('async-started');
     try {
-      // console.log('dbName from backend', dbName, 'dbType from backend');
-
       await db.connectToDB(dbName, dbType);
 
       // send updated db info
@@ -159,7 +164,7 @@ ipcMain.handle(
     }
   }
 );
-// await db.query(dropDBScript, null, dbType);
+
 // Deletes the DB that is passed from the front end and returns an updated DB List
 ipcMain.handle(
   'drop-db',
@@ -224,7 +229,6 @@ ipcMain.handle(
       const dumpCmd = withData
         ? runFullCopyFunc(sourceDb, tempFilePath, dbType)
         : runHollowCopyFunc(sourceDb, tempFilePath, dbType);
-      // console.log('dbType for importing a database', dbType);
       try {
         await promExecute(dumpCmd);
       } catch (e) {
@@ -257,7 +261,7 @@ ipcMain.handle(
       event.sender.send('db-lists', dbsAndTableInfo);
       logger("Sent 'db-lists' from 'duplicate-db'", LogType.SEND);
     } finally {
-      //  //cleanup temp file
+      //cleanup temp file
       try {
         fs.unlinkSync(tempFilePath);
       } catch (e) {
@@ -330,6 +334,10 @@ interface QueryPayload {
 
 // Run query passed from the front-end, and send back an updated DB List
 // DB will rollback if query is unsuccessful
+/*
+junaid
+look at this to check the explain might not support query error
+*/
 ipcMain.handle(
   'run-query',
   async (
@@ -558,7 +566,6 @@ ipcMain.handle(
       payload
     );
     event.sender.send('async-started');
-    console.log(payload, dbType)
     const { newDbName } = payload;
 
     try {
@@ -580,7 +587,6 @@ ipcMain.handle(
       };
       event.sender.send('feedback', feedback);
       // in the case of an error, delete the created db
-      console.log(e);
       // const dropDBScript = dropDBFunc(newDbName, dbType);
       // await db.query(dropDBScript, null, dbType);
       // throw new Error('Failed to initialize new database');
@@ -606,12 +612,10 @@ ipcMain.handle(
     event.sender.send('async-started');
 
     try {
-      let error: string | undefined;
       // connect to db to run query
       await db.connectToDB(selectedDb, dbType);
 
       // Run Query
-      // let returnedRows;
       try {
         await db.query(sqlString, null, dbType);
       } catch (e) {

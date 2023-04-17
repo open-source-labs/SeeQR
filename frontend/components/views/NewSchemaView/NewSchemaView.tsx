@@ -1,5 +1,5 @@
-import { IpcRendererEvent, ipcRenderer } from 'electron';
-import React, { useEffect, useState } from 'react';
+import { ipcRenderer } from 'electron';
+import React, { useState } from 'react';
 import { Box, Button, Typography } from '@material-ui/core/';
 import styled from 'styled-components';
 import {
@@ -8,13 +8,12 @@ import {
   AppState,
   TableInfo,
   DatabaseInfo,
-  isDbLists,
 } from '../../../types';
 import { DBType } from '../../../../backend/BE_types';
 import { defaultMargin } from '../../../style-variables';
 
 // not sure what this is yet...seems necessary for error message listeners
-import { once, sendFeedback } from '../../../lib/utils';
+import { sendFeedback } from '../../../lib/utils';
 
 // import child components below
 import SchemaName from './SchemaName';

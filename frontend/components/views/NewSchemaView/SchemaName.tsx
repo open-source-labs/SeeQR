@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { TextField, Box } from '@material-ui/core/';
 
 interface SchemaNameProps {

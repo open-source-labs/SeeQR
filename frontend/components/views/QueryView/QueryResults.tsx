@@ -11,7 +11,6 @@ import {
 import styled from 'styled-components';
 import { QueryData } from '../../../types';
 import { greyPrimary, DarkPaperFull } from '../../../style-variables';
-import { CommentsDisabledOutlined } from '@mui/icons-material';
 
 const StyledCell = styled(TableCell)`
   border-bottom: 1px solid ${greyPrimary};

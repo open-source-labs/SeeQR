@@ -1,18 +1,17 @@
-import { IpcRendererEvent, ipcRenderer } from 'electron';
-import React, { useEffect, useState } from 'react';
+import { ipcRenderer } from 'electron';
+import React from 'react';
 import { Button, Box } from '@material-ui/core/';
 import styled from 'styled-components';
 import {
   QueryData,
   CreateNewQuery,
   AppState,
-  isDbLists,
   DatabaseInfo,
 } from '../../../types';
 import { DBType } from '../../../../backend/BE_types';
 import { defaultMargin } from '../../../style-variables';
 import { getPrettyTime } from '../../../lib/queries';
-import { once, sendFeedback } from '../../../lib/utils';
+import { sendFeedback } from '../../../lib/utils';
 import QueryGroup from './QueryGroup';
 import QueryLabel from './QueryLabel';
 import QueryDb from './QueryDb';

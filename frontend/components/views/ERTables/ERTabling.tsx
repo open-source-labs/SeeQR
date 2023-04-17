@@ -71,7 +71,6 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
   });
   const [nodes, setNodes] = useState<Node[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
-  console.log(schemaState);
   // state for custom controls toggle
   // when tables (which is the database that is selected changes, update SchemaState)
   useEffect(() => {

@@ -5,14 +5,11 @@
  */
 
 import ms from 'ms';
-import { useState } from 'react';
-import { AppState, QueryData, FilePath } from '../types';
+import { AppState, QueryData } from '../types';
 import { sendFeedback } from './utils';
 
-const jsonminify = require("jsonminify")
 const path = require('path');
 const fs = require('fs');
-const electron = require('electron');
 
 
 /**
