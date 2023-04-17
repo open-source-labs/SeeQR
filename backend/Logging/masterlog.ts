@@ -2,9 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { LogType } from '../BE_types';
 
-interface Logger {
-  log: (message: string, logType?: LogType, opt1?: any, opt2?: any) => void;
-}
+//file to print color coded logs in the console
 
 // Helper functions!
 const saveLogMessage = (message) => {
@@ -62,10 +60,10 @@ const logger = function (
   if (opt1) moreText += JSON.stringify(opt1);
   if (opt2) moreText += JSON.stringify(opt2);
 
-  // console.log(
-  //   `\u001b[1;${colorCode}m ${`[${logType}] ${message + moreText}`}` +
-  //     `\u001b[1;0m`
-  // );
+  console.log(
+    `\u001b[1;${colorCode}m ${`[${logType}] ${message + moreText}`}` +
+      `\u001b[1;0m`
+  );
   saveLogMessage(`[${logType}] ${message}`);
 };
 

@@ -9,8 +9,6 @@ import {
   StyledButton,
   StyledTextField,
   DropdownContainer,
-  StyledDropdown,
-  StyledMenuItem,
   StyledInputLabel,
   StyledNativeDropdown,
   StyledNativeOption,

@@ -1,16 +1,12 @@
 import React, { useState } from 'react';
 import { DatabaseInfo } from '../../types';
 import { DBType } from '../../../backend/BE_types';
-import { IpcRendererEvent, ipcRenderer } from 'electron';
+import { ipcRenderer } from 'electron';
 import styled from 'styled-components';
 import {
-  TextField,
-  Box,
-  InputLabel,
-  Select,
   DialogTitle,
 } from '@material-ui/core/';
-import { Button, Dialog, FormControl, MenuItem, Tooltip } from '@mui/material';
+import { Dialog, Tooltip } from '@mui/material';
 import { sendFeedback } from '../../lib/utils';
 import {
   ButtonContainer,
@@ -18,8 +14,6 @@ import {
   StyledButton,
   StyledTextField,
   DropdownContainer,
-  StyledDropdown,
-  StyledMenuItem,
   StyledInputLabel,
   StyledNativeDropdown,
   StyledNativeOption,
@@ -31,12 +25,6 @@ const DBDialogBase = styled.div`
   display: flex;
   flex-direction: column;
 `;
-
-interface CreateDBDialogProps {
-  show: boolean;
-  DBInfo: Array<DatabaseInfo> | undefined;
-  onClose: () => void;
-}
 
 const CreateDBDialog = function ({ show, DBInfo, onClose }) {
   if (!show) return <></>;

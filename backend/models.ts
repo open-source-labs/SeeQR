@@ -57,10 +57,10 @@ const DBFunctions: DBFunctions = {
       try {
         await connectionFunctions.RDS_PG_DBConnect(this.curRDS_PG_DB);
         this.dbsInputted.rds_pg = true;
-        console.log('CONNECTED TO RDS PG DATABASE!');
+        logger('CONNECTED TO RDS PG DATABASE!', LogType.SUCCESS);
       } catch (error) {
         this.dbsInputted.rds_pg = false;
-        console.log('FAILED TO CONNECT TO RDS PG DATABASE');
+        logger('FAILED TO CONNECT TO RDS PG DATABASE', LogType.ERROR);
       }
     } else {
       this.dbsInputted.rds_pg = false;
@@ -76,14 +76,14 @@ const DBFunctions: DBFunctions = {
         await connectionFunctions.RDS_MSQL_DBConnect(this.curRDS_MSQL_DB);
         /*
         junaid
-           just a test query to make sure were connected. needed for the catch statement to hit incase we arent connected.
+        just a test query to make sure were connected. needed for the catch statement to hit incase we arent connected.
         */
         const testQuery = await pools.rds_msql_pool.query('SHOW DATABASES;');
-        console.log(`CONNECTED TO RDS MYSQL DATABASE!`);
+        logger(`CONNECTED TO RDS MYSQL DATABASE!`, LogType.SUCCESS);
         this.dbsInputted.rds_msql = true;
       } catch (error) {
         this.dbsInputted.rds_msql = false;
-        console.log('FAILED TO CONNECT TO RDS MSQL DATABASE');
+        logger('FAILED TO CONNECT TO RDS MSQL DATABASE', LogType.ERROR);
       }
     } else {
       this.dbsInputted.rds_msql = false;
@@ -94,11 +94,11 @@ const DBFunctions: DBFunctions = {
       this.pg_uri = `postgres://${PG_Cred.user}:${PG_Cred.password}@localhost:${PG_Cred.port}/`;
       try {
         await connectionFunctions.PG_DBConnect(this.pg_uri, this.curPG_DB);
-        console.log('CONNECTED TO LOCAL PG DATABASE');
+        logger('CONNECTED TO LOCAL PG DATABASE', LogType.SUCCESS);
         this.dbsInputted.pg = true;
       } catch (error) {
         this.dbsInputted.pg = false;
-        console.log('FAILED TO CONNECT TO LOCAL PG DATABASE');
+        logger('FAILED TO CONNECT TO LOCAL PG DATABASE', LogType.ERROR);
       }
     } else {
       this.dbsInputted.pg = false;
@@ -120,14 +120,14 @@ const DBFunctions: DBFunctions = {
         });
         /*
         junaid
-           just a test query to make sure were connected. needed for the catch statement to hit incase we arent connected.
+        just a test query to make sure were connected. needed for the catch statement to hit incase we arent connected.
         */
         const testQuery = await pools.msql_pool.query('SHOW DATABASES;');
         this.dbsInputted.msql = true;
-        console.log(`CONNECTED TO LOCAL MYSQL DATABASE!`);
+        logger(`CONNECTED TO LOCAL MYSQL DATABASE!`, LogType.SUCCESS);
       } catch (error) {
         this.dbsInputted.msql = false;
-        console.log('FAILED TO CONNECT TO LOCAL MSQL DATABASE');
+        logger('FAILED TO CONNECT TO LOCAL MSQL DATABASE', LogType.ERROR);
       }
     } else {
       this.dbsInputted.msql = false;
@@ -136,9 +136,6 @@ const DBFunctions: DBFunctions = {
   },
 
   query(text, params, dbType) {
-    console.log(text)
-    console.log(params);
-    console.log(dbType)
     // RUN ANY QUERY - function that will run query on database that is passed in.
     logger(`Attempting to run query: \n ${text} for: \n ${dbType}`);
 
@@ -193,7 +190,6 @@ const DBFunctions: DBFunctions = {
       databaseList: [],
       tableList: [],
     };
-    console.log('in get lists')
     if (this.dbsInputted.pg) {
       try {
         const pgDBList = await this.getDBNames(DBType.Postgres);
@@ -249,7 +245,6 @@ const DBFunctions: DBFunctions = {
         );
       }
     }
-    // console.log(listObj.databaseList)
     return listObj;
   },
 

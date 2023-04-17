@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
-import { Tabs, Tab, Button } from '@material-ui/core';
+import { Tabs, Tab } from '@material-ui/core';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import styled from 'styled-components';
 import TableDetails from './TableDetails';
 import { AppState, TableInfo } from '../../../types';
 import { DBType } from '../../../../backend/BE_types';
-import { greyPrimary, greenPrimary, textColor } from '../../../style-variables';
+import { greyPrimary, greenPrimary } from '../../../style-variables';
 import ERTables from '../ERTables/ERTabling';
-import updateSchema from './sample-updateschema';
-import { sendFeedback } from '../../../lib/utils';
 
 interface TabPanelProps {
   children?: React.ReactNode;
