@@ -42,6 +42,7 @@ function TabPanel(props: TabPanelProps) {
         display:'flex',
         flexDirection: 'column',
         alignItems: 'center',
+        pt: 2
       }}
       >
         {children}
