@@ -37,7 +37,16 @@ function TabPanel(props: TabPanelProps) {
       aria-labelledby={`simple-tab-${index}`}
       {...other}
     >
-      {value === index && <Box sx={{ p: 3, color: 'red' }}>{children}</Box>}
+      {value === index && (
+      <Box sx={{
+        display:'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+      }}
+      >
+        {children}
+      </Box>
+)}
     </div>
   );
 }
@@ -201,6 +210,7 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
     <Box sx={{ width: '100%' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs
+          variant="fullWidth"
           value={value}
           onChange={handleChange}
           aria-label="wrapped label basic tabs"
