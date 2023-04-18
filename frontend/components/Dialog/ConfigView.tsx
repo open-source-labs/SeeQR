@@ -15,7 +15,7 @@ import {
   StyledButton,
   StyledTextField,
 } from '../../style-variables';
-import '../../lib/style.scss'; // OSCAR test adding style sheet
+import '../../lib/style.scss';
 
 interface BasicTabsProps {
   onClose: () => void;
@@ -236,18 +236,10 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
       </TabPanel>
 
       <ButtonContainer>
-        <StyledButton
-          variant="contained"
-          color="secondary"
-          onClick={handleClose}
-        >
+        <StyledButton variant="contained" color="secondary" onClick={handleClose}>
           Cancel
         </StyledButton>
-        <StyledButton
-          variant="contained"
-          color="primary"
-          onClick={handleSubmit}
-        >
+        <StyledButton variant="contained" color="primary" onClick={handleSubmit}>
           Save
         </StyledButton>
       </ButtonContainer>
