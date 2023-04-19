@@ -1,7 +1,7 @@
 {
   "name": "seeqr",
   "productName": "SeeQR App",
-  "version": "9.0.1",
+  "version": "10.0.0",
   "description": "SQL Toolbox - Model Implementer, Execution Plan Visualizer and Query Comparison Tool",
   "main": "./tsCompiled/backend/main.js",
   "babel": {
