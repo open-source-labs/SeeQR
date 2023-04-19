@@ -22,7 +22,7 @@ const writeConfigDefault = function (): DocConfigFile {
   return defaultFile;
 };
 
-// Check if config.json has the relevant database properties, tries to replace only the properties that are missing and return either the original or new object. Doesn't care about additional properties
+// Check if config.json object has the correct database properties (mysql, pg, etc.), tries to replace only the properties that are missing and return either the original or new object. Doesn't care about additional properties in the object besides those in const defaultFile.
 const checkConfigFile = function (currConfig: DocConfigFile): DocConfigFile {
   const invalidKeys: string[] = [];
   try {
