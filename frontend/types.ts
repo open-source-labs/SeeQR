@@ -1,4 +1,4 @@
-import { DBType } from "../backend/BE_types";
+import { DBType } from '../backend/BE_types';
 
 /**
  * This file contains common types that need to be used across the frontend
@@ -353,13 +353,6 @@ export type TableHeaderNodeType = {
   tableName: string;
   type: string;
 };
-
-// export enum DBType {
-//   Postgres = 'pg',
-//   MySQL = 'mysql',
-//   RDSPostgres = 'rds-pg',
-//   RDSMySQL = 'rds-mysql',
-// }
 
 export interface DocConfigFile {
   mysql_user: string;

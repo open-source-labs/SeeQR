@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Drawer, IconButton, Tooltip } from '@material-ui/core/';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import styled from 'styled-components';
-import { AppState, TableInfo } from '../../types';
+import { AppState } from '../../types';
 import TopButtons from './TopButtons';
 import QueryList from './QueryList';
 import DbList from './DbList';

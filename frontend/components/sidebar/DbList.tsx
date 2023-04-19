@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
-import { IpcRendererEvent, ipcRenderer } from 'electron';
+import { ipcRenderer } from 'electron';
 import { IconButton, Tooltip } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import AddNewDbModal from '../modal/AddNewDbModalCorrect';
 import {
   AppState,
-  isDbLists,
   DatabaseInfo,
   TableInfo,
 } from '../../types';

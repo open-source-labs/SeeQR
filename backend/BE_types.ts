@@ -65,7 +65,7 @@ type dbsInputted = {
   msql: boolean;
   rds_pg: boolean;
   rds_msql: boolean;
-}
+};
 
 export interface DBFunctions {
   pg_uri: string;
@@ -77,7 +77,7 @@ export interface DBFunctions {
     password: string;
     host: string;
   };
-  dbsInputted: dbsInputted ;
+  dbsInputted: dbsInputted;
 
   setBaseConnections: () => Promise<dbsInputted>;
   query: (text: string, params: (string | number)[], dbType: DBType) => void;

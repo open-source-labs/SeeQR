@@ -7,7 +7,6 @@ import { LogType } from './BE_types';
 export default {
   PG_DBConnect: async function (pg_uri: string, db: string) {
     const newURI = `${pg_uri}${db}`;
-    logger(`New pool URI set: ${newURI}`, LogType.SUCCESS);
     const newPool = new Pool({ connectionString: newURI });
     pools.pg_pool = newPool;
     await pools.pg_pool.connect();
@@ -24,7 +23,7 @@ export default {
       .then(() => {
         logger(`Connected to MSQL DB: ${db}`, LogType.SUCCESS);
       })
-      .catch((err) => {
+      .catch(() => {
         logger(`Couldnt connect to MSQL DB: ${db}`, LogType.ERROR);
       });
   },
@@ -45,7 +44,7 @@ export default {
       .then(() => {
         logger(`Connected to MSQL DB: ${db}`, LogType.SUCCESS);
       })
-      .catch((err) => {
+      .catch(() => {
         logger(`Couldnt connect to MSQL DB: ${db}`, LogType.ERROR);
       });
   },

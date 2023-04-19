@@ -15,7 +15,7 @@ import {
   StyledButton,
   StyledTextField,
 } from '../../style-variables';
-import '../../lib/style.scss'; // OSCAR test adding style sheet
+import '../../lib/style.scss';
 
 interface BasicTabsProps {
   onClose: () => void;
@@ -37,7 +37,17 @@ function TabPanel(props: TabPanelProps) {
       aria-labelledby={`simple-tab-${index}`}
       {...other}
     >
-      {value === index && <Box sx={{ p: 3, color: 'red' }}>{children}</Box>}
+      {value === index && (
+      <Box sx={{
+        display:'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        pt: 2
+      }}
+      >
+        {children}
+      </Box>
+)}
     </div>
   );
 }
@@ -201,6 +211,7 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
     <Box sx={{ width: '100%' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs
+          variant="fullWidth"
           value={value}
           onChange={handleChange}
           aria-label="wrapped label basic tabs"
@@ -208,7 +219,7 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
           <Tab label="MySql" {...a11yProps(0)} />
           <Tab label="Postgres" {...a11yProps(1)} />
           <Tab label="RDS MySql" wrapped {...a11yProps(2)} />
-          <Tab label="RDS Postgres" wrapped />
+          <Tab label="RDS Postgres" wrapped {...a11yProps(3)} />
         </Tabs>
       </Box>
       <TabPanel value={value} index={0}>
@@ -225,18 +236,10 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
       </TabPanel>
 
       <ButtonContainer>
-        <StyledButton
-          variant="contained"
-          color="secondary"
-          onClick={handleClose}
-        >
+        <StyledButton variant="contained" color="secondary" onClick={handleClose}>
           Cancel
         </StyledButton>
-        <StyledButton
-          variant="contained"
-          color="primary"
-          onClick={handleSubmit}
-        >
+        <StyledButton variant="contained" color="primary" onClick={handleSubmit}>
           Save
         </StyledButton>
       </ButtonContainer>

@@ -124,7 +124,6 @@ const docConfig: DocConfig = {
       return configFile;
     } catch (err: any) {
       logger(err.message, LogType.WARNING);
-      console.log('Error in getFullConfig ', err);
       return 'Failed to retrieve data.';
     }
   },

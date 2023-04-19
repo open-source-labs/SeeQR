@@ -2,7 +2,7 @@ import React from 'react';
 import { Bar, defaults, ChartData } from 'react-chartjs-2';
 import styled from 'styled-components'
 import { AppState } from '../../../types';
-import { keyFromData, getTotalTime } from '../../../lib/queries';
+import { getTotalTime } from '../../../lib/queries';
 import { compareChartColors, textColor } from '../../../style-variables';
 
 const ChartContainer = styled.div`

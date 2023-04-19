@@ -1,4 +1,4 @@
-/**
+/*
  * This file is building the menu options that are available.
  * For Macs, the file menu is available at the top (i.e. File, Edit, Window, Help etc)
  * Each menu option is a new object element within the array

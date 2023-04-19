@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { Handle, Position } from 'react-flow-renderer';
 import { AccordionSummary, AccordionDetails } from '@mui/material';
 import MuiAccordion, { AccordionProps } from '@mui/material/Accordion';
