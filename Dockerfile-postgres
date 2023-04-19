@@ -1,0 +1,6 @@
+#pulling image from postgres
+FROM postgres:12.8
+
+# Copy script from (1st arg) current directory into
+# build container (2nd arg) image build
+COPY ./scripts/db_init.sql /docker-entrypoint-initdb.d/

@@ -19,6 +19,7 @@
     "electron-dev": "nodemon --watch tsCompiled/backend --exec \"npx cross-env NODE_ENV=development electron .\"",
     "tsc-dev": "tsc --watch",
     "test": "jest --verbose",
+    "test-db": "docker compose -f docker-compose-test.yml up",
     "electron-build": "electron-builder"
   },
   "repository": "github:open-source-labs/SeeQR",

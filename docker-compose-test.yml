@@ -1,0 +1,13 @@
+version: "3"
+services:
+  seeqrtestdb:
+    build:
+      dockerfile: Dockerfile-postgres
+    container_name: "seeqr-test-db-port-2345"
+    restart: always
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    environment:
+      POSTGRES_DB: ${POSTGRES_NAME}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASS}
