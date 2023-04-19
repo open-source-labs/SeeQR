@@ -144,21 +144,17 @@ const convertStateToReactFlow = {
       tables[i].columns.forEach((column) =>
         columnsGapSet.add(column.column_name)
       );
-      console.log(columnsGapSet.size);
       columnGap = Math.max(columnsGapSet.size * 74, columnGap);
-      console.log(columnGap);
       // calculate a default rowLength based on sqrt of number of tables
       const rowLength = Math.floor(Math.sqrt(tables.length));
       // if table should be the beginning of a new row...
       if (i % rowLength === 0) {
         // set x, y coordinates for new row to 0 and +250 respectively;
-
         tableCoordinates.x = 0;
         tableCoordinates.y += 250 + columnGap;
         columnGap = 0;
       } else {
         // ...otherwise increment tables position horizontally in current row.
-
         tableCoordinates.x += 500;
       }
       // create a new instance of Table, push into table array
