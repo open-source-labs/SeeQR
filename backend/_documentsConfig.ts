@@ -16,6 +16,53 @@ const defaultFile: DocConfigFile = {
   rds_mysql: { user: '', password: '', port: 3306, host: '' },
   rds_pg: { user: '', password: '', port: 5432, host: '' },
 };
+const writeConfigDefault = function (): DocConfigFile {
+  logger('Could not find config file. Creating default', LogType.WARNING);
+  fs.writeFileSync(configPath, JSON.stringify(defaultFile));
+  return defaultFile;
+};
+
+// Check if config.json has the relevant database properties, tries to replace only the properties that are missing and return either the original or new object. Doesn't care about additional properties
+const checkConfigFile = function (currConfig: DocConfigFile): DocConfigFile {
+  const invalidKeys: string[] = [];
+  try {
+    Object.keys(defaultFile).forEach((key) => {
+      if (!Object.prototype.hasOwnProperty.call(currConfig, key)) {
+        invalidKeys.push(key);
+      } else {
+        Object.keys(defaultFile[key]).forEach((field) => {
+          if (!Object.prototype.hasOwnProperty.call(currConfig[key], field)) {
+            invalidKeys.push(key);
+          }
+        });
+      }
+    });
+  } catch (err) {
+    console.log(err);
+    return writeConfigDefault();
+  }
+  if (invalidKeys.length) {
+    const newConfig = { ...currConfig };
+    invalidKeys.forEach((key) => {
+      newConfig[key] = defaultFile[key];
+    });
+    fs.writeFileSync(configPath, JSON.stringify(newConfig));
+    return newConfig;
+  }
+  return currConfig;
+};
+
+const readConfigFile = function (): DocConfigFile {
+  try {
+    const config = JSON.parse(
+      fs.readFileSync(configPath, 'utf-8')
+    ) as DocConfigFile;
+    return checkConfigFile(config);
+  } catch (err: any) {
+    console.log(err);
+    return writeConfigDefault();
+  }
+};
 interface DocConfig {
   getConfigFolder: () => string;
   getCredentials: (dbType: DBType) => {
@@ -90,54 +137,6 @@ const docConfig: DocConfig = {
       logger(err.message, LogType.WARNING);
     }
   },
-};
-
-const writeConfigDefault = function (): DocConfigFile {
-  logger('Could not find config file. Creating default', LogType.WARNING);
-  fs.writeFileSync(configPath, JSON.stringify(defaultFile));
-  return defaultFile;
-};
-
-// Check if config.json has the relevant database properties, tries to replace only the properties that are missing and return either the original or new object. Doesn't care about additional properties
-const checkConfigFile = function (currConfig: DocConfigFile): DocConfigFile {
-  const invalidKeys: string[] = [];
-  try {
-    Object.keys(defaultFile).forEach((key) => {
-      if (!Object.prototype.hasOwnProperty.call(currConfig, key)) {
-        invalidKeys.push(key);
-      } else {
-        Object.keys(defaultFile[key]).forEach((field) => {
-          if (!Object.prototype.hasOwnProperty.call(currConfig[key], field)) {
-            invalidKeys.push(key);
-          }
-        });
-      }
-    });
-  } catch (err) {
-    console.log(err);
-    return writeConfigDefault();
-  }
-  if (invalidKeys.length) {
-    const newConfig = { ...currConfig };
-    invalidKeys.forEach((key) => {
-      newConfig[key] = defaultFile[key];
-    });
-    console.log('newConfig', newConfig);
-    docConfig.saveConfig(newConfig);
-    return newConfig;
-  }
-  return currConfig;
-};
-const readConfigFile = function (): DocConfigFile {
-  try {
-    const config = JSON.parse(
-      fs.readFileSync(configPath, 'utf-8')
-    ) as DocConfigFile;
-    return checkConfigFile(config);
-  } catch (err: any) {
-    console.log(err);
-    return writeConfigDefault();
-  }
 };
 
 module.exports = docConfig;
