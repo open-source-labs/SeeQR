@@ -16,10 +16,16 @@ require('./channels');
 fixPath();
 // Keep a global reference of the window objects, if you don't, the window will be closed automatically when the JavaScript object is garbage collected.
 let mainWindow: BrowserWindow | null;
-const reactDevToolsPath = path.join(os.homedir(), '/Desktop/ReactDevTools');
-app.whenReady().then(async () => {
-  await session.defaultSession.loadExtension(reactDevToolsPath);
-});
+
+// for react dev tools to work with electron
+// download react devtools and save them on desktop in folder named ReactDevTools
+// devtools: https://github.com/facebook/react/issues/25843
+// https://github.com/mondaychen/react/raw/017f120369d80a21c0e122106bd7ca1faa48b8ee/packages/react-devtools-extensions/ReactDevTools.zip 
+// const reactDevToolsPath = path.join(os.homedir(), '/Desktop/ReactDevTools');
+// app.whenReady().then(async () => {
+//   await session.defaultSession.loadExtension(reactDevToolsPath);
+// });
+
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1800,
