@@ -9,7 +9,7 @@ import {
   StyledDialogTitle,
 } from '../../style-variables';
 import { sendFeedback } from '../../lib/utils';
-import { DBType } from '../../types';
+import { DBType } from '../../../backend/BE_types';
 
 interface DummyPayload {
   dbName: string;
@@ -36,7 +36,7 @@ const DummyDataModal = ({
   const [isError, setIsError] = useState(false);
   const [isEmpty, setIsEmpty] = useState(true);
 
-  console.log('curDBType:', curDBType);
+  // console.log('curDBType:', curDBType);
 
 
   const handleClose = () => {
@@ -105,7 +105,7 @@ const DummyDataModal = ({
     })
     )
     .catch((err: object) => {
-      console.log(err);
+      // console.log(err);
     })
     .finally(handleClose);
   };

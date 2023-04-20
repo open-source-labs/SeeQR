@@ -4,19 +4,30 @@ import tableField from './TableFieldNode';
  * This file is required for React-flow
  * React-flow states:
  *  " You can add a new node type to React Flow by adding it to the nodeTypes prop.
- *  It's important that the nodeTypes are memoized or defined outside of the component. 
+ *  It's important that the nodeTypes are memoized or defined outside of the component.
  *  Otherwise React creates a new object on every render which leads to performance issues and bugs."
- * 
+ *
  *  https://reactflow.dev/docs/guides/custom-nodes/
- * 
+ *
  */
 type NodeTypes = {
-  tableHeader: any
-  tableField: any
-}
+  tableHeader: any;
+  tableField: any;
+};
 const nodeTypes: NodeTypes = {
   tableHeader,
-  tableField
-}
+  tableField,
+};
+export type TablePosObjType = {
+  table_name: string;
+  table_position: {
+    x: number;
+    y: number;
+  };
+};
+export type DatabaseLayoutObjType = {
+  db_name: string;
+  db_tables: TablePosObjType[];
+};
 
 export default nodeTypes;

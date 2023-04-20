@@ -1,10 +1,7 @@
 import React from 'react';
 import { ButtonGroup, Button } from '@material-ui/core/';
 import styled from 'styled-components';
-import { ipcRenderer } from 'electron';
-import { AppState, DBType, DatabaseInfo } from '../../types';
 import { selectedColor, textColor, defaultMargin } from '../../style-variables';
-import { sendFeedback } from '../../lib/utils';
 
 const ViewBtnGroup = styled(ButtonGroup)`
   margin: ${defaultMargin} 5px;
@@ -20,18 +17,9 @@ interface ViewButtonProps {
 const ViewButton = styled(Button)`
   background: ${({ $isSelected }: ViewButtonProps) =>
     $isSelected ? textColor : selectedColor};
-
 `;
 
-
-type ViewSelectorProps = Pick<AppState, 'selectedView' | 'setSelectedView' | 'setSelectedDb' | 'selectedDb'>
-& {
-  curDBType: DBType | undefined;
-  setDBType: (dbType: DBType | undefined) => void;
-  // cdbt: DBType | undefined;
-  // setcdbt: (cdbt: DBType | undefined) => void;
-  DBInfo: DatabaseInfo[] | undefined;
-  setDBInfo: (dbInfo: DatabaseInfo[] | undefined) => void;
+type BottomButtonProps = {
   showCreateDialog: boolean;
   setCreateDialog: (show: boolean) => void;
 };
@@ -39,7 +27,10 @@ type ViewSelectorProps = Pick<AppState, 'selectedView' | 'setSelectedView' | 'se
 /**
  * Selector for view on sidebar. Updates App state with selected view
  */
-const BottomButtons = ({ selectedView, setSelectedView, setSelectedDb, selectedDb, curDBType, setDBType, DBInfo, setDBInfo, showCreateDialog, setCreateDialog}: ViewSelectorProps) => (
+const BottomButtons = ({
+  showCreateDialog,
+  setCreateDialog,
+}: BottomButtonProps) => (
   <ViewBtnGroup variant="contained" fullWidth>
     <ViewButton
       onClick={() => {

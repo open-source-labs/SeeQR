@@ -20,25 +20,24 @@ class Table {
   }
   // the render method converts the data into the form of react flow
   render() {
-    // This method gets the table table position from the stored file
+    // This method gets the table position from the stored file
     const getTablePosition = () => {
-      const location = remote.app.getPath('temp').concat('/UserTableLayouts.json');
+      const location = remote.app
+        .getPath('temp')
+        .concat('/UserTableLayouts.json');
       try {
-        const data = fs.readFileSync(location, 'utf8');
-        const parsedData = JSON.parse(data);
-        for (let i = 0; i < parsedData.length; i += 1) {
-          const db = parsedData[i];
-          if (db.db_name === this.database) {
-            // eslint-disable-next-line consistent-return
-            for (let j = 0; j < db.db_tables.length; j += 1) {
-              const currTable = db.db_tables[j];
-              if (currTable.table_name === this.name)
-                return currTable.table_position;
-            };
-          };
-        };
-        
-        return { x: this.tableCoordinates.x, y: this.tableCoordinates.y };
+        // refactored code. parse json file, look for current db in saved file, look for current table inside db. return undefined if db or table doesn't exist
+        const parsedData = JSON.parse(fs.readFileSync(location, 'utf8'));
+        const foundCurrentDB = parsedData.find(
+          (db) => db.db_name === this.database
+        );
+        const foundCurrentTable = foundCurrentDB?.db_tables.find(
+          (table) => table.table_name === this.name
+        );
+        // return current table's saved position coordinates else return passed in coordinates if could not find saved coordinates in json
+        return foundCurrentTable
+          ? foundCurrentTable.table_position
+          : { x: this.tableCoordinates.x, y: this.tableCoordinates.y };
       } catch (error) {
         return { x: (this.id - 1) * 500, y: 0 };
       }
@@ -56,40 +55,40 @@ class Table {
         },
       },
     ];
-
     const edges = [];
-
     let num = -1;
     // iterate through the columns data for this data, create a node for each column
     // create an edge (the connection line) for each column that has a designated
     // foreign table and foreign column name
-    this.columns.forEach((el, i) => {
-    // check if column exists in the nodes array so duplicate nodes arent created in case there are duplicate columns. nums variable on line 63 starts at 0 and upon first incrementation on line 72 increases nnuber to 0 for the first node positioning on line 79
-      const found = nodes.find(colEl => colEl.id === `table-${this.name}_column-${el.column_name}`);
+    this.columns.forEach((column) => {
+      // check if column exists in the nodes array so duplicate nodes arent created in case there are duplicate columns. nums variable on line 63 starts at 0 and upon first incrementation on line 72 increases nnuber to 0 for the first node positioning on line 79
+      const found = nodes.find(
+        (colEl) =>
+          colEl.id === `table-${this.name}_column-${column.column_name}`
+      );
       if (!found) {
-        num++;
-      // create a table field node for each column for react-flow
+        num += 1;
+        // create a table field node for each column for react-flow
         nodes.push({
-          id: `table-${this.name}_column-${el.column_name}`,
+          id: `table-${this.name}_column-${column.column_name}`,
           type: types.TABLE_FIELD,
           parentNode: `table-${this.name}`,
           draggable: false,
           position: { x: 0, y: (num + 1) * 78 },
           data: {
             tableName: this.name,
-            columnData: el,
+            columnData: column,
             otherTables: this.otherTables,
           },
-        }); 
+        });
       }
-
       // if the element has a foregin_column and foreign_table create an edge
-      if (el.foreign_column && el.foreign_table) {
+      if (column.foreign_column && column.foreign_table) {
         // create an edge for react flow
         edges.push({
-          source: `table-${this.name}_column-${el.column_name}`,
-          target: `table-${el.foreign_table}_column-${el.foreign_column}`,
-          id: `table-${this.name}_column${el.column_name}__table-${el.foreign_table}_column-${el.foreign_column}`,
+          source: `table-${this.name}_column-${column.column_name}`,
+          target: `table-${column.foreign_table}_column-${column.foreign_column}`,
+          id: `table-${this.name}_column${column.column_name}__table-${column.foreign_table}_column-${column.foreign_column}`,
           markerEnd: {
             type: MarkerType.Arrow,
             color: greenPrimary,
@@ -98,7 +97,6 @@ class Table {
         });
       }
     });
-
     // return an object with nodes and edges
     return {
       nodes,
@@ -108,78 +106,66 @@ class Table {
 }
 
 const convertStateToReactFlow = {
+  // generates nodes and edges to position tables in a dynamic grid formation based on total number of tables and columns
   convert: (schema) => {
-    // declare
     const nodes = [];
     const edges = [];
-    const tableList = [];
+    const localTableList = [];
+    const tables = schema.tableList;
     const tableCoordinates = {
       x: 0,
-      y: 0
+      y: 0,
     };
-
-    // create a columnGap variable, which calculates the y coordinate for any table in that row. 
-    // each time a column is added, increase column gap by 74. 
-    // each time a column is added, increase the y coordinate by the column gap  
+    let columnGap = 0;
+    // create a columnGap variable, which calculates the y coordinate for any table in that row.
+    // each time a column is added, increase column gap by 74.
+    // each time a column is added, increase the y coordinate by the column gap
     // when a new row is reached, reset column gap to 0.
 
-    let columnGap = 0;
-    // iterate through the tableList
-    for (let i = 0; i < schema.tableList.length; i += 1) {
-    
-      const column_names = [];
-      // get all the column names from the table
-      for (let j = 0; j < schema.tableList[i].columns.length; j += 1) {
-        column_names.push(schema.tableList[i].columns[j].column_name);
-      };
-      tableList.push({
-        table_name: schema.tableList[i].table_name,
-        column_names,
-      });  
-    }
+    // populate localTableList array that is a simplified list of tables and columns
+    // in a separate loop so we can pass each new table instance a list of every other table
+    tables.forEach((table) => {
+      localTableList.push({
+        table_name: table.table_name,
+        column_names: table.columns.map((column) => column.column_name),
+      });
+    });
 
-    for (let i = 0; i < schema.tableList.length; i += 1) {
+    for (let i = 0; i < tables.length; i += 1) {
       // make a deep copy so that modifying these values will not affect the data
-      const copyString = JSON.stringify(schema.tableList[i]);
-      const copy = JSON.parse(copyString);
-      // filter the table that is the same from the tableList
-      const otherTableList = tableList.filter(
-        (el) => el.table_name !== schema.tableList[i].table_name
+      const copyOfTable = JSON.parse(JSON.stringify(tables[i]));
+      // create a list of other tables to pass into the Table constructor
+      const otherTableList = localTableList.filter(
+        (localTable) => localTable.table_name !== tables[i].table_name
       );
-      
-      // check the current index of the table in tableList against the length of the list. 
-      // on each loop.
-      const tables = schema.tableList;
-      const columns = tables[i].columns.length;
-      const localColumnGap = columns * 74; 
-      if (localColumnGap > columnGap) columnGap = localColumnGap;
-
+      // if current table has more columns than any other in its row, set columnGap to new max number of columns * 74(px)
+      // filter for duplicate column names -- one imported test db was creating a new column for each constraint and this is a bandaid fix
+      const columnsGapSet = new Set();
+      tables[i].columns.forEach((column) =>
+        columnsGapSet.add(column.column_name)
+      );
+      columnGap = Math.max(columnsGapSet.size * 74, columnGap);
+      // calculate a default rowLength based on sqrt of number of tables
       const rowLength = Math.floor(Math.sqrt(tables.length));
-      // if index is divisible by length of list, start a new row of tables. 
+      // if table should be the beginning of a new row...
       if (i % rowLength === 0) {
-        // set x, y coordinates for new row to 0 and +250 respectively; 
+        // set x, y coordinates for new row to 0 and +250 respectively;
         tableCoordinates.x = 0;
         tableCoordinates.y += 250 + columnGap;
         columnGap = 0;
       } else {
-        // otherwise increment tables position horizontally in current row. 
+        // ...otherwise increment tables position horizontally in current row.
         tableCoordinates.x += 500;
-      };
-
-      // else increment x coordinate by + 250  
-
-
-      // position tables in dynamic grid formation. 
+      }
       // create a new instance of Table, push into table array
       const table = new Table(
         i + 1,
-        copy.columns,
+        copyOfTable.columns,
         schema.tableList[i].table_name,
         tableCoordinates,
         otherTableList,
         schema.database
       );
-
       // assign the evaluated result of rendering the table into tablesNodesEdges
       const tableNodesAndEdges = table.render();
       // each table will return an array of its nodes/edges

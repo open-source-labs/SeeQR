@@ -1,9 +1,7 @@
 /**
  * This file contains common types that need to be used across the backend
  */
- import {
-  UpdatesObjType
-} from '../frontend/types';
+import { UpdatesObjType } from '../frontend/types';
 
 export interface ColumnObj {
   column_name: string;
@@ -27,7 +25,7 @@ export interface TableDetails {
   columns?: ColumnObj[];
 }
 export interface DBList {
-  databaseConnected: boolean[];
+  databaseConnected: [boolean, boolean, boolean, boolean];
   databaseList: dbDetails[];
   tableList: TableDetails[];
 }
@@ -41,7 +39,9 @@ export type BackendObjType = {
 
 export enum DBType {
   Postgres = 'pg',
-  MySQL = 'mysql'
+  MySQL = 'mysql',
+  RDSPostgres = 'rds-pg',
+  RDSMySQL = 'rds-mysql',
 }
 
 export enum LogType {
@@ -50,14 +50,41 @@ export enum LogType {
   WARNING = 'WARNING',
   NORMAL = 'NORMAL',
   SEND = 'SEND',
-  RECEIVE = 'RECEIVE'
+  RECEIVE = 'RECEIVE',
 }
 
 export interface DocConfigFile {
-  mysql_user: string,
-  mysql_pass: string,
-  mysql_port: number | string,
-  pg_user: string,
-  pg_pass: string,
-  pg_port: number | string
+  mysql: { user: string; password: string; port: number };
+  pg: { user: string; password: string; port: number };
+  rds_mysql: { user: string; password: string; port: number; host: string };
+  rds_pg: { user: string; password: string; port: number; host: string };
+}
+
+type dbsInputted = {
+  pg: boolean;
+  msql: boolean;
+  rds_pg: boolean;
+  rds_msql: boolean;
+};
+
+export interface DBFunctions {
+  pg_uri: string;
+  curPG_DB: string;
+  curMSQL_DB: string;
+  curRDS_MSQL_DB: any;
+  curRDS_PG_DB: {
+    user: string;
+    password: string;
+    host: string;
+  };
+  dbsInputted: dbsInputted;
+
+  setBaseConnections: () => Promise<dbsInputted>;
+  query: (text: string, params: (string | number)[], dbType: DBType) => void;
+  connectToDB: (db: string, dbType?: DBType) => Promise<void>;
+  getLists: (dbName: string, dbType?: DBType) => Promise<DBList>;
+  getTableInfo: (tableName: string, dbType: DBType) => Promise<ColumnObj[]>;
+  getDBNames: (dbType: DBType) => Promise<dbDetails[]>;
+  getColumnObjects: (tableName: string, dbType: DBType) => Promise<ColumnObj[]>;
+  getDBLists: (dbType: DBType, dbName: string) => Promise<TableDetails[]>;
 }
