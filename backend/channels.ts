@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 /* eslint-disable prefer-destructuring */
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { ipcMain } from 'electron'; // IPCMain: Communicate asynchronously from the main process to renderer processes
 import path from 'path';
 import fs from 'fs';
@@ -261,7 +262,7 @@ ipcMain.handle(
       event.sender.send('db-lists', dbsAndTableInfo);
       logger("Sent 'db-lists' from 'duplicate-db'", LogType.SEND);
     } finally {
-      //cleanup temp file
+      // cleanup temp file
       try {
         fs.unlinkSync(tempFilePath);
       } catch (e) {
@@ -355,7 +356,6 @@ ipcMain.handle(
     try {
       let error: string | undefined;
       // connect to db to run query
-
       if (selectedDb !== targetDb) await db.connectToDB(targetDb, dbType);
 
       // Run Explain

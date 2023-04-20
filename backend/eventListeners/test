@@ -1,0 +1,38 @@
+import logger from '../Logging/masterlog';
+
+async (event, payload: InitializePayload, dbType: DBType) => {
+  logger(
+    `Received 'initialize-db' of dbType: ${dbType} and: `,
+    LogType.RECEIVE,
+    payload
+  );
+
+  event.sender.send('async-started');
+  const { newDbName } = payload;
+
+  try {
+    // create new empty db
+    await db.query(createDBFunc(newDbName, dbType), null, dbType);
+
+    // connect to initialized db
+    await db.connectToDB(newDbName, dbType);
+
+    // update DBList in the sidebar to show this new db
+    const dbsAndTableInfo: DBList = await db.getLists(newDbName, dbType);
+    event.sender.send('db-lists', dbsAndTableInfo);
+    logger("Sent 'db-lists' from 'initialize-db'", LogType.SEND);
+  } catch (e) {
+    const err = `Unsuccessful DB Creation for ${newDbName} in ${dbType} database`;
+    const feedback: Feedback = {
+      type: 'error',
+      message: err,
+    };
+    event.sender.send('feedback', feedback);
+    // in the case of an error, delete the created db
+    // const dropDBScript = dropDBFunc(newDbName, dbType);
+    // await db.query(dropDBScript, null, dbType);
+    // throw new Error('Failed to initialize new database');
+  } finally {
+    event.sender.send('async-complete');
+  }
+}
