@@ -81,7 +81,6 @@ const App = () => {
   const [showConfigDialog, setConfigDialog] = useState(false);
 
   useEffect(() => {
-    // console.log('dbTables:', dbTables, 'selectedTable: ', selectedTable, 'selectedDb: ', selectedDb, 'curDBType: ', curDBType, 'DBInfo: ', DBInfo, 'PG_isConnected: ', PG_isConnected, 'MYSQL_isConnected: ', MYSQL_isConnected);
     // Listen to backend for updates to list of available databases
     const dbListFromBackend = (evt: IpcRendererEvent, dbLists: DbLists) => {
       if (isDbLists(dbLists)) {
