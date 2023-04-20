@@ -10,35 +10,59 @@ import logger from './Logging/masterlog';
 const home = `${os.homedir()}/Documents/SeeQR`;
 const configFile = `config.json`;
 const configPath = `${home}/${configFile}`;
-
+const defaultFile: DocConfigFile = {
+  mysql: { user: '', password: '', port: 3306 },
+  pg: { user: '', password: '', port: 5432 },
+  rds_mysql: { user: '', password: '', port: 3306, host: '' },
+  rds_pg: { user: '', password: '', port: 5432, host: '' },
+};
 const writeConfigDefault = function (): DocConfigFile {
   logger('Could not find config file. Creating default', LogType.WARNING);
-
-  const defaultFile: DocConfigFile = {
-    mysql: { user: '', password: '', port: 3306 },
-    pg: { user: '', password: '', port: 5432 },
-    rds_mysql: { user: '', password: '', port: 3306, host: '' },
-    rds_pg: { user: '', password: '', port: 5432, host: '' },
-  };
-
   fs.writeFileSync(configPath, JSON.stringify(defaultFile));
-
   return defaultFile;
 };
 
+// Check if config.json object has the correct database properties (mysql, pg, etc.), tries to replace only the properties that are missing and return either the original or new object. Doesn't care about additional properties in the object besides those in const defaultFile.
+const checkConfigFile = function (currConfig: DocConfigFile): DocConfigFile {
+  const invalidKeys: string[] = [];
+  try {
+    Object.keys(defaultFile).forEach((key) => {
+      if (!Object.prototype.hasOwnProperty.call(currConfig, key)) {
+        invalidKeys.push(key);
+      } else {
+        Object.keys(defaultFile[key]).forEach((field) => {
+          if (!Object.prototype.hasOwnProperty.call(currConfig[key], field)) {
+            invalidKeys.push(key);
+          }
+        });
+      }
+    });
+  } catch (err) {
+    console.log(err);
+    return writeConfigDefault();
+  }
+  if (invalidKeys.length) {
+    const newConfig = { ...currConfig };
+    invalidKeys.forEach((key) => {
+      newConfig[key] = defaultFile[key];
+    });
+    fs.writeFileSync(configPath, JSON.stringify(newConfig));
+    return newConfig;
+  }
+  return currConfig;
+};
+
 const readConfigFile = function (): DocConfigFile {
-  if (fs.existsSync(configPath)) {
-    try {
-      const text = fs.readFileSync(configPath, 'utf-8');
-      return JSON.parse(text) as DocConfigFile;
-    } catch (err: any) {
-      throw `Error parsing config file: ${err.message}`;
-    }
-  } else {
+  try {
+    const config = JSON.parse(
+      fs.readFileSync(configPath, 'utf-8')
+    ) as DocConfigFile;
+    return checkConfigFile(config);
+  } catch (err: any) {
+    console.log(err);
     return writeConfigDefault();
   }
 };
-
 interface DocConfig {
   getConfigFolder: () => string;
   getCredentials: (dbType: DBType) => {
