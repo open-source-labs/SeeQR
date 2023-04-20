@@ -17,6 +17,11 @@ import {
 } from '../../style-variables';
 import '../../lib/style.scss';
 
+/*
+junaid
+frontend database login component
+*/
+
 interface BasicTabsProps {
   onClose: () => void;
 }

@@ -41,7 +41,7 @@ const AppContainer = styled.div`
   padding: 0;
 `;
 
-// prettier-ignore
+// prettier-ignore lint
 const Main = styled.main<{ $fullwidth: boolean }>`
   grid-area: ${({ $fullwidth }) => ($fullwidth ? '1 / 1 / -1 / -1' : 'main')};
   background: ${bgColor};
