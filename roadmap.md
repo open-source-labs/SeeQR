@@ -1,25 +1,37 @@
 # Improvements
 
-Front-End
+## view previous versions roadmap commits for older improvement goals
 
-- Dark scrollbar
-- QueryResults: First and Last page navigation buttons
-- Compare: allow comparison mode to switch between group (same label) and db (same db)
+### v10 roadmap for future iterators
 
-Back-End
+- fix outdated dependencies, currently packages must be force installed
 
-- Number of dummy data records that can be generated is currently limited by the maximum size/length a string can be in js and the maximum number of characters allowed in a Postgres query. Improve dummy data generation process to avoid these limits.
+- small bugs need to be ironed out, will find through testing
 
-Features
+- account for different constraint naming conventions
 
-- Save and  import "sessions" - query lists and their results
-- connect to any URI
-- Display Indexes available for each table
-- Highlight and display data types on Query Results table
-- Export Query Results/Explain data to plain text files
+- resolve issue of creating additional collumns for each constraint
 
-Improvements
+- rewrite get columns query to only query relevant column names and constraints
 
-- Deprecate the use of psql, pg_dump and pg_restore in favor of using only pg. This would remove the psql local dependency for users
-- Auto-update electron app
-- Display Query Execution time in TopSummary even if there are no Rows (ie Insert and Delete operations)
+- duplicate database names conflict
+
+- sqlite support
+
+- support for amazon aurora (beware of billing)
+
+- fix dummy data generation
+
+- delete database stops working after you delete one or two databases, or create one or two before
+
+- when creating new databases, state seems to be creating phantom copies of databases aswell.
+
+- rds pg cloud queries seem to be creating the tables in more than just the selected database.
+
+- rds my sql cloud queries wont let you create multiple tables at once. as in you have to create one table, then make another query to make your second table.
+
+- when you create a new cloud pg database, it seems to have all the other databases tables aswell.
+
+- update ui of the initial landing page of application with cloud database instructions aswell
+
+- queued backendObj changes are still there even when switching between different dbs in sidebar
