@@ -15,6 +15,8 @@
 
 </div>
 
+### For the latest in-depth docs for v10.0.0, please visit our [docs site](http://www.seeqrapp.com/docs).
+
 ## Table of Contents
 
 - [Table of Contents](#table-of-contents)
@@ -26,7 +28,6 @@
 - [Core Team](#core-team)
 - [License](#license)
 
-## For The Latest in-depth Docs, please visit our [docs site](http://www.seeqrapp.com/docs).
 
 ## Getting Started
 
