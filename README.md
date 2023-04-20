@@ -9,7 +9,7 @@
 [![Twitter](https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Ftwitter.com%2Ftheseeqr)](https://twitter.com/theseeqr)
 [![Github stars](https://img.shields.io/github/stars/open-source-labs/SeeQR?style=social)](https://github.com/open-source-labs/SeeQR)
 
-[SeeQRapp.com](http://www.seeqrapp.com)
+[seeqrapp.com](http://www.seeqrapp.com)
 
 <p>SeeQR is a <b>convenient one-stop shop</b> for efficient SQL database manipulation and performance testing. SeeQR can be used throughout the database life-cycle, from creation to testing.</p>
 
@@ -26,10 +26,11 @@
 - [Core Team](#core-team)
 - [License](#license)
 
+## For The Latest in-depth Docs, please visit our [docs site](http://www.seeqrapp.com/docs).
+
 ## Getting Started
 
 To get started on contributing and editing databases to this project:
-
 
 1. Download and install [Postgres](https://www.postgresql.org/download/) to access SeeQR's Postgres features and/or [MySQL](https://dev.mysql.com/downloads/mysql/) to access it's MySQL features.
 2. Ensure that psql and/or mysql are available in the `$PATH`.
@@ -51,13 +52,14 @@ To get started on contributing and editing databases to this project:
 - [CodeMirror](https://codemirror.net/)
 
 ## Interface & Features
+
 - Overview
   - Upon application launch, navigate to the config menu by clicking on the gear icon on the top left.
   - Ensure that your usernames, passwords, and ports are accurate in the SeeQR config.
   - Besides using the existing databases, the application also provides various options to create new databases:
-      - Importing `.sql` or `.tar` files.
-      - Navigating to the `Create Database` view at bottom of sidebar.
-      - Copying an existing database (with or without original data).
+    - Importing `.sql` or `.tar` files.
+    - Navigating to the `Create Database` view at bottom of sidebar.
+    - Copying an existing database (with or without original data).
   - Users can export any database onto their local machine.
   - Users can toggle between the 'DATABASES' view and the 'QUERIES' view.
   - Users can toggle between an 'ER DIAGRAM' view and the 'TABLES' view for each database.
@@ -68,6 +70,7 @@ To get started on contributing and editing databases to this project:
 </div>
 
 - Databases
+
   - In the 'DATABASES' view, an interactive Entity Relationship Diagram (`ER DIAGRAM`) is displayed for the selected database.
   - Users can select `TABLE` to see selected database in tabular form.
     - Users can select a table from a list of all the tables in the schema of the currently selected database.
@@ -84,12 +87,12 @@ To get started on contributing and editing databases to this project:
   <div align="center">
     <img src="./assets/readmeImages/gifs/dummy_data.gif" width=800/>
   </div>
+
 - Create/Edit Database
 
   - Users can create a new database from scratch by clicking the `Create New Database` button at the bottom of the sidebar.
   - Users can modify the newly created database as well as any existing databases using the `ER Diagram` to create/change/delete tables and columns.
   - The `Export` button will write a .sql file on the user's desktop of the selected database.
-
 
 <br>
 <div align="center">
@@ -134,7 +137,6 @@ To get started on contributing and editing databases to this project:
     - Clicking on a node will display additional details regarding that action as well.
   - To execute a new query, simply select the '+' button in the sidebar. To go back to a previously saved query, just select it in the sidebar.
 
-
   <br />
   <div align="center">
     <img src="./assets/readmeImages/gifs/Query_Exec_Plan.gif" width=800/>
@@ -166,8 +168,8 @@ We've released SeeQR because it's a useful tool to help optimize SQL databases. 
 
 ## Core Team
 
-[Aya Moosa](https://github.com/Hiya-its-Aya) | [Trevor Ferguson](https://github.com/TrevorJFerguson) | [Pauline Nguyen](https://github.com/paulinekpn) | [Utkarsh Uppal](https://github.com/utyvert) | [Fred Jeong](https://github.com/fred-jeong) | [Gabriel Kime](https://github.com/wizardbusiness) | [Chris Fryer](github.com/frynoceros) | [Ian Grepo](https://github.com/RadiantGH) | [Michelle Chang](https://github.com/mkchang168) | [Jake Bradbeer](https://github.com/JBradbeer) | [Bryan Santos](https://github.com/santosb93) | [William Trey Lewis](https://github.com/treyfrog128) | [Brandon Lee](https://github.com/BrandonW-Lee) | [Casey Escovedo](https://github.com/caseyescovedo) | [Casey Walker](https://github.com/cwalker3011) | [Catherine Chiu](https://github.com/catherinechiu) | [Chris Akinrinade](https://github.com/chrisakinrinade) | [Cindy Chau](https://github.com/cindychau) | [Claudio Santos](https://github.com/Claudiohbsantos) | [Eric Han](https://github.com/ericJH92) | [Faraz Akhtar](https://github.com/faraza22) | [Frank Norton](https://github.com/FrankNorton32) | [Harrison Nam](https://github.com/harrynam07) | [James Kolotouros](https://github.com/dkolotouros) | [Jennifer Courtner](https://github.com/jcourtner) | [John Wagner](https://github.com/jwagner988) | [Justin Dury-Agri](https://github.com/justinD-A) | [Justin Hicks](https://github.com/JuiceBawks) | [Katie Klochan](https://github.com/kklochan) | [May Wirapa Boonyasurat](https://github.com/mimiwrp) | [Mercer Stronck](https://github.com/mercerstronck) | [Muhammad Trad](https://github.com/muhammadtrad) | [Richard Guo](https://github.com/richardguoo) | [Richard Lam](https://github.com/rlam108) | [Sam Frakes](https://github.com/frakes413) | [Serena Kuo](https://github.com/serenackuo) | [Timothy Sin](https://github.com/timothysin) | [Vincent Trang](https://github.com/vincentt114)
-
+[Junaid Ahmed](https://github.com/junaid-ahmed7) | [Chase Sizemore](https://github.com/ChaseSizemore) | [Oscar Romero](https://github.com/creaturenex) | [Anthony Deng](https://github.com/anthonyadeng) | [Aya Moosa](https://github.com/Hiya-its-Aya) | [Trevor Ferguson](https://github.com/TrevorJFerguson) | [Pauline Nguyen](https://github.com/paulinekpn) | [Utkarsh Uppal](https://github.com/utyvert) | [Fred Jeong](https://github.com/fred-jeong) | [Gabriel Kime](https://github.com/wizardbusiness) | [Chris Fryer](github.com/frynoceros) | [Ian Grepo](https://github.com/RadiantGH) | [Michelle Chang](https://github.com/mkchang168) | [Jake Bradbeer](https://github.com/JBradbeer) | [Bryan Santos](https://github.com/santosb93) | [William Trey Lewis](https://github.com/treyfrog128) | [Brandon Lee](https://github.com/BrandonW-Lee) | [Casey Escovedo](https://github.com/caseyescovedo) | [Casey Walker](https://github.com/cwalker3011) | [Catherine Chiu](https://github.com/catherinechiu) | [Chris Akinrinade](https://github.com/chrisakinrinade) | [Cindy Chau](https://github.com/cindychau) | [Claudio Santos](https://github.com/Claudiohbsantos) | [Eric Han](https://github.com/ericJH92) | [Faraz Akhtar](https://github.com/faraza22) | [Frank Norton](https://github.com/FrankNorton32) | [Harrison Nam](https://github.com/harrynam07) | [James Kolotouros](https://github.com/dkolotouros) | [Jennifer Courtner](https://github.com/jcourtner) | [John Wagner](https://github.com/jwagner988) | [Justin Dury-Agri](https://github.com/justinD-A) | [Justin Hicks](https://github.com/JuiceBawks) | [Katie Klochan](https://github.com/kklochan) | [May Wirapa Boonyasurat](https://github.com/mimiwrp) | [Mercer Stronck](https://github.com/mercerstronck) | [Muhammad Trad](https://github.com/muhammadtrad) | [Richard Guo](https://github.com/richardguoo) | [Richard Lam](https://github.com/rlam108) | [Sam Frakes](https://github.com/frakes413) | [Serena Kuo](https://github.com/serenackuo) | [Timothy Sin](https://github.com/timothysin) | [Vincent Trang](https://github.com/vincentt114)
 
 ## License
+
 <p>SeeQR is <a href="./LICENSE">MIT licensed</a>.</p>
