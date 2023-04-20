@@ -15,30 +15,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { AppState, QueryData } from '../../types';
 import { deleteQuery, setCompare, saveQuery, getAppDataPath, key as queryKey } from '../../lib/queries';
 import QueryEntry from './QueryEntry';
-import logo from '../../../assets/logo/seeqr_dock.png';
 import { greyDarkest, greyDark, greenPrimary, SidebarList, StyledListItemText, textColor } from '../../style-variables';
-
-const Dropdown = styled(Accordion)`
-root: {
-  width: "100%",
-    "& .Mui-expanded": {
-      transform: "rotate(0deg)",
-      backgroundColor: "pink",
-      textColor: "green"
-    }
-  },
-  accordion: {
-    minHeight: 150, //ugly but works
-    height: "100%",
-    backgroundColor: "pink",
-    textColor: "green"
-  },
-  details: {
-    alignItems: "center",
-    border: "1px solid rgba(0,0,0,0.1)",
-    borderRadius: 4
-  }
-`;
 
 const QueryText = styled(StyledListItemText)`
   & .MuiListItemText-secondary {
@@ -123,7 +100,7 @@ const QueryList = ({
       }
       return undefined;
     }).catch((err: object | undefined) => {
-      console.log(err);
+      // console.log(err);
       return undefined;
     });
   }
@@ -149,7 +126,7 @@ const QueryList = ({
         }
         return undefined;
       }).catch((err: object) => {
-        console.log(err);
+        // console.log(err);
         return undefined;
       });
     }

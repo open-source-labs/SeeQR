@@ -1,22 +1,23 @@
 import React, { useState } from 'react';
-import { DatabaseInfo, DBType } from '../../types';
-import { IpcRendererEvent, ipcRenderer } from 'electron';
+import { DatabaseInfo } from '../../types';
+import { DBType } from '../../../backend/BE_types';
+import { ipcRenderer } from 'electron';
 import styled from 'styled-components';
-import { TextField, Box, InputLabel, Select, DialogTitle } from '@material-ui/core/';
-import { Button, Dialog, FormControl, MenuItem, Tooltip } from '@mui/material';
+import {
+  DialogTitle,
+} from '@material-ui/core/';
+import { Dialog, Tooltip } from '@mui/material';
 import { sendFeedback } from '../../lib/utils';
 import {
-    ButtonContainer,
-    TextFieldContainer,
-    StyledButton,
-    StyledTextField,
-    DropdownContainer,
-    StyledDropdown,
-    StyledMenuItem,
-    StyledInputLabel,
-    StyledNativeDropdown,
-    StyledNativeOption,
-  } from '../../style-variables';
+  ButtonContainer,
+  TextFieldContainer,
+  StyledButton,
+  StyledTextField,
+  DropdownContainer,
+  StyledInputLabel,
+  StyledNativeDropdown,
+  StyledNativeOption,
+} from '../../style-variables';
 
 const DBDialogBase = styled.div`
   width: 100%;
@@ -25,22 +26,16 @@ const DBDialogBase = styled.div`
   flex-direction: column;
 `;
 
-interface CreateDBDialogProps {
-    show: boolean;
-    DBInfo: Array<DatabaseInfo> | undefined;
-    onClose: () => void;
-}
+const CreateDBDialog = function ({ show, DBInfo, onClose }) {
+  if (!show) return <></>;
 
-const CreateDBDialog = function({show, DBInfo, onClose}) {
-    if(!show) return (<></>);
+  const [newDbName, setNewDbName] = useState('');
+  const [isError, setIsError] = useState(false);
+  const [isEmpty, setIsEmpty] = useState(true);
 
-    const [newDbName, setNewDbName] = useState('');
-    const [isError, setIsError] = useState(false);
-    const [isEmpty, setIsEmpty] = useState(true);
+  const dbNames = DBInfo?.map((dbi: DatabaseInfo) => dbi.db_name);
 
-    const dbNames = DBInfo?.map((dbi: DatabaseInfo) => dbi.db_name);
-
-    // Resets state for error messages
+  // Resets state for error messages
   const handleClose = () => {
     setIsError(false);
     setIsEmpty(true);
@@ -72,72 +67,74 @@ const CreateDBDialog = function({show, DBInfo, onClose}) {
     dbSafeName = dbSafeName.replace(/[^\w-]/gi, '');
     if (dbNames?.includes(dbSafeName)) {
       setIsError(true);
-    }
-    else {
+    } else {
       setIsError(false);
     }
     setNewDbName(dbSafeName);
   };
 
-    const handleSubmit = () => {
-        //it needs to be as any because otherwise typescript thinks it doesn't have a 'value' param idk why
-        const dbt: DBType = (document.getElementById('dbTypeDropdown') as any).value;
-        
-        ipcRenderer
-        .invoke(
-            'initialize-db',
-            {
-                newDbName: newDbName,
-            },
-            dbt
-        )
-        .then(() => {
-            handleClose();
-        })
-        .catch((err) => {
-            sendFeedback({
-            type: 'error',
-            message: err ?? 'Failed to initialize db',
-            });
-        });
-    }
+  const handleSubmit = () => {
+    //it needs to be as any because otherwise typescript thinks it doesn't have a 'value' param idk why
+    const dbt: DBType = (document.getElementById('dbTypeDropdown') as any)
+      .value;
 
-    return (
-        <div>
-        <Dialog
+    ipcRenderer
+      .invoke(
+        'initialize-db',
+        {
+          newDbName: newDbName,
+        },
+        dbt
+      )
+      .then(() => {
+        handleClose();
+      })
+      .catch((err) => {
+        sendFeedback({
+          type: 'error',
+          message: err ?? 'Failed to initialize db',
+        });
+      });
+  };
+
+  return (
+    <div>
+      <Dialog
         fullWidth
         maxWidth="xs"
         onClose={handleClose}
         aria-labelledby="modal-title"
         open={show}
-        >
+      >
         <TextFieldContainer>
-            <DialogTitle id="alert-dialog-title">
-            Create New Database
-            </DialogTitle>
-            <Tooltip title="Any special characters will be removed">
+          <DialogTitle id="alert-dialog-title">Create New Database</DialogTitle>
+          <Tooltip title="Any special characters will be removed">
             <StyledTextField
-                required
-                error={isError}
-                helperText={errorMessage()}
-                id="filled-basic"
-                label="Enter a database name"
-                size="small"
-                variant="outlined"
-                onChange={handleDbName}
-                InputProps={{
+              required
+              error={isError}
+              helperText={errorMessage()}
+              id="filled-basic"
+              label="Enter a database name"
+              size="small"
+              variant="outlined"
+              onChange={handleDbName}
+              InputProps={{
                 style: { color: '#575151' },
-                }}
+              }}
             />
-            </Tooltip>
+          </Tooltip>
         </TextFieldContainer>
 
-          <DropdownContainer>
-            <StyledInputLabel id="dbtype-select-label" variant="standard" htmlFor="uncontrolled-native">
-                Database Type
-            </StyledInputLabel>
+        <DropdownContainer>
+          <StyledInputLabel
+            id="dbtype-select-label"
+            variant="standard"
+            htmlFor="uncontrolled-native"
+          >
+            Database Type
+          </StyledInputLabel>
 
-            {/* <StyledDropdown
+          {/* <StyledDropdown
             labelId="dbtype-select-label"
             id="dbtype-select"
             value={DBType.Postgres}
@@ -148,37 +145,43 @@ const CreateDBDialog = function({show, DBInfo, onClose}) {
                 <StyledMenuItem value={DBType.MySQL}>MySQL</StyledMenuItem>
             </StyledDropdown> */}
 
-            <StyledNativeDropdown
-            id='dbTypeDropdown'
+          <StyledNativeDropdown
+            id="dbTypeDropdown"
             defaultValue={DBType.Postgres}
-            >
-                <StyledNativeOption value={DBType.Postgres}>Postgres</StyledNativeOption>
-                <StyledNativeOption value={DBType.MySQL}>MySQL</StyledNativeOption>
-            </StyledNativeDropdown>
+          >
+            <StyledNativeOption value={DBType.Postgres}>
+              Postgres
+            </StyledNativeOption>
+            <StyledNativeOption value={DBType.MySQL}>MySQL</StyledNativeOption>
+            <StyledNativeOption value={DBType.RDSPostgres}>
+              RDS Postgres
+            </StyledNativeOption>
+            <StyledNativeOption value={DBType.RDSMySQL}>
+              RDS MySQL
+            </StyledNativeOption>
+          </StyledNativeDropdown>
         </DropdownContainer>
-        
-        
 
         <ButtonContainer>
-            <StyledButton
+          <StyledButton
             variant="contained"
             color="secondary"
             onClick={handleClose}
-            >
+          >
             Cancel
-            </StyledButton>
+          </StyledButton>
 
-            <StyledButton
+          <StyledButton
             variant="contained"
             color="primary"
             onClick={isEmpty || isError ? () => {} : handleSubmit}
-            >
+          >
             Confirm
-            </StyledButton>
+          </StyledButton>
         </ButtonContainer>
-        </Dialog>
-        </div>
-    );
-}
+      </Dialog>
+    </div>
+  );
+};
 
 export default CreateDBDialog;

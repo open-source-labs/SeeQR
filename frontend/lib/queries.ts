@@ -5,14 +5,11 @@
  */
 
 import ms from 'ms';
-import { useState } from 'react';
-import { AppState, QueryData, FilePath } from '../types';
+import { AppState, QueryData } from '../types';
 import { sendFeedback } from './utils';
 
-const jsonminify = require("jsonminify")
 const path = require('path');
 const fs = require('fs');
-const electron = require('electron');
 
 
 /**
@@ -68,7 +65,7 @@ export const getAppDataPath: GetAppDataPath = () => {
       return path.join(process.env.HOME, ".SeeQR Data.json");
     }
     default: {
-      console.log("Unsupported platform!");
+      // console.log("Unsupported platform!");
       process.exit(1);
     }
   }
@@ -95,7 +92,7 @@ export const saveQuery:SaveQuery = ( query: QueryData, filePath: string) => {
             console.log(err);
           };
         } else {
-          console.log('File is found');
+          // console.log('File is found');
           const data: object = JSON.parse(fs.readFileSync(filePath));
           const label: string = `label:${query.label} db:${query.db} group:${query.group}`
           data[label] = query;

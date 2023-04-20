@@ -29,13 +29,33 @@ interface Feedback {
   type: string;
   message: string;
 }
-
-// This isn't being used for anything ATM
+/*
+junaid
+this runs whenever save is hit on the main app
+*/
 ipcMain.handle('set-config', async (event, configObj) => {
   docConfig.saveConfig(configObj);
 
   db.setBaseConnections()
-    .then(() => {
+    .then((dbsInputted) => {
+      /*
+      junaid
+      added error handling to display error message on frontend based on which dbs failed to login
+      */
+      let errorStr = '';
+      for (const dbs in dbsInputted) {
+        if (!dbsInputted[dbs]) {
+          errorStr += ` ${dbs}`;
+        }
+      }
+      if (errorStr.length) {
+        const err = `Unsuccessful login(s) for ${errorStr.toUpperCase()} database(s)`;
+        const feedback: Feedback = {
+          type: 'error',
+          message: err,
+        };
+        event.sender.send('feedback', feedback);
+      }
       logger('Successfully reset base connections', LogType.SUCCESS);
       db.getLists().then((data: DBList) => {
         event.sender.send('db-lists', data);
@@ -53,7 +73,7 @@ ipcMain.handle('set-config', async (event, configObj) => {
       event.sender.send('feedback', feedback);
       logger(
         "Sent 'feedback' from 'reset-connection' (Note: This is an ERROR!)",
-        LogType.SEND
+        LogType.ERROR
       );
     })
     .finally(() => {
@@ -66,7 +86,13 @@ ipcMain.handle('get-config', async (event, configObj) => {
 });
 
 // Listen for request from front-end and send back the DB List upon request
-ipcMain.on('return-db-list', (event, dbType: DBType = DBType.Postgres) => {
+/*
+junaid and chase
+removed the parameters because it doesnt seem like they do anything here, and it prevents the other databses from rendering on the list if pg is passed in
+*/
+
+// ipcMain.on('return-db-list', (event, dbType: DBType = DBType.Postgres) => {
+ipcMain.on('return-db-list', (event) => {
   logger(
     "Received 'return-db-list' (Note: No Async being sent here)",
     LogType.RECEIVE
@@ -74,7 +100,13 @@ ipcMain.on('return-db-list', (event, dbType: DBType = DBType.Postgres) => {
 
   db.setBaseConnections()
     .then(() => {
-      db.getLists('', dbType)
+      /*
+      junaid and chase
+      removed the parameters because it doesnt seem like they do anything here, and it prevents the other databses from rendering on the list if pg is passed in
+      */
+
+      // db.getLists('', dbType)
+      db.getLists()
         .then((data: DBList) => {
           event.sender.send('db-lists', data);
           logger("Sent 'db-lists' from 'return-db-list'", LogType.SEND);
@@ -121,8 +153,6 @@ ipcMain.handle(
 
     event.sender.send('async-started');
     try {
-      console.log('dbName from backend', dbName, 'dbType from backend');
-
       await db.connectToDB(dbName, dbType);
 
       // send updated db info
@@ -134,7 +164,7 @@ ipcMain.handle(
     }
   }
 );
-// await db.query(dropDBScript, null, dbType);
+
 // Deletes the DB that is passed from the front end and returns an updated DB List
 ipcMain.handle(
   'drop-db',
@@ -199,7 +229,6 @@ ipcMain.handle(
       const dumpCmd = withData
         ? runFullCopyFunc(sourceDb, tempFilePath, dbType)
         : runHollowCopyFunc(sourceDb, tempFilePath, dbType);
-      console.log('dbType for importing a database', dbType);
       try {
         await promExecute(dumpCmd);
       } catch (e) {
@@ -232,7 +261,7 @@ ipcMain.handle(
       event.sender.send('db-lists', dbsAndTableInfo);
       logger("Sent 'db-lists' from 'duplicate-db'", LogType.SEND);
     } finally {
-      //  //cleanup temp file
+      //cleanup temp file
       try {
         fs.unlinkSync(tempFilePath);
       } catch (e) {
@@ -305,6 +334,10 @@ interface QueryPayload {
 
 // Run query passed from the front-end, and send back an updated DB List
 // DB will rollback if query is unsuccessful
+/*
+junaid
+look at this to check the explain might not support query error
+*/
 ipcMain.handle(
   'run-query',
   async (
@@ -334,7 +367,7 @@ ipcMain.handle(
             null,
             dbType
           );
-          console.log(LogType.WARNING, results);
+          // console.log(LogType.WARNING, results);
           explainResults = results[1].rows;
         } else if (dbType === DBType.MySQL) {
           const results = await db.query(
@@ -345,7 +378,7 @@ ipcMain.handle(
           explainResults = results[0][0];
           // console.log('mysql explain results', explainResults);
 
-          console.log(LogType.WARNING, results);
+          // console.log(LogType.WARNING, results);
         }
       } catch (e) {
         error = `Failed to get Execution Plan. EXPLAIN might not support this query.`;
@@ -358,7 +391,7 @@ ipcMain.handle(
         if (dbType === DBType.MySQL) {
           returnedRows = results[0][1];
 
-          console.log('returnedRows in channels for MySQL', returnedRows);
+          // console.log('returnedRows in channels for MySQL', returnedRows);
         }
         if (dbType === DBType.Postgres) {
           // console.log('results in channels for Postgres', results);
@@ -440,30 +473,34 @@ interface dummyDataRequestPayload {
   rows: number;
 }
 
-ipcMain.handle( // generate dummy data
+ipcMain.handle(
+  // generate dummy data
   'generate-dummy-data',
   async (event, data: dummyDataRequestPayload, dbType: DBType) => {
     logger("Received 'generate-dummy-data'", LogType.RECEIVE);
     // send notice to front end that DD generation has been started
     event.sender.send('async-started');
-    console.log('genereatedata ipcMain dbType: ', dbType)
+    // console.log('genereatedata ipcMain dbType: ', dbType)
     let feedback: Feedback = {
       type: '',
       message: '',
     };
     try {
-      console.log('data in generate-dummy-data', data); // gets here fine
-      
+      // console.log('data in generate-dummy-data', data); // gets here fine
+
       // Retrieves the Primary Keys and Foreign Keys for all the tables
-      const tableInfo: ColumnObj[] = await db.getTableInfo(data.tableName, dbType); // passed in dbType to second argument
-      console.log('tableInfo in generate-dummy-data', tableInfo); // working
-    
+      const tableInfo: ColumnObj[] = await db.getTableInfo(
+        data.tableName,
+        dbType
+      ); // passed in dbType to second argument
+      // console.log('tableInfo in generate-dummy-data', tableInfo); // working
+
       // generate dummy data
       const dummyArray: DummyRecords = await generateDummyData(
         tableInfo,
         data.rows
       );
-      console.log('dummyArray output: ', dummyArray)
+      // console.log('dummyArray output: ', dummyArray)
       // generate insert query string to insert dummy records
       const columnsStringified = '('
         .concat(dummyArray[0].join(', '))
@@ -495,10 +532,10 @@ ipcMain.handle( // generate dummy data
         message: err,
       };
     } finally {
-      console.log('dbType inside generate-dummy-data', dbType)
+      // console.log('dbType inside generate-dummy-data', dbType)
       // send updated db info in case query affected table or database information
       const dbsAndTables: DBList = await db.getLists('', dbType); // dummy data clear error is from here
-      console.log('dbsAndTables in generate-dummy-data', dbsAndTables)
+      // console.log('dbsAndTables in generate-dummy-data', dbsAndTables)
       event.sender.send('db-lists', dbsAndTables); // dummy data clear error is from here
 
       // send feedback back to FE
@@ -529,7 +566,6 @@ ipcMain.handle(
       payload
     );
     event.sender.send('async-started');
-
     const { newDbName } = payload;
 
     try {
@@ -544,10 +580,16 @@ ipcMain.handle(
       event.sender.send('db-lists', dbsAndTableInfo);
       logger("Sent 'db-lists' from 'initialize-db'", LogType.SEND);
     } catch (e) {
+      const err = `Unsuccessful DB Creation for ${newDbName} in ${dbType} database`;
+      const feedback: Feedback = {
+        type: 'error',
+        message: err,
+      };
+      event.sender.send('feedback', feedback);
       // in the case of an error, delete the created db
-      const dropDBScript = dropDBFunc(newDbName, dbType);
-      await db.query(dropDBScript, null, dbType);
-      throw new Error('Failed to initialize new database');
+      // const dropDBScript = dropDBFunc(newDbName, dbType);
+      // await db.query(dropDBScript, null, dbType);
+      // throw new Error('Failed to initialize new database');
     } finally {
       event.sender.send('async-complete');
     }
@@ -570,12 +612,10 @@ ipcMain.handle(
     event.sender.send('async-started');
 
     try {
-      let error: string | undefined;
       // connect to db to run query
       await db.connectToDB(selectedDb, dbType);
 
       // Run Query
-      // let returnedRows;
       try {
         await db.query(sqlString, null, dbType);
       } catch (e) {

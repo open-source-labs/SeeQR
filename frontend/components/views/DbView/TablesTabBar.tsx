@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
-import { Tabs, Tab, Button } from '@material-ui/core';
+import { Tabs, Tab } from '@material-ui/core';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import styled from 'styled-components';
 import TableDetails from './TableDetails';
-import { AppState, DBType, TableInfo } from '../../../types';
-import { greyPrimary, greenPrimary, textColor } from '../../../style-variables';
+import { AppState, TableInfo } from '../../../types';
+import { DBType } from '../../../../backend/BE_types';
+import { greyPrimary, greenPrimary } from '../../../style-variables';
 import ERTables from '../ERTables/ERTabling';
-import updateSchema from './sample-updateschema';
-import { sendFeedback } from '../../../lib/utils';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -16,6 +15,10 @@ interface TabPanelProps {
   value: any;
   curDBType: DBType | undefined;
 }
+const StyledToggleButtonGroup = styled(ToggleButtonGroup)`
+  background-color: ${greenPrimary};
+  margin-bottom: 10px;
+`;
 
 const StyledTabs = styled(Tabs)`
   background-color: ${greyPrimary};
@@ -54,7 +57,7 @@ const TablesTabs = ({
   selectedTable,
   selectedDb,
   setERView,
-  curDBType
+  curDBType,
 }: TablesTabBarProps) => {
   const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
     selectTable(tables[newValue]);
@@ -63,13 +66,17 @@ const TablesTabs = ({
   const tableIndex = tables.findIndex(
     ({ table_name }) => table_name === selectedTable?.table_name
   );
-  
+
   const [active, setActive] = useState(true);
 
   const ErView = () => (
     <div>
-      { active ? (
-        <ERTables tables={tables} selectedDb={selectedDb} curDBType={curDBType}/>
+      {active ? (
+        <ERTables
+          tables={tables}
+          selectedDb={selectedDb}
+          curDBType={curDBType}
+        />
       ) : (
         <>
           <StyledTabs
@@ -102,25 +109,19 @@ const TablesTabs = ({
     </div>
   );
 
-
-  const handleView = (e ,newActive) => {
+  const handleView = (e, newActive) => {
     // force at least one selected view
     if (newActive !== null) {
       // set the new view to the currect view
       setActive(newActive);
-    
+
       // disable the dummy data button when in ER View
       if (setERView) {
         if (active) setERView(newActive);
         else setERView(newActive);
-      };
+      }
     }
   };
-
-  const StyledToggleButtonGroup = styled(ToggleButtonGroup)`
-  background-color: ${greenPrimary};
-  margin-bottom: 10px;
-  `;
 
   return (
     <div>

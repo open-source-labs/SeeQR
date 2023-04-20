@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Drawer, IconButton, Tooltip } from '@material-ui/core/';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import styled from 'styled-components';
-import { AppState, TableInfo } from '../../types';
+import { AppState } from '../../types';
 import TopButtons from './TopButtons';
 import QueryList from './QueryList';
 import DbList from './DbList';
@@ -38,7 +38,6 @@ const Logo = styled.img`
   width: 100px;
   height: 100px;
 `;
-
 
 const ShowSidebarBtn = styled(IconButton)`
   width: ${sidebarShowButtonSize};
@@ -76,9 +75,8 @@ const Sidebar = ({
   setSelectedTable,
   showCreateDialog,
   setCreateDialog,
-  setConfigDialog
+  setConfigDialog,
 }: AppState) => {
-
   const toggleOpen = () => setSidebarHidden(!sidebarIsHidden);
   /**
    * Show empty query view for user to create new query.
@@ -107,7 +105,11 @@ const Sidebar = ({
         <DbList
           selectedDb={selectedDb}
           setSelectedDb={setSelectedDb}
-          show={selectedView === 'dbView' || selectedView === 'quickStartView' || selectedView === 'newSchemaView'}
+          show={
+            selectedView === 'dbView' ||
+            selectedView === 'quickStartView' ||
+            selectedView === 'newSchemaView'
+          }
           setSelectedView={setSelectedView}
           curDBType={curDBType}
           setDBType={setDBType}
@@ -131,16 +133,6 @@ const Sidebar = ({
           newFilePath={newFilePath}
         />
         <BottomButtons
-          selectedDb={selectedDb}
-          selectedView={selectedView}
-          setSelectedView={setSelectedView}
-          setSelectedDb={setSelectedDb}
-          curDBType={curDBType}
-          setDBType={setDBType}
-          // cdbt={cdbt}
-          // setcdbt={setcdbt}
-          DBInfo={DBInfo}
-          setDBInfo={setDBInfo}
           showCreateDialog={showCreateDialog}
           setCreateDialog={setCreateDialog}
         />

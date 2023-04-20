@@ -1,15 +1,12 @@
-import { IpcRendererEvent, ipcRenderer } from 'electron';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@material-ui/core';
 import styled from 'styled-components';
-import { AppState, isDbLists, DatabaseInfo, TableInfo, DBType } from '../../../types';
+import { AppState, DatabaseInfo, TableInfo } from '../../../types';
+import { DBType } from '../../../../backend/BE_types';
 import TablesTabs from './TablesTabBar';
 import DatabaseDetails from './DatabaseDetails';
-import { once } from '../../../lib/utils';
 import DummyDataModal from '../../modal/DummyDataModal';
 import { sidebarShowButtonSize } from '../../../style-variables';
-// emitting with no payload requests backend to send back a db-lists event with list of dbs
-const requestDbListOnce = once(() => ipcRenderer.send('return-db-list'));
 
 interface DbViewProps {
   selectedDb: AppState['selectedDb'];
@@ -37,7 +34,7 @@ const DbView = ({ selectedDb, show, setERView, ERView, curDBType, setDBType, DBI
 
   const [open, setOpen] = useState(false);
   
-console.log('DB props', curDBType, selectedDb)
+// console.log('DB props', curDBType, selectedDb)
   
 
   const handleClickOpen = () => {

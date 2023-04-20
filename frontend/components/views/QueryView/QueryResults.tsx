@@ -11,7 +11,6 @@ import {
 import styled from 'styled-components';
 import { QueryData } from '../../../types';
 import { greyPrimary, DarkPaperFull } from '../../../style-variables';
-import { CommentsDisabledOutlined } from '@mui/icons-material';
 
 const StyledCell = styled(TableCell)`
   border-bottom: 1px solid ${greyPrimary};
@@ -35,14 +34,14 @@ const buildColumns = (row: Record<string, unknown>): Column[] =>
     name: column,
     align: isNumber(value) ? 'right' : 'left',
   }));
-console.log('buildColumns: QueryResults', buildColumns);
+// console.log('buildColumns: QueryResults', buildColumns);
 interface QueryResultsProps {
   results: QueryData['returnedRows'];
 }
 
 const QueryResults = ({ results }: QueryResultsProps) => {
   if (!results || !results.length) return null;
-  console.log('Results: QueryResults', results);
+  // console.log('Results: QueryResults', results);
   const [page, setPage] = React.useState(0);
   const rowsPerPage = 10;
 

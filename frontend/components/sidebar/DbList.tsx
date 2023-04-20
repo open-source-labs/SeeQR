@@ -1,16 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
-import { IpcRendererEvent, ipcRenderer } from 'electron';
+import { ipcRenderer } from 'electron';
 import { IconButton, Tooltip } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import AddNewDbModal from '../modal/AddNewDbModalCorrect';
 import {
   AppState,
-  isDbLists,
-  DBType,
   DatabaseInfo,
   TableInfo,
 } from '../../types';
+import { DBType } from '../../../backend/BE_types';
 import { sendFeedback } from '../../lib/utils';
 import DuplicateDbModal from '../modal/DuplicateDbModal';
 import DbEntry from './DbEntry';
@@ -101,7 +100,7 @@ const DbList = ({
       <StyledSidebarList>
         {DBInfo?.map((dbi) => (
           <DbEntry
-            key={`dbList_${dbi.db_name}`}
+            key={`dbList_${dbi.db_name}_${dbi.db_type}`}
             db={dbi.db_name}
             isSelected={selectedDb === dbi.db_name}
             select={selectHandler}

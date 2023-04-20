@@ -1,7 +1,8 @@
 /**
  * This file contains all reusable variables for styling in styled-components
  * Individual variables should be named exports
- */
+*/
+
 import React from 'react';
 import {
   ListItem,
@@ -16,7 +17,7 @@ import {
 } from '@material-ui/core';
 import { createMuiTheme } from '@material-ui/core/styles';
 import styled from 'styled-components';
-import { FormControl, InputLabel, MenuItem } from '@mui/material';
+import { InputLabel, MenuItem } from '@mui/material';
 
 // previous
 export const bgColor = '#2b2d35';
@@ -76,7 +77,7 @@ export const planNodeHeight = '100px';
 // theme to override Mui defaults
 export const MuiTheme = createMuiTheme({
   typography: {
-    fontSize: 17,
+    fontSize: 16,
   },
   palette: {
     primary: {
