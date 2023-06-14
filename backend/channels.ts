@@ -165,7 +165,14 @@ ipcMain.handle(
   }
 );
 
+
+
 // Deletes the DB that is passed from the front end and returns an updated DB List
+ipcMain.on('return-gggtest', ()=>{
+  console.log('999999999999999999999999999999');
+})
+
+
 ipcMain.handle(
   'drop-db',
   async (
@@ -177,11 +184,35 @@ ipcMain.handle(
     logger("Received 'drop-db'", LogType.RECEIVE);
 
     event.sender.send('async-started');
+
     try {
+       // db.setBaseConnections()
+      //   .then(() => {
+        
+      //   db.getLists()
+      //     .then((data: DBList) => {
+      //       event.sender.send('db-lists', data);
+      //       logger("888888888888888888");
+      //     })
+      //   });
+
       // if deleting currently connected db, disconnect from db
-      if (currDB) await db.connectToDB('', dbType);
+      // if (currDB) await db.connectToDB('', dbType);
+
 
       // drop db
+      // ////////eric////////
+      await db.connectToDB('', dbType);
+      if(dbType === DBType.Postgres){
+        await db.query(`UPDATE pg_database SET datallowconn = 'false' WHERE datname = '${dbName}'`, null, dbType);
+        await db.query(`
+        SELECT pid, pg_terminate_backend(pid)
+        FROM pg_stat_activity
+        WHERE datname = '${dbName}' AND pid <> pg_backend_pid();
+        `, null, dbType);
+        // await db.closeTheDB(dbName, dbType);
+        console.log('777777777777777777777777777777777777777777777');
+      }
       const dropDBScript = dropDBFunc(dbName, dbType);
       await db.query(dropDBScript, null, dbType);
 
@@ -189,6 +220,9 @@ ipcMain.handle(
       const dbsAndTables: DBList = await db.getLists(dbName, dbType);
       event.sender.send('db-lists', dbsAndTables);
       logger("Sent 'db-lists' from 'drop-db'", LogType.SEND);
+    } catch (e: any) {
+      logger(`888888888888888888888888888888888: ${e.message}`, LogType.WARNING);
+      throw new Error('888888888888888888888888888888888');
     } finally {
       event.sender.send('async-complete');
     }
@@ -571,7 +605,6 @@ ipcMain.handle(
     try {
       // create new empty db
       await db.query(createDBFunc(newDbName, dbType), null, dbType);
-
       // connect to initialized db
       await db.connectToDB(newDbName, dbType);
 

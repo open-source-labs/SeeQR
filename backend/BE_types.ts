@@ -82,6 +82,9 @@ export interface DBFunctions {
   setBaseConnections: () => Promise<dbsInputted>;
   query: (text: string, params: (string | number)[], dbType: DBType) => void;
   connectToDB: (db: string, dbType?: DBType) => Promise<void>;
+  ////////eric////////
+  closeTheDB: (db: string, dbType?: DBType) => Promise<void>;
+  ////////////////////
   getLists: (dbName: string, dbType?: DBType) => Promise<DBList>;
   getTableInfo: (tableName: string, dbType: DBType) => Promise<ColumnObj[]>;
   getDBNames: (dbType: DBType) => Promise<dbDetails[]>;
