@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { BrowserWindow, Menu } from 'electron';
+import { BrowserWindow, Menu, app } from 'electron';
 
-const { app, session } = require('electron');
+// import { app, session } from 'electron';
 
 const dev: boolean = process.env.NODE_ENV === 'development';
 const os = require('os');

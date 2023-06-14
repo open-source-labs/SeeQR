@@ -13,6 +13,7 @@ import {
 import './styles.css';
 import * as colors from '../../../style-variables';
 import { sendFeedback } from '../../../lib/utils';
+
 type TableHeaderProps = {
   data: TableHeaderDataObjectType;
 };

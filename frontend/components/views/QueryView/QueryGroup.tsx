@@ -1,5 +1,6 @@
 import React from 'react';
-import { TextField, Box } from '@material-ui/core/';
+import { TextField } from '@material-ui/core/';
+import Box from '@mui/material/Box';
 // import styled from 'styled-components'
 
 interface QueryGroupProps {

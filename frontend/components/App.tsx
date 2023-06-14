@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { MuiThemeProvider } from '@material-ui/core/';
 import { StylesProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import { IpcRendererEvent, ipcRenderer } from 'electron';
 import {
   MuiTheme,
   bgColor,
@@ -30,8 +31,7 @@ import QuickStartView from './views/QuickStartView';
 import NewSchemaView from './views/NewSchemaView/NewSchemaView';
 import FeedbackModal from './modal/FeedbackModal';
 import Spinner from './modal/Spinner';
-import { once } from './../lib/utils';
-import { IpcRendererEvent, ipcRenderer } from 'electron';
+import { once } from '../lib/utils';
 import CreateDBDialog from './Dialog/CreateDBDialog';
 import ConfigView from './Dialog/ConfigView';
 

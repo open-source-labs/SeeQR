@@ -138,7 +138,6 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
     const headerNodes = nodes.filter(
       (node) => node.type === 'tableHeader'
     ) as TableHeaderNodeType[];
-
     // create object for the current database
     type TablePosObjType = {
       table_name: string;
@@ -255,11 +254,13 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
         onClick={handleAddTable}
       >
         {' '}
-        Add New Table{' '}
+        Add New Table
+        {' '}
       </StyledViewButton>
       <StyledViewButton variant="contained" id="save" onClick={handleClickSave}>
         {' '}
-        Save{' '}
+        Save
+        {' '}
       </StyledViewButton>
       <ReactFlow
         nodes={nodes}

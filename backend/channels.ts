@@ -43,11 +43,17 @@ ipcMain.handle('set-config', async (event, configObj) => {
       added error handling to display error message on frontend based on which dbs failed to login
       */
       let errorStr = '';
-      for (const dbs in dbsInputted) {
-        if (!dbsInputted[dbs]) {
-          errorStr += ` ${dbs}`;
-        }
-      }
+      // for (const dbs in dbsInputted) {
+      //   if (!dbsInputted[dbs]) {
+      //     errorStr += ` ${dbs}`;
+      //   }
+      // }
+      // changed to forEach instead of above. eslint didnt like for...in loop above
+      Object.keys(dbsInputted).forEach(dbs => {
+          if (!dbsInputted[dbs]) {
+            errorStr += ` ${dbs}`;
+          }
+      })
       if (errorStr.length) {
         const err = `Unsuccessful login(s) for ${errorStr.toUpperCase()} database(s)`;
         const feedback: Feedback = {
