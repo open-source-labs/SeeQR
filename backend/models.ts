@@ -522,7 +522,7 @@ const DBFunctions: DBFunctions = {
         if (dbType === DBType.MySQL) pool = pools.msql_pool;
         if (dbType === DBType.RDSMySQL) pool = pools.rds_msql_pool;
         
-        query = `SELECT
+        let query2 = `SELECT
         table_catalog,
         table_schema,
         table_name,
@@ -530,17 +530,19 @@ const DBFunctions: DBFunctions = {
         FROM information_schema.tables
         WHERE table_schema = 'public' or table_schema = 'base'
         ORDER BY table_name;`;
-        //  query = `
-        //  SELECT
-        //  TABLE_CATALOG as table_schema,
-        //  TABLE_SCHEMA as table_catalog,
-        //  TABLE_NAME as table_name
-        //  FROM information_schema.tables
-        //  WHERE TABLE_SCHEMA NOT IN('information_schema', 'performance_schema', 'mysql')
-        //  AND TABLE_SCHEMA = '${dbName}'
-        //  ORDER BY table_name;`;
+
+         query = `
+         SELECT
+         TABLE_CATALOG as table_schema,
+         TABLE_SCHEMA as table_catalog,
+         TABLE_NAME as table_name
+         FROM information_schema.tables
+         WHERE TABLE_SCHEMA NOT IN('information_schema', 'performance_schema', 'mysql') 
+         AND TABLE_SCHEMA = '${dbName}'
+         ORDER BY table_name;`;
 
         pool
+          // .query(query2)
           .query(query)
           .then((tables) => {
             for (let i = 0; i < tables[0].length; i++) {
