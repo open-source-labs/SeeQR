@@ -168,11 +168,6 @@ ipcMain.handle(
 
 
 // Deletes the DB that is passed from the front end and returns an updated DB List
-ipcMain.on('return-gggtest', ()=>{
-  console.log('999999999999999999999999999999');
-})
-
-
 ipcMain.handle(
   'drop-db',
   async (
@@ -215,7 +210,6 @@ ipcMain.handle(
       }
       const dropDBScript = dropDBFunc(dbName, dbType);
       await db.query(dropDBScript, null, dbType);
-
       // send updated db info
       const dbsAndTables: DBList = await db.getLists(dbName, dbType);
       event.sender.send('db-lists', dbsAndTables);
@@ -611,6 +605,7 @@ ipcMain.handle(
       // update DBList in the sidebar to show this new db
       const dbsAndTableInfo: DBList = await db.getLists(newDbName, dbType);
       event.sender.send('db-lists', dbsAndTableInfo);
+      ///
       logger("Sent 'db-lists' from 'initialize-db'", LogType.SEND);
     } catch (e) {
       const err = `Unsuccessful DB Creation for ${newDbName} in ${dbType} database`;

@@ -490,7 +490,7 @@ const DBFunctions: DBFunctions = {
         ORDER BY table_name;`;
         pool
           .query(query)
-          .then((tables) => {
+          .then((tables) => {       
             for (let i = 0; i < tables.rows.length; i++) {
               tableList.push(tables.rows[i]);
               promiseArray.push(
@@ -521,9 +521,8 @@ const DBFunctions: DBFunctions = {
         let pool;
         if (dbType === DBType.MySQL) pool = pools.msql_pool;
         if (dbType === DBType.RDSMySQL) pool = pools.rds_msql_pool;
-
+        
          query = `
-         USE ${this.curMSQL_DB};
          SELECT
          TABLE_CATALOG as table_schema,
          TABLE_SCHEMA as table_catalog,
@@ -559,7 +558,6 @@ const DBFunctions: DBFunctions = {
                 for (let i = 0; i < columnInfo.length; i++) {
                   tableList[i].columns = columnInfo[i];
                 }
-
                 logger("MySQL 'getDBLists' resolved.", LogType.SUCCESS);
                 resolve(tableList);
               })
