@@ -522,23 +522,23 @@ const DBFunctions: DBFunctions = {
         if (dbType === DBType.MySQL) pool = pools.msql_pool;
         if (dbType === DBType.RDSMySQL) pool = pools.rds_msql_pool;
         
-         query = `
-         SELECT
-         TABLE_CATALOG as table_schema,
-         TABLE_SCHEMA as table_catalog,
-         TABLE_NAME as table_name
-         FROM information_schema.tables
-         WHERE TABLE_SCHEMA NOT IN('information_schema', 'performance_schema', 'mysql')
-         AND TABLE_SCHEMA = '${dbName}'
-         ORDER BY table_name;`;
-        // query = `SELECT
-        // TABLE_CATALOG as table_schema,
-        // TABLE_SCHEMA as table_catalog,
-        // TABLE_NAME as table_name
-        // FROM information_schema.tables
-        // WHERE TABLE_SCHEMA NOT IN("information_schema", "performance_schema", "mysql")
-        // AND TABLE_SCHEMA = "${dbName}"
-        // ORDER BY table_name;`;
+        query = `SELECT
+        table_catalog,
+        table_schema,
+        table_name,
+        is_insertable_into
+        FROM information_schema.tables
+        WHERE table_schema = 'public' or table_schema = 'base'
+        ORDER BY table_name;`;
+        //  query = `
+        //  SELECT
+        //  TABLE_CATALOG as table_schema,
+        //  TABLE_SCHEMA as table_catalog,
+        //  TABLE_NAME as table_name
+        //  FROM information_schema.tables
+        //  WHERE TABLE_SCHEMA NOT IN('information_schema', 'performance_schema', 'mysql')
+        //  AND TABLE_SCHEMA = '${dbName}'
+        //  ORDER BY table_name;`;
 
         pool
           .query(query)
