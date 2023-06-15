@@ -42,6 +42,7 @@ export enum DBType {
   MySQL = 'mysql',
   RDSPostgres = 'rds-pg',
   RDSMySQL = 'rds-mysql',
+  CloudDB = 'cloud-database', //added for cloud dbs
 }
 
 export enum LogType {
@@ -58,6 +59,7 @@ export interface DocConfigFile {
   pg: { user: string; password: string; port: number };
   rds_mysql: { user: string; password: string; port: number; host: string };
   rds_pg: { user: string; password: string; port: number; host: string };
+  cloud_db: { URI: '' };
 }
 
 type dbsInputted = {

@@ -155,16 +155,16 @@ const DBFunctions: DBFunctions = {
       });
     }
 
-    // if (dbType === DBType.MySQL) {
-    //   return pools.msql_pool.query(
-    //     text, //changed used to be 'USE ${someDB}; ...'
-    //     params,
-    //     dbType
-    //   );
-    // }
-    if (dbType === DBType.MySQL) { 
-      return pools.msql_pool.query(text, params, dbType);
+    if (dbType === DBType.MySQL) {
+      return pools.msql_pool.query(
+        text, //changed used to be 'USE ${someDB}; ...'
+        params,
+        dbType
+      );
     }
+    // if (dbType === DBType.MySQL) { 
+    //   return pools.msql_pool.query(text, params, dbType);
+    // }
   },
 
   async connectToDB(db, dbType) {
@@ -504,8 +504,7 @@ const DBFunctions: DBFunctions = {
         if (dbType === DBType.MySQL) pool = pools.msql_pool;
         if (dbType === DBType.RDSMySQL) pool = pools.rds_msql_pool;
 
-        query = `USE ${this.curMSQL_DB};
-        SELECT
+        query = `SELECT
         TABLE_CATALOG as table_schema,
         TABLE_SCHEMA as table_catalog,
         TABLE_NAME as table_name

@@ -20,6 +20,7 @@ const defaultFile: DocConfigFile = {
   pg: { user: '', password: '', port: 5432 },
   rds_mysql: { user: '', password: '', port: 3306, host: '' },
   rds_pg: { user: '', password: '', port: 5432, host: '' },
+  cloud_db: { URI: '' }, //added cloud db
 };
 const writeConfigDefault = function (): DocConfigFile {
   logger('Could not find config file. Creating default', LogType.WARNING);
@@ -71,10 +72,11 @@ const readConfigFile = function (): DocConfigFile {
 interface DocConfig {
   getConfigFolder: () => string;
   getCredentials: (dbType: DBType) => {
-    user: string;
-    password: string;
+    URI?: string //added uri and ? to each key
+    user?: string;
+    password?: string;
     host?: string;
-    port: number | string;
+    port?: number | string;
   };
   getFullConfig: () => Object;
   saveConfig: (config: Object) => void;
@@ -115,6 +117,9 @@ const docConfig: DocConfig = {
     }
     if (dbType === DBType.RDSPostgres) {
       return { ...configFile.rds_pg };
+    }
+    if (dbType === DBType.CloudDB) { //added cloud db
+      return { ...configFile.cloud_db };
     }
 
     logger('Could not get credentials of DBType: ', LogType.ERROR, dbType);
