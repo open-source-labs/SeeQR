@@ -163,6 +163,7 @@ const DBFunctions: DBFunctions = {
     //   );
     // }
     if (dbType === DBType.MySQL) { 
+      // pools.msql_pool.query(`USE ${this.curMSQL_DB}`);
       return pools.msql_pool.query(text, params, dbType);
     }
     // if (dbType === DBType.MySQL) {
@@ -531,13 +532,23 @@ const DBFunctions: DBFunctions = {
         WHERE table_schema = 'public' or table_schema = 'base'
         ORDER BY table_name;`;
 
+        //  query = `
+        //  SELECT
+        //  TABLE_CATALOG as table_schema,
+        //  TABLE_SCHEMA as table_catalog,
+        //  TABLE_NAME as table_name
+        //  FROM information_schema.tables
+        //  WHERE TABLE_SCHEMA NOT IN('information_schema', 'performance_schema', 'mysql') 
+        //  AND TABLE_SCHEMA = '${dbName}'
+        //  ORDER BY table_name;`;
+
          query = `
          SELECT
          TABLE_CATALOG as table_schema,
          TABLE_SCHEMA as table_catalog,
          TABLE_NAME as table_name
          FROM information_schema.tables
-         WHERE TABLE_SCHEMA NOT IN('information_schema', 'performance_schema', 'mysql') 
+         WHERE TABLE_SCHEMA NOT IN('information_schema', 'performance_schema', 'mysql', 'sys') 
          AND TABLE_SCHEMA = '${dbName}'
          ORDER BY table_name;`;
 

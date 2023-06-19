@@ -124,6 +124,17 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
       table_schema: `public`,
       table_catalog: `${schemaStateCopy.database}`,
       columns: [],
+      // columns: schemaStateCopy.tableList[0].clomuns,
+      ////eric////
+      // ericTestUnit: JSON.parse(JSON.parse(tables)),
+      // ericTestUnitTables: `${schemaStateCopy.tableList[0].columns[0]}`,
+      // ericTestUnitTables: `${schemaStateCopy}`,
+      // ericTestUnitTables: `${schemaStateString}`,
+      // ericTestUnitSchemaStateString_Or_SchemaState: schemaStateString,
+      // col_N: `${schemaStateCopy.tableList[0].columns[0].column_name}`,
+      // col_T: `${schemaStateCopy.tableList[0].columns[0].data_type}`,
+      // col_L: `${schemaStateCopy.tableList[0].columns[0].character_maximum_length}`,
+      /////////////
     };
     // update the backendObj
     backendObj.current.updates.addTables.push(addTableObj);
@@ -245,6 +256,7 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
     });
     setNodes(nodesArray);
     setEdges(initialState.edges);
+
   }, [schemaState]);
 
   return (

@@ -680,6 +680,7 @@ ipcMain.handle(
     try {
       // Generates query from backendObj
       const query = backendObjToQuery(backendObj, dbType);
+      console.log('query=======================================================query', query);
       // run sql command
       await db.query('Begin;', null, dbType);
       await db.query(query, null, dbType);
