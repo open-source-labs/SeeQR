@@ -83,8 +83,8 @@ export interface DBFunctions {
     password: string;
     host: string;
   };
-  sqlite: string;
-  directPGURI: string;
+  curSQLite_DB: string;
+  curdirectPGURI_DB: string;
   dbsInputted: dbsInputted;
 
   setBaseConnections: () => Promise<dbsInputted>;
