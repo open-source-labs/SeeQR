@@ -10,9 +10,15 @@ import {
 import logger from './Logging/masterlog';
 import pools from './poolVariables';
 import connectionFunctions from './databaseConnections';
+
 const docConfig = require('./_documentsConfig');
 // eslint-disable-next-line prefer-const
 
+/**
+ * This object contains info about the current database being accessed
+ *                      login info for rds
+ *                      highest level functions for accessing databases
+ */
 const DBFunctions: DBFunctions = {
   pg_uri: '',
   curPG_DB: '',
@@ -27,28 +33,38 @@ const DBFunctions: DBFunctions = {
     password: '',
     host: '',
   },
-  /*
-  junaid
-  object to check to true if that db was logged into
-  */
+  curSQLite_DB: '',
+  curdirectPGURI_DB: '',
+
+  /**
+   * Indicates whether the named database has been logged-in to, default to false
+   */
   dbsInputted: {
     pg: false,
     msql: false,
     rds_pg: false,
     rds_msql: false,
+    sqlite: false,
+    directPGURI: false,
   },
 
+  /**
+   * Save all login credentials from the config file to variables
+   * @returns 
+   */
   async setBaseConnections() {
     const PG_Cred = docConfig.getCredentials(DBType.Postgres);
     const MSQL_Cred = docConfig.getCredentials(DBType.MySQL);
     this.curRDS_PG_DB = docConfig.getCredentials(DBType.RDSPostgres);
     this.curRDS_MSQL_DB = docConfig.getCredentials(DBType.RDSMySQL);
+    this.curSQLite_DB = docConfig.getCredentials(DBType.SQLite);
+    this.curdirectPGURI_DB = docConfig.getCredentials(DBType.directPGURI);
     /*
      junaid
      all the if/else and try/catch in this function are for various forms of error handling. incorrect passwords/removed entries after successful logins
     */
 
-    //  RDS PG POOL
+    //  RDS PG POOL: truthy values means user has inputted info into config -> try to log in
     if (
       this.curRDS_PG_DB.user &&
       this.curRDS_PG_DB.password &&
@@ -66,7 +82,7 @@ const DBFunctions: DBFunctions = {
       this.dbsInputted.rds_pg = false;
     }
 
-    //  RDS MSQL POOL
+    //  RDS MSQL POOL: truthy values means user has inputted info into config -> try to log in
     if (
       this.curRDS_MSQL_DB.user &&
       this.curRDS_MSQL_DB.password &&
@@ -89,7 +105,7 @@ const DBFunctions: DBFunctions = {
       this.dbsInputted.rds_msql = false;
     }
 
-    //  LOCAL PG POOL
+    //  LOCAL PG POOL: truthy values means user has inputted info into config -> try to connect
     if (PG_Cred.user && PG_Cred.password) {
       this.pg_uri = `postgres://${PG_Cred.user}:${PG_Cred.password}@localhost:${PG_Cred.port}/`;
       try {
@@ -104,7 +120,7 @@ const DBFunctions: DBFunctions = {
       this.dbsInputted.pg = false;
     }
 
-    //  LOCAL MSQL POOL
+    //  LOCAL MSQL POOL: truthy values means user has inputted info into config -> try to log in
     if (MSQL_Cred.user && MSQL_Cred.password) {
       try {
         await connectionFunctions.MSQL_DBConnect({
@@ -164,6 +180,13 @@ const DBFunctions: DBFunctions = {
     }
   },
 
+  /**
+   * Only connect to one database at a time
+   * @param db Name of database to connect to
+   * @param dbType Type of database to connect to
+   * 
+   * asdf check this.curRDS_MSQL_DB typing 
+   */
   async connectToDB(db, dbType) {
     //change current Db
     if (dbType === DBType.Postgres) {
@@ -180,6 +203,12 @@ const DBFunctions: DBFunctions = {
     }
   },
 
+  /**
+   * 
+   * @param dbName 
+   * @param dbType 
+   * @returns List of all databases for logged in types
+   */
   async getLists(dbName = '', dbType) {
     /*
     junaid
@@ -253,14 +282,19 @@ const DBFunctions: DBFunctions = {
     return this.getColumnObjects(tableName, dbType);
   },
 
+  /**
+   * 
+   * @param dbType server to get database names of
+   * @returns 
+   */
   getDBNames(dbType) {
     return new Promise((resolve, reject) => {
       let query;
       if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) {
         let pool; // changes which pool is being queried based on dbType
 
-        if (dbType === DBType.Postgres) pool = pools.pg_pool;
-        if (dbType === DBType.RDSPostgres) pool = pools.rds_pg_pool;
+        if (dbType === DBType.Postgres && this.dbsInputted.pg) pool = pools.pg_pool;
+        if (dbType === DBType.RDSPostgres && this.dbsInputted.rds_pg) pool = pools.rds_pg_pool;
         const dbList: dbDetails[] = [];
         /*
         junaid
@@ -276,6 +310,7 @@ const DBFunctions: DBFunctions = {
             .then((databases) => {
               for (let i = 0; i < databases.rows.length; i++) {
                 const data = databases.rows[i];
+                console.log(data);
                 const { db_name } = data;
 
                 if (
