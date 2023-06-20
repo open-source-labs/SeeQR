@@ -36,23 +36,24 @@ function backendObjToQuery(backendObj: BackendObjType, dbType: DBType): string {
       const currTable: AddTablesObjType = addTableArray[i];
       const currAlterTable: AlterTablesObjType = alterTablesArray[i];
 
-      if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres)
+      if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres){
         outputArray.push(
           `CREATE TABLE ${currTable.table_schema}.${currTable.table_name}(); `
         );
-      if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL)
+      }
+      if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL){
       // console.log("currTable=============================================================currTable", currTable);
       // console.log("currAlterTable=============================================================currAlterTable", currAlterTable);
       // console.log("currAlterTable.addColumns=============================================================currAlterTable.addColumns", currAlterTable.addColumns);
-      firstAddingMySQLColumnName = `${currAlterTable.addColumns[0].column_name}`;
-        outputArray.push(
-          // `CREATE TABLE ${currTable.table_name} (_id VARCHAR(20)); `
-          `CREATE TABLE ${currTable.table_name} 
-                        (${currAlterTable.addColumns[0].column_name}
-                        ${currAlterTable.addColumns[0].data_type}
-                        (${currAlterTable.addColumns[0].character_maximum_length}))
-                        ;`
-        );
+        firstAddingMySQLColumnName = `${currAlterTable.addColumns[0].column_name}`;
+          outputArray.push(
+            `CREATE TABLE ${currTable.table_name} 
+                          (${currAlterTable.addColumns[0].column_name}
+                          ${currAlterTable.addColumns[0].data_type}
+                          (${currAlterTable.addColumns[0].character_maximum_length}))
+                          ;`
+          );
+      }
     }
   }
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -206,11 +207,7 @@ function backendObjToQuery(backendObj: BackendObjType, dbType: DBType): string {
           }
           if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL){
             if(!currTable.alterColumns[i].character_maximum_length){
-              if (currTable.alterColumns[i].data_type === 'date') {
-                alterTypeString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} ALTER COLUMN ${currTable.alterColumns[i].column_name} TYPE date USING ${currTable.alterColumns[i].column_name}::text::date; `;
-              } else {
                 alterTypeString += `ALTER TABLE ${currTable.table_name} MODIFY COLUMN ${currTable.alterColumns[i].column_name} ${currTable.alterColumns[i].data_type}; `;
-              }
             }
           }
         }

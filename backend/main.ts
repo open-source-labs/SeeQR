@@ -31,7 +31,8 @@ let mainWindow: BrowserWindow | null;
 // The major purpose is trying to hidding the pop out warning or error message from electron/react
 // That is, put everything undertable
 process.on('uncaughtException', (error) => {
-  console.error('Uncaught Exception:', error);
+  // Hiding the error on the terminal as well
+  // console.error('Uncaught Exception:', error);
 });
 
 
