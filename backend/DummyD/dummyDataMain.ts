@@ -44,7 +44,7 @@ const generateDataByType = (columnObj: ColumnObj): string | number => {
     case 'character varying':
       // defaulting length to 3 because faker.lorem defaults to a length of 3 if no length is specified
 
-      length = columnObj.character_maximum_length && columnObj.character_maximum_length < 3
+      length = columnObj.character_maximum_length && columnObj.character_maximum_length > 3
         ? Math.floor(Math.random() * columnObj.character_maximum_length)
         : 3;
       return '\''.concat(faker.random.alphaNumeric(length)).concat('\'');
@@ -52,7 +52,7 @@ const generateDataByType = (columnObj: ColumnObj): string | number => {
     case 'varchar':
       // defaulting length to 3 because faker.lorem defaults to a length of 3 if no length is specified
   
-      length = columnObj.character_maximum_length && columnObj.character_maximum_length < 3
+      length = columnObj.character_maximum_length && columnObj.character_maximum_length > 3
         ? Math.floor(Math.random() * columnObj.character_maximum_length)
         : 3;
       return '\''.concat(faker.random.alphaNumeric(length)).concat('\'');  
