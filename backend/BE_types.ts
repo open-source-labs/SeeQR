@@ -42,6 +42,8 @@ export enum DBType {
   MySQL = 'mysql',
   RDSPostgres = 'rds-pg',
   RDSMySQL = 'rds-mysql',
+  SQLite = 'sqlite',
+  directPGURI = 'directPGURI',
 }
 
 export enum LogType {
@@ -58,6 +60,8 @@ export interface DocConfigFile {
   pg: { user: string; password: string; port: number };
   rds_mysql: { user: string; password: string; port: number; host: string };
   rds_pg: { user: string; password: string; port: number; host: string };
+  sqlite: { path: string },
+  directPGURI: { uri: string }
 }
 
 type dbsInputted = {
@@ -65,6 +69,8 @@ type dbsInputted = {
   msql: boolean;
   rds_pg: boolean;
   rds_msql: boolean;
+  sqlite: boolean;
+  directPGURI: boolean;
 };
 
 export interface DBFunctions {
@@ -77,6 +83,8 @@ export interface DBFunctions {
     password: string;
     host: string;
   };
+  sqlite: string;
+  directPGURI: string;
   dbsInputted: dbsInputted;
 
   setBaseConnections: () => Promise<dbsInputted>;
