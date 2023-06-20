@@ -25,7 +25,12 @@ export interface TableDetails {
   columns?: ColumnObj[];
 }
 export interface DBList {
-  databaseConnected: [boolean, boolean, boolean, boolean];
+  databaseConnected: {
+    PG: boolean,
+    MySQL: boolean,
+    RDSPG: boolean,
+    RDSMySQL: boolean,
+  };
   databaseList: dbDetails[];
   tableList: TableDetails[];
 }

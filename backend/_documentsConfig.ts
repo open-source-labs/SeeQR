@@ -91,6 +91,8 @@ interface DocConfig {
     password: string;
     host?: string;
     port: number | string;
+    uri?: string;
+    path?: string;
   };
   getFullConfig: () => Object;
   saveConfig: (config: Object) => void;
@@ -141,13 +143,13 @@ const docConfig: DocConfig = {
     if (dbType === DBType.RDSPostgres) {
       return { ...configFile.rds_pg };
     }
-    // asdf check sqlite and directpguri and format for return in case of error
-    if (dbType === DBType.SQLite) {
-      return { ...configFile.sqlite };
-    }
-    if (dbType === DBType.directPGURI) {
-      return { ...configFile.directPGURI };
-    }
+    // // asdf check sqlite and directpguri and format for return in case of error
+    // if (dbType === DBType.SQLite) {
+    //   return { ...configFile.sqlite };
+    // }
+    // if (dbType === DBType.directPGURI) {
+    //   return { ...configFile.directPGURI };
+    // }
 
     logger('Could not get credentials of DBType: ', LogType.ERROR, dbType);
     return { user: '', password: '', port: 1 };

@@ -204,9 +204,9 @@ const DBFunctions: DBFunctions = {
   },
 
   /**
-   * 
-   * @param dbName 
-   * @param dbType 
+   * When called with no arguments, returns list of all logged-in databases
+   * @param dbName defaults to ''
+   * @param dbType optional argument
    * @returns List of all databases for logged in types
    */
   async getLists(dbName = '', dbType) {
@@ -215,14 +215,19 @@ const DBFunctions: DBFunctions = {
     this list object is what will be returned at the end of the function. function will get lists for all four databases depending on which is logged in
     */
     const listObj: DBList = {
-      databaseConnected: [false, false, false, false],
-      databaseList: [],
+      databaseConnected: {
+        PG: false,
+        MySQL: false,
+        RDSPG: false,
+        RDSMySQL: false,
+      },
+      databaseList: [], // accumulates lists for each logged-in database
       tableList: [],
     };
     if (this.dbsInputted.pg) {
       try {
         const pgDBList = await this.getDBNames(DBType.Postgres);
-        listObj.databaseConnected[0] = true;
+        listObj.databaseConnected.PG = true;
         listObj.databaseList = [...listObj.databaseList, ...pgDBList];
       } catch (error) {
         logger('COULDNT GET NAMES FROM LOCAL PG', LogType.ERROR);
@@ -232,7 +237,7 @@ const DBFunctions: DBFunctions = {
     if (this.dbsInputted.msql) {
       try {
         const msqlDBList = await this.getDBNames(DBType.MySQL);
-        listObj.databaseConnected[1] = true;
+        listObj.databaseConnected.MySQL = true;
         listObj.databaseList = [...listObj.databaseList, ...msqlDBList];
       } catch (error) {
         logger('COULDNT GET NAMES FROM LOCAL MSQL', LogType.ERROR);
@@ -242,7 +247,7 @@ const DBFunctions: DBFunctions = {
     if (this.dbsInputted.rds_msql) {
       try {
         const RDSmsqlDBList = await this.getDBNames(DBType.RDSMySQL);
-        listObj.databaseConnected[2] = true;
+        listObj.databaseConnected.RDSMySQL = true;
         listObj.databaseList = [...listObj.databaseList, ...RDSmsqlDBList];
       } catch (error) {
         logger('COULDNT GET NAMES FROM RDS MSQL', LogType.ERROR);
@@ -252,7 +257,7 @@ const DBFunctions: DBFunctions = {
     if (this.dbsInputted.rds_pg) {
       try {
         const RDSpgDBList = await this.getDBNames(DBType.RDSPostgres);
-        listObj.databaseConnected[3] = true;
+        listObj.databaseConnected.RDSPG = true;
         listObj.databaseList = [...listObj.databaseList, ...RDSpgDBList];
       } catch (error) {
         logger('COULDNT GET NAMES FROM RDS PG', LogType.ERROR);
@@ -283,9 +288,9 @@ const DBFunctions: DBFunctions = {
   },
 
   /**
-   * 
-   * @param dbType server to get database names of
-   * @returns 
+   * Generate a dbList for the inputted database type
+   * @param dbType server to get database names off of
+   * @returns dbList (array of objects containing db_name and db_size)
    */
   getDBNames(dbType) {
     return new Promise((resolve, reject) => {
@@ -293,8 +298,8 @@ const DBFunctions: DBFunctions = {
       if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) {
         let pool; // changes which pool is being queried based on dbType
 
-        if (dbType === DBType.Postgres && this.dbsInputted.pg) pool = pools.pg_pool;
-        if (dbType === DBType.RDSPostgres && this.dbsInputted.rds_pg) pool = pools.rds_pg_pool;
+        if (dbType === DBType.Postgres) pool = pools.pg_pool;
+        if (dbType === DBType.RDSPostgres) pool = pools.rds_pg_pool;
         const dbList: dbDetails[] = [];
         /*
         junaid
