@@ -8,7 +8,7 @@ import {
   TableRow,
   Typography,
   Paper,
-} from '@material-ui/core';
+} from '@mui/material';
 import styled from 'styled-components';
 import { greyDark, greyPrimary } from '../../../style-variables';
 import { TableInfo } from '../../../types';

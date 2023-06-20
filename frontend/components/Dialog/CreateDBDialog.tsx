@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   DialogTitle,
-} from '@material-ui/core/';
+} from '@mui/material/';
 import { Dialog, Tooltip } from '@mui/material';
 import { ipcRenderer } from 'electron';
 import styled from 'styled-components';

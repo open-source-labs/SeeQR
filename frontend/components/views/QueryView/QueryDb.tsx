@@ -1,5 +1,5 @@
 import React from 'react';
-import { Select, MenuItem, InputLabel } from '@material-ui/core/';
+import { Select, MenuItem, InputLabel } from '@mui/material/';
 import Box from '@mui/material/Box';
 import styled from 'styled-components';
 import { defaultMargin, greyPrimary } from '../../../style-variables';

@@ -1,6 +1,6 @@
 import React, { memo, useState } from 'react';
 import styled from 'styled-components';
-import { Card, Tooltip, LinearProgress } from '@material-ui/core';
+import { Card, Tooltip, LinearProgress } from '@mui/material';
 import ms from 'ms';
 import type { SizedPlanNode, Totals } from '../../../../lib/flow';
 import PlanDetails from './PlanDetails';

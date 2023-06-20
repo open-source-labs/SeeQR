@@ -14,8 +14,9 @@ import {
   ListItemText,
   Select,
   NativeSelect,
-} from '@material-ui/core';
-import { createMuiTheme } from '@material-ui/core/styles';
+  adaptV4Theme,
+} from '@mui/material';
+import { createTheme } from '@mui/material/styles';
 import styled from 'styled-components';
 import { InputLabel, MenuItem } from '@mui/material';
 
@@ -75,7 +76,7 @@ export const planNodeWidth = '200px';
 export const planNodeHeight = '100px';
 
 // theme to override Mui defaults
-export const MuiTheme = createMuiTheme({
+export const MuiTheme = createTheme(adaptV4Theme({
   typography: {
     fontSize: 16,
   },
@@ -115,7 +116,7 @@ export const MuiTheme = createMuiTheme({
       },
     },
   },
-});
+}));
 
 export const SidebarList = styled(List)`
   padding: 0;

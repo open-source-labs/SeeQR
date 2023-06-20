@@ -7,7 +7,7 @@ import {
   TableHead,
   TableRow,
   TablePagination,
-} from '@material-ui/core';
+} from '@mui/material';
 import styled from 'styled-components';
 import { QueryData } from '../../../types';
 import { greyPrimary, DarkPaperFull } from '../../../style-variables';

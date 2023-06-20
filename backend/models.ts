@@ -154,17 +154,27 @@ const DBFunctions: DBFunctions = {
         logger(err.message, LogType.WARNING);
       });
     }
-
-    if (dbType === DBType.MySQL) {
-      return pools.msql_pool.query(
-        text, //changed used to be 'USE ${someDB}; ...'
-        params,
-        dbType
-      );
-    }
-    // if (dbType === DBType.MySQL) { 
-    //   return pools.msql_pool.query(text, params, dbType);
+///////eric///////////////////////////////////
+    // if (dbType === DBType.MySQL) {
+    //   return pools.msql_pool.query(
+    //     `${text}`,
+    //     params,
+    //     dbType
+    //   );
     // }
+    if (dbType === DBType.MySQL) { 
+      // pools.msql_pool.query(`USE ${this.curMSQL_DB}`);
+      return pools.msql_pool.query(text, params, dbType);
+    }
+    // if (dbType === DBType.MySQL) {
+    //   console.log('3345657833456578334565783345657833456578');
+    //   return pools.msql_pool.query(
+    //     `USE ${this.curMSQL_DB}; ${text}`,
+    //     params,
+    //     dbType
+    //   );
+    // }
+////////////////////////////////////////////////////
   },
 
   async connectToDB(db, dbType) {
@@ -181,6 +191,14 @@ const DBFunctions: DBFunctions = {
     } else if (dbType === DBType.RDSPostgres) {
       await connectionFunctions.RDS_PG_DBConnect(this.curRDS_PG_DB);
     }
+  },
+
+  //////eric//////
+  async closeTheDB(db, dbType) {
+    if (dbType === DBType.Postgres) {
+      this.curPG_DB = '';
+      await connectionFunctions.PG_DBclose(this.pg_uri, db);
+    } 
   },
 
   async getLists(dbName = '', dbType) {
@@ -439,6 +457,7 @@ const DBFunctions: DBFunctions = {
             for (let i = 0; i < result[0].length; i += 1) {
               columnInfoArray.push(result[0][i]);
             }
+            // console.log("columnInfoArray==================================columnInfoArray", columnInfoArray);
             resolve(columnInfoArray);
           })
           .catch((err) => {
@@ -462,6 +481,7 @@ const DBFunctions: DBFunctions = {
         if (dbType === DBType.Postgres) pool = pools.pg_pool;
         if (dbType === DBType.RDSPostgres) pool = pools.rds_pg_pool;
 
+
         query = `SELECT
         table_catalog,
         table_schema,
@@ -472,7 +492,7 @@ const DBFunctions: DBFunctions = {
         ORDER BY table_name;`;
         pool
           .query(query)
-          .then((tables) => {
+          .then((tables) => {       
             for (let i = 0; i < tables.rows.length; i++) {
               tableList.push(tables.rows[i]);
               promiseArray.push(
@@ -503,17 +523,38 @@ const DBFunctions: DBFunctions = {
         let pool;
         if (dbType === DBType.MySQL) pool = pools.msql_pool;
         if (dbType === DBType.RDSMySQL) pool = pools.rds_msql_pool;
-
-        query = `SELECT
-        TABLE_CATALOG as table_schema,
-        TABLE_SCHEMA as table_catalog,
-        TABLE_NAME as table_name
+        
+        let query2 = `SELECT
+        table_catalog,
+        table_schema,
+        table_name,
+        is_insertable_into
         FROM information_schema.tables
-        WHERE TABLE_SCHEMA NOT IN("information_schema", "performance_schema", "mysql")
-        AND TABLE_SCHEMA = "${dbName}"
+        WHERE table_schema = 'public' or table_schema = 'base'
         ORDER BY table_name;`;
 
+        //  query = `
+        //  SELECT
+        //  TABLE_CATALOG as table_schema,
+        //  TABLE_SCHEMA as table_catalog,
+        //  TABLE_NAME as table_name
+        //  FROM information_schema.tables
+        //  WHERE TABLE_SCHEMA NOT IN('information_schema', 'performance_schema', 'mysql') 
+        //  AND TABLE_SCHEMA = '${dbName}'
+        //  ORDER BY table_name;`;
+
+         query = `
+         SELECT
+         TABLE_CATALOG as table_schema,
+         TABLE_SCHEMA as table_catalog,
+         TABLE_NAME as table_name
+         FROM information_schema.tables
+         WHERE TABLE_SCHEMA NOT IN('information_schema', 'performance_schema', 'mysql', 'sys') 
+         AND TABLE_SCHEMA = '${dbName}'
+         ORDER BY table_name;`;
+
         pool
+          // .query(query2)
           .query(query)
           .then((tables) => {
             for (let i = 0; i < tables[0].length; i++) {
@@ -531,7 +572,6 @@ const DBFunctions: DBFunctions = {
                 for (let i = 0; i < columnInfo.length; i++) {
                   tableList[i].columns = columnInfo[i];
                 }
-
                 logger("MySQL 'getDBLists' resolved.", LogType.SUCCESS);
                 resolve(tableList);
               })

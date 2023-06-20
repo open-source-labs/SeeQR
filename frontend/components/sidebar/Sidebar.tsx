@@ -1,6 +1,6 @@
 import React from 'react';
-import { Drawer, IconButton, Tooltip } from '@material-ui/core/';
-import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
+import { Drawer, IconButton, Tooltip } from '@mui/material/';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import styled from 'styled-components';
 import { AppState } from '../../types';
 import TopButtons from './TopButtons';

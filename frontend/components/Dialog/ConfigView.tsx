@@ -112,7 +112,7 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
                       [dbString]: !showpass[dbString],
                     })
                   }
-                >
+                  size="large">
                   {showpass[dbString] ? <Visibility /> : <VisibilityOff />}
                 </IconButton>
               </InputAdornment>

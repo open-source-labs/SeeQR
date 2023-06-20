@@ -302,6 +302,10 @@ export type AddTablesObjType = {
   table_name: string;
   table_schema: string;
   columns: ERTableColumnData[];
+  ericTestUnitTables?: any;
+  col_N?: any;
+  col_T?: any;
+  col_L?: any;
 };
 export type DropTablesObjType = {
   table_name: string;

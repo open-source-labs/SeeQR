@@ -1,5 +1,5 @@
 import React from 'react';
-import { ButtonGroup, Button } from '@material-ui/core/';
+import { ButtonGroup, Button } from '@mui/material/';
 import styled from 'styled-components';
 import { selectedColor, textColor, defaultMargin } from '../../style-variables';
 

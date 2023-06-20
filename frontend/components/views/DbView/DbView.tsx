@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button } from '@material-ui/core';
+import { Button } from '@mui/material';
 import styled from 'styled-components';
 import { AppState, DatabaseInfo, TableInfo } from '../../../types';
 import { DBType } from '../../../../backend/BE_types';

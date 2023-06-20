@@ -6,15 +6,15 @@ import {
   ListItemSecondaryAction,
   Checkbox,
   Tooltip,
-} from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close';
+} from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import {
   SidebarListItem,
   StyledListItemText,
   textColor,
 } from '../../style-variables';
 import { QueryData } from '../../types';
-import SaveIcon from '@material-ui/icons/Save';
+import SaveIcon from '@mui/icons-material/Save';
 
 const QueryText = styled(StyledListItemText)`
   & .MuiListItemText-secondary {
@@ -51,12 +51,12 @@ const QueryEntry = ({
         <CompareCheck onChange={setComparison} checked={isCompared} />
       </Tooltip>
       <Tooltip title="Save Query">
-        <IconButton onClick={saveThisQuery}>
+        <IconButton onClick={saveThisQuery} size="large">
           <SaveIcon fontSize='default' />
         </IconButton>
       </Tooltip>
       <Tooltip title="Forget Query">
-        <IconButton edge="end" onClick={deleteThisQuery}>
+        <IconButton edge="end" onClick={deleteThisQuery} size="large">
           <CloseIcon />
         </IconButton>
       </Tooltip>

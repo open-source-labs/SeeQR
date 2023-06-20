@@ -9,6 +9,7 @@ import {
   DropTablesObjType,
   TableHeaderDataObjectType,
   AlterColumnsObjType,
+  AddTablesObjType,
 } from '../../../types';
 import './styles.css';
 import * as colors from '../../../style-variables';
@@ -48,6 +49,8 @@ function TableHeader({ data }: TableHeaderProps) {
     alterTablesObj.addColumns.push(addColumnsObj);
     // update the backendObj
     backendObj.current.updates.alterTables.push(alterTablesObj);
+    /////////////////eric/////////////////
+    // backendObj.current.updates.addTables.ericTestUnit.push(alterTablesObj);
     // push a new object with blank properties
     currentTable.columns.push({
       column_name: `NewColumn${currentTable.columns?.length + 1 || 1}`,
@@ -161,10 +164,10 @@ function TableHeader({ data }: TableHeaderProps) {
         />
       </Tooltip>
       <Tooltip title="Add Column">
-        <IconButton onClick={handleAddColumn}>Add Column</IconButton>
+        <IconButton onClick={handleAddColumn} size="large">Add Column</IconButton>
       </Tooltip>
       <Tooltip title="Delete Table">
-        <IconButton onClick={handleDeleteTable}>
+        <IconButton onClick={handleDeleteTable} size="large">
           <DeleteIcon />
         </IconButton>
       </Tooltip>

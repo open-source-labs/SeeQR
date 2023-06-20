@@ -1,8 +1,8 @@
 import React from 'react';
-import { ButtonGroup, Button } from '@material-ui/core';
+import { ButtonGroup, Button } from '@mui/material';
 import Box from '@mui/material/Box';
-import AccountTreeIcon from '@material-ui/icons/AccountTree';
-import FormatListBulletedIcon from '@material-ui/icons/FormatListBulleted';
+import AccountTreeIcon from '@mui/icons-material/AccountTree';
+import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 import {useReactFlow} from 'react-flow-renderer';
 import styled from 'styled-components';
 import {

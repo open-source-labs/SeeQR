@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import '../lib/style.scss'
 import styled from 'styled-components';
-import { MuiThemeProvider } from '@material-ui/core/';
-import { StylesProvider } from '@material-ui/core/styles';
-import CssBaseline from '@material-ui/core/CssBaseline';
+import { ThemeProvider, Theme, StyledEngineProvider } from '@mui/material/';
+// import StylesProvider from '@mui/styles/StylesProvider';
+import CssBaseline from '@mui/material/CssBaseline';
 import { IpcRendererEvent, ipcRenderer } from 'electron';
 import {
   MuiTheme,
@@ -34,6 +35,19 @@ import Spinner from './modal/Spinner';
 import { once } from '../lib/utils';
 import CreateDBDialog from './Dialog/CreateDBDialog';
 import ConfigView from './Dialog/ConfigView';
+
+
+// declare module '@mui/styles/defaultTheme' {
+//   // eslint-disable-next-line @typescript-eslint/no-empty-interface
+//   interface DefaultTheme extends Theme {}
+// }
+
+
+///////eric//////Increase the maximum number of listeners to 20///////////////
+const EventEmitter = require('events');
+const emitter = new EventEmitter();
+emitter.setMaxListeners(20);
+//////////////////////////////////////////////////////////////////////////////
 
 const AppContainer = styled.div`
   display: grid;
@@ -94,6 +108,7 @@ const App = () => {
     };
     ipcRenderer.on('db-lists', dbListFromBackend); // dummy data error here?
     requestDbListOnce();
+
     // return cleanup function
     return () => {
       ipcRenderer.removeListener('db-lists', dbListFromBackend);
@@ -144,8 +159,9 @@ const App = () => {
 
   return (
     // Styled Components must be injected last in order to override Material UI style: https://material-ui.com/guides/interoperability/#controlling-priority-3
-    <StylesProvider injectFirst>
-      <MuiThemeProvider theme={MuiTheme}>
+    // <StylesProvider injectFirst>
+    <StyledEngineProvider injectFirst>
+      <ThemeProvider theme={MuiTheme}>
         <Spinner />
         <AppContainer>
           <CssBaseline />
@@ -245,8 +261,9 @@ const App = () => {
           </Main>
           <FeedbackModal />
         </AppContainer>
-      </MuiThemeProvider>
-    </StylesProvider>
+      </ThemeProvider>
+    </StyledEngineProvider>
+    // {/* </StylesProvider> */}
   );
 };
 

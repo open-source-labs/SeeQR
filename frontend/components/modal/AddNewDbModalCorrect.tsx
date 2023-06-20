@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Dialog, DialogTitle, Tooltip } from '@material-ui/core/';
-import CloudUploadIcon from '@material-ui/icons/CloudUpload';
+import { Dialog, DialogTitle, Tooltip } from '@mui/material/';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { ipcRenderer, remote } from 'electron';
 import { sendFeedback } from '../../lib/utils';
 import {

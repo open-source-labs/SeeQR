@@ -7,21 +7,20 @@ import {
   Typography,
   Tooltip,
   Slider,
-} from '@material-ui/core';
+} from '@mui/material';
 import { debounce } from 'debounce';
 import type { Thresholds } from '../../../../types';
 
 interface Props {
   children: React.ReactElement;
-  open: boolean;
   value: number;
 }
 
 function ValueLabelComponent(props: Props) {
-  const { children, open, value } = props;
+  const { children, value } = props;
 
   return (
-    <Tooltip open={open} enterTouchDelay={0} placement="top" title={value}>
+    <Tooltip enterTouchDelay={0} placement="top" title={value}>
       {children}
     </Tooltip>
   );
@@ -74,16 +73,22 @@ const ThresholdsDialog = ({
         </DialogContentText>
         <Typography gutterBottom>Percentage of total duration</Typography>
         <Slider
-          ValueLabelComponent={ValueLabelComponent}
-          aria-label="custom thumb label"
+          slots={{
+            valueLabel: ValueLabelComponent,
+          }}
+          valueLabelDisplay='auto'
           value={durThres}
+          aria-label="custom thumb label"
           onChange={handlePercentChange}
         />
         <Typography gutterBottom>Planner rows accuracy</Typography>
         <Slider
-          ValueLabelComponent={ValueLabelComponent}
-          aria-label="custom thumb label"
+          slots={{
+            valueLabel: ValueLabelComponent,
+          }}
+          valueLabelDisplay='auto'
           value={accThres}
+          aria-label="custom thumb label"
           onChange={handleAccuracyChange}
         />
       </DialogContent>
