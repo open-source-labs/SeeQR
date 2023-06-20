@@ -8,10 +8,10 @@ const mysql = require('mysql2/promise');
 
 export default {
   /**
-   * For a local Postgres database
-   * Uses passed in arguments to create a URI to create a pool, save it, and begin a connection 
-   * @param pg_uri: URI created in models.ts using login info
-   * @param db: name of target database that the login has access to
+   * For a local Postgres database.
+   * Uses passed in arguments to create a URI to create a pool, save it, and begin a connection. 
+   * @param pg_uri URI created in models.ts using login info
+   * @param db Name of target database that the login has access to. Initially empty string
    */
   async PG_DBConnect(pg_uri: string, db: string) {
     const newURI = `${pg_uri}${db}`;
@@ -21,10 +21,10 @@ export default {
   },
 
   /**
-   * For a local MySQL database
-   * If a connection already exists, end the connection
-   * Use passed in login info to create a new pool and save it
-   * @param MYSQL_CREDS: https://github.com/mysqljs/mysql
+   * For a local MySQL database.
+   * If a connection already exists, end the connection.
+   * Use passed in login info to create a new pool and save it.
+   * @param MYSQL_CREDS https://github.com/mysqljs/mysql
    *    {
           host: `localhost`,
           port: MSQL_Cred.port,             from config file
@@ -43,8 +43,8 @@ export default {
   },
 
   /**
-   * Checks that the MySQL database connection/pool is valid by running short query
-   * @param db: name of target MySQL database
+   * Checks that the MySQL database connection/pool is valid by running short query.
+   * @param db Name of target MySQL database
    */
   MSQL_DBQuery(db: string) {
     pools.msql_pool
@@ -58,7 +58,7 @@ export default {
   },
 
   /**
-   * For an RDS Postgres database
+   * Create pool and connect to an RDS Postgres database using login info.
    * @param RDS_PG_INFO from config file
    */
   async RDS_PG_DBConnect(RDS_PG_INFO) {
@@ -67,7 +67,8 @@ export default {
   },
 
   /**
-   * For an RDS MySQL database
+   * End RDS MySQL pool if one exists.
+   * Create/save new pool using login info.
    * @param RDS_MSQL_INFO from config file
    */
   async RDS_MSQL_DBConnect(RDS_MSQL_INFO) {
@@ -76,8 +77,8 @@ export default {
   },
 
   /**
-   * Checks that the MySQL database connection/pool is valid by running short query
-   * @param db: name of target RDS MySQL database
+   * Checks that the MySQL database connection/pool is valid by running short query.
+   * @param db name of target RDS MySQL database
    */
   RDS_MSQL_DBQuery(db: string) {
     pools.rds_msql_pool
