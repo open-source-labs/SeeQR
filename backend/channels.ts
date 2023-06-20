@@ -43,11 +43,10 @@ ipcMain.handle('set-config', async (event, configObj) => {
       added error handling to display error message on frontend based on which dbs failed to login
       */
       let errorStr = '';
-      for (const dbs in dbsInputted) {
-        if (!dbsInputted[dbs]) {
-          errorStr += ` ${dbs}`;
-        }
-      }
+      const dbs = Object.keys(dbsInputted);
+      dbs.forEach(e => {
+        if (!dbsInputted[e]) errorStr += ` ${e}`;
+      })
       if (errorStr.length) {
         const err = `Unsuccessful login(s) for ${errorStr.toUpperCase()} database(s)`;
         const feedback: Feedback = {
