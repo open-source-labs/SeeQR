@@ -48,6 +48,17 @@ const generateDataByType = (columnObj: ColumnObj): string | number => {
         ? Math.floor(Math.random() * columnObj.character_maximum_length)
         : 3;
       return '\''.concat(faker.random.alphaNumeric(length)).concat('\'');
+    /////////////////////////////////////////eric for mySQL////////////////////////////////////////////////////////////////////
+    case 'varchar':
+      // defaulting length to 3 because faker.lorem defaults to a length of 3 if no length is specified
+  
+      length = columnObj.character_maximum_length && columnObj.character_maximum_length < 3
+        ? Math.floor(Math.random() * columnObj.character_maximum_length)
+        : 3;
+      return '\''.concat(faker.random.alphaNumeric(length)).concat('\'');  
+    case 'int':
+      return faker.random.number({ min: -2147483648, max: 2147483647 });
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////  
     case 'date': {
       // generating a random date between 1500 and 2020
       const year = getRandomInt(1500, 2020).toString();
@@ -77,7 +88,12 @@ const generateDummyData: GenerateDummyData = async (tableInfo: ColumnObj[], numR
   for(let i = 0; i < tableInfo.length; i++) {
     columnNames.push(tableInfo[i].column_name);
   }
-  
+  console.log('columnNames=======================ericCheck========================ericCheck========================columnNames', columnNames);
+  console.log('ericCheck=======================ericCheck========================ericCheck========================ericCheck');
+  console.log('tableInfo=======================ericCheck========================ericCheck========================tableInfo', tableInfo);
+  console.log('ericCheck=======================ericCheck========================ericCheck========================ericCheck');
+  console.log('numRows=======================ericCheck========================ericCheck========================numRows', numRows);
+  console.log('ericCheck=======================ericCheck========================ericCheck========================ericCheck');
   const dummyRecords: DummyRecords = [columnNames];
 
   // generate dummy records for each row
@@ -86,14 +102,17 @@ const generateDummyData: GenerateDummyData = async (tableInfo: ColumnObj[], numR
     // at each row, check the columns of the table and generate dummy data accordingly
     for (let j = 0; j < tableInfo.length; j += 1) {
       // if column has no foreign key constraint, then generate dummy data based on data type
-      if (
-        tableInfo[j].constraint_type !== 'FOREIGN KEY' 
+      if (tableInfo[j].constraint_type !== 'FOREIGN KEY'){ 
         // && tableInfo[j].constraint_type !== 'PRIMARY KEY'
-      ) row.push(generateDataByType(tableInfo[j]));
+        console.log('ericCheckericCheckericCheckericCheckericCheckericCheckericCheckericCheckericCheckericCheckericCheckericCheck========================ericCheck========================ericCheck');
+        row.push(generateDataByType(tableInfo[j])) 
+        console.log('row=======================ericCheck========================ericCheck========================rowrowrowrowrowrow', row);
+        console.log('ericCheck=======================ericCheck========================ericCheck========================ericCheck');
+      }
       
       // if there is a foreign key constraint, grab random key from foreign table 
       else if (tableInfo[j].constraint_type === 'FOREIGN KEY') {
-        try {
+        // try {
           const foreignColumn = tableInfo[j].foreign_column;
           const foreignTable = tableInfo[j].foreign_table;
           const getForeignKeyQuery = `
@@ -111,10 +130,10 @@ const generateDummyData: GenerateDummyData = async (tableInfo: ColumnObj[], numR
             logger('There was an error while retrieving a valid foreign key while generating dummy data.', LogType.ERROR);
             throw new Error('There was an error while retrieving a valid foreign key.');
           }
-        }
-        catch(err) {
-          throw err;
-        }
+        // }
+        // catch(err) {
+        //   throw err;
+        // }
       }
     }
     dummyRecords.push(row);

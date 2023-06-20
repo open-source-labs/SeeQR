@@ -457,6 +457,7 @@ const DBFunctions: DBFunctions = {
             for (let i = 0; i < result[0].length; i += 1) {
               columnInfoArray.push(result[0][i]);
             }
+            // console.log("columnInfoArray==================================columnInfoArray", columnInfoArray);
             resolve(columnInfoArray);
           })
           .catch((err) => {

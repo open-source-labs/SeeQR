@@ -522,6 +522,9 @@ ipcMain.handle(
         dbType
       ); // passed in dbType to second argument
       // console.log('tableInfo in generate-dummy-data', tableInfo); // working
+      // console.log('tableInfo==========================================================tableInfo', tableInfo);
+
+      // console.log('ericCheck=======================ericCheck========================ericCheck========================ericCheck');
 
       // generate dummy data
       const dummyArray: DummyRecords = await generateDummyData(
@@ -529,6 +532,8 @@ ipcMain.handle(
         data.rows
       );
       // console.log('dummyArray output: ', dummyArray)
+      // console.log('tableInfo==========================================================tableInfo', tableInfo);
+      // console.log('dummyArray==========================================================dummyArray', dummyArray);
       // generate insert query string to insert dummy records
       const columnsStringified = '('
         .concat(dummyArray[0].join(', '))
