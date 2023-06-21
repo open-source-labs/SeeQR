@@ -12,3 +12,4 @@ coverage/
 release-builds/
 UserTableLayouts.json
 package-lock.json
+/assets
