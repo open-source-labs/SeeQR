@@ -256,7 +256,6 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
     });
     setNodes(nodesArray);
     setEdges(initialState.edges);
-
   }, [schemaState]);
 
   return (

@@ -76,6 +76,14 @@ export interface QueryData {
   group: string;
 
   // flag: boolean
+
+  /////////////////////////eric//////////////////////////////////////////////
+  numberOfSample: number,
+  totalSampleTime: number,
+  minmumSampleTime: number,
+  maximumSampleTime: number,
+  averageSampleTime: number,
+  ///////////////////////////////////////////////////////////////////////////
 }
 
 export type ValidTabs = 'Results' | 'Execution Plan';
@@ -226,6 +234,11 @@ export interface ExplainJson {
   Plan: PlanNode;
   'Planning Time': number;
   'Execution Time': number;
+  numberOfSample: number;
+  totalSampleTime: number;
+  minmumSampleTime: number;
+  maximumSampleTime: number;
+  averageSampleTime: number;
 }
 
 /**

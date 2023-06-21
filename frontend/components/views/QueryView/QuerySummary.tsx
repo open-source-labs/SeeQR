@@ -25,6 +25,11 @@ const QuerySummary = ({ executionPlan }: QuerySummaryProps) => {
   const summaryData = {
     'Planning Time': executionPlan?.['Planning Time'],
     'Execution Time': executionPlan?.['Execution Time'],
+    'Number of Sample': executionPlan?.numberOfSample,
+    'Total Sample Time': executionPlan?.totalSampleTime,
+    'Minmum Sample Time': executionPlan?.minmumSampleTime,
+    'Maximum Sample Time': executionPlan?.maximumSampleTime,
+    'Average Sample Time': executionPlan?.averageSampleTime,
   };
 
   if (!executionPlan) return null;

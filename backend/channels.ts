@@ -9,6 +9,7 @@ import generateDummyData from './DummyD/dummyDataMain';
 import { ColumnObj, DBList, DummyRecords, DBType, LogType } from './BE_types';
 import backendObjToQuery from './ertable-functions';
 import logger from './Logging/masterlog';
+import { Integer } from 'type-fest';
 
 const db = require('./models');
 const docConfig = require('./_documentsConfig');
@@ -380,6 +381,13 @@ ipcMain.handle(
       `selectedDb: ${selectedDb} and dbType: ${dbType} and runQueryNumber: ${runQueryNumber}`
     );
     event.sender.send('async-started');
+   const arr: any[] = [];
+   const numberOfSample: number = runQueryNumber;
+   let totalSampleTime: any = 0;
+   let minmumSampleTime: any;
+   let maximumSampleTime: any;
+   let averageSampleTime: any;
+   /////   ///////////   ///////////   ///////////   ///////////
 
     try {
       let error: string | undefined;
@@ -387,74 +395,78 @@ ipcMain.handle(
 
       if (selectedDb !== targetDb) await db.connectToDB(targetDb, dbType);
 
-      // Run Explain
+      // Run Explain            
       let explainResults;
       try {
-        if (dbType === DBType.Postgres) {
-          const results = await db.query(
-            explainQuery(sqlString, dbType),
-            null,
-            dbType
-          );
-          // console.log(LogType.WARNING, results);
-          console.log('ericCheck------------------------------------------------------------------ericCheck');
-          console.log('postgerSQL_results-----------------------------------------------------------------postgerSQL_results', results);
-          console.log('postgerSQL_results[1].rows-----------------------------------------------------------------postgerSQL_results[1].rows', results[1].rows);
-          console.log('postgerSQL_results[1].rows[0]["QUERY PLAN"][0]-----------------------------------------------------------------postgerSQL_results[1].rows[0]["QUERY PLAN"][0]', results[1].rows[0]["QUERY PLAN"][0]);
+        for(let i = 0; i < numberOfSample; i++){
+          if (dbType === DBType.Postgres) {
+            const results = await db.query(
+              explainQuery(sqlString, dbType),
+              null,
+              dbType
+            );
+            // console.log(LogType.WARNING, results);
+            console.log('ericCheck------------------------------------------------------------------ericCheck');
+            console.log('postgerSQL_results-----------------------------------------------------------------postgerSQL_results', results);
+            console.log('postgerSQL_results[1].rows-----------------------------------------------------------------postgerSQL_results[1].rows', results[1].rows);
+            console.log('postgerSQL_results[1].rows[0]["QUERY PLAN"][0]-----------------------------------------------------------------postgerSQL_results[1].rows[0]["QUERY PLAN"][0]', results[1].rows[0]["QUERY PLAN"][0]);
 
-          explainResults = results[1].rows;
-
-            ////////////////////////////////////////////////////////////
-            /////////////////////performance test///////////////////////
-            const arr: any[] = [];
-            // if (dbType === DBType.Postgres) {
-            //   for(let i = 0; i < 2; i + 1){
-            //     const results222 = await db.query(
-            //       explainQuery(sqlString, dbType),
-            //       null,
-            //       dbType
-            //     );
-            //     const aaa = results222.rows;
-            //     arr.push(aaa);
+            explainResults = results[1].rows;
+            const eachSampleTime: any = results[1].rows[0]["QUERY PLAN"][0]['Planning Time'] + results[1].rows[0]["QUERY PLAN"][0]['Execution Time'];
+            arr.push(eachSampleTime);
+            totalSampleTime += eachSampleTime;
+    
+          } else if (dbType === DBType.MySQL) {
+            const results = await db.query(
+              explainQuery(sqlString, dbType),
+              null,
+              dbType
+            );
+            console.log('ericCheck------------------------------------------------------------------ericCheck');
+            console.log('mySQL_results-----------------------------------------------------------------mySQL_results', results);
+            console.log('results[0][0]-----------------------------------------------------------------results[0][0]', results[0][0]);
+            // function parseExplainExplanation(explain) {
+            //   const regex = /actual time=(\d+\.\d+)\.\.(\d+\.\d+) rows=\d+ loops=(\d+)/g;
+            //   const matches: any[] = Array.from(explain.matchAll(regex));
+            //   const result: any[] = [];
+            
+            //   for (const match of matches) {
+            //     const actualTimeStart: any = parseFloat(match[1]);
+            //     const actualTimeEnd: any = parseFloat(match[2]);
+            //     const loopNumber: any = parseInt(match[3]);
+            
+            //     result.push({ actualTimeStart, actualTimeEnd, loopNumber });
             //   }
+            
+            //   return result;
             // }
- 
-            //   if (dbType === DBType.Postgres) {
-            //     for (let i = 0; i < 2; i+=1) {
-            //       const results222 = await db.query(
-            //         explainQuery(sqlString, dbType),
-            //         null,
-            //         dbType
-            //       );
-            //       const aaa = results222.rows;
-            //       arr.push(aaa);
-            //     }
-            //   }
 
-            // let total = 0;
-            // for(let i = 0; i < arr.length; i += 1){
-            //   total += arr[i][1].rows[0]["QUERY PLAN"][0]['Planning Time'] + arr[i][1].rows[0]["QUERY PLAN"][0]['Execution Time'];
-            // }
-            // const averageSamepleTime: any = total / 2;
-            // console.log('averageSamepleTime------------------------------------------------------------------averageSamepleTime', averageSamepleTime);
+            // arr.push(parseExplainExplanation(results[0][0]));
+            // console.log('ericCheck------------------------------------------------------------------ericCheck');
+            // console.log('arr-------------------------------------------------------------------arr', arr);
+                       
+            
+            explainResults = results[0][0];
+            // console.log('mysql explain results', explainResults);
 
-            ////////////////////////////////////////////////////////////
-            /////////////////////////////////////////////////////////////
+            // console.log(LogType.WARNING, results);
 
-        } else if (dbType === DBType.MySQL) {
-          const results = await db.query(
-            explainQuery(sqlString, dbType),
-            null,
-            dbType
-          );
-          explainResults = results[0][0];
-          // console.log('mysql explain results', explainResults);
-
-          // console.log(LogType.WARNING, results);
+          }
         }
+        console.log('ericCheck------------------------------------------------------------------ericCheck');
+        console.log('totalSampleTime------------------------------------------------------------------------------------------totalSampleTime', totalSampleTime);
+        minmumSampleTime = Math.min(...arr);
+        maximumSampleTime = Math.max(...arr);
+        averageSampleTime = totalSampleTime/numberOfSample;
+        console.log('minmumSampleTime------------------------------------------------------------------------------------------minmumSampleTime', minmumSampleTime);
+        console.log('maximumSampleTime------------------------------------------------------------------------------------------averageSampleTime', maximumSampleTime);
+        console.log('averageSampleTime------------------------------------------------------------------------------------------averageSampleTime', averageSampleTime);
       } catch (e) {
         error = `Failed to get Execution Plan. EXPLAIN might not support this query.`;
       }
+
+    
+    ///////////   ///////////   ///////////   ///////////
 
       // Run Query
       let returnedRows;
@@ -480,6 +492,11 @@ ipcMain.handle(
         returnedRows,
         explainResults,
         error,
+        numberOfSample,
+        totalSampleTime,
+        minmumSampleTime,
+        maximumSampleTime,
+        averageSampleTime,
       };
     } finally {
       // connect back to initialDb

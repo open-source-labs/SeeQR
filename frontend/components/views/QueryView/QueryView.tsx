@@ -81,6 +81,11 @@ const QueryView = ({
     db: selectedDb,
     sqlString: '',
     group: '',
+    numberOfSample: 0,
+    totalSampleTime: 0,
+    minmumSampleTime: 0,
+    maximumSampleTime: 0,
+    averageSampleTime: 0,
   };
 
   const localQuery = { ...defaultQuery, ...query };
@@ -160,14 +165,19 @@ const QueryView = ({
         },
         curDBType
       )
-      .then(({ db, sqlString, returnedRows, explainResults, error }) => {
+      .then(({ db, sqlString, returnedRows, explainResults, error, 
+                numberOfSample,
+                totalSampleTime,
+                minmumSampleTime,
+                maximumSampleTime,
+                averageSampleTime, }) => {
         if (error) {
           throw error;
         }
         let transformedData;
         // console.log('returnedRows after .then method', returnedRows);
         // console.log('explainResult after .then method', explainResults);
-
+        console.log(totalSampleTime, minmumSampleTime, maximumSampleTime, averageSampleTime);
         // console.log('curDBType in QueryView', curDBType);
 
         if (curDBType === DBType.Postgres) {
@@ -178,6 +188,11 @@ const QueryView = ({
             label: localQuery.label,
             db,
             group: localQuery.group,
+            numberOfSample: numberOfSample,
+            totalSampleTime: totalSampleTime,
+            minmumSampleTime: minmumSampleTime,
+            maximumSampleTime: maximumSampleTime,
+            averageSampleTime: averageSampleTime
           };
         }
         if (curDBType === DBType.MySQL) {
