@@ -383,10 +383,21 @@ ipcMain.handle(
     event.sender.send('async-started');
    const arr: any[] = [];
    const numberOfSample: number = runQueryNumber;
-   let totalSampleTime: any = 0;
-   let minmumSampleTime: any;
-   let maximumSampleTime: any;
-   let averageSampleTime: any;
+   let totalSampleTime: number = 0;
+   let minmumSampleTime: number = 0;
+   let maximumSampleTime: number = 0;
+   let averageSampleTime: number = 0;
+
+   function parseExplainExplanation(explain) {
+    const regex = /actual time=(\d+\.\d+)\.\.(\d+\.\d+) rows=\d+ loops=(\d+)/g;
+    const matches: any[] = Array.from(explain.matchAll(regex));
+    let result: number = 0;
+
+    for(let i = 0; i < matches.length; i+=1){
+      result += (parseFloat(matches[i][2]) - parseFloat(matches[i][1])) * parseFloat(matches[i][3]);
+    }
+    return result;
+  }
    /////   ///////////   ///////////   ///////////   ///////////
 
     try {
@@ -405,7 +416,7 @@ ipcMain.handle(
               null,
               dbType
             );
-            // console.log(LogType.WARNING, results);
+
             console.log('ericCheck------------------------------------------------------------------ericCheck');
             console.log('postgerSQL_results-----------------------------------------------------------------postgerSQL_results', results);
             console.log('postgerSQL_results[1].rows-----------------------------------------------------------------postgerSQL_results[1].rows', results[1].rows);
@@ -425,28 +436,64 @@ ipcMain.handle(
             console.log('ericCheck------------------------------------------------------------------ericCheck');
             console.log('mySQL_results-----------------------------------------------------------------mySQL_results', results);
             console.log('results[0][0]-----------------------------------------------------------------results[0][0]', results[0][0]);
-            // function parseExplainExplanation(explain) {
-            //   const regex = /actual time=(\d+\.\d+)\.\.(\d+\.\d+) rows=\d+ loops=(\d+)/g;
-            //   const matches: any[] = Array.from(explain.matchAll(regex));
-            //   const result: any[] = [];
-            
-            //   for (const match of matches) {
-            //     const actualTimeStart: any = parseFloat(match[1]);
-            //     const actualTimeEnd: any = parseFloat(match[2]);
-            //     const loopNumber: any = parseInt(match[3]);
-            
-            //     result.push({ actualTimeStart, actualTimeEnd, loopNumber });
-            //   }
-            
-            //   return result;
-            // }
 
-            // arr.push(parseExplainExplanation(results[0][0]));
-            // console.log('ericCheck------------------------------------------------------------------ericCheck');
-            // console.log('arr-------------------------------------------------------------------arr', arr);
+            const eachSampleTime: any = parseExplainExplanation(results[0][0].EXPLAIN);
+            arr.push(eachSampleTime);
+            totalSampleTime += eachSampleTime;
+            console.log('ericCheck------------------------------------------------------------------ericCheck');
+            console.log('arr-------------------------------------------------------------------arr', arr);
                        
-            
-            explainResults = results[0][0];
+
+            // //////////not real result just try to get rid of bugs first///////////////
+            explainResults = {
+              Plan: {
+                'Node Type': 'Seq Scan',
+                'Parallel Aware': false,
+                'Async Capable': false,
+                'Relation Name': 'newtable1',
+                Schema: 'public',
+                Alias: 'newtable1',
+                'Startup Cost': 0,
+                'Total Cost': 7,
+                'Plan Rows': 200,
+                'Plan Width': 132,
+                'Actual Startup Time': 0.015,
+                'Actual Total Time': 0.113,
+                'Actual Rows': 200,
+                'Actual Loops': 1,
+                Output: [ 'newcolumn1' ],
+                'Shared Hit Blocks': 5,
+                'Shared Read Blocks': 0,
+                'Shared Dirtied Blocks': 0,
+                'Shared Written Blocks': 0,
+                'Local Hit Blocks': 0,
+                'Local Read Blocks': 0,
+                'Local Dirtied Blocks': 0,
+                'Local Written Blocks': 0,
+                'Temp Read Blocks': 0,
+                'Temp Written Blocks': 0
+              },
+              Planning: {
+                'Shared Hit Blocks': 64,
+                'Shared Read Blocks': 0,
+                'Shared Dirtied Blocks': 0,
+                'Shared Written Blocks': 0,
+                'Local Hit Blocks': 0,
+                'Local Read Blocks': 0,
+                'Local Dirtied Blocks': 0,
+                'Local Written Blocks': 0,
+                'Temp Read Blocks': 0,
+                'Temp Written Blocks': 0
+              },
+              'Planning Time': 9999,
+              Triggers: [],
+              'Execution Time': 9999
+            };
+            // ////////////////////////////////////////////////////////////////////////////////////////
+            // ////////////////////////////////////////////////////////////////////////////////////////
+
+
+            // explainResults = results[0][0];
             // console.log('mysql explain results', explainResults);
 
             // console.log(LogType.WARNING, results);
@@ -459,7 +506,7 @@ ipcMain.handle(
         maximumSampleTime = Math.max(...arr);
         averageSampleTime = totalSampleTime/numberOfSample;
         console.log('minmumSampleTime------------------------------------------------------------------------------------------minmumSampleTime', minmumSampleTime);
-        console.log('maximumSampleTime------------------------------------------------------------------------------------------averageSampleTime', maximumSampleTime);
+        console.log('maximumSampleTime------------------------------------------------------------------------------------------maximumSampleTime', maximumSampleTime);
         console.log('averageSampleTime------------------------------------------------------------------------------------------averageSampleTime', averageSampleTime);
       } catch (e) {
         error = `Failed to get Execution Plan. EXPLAIN might not support this query.`;

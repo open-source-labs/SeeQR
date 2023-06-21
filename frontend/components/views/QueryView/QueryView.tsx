@@ -184,15 +184,16 @@ const QueryView = ({
           transformedData = {
             sqlString,
             returnedRows,
-            executionPlan: explainResults[0]['QUERY PLAN'][0],
+            executionPlan: {
+              numberOfSample,   // executionPlan.numberOfSample = numberOfSample
+              totalSampleTime,
+              minmumSampleTime,
+              maximumSampleTime,
+              averageSampleTime,
+              ...explainResults[0]['QUERY PLAN'][0],},
             label: localQuery.label,
             db,
             group: localQuery.group,
-            numberOfSample: numberOfSample,
-            totalSampleTime: totalSampleTime,
-            minmumSampleTime: minmumSampleTime,
-            maximumSampleTime: maximumSampleTime,
-            averageSampleTime: averageSampleTime
           };
         }
         if (curDBType === DBType.MySQL) {
@@ -202,6 +203,15 @@ const QueryView = ({
             label: localQuery.label,
             db,
             group: localQuery.group,
+            executionPlan: {
+              numberOfSample,   // executionPlan.numberOfSample = numberOfSample
+              totalSampleTime,
+              minmumSampleTime,
+              maximumSampleTime,
+              averageSampleTime,
+              // ...explainResults[0]['QUERY PLAN'][0],
+              ...explainResults,
+            },
           };
         }
 
@@ -262,7 +272,7 @@ const QueryView = ({
           Run Query
         </RunButton>
       </CenterButton>
-      <QuerySummary executionPlan={query?.executionPlan} />
+      <QuerySummary executionPlan={query?.executionPlan}/>
       <QueryTabs
         results={query?.returnedRows}
         executionPlan={query?.executionPlan}
