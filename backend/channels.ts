@@ -364,6 +364,7 @@ interface QueryPayload {
   targetDb: string;
   sqlString: string;
   selectedDb: string;
+  runQueryNumber: number;
 }
 
 // Run query passed from the front-end, and send back an updated DB List
@@ -376,13 +377,13 @@ ipcMain.handle(
   'run-query',
   async (
     event,
-    { targetDb, sqlString, selectedDb }: QueryPayload,
+    { targetDb, sqlString, selectedDb, runQueryNumber}: QueryPayload,
     dbType: DBType
   ) => {
     logger(
       "Received 'run-query'",
       LogType.RECEIVE,
-      `selectedDb: ${selectedDb} and dbType: ${dbType}`
+      `selectedDb: ${selectedDb} and dbType: ${dbType} and runQueryNumber: ${runQueryNumber}`
     );
     event.sender.send('async-started');
 

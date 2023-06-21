@@ -8,13 +8,13 @@ import {
   Tooltip,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import SaveIcon from '@mui/icons-material/Save';
 import {
   SidebarListItem,
   StyledListItemText,
   textColor,
 } from '../../style-variables';
 import { QueryData } from '../../types';
-import SaveIcon from '@mui/icons-material/Save';
 
 const QueryText = styled(StyledListItemText)`
   & .MuiListItemText-secondary {
@@ -44,7 +44,7 @@ const QueryEntry = ({
   deleteThisQuery,
   saveThisQuery,
 }: QueryEntryProps) => (
-  <SidebarListItem button $customSelected={isSelected} onClick={select}>
+  <SidebarListItem $customSelected={isSelected} onClick={select}>
     <QueryText primary={`${query.label} - ${query.db}`} />
     <ListItemSecondaryAction>
       <Tooltip title="View in Comparison">
@@ -52,7 +52,7 @@ const QueryEntry = ({
       </Tooltip>
       <Tooltip title="Save Query">
         <IconButton onClick={saveThisQuery} size="large">
-          <SaveIcon fontSize='default' />
+          <SaveIcon fontSize='inherit' />
         </IconButton>
       </Tooltip>
       <Tooltip title="Forget Query">

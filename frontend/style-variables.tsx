@@ -5,7 +5,7 @@
 
 import React from 'react';
 import {
-  ListItem,
+  ListItemButton,
   List,
   Paper,
   DialogTitle,
@@ -76,7 +76,7 @@ export const planNodeWidth = '200px';
 export const planNodeHeight = '100px';
 
 // theme to override Mui defaults
-export const MuiTheme = createTheme(adaptV4Theme({
+export const MuiTheme = createTheme({
   typography: {
     fontSize: 16,
   },
@@ -116,7 +116,7 @@ export const MuiTheme = createTheme(adaptV4Theme({
       },
     },
   },
-}));
+});
 
 export const SidebarList = styled(List)`
   padding: 0;
@@ -131,7 +131,7 @@ interface SidebarListItemProps {
  * Sidebar List item. Designed for dark bg.
  * Takes boolean in $customSelected prop to style selected item
  */
-export const SidebarListItem = styled(ListItem)`
+export const SidebarListItem = styled(ListItemButton)`
   color: ${({ $customSelected }: SidebarListItemProps) =>
     $customSelected ? selectedColor : textColor};
   background: transparent;

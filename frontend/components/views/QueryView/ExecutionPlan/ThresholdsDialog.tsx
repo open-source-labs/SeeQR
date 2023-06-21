@@ -73,9 +73,9 @@ const ThresholdsDialog = ({
         </DialogContentText>
         <Typography gutterBottom>Percentage of total duration</Typography>
         <Slider
-          slots={{
-            valueLabel: ValueLabelComponent,
-          }}
+          // slots={{
+          //   valueLabel: ValueLabelComponent,
+          // }}
           valueLabelDisplay='auto'
           value={durThres}
           aria-label="custom thumb label"
@@ -83,9 +83,9 @@ const ThresholdsDialog = ({
         />
         <Typography gutterBottom>Planner rows accuracy</Typography>
         <Slider
-          slots={{
-            valueLabel: ValueLabelComponent,
-          }}
+          // slots={{
+          //   valueLabel: ValueLabelComponent,
+          // }}
           valueLabelDisplay='auto'
           value={accThres}
           aria-label="custom thumb label"

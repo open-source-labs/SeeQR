@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import '../lib/style.scss'
+import '../lib/style.css'
 import styled from 'styled-components';
 import { ThemeProvider, Theme, StyledEngineProvider } from '@mui/material/';
 // import StylesProvider from '@mui/styles/StylesProvider';
@@ -37,7 +37,7 @@ import CreateDBDialog from './Dialog/CreateDBDialog';
 import ConfigView from './Dialog/ConfigView';
 
 
-// declare module '@mui/styles/defaultTheme' {
+// declare module '@mui/material/styles/defaultTheme' {
 //   // eslint-disable-next-line @typescript-eslint/no-empty-interface
 //   interface DefaultTheme extends Theme {}
 // }

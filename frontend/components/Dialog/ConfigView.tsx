@@ -15,7 +15,7 @@ import {
   StyledButton,
   StyledTextField,
 } from '../../style-variables';
-import '../../lib/style.scss';
+import '../../lib/style.css';
 
 /*
 junaid

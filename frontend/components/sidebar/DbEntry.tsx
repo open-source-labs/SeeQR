@@ -50,7 +50,6 @@ const DbEntry = ({
 
   return (
     <SidebarListItem
-      button
       $customSelected={isSelected}
       onClick={() => select(db, dbType)}
     >
