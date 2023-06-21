@@ -51,6 +51,8 @@ const helperFunctions: HelperFunctions = {
   explainQuery: function explainQuery(sqlString, dbType: DBType) {
     const PG = `BEGIN; EXPLAIN (FORMAT JSON, ANALYZE, VERBOSE, BUFFERS) ${sqlString}; ROLLBACK`;
     const MYSQL = `BEGIN; EXPLAIN ANALYZE ${sqlString}`;
+    console.log('ericCheck------------------------------------------------------------------ericCheck');
+    console.log('ericCheck------------------------------------------------------------------sql str', `BEGIN; EXPLAIN ANALYZE ${sqlString}` );
     return dbType === DBType.Postgres || dbType === DBType.RDSPostgres
       ? PG
       : MYSQL;

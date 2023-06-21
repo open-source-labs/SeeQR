@@ -396,7 +396,50 @@ ipcMain.handle(
             dbType
           );
           // console.log(LogType.WARNING, results);
+          console.log('ericCheck------------------------------------------------------------------ericCheck');
+          console.log('postgerSQL_results-----------------------------------------------------------------postgerSQL_results', results);
+          console.log('postgerSQL_results[1].rows-----------------------------------------------------------------postgerSQL_results[1].rows', results[1].rows);
+          console.log('postgerSQL_results[1].rows[0]["QUERY PLAN"][0]-----------------------------------------------------------------postgerSQL_results[1].rows[0]["QUERY PLAN"][0]', results[1].rows[0]["QUERY PLAN"][0]);
+
           explainResults = results[1].rows;
+
+            ////////////////////////////////////////////////////////////
+            /////////////////////performance test///////////////////////
+            const arr: any[] = [];
+            // if (dbType === DBType.Postgres) {
+            //   for(let i = 0; i < 2; i + 1){
+            //     const results222 = await db.query(
+            //       explainQuery(sqlString, dbType),
+            //       null,
+            //       dbType
+            //     );
+            //     const aaa = results222.rows;
+            //     arr.push(aaa);
+            //   }
+            // }
+ 
+            //   if (dbType === DBType.Postgres) {
+            //     for (let i = 0; i < 2; i+=1) {
+            //       const results222 = await db.query(
+            //         explainQuery(sqlString, dbType),
+            //         null,
+            //         dbType
+            //       );
+            //       const aaa = results222.rows;
+            //       arr.push(aaa);
+            //     }
+            //   }
+
+            // let total = 0;
+            // for(let i = 0; i < arr.length; i += 1){
+            //   total += arr[i][1].rows[0]["QUERY PLAN"][0]['Planning Time'] + arr[i][1].rows[0]["QUERY PLAN"][0]['Execution Time'];
+            // }
+            // const averageSamepleTime: any = total / 2;
+            // console.log('averageSamepleTime------------------------------------------------------------------averageSamepleTime', averageSamepleTime);
+
+            ////////////////////////////////////////////////////////////
+            /////////////////////////////////////////////////////////////
+
         } else if (dbType === DBType.MySQL) {
           const results = await db.query(
             explainQuery(sqlString, dbType),
