@@ -50,7 +50,7 @@ const DBFunctions: DBFunctions = {
 
   /**
    * Save all login credentials from the config file to variables
-   * @returns 
+   * @returns object containing login status of all database servers
    */
   async setBaseConnections() {
     const PG_Cred = docConfig.getCredentials(DBType.Postgres);
@@ -204,10 +204,11 @@ const DBFunctions: DBFunctions = {
   },
 
   /**
-   * When called with no arguments, returns list of all logged-in databases
+   * When called with no arguments, returns listObj with this.databaseList populated with data from all logged-in databases.
+   * When called with a dbName and dbType, additionally populates this.tableList with the tables under the named database
    * @param dbName defaults to ''
    * @param dbType optional argument
-   * @returns List of all databases for logged in types
+   * @returns promise that resolves to a listObj, containing database connection statuses, list of all logged in databases, and optional list of all tables under the named database
    */
   async getLists(dbName = '', dbType) {
     /*
@@ -220,6 +221,8 @@ const DBFunctions: DBFunctions = {
         MySQL: false,
         RDSPG: false,
         RDSMySQL: false,
+        SQLite: false,
+        directPGURI: false,
       },
       databaseList: [], // accumulates lists for each logged-in database
       tableList: [],
@@ -282,6 +285,13 @@ const DBFunctions: DBFunctions = {
     return listObj;
   },
 
+  /**
+   * asdf what is this here for.
+   * get column objects for the given tableName
+   * @param tableName name of table to get the columns of
+   * @param dbType type of database of the table 
+   * @returns 
+   */
   getTableInfo(tableName, dbType) {
     // Returns an array of columnObj given a tableName
     return this.getColumnObjects(tableName, dbType);
@@ -290,7 +300,7 @@ const DBFunctions: DBFunctions = {
   /**
    * Generate a dbList for the inputted database type
    * @param dbType server to get database names off of
-   * @returns dbList (array of objects containing db_name and db_size)
+   * @returns promise that resovles to a dbList (array of objects containing db_name, db_size, db_type)
    */
   getDBNames(dbType) {
     return new Promise((resolve, reject) => {
@@ -315,7 +325,6 @@ const DBFunctions: DBFunctions = {
             .then((databases) => {
               for (let i = 0; i < databases.rows.length; i++) {
                 const data = databases.rows[i];
-                console.log(data);
                 const { db_name } = data;
 
                 if (
@@ -391,9 +400,13 @@ const DBFunctions: DBFunctions = {
     });
   },
 
+  /**
+   * Generates a list of column objects for the inputted table name 
+   * @param tableName name of table to get column properties of
+   * @param dbType type of database the table is in
+   * @returns promise that resolves to array of columnObjects (column_name, data_type, character_maximum_length, is_nullable, constraint_name, constraint_type, foreign_table, foreign_column)
+   */
   getColumnObjects(tableName, dbType) {
-    // function that takes in a tableName, creates the column objects,
-    // and returns a promise that resolves to an array of columnObjects
     let queryString;
     const value = [tableName];
     if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) {
@@ -488,6 +501,12 @@ const DBFunctions: DBFunctions = {
     throw 'Unknown db type';
   },
 
+  /**
+   * Uses dbType and dbName to find the tables under the specified database
+   * @param dbType type of target database
+   * @param dbName name of target database
+   * @returns tableList (array of table detail objects containing table_catalog, table_schema, table_name, is_insertable_into, columns?)
+   */
   getDBLists(dbType, dbName) {
     return new Promise((resolve, reject) => {
       let query;
@@ -499,6 +518,7 @@ const DBFunctions: DBFunctions = {
         if (dbType === DBType.Postgres) pool = pools.pg_pool;
         if (dbType === DBType.RDSPostgres) pool = pools.rds_pg_pool;
 
+        // querying PG metadata
         query = `SELECT
         table_catalog,
         table_schema,
@@ -512,6 +532,15 @@ const DBFunctions: DBFunctions = {
           .then((tables) => {
             for (let i = 0; i < tables.rows.length; i++) {
               tableList.push(tables.rows[i]);
+              // asdf tables.rows looks like
+              // {
+              //   table_catalog: 'star_wars',
+              //   table_schema: 'base',
+              //   table_name: 'people',
+              //   is_insertable_into: 'YES'
+              // }
+              // for each table, push its columns into promiseArray,
+              // promiseArray is an array of arrays
               promiseArray.push(
                 this.getColumnObjects(tables.rows[i].table_name, dbType)
               );

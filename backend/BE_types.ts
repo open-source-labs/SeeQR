@@ -30,6 +30,8 @@ export interface DBList {
     MySQL: boolean,
     RDSPG: boolean,
     RDSMySQL: boolean,
+    SQLite: boolean,
+    directPGURI: boolean,
   };
   databaseList: dbDetails[];
   tableList: TableDetails[];
