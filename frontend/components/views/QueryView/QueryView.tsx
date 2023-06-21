@@ -1,5 +1,5 @@
 import { ipcRenderer } from 'electron';
-import React from 'react';
+import React, { useState } from 'react';
 import { Button, Box } from '@material-ui/core/';
 import styled from 'styled-components';
 import {
@@ -19,6 +19,7 @@ import QueryTopSummary from './QueryTopSummary';
 import QuerySqlInput from './QuerySqlInput';
 import QuerySummary from './QuerySummary';
 import QueryTabs from './QueryTabs';
+import QueryRunNumber from './QueryRunNumber';
 
 const TopRow = styled(Box)`
   display: flex;
@@ -88,6 +89,9 @@ const QueryView = ({
   // console.log('defaultQuery', defaultQuery);
   // console.log('curDBType', curDBType);
 
+  // ********** Added Number of times to run query**********/
+  const [ runQueryNumber, setRunQueryNumber ] = useState(1);
+
   const onLabelChange = (newLabel: string) => {
     setQuery({ ...localQuery, label: newLabel });
   };
@@ -152,6 +156,7 @@ const QueryView = ({
           targetDb: localQuery.db,
           sqlString: localQuery.sqlString,
           selectedDb,
+          runQueryNumber,
         },
         curDBType
       )
@@ -209,6 +214,11 @@ const QueryView = ({
       });
   };
 
+  // ********** Added Number of times to run query **********/
+  const onRunQueryNumChange = (runNumber: number) => {
+    setRunQueryNumber(runNumber);
+  }
+
   if (!show) return null;
   return (
     <QueryViewContainer>
@@ -231,6 +241,7 @@ const QueryView = ({
         onChange={onSqlChange}
         runQuery={onRun}
       />
+      <QueryRunNumber runNumber={runQueryNumber} onChange={onRunQueryNumChange} />
       <CenterButton>
         <RunButton variant="contained" onClick={onRun}>
           Run Query
