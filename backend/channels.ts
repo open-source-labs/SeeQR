@@ -39,8 +39,10 @@ interface Feedback {
 ipcMain.handle('set-config', async (event, configObj) => {
   docConfig.saveConfig(configObj); // saves login info from frontend into config file
 
+
   db.setBaseConnections() // tries to log in using config data
-    .then((dbsInputted) => {
+    .then(({ dbsInputted, configExists }) => {
+
       /*
       junaid
       added error handling to display error message on frontend based on which dbs failed to login
@@ -48,7 +50,7 @@ ipcMain.handle('set-config', async (event, configObj) => {
       let errorStr = '';
       const dbs = Object.keys(dbsInputted);
       dbs.forEach(e => {
-        if (!dbsInputted[e]) errorStr += ` ${e}`;
+        if (!dbsInputted[e] && configExists[e]) errorStr += ` ${e}`;
       })
       if (errorStr.length) {
         const err = `Unsuccessful login(s) for ${errorStr.toUpperCase()} database(s)`;
@@ -57,7 +59,6 @@ ipcMain.handle('set-config', async (event, configObj) => {
           message: err,
         };
         event.sender.send('feedback', feedback);
-        // asdf try to remove database type from the feedback if the config is null (ie, user is not trying to log into it)
       }
       logger('Successfully reset base connections', LogType.SUCCESS);
       db.getLists().then((data: DBList) => {
