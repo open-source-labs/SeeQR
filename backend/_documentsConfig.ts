@@ -156,7 +156,7 @@ const docConfig: DocConfig = {
   },
 
   /**
-   * 
+   * Reads config file contents and returns it all.
    * @returns all login info from config file
    */
   getFullConfig: function getFullConfig() {
