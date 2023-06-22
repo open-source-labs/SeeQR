@@ -10,9 +10,15 @@ import {
 import logger from './Logging/masterlog';
 import pools from './poolVariables';
 import connectionFunctions from './databaseConnections';
+
 const docConfig = require('./_documentsConfig');
 // eslint-disable-next-line prefer-const
 
+/**
+ * This object contains info about the current database being accessed
+ *                      login info for rds
+ *                      highest level functions for accessing databases
+ */
 const DBFunctions: DBFunctions = {
   pg_uri: '',
   curPG_DB: '',
@@ -27,28 +33,38 @@ const DBFunctions: DBFunctions = {
     password: '',
     host: '',
   },
-  /*
-  junaid
-  object to check to true if that db was logged into
-  */
+  curSQLite_DB: '',
+  curdirectPGURI_DB: '',
+
+  /**
+   * Indicates whether the named database has been logged-in to, default to false
+   */
   dbsInputted: {
     pg: false,
     msql: false,
     rds_pg: false,
     rds_msql: false,
+    sqlite: false,
+    directPGURI: false,
   },
 
+  /**
+   * Saves login info to variables. Tries to log in to databases using configs
+   * @returns object containing login status of all database servers
+   */
   async setBaseConnections() {
     const PG_Cred = docConfig.getCredentials(DBType.Postgres);
     const MSQL_Cred = docConfig.getCredentials(DBType.MySQL);
     this.curRDS_PG_DB = docConfig.getCredentials(DBType.RDSPostgres);
     this.curRDS_MSQL_DB = docConfig.getCredentials(DBType.RDSMySQL);
+    this.curSQLite_DB = docConfig.getCredentials(DBType.SQLite);
+    this.curdirectPGURI_DB = docConfig.getCredentials(DBType.directPGURI);
     /*
      junaid
      all the if/else and try/catch in this function are for various forms of error handling. incorrect passwords/removed entries after successful logins
     */
 
-    //  RDS PG POOL
+    //  RDS PG POOL: truthy values means user has inputted info into config -> try to log in
     if (
       this.curRDS_PG_DB.user &&
       this.curRDS_PG_DB.password &&
@@ -66,7 +82,7 @@ const DBFunctions: DBFunctions = {
       this.dbsInputted.rds_pg = false;
     }
 
-    //  RDS MSQL POOL
+    //  RDS MSQL POOL: truthy values means user has inputted info into config -> try to log in
     if (
       this.curRDS_MSQL_DB.user &&
       this.curRDS_MSQL_DB.password &&
@@ -89,7 +105,7 @@ const DBFunctions: DBFunctions = {
       this.dbsInputted.rds_msql = false;
     }
 
-    //  LOCAL PG POOL
+    //  LOCAL PG POOL: truthy values means user has inputted info into config -> try to connect
     if (PG_Cred.user && PG_Cred.password) {
       this.pg_uri = `postgres://${PG_Cred.user}:${PG_Cred.password}@localhost:${PG_Cred.port}/`;
       try {
@@ -104,7 +120,7 @@ const DBFunctions: DBFunctions = {
       this.dbsInputted.pg = false;
     }
 
-    //  LOCAL MSQL POOL
+    //  LOCAL MSQL POOL: truthy values means user has inputted info into config -> try to log in
     if (MSQL_Cred.user && MSQL_Cred.password) {
       try {
         await connectionFunctions.MSQL_DBConnect({
@@ -154,7 +170,7 @@ const DBFunctions: DBFunctions = {
         logger(err.message, LogType.WARNING);
       });
     }
-///////eric///////////////////////////////////
+    ///////eric///////////////////////////////////
     // if (dbType === DBType.MySQL) {
     //   return pools.msql_pool.query(
     //     `${text}`,
@@ -162,7 +178,7 @@ const DBFunctions: DBFunctions = {
     //     dbType
     //   );
     // }
-    if (dbType === DBType.MySQL) { 
+    if (dbType === DBType.MySQL) {
       // pools.msql_pool.query(`USE ${this.curMSQL_DB}`);
       return pools.msql_pool.query(text, params, dbType);
     }
@@ -174,9 +190,16 @@ const DBFunctions: DBFunctions = {
     //     dbType
     //   );
     // }
-////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////
   },
 
+  /**
+   * Only connect to one database at a time
+   * @param db Name of database to connect to
+   * @param dbType Type of database to connect to
+   * 
+   * asdf check this.curRDS_MSQL_DB typing 
+   */
   async connectToDB(db, dbType) {
     //change current Db
     if (dbType === DBType.Postgres) {
@@ -193,28 +216,42 @@ const DBFunctions: DBFunctions = {
     }
   },
 
-  //////eric//////
-  async closeTheDB(db, dbType) {
+  async disconnectToDrop(dbType) {
     if (dbType === DBType.Postgres) {
-      this.curPG_DB = '';
-      await connectionFunctions.PG_DBclose(this.pg_uri, db);
-    } 
+      console.log('ending pool');
+      await connectionFunctions.PG_DBDisconnect();
+
+    }
   },
 
+  /**
+   * When called with no arguments, returns listObj with this.databaseList populated with data from all logged-in databases.
+   * When called with a dbName and dbType, additionally populates this.tableList with the tables under the named database
+   * @param dbName defaults to ''
+   * @param dbType optional argument
+   * @returns promise that resolves to a listObj, containing database connection statuses, list of all logged in databases, and optional list of all tables under the named database
+   */
   async getLists(dbName = '', dbType) {
     /*
     junaid
     this list object is what will be returned at the end of the function. function will get lists for all four databases depending on which is logged in
     */
     const listObj: DBList = {
-      databaseConnected: [false, false, false, false],
-      databaseList: [],
+      databaseConnected: {
+        PG: false,
+        MySQL: false,
+        RDSPG: false,
+        RDSMySQL: false,
+        SQLite: false,
+        directPGURI: false,
+      },
+      databaseList: [], // accumulates lists for each logged-in database
       tableList: [],
     };
     if (this.dbsInputted.pg) {
       try {
         const pgDBList = await this.getDBNames(DBType.Postgres);
-        listObj.databaseConnected[0] = true;
+        listObj.databaseConnected.PG = true;
         listObj.databaseList = [...listObj.databaseList, ...pgDBList];
       } catch (error) {
         logger('COULDNT GET NAMES FROM LOCAL PG', LogType.ERROR);
@@ -224,7 +261,7 @@ const DBFunctions: DBFunctions = {
     if (this.dbsInputted.msql) {
       try {
         const msqlDBList = await this.getDBNames(DBType.MySQL);
-        listObj.databaseConnected[1] = true;
+        listObj.databaseConnected.MySQL = true;
         listObj.databaseList = [...listObj.databaseList, ...msqlDBList];
       } catch (error) {
         logger('COULDNT GET NAMES FROM LOCAL MSQL', LogType.ERROR);
@@ -234,7 +271,7 @@ const DBFunctions: DBFunctions = {
     if (this.dbsInputted.rds_msql) {
       try {
         const RDSmsqlDBList = await this.getDBNames(DBType.RDSMySQL);
-        listObj.databaseConnected[2] = true;
+        listObj.databaseConnected.RDSMySQL = true;
         listObj.databaseList = [...listObj.databaseList, ...RDSmsqlDBList];
       } catch (error) {
         logger('COULDNT GET NAMES FROM RDS MSQL', LogType.ERROR);
@@ -244,7 +281,7 @@ const DBFunctions: DBFunctions = {
     if (this.dbsInputted.rds_pg) {
       try {
         const RDSpgDBList = await this.getDBNames(DBType.RDSPostgres);
-        listObj.databaseConnected[3] = true;
+        listObj.databaseConnected.RDSPG = true;
         listObj.databaseList = [...listObj.databaseList, ...RDSpgDBList];
       } catch (error) {
         logger('COULDNT GET NAMES FROM RDS PG', LogType.ERROR);
@@ -269,11 +306,23 @@ const DBFunctions: DBFunctions = {
     return listObj;
   },
 
+  /**
+   * asdf what is this here for.
+   * get column objects for the given tableName
+   * @param tableName name of table to get the columns of
+   * @param dbType type of database of the table 
+   * @returns 
+   */
   getTableInfo(tableName, dbType) {
     // Returns an array of columnObj given a tableName
     return this.getColumnObjects(tableName, dbType);
   },
 
+  /**
+   * Generate a dbList for the inputted database type
+   * @param dbType server to get database names off of
+   * @returns promise that resovles to a dbList (array of objects containing db_name, db_size, db_type)
+   */
   getDBNames(dbType) {
     return new Promise((resolve, reject) => {
       let query;
@@ -372,9 +421,13 @@ const DBFunctions: DBFunctions = {
     });
   },
 
+  /**
+   * Generates a list of column objects for the inputted table name 
+   * @param tableName name of table to get column properties of
+   * @param dbType type of database the table is in
+   * @returns promise that resolves to array of columnObjects (column_name, data_type, character_maximum_length, is_nullable, constraint_name, constraint_type, foreign_table, foreign_column)
+   */
   getColumnObjects(tableName, dbType) {
-    // function that takes in a tableName, creates the column objects,
-    // and returns a promise that resolves to an array of columnObjects
     let queryString;
     const value = [tableName];
     if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) {
@@ -470,6 +523,12 @@ const DBFunctions: DBFunctions = {
     throw 'Unknown db type';
   },
 
+  /**
+   * Uses dbType and dbName to find the tables under the specified database
+   * @param dbType type of target database
+   * @param dbName name of target database
+   * @returns tableList (array of table detail objects containing table_catalog, table_schema, table_name, is_insertable_into, columns?)
+   */
   getDBLists(dbType, dbName) {
     return new Promise((resolve, reject) => {
       let query;
@@ -481,7 +540,7 @@ const DBFunctions: DBFunctions = {
         if (dbType === DBType.Postgres) pool = pools.pg_pool;
         if (dbType === DBType.RDSPostgres) pool = pools.rds_pg_pool;
 
-
+        // querying PG metadata
         query = `SELECT
         table_catalog,
         table_schema,
@@ -492,9 +551,18 @@ const DBFunctions: DBFunctions = {
         ORDER BY table_name;`;
         pool
           .query(query)
-          .then((tables) => {       
+          .then((tables) => {
             for (let i = 0; i < tables.rows.length; i++) {
               tableList.push(tables.rows[i]);
+              // asdf tables.rows looks like
+              // {
+              //   table_catalog: 'star_wars',
+              //   table_schema: 'base',
+              //   table_name: 'people',
+              //   is_insertable_into: 'YES'
+              // }
+              // for each table, push its columns into promiseArray,
+              // promiseArray is an array of arrays
               promiseArray.push(
                 this.getColumnObjects(tables.rows[i].table_name, dbType)
               );
@@ -523,7 +591,7 @@ const DBFunctions: DBFunctions = {
         let pool;
         if (dbType === DBType.MySQL) pool = pools.msql_pool;
         if (dbType === DBType.RDSMySQL) pool = pools.rds_msql_pool;
-        
+
         let query2 = `SELECT
         table_catalog,
         table_schema,
@@ -543,7 +611,7 @@ const DBFunctions: DBFunctions = {
         //  AND TABLE_SCHEMA = '${dbName}'
         //  ORDER BY table_name;`;
 
-         query = `
+        query = `
          SELECT
          TABLE_CATALOG as table_schema,
          TABLE_SCHEMA as table_catalog,

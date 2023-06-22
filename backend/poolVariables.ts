@@ -7,10 +7,14 @@ let pg_pool;
 let msql_pool;
 let rds_pg_pool;
 let rds_msql_pool;
+let sqlite_pool;
+let directPGURI_pool;
 
 export default {
   pg_pool,
   msql_pool,
   rds_pg_pool,
   rds_msql_pool,
+  sqlite_pool,
+  directPGURI_pool,
 };

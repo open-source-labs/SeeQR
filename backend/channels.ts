@@ -30,25 +30,26 @@ interface Feedback {
   type: string;
   message: string;
 }
-/*
-junaid
-this runs whenever save is hit on the main app
-*/
-ipcMain.handle('set-config', async (event, configObj) => {
-  docConfig.saveConfig(configObj);
 
-  db.setBaseConnections()
+/**
+ * handler for set-config.
+ * triggered whenever save is pressed on the config/login page
+ * establishes connections to database, logs failed connections, sends contents of config file
+ */
+ipcMain.handle('set-config', async (event, configObj) => {
+  docConfig.saveConfig(configObj); // saves login info from frontend into config file
+
+  db.setBaseConnections() // tries to log in using config data
     .then((dbsInputted) => {
       /*
       junaid
       added error handling to display error message on frontend based on which dbs failed to login
       */
       let errorStr = '';
-      for (const dbs in dbsInputted) {
-        if (!dbsInputted[dbs]) {
-          errorStr += ` ${dbs}`;
-        }
-      }
+      const dbs = Object.keys(dbsInputted);
+      dbs.forEach(e => {
+        if (!dbsInputted[e]) errorStr += ` ${e}`;
+      })
       if (errorStr.length) {
         const err = `Unsuccessful login(s) for ${errorStr.toUpperCase()} database(s)`;
         const feedback: Feedback = {
@@ -56,10 +57,11 @@ ipcMain.handle('set-config', async (event, configObj) => {
           message: err,
         };
         event.sender.send('feedback', feedback);
+        // asdf try to remove database type from the feedback if the config is null (ie, user is not trying to log into it)
       }
       logger('Successfully reset base connections', LogType.SUCCESS);
       db.getLists().then((data: DBList) => {
-        event.sender.send('db-lists', data);
+        event.sender.send('db-lists', data); // asdf used to populate sidebar?
       });
     })
     .catch((err) => {
@@ -82,7 +84,11 @@ ipcMain.handle('set-config', async (event, configObj) => {
     });
 });
 
-ipcMain.handle('get-config', async (event, configObj) => {
+/**
+ * IPC get-config handler
+ * sends configuration from config file
+ */
+ipcMain.handle('get-config', async (event, configObj) => { // asdf is configObj used?
   event.sender.send('get-config', docConfig.getFullConfig());
 });
 
@@ -93,6 +99,10 @@ removed the parameters because it doesnt seem like they do anything here, and it
 */
 
 // ipcMain.on('return-db-list', (event, dbType: DBType = DBType.Postgres) => {
+/**
+ * IPC return-db-list handler
+ * establishes connection to databases, then gets listObj from getLists, then sends to frontend
+ */
 ipcMain.on('return-db-list', (event) => {
   logger(
     "Received 'return-db-list' (Note: No Async being sent here)",
@@ -147,6 +157,10 @@ ipcMain.on('return-db-list', (event) => {
 
 // Listen for database changes sent from the renderer upon changing tabs
 // and send back an updated DB List
+/**
+ * IPC handler for select-db
+ * connect to selected db, then get object containing a list of all databases and a list of tables for the selected database, and sends to frontend
+ */
 ipcMain.handle(
   'select-db',
   async (event, dbName: string, dbType: DBType): Promise<void> => {
@@ -169,6 +183,10 @@ ipcMain.handle(
 
 
 // Deletes the DB that is passed from the front end and returns an updated DB List
+/**
+ * IPC handler for drop-db
+ * 
+ */
 ipcMain.handle(
   'drop-db',
   async (
@@ -182,42 +200,32 @@ ipcMain.handle(
     event.sender.send('async-started');
 
     try {
-       // db.setBaseConnections()
-      //   .then(() => {
-        
-      //   db.getLists()
-      //     .then((data: DBList) => {
-      //       event.sender.send('db-lists', data);
-      //       logger("888888888888888888");
-      //     })
-      //   });
-
       // if deleting currently connected db, disconnect from db
-      // if (currDB) await db.connectToDB('', dbType);
+      console.log('about to drop pool');
+      await db.disconnectToDrop(dbType);
+      console.log('about to reconnect to pool');
+      await db.connectToDB('', dbType);
 
 
       // drop db
       // ////////eric////////
-      await db.connectToDB('', dbType);
-      if(dbType === DBType.Postgres){
-        await db.query(`UPDATE pg_database SET datallowconn = 'false' WHERE datname = '${dbName}'`, null, dbType);
-        await db.query(`
-        SELECT pid, pg_terminate_backend(pid)
-        FROM pg_stat_activity
-        WHERE datname = '${dbName}' AND pid <> pg_backend_pid();
-        `, null, dbType);
-        // await db.closeTheDB(dbName, dbType);
-        console.log('777777777777777777777777777777777777777777777');
-      }
+      // await db.connectToDB('', dbType);
+      // if(dbType === DBType.Postgres){
+      //   await db.query(`UPDATE pg_database SET datallowconn = 'false' WHERE datname = '${dbName}'`, null, dbType);
+      //   await db.query(`
+      //   SELECT pid, pg_terminate_backend(pid)
+      //   FROM pg_stat_activity
+      //   WHERE datname = '${dbName}' AND pid <> pg_backend_pid();
+      //   `, null, dbType);
+      //   // await db.closeTheDB(dbName, dbType);
+      //   console.log('777777777777777777777777777777777777777777777');
+      // }
       const dropDBScript = dropDBFunc(dbName, dbType);
       await db.query(dropDBScript, null, dbType);
       // send updated db info
       const dbsAndTables: DBList = await db.getLists(dbName, dbType);
       event.sender.send('db-lists', dbsAndTables);
       logger("Sent 'db-lists' from 'drop-db'", LogType.SEND);
-    } catch (e: any) {
-      logger(`888888888888888888888888888888888: ${e.message}`, LogType.WARNING);
-      throw new Error('888888888888888888888888888888888');
     } finally {
       event.sender.send('async-complete');
     }
@@ -372,7 +380,7 @@ ipcMain.handle(
   'run-query',
   async (
     event,
-    { targetDb, sqlString, selectedDb, runQueryNumber}: QueryPayload,
+    { targetDb, sqlString, selectedDb, runQueryNumber }: QueryPayload,
     dbType: DBType
   ) => {
     logger(
@@ -381,24 +389,24 @@ ipcMain.handle(
       `selectedDb: ${selectedDb} and dbType: ${dbType} and runQueryNumber: ${runQueryNumber}`
     );
     event.sender.send('async-started');
-   const arr: any[] = [];
-   const numberOfSample: number = runQueryNumber;
-   let totalSampleTime: number = 0;
-   let minmumSampleTime: number = 0;
-   let maximumSampleTime: number = 0;
-   let averageSampleTime: number = 0;
+    const arr: any[] = [];
+    const numberOfSample: number = runQueryNumber;
+    let totalSampleTime: number = 0;
+    let minmumSampleTime: number = 0;
+    let maximumSampleTime: number = 0;
+    let averageSampleTime: number = 0;
 
-   function parseExplainExplanation(explain) {
-    const regex = /actual time=(\d+\.\d+)\.\.(\d+\.\d+) rows=\d+ loops=(\d+)/g;
-    const matches: any[] = Array.from(explain.matchAll(regex));
-    let result: number = 0;
+    function parseExplainExplanation(explain) {
+      const regex = /actual time=(\d+\.\d+)\.\.(\d+\.\d+) rows=\d+ loops=(\d+)/g;
+      const matches: any[] = Array.from(explain.matchAll(regex));
+      let result: number = 0;
 
-    for(let i = 0; i < matches.length; i+=1){
-      result += (parseFloat(matches[i][2]) - parseFloat(matches[i][1])) * parseFloat(matches[i][3]);
+      for (let i = 0; i < matches.length; i += 1) {
+        result += (parseFloat(matches[i][2]) - parseFloat(matches[i][1])) * parseFloat(matches[i][3]);
+      }
+      return result;
     }
-    return result;
-  }
-   /////   ///////////   ///////////   ///////////   ///////////
+    /////   ///////////   ///////////   ///////////   ///////////
 
     try {
       let error: string | undefined;
@@ -409,7 +417,7 @@ ipcMain.handle(
       // Run Explain            
       let explainResults;
       try {
-        for(let i = 0; i < numberOfSample; i++){
+        for (let i = 0; i < numberOfSample; i++) {
           if (dbType === DBType.Postgres) {
             const results = await db.query(
               explainQuery(sqlString, dbType),
@@ -426,7 +434,7 @@ ipcMain.handle(
             const eachSampleTime: any = results[1].rows[0]["QUERY PLAN"][0]['Planning Time'] + results[1].rows[0]["QUERY PLAN"][0]['Execution Time'];
             arr.push(eachSampleTime);
             totalSampleTime += eachSampleTime;
-    
+
           } else if (dbType === DBType.MySQL) {
             const results = await db.query(
               explainQuery(sqlString, dbType),
@@ -442,7 +450,7 @@ ipcMain.handle(
             totalSampleTime += eachSampleTime;
             console.log('ericCheck------------------------------------------------------------------ericCheck');
             console.log('arr-------------------------------------------------------------------arr', arr);
-                       
+
 
             // //////////not real result just try to get rid of bugs first///////////////
             explainResults = {
@@ -461,7 +469,7 @@ ipcMain.handle(
                 'Actual Total Time': 0.113,
                 'Actual Rows': 200,
                 'Actual Loops': 1,
-                Output: [ 'newcolumn1' ],
+                Output: ['newcolumn1'],
                 'Shared Hit Blocks': 5,
                 'Shared Read Blocks': 0,
                 'Shared Dirtied Blocks': 0,
@@ -507,7 +515,7 @@ ipcMain.handle(
         // averageSampleTime = totalSampleTime/numberOfSample;
         minmumSampleTime = Math.round(Math.min(...arr) * 10 ** 5) / 10 ** 5;
         maximumSampleTime = Math.round(Math.max(...arr) * 10 ** 5) / 10 ** 5;
-        averageSampleTime = Math.round((totalSampleTime/numberOfSample) * 10 ** 5) / 10 ** 5;
+        averageSampleTime = Math.round((totalSampleTime / numberOfSample) * 10 ** 5) / 10 ** 5;
         totalSampleTime = Math.round(totalSampleTime * 10 ** 5) / 10 ** 5;
         console.log('minmumSampleTime------------------------------------------------------------------------------------------minmumSampleTime', minmumSampleTime);
         console.log('maximumSampleTime------------------------------------------------------------------------------------------maximumSampleTime', maximumSampleTime);
@@ -516,8 +524,8 @@ ipcMain.handle(
         error = `Failed to get Execution Plan. EXPLAIN might not support this query.`;
       }
 
-    
-    ///////////   ///////////   ///////////   ///////////
+
+      ///////////   ///////////   ///////////   ///////////
 
       // Run Query
       let returnedRows;

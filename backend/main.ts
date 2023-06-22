@@ -32,7 +32,7 @@ let mainWindow: BrowserWindow | null;
 // That is, put everything undertable
 process.on('uncaughtException', (error) => {
   // Hiding the error on the terminal as well
-  // console.error('Uncaught Exception:', error);
+  console.error('Uncaught Exception:', error);
 });
 
 
