@@ -33,7 +33,7 @@ const DBFunctions: DBFunctions = {
     password: '',
     host: '',
   },
-  curSQLite_DB: '',
+  curSQLite_DB: { path: '' },
   curdirectPGURI_DB: '',
 
   /**
@@ -148,8 +148,24 @@ const DBFunctions: DBFunctions = {
     } else {
       this.dbsInputted.msql = false;
     }
+
+    //  RDS PG POOL: truthy values means user has inputted info into config -> try to log in
+    if (this.curSQLite_DB.path) {
+      try {
+        await connectionFunctions.SQLite_DBConnect(this.curSQLite_DB.path);
+        this.dbsInputted.sqlite = true;
+        logger('CONNECTED TO SQLITE DATABASE!', LogType.SUCCESS);
+      } catch (error) {
+        this.dbsInputted.sqlite = false;
+        logger('FAILED TO CONNECT TO SQLITE DATABASE', LogType.ERROR);
+      }
+    } else {
+      this.dbsInputted.sqlite = false;
+    }
+
     return this.dbsInputted;
   },
+
 
   query(text, params, dbType) {
     // RUN ANY QUERY - function that will run query on database that is passed in.
@@ -178,6 +194,12 @@ const DBFunctions: DBFunctions = {
         dbType
       );
     }
+
+    if (dbType === DBType.SQLite) {
+      return pools.sqlite_db.query(text, params).catch((err) => {
+        logger(err.message, LogType.WARNING);
+      });
+    }
   },
 
   /**
@@ -200,6 +222,8 @@ const DBFunctions: DBFunctions = {
       await connectionFunctions.RDS_MSQL_DBQuery(db);
     } else if (dbType === DBType.RDSPostgres) {
       await connectionFunctions.RDS_PG_DBConnect(this.curRDS_PG_DB);
+    } else if (dbType === DBType.SQLite) {
+      await connectionFunctions.SQLite_DBConnect(this.curSQLite_DB.path);
     }
   },
 
@@ -264,6 +288,16 @@ const DBFunctions: DBFunctions = {
         listObj.databaseList = [...listObj.databaseList, ...RDSpgDBList];
       } catch (error) {
         logger('COULDNT GET NAMES FROM RDS PG', LogType.ERROR);
+      }
+    }
+
+    if (this.dbsInputted.sqlite) {
+      try {
+        const sqliteDBList = await this.getDBNames(DBType.SQLite);
+        listObj.databaseConnected.SQLite = true;
+        listObj.databaseList = [...listObj.databaseList, ...sqliteDBList];
+      } catch (error) {
+        logger('COULDNT GET NAMES FROM SQLite DB', LogType.ERROR);
       }
     }
 
@@ -396,6 +430,13 @@ const DBFunctions: DBFunctions = {
         } else {
           resolve(dbList);
         }
+      } else if (dbType === DBType.SQLite) {
+        const dbList: dbDetails[] = [];
+        const { path } = this.curSQLite_DB;
+        const filename = path.slice(path.lastIndexOf('/') + 1);
+        const data = { db_name: filename, db_size: 'unknown', db_type: DBType.SQLite }
+        dbList.push(data);
+        resolve(dbList);
       }
     });
   },

@@ -90,7 +90,7 @@ export interface DBFunctions {
     password: string;
     host: string;
   };
-  curSQLite_DB: string;
+  curSQLite_DB: { path: string };
   curdirectPGURI_DB: string;
   dbsInputted: dbsInputted;
 

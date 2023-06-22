@@ -4,6 +4,7 @@ import { LogType } from './BE_types';
 
 const { Pool } = require('pg');
 const mysql = require('mysql2/promise');
+const sqlite3 = require('sqlite3').verbose();
 
 
 export default {
@@ -90,4 +91,15 @@ export default {
         logger(`Couldnt connect to MSQL DB: ${db}`, LogType.ERROR);
       });
   },
+
+  async SQLite_DBConnect(path: string): Promise<void> {
+    const newDB = new sqlite3.Database(
+      path,
+      sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE,
+      (err) => {
+        if (err) return console.error(err.message);
+      }
+    );
+    pools.sqlite_db = newDB;
+  }
 };
