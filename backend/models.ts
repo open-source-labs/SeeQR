@@ -49,7 +49,7 @@ const DBFunctions: DBFunctions = {
   },
 
   /**
-   * Save all login credentials from the config file to variables
+   * Saves login info to variables. Tries to log in to databases using configs
    * @returns object containing login status of all database servers
    */
   async setBaseConnections() {
@@ -204,13 +204,17 @@ const DBFunctions: DBFunctions = {
         logger(err.message, LogType.WARNING);
       });
     }
-
+    ///////eric///////////////////////////////////
+    // if (dbType === DBType.MySQL) {
+    //   return pools.msql_pool.query(
+    //     `${text}`,
+    //     params,
+    //     dbType
+    //   );
+    // }
     if (dbType === DBType.MySQL) {
-      return pools.msql_pool.query(
-        `USE ${this.curMSQL_DB}; ${text}`,
-        params,
-        dbType
-      );
+      // pools.msql_pool.query(`USE ${this.curMSQL_DB}`);
+      return pools.msql_pool.query(text, params, dbType);
     }
 
     if (dbType === DBType.SQLite) {
@@ -218,6 +222,17 @@ const DBFunctions: DBFunctions = {
         logger(err.message, LogType.WARNING);
       });
     }
+
+    // if (dbType === DBType.MySQL) {
+    //   console.log('3345657833456578334565783345657833456578');
+    //   return pools.msql_pool.query(
+    //     `USE ${this.curMSQL_DB}; ${text}`,
+    //     params,
+    //     dbType
+    //   );
+    // }
+    ////////////////////////////////////////////////////
+
   },
 
   /**
@@ -242,6 +257,14 @@ const DBFunctions: DBFunctions = {
       await connectionFunctions.RDS_PG_DBConnect(this.curRDS_PG_DB);
     } else if (dbType === DBType.SQLite) {
       await connectionFunctions.SQLite_DBConnect(this.curSQLite_DB.path);
+    }
+  },
+
+  async disconnectToDrop(dbType) {
+    if (dbType === DBType.Postgres) {
+      console.log('ending pool');
+      await connectionFunctions.PG_DBDisconnect();
+
     }
   },
 
@@ -548,6 +571,7 @@ const DBFunctions: DBFunctions = {
             for (let i = 0; i < result[0].length; i += 1) {
               columnInfoArray.push(result[0][i]);
             }
+            // console.log("columnInfoArray==================================columnInfoArray", columnInfoArray);
             resolve(columnInfoArray);
           })
           .catch((err) => {
@@ -629,16 +653,37 @@ const DBFunctions: DBFunctions = {
         if (dbType === DBType.MySQL) pool = pools.msql_pool;
         if (dbType === DBType.RDSMySQL) pool = pools.rds_msql_pool;
 
-        query = `SELECT
-        TABLE_CATALOG as table_schema,
-        TABLE_SCHEMA as table_catalog,
-        TABLE_NAME as table_name
+        let query2 = `SELECT
+        table_catalog,
+        table_schema,
+        table_name,
+        is_insertable_into
         FROM information_schema.tables
-        WHERE TABLE_SCHEMA NOT IN("information_schema", "performance_schema", "mysql")
-        AND TABLE_SCHEMA = "${dbName}"
+        WHERE table_schema = 'public' or table_schema = 'base'
         ORDER BY table_name;`;
 
+        //  query = `
+        //  SELECT
+        //  TABLE_CATALOG as table_schema,
+        //  TABLE_SCHEMA as table_catalog,
+        //  TABLE_NAME as table_name
+        //  FROM information_schema.tables
+        //  WHERE TABLE_SCHEMA NOT IN('information_schema', 'performance_schema', 'mysql') 
+        //  AND TABLE_SCHEMA = '${dbName}'
+        //  ORDER BY table_name;`;
+
+        query = `
+         SELECT
+         TABLE_CATALOG as table_schema,
+         TABLE_SCHEMA as table_catalog,
+         TABLE_NAME as table_name
+         FROM information_schema.tables
+         WHERE TABLE_SCHEMA NOT IN('information_schema', 'performance_schema', 'mysql', 'sys') 
+         AND TABLE_SCHEMA = '${dbName}'
+         ORDER BY table_name;`;
+
         pool
+          // .query(query2)
           .query(query)
           .then((tables) => {
             for (let i = 0; i < tables[0].length; i++) {
@@ -656,7 +701,6 @@ const DBFunctions: DBFunctions = {
                 for (let i = 0; i < columnInfo.length; i++) {
                   tableList[i].columns = columnInfo[i];
                 }
-
                 logger("MySQL 'getDBLists' resolved.", LogType.SUCCESS);
                 resolve(tableList);
               })

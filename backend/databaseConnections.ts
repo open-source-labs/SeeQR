@@ -18,7 +18,12 @@ export default {
     const newURI = `${pg_uri}${db}`;
     const newPool = new Pool({ connectionString: newURI });
     pools.pg_pool = newPool;
-    await pools.pg_pool.connect();
+    // await pools.pg_pool.connect(); this is unnecessary for making queries, and causes pg error when trying to drop db
+    await pools.pg_pool.query('SELECT pg_database.datname FROM pg_database'); // this test query will throw an error if connection failed
+  },
+
+  async PG_DBDisconnect(): Promise<void> {
+    await pools.pg_pool.end();
   },
 
   /**

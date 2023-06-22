@@ -1,5 +1,5 @@
 import { ipcRenderer } from 'electron';
-import React from 'react';
+import React, { useState } from 'react';
 import { Button, Box } from '@material-ui/core/';
 import styled from 'styled-components';
 import {
@@ -19,6 +19,7 @@ import QueryTopSummary from './QueryTopSummary';
 import QuerySqlInput from './QuerySqlInput';
 import QuerySummary from './QuerySummary';
 import QueryTabs from './QueryTabs';
+import QueryRunNumber from './QueryRunNumber';
 
 const TopRow = styled(Box)`
   display: flex;
@@ -80,6 +81,11 @@ const QueryView = ({
     db: selectedDb,
     sqlString: '',
     group: '',
+    numberOfSample: 0,
+    totalSampleTime: 0,
+    minmumSampleTime: 0,
+    maximumSampleTime: 0,
+    averageSampleTime: 0,
   };
 
   const localQuery = { ...defaultQuery, ...query };
@@ -87,6 +93,9 @@ const QueryView = ({
   // console.log('query', query);
   // console.log('defaultQuery', defaultQuery);
   // console.log('curDBType', curDBType);
+
+  // ********** Added Number of times to run query**********/
+  const [ runQueryNumber, setRunQueryNumber ] = useState(1);
 
   const onLabelChange = (newLabel: string) => {
     setQuery({ ...localQuery, label: newLabel });
@@ -152,24 +161,36 @@ const QueryView = ({
           targetDb: localQuery.db,
           sqlString: localQuery.sqlString,
           selectedDb,
+          runQueryNumber,
         },
         curDBType
       )
-      .then(({ db, sqlString, returnedRows, explainResults, error }) => {
+      .then(({ db, sqlString, returnedRows, explainResults, error, 
+                numberOfSample,
+                totalSampleTime,
+                minmumSampleTime,
+                maximumSampleTime,
+                averageSampleTime, }) => {
         if (error) {
           throw error;
         }
         let transformedData;
         // console.log('returnedRows after .then method', returnedRows);
         // console.log('explainResult after .then method', explainResults);
-
+        console.log(totalSampleTime, minmumSampleTime, maximumSampleTime, averageSampleTime);
         // console.log('curDBType in QueryView', curDBType);
 
         if (curDBType === DBType.Postgres) {
           transformedData = {
             sqlString,
             returnedRows,
-            executionPlan: explainResults[0]['QUERY PLAN'][0],
+            executionPlan: {
+              numberOfSample,   // executionPlan.numberOfSample = numberOfSample
+              totalSampleTime,
+              minmumSampleTime,
+              maximumSampleTime,
+              averageSampleTime,
+              ...explainResults[0]['QUERY PLAN'][0],},
             label: localQuery.label,
             db,
             group: localQuery.group,
@@ -182,6 +203,15 @@ const QueryView = ({
             label: localQuery.label,
             db,
             group: localQuery.group,
+            executionPlan: {
+              numberOfSample,   // executionPlan.numberOfSample = numberOfSample
+              totalSampleTime,
+              minmumSampleTime,
+              maximumSampleTime,
+              averageSampleTime,
+              // ...explainResults[0]['QUERY PLAN'][0],
+              ...explainResults,
+            },
           };
         }
 
@@ -209,6 +239,11 @@ const QueryView = ({
       });
   };
 
+  // ********** Added Number of times to run query **********/
+  const onRunQueryNumChange = (runNumber: number) => {
+    setRunQueryNumber(runNumber);
+  }
+
   if (!show) return null;
   return (
     <QueryViewContainer>
@@ -231,12 +266,13 @@ const QueryView = ({
         onChange={onSqlChange}
         runQuery={onRun}
       />
+      <QueryRunNumber runNumber={runQueryNumber} onChange={onRunQueryNumChange} />
       <CenterButton>
         <RunButton variant="contained" onClick={onRun}>
           Run Query
         </RunButton>
       </CenterButton>
-      <QuerySummary executionPlan={query?.executionPlan} />
+      <QuerySummary executionPlan={query?.executionPlan}/>
       <QueryTabs
         results={query?.returnedRows}
         executionPlan={query?.executionPlan}

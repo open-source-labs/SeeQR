@@ -9,6 +9,7 @@ import generateDummyData from './DummyD/dummyDataMain';
 import { ColumnObj, DBList, DummyRecords, DBType, LogType } from './BE_types';
 import backendObjToQuery from './ertable-functions';
 import logger from './Logging/masterlog';
+import { Integer } from 'type-fest';
 
 const db = require('./models');
 const docConfig = require('./_documentsConfig');
@@ -29,15 +30,19 @@ interface Feedback {
   type: string;
   message: string;
 }
-/*
-junaid
-this runs whenever save is hit on the main app
-*/
-ipcMain.handle('set-config', async (event, configObj) => {
-  docConfig.saveConfig(configObj);
 
-  db.setBaseConnections()
+/**
+ * handler for set-config.
+ * triggered whenever save is pressed on the config/login page
+ * establishes connections to database, logs failed connections, sends contents of config file
+ */
+ipcMain.handle('set-config', async (event, configObj) => {
+  docConfig.saveConfig(configObj); // saves login info from frontend into config file
+
+
+  db.setBaseConnections() // tries to log in using config data
     .then(({ dbsInputted, configExists }) => {
+
       /*
       junaid
       added error handling to display error message on frontend based on which dbs failed to login
@@ -57,7 +62,7 @@ ipcMain.handle('set-config', async (event, configObj) => {
       }
       logger('Successfully reset base connections', LogType.SUCCESS);
       db.getLists().then((data: DBList) => {
-        event.sender.send('db-lists', data);
+        event.sender.send('db-lists', data); // asdf used to populate sidebar?
       });
     })
     .catch((err) => {
@@ -80,7 +85,11 @@ ipcMain.handle('set-config', async (event, configObj) => {
     });
 });
 
-ipcMain.handle('get-config', async (event, configObj) => {
+/**
+ * IPC get-config handler
+ * sends configuration from config file
+ */
+ipcMain.handle('get-config', async (event, configObj) => { // asdf is configObj used?
   event.sender.send('get-config', docConfig.getFullConfig());
 });
 
@@ -91,6 +100,10 @@ removed the parameters because it doesnt seem like they do anything here, and it
 */
 
 // ipcMain.on('return-db-list', (event, dbType: DBType = DBType.Postgres) => {
+/**
+ * IPC return-db-list handler
+ * establishes connection to databases, then gets listObj from getLists, then sends to frontend
+ */
 ipcMain.on('return-db-list', (event) => {
   logger(
     "Received 'return-db-list' (Note: No Async being sent here)",
@@ -145,6 +158,10 @@ ipcMain.on('return-db-list', (event) => {
 
 // Listen for database changes sent from the renderer upon changing tabs
 // and send back an updated DB List
+/**
+ * IPC handler for select-db
+ * connect to selected db, then get object containing a list of all databases and a list of tables for the selected database, and sends to frontend
+ */
 ipcMain.handle(
   'select-db',
   async (event, dbName: string, dbType: DBType): Promise<void> => {
@@ -164,7 +181,13 @@ ipcMain.handle(
   }
 );
 
+
+
 // Deletes the DB that is passed from the front end and returns an updated DB List
+/**
+ * IPC handler for drop-db
+ * 
+ */
 ipcMain.handle(
   'drop-db',
   async (
@@ -176,14 +199,30 @@ ipcMain.handle(
     logger("Received 'drop-db'", LogType.RECEIVE);
 
     event.sender.send('async-started');
+
     try {
       // if deleting currently connected db, disconnect from db
-      if (currDB) await db.connectToDB('', dbType);
+      console.log('about to drop pool');
+      await db.disconnectToDrop(dbType);
+      console.log('about to reconnect to pool');
+      await db.connectToDB('', dbType);
+
 
       // drop db
+      // ////////eric////////
+      // await db.connectToDB('', dbType);
+      // if(dbType === DBType.Postgres){
+      //   await db.query(`UPDATE pg_database SET datallowconn = 'false' WHERE datname = '${dbName}'`, null, dbType);
+      //   await db.query(`
+      //   SELECT pid, pg_terminate_backend(pid)
+      //   FROM pg_stat_activity
+      //   WHERE datname = '${dbName}' AND pid <> pg_backend_pid();
+      //   `, null, dbType);
+      //   // await db.closeTheDB(dbName, dbType);
+      //   console.log('777777777777777777777777777777777777777777777');
+      // }
       const dropDBScript = dropDBFunc(dbName, dbType);
       await db.query(dropDBScript, null, dbType);
-
       // send updated db info
       const dbsAndTables: DBList = await db.getLists(dbName, dbType);
       event.sender.send('db-lists', dbsAndTables);
@@ -329,6 +368,7 @@ interface QueryPayload {
   targetDb: string;
   sqlString: string;
   selectedDb: string;
+  runQueryNumber: number;
 }
 
 // Run query passed from the front-end, and send back an updated DB List
@@ -341,15 +381,33 @@ ipcMain.handle(
   'run-query',
   async (
     event,
-    { targetDb, sqlString, selectedDb }: QueryPayload,
+    { targetDb, sqlString, selectedDb, runQueryNumber }: QueryPayload,
     dbType: DBType
   ) => {
     logger(
       "Received 'run-query'",
       LogType.RECEIVE,
-      `selectedDb: ${selectedDb} and dbType: ${dbType}`
+      `selectedDb: ${selectedDb} and dbType: ${dbType} and runQueryNumber: ${runQueryNumber}`
     );
     event.sender.send('async-started');
+    const arr: any[] = [];
+    const numberOfSample: number = runQueryNumber;
+    let totalSampleTime: number = 0;
+    let minmumSampleTime: number = 0;
+    let maximumSampleTime: number = 0;
+    let averageSampleTime: number = 0;
+
+    function parseExplainExplanation(explain) {
+      const regex = /actual time=(\d+\.\d+)\.\.(\d+\.\d+) rows=\d+ loops=(\d+)/g;
+      const matches: any[] = Array.from(explain.matchAll(regex));
+      let result: number = 0;
+
+      for (let i = 0; i < matches.length; i += 1) {
+        result += (parseFloat(matches[i][2]) - parseFloat(matches[i][1])) * parseFloat(matches[i][3]);
+      }
+      return result;
+    }
+    /////   ///////////   ///////////   ///////////   ///////////
 
     try {
       let error: string | undefined;
@@ -357,31 +415,118 @@ ipcMain.handle(
 
       if (selectedDb !== targetDb) await db.connectToDB(targetDb, dbType);
 
-      // Run Explain
+      // Run Explain            
       let explainResults;
       try {
-        if (dbType === DBType.Postgres) {
-          const results = await db.query(
-            explainQuery(sqlString, dbType),
-            null,
-            dbType
-          );
-          // console.log(LogType.WARNING, results);
-          explainResults = results[1].rows;
-        } else if (dbType === DBType.MySQL) {
-          const results = await db.query(
-            explainQuery(sqlString, dbType),
-            null,
-            dbType
-          );
-          explainResults = results[0][0];
-          // console.log('mysql explain results', explainResults);
+        for (let i = 0; i < numberOfSample; i++) {
+          if (dbType === DBType.Postgres) {
+            const results = await db.query(
+              explainQuery(sqlString, dbType),
+              null,
+              dbType
+            );
 
-          // console.log(LogType.WARNING, results);
+            console.log('ericCheck------------------------------------------------------------------ericCheck');
+            console.log('postgerSQL_results-----------------------------------------------------------------postgerSQL_results', results);
+            console.log('postgerSQL_results[1].rows-----------------------------------------------------------------postgerSQL_results[1].rows', results[1].rows);
+            console.log('postgerSQL_results[1].rows[0]["QUERY PLAN"][0]-----------------------------------------------------------------postgerSQL_results[1].rows[0]["QUERY PLAN"][0]', results[1].rows[0]["QUERY PLAN"][0]);
+
+            explainResults = results[1].rows;
+            const eachSampleTime: any = results[1].rows[0]["QUERY PLAN"][0]['Planning Time'] + results[1].rows[0]["QUERY PLAN"][0]['Execution Time'];
+            arr.push(eachSampleTime);
+            totalSampleTime += eachSampleTime;
+
+          } else if (dbType === DBType.MySQL) {
+            const results = await db.query(
+              explainQuery(sqlString, dbType),
+              null,
+              dbType
+            );
+            console.log('ericCheck------------------------------------------------------------------ericCheck');
+            console.log('mySQL_results-----------------------------------------------------------------mySQL_results', results);
+            console.log('results[0][0]-----------------------------------------------------------------results[0][0]', results[0][0]);
+
+            const eachSampleTime: any = parseExplainExplanation(results[0][0].EXPLAIN);
+            arr.push(eachSampleTime);
+            totalSampleTime += eachSampleTime;
+            console.log('ericCheck------------------------------------------------------------------ericCheck');
+            console.log('arr-------------------------------------------------------------------arr', arr);
+
+
+            // //////////not real result just try to get rid of bugs first///////////////
+            explainResults = {
+              Plan: {
+                'Node Type': 'Seq Scan',
+                'Parallel Aware': false,
+                'Async Capable': false,
+                'Relation Name': 'newtable1',
+                Schema: 'public',
+                Alias: 'newtable1',
+                'Startup Cost': 0,
+                'Total Cost': 7,
+                'Plan Rows': 200,
+                'Plan Width': 132,
+                'Actual Startup Time': 0.015,
+                'Actual Total Time': 0.113,
+                'Actual Rows': 200,
+                'Actual Loops': 1,
+                Output: ['newcolumn1'],
+                'Shared Hit Blocks': 5,
+                'Shared Read Blocks': 0,
+                'Shared Dirtied Blocks': 0,
+                'Shared Written Blocks': 0,
+                'Local Hit Blocks': 0,
+                'Local Read Blocks': 0,
+                'Local Dirtied Blocks': 0,
+                'Local Written Blocks': 0,
+                'Temp Read Blocks': 0,
+                'Temp Written Blocks': 0
+              },
+              Planning: {
+                'Shared Hit Blocks': 64,
+                'Shared Read Blocks': 0,
+                'Shared Dirtied Blocks': 0,
+                'Shared Written Blocks': 0,
+                'Local Hit Blocks': 0,
+                'Local Read Blocks': 0,
+                'Local Dirtied Blocks': 0,
+                'Local Written Blocks': 0,
+                'Temp Read Blocks': 0,
+                'Temp Written Blocks': 0
+              },
+              'Planning Time': 9999,
+              Triggers: [],
+              'Execution Time': 9999
+            };
+            // ////////////////////////////////////////////////////////////////////////////////////////
+            // ////////////////////////////////////////////////////////////////////////////////////////
+
+
+            // explainResults = results[0][0];
+            // console.log('mysql explain results', explainResults);
+
+            // console.log(LogType.WARNING, results);
+
+          }
         }
+        console.log('ericCheck------------------------------------------------------------------ericCheck');
+        console.log('totalSampleTime------------------------------------------------------------------------------------------totalSampleTime', totalSampleTime);
+        // minmumSampleTime = Math.min(...arr);
+        // maximumSampleTime = Math.max(...arr);
+        // averageSampleTime = totalSampleTime/numberOfSample;
+        minmumSampleTime = Math.round(Math.min(...arr) * 10 ** 5) / 10 ** 5;
+        maximumSampleTime = Math.round(Math.max(...arr) * 10 ** 5) / 10 ** 5;
+        averageSampleTime = Math.round((totalSampleTime / numberOfSample) * 10 ** 5) / 10 ** 5;
+        totalSampleTime = Math.round(totalSampleTime * 10 ** 5) / 10 ** 5;
+        console.log('minmumSampleTime------------------------------------------------------------------------------------------minmumSampleTime', minmumSampleTime);
+        console.log('maximumSampleTime------------------------------------------------------------------------------------------maximumSampleTime', maximumSampleTime);
+        console.log('averageSampleTime------------------------------------------------------------------------------------------averageSampleTime', averageSampleTime);
       } catch (e) {
         error = `Failed to get Execution Plan. EXPLAIN might not support this query.`;
       }
+
+
+      ///////////   ///////////   ///////////   ///////////
 
       // Run Query
       let returnedRows;
@@ -407,6 +552,11 @@ ipcMain.handle(
         returnedRows,
         explainResults,
         error,
+        numberOfSample,
+        totalSampleTime,
+        minmumSampleTime,
+        maximumSampleTime,
+        averageSampleTime,
       };
     } finally {
       // connect back to initialDb
@@ -493,6 +643,9 @@ ipcMain.handle(
         dbType
       ); // passed in dbType to second argument
       // console.log('tableInfo in generate-dummy-data', tableInfo); // working
+      // console.log('tableInfo==========================================================tableInfo', tableInfo);
+
+      // console.log('ericCheck=======================ericCheck========================ericCheck========================ericCheck');
 
       // generate dummy data
       const dummyArray: DummyRecords = await generateDummyData(
@@ -500,6 +653,8 @@ ipcMain.handle(
         data.rows
       );
       // console.log('dummyArray output: ', dummyArray)
+      // console.log('tableInfo==========================================================tableInfo', tableInfo);
+      // console.log('dummyArray==========================================================dummyArray', dummyArray);
       // generate insert query string to insert dummy records
       const columnsStringified = '('
         .concat(dummyArray[0].join(', '))
@@ -570,13 +725,13 @@ ipcMain.handle(
     try {
       // create new empty db
       await db.query(createDBFunc(newDbName, dbType), null, dbType);
-
       // connect to initialized db
       await db.connectToDB(newDbName, dbType);
 
       // update DBList in the sidebar to show this new db
       const dbsAndTableInfo: DBList = await db.getLists(newDbName, dbType);
       event.sender.send('db-lists', dbsAndTableInfo);
+      ///
       logger("Sent 'db-lists' from 'initialize-db'", LogType.SEND);
     } catch (e) {
       const err = `Unsuccessful DB Creation for ${newDbName} in ${dbType} database`;
@@ -651,6 +806,8 @@ ipcMain.handle(
     try {
       // Generates query from backendObj
       const query = backendObjToQuery(backendObj, dbType);
+      console.log('ipcMain-------------------------------------------------------------ipcMain', backendObj);
+      console.log('query=======================================================query', query);
       // run sql command
       await db.query('Begin;', null, dbType);
       await db.query(query, null, dbType);
