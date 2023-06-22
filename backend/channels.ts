@@ -502,9 +502,13 @@ ipcMain.handle(
         }
         console.log('ericCheck------------------------------------------------------------------ericCheck');
         console.log('totalSampleTime------------------------------------------------------------------------------------------totalSampleTime', totalSampleTime);
-        minmumSampleTime = Math.min(...arr);
-        maximumSampleTime = Math.max(...arr);
-        averageSampleTime = totalSampleTime/numberOfSample;
+        // minmumSampleTime = Math.min(...arr);
+        // maximumSampleTime = Math.max(...arr);
+        // averageSampleTime = totalSampleTime/numberOfSample;
+        minmumSampleTime = Math.round(Math.min(...arr) * 10 ** 5) / 10 ** 5;
+        maximumSampleTime = Math.round(Math.max(...arr) * 10 ** 5) / 10 ** 5;
+        averageSampleTime = Math.round((totalSampleTime/numberOfSample) * 10 ** 5) / 10 ** 5;
+        totalSampleTime = Math.round(totalSampleTime * 10 ** 5) / 10 ** 5;
         console.log('minmumSampleTime------------------------------------------------------------------------------------------minmumSampleTime', minmumSampleTime);
         console.log('maximumSampleTime------------------------------------------------------------------------------------------maximumSampleTime', maximumSampleTime);
         console.log('averageSampleTime------------------------------------------------------------------------------------------averageSampleTime', averageSampleTime);
@@ -793,6 +797,7 @@ ipcMain.handle(
     try {
       // Generates query from backendObj
       const query = backendObjToQuery(backendObj, dbType);
+      console.log('ipcMain-------------------------------------------------------------ipcMain', backendObj);
       console.log('query=======================================================query', query);
       // run sql command
       await db.query('Begin;', null, dbType);

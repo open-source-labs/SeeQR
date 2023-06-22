@@ -79,10 +79,10 @@ export interface QueryData {
 
   /////////////////////////eric//////////////////////////////////////////////
   numberOfSample: number,
-  totalSampleTime: number,
-  minmumSampleTime: number,
-  maximumSampleTime: number,
-  averageSampleTime: number,
+  totalSampleTime: number | string,
+  minmumSampleTime: number | string,
+  maximumSampleTime: number | string,
+  averageSampleTime: number| string, 
   ///////////////////////////////////////////////////////////////////////////
 }
 
@@ -278,6 +278,7 @@ export type ERTableColumnData = {
   auto_increment?: boolean; // optional until implemented
 };
 export type DataTypes = 'integer' | 'bigint' | 'varchar' | 'date' | null;
+export type DataTypesMySQL = 'int' | 'bigint' | 'varchar' | 'date' | null;
 
 export type AddColumnsObjType = {
   column_name: string | null;

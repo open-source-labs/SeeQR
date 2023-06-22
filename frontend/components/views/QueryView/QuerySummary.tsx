@@ -23,13 +23,13 @@ interface QuerySummaryProps {
 
 const QuerySummary = ({ executionPlan }: QuerySummaryProps) => {
   const summaryData = {
-    'Planning Time': executionPlan?.['Planning Time'],
-    'Execution Time': executionPlan?.['Execution Time'],
+    // 'Planning Time': executionPlan?.['Planning Time'],
+    // 'Execution Time': executionPlan?.['Execution Time'],
     'Number of Sample': executionPlan?.numberOfSample,
-    'Total Sample Time': executionPlan?.totalSampleTime,
-    'Minmum Sample Time': executionPlan?.minmumSampleTime,
-    'Maximum Sample Time': executionPlan?.maximumSampleTime,
-    'Average Sample Time': executionPlan?.averageSampleTime,
+    'Total Sample Time': executionPlan?.totalSampleTime + 'ms',
+    'Minmum Sample Time': executionPlan?.minmumSampleTime + 'ms',
+    'Maximum Sample Time': executionPlan?.maximumSampleTime + 'ms',
+    'Average Sample Time': executionPlan?.averageSampleTime + 'ms',
   };
 
   if (!executionPlan) return null;
