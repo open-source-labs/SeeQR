@@ -49,7 +49,7 @@ const DBFunctions: DBFunctions = {
   },
 
   /**
-   * Save all login credentials from the config file to variables
+   * Saves login info to variables. Tries to log in to databases using configs
    * @returns object containing login status of all database servers
    */
   async setBaseConnections() {
@@ -200,6 +200,14 @@ const DBFunctions: DBFunctions = {
       await connectionFunctions.RDS_MSQL_DBQuery(db);
     } else if (dbType === DBType.RDSPostgres) {
       await connectionFunctions.RDS_PG_DBConnect(this.curRDS_PG_DB);
+    }
+  },
+
+  async disconnectToDrop(dbType) {
+    if (dbType === DBType.Postgres) {
+      console.log('ending pool');
+      await connectionFunctions.PG_DBDisconnect();
+
     }
   },
 

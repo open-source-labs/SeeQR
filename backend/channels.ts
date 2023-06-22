@@ -29,14 +29,16 @@ interface Feedback {
   type: string;
   message: string;
 }
-/*
-junaid
-this runs whenever save is hit on the main app
-*/
-ipcMain.handle('set-config', async (event, configObj) => {
-  docConfig.saveConfig(configObj);
 
-  db.setBaseConnections()
+/**
+ * handler for set-config.
+ * triggered whenever save is pressed on the config/login page
+ * establishes connections to database, logs failed connections, sends contents of config file
+ */
+ipcMain.handle('set-config', async (event, configObj) => {
+  docConfig.saveConfig(configObj); // saves login info from frontend into config file
+
+  db.setBaseConnections() // tries to log in using config data
     .then((dbsInputted) => {
       /*
       junaid
@@ -54,10 +56,11 @@ ipcMain.handle('set-config', async (event, configObj) => {
           message: err,
         };
         event.sender.send('feedback', feedback);
+        // asdf try to remove database type from the feedback if the config is null (ie, user is not trying to log into it)
       }
       logger('Successfully reset base connections', LogType.SUCCESS);
       db.getLists().then((data: DBList) => {
-        event.sender.send('db-lists', data);
+        event.sender.send('db-lists', data); // asdf used to populate sidebar?
       });
     })
     .catch((err) => {
@@ -80,7 +83,11 @@ ipcMain.handle('set-config', async (event, configObj) => {
     });
 });
 
-ipcMain.handle('get-config', async (event, configObj) => {
+/**
+ * IPC get-config handler
+ * sends configuration from config file
+ */
+ipcMain.handle('get-config', async (event, configObj) => { // asdf is configObj used?
   event.sender.send('get-config', docConfig.getFullConfig());
 });
 
@@ -91,6 +98,10 @@ removed the parameters because it doesnt seem like they do anything here, and it
 */
 
 // ipcMain.on('return-db-list', (event, dbType: DBType = DBType.Postgres) => {
+/**
+ * IPC return-db-list handler
+ * establishes connection to databases, then gets listObj from getLists, then sends to frontend
+ */
 ipcMain.on('return-db-list', (event) => {
   logger(
     "Received 'return-db-list' (Note: No Async being sent here)",
@@ -145,6 +156,10 @@ ipcMain.on('return-db-list', (event) => {
 
 // Listen for database changes sent from the renderer upon changing tabs
 // and send back an updated DB List
+/**
+ * IPC handler for select-db
+ * connect to selected db, then get object containing a list of all databases and a list of tables for the selected database, and sends to frontend
+ */
 ipcMain.handle(
   'select-db',
   async (event, dbName: string, dbType: DBType): Promise<void> => {
@@ -165,6 +180,10 @@ ipcMain.handle(
 );
 
 // Deletes the DB that is passed from the front end and returns an updated DB List
+/**
+ * IPC handler for drop-db
+ * 
+ */
 ipcMain.handle(
   'drop-db',
   async (
@@ -178,7 +197,10 @@ ipcMain.handle(
     event.sender.send('async-started');
     try {
       // if deleting currently connected db, disconnect from db
-      if (currDB) await db.connectToDB('', dbType);
+      console.log('about to drop pool');
+      await db.disconnectToDrop(dbType);
+      console.log('about to reconnect to pool');
+      await db.connectToDB('', dbType);
 
       // drop db
       const dropDBScript = dropDBFunc(dbName, dbType);

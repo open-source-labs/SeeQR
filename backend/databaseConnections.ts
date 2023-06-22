@@ -17,7 +17,11 @@ export default {
     const newURI = `${pg_uri}${db}`;
     const newPool = new Pool({ connectionString: newURI });
     pools.pg_pool = newPool;
-    await pools.pg_pool.connect();
+    // await pools.pg_pool.connect();
+  },
+
+  async PG_DBDisconnect(): Promise<void> {
+    await pools.pg_pool.end();
   },
 
   /**
