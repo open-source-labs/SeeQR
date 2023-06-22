@@ -26,6 +26,17 @@ let mainWindow: BrowserWindow | null;
 //   await session.defaultSession.loadExtension(reactDevToolsPath);
 // });
 
+
+// Add an event listener for uncaught exceptions
+// The major purpose is trying to hidding the pop out warning or error message from electron/react
+// That is, put everything undertable
+process.on('uncaughtException', (error) => {
+  // Hiding the error on the terminal as well
+  console.error('Uncaught Exception:', error);
+});
+
+
+
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1800,

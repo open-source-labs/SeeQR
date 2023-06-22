@@ -35,6 +35,12 @@ import { IpcRendererEvent, ipcRenderer } from 'electron';
 import CreateDBDialog from './Dialog/CreateDBDialog';
 import ConfigView from './Dialog/ConfigView';
 
+///////eric//////Increase the maximum number of listeners to 20///////////////
+const EventEmitter = require('events');
+const emitter = new EventEmitter();
+emitter.setMaxListeners(20);
+//////////////////////////////////////////////////////////////////////////////
+
 const AppContainer = styled.div`
   display: grid;
   grid: 'sidebar main' 1fr / ${sidebarWidth} 1fr;
@@ -94,6 +100,7 @@ const App = () => {
     };
     ipcRenderer.on('db-lists', dbListFromBackend); // dummy data error here?
     requestDbListOnce();
+
     // return cleanup function
     return () => {
       ipcRenderer.removeListener('db-lists', dbListFromBackend);
@@ -105,6 +112,8 @@ const App = () => {
    */
   const createNewQuery: CreateNewQuery = (query: QueryData) => {
     // Only save query to saved queries if it contains all minimum information
+    console.log("ericFrontendCheck-------------------------------------------------------------------------------ericFrontendCheck");
+    console.log("query--------------------------------------------------------------------------------------------------query", query);
     if (query.label && query.db && query.sqlString && query.group) {
       const newQueries = createQuery(queries, query);
       setQueries(newQueries);
