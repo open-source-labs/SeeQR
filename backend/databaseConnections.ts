@@ -12,6 +12,13 @@ export default {
     await pools.pg_pool.connect();
   },
 
+  //////eric///////
+  PG_DBclose: async function (pg_uri: string, db: string) {
+
+    pools.pg_pool.end();
+    // pools.pg_pool = null;
+  },
+
   MSQL_DBConnect: async function (MYSQL_CREDS: any) {
     if (pools.msql_pool) await pools.msql_pool.end();
     pools.msql_pool = await mysql.createPool({ ...MYSQL_CREDS });
