@@ -37,7 +37,7 @@ ipcMain.handle('set-config', async (event, configObj) => {
   docConfig.saveConfig(configObj);
 
   db.setBaseConnections()
-    .then((dbsInputted) => {
+    .then(({ dbsInputted, configExists }) => {
       /*
       junaid
       added error handling to display error message on frontend based on which dbs failed to login
@@ -45,7 +45,7 @@ ipcMain.handle('set-config', async (event, configObj) => {
       let errorStr = '';
       const dbs = Object.keys(dbsInputted);
       dbs.forEach(e => {
-        if (!dbsInputted[e]) errorStr += ` ${e}`;
+        if (!dbsInputted[e] && configExists[e]) errorStr += ` ${e}`;
       })
       if (errorStr.length) {
         const err = `Unsuccessful login(s) for ${errorStr.toUpperCase()} database(s)`;

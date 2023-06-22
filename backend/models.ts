@@ -59,6 +59,14 @@ const DBFunctions: DBFunctions = {
     this.curRDS_MSQL_DB = docConfig.getCredentials(DBType.RDSMySQL);
     this.curSQLite_DB = docConfig.getCredentials(DBType.SQLite);
     this.curdirectPGURI_DB = docConfig.getCredentials(DBType.directPGURI);
+    const configExists = {
+      pg: false,
+      msql: false,
+      rds_pg: false,
+      rds_msql: false,
+      sqlite: false,
+      directPGURI: false,
+    }
     /*
      junaid
      all the if/else and try/catch in this function are for various forms of error handling. incorrect passwords/removed entries after successful logins
@@ -71,6 +79,7 @@ const DBFunctions: DBFunctions = {
       this.curRDS_PG_DB.host
     ) {
       try {
+        configExists.rds_pg = true;
         await connectionFunctions.RDS_PG_DBConnect(this.curRDS_PG_DB);
         this.dbsInputted.rds_pg = true;
         logger('CONNECTED TO RDS PG DATABASE!', LogType.SUCCESS);
@@ -79,6 +88,7 @@ const DBFunctions: DBFunctions = {
         logger('FAILED TO CONNECT TO RDS PG DATABASE', LogType.ERROR);
       }
     } else {
+      configExists.rds_pg = false;
       this.dbsInputted.rds_pg = false;
     }
 
@@ -89,6 +99,7 @@ const DBFunctions: DBFunctions = {
       this.curRDS_MSQL_DB.host
     ) {
       try {
+        configExists.rds_msql = true;
         await connectionFunctions.RDS_MSQL_DBConnect(this.curRDS_MSQL_DB);
         /*
         junaid
@@ -102,6 +113,7 @@ const DBFunctions: DBFunctions = {
         logger('FAILED TO CONNECT TO RDS MSQL DATABASE', LogType.ERROR);
       }
     } else {
+      configExists.rds_msql = false;
       this.dbsInputted.rds_msql = false;
     }
 
@@ -109,6 +121,7 @@ const DBFunctions: DBFunctions = {
     if (PG_Cred.user && PG_Cred.password) {
       this.pg_uri = `postgres://${PG_Cred.user}:${PG_Cred.password}@localhost:${PG_Cred.port}/`;
       try {
+        configExists.pg = true;
         await connectionFunctions.PG_DBConnect(this.pg_uri, this.curPG_DB);
         logger('CONNECTED TO LOCAL PG DATABASE', LogType.SUCCESS);
         this.dbsInputted.pg = true;
@@ -117,12 +130,14 @@ const DBFunctions: DBFunctions = {
         logger('FAILED TO CONNECT TO LOCAL PG DATABASE', LogType.ERROR);
       }
     } else {
+      configExists.pg = false;
       this.dbsInputted.pg = false;
     }
 
     //  LOCAL MSQL POOL: truthy values means user has inputted info into config -> try to log in
     if (MSQL_Cred.user && MSQL_Cred.password) {
       try {
+        configExists.msql = true;
         await connectionFunctions.MSQL_DBConnect({
           host: `localhost`,
           port: MSQL_Cred.port,
@@ -146,12 +161,14 @@ const DBFunctions: DBFunctions = {
         logger('FAILED TO CONNECT TO LOCAL MSQL DATABASE', LogType.ERROR);
       }
     } else {
+      configExists.msql = false;
       this.dbsInputted.msql = false;
     }
 
     //  RDS PG POOL: truthy values means user has inputted info into config -> try to log in
     if (this.curSQLite_DB.path) {
       try {
+        configExists.sqlite = true;
         await connectionFunctions.SQLite_DBConnect(this.curSQLite_DB.path);
         this.dbsInputted.sqlite = true;
         logger('CONNECTED TO SQLITE DATABASE!', LogType.SUCCESS);
@@ -160,10 +177,11 @@ const DBFunctions: DBFunctions = {
         logger('FAILED TO CONNECT TO SQLITE DATABASE', LogType.ERROR);
       }
     } else {
+      configExists.sqlite = false;
       this.dbsInputted.sqlite = false;
     }
 
-    return this.dbsInputted;
+    return { dbsInputted: this.dbsInputted, configExists }
   },
 
 
