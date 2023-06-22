@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import '../lib/style.css'
+// import '../lib/style.css'
 import styled from 'styled-components';
 import { ThemeProvider, Theme, StyledEngineProvider } from '@mui/material/';
-// import StylesProvider from '@mui/styles/StylesProvider';
+// import '@mui/material/styles/defaultTheme';
 import CssBaseline from '@mui/material/CssBaseline';
 import { IpcRendererEvent, ipcRenderer } from 'electron';
 import {
@@ -37,10 +37,10 @@ import CreateDBDialog from './Dialog/CreateDBDialog';
 import ConfigView from './Dialog/ConfigView';
 
 
-// declare module '@mui/material/styles/defaultTheme' {
-//   // eslint-disable-next-line @typescript-eslint/no-empty-interface
-//   interface DefaultTheme extends Theme {}
-// }
+declare module '@mui/material/styles/' {
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  interface DefaultTheme extends Theme {}
+}
 
 
 ///////eric//////Increase the maximum number of listeners to 20///////////////
@@ -103,7 +103,7 @@ const App = () => {
         setPGStatus(dbLists.databaseConnected[0]);
         setMYSQLStatus(dbLists.databaseConnected[1]);
 
-        setSelectedTable(selectedTable ? selectedTable : dbTables[0]);
+        setSelectedTable(selectedTable || dbTables[0]);
       }
     };
     ipcRenderer.on('db-lists', dbListFromBackend); // dummy data error here?

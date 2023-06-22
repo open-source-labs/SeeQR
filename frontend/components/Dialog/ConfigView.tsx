@@ -46,6 +46,7 @@ function TabPanel(props: TabPanelProps) {
       <Box sx={{
         display:'flex',
         flexDirection: 'column',
+        gap: '.25rem',
         alignItems: 'center',
         pt: 2
       }}
@@ -112,7 +113,8 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
                       [dbString]: !showpass[dbString],
                     })
                   }
-                  size="large">
+                  size="large"
+                >
                   {showpass[dbString] ? <Visibility /> : <VisibilityOff />}
                 </IconButton>
               </InputAdornment>

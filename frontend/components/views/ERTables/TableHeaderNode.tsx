@@ -158,7 +158,7 @@ function TableHeader({ data }: TableHeaderProps) {
           label="Table Name"
           variant="outlined"
           defaultValue={data.table_name}
-          onKeyPress={handleChangeTableName}
+          onKeyDown={handleChangeTableName}
           onClick={warnUser}
           style={{ backgroundColor: 'white' }}
         />

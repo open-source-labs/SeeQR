@@ -14,11 +14,11 @@ import {
   ListItemText,
   Select,
   NativeSelect,
-  adaptV4Theme,
+  InputLabel,
+  MenuItem,
 } from '@mui/material';
 import { createTheme } from '@mui/material/styles';
 import styled from 'styled-components';
-import { InputLabel, MenuItem } from '@mui/material';
 
 // previous
 export const bgColor = '#2b2d35';
@@ -95,24 +95,30 @@ export const MuiTheme = createTheme({
       secondary: greyLight,
     },
   },
-  overrides: {
+  components: {
     MuiIconButton: {
-      root: {
-        color: textColor,
-        '&:hover': {
+      styleOverrides: {
+        root: {
+          color: textColor,
+          '&:hover': {
           color: hoverColor,
+          },
         },
       },
     },
     MuiTooltip: {
-      tooltip: {
-        fontSize: '1em',
+      styleOverrides: {
+        tooltip: {
+          fontSize: '1em',
+        },
       },
     },
     MuiTab: {
-      root: {
-        fontSize: 20,
-        textTransform: 'none',
+      styleOverrides: {
+        root: {
+          fontSize: 20,
+          textTransform: 'none',
+        },
       },
     },
   },

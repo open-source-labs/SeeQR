@@ -281,7 +281,7 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
         nodesConnectable={false}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
-        panOnScroll
+        zoomOnScroll // think this fixes scrolling issue on erDiagram
         minZoom={0.1}
         maxZoom={10}
         defaultPosition={[0, 0]}
