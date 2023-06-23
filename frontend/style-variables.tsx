@@ -116,7 +116,7 @@ export const MuiTheme = createTheme({
     MuiTab: {
       styleOverrides: {
         root: {
-          fontSize: 20,
+          fontSize: '.875rem',
           textTransform: 'none',
         },
       },

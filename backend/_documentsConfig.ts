@@ -20,9 +20,10 @@ const defaultFile: DocConfigFile = {
   pg: { user: '', password: '', port: 5432 },
   rds_mysql: { user: '', password: '', port: 3306, host: '' },
   rds_pg: { user: '', password: '', port: 5432, host: '' },
-  cloud_db: { URI: '' }, //added cloud db
+  sqlite: { path: '' },
+  directPGURI: { uri: '' }
 };
-const writeConfigDefault = function (): DocConfigFile {
+function writeConfigDefault(): DocConfigFile {
   logger('Could not find config file. Creating default', LogType.WARNING);
   fs.writeFileSync(configPath, JSON.stringify(defaultFile));
   return defaultFile;
@@ -45,6 +46,10 @@ const checkConfigFile = function (currConfig: DocConfigFile): DocConfigFile {
     });
   } catch (err) {
     console.log(err);
+    logger(
+      `Error caught checking config file. Resetting config to default.`,
+      LogType.WARNING
+    );
     return writeConfigDefault();
   }
   if (invalidKeys.length) {
@@ -58,7 +63,12 @@ const checkConfigFile = function (currConfig: DocConfigFile): DocConfigFile {
   return currConfig;
 };
 
-const readConfigFile = function (): DocConfigFile {
+/**
+ * Reads config file data and sends it into checkConfigFile, then returns the result
+ * If an error occurs during read, the config file will be set back to default 
+ * @returns config file contents (login info for each database type)
+ */
+function readConfigFile(): DocConfigFile {
   try {
     const config = JSON.parse(
       fs.readFileSync(configPath, 'utf-8')
@@ -66,9 +76,14 @@ const readConfigFile = function (): DocConfigFile {
     return checkConfigFile(config);
   } catch (err: any) {
     console.log(err);
+    logger(
+      `Error caught checking config file. Resetting config to default.`,
+      LogType.WARNING
+    );
     return writeConfigDefault();
   }
 };
+
 interface DocConfig {
   getConfigFolder: () => string;
   getCredentials: (dbType: DBType) => {
@@ -76,14 +91,20 @@ interface DocConfig {
     user?: string;
     password?: string;
     host?: string;
-    port?: number | string;
+    port: number | string;
+    uri?: string;
+    path?: string;
   };
   getFullConfig: () => Object;
   saveConfig: (config: Object) => void;
 }
 
 const docConfig: DocConfig = {
-  getConfigFolder: function () {
+  /**
+   * Checks if config file directory exists. If not, creates one
+   * @returns config file directory
+   */
+  getConfigFolder: function getConfigFolder() {
     if (fs.existsSync(home)) {
       logger(`Found documents directory: ${home}`, LogType.SUCCESS);
     } else {
@@ -96,11 +117,16 @@ const docConfig: DocConfig = {
     return home;
   },
 
-  getCredentials: function (dbType: DBType) {
-    this.getConfigFolder();
+  /**
+   * Grabs login info from config file
+   * @param dbType: desired database type for login info
+   * @returns login info for the desired database type
+   */
+  getCredentials: function getCredentials(dbType: DBType) {
+    this.getConfigFolder(); // ensure directory exists 
     let configFile: DocConfigFile;
     try {
-      configFile = readConfigFile();
+      configFile = readConfigFile(); // all login info now in configFile
     } catch (err: any) {
       logger(err.message, LogType.WARNING);
       return { user: '', password: '', port: 1 };
@@ -118,15 +144,23 @@ const docConfig: DocConfig = {
     if (dbType === DBType.RDSPostgres) {
       return { ...configFile.rds_pg };
     }
-    if (dbType === DBType.CloudDB) { //added cloud db
-      return { ...configFile.cloud_db };
-    }
+    // // asdf check sqlite and directpguri and format for return in case of error
+    // if (dbType === DBType.SQLite) {
+    //   return { ...configFile.sqlite };
+    // }
+    // if (dbType === DBType.directPGURI) {
+    //   return { ...configFile.directPGURI };
+    // }
 
     logger('Could not get credentials of DBType: ', LogType.ERROR, dbType);
     return { user: '', password: '', port: 1 };
   },
 
-  getFullConfig: function () {
+  /**
+   * 
+   * @returns all login info from config file
+   */
+  getFullConfig: function getFullConfig() {
     this.getConfigFolder();
     let configFile: DocConfigFile;
     try {
@@ -138,7 +172,11 @@ const docConfig: DocConfig = {
     }
   },
 
-  saveConfig: function (config: Object) {
+  /**
+   * Takes config data object sent from frontend, stringifies it and saves in config file
+   * @param config 
+   */
+  saveConfig: function saveConfig(config: Object) {
     try {
       fs.writeFileSync(configPath, JSON.stringify(config));
       logger('Saved new config: ', LogType.NORMAL, config);

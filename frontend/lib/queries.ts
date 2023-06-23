@@ -140,7 +140,9 @@ export const setCompare = (
 export const getTotalTime = (query: QueryData | undefined) => {
   if (!query?.executionPlan) return 0;
   return (
-    query.executionPlan['Execution Time'] + query.executionPlan['Planning Time']
+    // query.executionPlan['Execution Time'] + query.executionPlan['Planning Time']
+    // eric ////////
+    query.executionPlan.averageSampleTime
   );
 };
 

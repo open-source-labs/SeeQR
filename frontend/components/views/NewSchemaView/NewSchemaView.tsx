@@ -117,6 +117,13 @@ const NewSchemaView = ({
     db: '', // name that user inputs in SchemaName.tsx
     sqlString: '', // sql string that user inputs in SchemaSqlInput.tsx
     group: '', // group string for sorting queries in accordians
+    /////////////////////////eric//////////////////////////////////////////////
+    numberOfSample: 0,
+    totalSampleTime: 0,
+    minmumSampleTime: 0,
+    maximumSampleTime: 0,
+    averageSampleTime: 0,
+    ///////////////////////////////////////////////////////////////////////////
   };
 
   const localQuery = { ...defaultQuery, ...query };

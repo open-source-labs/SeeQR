@@ -76,6 +76,14 @@ export interface QueryData {
   group: string;
 
   // flag: boolean
+
+  /////////////////////////eric//////////////////////////////////////////////
+  numberOfSample: number,
+  totalSampleTime: number | string,
+  minmumSampleTime: number | string,
+  maximumSampleTime: number | string,
+  averageSampleTime: number| string, 
+  ///////////////////////////////////////////////////////////////////////////
 }
 
 export type ValidTabs = 'Results' | 'Execution Plan';
@@ -226,6 +234,11 @@ export interface ExplainJson {
   Plan: PlanNode;
   'Planning Time': number;
   'Execution Time': number;
+  numberOfSample: number;
+  totalSampleTime: number;
+  minmumSampleTime: number;
+  maximumSampleTime: number;
+  averageSampleTime: number;
 }
 
 /**
@@ -265,6 +278,7 @@ export type ERTableColumnData = {
   auto_increment?: boolean; // optional until implemented
 };
 export type DataTypes = 'integer' | 'bigint' | 'varchar' | 'date' | null;
+export type DataTypesMySQL = 'int' | 'bigint' | 'varchar' | 'date' | null;
 
 export type AddColumnsObjType = {
   column_name: string | null;

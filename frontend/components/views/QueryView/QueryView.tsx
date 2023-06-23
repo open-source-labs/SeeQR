@@ -82,6 +82,11 @@ const QueryView = ({
     db: selectedDb,
     sqlString: '',
     group: '',
+    numberOfSample: 0,
+    totalSampleTime: 0,
+    minmumSampleTime: 0,
+    maximumSampleTime: 0,
+    averageSampleTime: 0,
   };
 
   const localQuery = { ...defaultQuery, ...query };
@@ -161,21 +166,32 @@ const QueryView = ({
         },
         curDBType
       )
-      .then(({ db, sqlString, returnedRows, explainResults, error }) => {
+      .then(({ db, sqlString, returnedRows, explainResults, error, 
+                numberOfSample,
+                totalSampleTime,
+                minmumSampleTime,
+                maximumSampleTime,
+                averageSampleTime, }) => {
         if (error) {
           throw error;
         }
         let transformedData;
         // console.log('returnedRows after .then method', returnedRows);
         // console.log('explainResult after .then method', explainResults);
-
+        console.log(totalSampleTime, minmumSampleTime, maximumSampleTime, averageSampleTime);
         // console.log('curDBType in QueryView', curDBType);
 
         if (curDBType === DBType.Postgres) {
           transformedData = {
             sqlString,
             returnedRows,
-            executionPlan: explainResults[0]['QUERY PLAN'][0],
+            executionPlan: {
+              numberOfSample,   // executionPlan.numberOfSample = numberOfSample
+              totalSampleTime,
+              minmumSampleTime,
+              maximumSampleTime,
+              averageSampleTime,
+              ...explainResults[0]['QUERY PLAN'][0],},
             label: localQuery.label,
             db,
             group: localQuery.group,
@@ -188,6 +204,15 @@ const QueryView = ({
             label: localQuery.label,
             db,
             group: localQuery.group,
+            executionPlan: {
+              numberOfSample,   // executionPlan.numberOfSample = numberOfSample
+              totalSampleTime,
+              minmumSampleTime,
+              maximumSampleTime,
+              averageSampleTime,
+              // ...explainResults[0]['QUERY PLAN'][0],
+              ...explainResults,
+            },
           };
         }
 
@@ -248,7 +273,7 @@ const QueryView = ({
           Run Query
         </RunButton>
       </CenterButton>
-      <QuerySummary executionPlan={query?.executionPlan} />
+      <QuerySummary executionPlan={query?.executionPlan}/>
       <QueryTabs
         results={query?.returnedRows}
         executionPlan={query?.executionPlan}

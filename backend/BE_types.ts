@@ -25,7 +25,14 @@ export interface TableDetails {
   columns?: ColumnObj[];
 }
 export interface DBList {
-  databaseConnected: [boolean, boolean, boolean, boolean];
+  databaseConnected: {
+    PG: boolean,
+    MySQL: boolean,
+    RDSPG: boolean,
+    RDSMySQL: boolean,
+    SQLite: boolean,
+    directPGURI: boolean,
+  };
   databaseList: dbDetails[];
   tableList: TableDetails[];
 }
@@ -43,6 +50,8 @@ export enum DBType {
   RDSPostgres = 'rds-pg',
   RDSMySQL = 'rds-mysql',
   CloudDB = 'cloud-database', //added for cloud dbs
+  SQLite = 'sqlite',
+  directPGURI = 'directPGURI',
 }
 
 export enum LogType {
@@ -59,7 +68,8 @@ export interface DocConfigFile {
   pg: { user: string; password: string; port: number };
   rds_mysql: { user: string; password: string; port: number; host: string };
   rds_pg: { user: string; password: string; port: number; host: string };
-  cloud_db: { URI: '' };
+  sqlite: { path: '' };
+  directPGURI: { uri: '' };
 }
 
 type dbsInputted = {
@@ -67,6 +77,8 @@ type dbsInputted = {
   msql: boolean;
   rds_pg: boolean;
   rds_msql: boolean;
+  sqlite: boolean;
+  directPGURI: boolean;
 };
 
 export interface DBFunctions {
@@ -79,14 +91,14 @@ export interface DBFunctions {
     password: string;
     host: string;
   };
+  curSQLite_DB: string;
+  curdirectPGURI_DB: string;
   dbsInputted: dbsInputted;
 
   setBaseConnections: () => Promise<dbsInputted>;
   query: (text: string, params: (string | number)[], dbType: DBType) => void;
   connectToDB: (db: string, dbType?: DBType) => Promise<void>;
-  ////////eric////////
-  closeTheDB: (db: string, dbType?: DBType) => Promise<void>;
-  ////////////////////
+  disconnectToDrop: (dbType: DBType) => Promise<void>;
   getLists: (dbName: string, dbType?: DBType) => Promise<DBList>;
   getTableInfo: (tableName: string, dbType: DBType) => Promise<ColumnObj[]>;
   getDBNames: (dbType: DBType) => Promise<dbDetails[]>;

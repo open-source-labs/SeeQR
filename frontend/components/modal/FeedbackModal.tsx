@@ -39,12 +39,14 @@ const FeedbackModal = () => {
       onClose={handleClose}
       autoHideDuration={readingTime(message)}
       anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-      // disable hiding on clickAway
+    // disable hiding on clickAway
       ClickAwayListenerProps={{ onClickAway: () => {} }}
     >
-      <Alert onClose={handleClose} severity={severity}>
-        {message}
-      </Alert>
+      <div>
+        <Alert onClose={handleClose} severity={severity}>
+          {message}
+        </Alert>
+      </div>
     </Snackbar>
   );
 };
