@@ -20,12 +20,9 @@ module.exports = {
       {
         test: /\.s?css$/,
         use: [
-          {
-            loader: 'style-loader', // inject CSS to page
-          },
-          {
-            loader: 'css-loader', // translates CSS into CommonJS modules
-          },
+          'style-loader', // inject CSS to page
+          'css-loader', // translates CSS into CommonJS modules
+          'sass-loader', // compiles Sass to CSS
           {
             loader: 'postcss-loader', // Run postcss actions
             options: {
@@ -35,9 +32,6 @@ module.exports = {
                 },
               },
             },
-          },
-          {
-            loader: 'sass-loader', // compiles Sass to CSS
           },
         ],
       },

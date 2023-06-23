@@ -1,7 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { BrowserWindow, Menu } from 'electron';
-
-const { app, session } = require('electron');
+import { BrowserWindow, Menu, app, session } from 'electron'; // added session here
 
 const dev: boolean = process.env.NODE_ENV === 'development';
 const os = require('os');
@@ -21,10 +19,12 @@ let mainWindow: BrowserWindow | null;
 // download react devtools and save them on desktop in folder named ReactDevTools
 // devtools: https://github.com/facebook/react/issues/25843
 // https://github.com/mondaychen/react/raw/017f120369d80a21c0e122106bd7ca1faa48b8ee/packages/react-devtools-extensions/ReactDevTools.zip 
-// const reactDevToolsPath = path.join(os.homedir(), '/Desktop/ReactDevTools');
-// app.whenReady().then(async () => {
-//   await session.defaultSession.loadExtension(reactDevToolsPath);
-// });
+// ******************** Comment out when done ******************** //
+const reactDevToolsPath = path.join(os.homedir(), '/Desktop/ReactDevTools');
+app.whenReady().then(async () => {
+  await session.defaultSession.loadExtension(reactDevToolsPath);
+});
+// ******************** Comment out when done ******************** //
 
 
 // Add an event listener for uncaught exceptions

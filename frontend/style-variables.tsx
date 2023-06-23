@@ -5,7 +5,7 @@
 
 import React from 'react';
 import {
-  ListItem,
+  ListItemButton,
   List,
   Paper,
   DialogTitle,
@@ -14,10 +14,11 @@ import {
   ListItemText,
   Select,
   NativeSelect,
-} from '@material-ui/core';
-import { createMuiTheme } from '@material-ui/core/styles';
+  InputLabel,
+  MenuItem,
+} from '@mui/material';
+import { createTheme } from '@mui/material/styles';
 import styled from 'styled-components';
-import { InputLabel, MenuItem } from '@mui/material';
 
 // previous
 export const bgColor = '#2b2d35';
@@ -75,7 +76,7 @@ export const planNodeWidth = '200px';
 export const planNodeHeight = '100px';
 
 // theme to override Mui defaults
-export const MuiTheme = createMuiTheme({
+export const MuiTheme = createTheme({
   typography: {
     fontSize: 16,
   },
@@ -94,24 +95,30 @@ export const MuiTheme = createMuiTheme({
       secondary: greyLight,
     },
   },
-  overrides: {
+  components: {
     MuiIconButton: {
-      root: {
-        color: textColor,
-        '&:hover': {
+      styleOverrides: {
+        root: {
+          color: textColor,
+          '&:hover': {
           color: hoverColor,
+          },
         },
       },
     },
     MuiTooltip: {
-      tooltip: {
-        fontSize: '1em',
+      styleOverrides: {
+        tooltip: {
+          fontSize: '1em',
+        },
       },
     },
     MuiTab: {
-      root: {
-        fontSize: 20,
-        textTransform: 'none',
+      styleOverrides: {
+        root: {
+          fontSize: '.875rem',
+          textTransform: 'none',
+        },
       },
     },
   },
@@ -130,7 +137,7 @@ interface SidebarListItemProps {
  * Sidebar List item. Designed for dark bg.
  * Takes boolean in $customSelected prop to style selected item
  */
-export const SidebarListItem = styled(ListItem)`
+export const SidebarListItem = styled(ListItemButton)`
   color: ${({ $customSelected }: SidebarListItemProps) =>
     $customSelected ? selectedColor : textColor};
   background: transparent;

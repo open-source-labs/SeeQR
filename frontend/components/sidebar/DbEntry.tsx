@@ -9,9 +9,9 @@ import {
   DialogContentText,
   DialogActions,
   Button,
-} from '@material-ui/core';
-import DeleteIcon from '@material-ui/icons/Delete';
-import FileCopyIcon from '@material-ui/icons/FileCopy';
+} from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import FileCopyIcon from '@mui/icons-material/FileCopy';
 
 import { SidebarListItem, StyledListItemText } from '../../style-variables';
 import { sendFeedback } from '../../lib/utils';
@@ -50,19 +50,18 @@ const DbEntry = ({
 
   return (
     <SidebarListItem
-      button
       $customSelected={isSelected}
       onClick={() => select(db, dbType)}
     >
       <StyledListItemText primary={`${db} [${dbType}]`} />
       <ListItemSecondaryAction>
         <Tooltip title="Copy Database">
-          <IconButton edge="end" onClick={duplicate}>
+          <IconButton edge="end" onClick={duplicate} size="large">
             <FileCopyIcon />
           </IconButton>
         </Tooltip>
         <Tooltip title="Drop Database">
-          <IconButton edge="end" onClick={() => setIsDeleteDialogOpen(true)}>
+          <IconButton edge="end" onClick={() => setIsDeleteDialogOpen(true)} size="large">
             <DeleteIcon />
           </IconButton>
         </Tooltip>

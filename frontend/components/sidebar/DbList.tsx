@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { ipcRenderer } from 'electron';
-import { IconButton, Tooltip } from '@material-ui/core';
-import AddIcon from '@material-ui/icons/Add';
+import { IconButton, Tooltip } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 import AddNewDbModal from '../modal/AddNewDbModalCorrect';
 import {
   AppState,
@@ -90,42 +90,40 @@ const DbList = ({
   };
 
   if (!show) return null;
-  return (
-    <>
-      <Tooltip title="Import Database">
-        <IconButton onClick={handleClickOpenAdd}>
-          <AddIcon fontSize="large" />
-        </IconButton>
-      </Tooltip>
-      <StyledSidebarList>
-        {DBInfo?.map((dbi) => (
-          <DbEntry
-            key={`dbList_${dbi.db_name}_${dbi.db_type}`}
-            db={dbi.db_name}
-            isSelected={selectedDb === dbi.db_name}
-            select={selectHandler}
-            duplicate={() => handleClickOpenDupe(dbi.db_name)}
-            dbType={dbi.db_type}
-          />
-        ))}
-        {openDupe ? (
-          <DuplicateDbModal
-            open={openDupe}
-            onClose={handleCloseDupe}
-            dbCopyName={dbToDupe}
-            dbNames={dbNames}
-            curDBType={curDBType}
-          />
-        ) : null}
-      </StyledSidebarList>
-      <AddNewDbModal
-        open={openAdd}
-        onClose={handleCloseAdd}
-        dbNames={dbNames}
-        curDBType={curDBType}
-      />
-    </>
-  );
+  return <>
+    <Tooltip title="Import Database">
+      <IconButton onClick={handleClickOpenAdd} size="large">
+        <AddIcon fontSize="large" />
+      </IconButton>
+    </Tooltip>
+    <StyledSidebarList>
+      {DBInfo?.map((dbi) => (
+        <DbEntry
+          key={`dbList_${dbi.db_name}_${dbi.db_type}`}
+          db={dbi.db_name}
+          isSelected={selectedDb === dbi.db_name}
+          select={selectHandler}
+          duplicate={() => handleClickOpenDupe(dbi.db_name)}
+          dbType={dbi.db_type}
+        />
+      ))}
+      {openDupe ? (
+        <DuplicateDbModal
+          open={openDupe}
+          onClose={handleCloseDupe}
+          dbCopyName={dbToDupe}
+          dbNames={dbNames}
+          curDBType={curDBType}
+        />
+      ) : null}
+    </StyledSidebarList>
+    <AddNewDbModal
+      open={openAdd}
+      onClose={handleCloseAdd}
+      dbNames={dbNames}
+      curDBType={curDBType}
+    />
+  </>;
 };
 
 export default DbList;

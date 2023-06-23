@@ -14,6 +14,7 @@ import {
 import './styles.css';
 import * as colors from '../../../style-variables';
 import { sendFeedback } from '../../../lib/utils';
+
 type TableHeaderProps = {
   data: TableHeaderDataObjectType;
 };
@@ -157,16 +158,16 @@ function TableHeader({ data }: TableHeaderProps) {
           label="Table Name"
           variant="outlined"
           defaultValue={data.table_name}
-          onKeyPress={handleChangeTableName}
+          onKeyDown={handleChangeTableName}
           onClick={warnUser}
           style={{ backgroundColor: 'white' }}
         />
       </Tooltip>
       <Tooltip title="Add Column">
-        <IconButton onClick={handleAddColumn}>Add Column</IconButton>
+        <IconButton onClick={handleAddColumn} size="large">Add Column</IconButton>
       </Tooltip>
       <Tooltip title="Delete Table">
-        <IconButton onClick={handleDeleteTable}>
+        <IconButton onClick={handleDeleteTable} size="large">
           <DeleteIcon />
         </IconButton>
       </Tooltip>

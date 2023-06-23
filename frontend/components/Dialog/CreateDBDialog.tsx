@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { DatabaseInfo } from '../../types';
-import { DBType } from '../../../backend/BE_types';
-import { ipcRenderer } from 'electron';
-import styled from 'styled-components';
 import {
   DialogTitle,
-} from '@material-ui/core/';
+} from '@mui/material/';
 import { Dialog, Tooltip } from '@mui/material';
+import { ipcRenderer } from 'electron';
+import styled from 'styled-components';
+import { DatabaseInfo } from '../../types';
+import { DBType } from '../../../backend/BE_types';
 import { sendFeedback } from '../../lib/utils';
 import {
   ButtonContainer,
@@ -82,7 +82,7 @@ const CreateDBDialog = function ({ show, DBInfo, onClose }) {
       .invoke(
         'initialize-db',
         {
-          newDbName: newDbName,
+          newDbName,
         },
         dbt
       )
@@ -152,12 +152,18 @@ const CreateDBDialog = function ({ show, DBInfo, onClose }) {
             <StyledNativeOption value={DBType.Postgres}>
               Postgres
             </StyledNativeOption>
-            <StyledNativeOption value={DBType.MySQL}>MySQL</StyledNativeOption>
+            <StyledNativeOption value={DBType.MySQL}>
+              MySQL
+            </StyledNativeOption>
             <StyledNativeOption value={DBType.RDSPostgres}>
               RDS Postgres
             </StyledNativeOption>
             <StyledNativeOption value={DBType.RDSMySQL}>
               RDS MySQL
+            </StyledNativeOption>
+            {/* Added this cloud db to create db dropdowns */}
+            <StyledNativeOption value={DBType.CloudDB}>
+              Cloud Database
             </StyledNativeOption>
           </StyledNativeDropdown>
         </DropdownContainer>

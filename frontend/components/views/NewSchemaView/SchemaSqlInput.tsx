@@ -1,6 +1,6 @@
 import React from 'react';
-import FormatPaintIcon from '@material-ui/icons/FormatPaint';
-import { ButtonGroup, Button, Tooltip } from '@material-ui/core';
+import FormatPaintIcon from '@mui/icons-material/FormatPaint';
+import { ButtonGroup, Button, Tooltip } from '@mui/material';
 import styled from 'styled-components';
 import { format } from 'sql-formatter';
 

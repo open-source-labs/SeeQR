@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+// import '../lib/style.css'
 import styled from 'styled-components';
-import { MuiThemeProvider } from '@material-ui/core/';
-import { StylesProvider } from '@material-ui/core/styles';
-import CssBaseline from '@material-ui/core/CssBaseline';
+import { ThemeProvider, Theme, StyledEngineProvider } from '@mui/material/';
+// import '@mui/material/styles/defaultTheme';
+import CssBaseline from '@mui/material/CssBaseline';
+import { IpcRendererEvent, ipcRenderer } from 'electron';
 import {
   MuiTheme,
   bgColor,
@@ -30,10 +32,17 @@ import QuickStartView from './views/QuickStartView';
 import NewSchemaView from './views/NewSchemaView/NewSchemaView';
 import FeedbackModal from './modal/FeedbackModal';
 import Spinner from './modal/Spinner';
-import { once } from './../lib/utils';
-import { IpcRendererEvent, ipcRenderer } from 'electron';
+import { once } from '../lib/utils';
 import CreateDBDialog from './Dialog/CreateDBDialog';
 import ConfigView from './Dialog/ConfigView';
+import NewChart from './views/NewChart';
+
+
+declare module '@mui/material/styles/' {
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  interface DefaultTheme extends Theme {}
+}
+
 
 ///////eric//////Increase the maximum number of listeners to 20///////////////
 const EventEmitter = require('events');
@@ -95,7 +104,7 @@ const App = () => {
         setPGStatus(dbLists.databaseConnected[0]);
         setMYSQLStatus(dbLists.databaseConnected[1]);
 
-        setSelectedTable(selectedTable ? selectedTable : dbTables[0]);
+        setSelectedTable(selectedTable || dbTables[0]);
       }
     };
     ipcRenderer.on('db-lists', dbListFromBackend); // dummy data error here?
@@ -146,6 +155,9 @@ const App = () => {
     case 'newSchemaView':
       shownView = 'newSchemaView';
       break;
+    case 'newChart':                // added for new chart
+      shownView = 'newChart';
+      break;
     case 'quickStartView':
     default:
       shownView = 'quickStartView';
@@ -153,8 +165,9 @@ const App = () => {
 
   return (
     // Styled Components must be injected last in order to override Material UI style: https://material-ui.com/guides/interoperability/#controlling-priority-3
-    <StylesProvider injectFirst>
-      <MuiThemeProvider theme={MuiTheme}>
+    // <StylesProvider injectFirst>
+    <StyledEngineProvider injectFirst>
+      <ThemeProvider theme={MuiTheme}>
         <Spinner />
         <AppContainer>
           <CssBaseline />
@@ -225,6 +238,8 @@ const App = () => {
             />
             <QuickStartView show={shownView === 'quickStartView'} />
 
+            <NewChart show={shownView === 'newChart'} />
+
             <NewSchemaView
               query={workingQuery}
               setQuery={setWorkingQuery}
@@ -254,8 +269,9 @@ const App = () => {
           </Main>
           <FeedbackModal />
         </AppContainer>
-      </MuiThemeProvider>
-    </StylesProvider>
+      </ThemeProvider>
+    </StyledEngineProvider>
+    // </StylesProvider>
   );
 };
 

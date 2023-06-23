@@ -3,7 +3,7 @@ import { Handle, Position } from 'react-flow-renderer';
 import { AccordionSummary, AccordionDetails } from '@mui/material';
 import MuiAccordion, { AccordionProps } from '@mui/material/Accordion';
 import styled from 'styled-components';
-import { Button } from '@material-ui/core';
+import { Button } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
   ERTableColumnData,

@@ -6,15 +6,15 @@ import {
   ListItemSecondaryAction,
   Checkbox,
   Tooltip,
-} from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close';
+} from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import SaveIcon from '@mui/icons-material/Save';
 import {
   SidebarListItem,
   StyledListItemText,
   textColor,
 } from '../../style-variables';
 import { QueryData } from '../../types';
-import SaveIcon from '@material-ui/icons/Save';
 
 const QueryText = styled(StyledListItemText)`
   & .MuiListItemText-secondary {
@@ -44,19 +44,19 @@ const QueryEntry = ({
   deleteThisQuery,
   saveThisQuery,
 }: QueryEntryProps) => (
-  <SidebarListItem button $customSelected={isSelected} onClick={select}>
+  <SidebarListItem $customSelected={isSelected} onClick={select}>
     <QueryText primary={`${query.label} - ${query.db}`} />
     <ListItemSecondaryAction>
       <Tooltip title="View in Comparison">
         <CompareCheck onChange={setComparison} checked={isCompared} />
       </Tooltip>
       <Tooltip title="Save Query">
-        <IconButton onClick={saveThisQuery}>
-          <SaveIcon fontSize='default' />
+        <IconButton onClick={saveThisQuery} size="large">
+          <SaveIcon fontSize='inherit' />
         </IconButton>
       </Tooltip>
       <Tooltip title="Forget Query">
-        <IconButton edge="end" onClick={deleteThisQuery}>
+        <IconButton edge="end" onClick={deleteThisQuery} size="large">
           <CloseIcon />
         </IconButton>
       </Tooltip>

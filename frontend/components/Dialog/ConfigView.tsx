@@ -15,7 +15,7 @@ import {
   StyledButton,
   StyledTextField,
 } from '../../style-variables';
-import '../../lib/style.scss';
+import '../../lib/style.css';
 
 /*
 junaid
@@ -46,6 +46,7 @@ function TabPanel(props: TabPanelProps) {
       <Box sx={{
         display:'flex',
         flexDirection: 'column',
+        gap: '.25rem',
         alignItems: 'center',
         pt: 2
       }}
@@ -70,6 +71,7 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
   const [pg, setpg] = useState({});
   const [rds_mysql, setrds_mysql] = useState({});
   const [rds_pg, setrds_pg] = useState({});
+  const [sqlite, setSqlite] = useState({}); // added sqlite
   // Toggle TabPanel display
   const [value, setValue] = useState(0);
   // Toggle show password in input fields
@@ -78,6 +80,7 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
     mysql: false,
     rds_mysql: false,
     rds_pg: false,
+    sqlite: false,
   });
   // Storing input StyledTextFields to render in state
   const [inputFieldsToRender, setInputFieldsToRender] = useState({
@@ -85,6 +88,7 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
     mysql: [],
     rds_mysql: [],
     rds_pg: [],
+    sqlite: [], // added sqlite
   });
   // Function to make StyledTextFields and store them in inputFieldsToRender state
   function inputFieldMaker(dbTypeFromState, setDbTypeFromState, dbString) {
@@ -110,6 +114,7 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
                       [dbString]: !showpass[dbString],
                     })
                   }
+                  size="large"
                 >
                   {showpass[dbString] ? <Visibility /> : <VisibilityOff />}
                 </IconButton>
@@ -157,6 +162,7 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
       setpg({ ...config.pg });
       setrds_mysql({ ...config.rds_mysql });
       setrds_pg({ ...config.rds_pg });
+      setSqlite({ ...config.sqlite }); // added sqlite
     };
     ipcRenderer.on('get-config', configFromBackend);
     ipcRenderer.invoke('get-config');
@@ -180,6 +186,9 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
   useEffect(() => {
     inputFieldMaker(rds_mysql, setrds_mysql, 'rds_mysql');
   }, [rds_mysql, showpass.rds_mysql]);
+  useEffect(() => {
+    inputFieldMaker(sqlite, setSqlite, 'sqlite'); // added sqlite
+  }, [sqlite]);
 
   const handleClose = () => {
     onClose();
@@ -193,6 +202,7 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
         pg: { ...pg },
         rds_mysql: { ...rds_mysql },
         rds_pg: { ...rds_pg },
+        sqlite: { ...sqlite }, // added sqlite
       })
       .then(() => {
         handleClose();
@@ -207,7 +217,7 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
   // Function to handle onChange -- when tab panels change
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     // On panel change reset all passwords to hidden
-    setShowpass({ mysql: false, pg: false, rds_mysql: false, rds_pg: false });
+    setShowpass({ mysql: false, pg: false, rds_mysql: false, rds_pg: false, sqlite: false });
     // Change which tab panel is hidden/shown
     setValue(newValue);
   };
@@ -225,6 +235,8 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
           <Tab label="Postgres" {...a11yProps(1)} />
           <Tab label="RDS MySql" wrapped {...a11yProps(2)} />
           <Tab label="RDS Postgres" wrapped {...a11yProps(3)} />
+          {/* added sqlite */}
+          <Tab label="Sqlite" wrapped {...a11yProps(4)} />
         </Tabs>
       </Box>
       <TabPanel value={value} index={0}>
@@ -238,6 +250,10 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
       </TabPanel>
       <TabPanel value={value} index={3}>
         {inputFieldsToRender.rds_pg}
+      </TabPanel>
+      {/* added sqlite */}
+      <TabPanel value={value} index={4}>
+        {inputFieldsToRender.sqlite}
       </TabPanel>
 
       <ButtonContainer>

@@ -9,7 +9,7 @@ import generateDummyData from './DummyD/dummyDataMain';
 import { ColumnObj, DBList, DummyRecords, DBType, LogType } from './BE_types';
 import backendObjToQuery from './ertable-functions';
 import logger from './Logging/masterlog';
-import { Integer } from 'type-fest';
+// import { Integer } from 'type-fest';
 
 const db = require('./models');
 const docConfig = require('./_documentsConfig');

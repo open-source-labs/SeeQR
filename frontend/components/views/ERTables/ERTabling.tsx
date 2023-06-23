@@ -10,7 +10,7 @@ import ReactFlow, {
   Edge,
   MiniMap,
 } from 'react-flow-renderer';
-import { Button } from '@material-ui/core';
+import { Button } from '@mui/material';
 import styled from 'styled-components';
 import stateToReactFlow from '../../../lib/convertStateToReactFlow';
 import nodeTypes from './NodeTypes';
@@ -149,7 +149,6 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
     const headerNodes = nodes.filter(
       (node) => node.type === 'tableHeader'
     ) as TableHeaderNodeType[];
-
     // create object for the current database
     type TablePosObjType = {
       table_name: string;
@@ -266,11 +265,13 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
         onClick={handleAddTable}
       >
         {' '}
-        Add New Table{' '}
+        Add New Table
+        {' '}
       </StyledViewButton>
       <StyledViewButton variant="contained" id="save" onClick={handleClickSave}>
         {' '}
-        Save{' '}
+        Save
+        {' '}
       </StyledViewButton>
       <ReactFlow
         nodes={nodes}
@@ -279,7 +280,7 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
         nodesConnectable={false}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
-        panOnScroll
+        zoomOnScroll // think this fixes scrolling issue on erDiagram
         minZoom={0.1}
         maxZoom={10}
         defaultPosition={[0, 0]}

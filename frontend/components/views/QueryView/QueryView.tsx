@@ -1,6 +1,7 @@
 import { ipcRenderer } from 'electron';
 import React, { useState } from 'react';
-import { Button, Box } from '@material-ui/core/';
+import { Button } from '@mui/material/';
+import Box from '@mui/material/Box';
 import styled from 'styled-components';
 import {
   QueryData,

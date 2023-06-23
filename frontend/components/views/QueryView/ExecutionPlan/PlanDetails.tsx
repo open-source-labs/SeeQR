@@ -8,7 +8,7 @@ import {
   TableCell,
   TableContainer,
   TableRow,
-} from '@material-ui/core';
+} from '@mui/material';
 import styled from 'styled-components';
 import {
   DarkPaperFull,

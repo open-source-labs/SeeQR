@@ -1,6 +1,6 @@
 import React from 'react';
-import { IconButton, Tooltip } from '@material-ui/core';
-import AddIcon from '@material-ui/icons/Add';
+import { IconButton, Tooltip } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import FileCopyIcon from '@mui/icons-material/FileCopy';
 import fs from 'fs';
@@ -194,55 +194,53 @@ const QueryList = ({
       });
   }
 
-  return (
-    <>
-      <span>
-        <Tooltip title="New Query">
-          <IconButton onClick={createQuery}>
-            <AddIcon fontSize="large" />
-          </IconButton>
+  return <>
+    <span>
+      <Tooltip title="New Query">
+        <IconButton onClick={createQuery} size="large">
+          <AddIcon fontSize="large" />
+        </IconButton>
+      </Tooltip>
+
+      <Tooltip title="Import Query">
+        <IconButton onClick={loadQueryHandler} size="large">
+          <UploadFileIcon fontSize="large" />
+        </IconButton>
+      </Tooltip>
+
+      <Tooltip title="Designate Save Location">
+        <IconButton onClick={designateFile} size="large"> 
+          <FileCopyIcon fontSize='large' />
+        </IconButton>
+      </Tooltip>
+    </span>
+
+
+
+    <StyledSidebarList>
+      {Object.values(accordians).map((arrGroup: any) => (
+        <Tooltip title="drop down">
+          <Accordion>
+            <AccordionSummary 
+              sx={{
+              backgroundColor: `${greenPrimary}`, color: "black"
+            }} 
+              expandIcon={<ExpandMoreIcon />} 
+              aria-controls="panel1a-content" 
+              id="panel1a-header"
+            >
+              <Typography sx={{ color: 'black' }}>
+                <QueryText primary={arrGroup[0].key.slice(arrGroup[0].key.indexOf('group:::') + 8)} />
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails sx={{ backgroundColor: `${greyDark}`, color: `${textColor}` }}>
+              {arrGroup}
+            </AccordionDetails>
+          </Accordion>
         </Tooltip>
-
-        <Tooltip title="Import Query">
-          <IconButton onClick={loadQueryHandler}>
-            <UploadFileIcon fontSize="large" />
-          </IconButton>
-        </Tooltip>
-
-        <Tooltip title="Designate Save Location">
-          <IconButton onClick={designateFile}> 
-            <FileCopyIcon fontSize='large' />
-          </IconButton>
-        </Tooltip>
-      </span>
-
-
-
-      <StyledSidebarList>
-        {Object.values(accordians).map((arrGroup: any) => (
-          <Tooltip title="drop down">
-            <Accordion>
-              <AccordionSummary 
-                sx={{
-                backgroundColor: `${greenPrimary}`, color: "black"
-              }} 
-                expandIcon={<ExpandMoreIcon />} 
-                aria-controls="panel1a-content" 
-                id="panel1a-header"
-              >
-                <Typography sx={{ color: 'black' }}>
-                  <QueryText primary={arrGroup[0].key.slice(arrGroup[0].key.indexOf('group:::') + 8)} />
-                </Typography>
-              </AccordionSummary>
-              <AccordionDetails sx={{ backgroundColor: `${greyDark}`, color: `${textColor}` }}>
-                {arrGroup}
-              </AccordionDetails>
-            </Accordion>
-          </Tooltip>
-        ))}
-      </StyledSidebarList>
-    </>
-  );
+      ))}
+    </StyledSidebarList>
+  </>;
 };
 
 export default QueryList;
