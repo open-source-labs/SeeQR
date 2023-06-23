@@ -1,11 +1,10 @@
 import React from 'react';
 import { IconButton, Tooltip } from '@mui/material';
 import styled from 'styled-components';
-import { HelpOutline, ArrowBackIos, Equalizer } from '@mui/icons-material';
+import { HelpOutline, ArrowBackIos, Equalizer, Settings, Coronavirus } from '@mui/icons-material';
 import { AppState } from '../../types';
 
 import { textColor, hoverColor, selectedColor } from '../../style-variables';
-import { Settings } from '@mui/icons-material';
 
 const Container = styled.div`
   display: flex;
@@ -64,6 +63,12 @@ const TopButtons = ({
             fontSize="large"
             $isSelected={selectedView === 'compareView'}
           />
+        </StyledIconButton>
+      </Tooltip>
+
+      <Tooltip title="New Page">
+        <StyledIconButton onClick={() => setSelectedView('newChart')}>
+          <Coronavirus fontSize="large" />
         </StyledIconButton>
       </Tooltip>
 

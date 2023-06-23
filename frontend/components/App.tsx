@@ -35,6 +35,7 @@ import Spinner from './modal/Spinner';
 import { once } from '../lib/utils';
 import CreateDBDialog from './Dialog/CreateDBDialog';
 import ConfigView from './Dialog/ConfigView';
+import NewChart from './views/NewChart';
 
 
 declare module '@mui/material/styles/' {
@@ -154,6 +155,9 @@ const App = () => {
     case 'newSchemaView':
       shownView = 'newSchemaView';
       break;
+    case 'newChart':                // added for new chart
+      shownView = 'newChart';
+      break;
     case 'quickStartView':
     default:
       shownView = 'quickStartView';
@@ -233,6 +237,8 @@ const App = () => {
               setDBInfo={setDBInfo}
             />
             <QuickStartView show={shownView === 'quickStartView'} />
+
+            <NewChart show={shownView === 'newChart'} />
 
             <NewSchemaView
               query={workingQuery}

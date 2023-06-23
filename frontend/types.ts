@@ -9,7 +9,8 @@ type ViewName =
   | 'dbView'
   | 'queryView'
   | 'quickStartView'
-  | 'newSchemaView';
+  | 'newSchemaView'
+  | 'newChart'; // added for new chart
 
 export interface AppState {
   selectedView: ViewName;

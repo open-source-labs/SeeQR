@@ -1,6 +1,7 @@
 import React from 'react';
-import { Drawer, IconButton, Tooltip } from '@mui/material/';
+import { Drawer, IconButton, Tooltip, Box } from '@mui/material/';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import ArrowBackIos from '@mui/icons-material';
 import styled from 'styled-components';
 import { AppState } from '../../types';
 import TopButtons from './TopButtons';
@@ -137,6 +138,11 @@ const Sidebar = ({
           setCreateDialog={setCreateDialog}
         />
         <Logo src={logo} alt="Logo" />
+        <Box sx={{ borderColor: 'divider' }}>
+          <ShowSidebarBtn onClick={toggleOpen} size="large">
+            {/* <ArrowBackIos /> */}
+          </ShowSidebarBtn>
+        </Box>
       </StyledDrawer>
     </>
   );
