@@ -87,11 +87,10 @@ function readConfigFile(): DocConfigFile {
 interface DocConfig {
   getConfigFolder: () => string;
   getCredentials: (dbType: DBType) => {
-    URI?: string //added uri and ? to each key
     user?: string;
     password?: string;
     host?: string;
-    port: number | string;
+    port?: number | string;
     uri?: string;
     path?: string;
   };
@@ -144,10 +143,10 @@ const docConfig: DocConfig = {
     if (dbType === DBType.RDSPostgres) {
       return { ...configFile.rds_pg };
     }
-    // // asdf check sqlite and directpguri and format for return in case of error
-    // if (dbType === DBType.SQLite) {
-    //   return { ...configFile.sqlite };
-    // }
+    // asdf check sqlite and directpguri and format for return in case of error
+    if (dbType === DBType.SQLite) {
+      return { ...configFile.sqlite };
+    }
     // if (dbType === DBType.directPGURI) {
     //   return { ...configFile.directPGURI };
     // }
@@ -157,7 +156,7 @@ const docConfig: DocConfig = {
   },
 
   /**
-   * 
+   * Reads config file contents and returns it all.
    * @returns all login info from config file
    */
   getFullConfig: function getFullConfig() {

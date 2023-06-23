@@ -81,6 +81,20 @@ type dbsInputted = {
   directPGURI: boolean;
 };
 
+type configExists = {
+  pg: boolean;
+  msql: boolean;
+  rds_pg: boolean;
+  rds_msql: boolean;
+  sqlite: boolean;
+  directPGURI: boolean;
+};
+
+type combined = {
+  dbsInputted: dbsInputted;
+  configExists: configExists;
+}
+
 export interface DBFunctions {
   pg_uri: string;
   curPG_DB: string;
@@ -91,11 +105,11 @@ export interface DBFunctions {
     password: string;
     host: string;
   };
-  curSQLite_DB: string;
+  curSQLite_DB: { path: string };
   curdirectPGURI_DB: string;
   dbsInputted: dbsInputted;
 
-  setBaseConnections: () => Promise<dbsInputted>;
+  setBaseConnections: () => Promise<combined>;
   query: (text: string, params: (string | number)[], dbType: DBType) => void;
   connectToDB: (db: string, dbType?: DBType) => Promise<void>;
   disconnectToDrop: (dbType: DBType) => Promise<void>;
