@@ -54,14 +54,26 @@ const ShowSidebarBtn = styled(IconButton)`
   z-index: 200;
   background: #57a777;
   border-radius: 0 15px 15px 0;
-`;
-
-const HideSidebarBtn = styled(IconButton)`
+  transition: all .3s ease;
+  &:hover {
+    background: #57a777;
+    opacity: .6;
+    color: white;
+  }
+  `;
+  
+  const HideSidebarBtn = styled(IconButton)`
   width: 40px;
   height: ${sidebarShowButtonSize};
   z-index: 200;
   background: #57a777;
   border-radius: 15px 0 0 15px;
+  transition: all .3s ease;
+  &:hover {
+    background: #57a777;
+    opacity: .6;
+    color: white;
+  }
 `;
 
 const HideSidebarBtnContainer = styled.div`
