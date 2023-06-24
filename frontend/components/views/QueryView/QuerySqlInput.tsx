@@ -1,13 +1,16 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import React from 'react';
 import FormatPaintIcon from '@mui/icons-material/FormatPaint';
 import { ButtonGroup, Button, Tooltip } from '@mui/material';
 import styled from 'styled-components';
 import { format } from 'sql-formatter';
 
-import 'codemirror/lib/codemirror.css'; // Styline
-import 'codemirror/mode/sql/sql'; // Language (Syntax Highlighting)
-import 'codemirror/theme/lesser-dark.css'; // Theme
-import CodeMirror from '@skidding/react-codemirror';
+// import 'codemirror/lib/codemirror.css'; // Styline
+// import 'codemirror/mode/sql/sql'; // Language (Syntax Highlighting)
+// import 'codemirror/theme/lesser-dark.css'; // Theme
+import CodeMirror from '@uiw/react-codemirror';
+import { dracula } from '@uiw/codemirror-theme-dracula';
+// import { sql } from '@codemirror/lang-sql'
 
 const Container = styled.div`
   position: relative;
@@ -63,7 +66,7 @@ const QuerySqlInput = ({ sql, onChange, runQuery }: QuerySqlInputProps) => {
           </Tooltip>
         </ButtonGroup>
       </Toolbar>
-      <CodeMirror onChange={onChange} options={options} value={sql}/>
+      <CodeMirror onChange={onChange} theme={dracula} height='300px' value={sql} />
     </Container>
   );
 };
