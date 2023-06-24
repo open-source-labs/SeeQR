@@ -17,7 +17,7 @@ import { SidebarList, greyDarkest } from '../../style-variables';
 
 const StyledSidebarList = styled(SidebarList)`
   background-color: ${greyDarkest};
-  width: 92%;
+  width: 90%;
   align-self: flex-start;
   overflow: auto;
   max-height: calc(100vh - 300px);

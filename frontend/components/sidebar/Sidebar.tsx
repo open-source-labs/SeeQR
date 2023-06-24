@@ -47,17 +47,21 @@ const Logo = styled.img`
 `;
 
 const ShowSidebarBtn = styled(IconButton)`
-  width: ${sidebarShowButtonSize};
+  width: 40px;
   height: ${sidebarShowButtonSize};
   position: fixed;
   top: 50%;
   z-index: 200;
+  background: #57a777;
+  border-radius: 0 15px 15px 0;
 `;
 
 const HideSidebarBtn = styled(IconButton)`
-  width: ${sidebarShowButtonSize};
+  width: 40px;
   height: ${sidebarShowButtonSize};
   z-index: 200;
+  background: #57a777;
+  border-radius: 15px 0 0 15px;
 `;
 
 const HideSidebarBtnContainer = styled.div`
