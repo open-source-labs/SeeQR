@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { IpcRendererEvent, ipcRenderer } from 'electron';
+import { IpcRendererEvent, ipcRenderer, remote } from 'electron';
 import {
   Box,
   Tab,
@@ -16,6 +16,7 @@ import {
   StyledTextField,
 } from '../../style-variables';
 import '../../lib/style.css';
+
 
 /*
 junaid
@@ -43,17 +44,17 @@ function TabPanel(props: TabPanelProps) {
       {...other}
     >
       {value === index && (
-      <Box sx={{
-        display:'flex',
-        flexDirection: 'column',
-        gap: '.25rem',
-        alignItems: 'center',
-        pt: 2
-      }}
-      >
-        {children}
-      </Box>
-)}
+        <Box sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '.25rem',
+          alignItems: 'center',
+          pt: 2
+        }}
+        >
+          {children}
+        </Box>
+      )}
     </div>
   );
 }
@@ -90,63 +91,94 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
     rds_pg: [],
     sqlite: [], // added sqlite
   });
+
+  // function to store user-selected file path in state
+  const designateFile = function (path, setPath) {
+    const { dialog } = remote;
+    const WIN = remote.getCurrentWindow();
+
+    const options = {
+      title: "Select SQLite File",
+      defaultPath: '',
+      buttonLabel: "Select File", filters: [
+        { name: 'db', extensions: ['db'] }
+      ]
+    }
+
+    dialog.showOpenDialog(WIN, options)
+      .then((res: any) => {
+        setPath({ path: res.filePaths[0] })
+      });
+  }
+
   // Function to make StyledTextFields and store them in inputFieldsToRender state
   function inputFieldMaker(dbTypeFromState, setDbTypeFromState, dbString) {
     // Push all StyledTextFields into this temporary array
     const arrayToRender: JSX.Element[] = [];
-    // Get key value pairs from passed in database connection info from state
-    Object.entries(dbTypeFromState).forEach((entry) => {
-      // entry looks like [user: 'username'] or [password: 'password]
-      const [dbEntryKey, dbEntryValue] = entry;
-      // If we are rendering a password StyledTextField, then add special props
-      let styledTextFieldProps;
-      if (dbEntryKey === 'password') {
-        styledTextFieldProps = {
-          type: showpass[dbString] ? 'text' : 'password',
-          InputProps: {
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton
-                  aria-label="toggle password visibility"
-                  onClick={() =>
-                    setShowpass({
-                      ...showpass,
-                      [dbString]: !showpass[dbString],
-                    })
-                  }
-                  size="large"
-                >
-                  {showpass[dbString] ? <Visibility /> : <VisibilityOff />}
-                </IconButton>
-              </InputAdornment>
-            ),
-          },
-        };
-      }
-      // Push StyledTextField to temporary render array for current key in database connection object from state
+    if (dbString === 'sqlite') {
       arrayToRender.push(
-        <StyledTextField
-          required
-          id="filled-basic"
-          label={`${dbString.toUpperCase()} ${dbEntryKey.toUpperCase()}`}
-          size="small"
-          variant="outlined"
-          key={`${dbString} ${dbEntryKey}`}
-          onChange={(event) => {
-            setDbTypeFromState({
-              ...dbTypeFromState,
-              [dbEntryKey]: event.target.value,
-            });
-          }}
-          defaultValue={dbEntryValue}
-          InputProps={{
-            style: { color: '#575151' },
-          }}
-          // Spread special password props if they exist
-          {...styledTextFieldProps}
-        />
-      );
-    });
+        <StyledButton variant="contained" color="primary" onClick={() => designateFile(dbTypeFromState, setDbTypeFromState)}>
+          Set db file location
+        </StyledButton>
+      )
+    } else {
+      // Get key value pairs from passed in database connection info from state
+      Object.entries(dbTypeFromState).forEach((entry) => {
+        // entry looks like [user: 'username'] or [password: 'password]
+        const [dbEntryKey, dbEntryValue] = entry;
+        // If we are rendering a password StyledTextField, then add special props
+        let styledTextFieldProps;
+        if (dbEntryKey === 'password') {
+          styledTextFieldProps = {
+            type: showpass[dbString] ? 'text' : 'password',
+            InputProps: {
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={() =>
+                      setShowpass({
+                        ...showpass,
+                        [dbString]: !showpass[dbString],
+                      })
+                    }
+                    size="large"
+                  >
+                    {showpass[dbString] ? <Visibility /> : <VisibilityOff />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            },
+          };
+        }
+        // Push StyledTextField to temporary render array for current key in database connection object from state
+
+
+        arrayToRender.push(
+          <StyledTextField
+            required
+            id="filled-basic"
+            label={`${dbString.toUpperCase()} ${dbEntryKey.toUpperCase()}`}
+            size="small"
+            variant="outlined"
+            key={`${dbString} ${dbEntryKey}`}
+            onChange={(event) => {
+              setDbTypeFromState({
+                ...dbTypeFromState,
+                [dbEntryKey]: event.target.value,
+              });
+            }}
+            defaultValue={dbEntryValue}
+            InputProps={{
+              style: { color: '#575151' },
+            }}
+            // Spread special password props if they exist
+            {...styledTextFieldProps}
+          />
+        );
+
+      });
+    }
     // Update state for our current database type passing in our temporary array of StyledTextField components
     setInputFieldsToRender({
       ...inputFieldsToRender,
