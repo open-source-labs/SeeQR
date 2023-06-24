@@ -1,7 +1,7 @@
 import React from 'react';
-import { Drawer, IconButton, Tooltip, Box } from '@mui/material/';
+import { Drawer, IconButton, Tooltip } from '@mui/material/';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import ArrowBackIos from '@mui/icons-material';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import styled from 'styled-components';
 import { AppState } from '../../types';
 import TopButtons from './TopButtons';
@@ -25,7 +25,13 @@ const StyledDrawer = styled(Drawer)`
     display: flex;
     flex-direction: column;
     align-items: center;
+    overflow: hidden;
   }
+`;
+
+const SideBarTopContainer = styled.div`
+  position: fixed;
+  top: 0;
 `;
 
 const Logo = styled.img`
@@ -46,6 +52,25 @@ const ShowSidebarBtn = styled(IconButton)`
   position: fixed;
   top: 50%;
   z-index: 200;
+`;
+
+const HideSidebarBtn = styled(IconButton)`
+  width: ${sidebarShowButtonSize};
+  height: ${sidebarShowButtonSize};
+  z-index: 200;
+`;
+
+const HideSidebarBtnContainer = styled.div`
+  position: absolute;
+  display: flex;
+  width: 25px;
+  height: 100vh;
+  background: transparent;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  align-self: flex-end;
+  // border-left: 1px solid #525252;
 `;
 
 const Sidebar = ({
@@ -96,13 +121,15 @@ const Sidebar = ({
         </ShowSidebarBtn>
       </Tooltip>
       <StyledDrawer variant="persistent" anchor="left" open={!sidebarIsHidden}>
-        <TopButtons
-          selectedView={selectedView}
-          setSelectedView={setSelectedView}
-          toggleOpen={toggleOpen}
-          setConfigDialog={setConfigDialog}
-        />
-        <ViewSelector {...{ selectedView, setSelectedView, setERView }} />
+        <div>
+          <TopButtons
+            selectedView={selectedView}
+            setSelectedView={setSelectedView}
+            toggleOpen={toggleOpen}
+            setConfigDialog={setConfigDialog}
+          />
+          <ViewSelector {...{ selectedView, setSelectedView, setERView }} />
+        </div>
         <DbList
           selectedDb={selectedDb}
           setSelectedDb={setSelectedDb}
@@ -138,11 +165,13 @@ const Sidebar = ({
           setCreateDialog={setCreateDialog}
         />
         <Logo src={logo} alt="Logo" />
-        <Box sx={{ borderColor: 'divider' }}>
-          <ShowSidebarBtn onClick={toggleOpen} size="large">
-            {/* <ArrowBackIos /> */}
-          </ShowSidebarBtn>
-        </Box>
+        <HideSidebarBtnContainer>
+          <Tooltip title="Hide sidebar">
+            <HideSidebarBtn onClick={toggleOpen} size="large">
+              <ArrowBackIosIcon />
+            </HideSidebarBtn>
+          </Tooltip>
+        </HideSidebarBtnContainer>
       </StyledDrawer>
     </>
   );

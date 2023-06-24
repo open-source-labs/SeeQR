@@ -17,6 +17,8 @@ import { SidebarList, greyDarkest } from '../../style-variables';
 
 const StyledSidebarList = styled(SidebarList)`
   background-color: ${greyDarkest};
+  width: 95%;
+  align-self: flex-start;
 `;
 
 type DbListProps = Pick<
@@ -90,40 +92,42 @@ const DbList = ({
   };
 
   if (!show) return null;
-  return <>
-    <Tooltip title="Import Database">
-      <IconButton onClick={handleClickOpenAdd} size="large">
-        <AddIcon fontSize="large" />
-      </IconButton>
-    </Tooltip>
-    <StyledSidebarList>
-      {DBInfo?.map((dbi) => (
-        <DbEntry
-          key={`dbList_${dbi.db_name}_${dbi.db_type}`}
-          db={dbi.db_name}
-          isSelected={selectedDb === dbi.db_name}
-          select={selectHandler}
-          duplicate={() => handleClickOpenDupe(dbi.db_name)}
-          dbType={dbi.db_type}
-        />
+  return (
+    <>
+      <Tooltip title="Import Database">
+        <IconButton onClick={handleClickOpenAdd} size="large">
+          <AddIcon fontSize="large" />
+        </IconButton>
+      </Tooltip>
+      <StyledSidebarList>
+        {DBInfo?.map((dbi) => (
+          <DbEntry
+            key={`dbList_${dbi.db_name}_${dbi.db_type}`}
+            db={dbi.db_name}
+            isSelected={selectedDb === dbi.db_name}
+            select={selectHandler}
+            duplicate={() => handleClickOpenDupe(dbi.db_name)}
+            dbType={dbi.db_type}
+          />
       ))}
-      {openDupe ? (
-        <DuplicateDbModal
-          open={openDupe}
-          onClose={handleCloseDupe}
-          dbCopyName={dbToDupe}
-          dbNames={dbNames}
-          curDBType={curDBType}
-        />
+        {openDupe ? (
+          <DuplicateDbModal
+            open={openDupe}
+            onClose={handleCloseDupe}
+            dbCopyName={dbToDupe}
+            dbNames={dbNames}
+            curDBType={curDBType}
+          />
       ) : null}
-    </StyledSidebarList>
-    <AddNewDbModal
-      open={openAdd}
-      onClose={handleCloseAdd}
-      dbNames={dbNames}
-      curDBType={curDBType}
-    />
-  </>;
+      </StyledSidebarList>
+      <AddNewDbModal
+        open={openAdd}
+        onClose={handleCloseAdd}
+        dbNames={dbNames}
+        curDBType={curDBType}
+      />
+    </>
+);
 };
 
 export default DbList;

@@ -72,11 +72,11 @@ const TopButtons = ({
         </StyledIconButton>
       </Tooltip>
 
-      <Tooltip title="Hide Sidebar">
+      {/* <Tooltip title="Hide Sidebar">
         <StyledIconButton onClick={toggleOpen}>
           <ArrowBackIos fontSize="large" />
         </StyledIconButton>
-      </Tooltip>
+      </Tooltip> */}
     </Container>
   );
 };
