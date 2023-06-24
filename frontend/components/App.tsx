@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-// import '../lib/style.css'
+import '../lib/style.css'
 import styled from 'styled-components';
 import { ThemeProvider, Theme, StyledEngineProvider } from '@mui/material/';
 // import '@mui/material/styles/defaultTheme';
