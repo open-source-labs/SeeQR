@@ -17,8 +17,21 @@ import { SidebarList, greyDarkest } from '../../style-variables';
 
 const StyledSidebarList = styled(SidebarList)`
   background-color: ${greyDarkest};
-  width: 95%;
+  width: 92%;
   align-self: flex-start;
+  overflow: auto;
+  max-height: calc(100vh - 300px);
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+  ::-webkit-scrollbar-track {
+    border-radius: 5px;
+    background: rgba(255, 255, 255, .1);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: white;
+    border-radius: 5px;
+  }
 `;
 
 type DbListProps = Pick<
