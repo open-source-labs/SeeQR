@@ -474,7 +474,7 @@ const DBFunctions: DBFunctions = {
       } else if (dbType === DBType.SQLite) {
         const dbList: dbDetails[] = [];
         const { path } = this.curSQLite_DB;
-        const filename = path.slice(path.lastIndexOf('/') + 1);
+        const filename = path.slice(path.lastIndexOf('\\') + 1);
         const data = { db_name: filename, db_size: 'unknown', db_type: DBType.SQLite }
         dbList.push(data);
         resolve(dbList);
