@@ -579,6 +579,50 @@ const DBFunctions: DBFunctions = {
           });
       });
     }
+
+    if (dbType === DBType.SQLite) {
+      const sqliteDB = pools.sqlite_db;
+
+      queryString = `SELECT
+      m.name AS table_name, 
+      p.name AS column_name, 
+      p.type AS data_type, 
+      p.[notnull] AS not_null, 
+      p.pk AS pk,
+      fkl.[table] AS foreign_table, 
+      fkl.[to] AS foreign_column
+      FROM sqlite_master m
+      LEFT JOIN pragma_table_info(m.name) p
+      LEFT JOIN pragma_foreign_key_list(m.name) fkl
+      ON p.name = fkl.[from]
+      WHERE m.type = 'table' AND p.type != '' AND m.name = ?`;
+
+      return new Promise((resolve, reject) => {
+        sqliteDB
+          .query(queryString, value)
+          .then((result) => {
+            const columnInfoArray: ColumnObj[] = [];
+            for (let i = 0; i < result.rows.length; i++) {
+              const { column_name, data_type, not_null, pk, foreign_table, foreign_column } = result.rows[i];
+              const newColumnObj: ColumnObj = {
+                column_name,
+                data_type,
+                character_maximum_length: data_type.includes(`(`) ? parseInt(data_type.slice(1 + data_type.indexOf(`(`), data_type.indexOf(`)`)), 10) : null,
+                is_nullable: not_null === 1 ? 'NO' : 'YES',
+                constraint_type: pk === 1 ? 'PRIMARY KEY' : foreign_table ? 'FOREIGN KEY' : '',
+                foreign_table,
+                foreign_column,
+              }
+              columnInfoArray.push(newColumnObj);
+            }
+            resolve(columnInfoArray);
+          })
+          .catch((err) => {
+            reject(err);
+          });
+      })
+    }
+
     logger('Trying to use unknown DB Type: ', LogType.ERROR, dbType);
     // eslint-disable-next-line no-throw-literal
     throw 'Unknown db type';
