@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useReactFlow } from 'react-flow-renderer';
+import { useReactFlow } from 'reactflow';
 import { ButtonGroup, Button, Tooltip } from '@mui/material';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';

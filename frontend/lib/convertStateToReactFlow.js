@@ -1,6 +1,7 @@
 import fs from 'fs';
 import { remote } from 'electron';
-import { MarkerType } from 'react-flow-renderer';
+import { MarkerType } from 'reactflow';
+import 'reactflow/dist/style.css';
 import { greenPrimary } from '../style-variables';
 import * as types from '../constants/constants';
 

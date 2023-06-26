@@ -164,7 +164,7 @@ function TableHeader({ data }: TableHeaderProps) {
         />
       </Tooltip>
       <Tooltip title="Add Column">
-        <IconButton onClick={handleAddColumn} size="large">Add Column</IconButton>
+        <IconButton onClick={handleAddColumn} className='add-column' size="large">Add Column</IconButton>
       </Tooltip>
       <Tooltip title="Delete Table">
         <IconButton onClick={handleDeleteTable} size="large">

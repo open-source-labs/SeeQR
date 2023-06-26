@@ -10,7 +10,6 @@ import { format } from 'sql-formatter';
 // import 'codemirror/theme/lesser-dark.css'; // Theme
 import CodeMirror from '@uiw/react-codemirror';
 import { dracula } from '@uiw/codemirror-theme-dracula';
-// import { sql } from '@codemirror/lang-sql'
 
 const Container = styled.div`
   position: relative;
@@ -66,7 +65,15 @@ const QuerySqlInput = ({ sql, onChange, runQuery }: QuerySqlInputProps) => {
           </Tooltip>
         </ButtonGroup>
       </Toolbar>
-      <CodeMirror onChange={onChange} theme={dracula} height='300px' value={sql} />
+      <CodeMirror 
+        onChange={onChange}
+        theme={dracula}
+        height='300px'
+        value={sql}
+        basicSetup={{
+            highlightActiveLine: false
+          }}
+      />
     </Container>
   );
 };
