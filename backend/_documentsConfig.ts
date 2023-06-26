@@ -23,13 +23,22 @@ const defaultFile: DocConfigFile = {
   sqlite: { path: '' },
   directPGURI: { uri: '' }
 };
+
+/**
+ * Create and return default config file of database/login info
+ * @returns object of default database configurations
+ */
 function writeConfigDefault(): DocConfigFile {
   logger('Could not find config file. Creating default', LogType.WARNING);
   fs.writeFileSync(configPath, JSON.stringify(defaultFile));
   return defaultFile;
 };
 
-// Check if config.json object has the correct database properties (mysql, pg, etc.), tries to replace only the properties that are missing and return either the original or new object. Doesn't care about additional properties in the object besides those in const defaultFile.
+/**
+ * Check if config.json object has the correct database properties (mysql, pg, etc.), tries to replace only the properties that are missing and return either the original or new object. Doesn't care about additional properties in the object besides those in const defaultFile.
+ * @param currConfig current configuration
+ * @returns configuration with only valid key value properties
+ */
 const checkConfigFile = function (currConfig: DocConfigFile): DocConfigFile {
   const invalidKeys: string[] = [];
   try {
