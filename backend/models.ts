@@ -11,7 +11,9 @@ import logger from './Logging/masterlog';
 import pools from './poolVariables';
 import connectionFunctions from './databaseConnections';
 
+const fs = require('fs');
 const docConfig = require('./_documentsConfig');
+
 // eslint-disable-next-line prefer-const
 
 /**
@@ -298,7 +300,7 @@ const DBFunctions: DBFunctions = {
     if (this.dbsInputted.pg) {
       try {
         const pgDBList = await this.getDBNames(DBType.Postgres);
-        console.log('pgDBList', pgDBList)
+        // console.log('pgDBList', pgDBList)
         listObj.databaseConnected.PG = true;
         listObj.databaseList = [...listObj.databaseList, ...pgDBList];
       } catch (error) {
@@ -339,7 +341,7 @@ const DBFunctions: DBFunctions = {
     if (this.dbsInputted.sqlite) {
       try {
         const sqliteDBList = await this.getDBNames(DBType.SQLite);
-        console.log('sqliteDBList', sqliteDBList)
+        // console.log('sqliteDBList', sqliteDBList)
         listObj.databaseConnected.SQLite = true;
         listObj.databaseList = [...listObj.databaseList, ...sqliteDBList];
       } catch (error) {
@@ -362,7 +364,7 @@ const DBFunctions: DBFunctions = {
         );
       }
     }
-    console.log(listObj);
+    // console.log(listObj);
     return listObj;
   },
 
@@ -480,8 +482,11 @@ const DBFunctions: DBFunctions = {
       } else if (dbType === DBType.SQLite) {
         const dbList: dbDetails[] = [];
         const { path } = this.curSQLite_DB;
-        const filename = path.slice(path.lastIndexOf('\\') + 1);
-        const data = { db_name: filename, db_size: 'unknown', db_type: DBType.SQLite }
+        const filename = path.slice(path.lastIndexOf('\\') + 1, path.lastIndexOf('.db'));
+        const stats = fs.statSync(path)
+        const fileSizeInKB = stats.size / 1024;
+        // Convert the file size to megabytes (optional)
+        const data = { db_name: filename, db_size: `${fileSizeInKB}kB`, db_type: DBType.SQLite }
         dbList.push(data);
         resolve(dbList);
       }
