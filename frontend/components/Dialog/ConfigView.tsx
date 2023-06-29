@@ -17,7 +17,6 @@ import {
 } from '../../style-variables';
 import '../../lib/style.css';
 
-
 /*
 junaid
 frontend database login component
@@ -254,6 +253,9 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
     setValue(newValue);
   };
 
+  // Array of all db names for login tabs
+  const dbNames = ['MySql', 'Postgres', 'RDS Mysql', 'RDS Postgres', 'Sqlite'];
+
   return (
     <Box sx={{ width: '100%' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
@@ -262,13 +264,11 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
           value={value}
           onChange={handleChange}
           aria-label="wrapped label basic tabs"
+          className='db-login-tabs'
         >
-          <Tab label="MySql" {...a11yProps(0)} />
-          <Tab label="Postgres" {...a11yProps(1)} />
-          <Tab label="RDS MySql" wrapped {...a11yProps(2)} />
-          <Tab label="RDS Postgres" wrapped {...a11yProps(3)} />
-          {/* added sqlite */}
-          <Tab label="Sqlite" wrapped {...a11yProps(4)} />
+          {dbNames.map((db, idx) =>
+            <Tab label={db} wrapped {...a11yProps(idx)} className='db-login-tab' key={db} />
+           )}
         </Tabs>
       </Box>
       <TabPanel value={value} index={0}>
