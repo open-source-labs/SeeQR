@@ -182,7 +182,7 @@ const Sidebar = ({
         />
         <Logo src={logo} alt="Logo" />
         <HideSidebarBtnContainer>
-          <Tooltip title="Hide sidebar">
+          <Tooltip title="Hide Sidebar">
             <HideSidebarBtn onClick={toggleOpen} size="large">
               <ArrowBackIosIcon />
             </HideSidebarBtn>
