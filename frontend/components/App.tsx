@@ -238,7 +238,10 @@ const App = () => {
             />
             <QuickStartView show={shownView === 'quickStartView'} />
 
-            <NewChart show={shownView === 'newChart'} />
+            <NewChart 
+              show={shownView === 'newChart'}
+              dbTables={dbTables} 
+            />
 
             <NewSchemaView
               query={workingQuery}

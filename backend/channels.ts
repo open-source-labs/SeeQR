@@ -173,6 +173,9 @@ ipcMain.handle(
 
       // send updated db info
       const dbsAndTables: DBList = await db.getLists(dbName, dbType);
+      //////////////////////////////////////////////////eric check for Bloom/////////////////////////////////////////////
+      console.log("eric check for bloom-----------------------------------------------------------------------dbTables", dbsAndTables);
+      ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       event.sender.send('db-lists', dbsAndTables);
       logger("Sent 'db-lists' from 'select-db'", LogType.SEND);
     } finally {
