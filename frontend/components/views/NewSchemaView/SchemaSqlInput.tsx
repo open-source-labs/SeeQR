@@ -5,9 +5,6 @@ import { ButtonGroup, Button, Tooltip } from '@mui/material';
 import styled from 'styled-components';
 import { format } from 'sql-formatter';
 
-// import 'codemirror/lib/codemirror.css'; // Styline
-// import 'codemirror/mode/sql/sql'; // Language (Syntax Highlighting)
-// import 'codemirror/theme/lesser-dark.css'; // Theme
 import CodeMirror from '@uiw/react-codemirror';
 import { dracula } from '@uiw/codemirror-theme-dracula';
 
@@ -68,7 +65,15 @@ interface SchemaSqlInputProps {
             </Tooltip>
           </ButtonGroup>
         </Toolbar>
-        <CodeMirror onChange={onChange} theme={dracula} height='300px' value={sql} />
+        <CodeMirror 
+          onChange={onChange}
+          theme={dracula}
+          height='300px'
+          value={sql}
+          basicSetup={{
+            highlightActiveLine: false
+          }}
+        />
       </Container>
     );
   };

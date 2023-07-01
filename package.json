@@ -69,6 +69,7 @@
     "react-force-graph": "github:vasturiano/react-force-graph",
     "react-loading": "^2.0.3",
     "react-router-dom": "^5.2.0",
+    "reactflow": "^11.7.4",
     "sql-formatter": "^4.0.2",
     "sqlite3": "^5.1.6",
     "styled-components": "^5.2.1",

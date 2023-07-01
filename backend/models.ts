@@ -11,7 +11,9 @@ import logger from './Logging/masterlog';
 import pools from './poolVariables';
 import connectionFunctions from './databaseConnections';
 
+const fs = require('fs');
 const docConfig = require('./_documentsConfig');
+
 // eslint-disable-next-line prefer-const
 
 /**
@@ -260,11 +262,14 @@ const DBFunctions: DBFunctions = {
     }
   },
 
+  /**
+   * Function to disconnect the passed in database type, in order to drop database
+   * @param dbType type of database to disconnect
+   */
   async disconnectToDrop(dbType) {
     if (dbType === DBType.Postgres) {
       console.log('ending pool');
       await connectionFunctions.PG_DBDisconnect();
-
     }
   },
 
@@ -295,6 +300,7 @@ const DBFunctions: DBFunctions = {
     if (this.dbsInputted.pg) {
       try {
         const pgDBList = await this.getDBNames(DBType.Postgres);
+        // console.log('pgDBList', pgDBList)
         listObj.databaseConnected.PG = true;
         listObj.databaseList = [...listObj.databaseList, ...pgDBList];
       } catch (error) {
@@ -335,6 +341,7 @@ const DBFunctions: DBFunctions = {
     if (this.dbsInputted.sqlite) {
       try {
         const sqliteDBList = await this.getDBNames(DBType.SQLite);
+        // console.log('sqliteDBList', sqliteDBList)
         listObj.databaseConnected.SQLite = true;
         listObj.databaseList = [...listObj.databaseList, ...sqliteDBList];
       } catch (error) {
@@ -357,6 +364,7 @@ const DBFunctions: DBFunctions = {
         );
       }
     }
+    // console.log(listObj);
     return listObj;
   },
 
@@ -474,8 +482,11 @@ const DBFunctions: DBFunctions = {
       } else if (dbType === DBType.SQLite) {
         const dbList: dbDetails[] = [];
         const { path } = this.curSQLite_DB;
-        const filename = path.slice(path.lastIndexOf('\\') + 1);
-        const data = { db_name: filename, db_size: 'unknown', db_type: DBType.SQLite }
+        const filename = path.slice(path.lastIndexOf('\\') + 1, path.lastIndexOf('.db'));
+        const stats = fs.statSync(path)
+        const fileSizeInKB = stats.size / 1024;
+        // Convert the file size to megabytes (optional)
+        const data = { db_name: filename, db_size: `${fileSizeInKB}kB`, db_type: DBType.SQLite }
         dbList.push(data);
         resolve(dbList);
       }
@@ -579,6 +590,46 @@ const DBFunctions: DBFunctions = {
           });
       });
     }
+
+    if (dbType === DBType.SQLite) {
+      const sqliteDB = pools.sqlite_db;
+      queryString = `SELECT
+      m.name AS table_name, 
+      p.name AS column_name, 
+      p.type AS data_type, 
+      p.[notnull] AS not_null, 
+      p.pk AS pk,
+      fkl.[table] AS foreign_table, 
+      fkl.[to] AS foreign_column
+      FROM sqlite_master m
+      LEFT JOIN pragma_table_info(m.name) p
+      LEFT JOIN pragma_foreign_key_list(m.name) fkl
+      ON p.name = fkl.[from]
+      WHERE m.type = 'table' AND p.type != '' AND m.name = ?`;
+
+      return new Promise((resolve, reject) => {
+        sqliteDB
+          .all(queryString, value, (err, rows) => {
+            if (err) console.log('ERROR OCCURED', err);
+            const columnInfoArray: ColumnObj[] = [];
+            for (let i = 0; i < rows.length; i++) {
+              const { column_name, data_type, not_null, pk, foreign_table, foreign_column } = rows[i];
+              const newColumnObj: ColumnObj = {
+                column_name,
+                data_type,
+                character_maximum_length: data_type.includes(`(`) ? parseInt(data_type.slice(1 + data_type.indexOf(`(`), data_type.indexOf(`)`)), 10) : null,
+                is_nullable: not_null === 1 ? 'NO' : 'YES',
+                constraint_type: pk === 1 ? 'PRIMARY KEY' : foreign_table ? 'FOREIGN KEY' : null,
+                foreign_table,
+                foreign_column,
+              }
+              columnInfoArray.push(newColumnObj);
+            }
+            resolve(columnInfoArray);
+          })
+      })
+    }
+
     logger('Trying to use unknown DB Type: ', LogType.ERROR, dbType);
     // eslint-disable-next-line no-throw-literal
     throw 'Unknown db type';
@@ -615,15 +666,6 @@ const DBFunctions: DBFunctions = {
           .then((tables) => {
             for (let i = 0; i < tables.rows.length; i++) {
               tableList.push(tables.rows[i]);
-              // asdf tables.rows looks like
-              // {
-              //   table_catalog: 'star_wars',
-              //   table_schema: 'base',
-              //   table_name: 'people',
-              //   is_insertable_into: 'YES'
-              // }
-              // for each table, push its columns into promiseArray,
-              // promiseArray is an array of arrays
               promiseArray.push(
                 this.getColumnObjects(tables.rows[i].table_name, dbType)
               );
@@ -711,6 +753,44 @@ const DBFunctions: DBFunctions = {
           .catch((err) => {
             reject(err);
           });
+      } else if (dbType === DBType.SQLite) {
+        const sqliteDB = pools.sqlite_db;
+
+        // querying SQLite metadata
+        query = `SELECT
+        m.name AS table_name 
+        FROM sqlite_master m
+        WHERE m.type = 'table' AND m.name != 'sqlite_stat1' AND m.name != 'sqlite_sequence'`;
+        sqliteDB
+          .all(query, (err, rows) => {
+            if (err) console.log('error occured')
+            for (let i = 0; i < rows.length; i++) {
+              const newTableDetails: TableDetails = {
+                table_catalog: this.curSQLite_DB.path.slice(this.curSQLite_DB.path.lastIndexOf('\\') + 1),
+                table_schema: 'asdf',
+                table_name: rows[i].table_name,
+                is_insertable_into: 'asdf',
+              }
+              tableList.push(newTableDetails);
+              promiseArray.push(
+                this.getColumnObjects(rows[i].table_name, dbType)
+              );
+            }
+            Promise.all(promiseArray)
+              .then((columnInfo) => {
+                for (let i = 0; i < columnInfo.length; i++) {
+                  tableList[i].columns = columnInfo[i];
+                }
+                logger("SQLite 'getDBLists' resolved.", LogType.SUCCESS);
+                resolve(tableList);
+              })
+              .catch((error) => {
+                reject(error);
+              });
+          })
+        // .catch((err) => {
+        //   reject(err);
+        // });
       }
     });
   },

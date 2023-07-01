@@ -15,6 +15,14 @@
   border-radius: 5px;
 };
 
+.db-login-tab.Mui-selected {
+  color: rgb(25, 118, 210) !important;
+}
+
+.db-login-tabs .MuiTabs-indicator {
+  background-color: rgb(25, 118, 210);
+}
+
 /* QuickStartView */
 .step-btn {
   margin-right: 8px;
@@ -47,4 +55,17 @@
 
 .stepper {
   font-size: 50px;
+}
+
+.Mui-selected:not(.db-login-tab) {
+  color: rgb(255, 255, 255) !important;
+  opacity: 1 !important;
+}
+
+.MuiTabs-scroller > div > button:not(.db-login-tab) {
+	color: rgba(255, 255, 255, .3);
+	font-size: 1.25rem;
+  border-right: 1px solid rgba(255, 255, 255, .1);
+  border-left: 1px solid rgba(255, 255, 255, .1);
+  width: 33%;
 }

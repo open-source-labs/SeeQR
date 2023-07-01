@@ -163,6 +163,35 @@ const App = () => {
       shownView = 'quickStartView';
   }
 
+  const stateTest = {
+    queries,
+    setQueries,
+    comparedQueries,
+    setComparedQueries,
+    selectedView,
+    setSelectedView,
+    selectedDb,
+    setSelectedDb,
+    workingQuery,
+    setWorkingQuery,
+    setSidebarHidden,
+    sidebarIsHidden,
+    setFilePath,
+    newFilePath,
+    setERView,
+    curDBType,
+    setDBType,
+    DBInfo,
+    setDBInfo,
+    dbTables,
+    setTables,
+    selectedTable,
+    setSelectedTable,
+    showCreateDialog,
+    setCreateDialog,
+    setConfigDialog,
+  }
+
   return (
     // Styled Components must be injected last in order to override Material UI style: https://material-ui.com/guides/interoperability/#controlling-priority-3
     // <StylesProvider injectFirst>

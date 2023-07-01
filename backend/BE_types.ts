@@ -8,9 +8,9 @@ export interface ColumnObj {
   data_type: string;
   character_maximum_length: number | null;
   is_nullable: string;
-  constraint_type: string;
-  foreign_table: string;
-  foreign_column: string;
+  constraint_type: string | null;
+  foreign_table: string | null;
+  foreign_column: string | null;
 }
 export interface dbDetails {
   db_name: string;

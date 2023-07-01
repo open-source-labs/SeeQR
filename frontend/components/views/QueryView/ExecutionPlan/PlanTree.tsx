@@ -1,6 +1,7 @@
 import React, { useState, memo  } from 'react';
 import styled from 'styled-components';
-import ReactFlow, { Background } from 'react-flow-renderer';
+import ReactFlow, { Background } from 'reactflow';
+import 'reactflow/dist/style.css'
 import buildFlowGraph from '../../../../lib/flow';
 import { ExplainJson, Thresholds } from '../../../../types';
 import { DarkPaperFull } from '../../../../style-variables';
