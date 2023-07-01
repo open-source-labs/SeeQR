@@ -57,6 +57,7 @@ class Table {
     ];
     const edges = [];
     let num = -1;
+    console.log('---------------------------------convertStateToReactFlow, columns', this.columns);
     // iterate through the columns data for this data, create a node for each column
     // create an edge (the connection line) for each column that has a designated
     // foreign table and foreign column name
@@ -97,6 +98,10 @@ class Table {
         });
       }
     });
+    console.log('---------------------------------convertStateToReactFlow, nodes', nodes);
+
+    console.log('---------------------------------convertStateToReactFlow, edges', edges);
+
     // return an object with nodes and edges
     return {
       nodes,
