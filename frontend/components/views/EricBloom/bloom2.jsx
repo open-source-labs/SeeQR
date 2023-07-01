@@ -1,8 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ForceGraph3D } from 'react-force-graph';
+import * as THREE from 'three';
+import SpriteText from 'three-spritetext';
 
 const ParanoidUniverse = ({ dbTables }) => {
-  console.log('----------------------------------dbTables', dbTables);
+  const [showSprites, setShowSprites] = useState(true);
 
   useEffect(() => {
     const databaseCache = {};
@@ -15,72 +17,50 @@ const ParanoidUniverse = ({ dbTables }) => {
       }
     }
 
-    console.log('------------------------databaseCache', databaseCache);
     const nodes = [];
     const edges = [];
 
     Object.keys(databaseCache).forEach((prop) => {
-      const sourceNode = { id: prop, name: prop, size: 12, type: 'table' };
+      const sourceNode = { id: `table:${prop}`, name: `table:${prop}`, size: 12, type: 'table' };
       nodes.push(sourceNode);
 
       const columns = databaseCache[prop];
-      columns.forEach((column, index) => {
+      columns.forEach((column) => {
         const targetNode = {
-          id: `${prop}-${column.column_name}`, // Unique identifier for the column
-          name: column.column_name,
+          id: `table:${prop}-column:${column.column_name}`,
+          name: `table:${prop}-column:${column.column_name}`,
           size: 5,
           type: 'column',
+          group: `table:${prop}`,
         };
         nodes.push(targetNode);
         edges.push({ source: sourceNode.id, target: targetNode.id });
       });
     });
-    // const databaseCache = {};
-    // for (let i = 0; i < dbTables.length; i++) {
-    //   databaseCache[dbTables[i].table_name] = [];
-    //   for (let j = 0; j < dbTables[i].columns.length; j++) {
-    //       databaseCache[dbTables[i].table_name].push(dbTables[i].columns[j]);
-    //   }
-    // }
 
-    // console.log('------------------------databaseCache', databaseCache);
-    // const nodes = [];
-    // const edges = [];
+    const databaseCacheAll = {};
+    for (let i = 0; i < dbTables.length; i++) {
+      databaseCacheAll[dbTables[i].table_name] = [];
+      for (let j = 0; j < dbTables[i].columns.length; j++) {
+        databaseCacheAll[dbTables[i].table_name].push(dbTables[i].columns[j]);
+      }
+    }
 
-    // Object.keys(databaseCache).forEach((prop) => {
-    //   const sourceNode = { id: prop, name: prop, size: 12, type: 'table' };
-    //   nodes.push(sourceNode);
+    Object.keys(databaseCacheAll).forEach((prop) => {
+      const columns = databaseCacheAll[prop];
+      columns.forEach((column) => {
+        const foundCurrColumn = nodes.find(
+          (colEl) => colEl.id === `table:${prop}-column:${column.column_name}`
+        );
+        const foundForeignColumn = nodes.find(
+          (colEl) => colEl.id === `table:${column.foreign_table}-column:${column.foreign_column}`
+        );
+        if (foundCurrColumn && foundForeignColumn) {
+          edges.push({ source: foundForeignColumn.id, target: foundCurrColumn.id });
+        }
+      });
+    });
 
-    //   const columns = databaseCache[prop];
-    //   columns.forEach((column, index) => {
-    //     const found = nodes.find(
-    //       (colEl) => colEl.id === `${prop}-${column.column_name}`
-    //     );
-    //     console.log('-------------------===============+++++++++++++++++++found', found);
-    //     // const found2 = nodes.find(
-    //     //   (colEl) => colEl.id === `${column.foreign_table}-${column.foreign_column}`
-    //     // );
-    //     // console.log('-------------------===============+++++++++++++++++++found2', found2);
-    //     if(!found){
-    //       const targetNode = {
-    //         id: `${prop}-${column.column_name}`, // Unique identifier for the column
-    //         name: column.column_name,
-    //         size: 5,
-    //         type: 'column',
-    //       };
-    //       nodes.push(targetNode);
-    //       edges.push({ source: sourceNode.id, target: targetNode.id });
-    //     }
-        
-    //   });
-    // });
-
-
-    console.log('--------nodesBeforeForeign: ', nodes);
-    console.log('---------edgesBeforeForeign: ', edges);
-
-
-    // Update the graphData object with the updated nodes and edges
     setData({ nodes, links: edges });
   }, []);
 
@@ -89,33 +69,46 @@ const ParanoidUniverse = ({ dbTables }) => {
   const maxContainerHeight = window.innerHeight - 40;
   const height = Math.min(window.innerHeight, maxContainerHeight);
 
-  const [data, setData] = React.useState({ nodes: [], links: [] });
+  const [data, setData] = useState({ nodes: [], links: [] });
 
   return (
-    <ForceGraph3D
-      graphData={data}
-      width={width}
-      height={height}
-      nodeAutoColorBy="type" // Color nodes based on their 'type' property
-      linkAutoColorBy="source"
-      linkWidth={2}
-      linkDirectionalArrowLength={0}
-      linkDirectionalArrowRelPos={1}
-      nodeThreeObject={(node) => {
-        const nodeSize = node.size || 1; // Default size if not specified
-        let color = 'blue'; // Default color
-        if (node.type === 'table') {
-          color = 'green'; // Table name color
-        } else if (node.type === 'column') {
-          color = 'orange'; // Column name color
-        }
-        const geometry = new THREE.SphereGeometry(nodeSize, 64, 64);
-        const material = new THREE.MeshBasicMaterial({ color });
-        return new THREE.Mesh(geometry, material);
-      }}
-      nodeLabel={(node) => node.name} // Show the node id as the label
-      nodeLabelColor="white" // Set the label color to white
-    />
+    <div>
+      <button onClick={() => setShowSprites(!showSprites)}>
+        {showSprites ? 'Hide Sprites' : 'Show Sprites'}
+      </button>
+      <ForceGraph3D
+        graphData={data}
+        width={width}
+        height={height}
+        nodeAutoColorBy="group"
+        linkAutoColorBy="source"
+        linkWidth={2}
+        linkDirectionalArrowLength={0}
+        linkDirectionalArrowRelPos={1}
+        nodeThreeObject={(node) => {
+          const nodeSize = node.size || 1;
+          const color = node.color || 'blue';
+          const geometry = new THREE.SphereGeometry(nodeSize, 32, 32);
+          const material = new THREE.MeshPhongMaterial({ color });
+          const nodeMesh = new THREE.Mesh(geometry, material);
+
+          const sprite = new SpriteText(node.name);
+          sprite.color = node.color;
+          sprite.textHeight = 2;
+          sprite.position.y = -nodeSize - 3;
+          sprite.visible = showSprites; // Set the visibility of the sprite based on showSprites state
+          nodeMesh.add(sprite);
+
+          return nodeMesh;
+        }}
+        nodeLabel={(node) => node.name}
+        nodeLabelColor="white"
+        onNodeClick={(node) => console.log(node)}
+      >
+        <ambientLight color="#ffffff" intensity={1} />
+        <directionalLight color="#ffffff" intensity={0.6} position={[-1, 1, 4]} />
+      </ForceGraph3D>
+    </div>
   );
 };
 
