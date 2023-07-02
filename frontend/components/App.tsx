@@ -270,6 +270,7 @@ const App = () => {
             <NewChart 
               show={shownView === 'newChart'}
               dbTables={dbTables} 
+              dbType={curDBType}
             />
 
             <NewSchemaView

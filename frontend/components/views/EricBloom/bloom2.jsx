@@ -3,63 +3,119 @@ import { ForceGraph3D } from 'react-force-graph';
 import * as THREE from 'three';
 import SpriteText from 'three-spritetext';
 
-const ParanoidUniverse = ({ dbTables }) => {
+const ParanoidUniverse = ({ dbTables, dbType }) => {
   const [showSprites, setShowSprites] = useState(true);
+  console.log('Databases Type: ', dbType);
+  console.log('-------------------------------------------------dbTables', dbTables);
+
 
   useEffect(() => {
-    const databaseCache = {};
-    for (let i = 0; i < dbTables.length; i++) {
-      databaseCache[dbTables[i].table_name] = [];
-      for (let j = 0; j < dbTables[i].columns.length; j++) {
-        if (dbTables[i].columns[j].foreign_column === null) {
-          databaseCache[dbTables[i].table_name].push(dbTables[i].columns[j]);
-        }
-      }
-    }
-
     const nodes = [];
     const edges = [];
 
-    Object.keys(databaseCache).forEach((prop) => {
-      const sourceNode = { id: `table:${prop}`, name: `table:${prop}`, size: 12, type: 'table' };
-      nodes.push(sourceNode);
+    if(dbType === 'mysql'){
 
-      const columns = databaseCache[prop];
-      columns.forEach((column) => {
-        const targetNode = {
-          id: `table:${prop}-column:${column.column_name}`,
-          name: `table:${prop}-column:${column.column_name}`,
-          size: 5,
-          type: 'column',
-          group: `table:${prop}`,
-        };
-        nodes.push(targetNode);
-        edges.push({ source: sourceNode.id, target: targetNode.id });
-      });
-    });
-
-    const databaseCacheAll = {};
-    for (let i = 0; i < dbTables.length; i++) {
-      databaseCacheAll[dbTables[i].table_name] = [];
-      for (let j = 0; j < dbTables[i].columns.length; j++) {
-        databaseCacheAll[dbTables[i].table_name].push(dbTables[i].columns[j]);
+      const databaseCache = {};
+      for (let i = 0; i < dbTables.length; i++) {
+        databaseCache[dbTables[i].table_name] = [];
+        for (let j = 0; j < dbTables[i].columns.length; j++) {
+          if (dbTables[i].columns[j].foreign_column === null) {
+            databaseCache[dbTables[i].table_name].push(dbTables[i].columns[j]);
+          }
+       }
       }
-    }
 
-    Object.keys(databaseCacheAll).forEach((prop) => {
-      const columns = databaseCacheAll[prop];
-      columns.forEach((column) => {
-        const foundCurrColumn = nodes.find(
-          (colEl) => colEl.id === `table:${prop}-column:${column.column_name}`
-        );
-        const foundForeignColumn = nodes.find(
-          (colEl) => colEl.id === `table:${column.foreign_table}-column:${column.foreign_column}`
-        );
-        if (foundCurrColumn && foundForeignColumn) {
-          edges.push({ source: foundForeignColumn.id, target: foundCurrColumn.id });
-        }
+      console.log('-------------------------------------------------databaseCache', databaseCache);
+
+      Object.keys(databaseCache).forEach((prop) => {
+        const sourceNode = { id: `table:${prop}`, name: `table:${prop}`, size: 12, type: 'table' };
+        nodes.push(sourceNode);
+
+        const columns = databaseCache[prop];
+        columns.forEach((column) => {
+          const targetNode = {
+            id: `table:${prop}-column:${column.column_name}`,
+            name: `table:${prop}-column:${column.column_name}`,
+            size: 5,
+            type: 'column',
+            group: `table:${prop}`,
+          };
+          nodes.push(targetNode);
+          edges.push({ source: sourceNode.id, target: targetNode.id });
+        });
       });
-    });
+
+      const databaseCacheAll = {};
+      for (let i = 0; i < dbTables.length; i++) {
+        databaseCacheAll[dbTables[i].table_name] = [];
+        for (let j = 0; j < dbTables[i].columns.length; j++) {
+          databaseCacheAll[dbTables[i].table_name].push(dbTables[i].columns[j]);
+        }
+      }
+
+      console.log('-------------------------------------------------databaseCacheAll', databaseCacheAll);
+
+      Object.keys(databaseCacheAll).forEach((prop) => {
+        const columns = databaseCacheAll[prop];
+        console.log('-------------------------------------------------databaseCacheAll-Each-cloumns', columns);
+        columns.forEach((column) => {
+          console.log("+++++++++++++++table:${prop}-column:${column.column_name}", `table:${prop}-column:${column.column_name}`);
+          const foundCurrColumn = nodes.find(
+            (colEl) => colEl.id === `table:${prop}-column:${column.column_name}`
+          );
+          const foundForeignColumn = nodes.find(
+            (colEl) => colEl.id === `table:${column.foreign_table}-column:${column.foreign_column}`
+          );
+          if (foundCurrColumn && foundForeignColumn) {
+            edges.push({ source: foundForeignColumn.id, target: foundCurrColumn.id });
+          }
+        });
+      });
+
+      console.log('-------------------------------------------------nodes', nodes);
+      console.log('-------------------------------------------------edges', edges);
+    }
+    // If type of databases if PostgreSQL:
+    else if(dbType === 'pg'){
+      const databaseCache = {};
+      for (let i = 0; i < dbTables.length; i++) {
+        databaseCache[dbTables[i].table_name] = [];
+        for (let j = 0; j < dbTables[i].columns.length; j++) {
+          databaseCache[dbTables[i].table_name].push(dbTables[i].columns[j]);
+       }
+      }
+
+      Object.keys(databaseCache).forEach((prop) => {
+        const sourceNode = { id: `table:${prop}`, name: `table:${prop}`, size: 12, type: 'table' };
+        nodes.push(sourceNode);
+
+        const columns = databaseCache[prop];
+        columns.forEach((column) => {
+
+          const foundCurrColumn = nodes.find(
+            (colEl) => colEl.id === `table:${prop}-column:${column.column_name}`
+          );
+
+          if(!foundCurrColumn){
+            const targetNode = {
+              id: `table:${prop}-column:${column.column_name}`,
+              name: `table:${prop}-column:${column.column_name}`,
+              size: 5,
+              type: 'column',
+              group: `table:${prop}`,
+            };
+            nodes.push(targetNode);
+            edges.push({ source: sourceNode.id, target: targetNode.id });
+          }
+          if (column.foreign_table && column.foreign_column) {
+            edges.push({ source: `table:${column.foreign_table}-column:${column.foreign_column}`, target: `table:${prop}-column:${column.column_name}` });
+          }
+        });
+      });
+
+    }
+    
+
 
     setData({ nodes, links: edges });
   }, []);
