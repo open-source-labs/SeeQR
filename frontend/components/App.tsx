@@ -269,6 +269,7 @@ const App = () => {
 
             <NewChart 
               show={shownView === 'newChart'}
+              selectedDb={selectedDb}
               dbTables={dbTables} 
               dbType={curDBType}
             />
