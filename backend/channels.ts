@@ -6,7 +6,7 @@ import fs from 'fs';
 import os from 'os';
 import helperFunctions from './helperFunctions';
 import generateDummyData from './DummyD/dummyDataMain';
-import { ColumnObj, DBList, DummyRecords, DBType, LogType } from './BE_types';
+import { ColumnObj, DBList, DummyRecords, DBType, LogType, QueryPayload } from './BE_types';
 import backendObjToQuery from './ertable-functions';
 import logger from './Logging/masterlog';
 // import { Integer } from 'type-fest';
@@ -364,12 +364,7 @@ ipcMain.handle(
   }
 );
 
-interface QueryPayload {
-  targetDb: string;
-  sqlString: string;
-  selectedDb: string;
-  runQueryNumber: number;
-}
+
 
 // Run query passed from the front-end, and send back an updated DB List
 // DB will rollback if query is unsuccessful
@@ -377,6 +372,9 @@ interface QueryPayload {
 junaid
 look at this to check the explain might not support query error
 */
+/**
+ * Handle run-query events passed from the front-end, and send back an updated DB List
+ */
 ipcMain.handle(
   'run-query',
   async (
@@ -426,10 +424,10 @@ ipcMain.handle(
               dbType
             );
 
-            console.log('ericCheck------------------------------------------------------------------ericCheck');
-            console.log('postgerSQL_results-----------------------------------------------------------------postgerSQL_results', results);
-            console.log('postgerSQL_results[1].rows-----------------------------------------------------------------postgerSQL_results[1].rows', results[1].rows);
-            console.log('postgerSQL_results[1].rows[0]["QUERY PLAN"][0]-----------------------------------------------------------------postgerSQL_results[1].rows[0]["QUERY PLAN"][0]', results[1].rows[0]["QUERY PLAN"][0]);
+            console.log('ericCheck--------------------------------------------ericCheck');
+            console.log('postgerSQL_results-----------------------------------postgerSQL_results', results);
+            console.log('postgerSQL_results[1].rows---------------------------postgerSQL_results[1].rows', results[1].rows);
+            console.log('postgerSQL_results[1].rows[0]["QUERY PLAN"][0]-------postgerSQL_results[1].rows[0]["QUERY PLAN"][0]', results[1].rows[0]["QUERY PLAN"][0]);
 
             explainResults = results[1].rows;
             const eachSampleTime: any = results[1].rows[0]["QUERY PLAN"][0]['Planning Time'] + results[1].rows[0]["QUERY PLAN"][0]['Execution Time'];
@@ -442,15 +440,15 @@ ipcMain.handle(
               null,
               dbType
             );
-            console.log('ericCheck------------------------------------------------------------------ericCheck');
-            console.log('mySQL_results-----------------------------------------------------------------mySQL_results', results);
-            console.log('results[0][0]-----------------------------------------------------------------results[0][0]', results[0][0]);
+            console.log('ericCheck--------------------------------------------ericCheck');
+            console.log('mySQL_results----------------------------------------mySQL_results', results);
+            console.log('results[0][0]----------------------------------------results[0][0]', results[0][0]);
 
             const eachSampleTime: any = parseExplainExplanation(results[0][0].EXPLAIN);
             arr.push(eachSampleTime);
             totalSampleTime += eachSampleTime;
-            console.log('ericCheck------------------------------------------------------------------ericCheck');
-            console.log('arr-------------------------------------------------------------------arr', arr);
+            console.log('ericCheck--------------------------------------------ericCheck');
+            console.log('arr--------------------------------------------------arr', arr);
 
 
             // //////////not real result just try to get rid of bugs first///////////////
@@ -509,18 +507,16 @@ ipcMain.handle(
 
           }
         }
-        console.log('ericCheck------------------------------------------------------------------ericCheck');
-        console.log('totalSampleTime------------------------------------------------------------------------------------------totalSampleTime', totalSampleTime);
-        // minmumSampleTime = Math.min(...arr);
-        // maximumSampleTime = Math.max(...arr);
-        // averageSampleTime = totalSampleTime/numberOfSample;
+        console.log('ericCheck--------------------------------------------ericCheck');
+        console.log('totalSampleTime--------------------------------------totalSampleTime', totalSampleTime);
+        // get 5 decimal points for sample time
         minmumSampleTime = Math.round(Math.min(...arr) * 10 ** 5) / 10 ** 5;
         maximumSampleTime = Math.round(Math.max(...arr) * 10 ** 5) / 10 ** 5;
         averageSampleTime = Math.round((totalSampleTime / numberOfSample) * 10 ** 5) / 10 ** 5;
         totalSampleTime = Math.round(totalSampleTime * 10 ** 5) / 10 ** 5;
-        console.log('minmumSampleTime------------------------------------------------------------------------------------------minmumSampleTime', minmumSampleTime);
-        console.log('maximumSampleTime------------------------------------------------------------------------------------------maximumSampleTime', maximumSampleTime);
-        console.log('averageSampleTime------------------------------------------------------------------------------------------averageSampleTime', averageSampleTime);
+        console.log('minmumSampleTime-------------------------------------minmumSampleTime', minmumSampleTime);
+        console.log('maximumSampleTime------------------------------------maximumSampleTime', maximumSampleTime);
+        console.log('averageSampleTime------------------------------------averageSampleTime', averageSampleTime);
       } catch (e) {
         error = `Failed to get Execution Plan. EXPLAIN might not support this query.`;
       }

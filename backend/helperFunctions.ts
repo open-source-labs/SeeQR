@@ -103,7 +103,7 @@ const helperFunctions: HelperFunctions = {
     dbType: DBType
   ) {
     const SQL_data = docConfig.getFullConfig();
-    const PG = `pg_dump -s -U ${SQL_data.pg.user}  -p ${SQL_data.pg.port} -Fp -d ${dbCopyName} > "${newFile}"`;
+    const PG = `pg_dump -U ${SQL_data.pg.user}  -p ${SQL_data.pg.port} -Fp -d ${dbCopyName} > "${newFile}"`;
     const MYSQL = `export MYSQL_PWD='${SQL_data.mysql.password}'; mysqldump -h localhost -u ${SQL_data.mysql.user}  ${dbCopyName} > ${newFile}`;
     return dbType === DBType.Postgres || dbType === DBType.RDSPostgres
       ? PG

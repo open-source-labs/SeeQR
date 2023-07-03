@@ -119,3 +119,10 @@ export interface DBFunctions {
   getColumnObjects: (tableName: string, dbType: DBType) => Promise<ColumnObj[]>;
   getDBLists: (dbType: DBType, dbName: string) => Promise<TableDetails[]>;
 }
+
+export interface QueryPayload {
+  targetDb: string;
+  sqlString: string;
+  selectedDb: string;
+  runQueryNumber: number;
+}
