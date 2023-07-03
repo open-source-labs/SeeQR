@@ -229,36 +229,33 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
           },
           dbType
         )
-        .then(({ db, sqlString, returnedRows, explainResults, error, 
-          numberOfSample,
-          totalSampleTime,
-          minmumSampleTime,
-          maximumSampleTime,
-          averageSampleTime, }) => {
-          if (error) {
-            throw error;
-          }
+        .then(({ db,  returnedRows }) => {
 
           let strrr = '';
-          const maxLength = 200;
-
-          returnedRows.forEach(obj => {
-            const objectString = JSON.stringify(obj) + "\n";
-            if (strrr.length + objectString.length > maxLength) {
-              return; // Break out of the loop if the length exceeds the maximum
+          let ct = 0;
+          strrr += `columns: ` + "\n";
+          strrr += `------------------------------------------------------------------------------\n`;
+          if(returnedRows.length === 0){
+            strrr += "I am sorry,\nthere is nothing in this table currently..."
+          }
+          else{
+            for(const property in returnedRows[0]){
+              strrr += `${property}` + "\n";
+              ct += 1;
             }
-            strrr += objectString;
-          });
+          }
+
+          
 
                    
 
           // Define properties of the table cells
-          const cellWidth = 400;
-          const cellHeight = 200;
+          const cellWidth = 170;
+          const cellHeight = 45 + 6 * ct;
       
           // Create the table structure
           const cellGeometry = new THREE.BoxGeometry(cellWidth, cellHeight, 10);
-          const cellMaterial = new THREE.MeshBasicMaterial({ color: 'rgb(50, 200, 123)', opacity: 0.3, transparent: true });
+          const cellMaterial = new THREE.MeshBasicMaterial({ color: 'rgb(50, 200, 150)', opacity: 0.3, transparent: true });
           const cellMesh = new THREE.Mesh(cellGeometry, cellMaterial);
           // Calculate the position of each cell
           cellMesh.position.set(node.x, node.y + cellHeight/2, node.z);
@@ -276,7 +273,7 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
                 size: 4,
                 height: 2,
               });
-              const textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+              const textMaterial = new THREE.MeshBasicMaterial({ color: 'rgb(225, 255, 255)'});
               const textMesh = new THREE.Mesh(textGeometry, textMaterial);
       
               // Position the text on the cell
@@ -286,10 +283,6 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
       
               // Add the text mesh to the table object
               table.add(textMesh);
-      
-              const graph = graphRef.current;
-              
-
 
               // Calculate the table's position relative to the camera
               const tablePosition = table.position.clone();
@@ -299,8 +292,7 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
               // Set the table's rotation to face the user/camera
               table.lookAt(lookAtVector);
 
-                // graph2.scene().attach(table);
-                node.__threeObj.add(table);
+              node.__threeObj.add(table);
 
             }
           );
@@ -330,37 +322,36 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
           minmumSampleTime,
           maximumSampleTime,
           averageSampleTime, }) => {
-          if (error) {
-            throw error;
-          }
+
           
           let strrr = '';
-
+          let newlineCount = 0;
 
 
           strrr += `${node.columnName}: ` + "\n";
-          strrr += `---------------------------\n`;
-          if(!returnedRows){
-            strrr += "I am sorry,\nthe current column is undefined..."
+          strrr += `-------------------------------------\n`;
+          if(returnedRows.length === 0){
+            strrr += "I am sorry,\nthere is nothing in this column currently..."
           }
           else{
-            for(let i = 0; i < 10; i++){
+            for(let i = 0; i < returnedRows.length; i++){
               strrr += `${returnedRows[i][node.columnName]}` + "\n";
+              newlineCount += 1;
+              if(strrr.length > 250 || newlineCount >25){
+                strrr += '   .\n   .\n   .\n';
+                newlineCount += 3;
+                break;
+              }
             }
-            strrr += '   .\n   .\n   .\n';
           }
-
-
-
-                   
 
           // Define properties of the table cells
           const cellWidth = 200;
-          const cellHeight = 100;
+          const cellHeight = 45 + 6 * newlineCount;
       
           // Create the table structure
           const cellGeometry = new THREE.BoxGeometry(cellWidth, cellHeight, 10);
-          const cellMaterial = new THREE.MeshBasicMaterial({ color: 'rgb(50, 200, 123)', opacity: 0.3, transparent: true });
+          const cellMaterial = new THREE.MeshBasicMaterial({ color: 'rgb(50, 200, 150)', opacity: 0.3, transparent: true });
           const cellMesh = new THREE.Mesh(cellGeometry, cellMaterial);
           // Calculate the position of each cell
           cellMesh.position.set(node.x, node.y + cellHeight/2, node.z);
@@ -378,7 +369,7 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
                 size: 4,
                 height: 2,
               });
-              const textMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+              const textMaterial = new THREE.MeshBasicMaterial({ color: 'rgb(225, 255, 255)' });
               const textMesh = new THREE.Mesh(textGeometry, textMaterial);
       
               // Position the text on the cell
@@ -388,10 +379,6 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
       
               // Add the text mesh to the table object
               table.add(textMesh);
-      
-              const graph = graphRef.current;
-              
-
 
               // Calculate the table's position relative to the camera
               const tablePosition = table.position.clone();
@@ -401,8 +388,7 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
               // Set the table's rotation to face the user/camera
               table.lookAt(lookAtVector);
 
-                // graph2.scene().attach(table);
-                node.__threeObj.add(table);
+              node.__threeObj.add(table);
 
             }
           );
@@ -425,6 +411,7 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
         })
     }
   }
+
 
   return (
     <div>
