@@ -17,31 +17,24 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
   const maxContainerHeight = window.innerHeight - 60;
   const height = Math.min(window.innerHeight, maxContainerHeight);
 
-
+  // React hook for the nodes
   const [data, setData] = useState({ nodes: [], links: [] });
+  // React hook for user's camera
   const [camera, setCamera] = useState(null);
-  const [showStars, setShowStars] = useState(true); // Added showStars state
-
-
- 
-
-
-
-
+  // React hook for showing/hiding the stars' theme background
+  const [showStars, setShowStars] = useState(true);
+  // React hook for showing/hiding the labeling of each star
   const [showSprites, setShowSprites] = useState(true);
-  console.log('Databases Type: ', dbType);
-  console.log('-------------------------------------------------dbTables', dbTables);
 
-
+  
   useEffect(() => {
     const nodes = [];
     const edges = [];
 
-
-
-
+    // ///// ***** Because the thing send back from backend to front end is not totally same between PostgreSQL and MySQL, So We specialize the condition ***** ///// //
+    // Handle the case when database is MySQL database
     if(dbType === 'mysql'){
-
+      // First one collect the real cloumn and table only, with considering the connection/ relationship between columns  
       const databaseCache = {};
       for (let i = 0; i < dbTables.length; i++) {
         databaseCache[dbTables[i].table_name] = [];
@@ -52,10 +45,9 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
        }
       }
 
-      console.log('-------------------------------------------------databaseCache', databaseCache);
-
       Object.keys(databaseCache).forEach((prop) => {
         const sourceNode = { id: `table:${prop}`, name: `table:${prop}`, size: 12, type: 'table', group: `${prop}` };
+        // adding the table to the nodes array in order to 3D visualize the table
         nodes.push(sourceNode);
 
         const columns = databaseCache[prop];
@@ -68,11 +60,13 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
             group: `${prop}`,
             columnName: `${column.column_name}`,
           };
+          // Pushing each node to the nodes array
           nodes.push(targetNode);
+          // Build the connection between the table and corresponding columns what the table are having
           edges.push({ source: sourceNode.id, target: targetNode.id });
         });
       });
-
+      // Second one just start to consider the connection/ relationship between columns  
       const databaseCacheAll = {};
       for (let i = 0; i < dbTables.length; i++) {
         databaseCacheAll[dbTables[i].table_name] = [];
@@ -81,30 +75,26 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
         }
       }
 
-      console.log('-------------------------------------------------databaseCacheAll', databaseCacheAll);
-
       Object.keys(databaseCacheAll).forEach((prop) => {
         const columns = databaseCacheAll[prop];
-        console.log('-------------------------------------------------databaseCacheAll-Each-cloumns', columns);
         columns.forEach((column) => {
-          console.log("+++++++++++++++table:${prop}-column:${column.column_name}", `table:${prop}-column:${column.column_name}`);
+          // Verify if the current column already is in the nodes array; if not that means the current column could be the system config or the permission stuff which is not a 'real' column to saving our input data 
           const foundCurrColumn = nodes.find(
             (colEl) => colEl.id === `table:${prop}-column:${column.column_name}`
           );
+          // Chech if the current column's foreign is in the nodes array when the current column's foreign_table and foreign_column is not null
           const foundForeignColumn = nodes.find(
             (colEl) => colEl.id === `table:${column.foreign_table}-column:${column.foreign_column}`
           );
+          // If current column and foreign column and foregin table all in the nodes array, than we can build the connection between the current column and foreign column
           if (foundCurrColumn && foundForeignColumn) {
             edges.push({ source: foundForeignColumn.id, target: foundCurrColumn.id });
           }
         });
       });
-
-      console.log('-------------------------------------------------nodes', nodes);
-      console.log('-------------------------------------------------edges', edges);
     }
-    //If type of databases is PostgreSQL:
-    else if(dbType === 'pg'){
+    // Handle the case when database is other database, current verified databases is: PostgreSQL
+    else {
       const databaseCache = {};
       for (let i = 0; i < dbTables.length; i++) {
         databaseCache[dbTables[i].table_name] = [];
@@ -115,6 +105,7 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
 
       Object.keys(databaseCache).forEach((prop) => {
         const sourceNode = { id: `table:${prop}`, name: `table:${prop}`, size: 12, type: 'table', group: `${prop}` };
+        // adding the table to the nodes array in order to 3D visualize the table
         nodes.push(sourceNode);
 
         const columns = databaseCache[prop];
@@ -123,7 +114,7 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
           const foundCurrColumn = nodes.find(
             (colEl) => colEl.id === `table:${prop}-column:${column.column_name}`
           );
-
+          // Verify if the current column already is in the nodes array;
           if(!foundCurrColumn){
             const targetNode = {
               id: `table:${prop}-column:${column.column_name}`,
@@ -133,9 +124,12 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
               group: `${prop}`,
               columnName: `${column.column_name}`,
             };
+            // If the current column is not in the nodes array, then we add the current column in to nodes array;
             nodes.push(targetNode);
+            // Connect the current table and corresponding column
             edges.push({ source: sourceNode.id, target: targetNode.id });
           }
+          // If the column has foreign, we do build the connection directly
           if (column.foreign_table && column.foreign_column) {
             edges.push({ source: `table:${column.foreign_table}-column:${column.foreign_column}`, target: `table:${prop}-column:${column.column_name}` });
           }
@@ -145,11 +139,10 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
     }
     
 
-
     setData({ nodes, links: edges });
   }, []);
 
-  // ////////////////////////////////////////////////////////////////////////////////////////////////// //
+  // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// //
   // Shout out to Gundam Seed Stargazer 
   // ParanoidUniverse Background Setting Up
   // ParanoidUniverse Container
@@ -173,18 +166,18 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
     return [x, y, z];
   }
 
-
     const starsGeometry = new THREE.BufferGeometry();
     // Generate 7777 stars on at the distance of 3351
     d3.range(7777).map((d, i) => {
-
+    // Generate random coordinate for each star  
     const arr = getRandomInSphere(3351);
     var x = arr[0];
     var y = arr[1];
     var z = arr[2];
-
+    // stars' coordinate
     positions.push(x, y, z);
-    colors.push(1, 1, 1);
+    // stars' color
+    colors.push(1, 1, 1); 
     });
 
     starsGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
@@ -193,13 +186,12 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
 
     const starsMaterial = new THREE.PointsMaterial({ vertexColors: true });
     const starField = new THREE.Points(starsGeometry, starsMaterial);
+    // Condition to show stars or not show the stars
     starField.visible = showStars;
-
-    // //////////
-
     const graph = graphRef.current;
     if (graph) {
       setCamera(graph.camera());
+      // Saving the stars in to closure backpack of the graph.scene function
       graph.scene().add(starField);
     }
 
@@ -210,18 +202,14 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
     };
   }, [showStars]);
 
-  // ////////////////////////////////////////////////////////////////////////////////////////////////// //
+  // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// //
 
 
-  // const graph2 = graphRef.current;
-  let table = null; // Variable to store the current table
+  // Variable to store the current table
+  let table = null; 
 
   function runQueryBloom (node){ 
-    // console.log('graphRef.currentgraphRef.currentgraphRef.currentgraphRef.currentgraphRef.current',graphRef);
-    // graph2.scene().removeFromParent(); // Remove the table from the scene
-    // table = null; // Reset the table variable
     table = new THREE.Object3D();
-       
 
     if(node.type === 'table'){
       ipcRenderer
@@ -229,6 +217,7 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
           'run-query',
           {
             targetDb: selectedDb,
+            // Run a single query to databases whenever user click the node
             sqlString: `select * from ${node.group}`,
             selectedDb: selectedDb,
             runQueryNumber: 1,
@@ -236,7 +225,7 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
           dbType
         )
         .then(({ db,  returnedRows }) => {
-
+          // 3D preview greenboard design
           let strrr = '';
           let ct = 0;
           strrr += `columns: ` + "\n";
@@ -246,6 +235,7 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
               strrr += "I am sorry,\nthere is nothing in this table currently..."
             }
             else{
+              // Only display the table's columns' name only
               for(const property in returnedRows[0]){
                 strrr += `${property}` + "\n";
                 ct += 1;
@@ -253,16 +243,12 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
             }
           }
 
-          
-
-                   
-
           // Define properties of the table cells
           const cellWidth = 170;
           const cellHeight = 45 + 6 * ct;
-      
           // Create the table structure
           const cellGeometry = new THREE.BoxGeometry(cellWidth, cellHeight, 10);
+          // Define the preview green board's color and transparency
           const cellMaterial = new THREE.MeshBasicMaterial({ color: 'rgb(50, 200, 150)', opacity: 0.3, transparent: true });
           const cellMesh = new THREE.Mesh(cellGeometry, cellMaterial);
           // Calculate the position of each cell
@@ -281,33 +267,24 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
                 size: 4,
                 height: 2,
               });
+              // Declairing a new text 3D object with Three.MeshBasicMaterial method
               const textMaterial = new THREE.MeshBasicMaterial({ color: 'rgb(225, 255, 255)'});
               const textMesh = new THREE.Mesh(textGeometry, textMaterial);
-      
               // Position the text on the cell
               const textOffsetX = -cellWidth / 2 + 10; // Adjust the offset as needed
               const textOffsetY = cellHeight / 2 - 12; // Adjust the offset as needed
               textMesh.position.set(node.x + textOffsetX, node.y + (cellHeight/2) + textOffsetY, node.z+5); // Set the z-position to ensure the text is visible
-      
               // Add the text mesh to the table object
               table.add(textMesh);
-
-              // Calculate the table's position relative to the camera
-    
+              // Calculate the preview table's position relative to the camera
               const cameraPosition = camera.getWorldPosition(new THREE.Vector3());
-      
-          
               // Set the table's rotation to face the user/camera
               table.lookAt(cameraPosition);
-
+              // Adding/attaching the object to the clicked node's 3D object    
               node.__threeObj.add(table);
-
             }
           );
-          
-
         })
-
     }
     ////
     if(node.type === 'column' ){
@@ -316,6 +293,7 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
           'run-query',
           {
             targetDb: selectedDb,
+            // Run a single query to databases whenever user click the node
             sqlString: `select * from ${node.group}`,
             selectedDb: selectedDb,
             runQueryNumber: 1,
@@ -323,12 +301,9 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
           dbType
         )
         .then(({ db, returnedRows }) => {
-
-          
+          // 3D preview greenboard design
           let strrr = '';
           let newlineCount = 0;
-
-
           strrr += `${node.columnName}: ` + "\n";
           strrr += `------------------------------------------------------------------------------\n`;
           if(returnedRows){
@@ -336,10 +311,14 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
               strrr += "I am sorry,\nthere is nothing in this column currently..."
             }
             else{
+              // Only display the correspond column's contnet only
               for(let i = 0; i < returnedRows.length; i++){
                 strrr += `${returnedRows[i][node.columnName]}` + "\n";
                 newlineCount += 1;
+                // This is a restriction to preventing generate too many contents due to each character will be an individual object
+                // And each object has multiple vertex that users' computer might be too laggy to perform camera control 
                 if(strrr.length > 250 || newlineCount >25){
+                  // '...' represent a hint to tell user that current preview not able to load all the content of the column
                   strrr += '   .\n   .\n   .\n';
                   newlineCount += 3;
                   break;
@@ -351,9 +330,9 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
           // Define properties of the table cells
           const cellWidth = 200;
           const cellHeight = 45 + 6 * newlineCount;
-      
           // Create the table structure
           const cellGeometry = new THREE.BoxGeometry(cellWidth, cellHeight, 10);
+          // Define the preview green board's color and transparency
           const cellMaterial = new THREE.MeshBasicMaterial({ color: 'rgb(50, 200, 150)', opacity: 0.3, transparent: true });
           const cellMesh = new THREE.Mesh(cellGeometry, cellMaterial);
           // Calculate the position of each cell
@@ -372,47 +351,37 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
                 size: 4,
                 height: 2,
               });
+              // Declairing a new text 3D object with Three.MeshBasicMaterial method
               const textMaterial = new THREE.MeshBasicMaterial({ color: 'rgb(225, 255, 255)' });
               const textMesh = new THREE.Mesh(textGeometry, textMaterial);
-      
               // Position the text on the cell
               const textOffsetX = -cellWidth / 2 + 5; // Adjust the offset as needed
               const textOffsetY = cellHeight / 2 - 5 // Adjust the offset as needed
               textMesh.position.set(node.x + textOffsetX, node.y + (cellHeight/2) + textOffsetY, node.z+5); // Set the z-position to ensure the text is visible
-      
               // Add the text mesh to the table object
               table.add(textMesh);
-
-              // Calculate the table's position relative to the camera
-              const tablePosition = table.position.clone();
-              const cameraPosition = camera.position.clone();
-              const lookAtVector = cameraPosition.sub(tablePosition).normalize();
-          
+              // Calculate the preview table's position relative to the camera
+              const cameraPosition = camera.getWorldPosition(new THREE.Vector3());
               // Set the table's rotation to face the user/camera
-              table.lookAt(lookAtVector);
-
+              table.lookAt(cameraPosition);
+              // Adding/attaching the object to the clicked node's 3D object    
               node.__threeObj.add(table);
-
             }
           );
-
-          console.log('yo obj: ', {
-            db, returnedRows,
-          })
-
         })
-
     }
   }
 
 
   return (
     <div>
+      {/* A button to trun off/on functionlity of nodes' labeling */}
       <button onClick={() => setShowSprites(!showSprites)}>
-        {showSprites ? 'Hide Sprites' : 'Show Sprites'}
+        {showSprites ? 'Hide Nodes\' Labeling' : 'Show Nodes\' Labeling'}
       </button>
+      {/* A button to trun off/on functionlity of star's theme background, also clean the green board preview together */}
       <button onClick={toggleStars}>
-        {showStars ? 'Hide Stars' : 'Show Stars'}
+        {showStars ? 'Hide Stars Backgorund' : 'Show Stars Backgorund'}
       </button>
       <ForceGraph3D
         ref={graphRef}
@@ -427,26 +396,27 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
         linkDirectionalParticles={3}
         linkDirectionalParticleSpeed={0.005}
         nodeThreeObject={(node) => {
-          const nodeSize = node.size || 1;
-          const color = node.color || 'blue';
-          const geometry = new THREE.SphereGeometry(nodeSize, 32, 32);
-          const material = new THREE.MeshPhongMaterial({ color });
+          const nodeSize = node.size || 1;  // Default node size is each Node/ball's property node.size's correspoinding value
+          const color = node.color || 'orange'; // Default node size is each Node/ball's property node.color's correspoinding value
+          const geometry = new THREE.SphereGeometry(nodeSize, 32, 32); // The 2nd and 3rd parameters representing the number of horizontal and vertical resolution of each node/ball
+          const material = new THREE.MeshPhongMaterial({ color }); // Color of each node/ball
           const nodeMesh = new THREE.Mesh(geometry, material);
 
           const sprite = new SpriteText(node.name);
-          sprite.color = node.color;
-          sprite.textHeight = 2;
-          sprite.position.y = -nodeSize - 3;
-          sprite.visible = showSprites; // Set the visibility of the sprite based on showSprites state
-          nodeMesh.add(sprite);
+          sprite.color = node.color; // labeling's font color
+          sprite.textHeight = 2; // labeling's font size
+          sprite.position.y = -nodeSize - 3; // The relative position of each labeling to each node
+          sprite.visible = showSprites; // Set the visibility of the labeling based on showSprites state
+          nodeMesh.add(sprite); // Adding/attaching the labeling to each node's object
 
           return nodeMesh;
         }}
-        nodeLabel={(node) => node.name}
-        nodeLabelColor="white"
-        onNodeClick={(node) => runQueryBloom(node)}
+        nodeLabel={(node) => node.name} // Labeling display each Node/ball's property node.name's correspoinding value
+        nodeLabelColor="white" // Default labeling color is white
+        onNodeClick={(node) => runQueryBloom(node)} // Click the node in order to display green board content preview
       >
-        <ambientLight color="#ffffff" intensity={1} />
+        {/* The light and shadow to make the nodes/balls look like more 3D */}
+        <ambientLight color="#ffffff" intensity={1} /> 
         <directionalLight color="#ffffff" intensity={0.6} position={[-1, 1, 4]} />
       </ForceGraph3D>
     
