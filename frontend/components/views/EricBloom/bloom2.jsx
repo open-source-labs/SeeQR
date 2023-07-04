@@ -20,6 +20,8 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
 
   const [data, setData] = useState({ nodes: [], links: [] });
   const [camera, setCamera] = useState(null);
+  const [showStars, setShowStars] = useState(true); // Added showStars state
+
 
  
 
@@ -151,6 +153,9 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
   // Shout out to Gundam Seed Stargazer 
   // ParanoidUniverse Background Setting Up
   // ParanoidUniverse Container
+  const toggleStars = () => {
+    setShowStars((prevState) => !prevState);
+  };
   const graphRef = useRef();
   useEffect(() => {
     var positions = [];
@@ -188,6 +193,7 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
 
     const starsMaterial = new THREE.PointsMaterial({ vertexColors: true });
     const starField = new THREE.Points(starsGeometry, starsMaterial);
+    starField.visible = showStars;
 
     // //////////
 
@@ -202,7 +208,7 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
         graph.scene().remove(starField);
       }
     };
-  }, []);
+  }, [showStars]);
 
   // ////////////////////////////////////////////////////////////////////////////////////////////////// //
 
@@ -235,13 +241,15 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
           let ct = 0;
           strrr += `columns: ` + "\n";
           strrr += `------------------------------------------------------------------------------\n`;
-          if(returnedRows.length === 0){
-            strrr += "I am sorry,\nthere is nothing in this table currently..."
-          }
-          else{
-            for(const property in returnedRows[0]){
-              strrr += `${property}` + "\n";
-              ct += 1;
+          if(returnedRows){
+            if(returnedRows.length === 0){
+              strrr += "I am sorry,\nthere is nothing in this table currently..."
+            }
+            else{
+              for(const property in returnedRows[0]){
+                strrr += `${property}` + "\n";
+                ct += 1;
+              }
             }
           }
 
@@ -285,12 +293,12 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
               table.add(textMesh);
 
               // Calculate the table's position relative to the camera
-              const tablePosition = table.position.clone();
-              const cameraPosition = camera.position.clone();
-              const lookAtVector = cameraPosition.sub(tablePosition).normalize();
+    
+              const cameraPosition = camera.getWorldPosition(new THREE.Vector3());
+      
           
               // Set the table's rotation to face the user/camera
-              table.lookAt(lookAtVector);
+              table.lookAt(cameraPosition);
 
               node.__threeObj.add(table);
 
@@ -299,12 +307,10 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
           
 
         })
-        .then(()=>{
-          console.log('yooooooooooooooooooooooo');
-        })
+
     }
     ////
-    if(node.type === 'column'){
+    if(node.type === 'column' ){
       ipcRenderer
         .invoke(
           'run-query',
@@ -316,12 +322,7 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
           },
           dbType
         )
-        .then(({ db, sqlString, returnedRows, explainResults, error, 
-          numberOfSample,
-          totalSampleTime,
-          minmumSampleTime,
-          maximumSampleTime,
-          averageSampleTime, }) => {
+        .then(({ db, returnedRows }) => {
 
           
           let strrr = '';
@@ -329,18 +330,20 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
 
 
           strrr += `${node.columnName}: ` + "\n";
-          strrr += `-------------------------------------\n`;
-          if(returnedRows.length === 0){
-            strrr += "I am sorry,\nthere is nothing in this column currently..."
-          }
-          else{
-            for(let i = 0; i < returnedRows.length; i++){
-              strrr += `${returnedRows[i][node.columnName]}` + "\n";
-              newlineCount += 1;
-              if(strrr.length > 250 || newlineCount >25){
-                strrr += '   .\n   .\n   .\n';
-                newlineCount += 3;
-                break;
+          strrr += `------------------------------------------------------------------------------\n`;
+          if(returnedRows){
+            if(returnedRows.length === 0){
+              strrr += "I am sorry,\nthere is nothing in this column currently..."
+            }
+            else{
+              for(let i = 0; i < returnedRows.length; i++){
+                strrr += `${returnedRows[i][node.columnName]}` + "\n";
+                newlineCount += 1;
+                if(strrr.length > 250 || newlineCount >25){
+                  strrr += '   .\n   .\n   .\n';
+                  newlineCount += 3;
+                  break;
+                }
               }
             }
           }
@@ -393,22 +396,12 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
             }
           );
 
-
-          console.log('dbdbdbdbdbdbdbdbdbdbdbdbdbdb', db);
-          // console.log('returnedRowsreturnedRowsreturnedRowsreturnedRows', returnedRows);
           console.log('yo obj: ', {
-            db, sqlString, returnedRows, explainResults, 
-          numberOfSample,
-          totalSampleTime,
-          minmumSampleTime,
-          maximumSampleTime,
-          averageSampleTime,
+            db, returnedRows,
           })
 
         })
-        .then(()=>{
-          console.log('yooooooooooooooooooooooo');
-        })
+
     }
   }
 
@@ -417,6 +410,9 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
     <div>
       <button onClick={() => setShowSprites(!showSprites)}>
         {showSprites ? 'Hide Sprites' : 'Show Sprites'}
+      </button>
+      <button onClick={toggleStars}>
+        {showStars ? 'Hide Stars' : 'Show Stars'}
       </button>
       <ForceGraph3D
         ref={graphRef}

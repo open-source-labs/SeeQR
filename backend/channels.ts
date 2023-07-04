@@ -512,18 +512,10 @@ ipcMain.handle(
 
           }
         }
-        console.log('ericCheck------------------------------------------------------------------ericCheck');
-        console.log('totalSampleTime------------------------------------------------------------------------------------------totalSampleTime', totalSampleTime);
-        // minmumSampleTime = Math.min(...arr);
-        // maximumSampleTime = Math.max(...arr);
-        // averageSampleTime = totalSampleTime/numberOfSample;
         minmumSampleTime = Math.round(Math.min(...arr) * 10 ** 5) / 10 ** 5;
         maximumSampleTime = Math.round(Math.max(...arr) * 10 ** 5) / 10 ** 5;
         averageSampleTime = Math.round((totalSampleTime / numberOfSample) * 10 ** 5) / 10 ** 5;
         totalSampleTime = Math.round(totalSampleTime * 10 ** 5) / 10 ** 5;
-        console.log('minmumSampleTime------------------------------------------------------------------------------------------minmumSampleTime', minmumSampleTime);
-        console.log('maximumSampleTime------------------------------------------------------------------------------------------maximumSampleTime', maximumSampleTime);
-        console.log('averageSampleTime------------------------------------------------------------------------------------------averageSampleTime', averageSampleTime);
       } catch (e) {
         error = `Failed to get Execution Plan. EXPLAIN might not support this query.`;
       }
@@ -536,8 +528,13 @@ ipcMain.handle(
       try {
         const results = await db.query(sqlString, null, dbType);
         if (dbType === DBType.MySQL) {
-          returnedRows = results[0][1];
-
+          console.log('--------------------*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*---------mySQL results', results);
+          // returnedRows = results[0][1];
+          returnedRows = results[0];
+          console.log('--------------------*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*---------mySQL results[0][1]', results[0][1]);
+          console.log('--------------------*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*---------mySQL results[0][2]', results[0][2]);
+          console.log('--------------------*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*---------mySQL results[0][3]', results[0][3]);
+          console.log('--------------------*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*---------mySQL results[0]', results[0]);
           // console.log('returnedRows in channels for MySQL', returnedRows);
         }
         if (dbType === DBType.Postgres) {
