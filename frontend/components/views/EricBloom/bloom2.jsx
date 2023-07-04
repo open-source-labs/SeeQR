@@ -6,10 +6,9 @@ import { IpcRendererEvent, ipcRenderer } from 'electron';
 import * as d3 from 'd3';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
+import ClickedNodeDetail from './detailOfClickedNode';
 
 const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
-
- 
 
   // Define the width and height of the universe container
   const maxContainerWidth = window.innerWidth * 0.9 - 275;
@@ -25,8 +24,12 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
   const [showStars, setShowStars] = useState(true);
   // React hook for showing/hiding the labeling of each star
   const [showSprites, setShowSprites] = useState(true);
+  // For passing down to the ClickedNodeDetail table chart
+  const [cachedReturnedRows, setCachedReturnedRows] = useState([]);
+  // State variable to track the clicked node
+  const [clickedNode, setClickedNode] = useState(null); 
 
-  
+
   useEffect(() => {
     const nodes = [];
     const edges = [];
@@ -232,9 +235,12 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
           strrr += `------------------------------------------------------------------------------\n`;
           if(returnedRows){
             if(returnedRows.length === 0){
+              setClickedNode(null)
               strrr += "I am sorry,\nthere is nothing in this table currently..."
             }
             else{
+              setCachedReturnedRows(returnedRows);
+              setClickedNode(true)
               // Only display the table's columns' name only
               for(const property in returnedRows[0]){
                 strrr += `${property}` + "\n";
@@ -286,7 +292,7 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
           );
         })
     }
-    ////
+
     if(node.type === 'column' ){
       ipcRenderer
         .invoke(
@@ -308,9 +314,12 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
           strrr += `------------------------------------------------------------------------------\n`;
           if(returnedRows){
             if(returnedRows.length === 0){
+              setClickedNode(null)
               strrr += "I am sorry,\nthere is nothing in this column currently..."
             }
             else{
+              setCachedReturnedRows(returnedRows);
+              setClickedNode(true)
               // Only display the correspond column's contnet only
               for(let i = 0; i < returnedRows.length; i++){
                 strrr += `${returnedRows[i][node.columnName]}` + "\n";
@@ -419,7 +428,11 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
         <ambientLight color="#ffffff" intensity={1} /> 
         <directionalLight color="#ffffff" intensity={0.6} position={[-1, 1, 4]} />
       </ForceGraph3D>
-    
+      {clickedNode && (
+        <ClickedNodeDetail
+          returnedRows={cachedReturnedRows}
+        />
+      )}
     </div>
   );
 };
