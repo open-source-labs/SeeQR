@@ -30,21 +30,32 @@ interface HelperFunctions {
 
 const helperFunctions: HelperFunctions = {
   // create a database
+  /**
+   * Generate query for creating a database with the input name for the input type
+   * @param name name of database to create
+   * @param dbType type of database to create
+   * @returns String form of query
+   */
   createDBFunc: function createDBFunc(name, dbType: DBType) {
     const PG = `CREATE DATABASE "${name}"`;
     const MYSQL = `CREATE DATABASE ${name}`;
-    return dbType === DBType.Postgres || dbType === DBType.RDSPostgres
-      ? PG
-      : MYSQL;
+    if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) return PG;
+    if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL) return MYSQL;
+    return 'invalid dbtype';
   },
 
-  // drop provided database
+  /**
+   * Generate query for dropping a database with the input name from the input type
+   * @param dbName name of database to drop
+   * @param dbType type of database to drop
+   * @returns String form of a query
+   */
   dropDBFunc: function dropDBFunc(dbName, dbType: DBType) {
     const PG = `DROP DATABASE "${dbName}"`;
     const MYSQL = `DROP DATABASE ${dbName}`;
-    return dbType === DBType.Postgres || dbType === DBType.RDSPostgres
-      ? PG
-      : MYSQL;
+    if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) return PG;
+    if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL) return MYSQL;
+    return 'invalid dbtype';
   },
 
   // run explain on query
@@ -52,37 +63,39 @@ const helperFunctions: HelperFunctions = {
     const PG = `BEGIN; EXPLAIN (FORMAT JSON, ANALYZE, VERBOSE, BUFFERS) ${sqlString}; ROLLBACK`;
     // const MYSQL = `BEGIN; EXPLAIN ANALYZE ${sqlString}`;
     const MYSQL = `EXPLAIN ANALYZE ${sqlString}`;
+    const SQLite = `EXPLAIN QUERY PLAN ${sqlString}`
 
     console.log('ericCheck------------------------------------------------------------------ericCheck');
-    if(dbType === DBType.Postgres || dbType === DBType.RDSPostgres){
+    if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) {
       console.log('ericCheck------------------------------------------------------------------sql str', PG);
     }
     else {
       console.log('ericCheck------------------------------------------------------------------sql str', MYSQL);
     }
-    return dbType === DBType.Postgres || dbType === DBType.RDSPostgres
-      ? PG
-      : MYSQL;
+    if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) return PG;
+    if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL) return MYSQL;
+    if (dbType === DBType.SQLite) return SQLite;
+    return 'invalid dbtype';
   },
 
   // import SQL file into new DB created
   runSQLFunc: function runSQLFunc(dbName, file, dbType: DBType) {
     const SQL_data = docConfig.getFullConfig();
-    const PG = `PGPASSWORD=${SQL_data.pg.password} psql -U ${SQL_data.pg.user} -d "${dbName}" -f "${file}" -p ${SQL_data.pg.port}`;
+    const PG = `psql -U ${SQL_data.pg.user} -d "${dbName}" -f "${file}" -p ${SQL_data.pg.port}`;
     const MYSQL = `export MYSQL_PWD='${SQL_data.mysql.password}'; mysql -u${SQL_data.mysql.user} --port=${SQL_data.mysql.port} ${dbName} < ${file}`;
-    return dbType === DBType.Postgres || dbType === DBType.RDSPostgres
-      ? PG
-      : MYSQL;
+    if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) return PG;
+    if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL) return MYSQL;
+    return 'invalid dbtype';
   },
 
   // import TAR file into new DB created
   runTARFunc: function runTARFunc(dbName, file, dbType: DBType) {
     const SQL_data = docConfig.getFullConfig();
-    const PG = `PGPASSWORD=${SQL_data.pg.password} pg_restore -U ${SQL_data.pg.user} -p ${SQL_data.pg.port} -d "${dbName}" "${file}" `;
+    const PG = `pg_restore -U ${SQL_data.pg.user} -p ${SQL_data.pg.port} -d "${dbName}" "${file}" `;
     const MYSQL = `export MYSQL_PWD='${SQL_data.mysql.password}'; mysqldump -u ${SQL_data.mysql.user} --port=${SQL_data.mysql.port}  ${dbName} > ${file}`;
-    return dbType === DBType.Postgres || dbType === DBType.RDSPostgres
-      ? PG
-      : MYSQL;
+    if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) return PG;
+    if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL) return MYSQL;
+    return 'invalid dbtype';
   },
 
   // make a full copy of the schema
@@ -92,11 +105,11 @@ const helperFunctions: HelperFunctions = {
     dbType: DBType
   ) {
     const SQL_data = docConfig.getFullConfig();
-    const PG = `PGPASSWORD=${SQL_data.pg.password} pg_dump -s -U ${SQL_data.pg.user}  -p ${SQL_data.pg.port} -Fp -d ${dbCopyName} > "${newFile}"`;
+    const PG = `pg_dump -U ${SQL_data.pg.user}  -p ${SQL_data.pg.port} -Fp -d ${dbCopyName} > "${newFile}"`;
     const MYSQL = `export MYSQL_PWD='${SQL_data.mysql.password}'; mysqldump -h localhost -u ${SQL_data.mysql.user}  ${dbCopyName} > ${newFile}`;
-    return dbType === DBType.Postgres || dbType === DBType.RDSPostgres
-      ? PG
-      : MYSQL;
+    if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) return PG;
+    if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL) return MYSQL;
+    return 'invalid dbtype';
   },
 
   // make a hollow copy of the schema
@@ -106,19 +119,23 @@ const helperFunctions: HelperFunctions = {
     dbType: DBType
   ) {
     const SQL_data = docConfig.getFullConfig();
-    const PG = ` PGPASSWORD=${SQL_data.pg.password} pg_dump -s -U ${SQL_data.pg.user}  -p ${SQL_data.pg.port} -F p -d "${dbCopyName}" > "${file}"`;
+    const PG = `pg_dump -s -U ${SQL_data.pg.user}  -p ${SQL_data.pg.port} -F p -d "${dbCopyName}" > "${file}"`;
     const MYSQL = `export MYSQL_PWD='${SQL_data.mysql.password}'; mysqldump -h localhost -u ${SQL_data.mysql.user} --port=${SQL_data.mysql.port}  ${dbCopyName} > ${file}`;
-    return dbType === DBType.Postgres || dbType === DBType.RDSPostgres
-      ? PG
-      : MYSQL;
+    if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) return PG;
+    if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL) return MYSQL;
+    return 'invalid dbtype';
   },
 
   // promisified execute to execute commands in the child process
   promExecute: (cmd: string) =>
     new Promise((resolve, reject) => {
-      exec(cmd, { timeout: 5000 }, (error, stdout, stderr) => {
+      exec(cmd, {
+        timeout: 5000,
+        env: { PGPASSWORD: docConfig.getFullConfig().pg.password },
+      }, (error, stdout, stderr) => {
         if (error) {
           // console.log(error)
+          console.log(error);
           return reject(error);
         }
         if (stderr) return reject(new Error(stderr));
