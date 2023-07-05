@@ -1,11 +1,16 @@
 import React from 'react';
+import ParanoidUniverse from './EricBloom/bloom2';
 // import { AppState } from '../../../types';
 
-const NewChart = ({ show }) => {
+const NewChart = ({ show, selectedDb, dbTables, dbType }) => {
   if (!show) return null;
   return (
     <div>
-      <h1>NEW PAGE</h1>
+      <ParanoidUniverse 
+      selectedDb={selectedDb}
+      dbTables={dbTables}
+      dbType={dbType}
+      />
     </div>
   );
 };
