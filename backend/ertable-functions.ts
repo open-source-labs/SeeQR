@@ -21,20 +21,6 @@ function backendObjToQuery(backendObj: BackendObjType, dbType: DBType): string {
   const outputArray: string[] = [];
   let firstAddingMySQLColumnName: string | null;
   // Add table to database
-  // function addTable(addTableArray: AddTablesObjType[]): void {
-  //   for (let i = 0; i < addTableArray.length; i += 1) {
-  //     const currTable: AddTablesObjType = addTableArray[i];
-  //     if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres)
-  //       outputArray.push(
-  //         `CREATE TABLE ${currTable.table_schema}.${currTable.table_name}(); `
-  //       );
-  //     if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL)
-  //       outputArray.push(
-  //         `CREATE TABLE ${currTable.table_name} (_id VARCHAR(20)); `
-  //       );
-  //   }
-  // }
-  ///////////////////////////eric/////////////////////////////////////////////////////////////////////////////////
 
 
   /**
@@ -43,16 +29,10 @@ function backendObjToQuery(backendObj: BackendObjType, dbType: DBType): string {
    * @param alterTablesArray holds table of properties of tables to be altered, and alterations to be made
    */
   function addTable(addTableArray: AddTablesObjType[], alterTablesArray: AlterTablesObjType[]): void {
-    console.log('ERTABLEFUNCTIONS ADDTABLEARRAY:', addTableArray);
-    console.log('ERTABLEFUNCTIONS ALTERTABLESARRAY', alterTablesArray);
     for (let i = 0; i < addTableArray.length; i += 1) {
 
       const currTable: AddTablesObjType = addTableArray[i];
       const currAlterTable: AlterTablesObjType = alterTablesArray[i];
-      console.log('curraltertable ALTERCOLUMNS')
-      console.log(currAlterTable.alterColumns);
-      console.log('curraltertable ADDCOLUMNS')
-      console.log(currAlterTable.addColumns);
 
       if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) {
         outputArray.push(
@@ -60,9 +40,6 @@ function backendObjToQuery(backendObj: BackendObjType, dbType: DBType): string {
         );
       }
       if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL) {
-        // console.log("currTable=============================================================currTable", currTable);
-        // console.log("currAlterTable=============================================================currAlterTable", currAlterTable);
-        // console.log("currAlterTable.addColumns=============================================================currAlterTable.addColumns", currAlterTable.addColumns);
         firstAddingMySQLColumnName = `${currAlterTable.addColumns[0].column_name}`;
         outputArray.push(
           `CREATE TABLE ${currTable.table_name} 
@@ -96,7 +73,6 @@ function backendObjToQuery(backendObj: BackendObjType, dbType: DBType): string {
       }
     }
   }
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   // Remove table from database
   function dropTable(dropTableArray: DropTablesObjType[]): void {
@@ -119,8 +95,6 @@ function backendObjToQuery(backendObj: BackendObjType, dbType: DBType): string {
 
   // Alter existing table in database. All column functions reside under this function
   function alterTable(alterTableArray: AlterTablesObjType[]): void {
-    // console.log('alterTableArray in ertablefunctions')
-    // console.log(alterTableArray);
     // Add column to table
     function addColumn(currTable: AlterTablesObjType): string {
       let addColumnString: string = '';
@@ -129,8 +103,6 @@ function backendObjToQuery(backendObj: BackendObjType, dbType: DBType): string {
           if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres)
             addColumnString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} ADD COLUMN ${currTable.addColumns[i].column_name} ${currTable.addColumns[i].data_type}(${currTable.addColumns[i].character_maximum_length}); `;
           if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL) {
-            // console.log('currTable.addColumns in ertable-functions')
-            // console.log(currTable.addColumns);
             let lengthOfData = '';
             if (currTable.addColumns[i].character_maximum_length != null) {
               lengthOfData = `(${currTable.addColumns[i].character_maximum_length})`;

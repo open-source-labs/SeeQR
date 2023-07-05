@@ -110,7 +110,7 @@ export interface DBFunctions {
   dbsInputted: dbsInputted;
 
   setBaseConnections: () => Promise<combined>;
-  query: (text: string, params: (string | number)[], dbType: DBType, callback?: (err: string, res?: Array<any>) => void) => void;
+  query: (text: string, params: (string | number)[], dbType: DBType) => void;
   connectToDB: (db: string, dbType?: DBType) => Promise<void>;
   disconnectToDrop: (dbType: DBType) => Promise<void>;
   getLists: (dbName: string, dbType?: DBType) => Promise<DBList>;
