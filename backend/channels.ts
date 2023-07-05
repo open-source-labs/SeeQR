@@ -889,7 +889,7 @@ ipcMain.handle(
       const query = backendObjToQuery(backendObj, dbType);
       console.log('backendObj in channels.ts')
       console.log(backendObj);
-      console.log('query in channels.ts')
+      console.log('query created in channels.ts from backendObj')
       console.log(query);
       // run sql command
       await db.query('Begin;', null, dbType);
