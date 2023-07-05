@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { ipcRenderer } from 'electron';
 import { IconButton, Tooltip, Menu, MenuItem } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
+import UploadFileIcon from '@mui/icons-material/UploadFile';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import AddNewDbModal from '../modal/AddNewDbModalCorrect';
 import {
@@ -43,11 +43,7 @@ type DbListProps = Pick<
   curDBType: DBType | undefined;
   setDBType: (dbType: DBType | undefined) => void;
   DBInfo: DatabaseInfo[] | undefined;
-  setDBInfo: (dbInfo: DatabaseInfo[] | undefined) => void;
-  dbTables: TableInfo[];
-  setTables: (tableInfo: TableInfo[]) => void;
-  selectedTable: TableInfo | undefined;
-  setSelectedTable: (tableInfo: TableInfo | undefined) => void;
+  selectedView: AppState['selectedView'];
 };
 
 const DbList = ({
@@ -58,11 +54,7 @@ const DbList = ({
   curDBType,
   setDBType,
   DBInfo,
-  setDBInfo,
-  dbTables,
-  setTables,
-  selectedTable,
-  setSelectedTable,
+  selectedView,
 }: DbListProps) => {
   const [openAdd, setOpenAdd] = useState(false);
   const [openDupe, setOpenDupe] = useState(false);
@@ -97,7 +89,7 @@ const DbList = ({
   };
 
   const selectHandler = (dbName: string, cdbt: DBType | undefined) => {
-    setSelectedView('dbView');
+    setSelectedView(selectedView === 'newChart' ?  'newChart' : 'dbView');
     if (dbName === selectedDb) return;
     ipcRenderer
       .invoke('select-db', dbName, cdbt)
@@ -166,7 +158,7 @@ const DbList = ({
         </Menu>
         <Tooltip title="Import Database">
           <IconButton onClick={handleClickOpenAdd} size="large">
-            <AddIcon fontSize="large" />
+            <UploadFileIcon fontSize="large" />
           </IconButton>
         </Tooltip>
       </div>

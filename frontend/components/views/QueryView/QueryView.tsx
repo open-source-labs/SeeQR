@@ -90,12 +90,7 @@ const QueryView = ({
   };
 
   const localQuery = { ...defaultQuery, ...query };
-  // console.log('local query', localQuery);
-  // console.log('query', query);
-  // console.log('defaultQuery', defaultQuery);
-  // console.log('curDBType', curDBType);
 
-  // ********** Added Number of times to run query**********/
   const [ runQueryNumber, setRunQueryNumber ] = useState(1);
 
   const onLabelChange = (newLabel: string) => {
@@ -176,16 +171,13 @@ const QueryView = ({
           throw error;
         }
         let transformedData;
-        // console.log('returnedRows after .then method', returnedRows);
-        // console.log('explainResult after .then method', explainResults);
-        // console.log('curDBType in QueryView', curDBType);
 
         if (curDBType === DBType.Postgres) {
           transformedData = {
             sqlString,
             returnedRows,
             executionPlan: {
-              numberOfSample,   // executionPlan.numberOfSample = numberOfSample
+              numberOfSample,
               totalSampleTime,
               minmumSampleTime,
               maximumSampleTime,
@@ -204,7 +196,7 @@ const QueryView = ({
             db,
             group: localQuery.group,
             executionPlan: {
-              numberOfSample,   // executionPlan.numberOfSample = numberOfSample
+              numberOfSample,
               totalSampleTime,
               minmumSampleTime,
               maximumSampleTime,
@@ -239,7 +231,6 @@ const QueryView = ({
       });
   };
 
-  // ********** Added Number of times to run query **********/
   const onRunQueryNumChange = (runNumber: number) => {
     setRunQueryNumber(runNumber);
   }

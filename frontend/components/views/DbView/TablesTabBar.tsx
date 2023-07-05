@@ -131,10 +131,10 @@ const TablesTabs = ({
         onChange={handleView}
         aria-label="active-view"
       >
-        <ToggleButton value aria-label="er">
+        <ToggleButton value aria-label="er" className='tables-view-btn'>
           ER diagram
         </ToggleButton>
-        <ToggleButton value={false} aria-label="table">
+        <ToggleButton value={false} aria-label="table" className='tables-view-btn'>
           Table
         </ToggleButton>
       </StyledToggleButtonGroup>
