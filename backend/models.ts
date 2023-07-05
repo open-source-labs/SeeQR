@@ -251,7 +251,6 @@ const DBFunctions: DBFunctions = {
   },
 
   sampler(queryString) {
-    console.log('pre performance');
     return new Promise((resolve, reject) => {
       pools.sqlite_db.run('BEGIN', (err) => {
         if (err) {
@@ -271,7 +270,7 @@ const DBFunctions: DBFunctions = {
                   reject(err);
                 } else {
                   const elapsedTime = endTime - startTime;
-                  console.log(`Elapsed time: ${elapsedTime} milliseconds`);
+                  // console.log(`Elapsed time: ${elapsedTime} milliseconds`);
                   resolve(elapsedTime);
                 }
               });
