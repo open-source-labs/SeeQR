@@ -8,7 +8,6 @@ import AddNewDbModal from '../modal/AddNewDbModalCorrect';
 import {
   AppState,
   DatabaseInfo,
-  TableInfo,
 } from '../../types';
 import { DBType } from '../../../backend/BE_types';
 import { sendFeedback } from '../../lib/utils';
@@ -60,13 +59,10 @@ const DbList = ({
   const [openDupe, setOpenDupe] = useState(false);
   const [dbToDupe, setDbToDupe] = useState('');
   
-  /* ****************************************************************************** */ 
-  // added for filter button
+  // filter button
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [filterBy, setFilterBy] = useState<string>('All');
   const openFilter = Boolean(anchorEl);
-  /* ****************************************************************************** */ 
-
 
   // I think this returns undefined if DBInfo is falsy idk lol
   const dbNames = DBInfo?.map((dbi) => dbi.db_name);
@@ -105,12 +101,6 @@ const DbList = ({
       );
   };
 
-  /* ****************************************************************************** */ 
-  // added for filter button
-  // const handleFilter = () => {
-
-  // }
-
   const handleClickFilter = (e: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(e.currentTarget);
   }
@@ -120,6 +110,7 @@ const DbList = ({
     setFilterBy(e.currentTarget.innerText || filterBy);
   }
   
+  //  filter options
   const dbNamesArr = ['All', 'MySql', 'Postgres', 'RDS Mysql', 'RDS Postgres', 'SQLite'];
 
   const dbNamesObj = {
@@ -130,7 +121,6 @@ const DbList = ({
     'RDS Postgres': 'rds-pg',
     SQLite: 'sqlite',
   }
-  /* ****************************************************************************** */ 
 
   if (!show) return null;
   return (

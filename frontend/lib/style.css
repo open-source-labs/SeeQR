@@ -78,3 +78,13 @@ main {
 .query-run-box {
   margin-top: 1rem;
 }
+
+.hide-3d-btn {
+  color: rgba(255, 255, 255, .8);
+  border: 2px solid rgba(255, 255, 255, .8);
+  border-radius: .5rem;
+  background: transparent;
+  padding: 1rem .5rem;
+  cursor: pointer;
+  outline: none;
+}

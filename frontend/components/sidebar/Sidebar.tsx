@@ -29,11 +29,6 @@ const StyledDrawer = styled(Drawer)`
   }
 `;
 
-const SideBarTopContainer = styled.div`
-  position: fixed;
-  top: 0;
-`;
-
 const Logo = styled.img`
   position: fixed;
   bottom: 100px;
@@ -86,7 +81,6 @@ const HideSidebarBtnContainer = styled.div`
   justify-content: center;
   align-items: center;
   align-self: flex-end;
-  // border-left: 1px solid #525252;
 `;
 
 const Sidebar = ({
@@ -107,14 +101,7 @@ const Sidebar = ({
   setERView,
   curDBType,
   setDBType,
-  // cdbt,
-  // setcdbt,
   DBInfo,
-  setDBInfo,
-  dbTables,
-  setTables,
-  selectedTable,
-  setSelectedTable,
   showCreateDialog,
   setCreateDialog,
   setConfigDialog,
@@ -141,7 +128,6 @@ const Sidebar = ({
           <TopButtons
             selectedView={selectedView}
             setSelectedView={setSelectedView}
-            toggleOpen={toggleOpen}
             setConfigDialog={setConfigDialog}
           />
           <ViewSelector {...{ selectedView, setSelectedView, setERView }} />

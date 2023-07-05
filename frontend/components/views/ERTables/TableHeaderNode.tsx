@@ -9,7 +9,6 @@ import {
   DropTablesObjType,
   TableHeaderDataObjectType,
   AlterColumnsObjType,
-  AddTablesObjType,
 } from '../../../types';
 import './styles.css';
 import * as colors from '../../../style-variables';
@@ -49,8 +48,6 @@ function TableHeader({ data }: TableHeaderProps) {
     alterTablesObj.addColumns.push(addColumnsObj);
     // update the backendObj
     backendObj.current.updates.alterTables.push(alterTablesObj);
-    /////////////////eric/////////////////
-    // backendObj.current.updates.addTables.ericTestUnit.push(alterTablesObj);
     // push a new object with blank properties
     currentTable.columns.push({
       column_name: `NewColumn${currentTable.columns?.length + 1 || 1}`,

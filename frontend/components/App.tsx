@@ -34,7 +34,7 @@ import Spinner from './modal/Spinner';
 import { once } from '../lib/utils';
 import CreateDBDialog from './Dialog/CreateDBDialog';
 import ConfigView from './Dialog/ConfigView';
-import NewChart from './views/NewChart';
+import NewChart from './views/EricBloom/NewChart';
 
 
 declare module '@mui/material/styles/' {
@@ -185,11 +185,6 @@ const App = () => {
               curDBType,
               setDBType,
               DBInfo,
-              setDBInfo,
-              dbTables,
-              setTables,
-              selectedTable,
-              setSelectedTable,
               showCreateDialog,
               setCreateDialog,
               setConfigDialog,
@@ -222,7 +217,6 @@ const App = () => {
               curDBType={curDBType}
               setDBType={setDBType}
               DBInfo={DBInfo}
-              setDBInfo={setDBInfo}
             />
             <QuickStartView show={shownView === 'quickStartView'} />
 
@@ -238,14 +232,9 @@ const App = () => {
               setQuery={setWorkingQuery}
               selectedDb={selectedDb}
               setSelectedDb={setSelectedDb}
-              createNewQuery={createNewQuery}
               show={shownView === 'newSchemaView'}
               curDBType={curDBType}
-              setDBType={setDBType}
-              DBInfo={DBInfo}
-              setDBInfo={setDBInfo}
               dbTables={dbTables}
-              setTables={setTables}
               selectedTable={selectedTable}
               setSelectedTable={setSelectedTable}
             />

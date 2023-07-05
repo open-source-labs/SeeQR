@@ -23,8 +23,6 @@ interface QuerySummaryProps {
 
 const QuerySummary = ({ executionPlan }: QuerySummaryProps) => {
   const summaryData = {
-    // 'Planning Time': executionPlan?.['Planning Time'],
-    // 'Execution Time': executionPlan?.['Execution Time'],
     'Number of Sample': executionPlan?.numberOfSample,
     'Total Sample Time': executionPlan?.totalSampleTime + 'ms',
     'Minimum Sample Time': executionPlan?.minimumSampleTime + 'ms',

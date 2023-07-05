@@ -43,17 +43,7 @@ interface SchemaSqlInputProps {
       const formatted = format(sql, { language: 'postgresql', uppercase: true });
       onChange(formatted);
     };
-  
-    // Codemirror module configuration options
-    const options = {
-      lineNumbers: true,
-      mode: 'sql',
-      theme: 'lesser-dark',
-      extraKeys: {
-        'Ctrl-Enter': runQuery,
-        'Ctrl-F': formatQuery,
-      },
-    };
+
     return (
       <Container>
         <Toolbar>

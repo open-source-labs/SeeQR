@@ -30,14 +30,12 @@ export interface AppState {
   setERView?: (boolean) => void;
   curDBType: DBType | undefined;
   setDBType: (dbType: DBType | undefined) => void;
-  // cdbt: DBType | undefined;
-  // setcdbt: (cdbt: DBType | undefined) => void;
   DBInfo: DatabaseInfo[] | undefined;
-  setDBInfo: (dbInfo: DatabaseInfo[] | undefined) => void;
-  dbTables: TableInfo[];
-  setTables: (tableInfo: TableInfo[]) => void;
-  selectedTable: TableInfo | undefined;
-  setSelectedTable: (tableInfo: TableInfo | undefined) => void;
+  setDBInfo?: (dbInfo: DatabaseInfo[] | undefined) => void;
+  dbTables?: TableInfo[];
+  setTables?: (tableInfo: TableInfo[]) => void;
+  selectedTable?: TableInfo | undefined;
+  setSelectedTable?: (tableInfo: TableInfo | undefined) => void;
   showCreateDialog: boolean;
   setCreateDialog: (show: boolean) => void;
   setConfigDialog: (show: boolean) => void;
@@ -78,13 +76,11 @@ export interface QueryData {
 
   // flag: boolean
 
-  /////////////////////////eric//////////////////////////////////////////////
   numberOfSample: number,
   totalSampleTime: number | string,
   minimumSampleTime: number | string,
   maximumSampleTime: number | string,
   averageSampleTime: number | string,
-  ///////////////////////////////////////////////////////////////////////////
 }
 
 export type ValidTabs = 'Results' | 'Execution Plan';
