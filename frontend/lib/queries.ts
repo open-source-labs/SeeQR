@@ -141,8 +141,7 @@ export const getTotalTime = (query: QueryData | undefined) => {
   if (!query?.executionPlan) return 0;
   return (
     // query.executionPlan['Execution Time'] + query.executionPlan['Planning Time']
-    // eric ////////
-    query.executionPlan.averageSampleTime
+    query.executionPlan['totalSampleTime'] / query.executionPlan['numberOfSample']
   );
 };
 
@@ -151,5 +150,5 @@ export const getTotalTime = (query: QueryData | undefined) => {
  */
 export const getPrettyTime = (query: QueryData | undefined) => {
   if (!query?.executionPlan) return undefined 
-  return ms(+getTotalTime(query).toPrecision(3), { long: true });
+  return ms(+getTotalTime(query).toPrecision(8), { long: true });
 };

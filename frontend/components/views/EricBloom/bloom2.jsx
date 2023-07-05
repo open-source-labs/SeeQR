@@ -28,6 +28,8 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
   const [cachedReturnedRows, setCachedReturnedRows] = useState([]);
   // State variable to track the clicked node
   const [clickedNode, setClickedNode] = useState(null); 
+  // State variable to track which node has been selected
+  const [selectedNode, setSelectedNode] = useState(''); 
 
 
   useEffect(() => {
@@ -241,6 +243,7 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
             else{
               setCachedReturnedRows(returnedRows);
               setClickedNode(true)
+              setSelectedNode(node.group);
               // Only display the table's columns' name only
               for(const property in returnedRows[0]){
                 strrr += `${property}` + "\n";
@@ -319,7 +322,8 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
             }
             else{
               setCachedReturnedRows(returnedRows);
-              setClickedNode(true)
+              setClickedNode(true);
+              setSelectedNode(node.columnName);
               // Only display the correspond column's contnet only
               for(let i = 0; i < returnedRows.length; i++){
                 strrr += `${returnedRows[i][node.columnName]}` + "\n";
@@ -431,6 +435,7 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
       {clickedNode && (
         <ClickedNodeDetail
           returnedRows={cachedReturnedRows}
+          selectedNode={selectedNode}
         />
       )}
     </div>

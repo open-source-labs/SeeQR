@@ -80,6 +80,7 @@
     "@babel/preset-env": "^7.10.4",
     "@babel/preset-react": "^7.10.4",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.4.3",
+    "@testing-library/react": "^12.1.5",
     "@types/chart.js": "^2.9.30",
     "@types/debounce": "^1.2.0",
     "@types/electron": "^1.6.10",

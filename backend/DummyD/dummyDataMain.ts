@@ -88,12 +88,7 @@ const generateDummyData: GenerateDummyData = async (tableInfo: ColumnObj[], numR
   for(let i = 0; i < tableInfo.length; i++) {
     columnNames.push(tableInfo[i].column_name);
   }
-  console.log('columnNames=======================ericCheck========================ericCheck========================columnNames', columnNames);
-  console.log('ericCheck=======================ericCheck========================ericCheck========================ericCheck');
-  console.log('tableInfo=======================ericCheck========================ericCheck========================tableInfo', tableInfo);
-  console.log('ericCheck=======================ericCheck========================ericCheck========================ericCheck');
-  console.log('numRows=======================ericCheck========================ericCheck========================numRows', numRows);
-  console.log('ericCheck=======================ericCheck========================ericCheck========================ericCheck');
+
   const dummyRecords: DummyRecords = [columnNames];
 
   // generate dummy records for each row
@@ -104,10 +99,7 @@ const generateDummyData: GenerateDummyData = async (tableInfo: ColumnObj[], numR
       // if column has no foreign key constraint, then generate dummy data based on data type
       if (tableInfo[j].constraint_type !== 'FOREIGN KEY'){ 
         // && tableInfo[j].constraint_type !== 'PRIMARY KEY'
-        console.log('ericCheckericCheckericCheckericCheckericCheckericCheckericCheckericCheckericCheckericCheckericCheckericCheck========================ericCheck========================ericCheck');
         row.push(generateDataByType(tableInfo[j])) 
-        console.log('row=======================ericCheck========================ericCheck========================rowrowrowrowrowrow', row);
-        console.log('ericCheck=======================ericCheck========================ericCheck========================ericCheck');
       }
       
       // if there is a foreign key constraint, grab random key from foreign table 
