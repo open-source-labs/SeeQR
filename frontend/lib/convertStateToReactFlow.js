@@ -58,6 +58,7 @@ class Table {
     ];
     const edges = [];
     let num = -1;
+
     // iterate through the columns data for this data, create a node for each column
     // create an edge (the connection line) for each column that has a designated
     // foreign table and foreign column name

@@ -121,8 +121,6 @@ const App = () => {
    */
   const createNewQuery: CreateNewQuery = (query: QueryData) => {
     // Only save query to saved queries if it contains all minimum information
-    console.log("ericFrontendCheck-------------------------------------------------------------------------------ericFrontendCheck");
-    console.log("query--------------------------------------------------------------------------------------------------query", query);
     if (query.label && query.db && query.sqlString && query.group) {
       const newQueries = createQuery(queries, query);
       setQueries(newQueries);
@@ -267,7 +265,12 @@ const App = () => {
             />
             <QuickStartView show={shownView === 'quickStartView'} />
 
-            <NewChart show={shownView === 'newChart'} />
+            <NewChart 
+              show={shownView === 'newChart'}
+              selectedDb={selectedDb}
+              dbTables={dbTables} 
+              dbType={curDBType}
+            />
 
             <NewSchemaView
               query={workingQuery}

@@ -75,5 +75,5 @@
     "forceConsistentCasingInFileNames": true /* Disallow inconsistently-cased references to the same file. */,
     "resolveJsonModule": true /*  Include modules imported with '.json' extension. Requires TypeScript version 2.9 or later. */
   },
-  "include": ["backend", "frontend"]
+  "include": ["backend", "frontend", "__tests__/frontend/lib/testClickNodeForDetails.ts", "__tests__/frontend/lib/checkClickNode.ts"]
 }
