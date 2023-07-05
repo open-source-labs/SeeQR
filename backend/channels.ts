@@ -627,23 +627,6 @@ ipcMain.handle(
         error = e.toString();
       }
 
-      try {
-        console.log('asdf')
-        console.log({ targetDb },
-          { sqlString },
-          { returnedRows },
-          { explainResults },
-          { error },
-          { numberOfSample },
-          { totalSampleTime },
-          { minimumSampleTime },
-          { maximumSampleTime },
-          { averageSampleTime },)
-        console.log(explainResults[0]);
-      } catch (err: any) {
-        console.error(err.message);
-      }
-
       return {
         db: targetDb,
         sqlString,
@@ -904,8 +887,10 @@ ipcMain.handle(
     try {
       // Generates query from backendObj
       const query = backendObjToQuery(backendObj, dbType);
-      console.log('ipcMain-------------------------------------------------------------ipcMain', backendObj);
-      console.log('query=======================================================query', query);
+      console.log('backendObj in channels.ts')
+      console.log(backendObj);
+      console.log('query in channels.ts')
+      console.log(query);
       // run sql command
       await db.query('Begin;', null, dbType);
       await db.query(query, null, dbType);
