@@ -178,7 +178,6 @@ const QueryView = ({
         let transformedData;
         // console.log('returnedRows after .then method', returnedRows);
         // console.log('explainResult after .then method', explainResults);
-
         console.log(totalSampleTime, minimumSampleTime, maximumSampleTime, averageSampleTime);
 
         // console.log('curDBType in QueryView', curDBType);

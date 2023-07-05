@@ -601,10 +601,6 @@ ipcMain.handle(
         // console.log('minimumSampleTime-------------------------------------minimumSampleTime', minimumSampleTime);
         // console.log('maximumSampleTime------------------------------------maximumSampleTime', maximumSampleTime);
         // console.log('averageSampleTime------------------------------------averageSampleTime', averageSampleTime);
-        minmumSampleTime = Math.round(Math.min(...arr) * 10 ** 5) / 10 ** 5;
-        maximumSampleTime = Math.round(Math.max(...arr) * 10 ** 5) / 10 ** 5;
-        averageSampleTime = Math.round((totalSampleTime / numberOfSample) * 10 ** 5) / 10 ** 5;
-        totalSampleTime = Math.round(totalSampleTime * 10 ** 5) / 10 ** 5;
       } catch (e) {
         error = `Failed to get Execution Plan. EXPLAIN might not support this query.`;
       }
