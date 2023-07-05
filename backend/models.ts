@@ -317,6 +317,18 @@ const DBFunctions: DBFunctions = {
       console.log('ending pool');
       await connectionFunctions.PG_DBDisconnect();
     }
+    if (dbType === DBType.SQLite) {
+      try {
+        console.log('unlinkling');
+        pools.sqlite_db.close();
+        fs.unlinkSync(this.curSQLite_DB.path);
+        this.curSQLite_DB.path = '';
+      } catch (e) {
+        console.log(e)
+        logger('FAILED TO DELETE SQLITE DB FILE', LogType.ERROR);
+
+      }
+    }
   },
 
   /**

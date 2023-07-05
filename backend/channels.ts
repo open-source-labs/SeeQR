@@ -9,8 +9,6 @@ import generateDummyData from './DummyD/dummyDataMain';
 import { ColumnObj, DBList, DummyRecords, DBType, LogType, QueryPayload } from './BE_types';
 import backendObjToQuery from './ertable-functions';
 import logger from './Logging/masterlog';
-import sqlite_db from './poolVariables';
-import poolVariables from './poolVariables';
 
 // import { Integer } from 'type-fest';
 
@@ -35,7 +33,7 @@ interface Feedback {
 }
 
 /**
- * handler for set-config.
+ * Handles set-config requests from frontend
  * triggered whenever save is pressed on the config/login page
  * establishes connections to database, logs failed connections, sends contents of config file
  */
@@ -46,10 +44,7 @@ ipcMain.handle('set-config', async (event, configObj) => {
   db.setBaseConnections() // tries to log in using config data
     .then(({ dbsInputted, configExists }) => {
 
-      /*
-      junaid
-      added error handling to display error message on frontend based on which dbs failed to login
-      */
+      // error handling for trying and failing to log in to databases
       let errorStr = '';
       const dbs = Object.keys(dbsInputted);
       dbs.forEach(e => {
@@ -65,7 +60,7 @@ ipcMain.handle('set-config', async (event, configObj) => {
       }
       logger('Successfully reset base connections', LogType.SUCCESS);
       db.getLists().then((data: DBList) => {
-        event.sender.send('db-lists', data); // asdf used to populate sidebar?
+        event.sender.send('db-lists', data); // used to populate sidebar
       });
     })
     .catch((err) => {
@@ -89,22 +84,15 @@ ipcMain.handle('set-config', async (event, configObj) => {
 });
 
 /**
- * IPC get-config handler
+ * Handles get-config request from frontend
  * sends configuration from config file
  */
-ipcMain.handle('get-config', async (event, configObj) => { // asdf is configObj used?
+ipcMain.handle('get-config', async (event) => { // asdf is configObj used?
   event.sender.send('get-config', docConfig.getFullConfig());
 });
 
-// Listen for request from front-end and send back the DB List upon request
-/*
-junaid and chase
-removed the parameters because it doesnt seem like they do anything here, and it prevents the other databses from rendering on the list if pg is passed in
-*/
-
-// ipcMain.on('return-db-list', (event, dbType: DBType = DBType.Postgres) => {
 /**
- * IPC return-db-list handler
+ * Handles return-db-list request from the frontend
  * establishes connection to databases, then gets listObj from getLists, then sends to frontend
  */
 ipcMain.on('return-db-list', (event) => {
@@ -115,12 +103,6 @@ ipcMain.on('return-db-list', (event) => {
 
   db.setBaseConnections()
     .then(() => {
-      /*
-      junaid and chase
-      removed the parameters because it doesnt seem like they do anything here, and it prevents the other databses from rendering on the list if pg is passed in
-      */
-
-      // db.getLists('', dbType)
       db.getLists()
         .then((data: DBList) => {
           event.sender.send('db-lists', data);
@@ -159,10 +141,9 @@ ipcMain.on('return-db-list', (event) => {
     });
 });
 
-// Listen for database changes sent from the renderer upon changing tabs
-// and send back an updated DB List
+
 /**
- * IPC handler for select-db
+ * Handles select-db request from frontend
  * connect to selected db, then get object containing a list of all databases and a list of tables for the selected database, and sends to frontend
  */
 ipcMain.handle(
@@ -176,9 +157,6 @@ ipcMain.handle(
 
       // send updated db info
       const dbsAndTables: DBList = await db.getLists(dbName, dbType);
-      //////////////////////////////////////////////////eric check for Bloom/////////////////////////////////////////////
-      console.log("eric check for bloom-----------------------------------------------------------------------dbTables", dbsAndTables);
-      ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       event.sender.send('db-lists', dbsAndTables);
       logger("Sent 'db-lists' from 'select-db'", LogType.SEND);
     } finally {
@@ -188,11 +166,9 @@ ipcMain.handle(
 );
 
 
-
-// Deletes the DB that is passed from the front end and returns an updated DB List
 /**
- * IPC handler for drop-db
- * 
+ * Handler for drop-db requests from frontend
+ * Drops the passed in DB and returns updated DB List
  */
 ipcMain.handle(
   'drop-db',
@@ -208,14 +184,13 @@ ipcMain.handle(
 
     try {
       // if deleting currently connected db, disconnect from db
-      console.log('about to drop pool');
+      // end pool connection 
       await db.disconnectToDrop(dbType);
-      console.log('about to reconnect to pool');
+      // reconnect to database server, but not the db that will be dropped
       await db.connectToDB('', dbType);
 
-
-      // drop db
-      // ////////eric////////
+      // IN CASE OF EMERGENCY USE THIS CODE TO DROP DATABASES
+      // WILL THROW UNCAUGHT ERRORS LAST RESORT ONLY!!!
       // await db.connectToDB('', dbType);
       // if(dbType === DBType.Postgres){
       //   await db.query(`UPDATE pg_database SET datallowconn = 'false' WHERE datname = '${dbName}'`, null, dbType);
@@ -225,10 +200,11 @@ ipcMain.handle(
       //   WHERE datname = '${dbName}' AND pid <> pg_backend_pid();
       //   `, null, dbType);
       //   // await db.closeTheDB(dbName, dbType);
-      //   console.log('777777777777777777777777777777777777777777777');
       // }
+
       const dropDBScript = dropDBFunc(dbName, dbType);
-      await db.query(dropDBScript, null, dbType);
+      if (dbType !== DBType.SQLite) await db.query(dropDBScript, null, dbType);
+
       // send updated db info
       const dbsAndTables: DBList = await db.getLists(dbName, dbType);
       event.sender.send('db-lists', dbsAndTables);
@@ -305,7 +281,7 @@ ipcMain.handle(
       event.sender.send('db-lists', dbsAndTableInfo);
       logger("Sent 'db-lists' from 'duplicate-db'", LogType.SEND);
     } finally {
-      //cleanup temp file
+      // clean up temp file
       try {
         fs.unlinkSync(tempFilePath);
       } catch (e) {
