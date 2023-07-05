@@ -110,7 +110,7 @@ export interface DBFunctions {
   dbsInputted: dbsInputted;
 
   setBaseConnections: () => Promise<combined>;
-  query: (text: string, params: (string | number)[], dbType: DBType) => void;
+  query: (text: string, params: (string | number)[], dbType: DBType, callback?: (err: string, res?: Array<any>) => void) => void;
   connectToDB: (db: string, dbType?: DBType) => Promise<void>;
   disconnectToDrop: (dbType: DBType) => Promise<void>;
   getLists: (dbName: string, dbType?: DBType) => Promise<DBList>;
@@ -118,4 +118,12 @@ export interface DBFunctions {
   getDBNames: (dbType: DBType) => Promise<dbDetails[]>;
   getColumnObjects: (tableName: string, dbType: DBType) => Promise<ColumnObj[]>;
   getDBLists: (dbType: DBType, dbName: string) => Promise<TableDetails[]>;
+  sampler: (queryString: string) => Promise<number>;
+}
+
+export interface QueryPayload {
+  targetDb: string;
+  sqlString: string;
+  selectedDb: string;
+  runQueryNumber: number;
 }

@@ -84,7 +84,7 @@ const QueryView = ({
     group: '',
     numberOfSample: 0,
     totalSampleTime: 0,
-    minmumSampleTime: 0,
+    minimumSampleTime: 0,
     maximumSampleTime: 0,
     averageSampleTime: 0,
   };
@@ -161,12 +161,12 @@ const QueryView = ({
         },
         curDBType
       )
-      .then(({ db, sqlString, returnedRows, explainResults, error, 
-                numberOfSample,
-                totalSampleTime,
-                minmumSampleTime,
-                maximumSampleTime,
-                averageSampleTime, }) => {
+      .then(({ db, sqlString, returnedRows, explainResults, error,
+        numberOfSample,
+        totalSampleTime,
+        minimumSampleTime,
+        maximumSampleTime,
+        averageSampleTime, }) => {
         if (error) {
           throw error;
         }
@@ -179,10 +179,11 @@ const QueryView = ({
             executionPlan: {
               numberOfSample,
               totalSampleTime,
-              minmumSampleTime,
+              minimumSampleTime,
               maximumSampleTime,
               averageSampleTime,
-              ...explainResults[0]['QUERY PLAN'][0],},
+              ...explainResults[0]['QUERY PLAN'][0],
+            },
             label: localQuery.label,
             db,
             group: localQuery.group,
@@ -198,10 +199,27 @@ const QueryView = ({
             executionPlan: {
               numberOfSample,
               totalSampleTime,
-              minmumSampleTime,
+              minimumSampleTime,
               maximumSampleTime,
               averageSampleTime,
               // ...explainResults[0]['QUERY PLAN'][0],
+              ...explainResults,
+            },
+          };
+        }
+        if (curDBType === DBType.SQLite) {
+          transformedData = {
+            sqlString,
+            returnedRows,
+            label: localQuery.label,
+            db,
+            group: localQuery.group,
+            executionPlan: {
+              numberOfSample,
+              totalSampleTime,
+              minimumSampleTime,
+              maximumSampleTime,
+              averageSampleTime,
               ...explainResults,
             },
           };
@@ -263,7 +281,7 @@ const QueryView = ({
           Run Query
         </RunButton>
       </CenterButton>
-      <QuerySummary executionPlan={query?.executionPlan}/>
+      <QuerySummary executionPlan={query?.executionPlan} />
       <QueryTabs
         results={query?.returnedRows}
         executionPlan={query?.executionPlan}

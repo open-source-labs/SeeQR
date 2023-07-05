@@ -39,7 +39,7 @@ import NewChart from './views/NewChart';
 
 declare module '@mui/material/styles/' {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  interface DefaultTheme extends Theme {}
+  interface DefaultTheme extends Theme { }
 }
 
 const EventEmitter = require('events');
