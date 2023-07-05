@@ -120,7 +120,7 @@ const NewSchemaView = ({
     /////////////////////////eric//////////////////////////////////////////////
     numberOfSample: 0,
     totalSampleTime: 0,
-    minmumSampleTime: 0,
+    minimumSampleTime: 0,
     maximumSampleTime: 0,
     averageSampleTime: 0,
     ///////////////////////////////////////////////////////////////////////////
