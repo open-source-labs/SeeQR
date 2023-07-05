@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import '../lib/style.css'
 import styled from 'styled-components';
 import { ThemeProvider, Theme, StyledEngineProvider } from '@mui/material/';
-// import '@mui/material/styles/defaultTheme';
 import CssBaseline from '@mui/material/CssBaseline';
 import { IpcRendererEvent, ipcRenderer } from 'electron';
 import {
@@ -23,7 +22,7 @@ import {
   DbLists,
 } from '../types';
 import { DBType } from '../../backend/BE_types';
-import { createQuery, key } from '../lib/queries';
+import { createQuery } from '../lib/queries';
 import Sidebar from './sidebar/Sidebar';
 import QueryView from './views/QueryView/QueryView';
 import DbView from './views/DbView/DbView';
@@ -43,12 +42,10 @@ declare module '@mui/material/styles/' {
   interface DefaultTheme extends Theme { }
 }
 
-
-///////eric//////Increase the maximum number of listeners to 20///////////////
 const EventEmitter = require('events');
+
 const emitter = new EventEmitter();
 emitter.setMaxListeners(20);
-//////////////////////////////////////////////////////////////////////////////
 
 const AppContainer = styled.div`
   display: grid;
@@ -85,7 +82,6 @@ const App = () => {
 
   const [DBInfo, setDBInfo] = useState<DatabaseInfo[]>();
   const [curDBType, setDBType] = useState<DBType>();
-  // const [cdbt, setcdbt] = useState<DBType>();
 
   const [dbTables, setTables] = useState<TableInfo[]>([]);
   const [selectedTable, setSelectedTable] = useState<TableInfo | undefined>();
@@ -161,38 +157,8 @@ const App = () => {
       shownView = 'quickStartView';
   }
 
-  const stateTest = {
-    queries,
-    setQueries,
-    comparedQueries,
-    setComparedQueries,
-    selectedView,
-    setSelectedView,
-    selectedDb,
-    setSelectedDb,
-    workingQuery,
-    setWorkingQuery,
-    setSidebarHidden,
-    sidebarIsHidden,
-    setFilePath,
-    newFilePath,
-    setERView,
-    curDBType,
-    setDBType,
-    DBInfo,
-    setDBInfo,
-    dbTables,
-    setTables,
-    selectedTable,
-    setSelectedTable,
-    showCreateDialog,
-    setCreateDialog,
-    setConfigDialog,
-  }
-
   return (
     // Styled Components must be injected last in order to override Material UI style: https://material-ui.com/guides/interoperability/#controlling-priority-3
-    // <StylesProvider injectFirst>
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={MuiTheme}>
         <Spinner />
@@ -218,8 +184,6 @@ const App = () => {
               setERView,
               curDBType,
               setDBType,
-              // cdbt,
-              // setcdbt,
               DBInfo,
               setDBInfo,
               dbTables,
@@ -242,11 +206,8 @@ const App = () => {
               setERView={setERView}
               ERView={ERView}
               curDBType={curDBType}
-              setDBType={setDBType}
               DBInfo={DBInfo}
-              setDBInfo={setDBInfo}
               dbTables={dbTables}
-              setTables={setTables}
               selectedTable={selectedTable}
               setSelectedTable={setSelectedTable}
             />
@@ -303,7 +264,6 @@ const App = () => {
         </AppContainer>
       </ThemeProvider>
     </StyledEngineProvider>
-    // </StylesProvider>
   );
 };
 

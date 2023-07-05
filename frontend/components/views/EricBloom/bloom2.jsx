@@ -224,7 +224,7 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
             targetDb: selectedDb,
             // Run a single query to databases whenever user click the node
             sqlString: `select * from ${node.group}`,
-            selectedDb: selectedDb,
+            selectedDb,
             runQueryNumber: 1,
           },
           dbType
@@ -304,7 +304,7 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
             targetDb: selectedDb,
             // Run a single query to databases whenever user click the node
             sqlString: `select * from ${node.group}`,
-            selectedDb: selectedDb,
+            selectedDb,
             runQueryNumber: 1,
           },
           dbType

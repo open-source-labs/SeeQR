@@ -152,17 +152,14 @@ const Sidebar = ({
           show={
             selectedView === 'dbView' ||
             selectedView === 'quickStartView' ||
-            selectedView === 'newSchemaView'
+            selectedView === 'newSchemaView' ||
+            selectedView === 'newChart'
           }
           setSelectedView={setSelectedView}
           curDBType={curDBType}
           setDBType={setDBType}
           DBInfo={DBInfo}
-          setDBInfo={setDBInfo}
-          dbTables={dbTables}
-          setTables={setTables}
-          selectedTable={selectedTable}
-          setSelectedTable={setSelectedTable}
+          selectedView={selectedView}
         />
         <QueryList
           setComparedQueries={setComparedQueries}

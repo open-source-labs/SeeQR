@@ -9,7 +9,7 @@ interface QueryRunProps {
 }
 
 const QueryRunNumber = ({ runNumber, onChange }: QueryRunProps) => (
-  <Box>
+  <Box className='query-run-box'>
     <TextField
       label="Number of Queries"
       value={runNumber}
