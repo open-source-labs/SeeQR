@@ -65,13 +65,6 @@ const helperFunctions: HelperFunctions = {
     const MYSQL = `EXPLAIN ANALYZE ${sqlString}`;
     const SQLite = `EXPLAIN QUERY PLAN ${sqlString}`
 
-    console.log('ericCheck------------------------------------------------------------------ericCheck');
-    if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) {
-      console.log('ericCheck------------------------------------------------------------------sql str', PG);
-    }
-    else {
-      console.log('ericCheck------------------------------------------------------------------sql str', MYSQL);
-    }
     if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) return PG;
     if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL) return MYSQL;
     if (dbType === DBType.SQLite) return SQLite;
@@ -134,8 +127,6 @@ const helperFunctions: HelperFunctions = {
         env: { PGPASSWORD: docConfig.getFullConfig().pg.password },
       }, (error, stdout, stderr) => {
         if (error) {
-          // console.log(error)
-          console.log(error);
           return reject(error);
         }
         if (stderr) return reject(new Error(stderr));

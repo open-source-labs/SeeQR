@@ -9,8 +9,6 @@ import generateDummyData from './DummyD/dummyDataMain';
 import { ColumnObj, DBList, DummyRecords, DBType, LogType, QueryPayload } from './BE_types';
 import backendObjToQuery from './ertable-functions';
 import logger from './Logging/masterlog';
-import sqlite_db from './poolVariables';
-import poolVariables from './poolVariables';
 
 // import { Integer } from 'type-fest';
 
@@ -35,7 +33,7 @@ interface Feedback {
 }
 
 /**
- * handler for set-config.
+ * Handles set-config requests from frontend
  * triggered whenever save is pressed on the config/login page
  * establishes connections to database, logs failed connections, sends contents of config file
  */
@@ -46,10 +44,7 @@ ipcMain.handle('set-config', async (event, configObj) => {
   db.setBaseConnections() // tries to log in using config data
     .then(({ dbsInputted, configExists }) => {
 
-      /*
-      junaid
-      added error handling to display error message on frontend based on which dbs failed to login
-      */
+      // error handling for trying and failing to log in to databases
       let errorStr = '';
       const dbs = Object.keys(dbsInputted);
       dbs.forEach(e => {
@@ -65,7 +60,7 @@ ipcMain.handle('set-config', async (event, configObj) => {
       }
       logger('Successfully reset base connections', LogType.SUCCESS);
       db.getLists().then((data: DBList) => {
-        event.sender.send('db-lists', data); // asdf used to populate sidebar?
+        event.sender.send('db-lists', data); // used to populate sidebar
       });
     })
     .catch((err) => {
@@ -89,22 +84,15 @@ ipcMain.handle('set-config', async (event, configObj) => {
 });
 
 /**
- * IPC get-config handler
+ * Handles get-config request from frontend
  * sends configuration from config file
  */
-ipcMain.handle('get-config', async (event, configObj) => { // asdf is configObj used?
+ipcMain.handle('get-config', async (event) => { // asdf is configObj used?
   event.sender.send('get-config', docConfig.getFullConfig());
 });
 
-// Listen for request from front-end and send back the DB List upon request
-/*
-junaid and chase
-removed the parameters because it doesnt seem like they do anything here, and it prevents the other databses from rendering on the list if pg is passed in
-*/
-
-// ipcMain.on('return-db-list', (event, dbType: DBType = DBType.Postgres) => {
 /**
- * IPC return-db-list handler
+ * Handles return-db-list request from the frontend
  * establishes connection to databases, then gets listObj from getLists, then sends to frontend
  */
 ipcMain.on('return-db-list', (event) => {
@@ -115,12 +103,6 @@ ipcMain.on('return-db-list', (event) => {
 
   db.setBaseConnections()
     .then(() => {
-      /*
-      junaid and chase
-      removed the parameters because it doesnt seem like they do anything here, and it prevents the other databses from rendering on the list if pg is passed in
-      */
-
-      // db.getLists('', dbType)
       db.getLists()
         .then((data: DBList) => {
           event.sender.send('db-lists', data);
@@ -159,10 +141,9 @@ ipcMain.on('return-db-list', (event) => {
     });
 });
 
-// Listen for database changes sent from the renderer upon changing tabs
-// and send back an updated DB List
+
 /**
- * IPC handler for select-db
+ * Handles select-db request from frontend
  * connect to selected db, then get object containing a list of all databases and a list of tables for the selected database, and sends to frontend
  */
 ipcMain.handle(
@@ -176,9 +157,6 @@ ipcMain.handle(
 
       // send updated db info
       const dbsAndTables: DBList = await db.getLists(dbName, dbType);
-      //////////////////////////////////////////////////eric check for Bloom/////////////////////////////////////////////
-      console.log("eric check for bloom-----------------------------------------------------------------------dbTables", dbsAndTables);
-      ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       event.sender.send('db-lists', dbsAndTables);
       logger("Sent 'db-lists' from 'select-db'", LogType.SEND);
     } finally {
@@ -188,11 +166,9 @@ ipcMain.handle(
 );
 
 
-
-// Deletes the DB that is passed from the front end and returns an updated DB List
 /**
- * IPC handler for drop-db
- * 
+ * Handler for drop-db requests from frontend
+ * Drops the passed in DB and returns updated DB List
  */
 ipcMain.handle(
   'drop-db',
@@ -208,14 +184,13 @@ ipcMain.handle(
 
     try {
       // if deleting currently connected db, disconnect from db
-      console.log('about to drop pool');
+      // end pool connection 
       await db.disconnectToDrop(dbType);
-      console.log('about to reconnect to pool');
+      // reconnect to database server, but not the db that will be dropped
       await db.connectToDB('', dbType);
 
-
-      // drop db
-      // ////////eric////////
+      // IN CASE OF EMERGENCY USE THIS CODE TO DROP DATABASES
+      // WILL THROW UNCAUGHT ERRORS LAST RESORT ONLY!!!
       // await db.connectToDB('', dbType);
       // if(dbType === DBType.Postgres){
       //   await db.query(`UPDATE pg_database SET datallowconn = 'false' WHERE datname = '${dbName}'`, null, dbType);
@@ -225,10 +200,11 @@ ipcMain.handle(
       //   WHERE datname = '${dbName}' AND pid <> pg_backend_pid();
       //   `, null, dbType);
       //   // await db.closeTheDB(dbName, dbType);
-      //   console.log('777777777777777777777777777777777777777777777');
       // }
+
       const dropDBScript = dropDBFunc(dbName, dbType);
-      await db.query(dropDBScript, null, dbType);
+      if (dbType !== DBType.SQLite) await db.query(dropDBScript, null, dbType);
+
       // send updated db info
       const dbsAndTables: DBList = await db.getLists(dbName, dbType);
       event.sender.send('db-lists', dbsAndTables);
@@ -305,7 +281,7 @@ ipcMain.handle(
       event.sender.send('db-lists', dbsAndTableInfo);
       logger("Sent 'db-lists' from 'duplicate-db'", LogType.SEND);
     } finally {
-      //cleanup temp file
+      // clean up temp file
       try {
         fs.unlinkSync(tempFilePath);
       } catch (e) {
@@ -371,15 +347,12 @@ ipcMain.handle(
 );
 
 
-
-// Run query passed from the front-end, and send back an updated DB List
-// DB will rollback if query is unsuccessful
 /*
-junaid
 look at this to check the explain might not support query error
 */
 /**
  * Handle run-query events passed from the front-end, and send back an updated DB List
+ * If error occurs, will rollback to pre-query state
  */
 ipcMain.handle(
   'run-query',
@@ -394,7 +367,7 @@ ipcMain.handle(
       `selectedDb: ${selectedDb} and dbType: ${dbType} and runQueryNumber: ${runQueryNumber}`
     );
     event.sender.send('async-started');
-    const arr: any[] = [];
+    const arr: any[] = []; // array of sample
     const numberOfSample: number = runQueryNumber;
     let totalSampleTime: number = 0;
     let minimumSampleTime: number = 0;
@@ -411,7 +384,6 @@ ipcMain.handle(
       }
       return result;
     }
-    /////   ///////////   ///////////   ///////////   ///////////
 
     try {
       let error: string | undefined;
@@ -432,10 +404,9 @@ ipcMain.handle(
               dbType
             );
 
-            // console.log('ericCheck--------------------------------------------ericCheck');
-            // console.log('postgerSQL_results-----------------------------------postgerSQL_results', results);
-            // console.log('postgerSQL_results[1].rows---------------------------postgerSQL_results[1].rows', results[1].rows);
-            // console.log('postgerSQL_results[1].rows[0]["QUERY PLAN"][0]-------postgerSQL_results[1].rows[0]["QUERY PLAN"][0]', results[1].rows[0]["QUERY PLAN"][0]);
+            // console.log('query results', results);
+            // console.log('explain query results', results[1].rows);
+            // console.log('query plan including sample time data', results[1].rows[0]["QUERY PLAN"][0]);
 
             explainResults = results[1].rows;
             const eachSampleTime: any = results[1].rows[0]["QUERY PLAN"][0]['Planning Time'] + results[1].rows[0]["QUERY PLAN"][0]['Execution Time'];
@@ -448,18 +419,11 @@ ipcMain.handle(
               null,
               dbType
             );
-            console.log('ericCheck--------------------------------------------ericCheck');
-            console.log('mySQL_results----------------------------------------mySQL_results', results);
-            console.log('results[0][0]----------------------------------------results[0][0]', results[0][0]);
-
             const eachSampleTime: any = parseExplainExplanation(results[0][0].EXPLAIN);
             arr.push(eachSampleTime);
             totalSampleTime += eachSampleTime;
-            console.log('ericCheck--------------------------------------------ericCheck');
-            console.log('arr--------------------------------------------------arr', arr);
 
-
-            // //////////not real result just try to get rid of bugs first///////////////
+            // hard coded explainResults just to get it working for now
             explainResults = {
               Plan: {
                 'Node Type': 'Seq Scan',
@@ -504,36 +468,13 @@ ipcMain.handle(
               Triggers: [],
               'Execution Time': 9999
             };
-            // ////////////////////////////////////////////////////////////////////////////////////////
-            // ////////////////////////////////////////////////////////////////////////////////////////
-
-
-            // explainResults = results[0][0];
-            // console.log('mysql explain results', explainResults);
-
-            // console.log(LogType.WARNING, results);
 
           } else if (dbType === DBType.SQLite) {
-            console.log('type is sqlite');
-            console.log('started timer');
             const sampleTime = await db.sampler(sqlString);
             arr.push(sampleTime);
             totalSampleTime += sampleTime
-            // db.all('BEGIN', (err1) => {
-            //   if (err1) return console.error(err1.message);
-            //   console.log('began')
-            //   return db.all(sqlString, (err2) => {
-            //     if (err2) return console.error(err2.message);
-            //     console.log('ran query')
-            //     // const endTime = performance.now();
-            //     db.all('ROLLBACK');
-            //     // const eachSampleTime = endTime - startTime;
-            //     // arr.push(eachSampleTime);
-            //     // totalSampleTime += eachSampleTime
-            //     console.log('onedone')
-            //   });
-            // });
-            //////////not real result just try to get rid of bugs first///////////////
+
+            // hard coded explainResults just to get it working for now
             explainResults = {
               Plan: {
                 'Node Type': 'Seq Scan',
@@ -578,48 +519,24 @@ ipcMain.handle(
               Triggers: [],
               'Execution Time': 9999
             };
-            ////////////////////////////////////////////////////////////////////////////////////////
           }
         }
-        // if (dbType === DBType.SQLite) {
-        //   poolVariables.sqlite_db.serialize(function () {
-        //     for (let i = 0; i < numberOfSample; i++) {
-        //       poolVariables.sqlite_db.run('BEGIN');
-        //       poolVariables.sqlite_db.run(sqlString);
-        //       poolVariables.sqlite_db.run('ROLLBACK');
-        //     }
-        //   })
-        // }
-        // console.log('ericCheck--------------------------------------------ericCheck');
-        // console.log('totalSampleTime--------------------------------------totalSampleTime', totalSampleTime);
         // get 5 decimal points for sample time
-        console.log({ arr })
         minimumSampleTime = Math.round(Math.min(...arr) * 10 ** 5) / 10 ** 5;
         maximumSampleTime = Math.round(Math.max(...arr) * 10 ** 5) / 10 ** 5;
         averageSampleTime = Math.round((totalSampleTime / numberOfSample) * 10 ** 5) / 10 ** 5;
         totalSampleTime = Math.round(totalSampleTime * 10 ** 5) / 10 ** 5;
-        // console.log('minimumSampleTime-------------------------------------minimumSampleTime', minimumSampleTime);
-        // console.log('maximumSampleTime------------------------------------maximumSampleTime', maximumSampleTime);
-        // console.log('averageSampleTime------------------------------------averageSampleTime', averageSampleTime);
       } catch (e) {
         error = `Failed to get Execution Plan. EXPLAIN might not support this query.`;
       }
-
-
-      ///////////   ///////////   ///////////   ///////////
 
       // Run Query
       let returnedRows;
       try {
         const results = await db.query(sqlString, null, dbType);
         if (dbType === DBType.MySQL) {
-          console.log('--------------------*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*---------mySQL results', results);
-          // returnedRows = results[0][1];
+          // console.log('mySQL results', results);
           returnedRows = results[0];
-          console.log('--------------------*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*---------mySQL results[0][1]', results[0][1]);
-          console.log('--------------------*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*---------mySQL results[0][2]', results[0][2]);
-          console.log('--------------------*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*---------mySQL results[0][3]', results[0][3]);
-          console.log('--------------------*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*+*---------mySQL results[0]', results[0]);
           // console.log('returnedRows in channels for MySQL', returnedRows);
         }
         if (dbType === DBType.Postgres) {
@@ -732,9 +649,6 @@ ipcMain.handle(
         dbType
       ); // passed in dbType to second argument
       // console.log('tableInfo in generate-dummy-data', tableInfo); // working
-      // console.log('tableInfo==========================================================tableInfo', tableInfo);
-
-      // console.log('ericCheck=======================ericCheck========================ericCheck========================ericCheck');
 
       // generate dummy data
       const dummyArray: DummyRecords = await generateDummyData(
@@ -742,8 +656,6 @@ ipcMain.handle(
         data.rows
       );
       // console.log('dummyArray output: ', dummyArray)
-      // console.log('tableInfo==========================================================tableInfo', tableInfo);
-      // console.log('dummyArray==========================================================dummyArray', dummyArray);
       // generate insert query string to insert dummy records
       const columnsStringified = '('
         .concat(dummyArray[0].join(', '))
@@ -895,10 +807,7 @@ ipcMain.handle(
     try {
       // Generates query from backendObj
       const query = backendObjToQuery(backendObj, dbType);
-      console.log('backendObj in channels.ts')
-      console.log(backendObj);
-      console.log('query created in channels.ts from backendObj')
-      console.log(query);
+
       // run sql command
       await db.query('Begin;', null, dbType);
       await db.query(query, null, dbType);

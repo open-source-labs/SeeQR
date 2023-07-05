@@ -7,11 +7,6 @@ import os from 'os';
 import { DBType, DocConfigFile, LogType } from './BE_types';
 import logger from './Logging/masterlog';
 
-/*
-junaid
-file writes the original config (login) file to users hardware
-*/
-
 const home = `${os.homedir()}/Documents/SeeQR`;
 const configFile = `config.json`;
 const configPath = `${home}/${configFile}`;

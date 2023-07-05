@@ -71,7 +71,6 @@ const DBFunctions: DBFunctions = {
       directPGURI: false,
     }
     /*
-     junaid
      all the if/else and try/catch in this function are for various forms of error handling. incorrect passwords/removed entries after successful logins
     */
 
@@ -104,10 +103,8 @@ const DBFunctions: DBFunctions = {
       try {
         configExists.rds_msql = true;
         await connectionFunctions.RDS_MSQL_DBConnect(this.curRDS_MSQL_DB);
-        /*
-        junaid
-        just a test query to make sure were connected. needed for the catch statement to hit incase we arent connected.
-        */
+
+        // test query to make sure were connected. needed for the catch statement to hit incase we arent connected.
         const testQuery = await pools.rds_msql_pool.query('SHOW DATABASES;');
         logger(`CONNECTED TO RDS MYSQL DATABASE!`, LogType.SUCCESS);
         this.dbsInputted.rds_msql = true;
@@ -152,10 +149,8 @@ const DBFunctions: DBFunctions = {
           queueLimit: 0,
           multipleStatements: true,
         });
-        /*
-        junaid
-        just a test query to make sure were connected. needed for the catch statement to hit incase we arent connected.
-        */
+
+        // test query to make sure were connected. needed for the catch statement to hit incase we arent connected.
         const testQuery = await pools.msql_pool.query('SHOW DATABASES;');
         this.dbsInputted.msql = true;
         logger(`CONNECTED TO LOCAL MYSQL DATABASE!`, LogType.SUCCESS);
@@ -188,7 +183,7 @@ const DBFunctions: DBFunctions = {
   },
 
 
-  query(text, params, dbType, callback) {
+  query(text, params, dbType) {
     // RUN ANY QUERY - function that will run query on database that is passed in.
     logger(`Attempting to run query: \n ${text} for: \n ${dbType}`);
 
@@ -207,14 +202,7 @@ const DBFunctions: DBFunctions = {
         logger(err.message, LogType.WARNING);
       });
     }
-    ///////eric///////////////////////////////////
-    // if (dbType === DBType.MySQL) {
-    //   return pools.msql_pool.query(
-    //     `${text}`,
-    //     params,
-    //     dbType
-    //   );
-    // }
+
     if (dbType === DBType.MySQL) {
       // pools.msql_pool.query(`USE ${this.curMSQL_DB}`);
       return pools.msql_pool.query(text, params, dbType);
@@ -238,20 +226,9 @@ const DBFunctions: DBFunctions = {
       })
     }
 
-    // if (dbType === DBType.MySQL) {
-    //   console.log('3345657833456578334565783345657833456578');
-    //   return pools.msql_pool.query(
-    //     `USE ${this.curMSQL_DB}; ${text}`,
-    //     params,
-    //     dbType
-    //   );
-    // }
-    ////////////////////////////////////////////////////
-
   },
 
   sampler(queryString) {
-    console.log('pre performance');
     return new Promise((resolve, reject) => {
       pools.sqlite_db.run('BEGIN', (err) => {
         if (err) {
@@ -271,7 +248,7 @@ const DBFunctions: DBFunctions = {
                   reject(err);
                 } else {
                   const elapsedTime = endTime - startTime;
-                  console.log(`Elapsed time: ${elapsedTime} milliseconds`);
+                  // console.log(`Elapsed time: ${elapsedTime} milliseconds`);
                   resolve(elapsedTime);
                 }
               });
@@ -283,15 +260,15 @@ const DBFunctions: DBFunctions = {
   },
 
 
+  // asdf check this.curRDS_MSQL_DB typing sometime
   /**
    * Only connect to one database at a time
    * @param db Name of database to connect to
    * @param dbType Type of database to connect to
    * 
-   * asdf check this.curRDS_MSQL_DB typing 
    */
   async connectToDB(db, dbType) {
-    //change current Db
+    // change current Db
     if (dbType === DBType.Postgres) {
       this.curPG_DB = db;
       await connectionFunctions.PG_DBConnect(this.pg_uri, db);
@@ -314,8 +291,19 @@ const DBFunctions: DBFunctions = {
    */
   async disconnectToDrop(dbType) {
     if (dbType === DBType.Postgres) {
-      console.log('ending pool');
+      // ending pool
       await connectionFunctions.PG_DBDisconnect();
+    }
+    if (dbType === DBType.SQLite) {
+      try {
+        // disconnect from and delete sqlite .db file
+        pools.sqlite_db.close();
+        fs.unlinkSync(this.curSQLite_DB.path);
+        this.curSQLite_DB.path = '';
+      } catch (e) {
+        logger('FAILED TO DELETE SQLITE DB FILE', LogType.ERROR);
+
+      }
     }
   },
 
@@ -415,7 +403,7 @@ const DBFunctions: DBFunctions = {
   },
 
   /**
-   * asdf what is this here for.
+   * 
    * get column objects for the given tableName
    * @param tableName name of table to get the columns of
    * @param dbType type of database of the table 
@@ -482,7 +470,6 @@ const DBFunctions: DBFunctions = {
         if (dbType === DBType.RDSMySQL) pool = pools.rds_msql_pool;
         const dbList: dbDetails[] = [];
         /*
-        junaid
         only run queries if pool is made
         */
         if (pool) {
@@ -628,7 +615,6 @@ const DBFunctions: DBFunctions = {
             for (let i = 0; i < result[0].length; i += 1) {
               columnInfoArray.push(result[0][i]);
             }
-            // console.log("columnInfoArray==================================columnInfoArray", columnInfoArray);
             resolve(columnInfoArray);
           })
           .catch((err) => {
@@ -656,7 +642,9 @@ const DBFunctions: DBFunctions = {
       return new Promise((resolve, reject) => {
         sqliteDB
           .all(queryString, value, (err, rows) => {
-            if (err) console.log('ERROR OCCURED', err);
+            if (err) {
+              reject(err);
+            }
             const columnInfoArray: ColumnObj[] = [];
             for (let i = 0; i < rows.length; i++) {
               const { column_name, data_type, not_null, pk, foreign_table, foreign_column } = rows[i];
@@ -809,8 +797,8 @@ const DBFunctions: DBFunctions = {
         WHERE m.type = 'table' AND m.name != 'sqlite_stat1' AND m.name != 'sqlite_sequence'`;
         sqliteDB
           .all(query, (err, rows) => {
-            if (err) console.log('error occured')
-            for (let i = 0; i < rows.length; i++) {
+            if (err) console.error(err.message)
+            for (let i = 0; i < rows.length; i += 1) {
               const newTableDetails: TableDetails = {
                 table_catalog: this.curSQLite_DB.path.slice(this.curSQLite_DB.path.lastIndexOf('\\') + 1),
                 table_schema: 'asdf',
@@ -824,7 +812,7 @@ const DBFunctions: DBFunctions = {
             }
             Promise.all(promiseArray)
               .then((columnInfo) => {
-                for (let i = 0; i < columnInfo.length; i++) {
+                for (let i = 0; i < columnInfo.length; i += 1) {
                   tableList[i].columns = columnInfo[i];
                 }
                 logger("SQLite 'getDBLists' resolved.", LogType.SUCCESS);
