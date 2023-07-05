@@ -27,7 +27,7 @@ const QuerySummary = ({ executionPlan }: QuerySummaryProps) => {
     // 'Execution Time': executionPlan?.['Execution Time'],
     'Number of Sample': executionPlan?.numberOfSample,
     'Total Sample Time': executionPlan?.totalSampleTime + 'ms',
-    'Minmum Sample Time': executionPlan?.minmumSampleTime + 'ms',
+    'Minimum Sample Time': executionPlan?.minimumSampleTime + 'ms',
     'Maximum Sample Time': executionPlan?.maximumSampleTime + 'ms',
     'Average Sample Time': executionPlan?.averageSampleTime + 'ms',
   };

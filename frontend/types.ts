@@ -81,9 +81,9 @@ export interface QueryData {
   /////////////////////////eric//////////////////////////////////////////////
   numberOfSample: number,
   totalSampleTime: number | string,
-  minmumSampleTime: number | string,
+  minimumSampleTime: number | string,
   maximumSampleTime: number | string,
-  averageSampleTime: number| string, 
+  averageSampleTime: number | string,
   ///////////////////////////////////////////////////////////////////////////
 }
 
@@ -111,7 +111,7 @@ export interface Thresholds {
  * Fake type guard that asserts a type to simplify tests inside real type guards
  */
 // type assertions don't work with arrow functions https://github.com/microsoft/TypeScript/issues/34523
-function assumeType<T>(x: unknown): asserts x is T {}
+function assumeType<T>(x: unknown): asserts x is T { }
 
 export interface DatabaseInfo {
   /**
@@ -237,7 +237,7 @@ export interface ExplainJson {
   'Execution Time': number;
   numberOfSample: number;
   totalSampleTime: number;
-  minmumSampleTime: number;
+  minimumSampleTime: number;
   maximumSampleTime: number;
   averageSampleTime: number;
 }

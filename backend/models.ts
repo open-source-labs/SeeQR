@@ -12,6 +12,7 @@ import pools from './poolVariables';
 import connectionFunctions from './databaseConnections';
 
 const fs = require('fs');
+const { performance } = require('perf_hooks');
 const docConfig = require('./_documentsConfig');
 
 // eslint-disable-next-line prefer-const
@@ -187,7 +188,7 @@ const DBFunctions: DBFunctions = {
   },
 
 
-  query(text, params, dbType) {
+  query(text, params, dbType, callback) {
     // RUN ANY QUERY - function that will run query on database that is passed in.
     logger(`Attempting to run query: \n ${text} for: \n ${dbType}`);
 
@@ -220,9 +221,21 @@ const DBFunctions: DBFunctions = {
     }
 
     if (dbType === DBType.SQLite) {
-      return pools.sqlite_db.query(text, params).catch((err) => {
-        logger(err.message, LogType.WARNING);
-      });
+      // return pools.sqlite_db.all(text, (err, res) => {
+      //   if (err) logger(err.message, LogType.WARNING);
+      //   console.log('res', res);
+      //   return res;
+      // });
+      return new Promise((resolve, reject) => {
+        pools.sqlite_db.all(text, (err, res) => {
+          if (err) {
+            logger(err.message, LogType.WARNING);
+            reject(err);
+          } else {
+            resolve(res);
+          }
+        })
+      })
     }
 
     // if (dbType === DBType.MySQL) {
@@ -236,6 +249,39 @@ const DBFunctions: DBFunctions = {
     ////////////////////////////////////////////////////
 
   },
+
+  sampler(queryString) {
+    console.log('pre performance');
+    return new Promise((resolve, reject) => {
+      pools.sqlite_db.run('BEGIN', (err) => {
+        if (err) {
+          console.error(err.message);
+          reject(err);
+        } else {
+          const startTime = performance.now();
+          pools.sqlite_db.all(queryString, (err, res) => {
+            if (err) {
+              console.error(err.message);
+              reject(err);
+            } else {
+              const endTime = performance.now();
+              pools.sqlite_db.run('ROLLBACK', (err) => {
+                if (err) {
+                  console.error(err.message);
+                  reject(err);
+                } else {
+                  const elapsedTime = endTime - startTime;
+                  console.log(`Elapsed time: ${elapsedTime} milliseconds`);
+                  resolve(elapsedTime);
+                }
+              });
+            }
+          });
+        }
+      });
+    });
+  },
+
 
   /**
    * Only connect to one database at a time
