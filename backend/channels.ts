@@ -581,12 +581,6 @@ ipcMain.handle(
             ////////////////////////////////////////////////////////////////////////////////////////
           }
         }
-<<<<<<< HEAD
-        minmumSampleTime = Math.round(Math.min(...arr) * 10 ** 5) / 10 ** 5;
-        maximumSampleTime = Math.round(Math.max(...arr) * 10 ** 5) / 10 ** 5;
-        averageSampleTime = Math.round((totalSampleTime / numberOfSample) * 10 ** 5) / 10 ** 5;
-        totalSampleTime = Math.round(totalSampleTime * 10 ** 5) / 10 ** 5;
-=======
         // if (dbType === DBType.SQLite) {
         //   poolVariables.sqlite_db.serialize(function () {
         //     for (let i = 0; i < numberOfSample; i++) {
@@ -604,10 +598,9 @@ ipcMain.handle(
         maximumSampleTime = Math.round(Math.max(...arr) * 10 ** 5) / 10 ** 5;
         averageSampleTime = Math.round((totalSampleTime / numberOfSample) * 10 ** 5) / 10 ** 5;
         totalSampleTime = Math.round(totalSampleTime * 10 ** 5) / 10 ** 5;
-        // console.log('minimumSampleTime-------------------------------------minimumSampleTime', minimumSampleTime);
-        // console.log('maximumSampleTime------------------------------------maximumSampleTime', maximumSampleTime);
-        // console.log('averageSampleTime------------------------------------averageSampleTime', averageSampleTime);
->>>>>>> sqlite
+        console.log('minimumSampleTime------------------------------------------------------------------------------------------minimumSampleTime', minimumSampleTime);
+        console.log('maximumSampleTime------------------------------------------------------------------------------------------maximumSampleTime', maximumSampleTime);
+        console.log('averageSampleTime------------------------------------------------------------------------------------------averageSampleTime', averageSampleTime);
       } catch (e) {
         error = `Failed to get Execution Plan. EXPLAIN might not support this query.`;
       }
