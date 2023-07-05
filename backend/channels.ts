@@ -9,6 +9,9 @@ import generateDummyData from './DummyD/dummyDataMain';
 import { ColumnObj, DBList, DummyRecords, DBType, LogType, QueryPayload } from './BE_types';
 import backendObjToQuery from './ertable-functions';
 import logger from './Logging/masterlog';
+import sqlite_db from './poolVariables';
+import poolVariables from './poolVariables';
+
 // import { Integer } from 'type-fest';
 
 const db = require('./models');
@@ -391,7 +394,7 @@ ipcMain.handle(
     const arr: any[] = [];
     const numberOfSample: number = runQueryNumber;
     let totalSampleTime: number = 0;
-    let minmumSampleTime: number = 0;
+    let minimumSampleTime: number = 0;
     let maximumSampleTime: number = 0;
     let averageSampleTime: number = 0;
 
@@ -416,7 +419,9 @@ ipcMain.handle(
       // Run Explain            
       let explainResults;
       try {
+        // console.log('start of try');
         for (let i = 0; i < numberOfSample; i++) {
+          // console.log('start of for loopo');
           if (dbType === DBType.Postgres) {
             const results = await db.query(
               explainQuery(sqlString, dbType),
@@ -424,10 +429,10 @@ ipcMain.handle(
               dbType
             );
 
-            console.log('ericCheck--------------------------------------------ericCheck');
-            console.log('postgerSQL_results-----------------------------------postgerSQL_results', results);
-            console.log('postgerSQL_results[1].rows---------------------------postgerSQL_results[1].rows', results[1].rows);
-            console.log('postgerSQL_results[1].rows[0]["QUERY PLAN"][0]-------postgerSQL_results[1].rows[0]["QUERY PLAN"][0]', results[1].rows[0]["QUERY PLAN"][0]);
+            // console.log('ericCheck--------------------------------------------ericCheck');
+            // console.log('postgerSQL_results-----------------------------------postgerSQL_results', results);
+            // console.log('postgerSQL_results[1].rows---------------------------postgerSQL_results[1].rows', results[1].rows);
+            // console.log('postgerSQL_results[1].rows[0]["QUERY PLAN"][0]-------postgerSQL_results[1].rows[0]["QUERY PLAN"][0]', results[1].rows[0]["QUERY PLAN"][0]);
 
             explainResults = results[1].rows;
             const eachSampleTime: any = results[1].rows[0]["QUERY PLAN"][0]['Planning Time'] + results[1].rows[0]["QUERY PLAN"][0]['Execution Time'];
@@ -505,18 +510,94 @@ ipcMain.handle(
 
             // console.log(LogType.WARNING, results);
 
+          } else if (dbType === DBType.SQLite) {
+            console.log('type is sqlite');
+            console.log('started timer');
+            const sampleTime = await db.sampler(sqlString);
+            arr.push(sampleTime);
+            totalSampleTime += sampleTime
+            // db.all('BEGIN', (err1) => {
+            //   if (err1) return console.error(err1.message);
+            //   console.log('began')
+            //   return db.all(sqlString, (err2) => {
+            //     if (err2) return console.error(err2.message);
+            //     console.log('ran query')
+            //     // const endTime = performance.now();
+            //     db.all('ROLLBACK');
+            //     // const eachSampleTime = endTime - startTime;
+            //     // arr.push(eachSampleTime);
+            //     // totalSampleTime += eachSampleTime
+            //     console.log('onedone')
+            //   });
+            // });
+            //////////not real result just try to get rid of bugs first///////////////
+            explainResults = {
+              Plan: {
+                'Node Type': 'Seq Scan',
+                'Parallel Aware': false,
+                'Async Capable': false,
+                'Relation Name': 'newtable1',
+                Schema: 'public',
+                Alias: 'newtable1',
+                'Startup Cost': 0,
+                'Total Cost': 7,
+                'Plan Rows': 200,
+                'Plan Width': 132,
+                'Actual Startup Time': 0.015,
+                'Actual Total Time': 0.113,
+                'Actual Rows': 200,
+                'Actual Loops': 1,
+                Output: ['newcolumn1'],
+                'Shared Hit Blocks': 5,
+                'Shared Read Blocks': 0,
+                'Shared Dirtied Blocks': 0,
+                'Shared Written Blocks': 0,
+                'Local Hit Blocks': 0,
+                'Local Read Blocks': 0,
+                'Local Dirtied Blocks': 0,
+                'Local Written Blocks': 0,
+                'Temp Read Blocks': 0,
+                'Temp Written Blocks': 0
+              },
+              Planning: {
+                'Shared Hit Blocks': 64,
+                'Shared Read Blocks': 0,
+                'Shared Dirtied Blocks': 0,
+                'Shared Written Blocks': 0,
+                'Local Hit Blocks': 0,
+                'Local Read Blocks': 0,
+                'Local Dirtied Blocks': 0,
+                'Local Written Blocks': 0,
+                'Temp Read Blocks': 0,
+                'Temp Written Blocks': 0
+              },
+              'Planning Time': 9999,
+              Triggers: [],
+              'Execution Time': 9999
+            };
+            ////////////////////////////////////////////////////////////////////////////////////////
           }
         }
-        console.log('ericCheck--------------------------------------------ericCheck');
-        console.log('totalSampleTime--------------------------------------totalSampleTime', totalSampleTime);
+        // if (dbType === DBType.SQLite) {
+        //   poolVariables.sqlite_db.serialize(function () {
+        //     for (let i = 0; i < numberOfSample; i++) {
+        //       poolVariables.sqlite_db.run('BEGIN');
+        //       poolVariables.sqlite_db.run(sqlString);
+        //       poolVariables.sqlite_db.run('ROLLBACK');
+        //     }
+        //   })
+        // }
+        // console.log('ericCheck--------------------------------------------ericCheck');
+        // console.log('totalSampleTime--------------------------------------totalSampleTime', totalSampleTime);
         // get 5 decimal points for sample time
-        minmumSampleTime = Math.round(Math.min(...arr) * 10 ** 5) / 10 ** 5;
+        console.log({ arr })
+        minimumSampleTime = Math.round(Math.min(...arr) * 10 ** 5) / 10 ** 5;
         maximumSampleTime = Math.round(Math.max(...arr) * 10 ** 5) / 10 ** 5;
         averageSampleTime = Math.round((totalSampleTime / numberOfSample) * 10 ** 5) / 10 ** 5;
         totalSampleTime = Math.round(totalSampleTime * 10 ** 5) / 10 ** 5;
-        console.log('minmumSampleTime-------------------------------------minmumSampleTime', minmumSampleTime);
-        console.log('maximumSampleTime------------------------------------maximumSampleTime', maximumSampleTime);
-        console.log('averageSampleTime------------------------------------averageSampleTime', averageSampleTime);
+        // console.log('minimumSampleTime-------------------------------------minimumSampleTime', minimumSampleTime);
+        // console.log('maximumSampleTime------------------------------------maximumSampleTime', maximumSampleTime);
+        // console.log('averageSampleTime------------------------------------averageSampleTime', averageSampleTime);
       } catch (e) {
         error = `Failed to get Execution Plan. EXPLAIN might not support this query.`;
       }
@@ -538,8 +619,29 @@ ipcMain.handle(
           returnedRows = results.rows;
           // console.log('returnedRows in channels for Postgres', returnedRows);
         }
+        if (dbType === DBType.SQLite) {
+          returnedRows = results;
+          // console.log('returnedRows in channels for SQLite', returnedRows)
+        }
       } catch (e: any) {
         error = e.toString();
+      }
+
+      try {
+        console.log('asdf')
+        console.log({ targetDb },
+          { sqlString },
+          { returnedRows },
+          { explainResults },
+          { error },
+          { numberOfSample },
+          { totalSampleTime },
+          { minimumSampleTime },
+          { maximumSampleTime },
+          { averageSampleTime },)
+        console.log(explainResults[0]);
+      } catch (err: any) {
+        console.error(err.message);
       }
 
       return {
@@ -550,7 +652,7 @@ ipcMain.handle(
         error,
         numberOfSample,
         totalSampleTime,
-        minmumSampleTime,
+        minimumSampleTime,
         maximumSampleTime,
         averageSampleTime,
       };

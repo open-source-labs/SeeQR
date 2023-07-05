@@ -84,7 +84,7 @@ const QueryView = ({
     group: '',
     numberOfSample: 0,
     totalSampleTime: 0,
-    minmumSampleTime: 0,
+    minimumSampleTime: 0,
     maximumSampleTime: 0,
     averageSampleTime: 0,
   };
@@ -96,7 +96,7 @@ const QueryView = ({
   // console.log('curDBType', curDBType);
 
   // ********** Added Number of times to run query**********/
-  const [ runQueryNumber, setRunQueryNumber ] = useState(1);
+  const [runQueryNumber, setRunQueryNumber] = useState(1);
 
   const onLabelChange = (newLabel: string) => {
     setQuery({ ...localQuery, label: newLabel });
@@ -166,19 +166,19 @@ const QueryView = ({
         },
         curDBType
       )
-      .then(({ db, sqlString, returnedRows, explainResults, error, 
-                numberOfSample,
-                totalSampleTime,
-                minmumSampleTime,
-                maximumSampleTime,
-                averageSampleTime, }) => {
+      .then(({ db, sqlString, returnedRows, explainResults, error,
+        numberOfSample,
+        totalSampleTime,
+        minimumSampleTime,
+        maximumSampleTime,
+        averageSampleTime, }) => {
         if (error) {
           throw error;
         }
         let transformedData;
         // console.log('returnedRows after .then method', returnedRows);
         // console.log('explainResult after .then method', explainResults);
-        console.log(totalSampleTime, minmumSampleTime, maximumSampleTime, averageSampleTime);
+        console.log(totalSampleTime, minimumSampleTime, maximumSampleTime, averageSampleTime);
         // console.log('curDBType in QueryView', curDBType);
 
         if (curDBType === DBType.Postgres) {
@@ -188,10 +188,11 @@ const QueryView = ({
             executionPlan: {
               numberOfSample,   // executionPlan.numberOfSample = numberOfSample
               totalSampleTime,
-              minmumSampleTime,
+              minimumSampleTime,
               maximumSampleTime,
               averageSampleTime,
-              ...explainResults[0]['QUERY PLAN'][0],},
+              ...explainResults[0]['QUERY PLAN'][0],
+            },
             label: localQuery.label,
             db,
             group: localQuery.group,
@@ -207,10 +208,27 @@ const QueryView = ({
             executionPlan: {
               numberOfSample,   // executionPlan.numberOfSample = numberOfSample
               totalSampleTime,
-              minmumSampleTime,
+              minimumSampleTime,
               maximumSampleTime,
               averageSampleTime,
               // ...explainResults[0]['QUERY PLAN'][0],
+              ...explainResults,
+            },
+          };
+        }
+        if (curDBType === DBType.SQLite) {
+          transformedData = {
+            sqlString,
+            returnedRows,
+            label: localQuery.label,
+            db,
+            group: localQuery.group,
+            executionPlan: {
+              numberOfSample,
+              totalSampleTime,
+              minimumSampleTime,
+              maximumSampleTime,
+              averageSampleTime,
               ...explainResults,
             },
           };
@@ -273,7 +291,7 @@ const QueryView = ({
           Run Query
         </RunButton>
       </CenterButton>
-      <QuerySummary executionPlan={query?.executionPlan}/>
+      <QuerySummary executionPlan={query?.executionPlan} />
       <QueryTabs
         results={query?.returnedRows}
         executionPlan={query?.executionPlan}
