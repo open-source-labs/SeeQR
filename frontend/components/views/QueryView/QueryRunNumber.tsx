@@ -1,7 +1,6 @@
 import React from 'react';
 import { TextField } from '@mui/material/';
 import Box from '@mui/material/Box';
-// import styled from 'styled-components'
 
 interface QueryRunProps {
   runNumber?: number;
@@ -13,7 +12,7 @@ const QueryRunNumber = ({ runNumber, onChange }: QueryRunProps) => (
     <TextField
       label="Number of Queries"
       value={runNumber}
-      onChange={(evt) => onChange(Number(evt.target.value))}
+      onChange={(evt) => onChange(Number(evt.target.value) || 1)}
     />
   </Box>
 );

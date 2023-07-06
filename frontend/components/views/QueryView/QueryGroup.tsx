@@ -1,7 +1,6 @@
 import React from 'react';
 import { TextField } from '@mui/material/';
 import Box from '@mui/material/Box';
-// import styled from 'styled-components'
 
 interface QueryGroupProps {
   group?: string;

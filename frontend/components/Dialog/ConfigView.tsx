@@ -283,7 +283,6 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
       <TabPanel value={value} index={3}>
         {inputFieldsToRender.rds_pg}
       </TabPanel>
-      {/* added sqlite */}
       <TabPanel value={value} index={4}>
         {inputFieldsToRender.sqlite}
       </TabPanel>

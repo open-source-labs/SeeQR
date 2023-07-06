@@ -39,7 +39,7 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
     // ///// ***** Distinguish between MySQL & PG DBs, due to differences in object structure (when obj is sent from backend to frontend) ***** ///// //
     // Handle the case when database is MySQL database
     if(dbType === 'mysql'){
-      // First one collect the real cloumn and table only, with considering the connection/ relationship between columns  
+      // First one collect the real column and table only, with considering the connection/ relationship between columns  
       const databaseCache = {};
       for (let i = 0; i < dbTables.length; i++) {
         databaseCache[dbTables[i].table_name] = [];
@@ -52,7 +52,7 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
 
       Object.keys(databaseCache).forEach((prop) => {
         const sourceNode = { id: `table:${prop}`, name: `table:${prop}`, size: 12, type: 'table', group: `${prop}` };
-        // Add the table to the nodes array in order to visualize the table
+        // Add the table to the nodes array in order to 3D visualize the table
         nodes.push(sourceNode);
 
         const columns = databaseCache[prop];
@@ -83,7 +83,7 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
       Object.keys(databaseCacheAll).forEach((prop) => {
         const columns = databaseCacheAll[prop];
         columns.forEach((column) => {
-          // Verify if the current column already is in the nodes array; if not, current column may be system config/permission/built-in columns
+          // Verify if the current column already is in the nodes array; if not, current column may be system config/permission/built-in columns 
           const foundCurrColumn = nodes.find(
             (colEl) => colEl.id === `table:${prop}-column:${column.column_name}`
           );
@@ -98,7 +98,7 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
         });
       });
     }
-    // Handle the case when database is other database; current verified databases is PostgreSQL
+    // Handle the case when database is other database, current verified databases is: PostgreSQL
     else {
       const databaseCache = {};
       for (let i = 0; i < dbTables.length; i++) {
@@ -110,7 +110,7 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
 
       Object.keys(databaseCache).forEach((prop) => {
         const sourceNode = { id: `table:${prop}`, name: `table:${prop}`, size: 12, type: 'table', group: `${prop}` };
-        // add the table to the nodes array in order to visualize the table
+        // add the table to the nodes array in order to 3D visualize the table
         nodes.push(sourceNode);
 
         const columns = databaseCache[prop];
@@ -190,12 +190,12 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
 
     const starsMaterial = new THREE.PointsMaterial({ vertexColors: true });
     const starField = new THREE.Points(starsGeometry, starsMaterial);
-    // Condition to show stars
+    // Condition to show stars or not show the stars
     starField.visible = showStars;
     const graph = graphRef.current;
     if (graph) {
       setCamera(graph.camera());
-      // Save the stars in closure of the graph.scene function
+      // Saving the stars in to closure backpack of the graph.scene function
       graph.scene().add(starField);
     }
 
@@ -205,6 +205,8 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
       }
     };
   }, [showStars]);
+
+
 
   // Variable to store the current table
   let table = null; 
@@ -218,7 +220,7 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
           'run-query',
           {
             targetDb: selectedDb,
-            // Run a single query to databases whenever user clicks the node
+            // Run a single query to databases whenever user click the node
             sqlString: `select * from ${node.group}`,
             selectedDb,
             runQueryNumber: 1,
@@ -234,7 +236,7 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
           if(returnedRows){
             if(returnedRows.length === 0){
               setClickedNode(null)
-              strrr += "I am sorry,\nthere is nothing in this table currently..."
+              strrr += "This column is currently empty..."
             }
             else{
               setCachedReturnedRows(returnedRows);
@@ -272,7 +274,7 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
                 size: 4,
                 height: 2,
               });
-              // Declairing a new text 3D object with Three.MeshBasicMaterial method
+              // Declaring a new text 3D object with Three.MeshBasicMaterial method
               const textMaterial = new THREE.MeshBasicMaterial({ color: 'rgb(225, 255, 255)'});
               const textMesh = new THREE.Mesh(textGeometry, textMaterial);
               // Position the text on the cell
@@ -314,7 +316,7 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
           if(returnedRows){
             if(returnedRows.length === 0){
               setClickedNode(null)
-              strrr += "I am sorry,\nthere is nothing in this column currently..."
+              strrr += "This column is currently empty..."
             }
             else{
               setCachedReturnedRows(returnedRows);
@@ -390,7 +392,7 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
       </button>
       {/* A button to turn off/on functionality of star's theme background; also clean the green board preview together */}
       <button onClick={toggleStars}>
-        {showStars ? 'Hide Stars Backgorund' : 'Show Stars Backgorund'}
+        {showStars ? 'Hide Stars in Background' : 'Show Stars in Background'}
       </button>
       <ForceGraph3D
         ref={graphRef}
@@ -424,7 +426,7 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
         nodeLabelColor="white" // Default labeling color is white
         onNodeClick={(node) => runQueryBloom(node)} // Click the node in order to display green board content preview
       >
-        {/* The light and shadow to make the nodes/balls 3D */}
+        {/* The light and shadow to make the nodes/balls look 3D */}
         <ambientLight color="#ffffff" intensity={1} /> 
         <directionalLight color="#ffffff" intensity={0.6} position={[-1, 1, 4]} />
       </ForceGraph3D>

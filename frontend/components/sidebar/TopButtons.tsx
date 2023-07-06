@@ -1,7 +1,8 @@
 import React from 'react';
 import { IconButton, Tooltip } from '@mui/material';
 import styled from 'styled-components';
-import { HelpOutline, ArrowBackIos, Equalizer, Settings, Coronavirus } from '@mui/icons-material';
+import { Equalizer, Settings, Coronavirus } from '@mui/icons-material';
+import HomeIcon from '@mui/icons-material/Home'
 import { AppState } from '../../types';
 
 import { textColor, hoverColor, selectedColor } from '../../style-variables';
@@ -20,7 +21,7 @@ interface StyledCompareButtonProps {
   $isSelected: boolean;
 }
 
-const StyledCompareIcon = styled(Equalizer)<StyledCompareButtonProps>`
+const StyledCompareIcon = styled(Equalizer) <StyledCompareButtonProps>`
   color: ${({ $isSelected }) => ($isSelected ? selectedColor : textColor)};
   &:hover {
     color: ${hoverColor};
@@ -28,14 +29,12 @@ const StyledCompareIcon = styled(Equalizer)<StyledCompareButtonProps>`
 `;
 
 type TopButtonsProps = Pick<AppState, 'selectedView' | 'setSelectedView'> & {
-  toggleOpen: () => void;
   setConfigDialog: (show: boolean) => void;
 };
 
 const TopButtons = ({
   selectedView,
   setSelectedView,
-  toggleOpen,
   setConfigDialog,
 }: TopButtonsProps) => {
   const toggleCompareView = () => {
@@ -51,12 +50,12 @@ const TopButtons = ({
         </StyledIconButton>
       </Tooltip>
 
-      <Tooltip title="Help">
+      <Tooltip title="Home">
         <StyledIconButton onClick={() => setSelectedView('quickStartView')}>
-          <HelpOutline fontSize="large" />
+          <HomeIcon fontSize="large" />
         </StyledIconButton>
       </Tooltip>
-      
+
       <Tooltip title="Compare Queries">
         <StyledIconButton onClick={toggleCompareView}>
           <StyledCompareIcon
@@ -66,17 +65,11 @@ const TopButtons = ({
         </StyledIconButton>
       </Tooltip>
 
-      <Tooltip title="New Page">
-        <StyledIconButton onClick={() => setSelectedView('newChart')}>
+      <Tooltip title="3D View">
+        <StyledIconButton onClick={() => setSelectedView('threeDView')}>
           <Coronavirus fontSize="large" />
         </StyledIconButton>
       </Tooltip>
-
-      {/* <Tooltip title="Hide Sidebar">
-        <StyledIconButton onClick={toggleOpen}>
-          <ArrowBackIos fontSize="large" />
-        </StyledIconButton>
-      </Tooltip> */}
     </Container>
   );
 };

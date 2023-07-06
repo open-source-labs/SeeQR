@@ -55,7 +55,6 @@ interface QueryViewProps {
   curDBType: DBType | undefined;
   setDBType: (dbType: DBType | undefined) => void;
   DBInfo: DatabaseInfo[] | undefined;
-  setDBInfo: (dbInfo: DatabaseInfo[] | undefined) => void;
 }
 
 const QueryView = ({
@@ -69,9 +68,7 @@ const QueryView = ({
   curDBType,
   setDBType,
   DBInfo,
-  setDBInfo,
 }: QueryViewProps) => {
-  // const [databases, setDatabases] = useState<string[]>([]);
 
   // I think this returns undefined if DBInfo is falsy idk lol
   const dbNames = DBInfo?.map((dbi) => dbi.db_name);
@@ -105,12 +102,6 @@ const QueryView = ({
     // when db is changed we must change selected db state on app, as well as
     // request updates for db and table information. Otherwise database view tab
     // will show wrong information
-
-    // console.log(
-    //   'when selecting a database from the dropdown menu, we first go here in queryview'
-    // );
-    // console.log('nextDBType in QueryView', nextDBType);
-    // console.log('newDB in Query View', newDb);
 
     setSelectedDb(newDb);
     setDBType(nextDBType);

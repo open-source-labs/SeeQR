@@ -5,10 +5,8 @@ import Box from '@mui/material/Box';
 import styled from 'styled-components';
 import {
   QueryData,
-  CreateNewQuery,
   AppState,
   TableInfo,
-  DatabaseInfo,
 } from '../../../types';
 import { DBType } from '../../../../backend/BE_types';
 import { defaultMargin } from '../../../style-variables';
@@ -72,16 +70,11 @@ const NewSchemaViewContainer = styled.div`
 interface NewSchemaViewProps {
   query?: AppState['workingQuery'];
   setQuery: AppState['setWorkingQuery'];
-  createNewQuery: CreateNewQuery;
   setSelectedDb: AppState['setSelectedDb'];
   selectedDb: AppState['selectedDb'];
   show: boolean;
   curDBType: DBType | undefined;
-  setDBType: (dbType: DBType | undefined) => void;
-  DBInfo: DatabaseInfo[] | undefined;
-  setDBInfo: (dbInfo: DatabaseInfo[] | undefined) => void;
   dbTables: TableInfo[];
-  setTables: (tableInfo: TableInfo[]) => void;
   selectedTable: TableInfo | undefined;
   setSelectedTable: (tableInfo: TableInfo | undefined) => void;
 }
@@ -89,26 +82,16 @@ interface NewSchemaViewProps {
 const NewSchemaView = ({
   query,
   setQuery,
-  createNewQuery,
   setSelectedDb,
   selectedDb,
   show,
   curDBType,
-  setDBType,
-  DBInfo,
-  setDBInfo,
   dbTables,
-  setTables,
   selectedTable,
   setSelectedTable,
 }: NewSchemaViewProps) => {
-  // additional local state properties using hooks
-  // const [dbTables, setTables] = useState<TableInfo[]>([]);
-  // const [selectedTable, setSelectedTable] = useState<TableInfo>();
-  // const [databases, setDatabases] = useState<DatabaseInfo[]>([]);
 
   const [currentSql, setCurrentSql] = useState('');
-  // const [open, setOpen] = useState(false);
 
   const TEMP_DBTYPE = DBType.Postgres;
 
@@ -117,13 +100,11 @@ const NewSchemaView = ({
     db: '', // name that user inputs in SchemaName.tsx
     sqlString: '', // sql string that user inputs in SchemaSqlInput.tsx
     group: '', // group string for sorting queries in accordians
-    /////////////////////////eric//////////////////////////////////////////////
     numberOfSample: 0,
     totalSampleTime: 0,
     minimumSampleTime: 0,
     maximumSampleTime: 0,
     averageSampleTime: 0,
-    ///////////////////////////////////////////////////////////////////////////
   };
 
   const localQuery = { ...defaultQuery, ...query };
@@ -227,7 +208,6 @@ const NewSchemaView = ({
         <Typography variant="h4">{`${selectedDb}`}</Typography>
       </Container>
       <TablesTabs
-        // setTables={setTables}
         tables={dbTables}
         selectTable={(table: TableInfo) => setSelectedTable(table)}
         selectedTable={selectedTable}

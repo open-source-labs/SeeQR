@@ -1,7 +1,4 @@
 import React, { useState } from 'react';
-// import { Theme } from '@mui/material/styles';
-// import makeStyles from '@mui/styles/makeStyles';
-// import createStyles from '@mui/styles/createStyles';
 import '../../lib/style.css';
 import styled from 'styled-components';
 import {
@@ -17,34 +14,6 @@ import logo from '../../../assets/logo/seeqr_dock.png';
 interface QuickStartViewProps {
   show: boolean;
 }
-// deprecated could prob just make a normal object
-// const useStyles = makeStyles((theme: Theme) =>
-// {
-//     button: {
-//       marginRight: theme.spacing(1),
-//     },
-//     backButton: {
-//       marginRight: theme.spacing(1),
-//     },
-//     completed: {
-//       display: 'inline-block',
-//     },
-//     instructions: {
-//       marginBottom: theme.spacing(3),
-//     },
-//     image: {
-//       marginTop: theme.spacing(2),
-//       marginBottom: theme.spacing(-4),
-//       width: '20vh',
-//       height: '20vh',
-//       maxHeight: '300px',
-//       maxWidth: '300px',
-//     },
-//     stepper: {
-//       fontSize: '50px',
-//     },
-//   }
-// );
 
 const PageContainer = styled.a`
   display: flex;
@@ -203,7 +172,6 @@ function getStepContent(step: number) {
 
 const QuickStartView = ({ show }: QuickStartViewProps) => {
   if (!show) return null;
-  // const classes = useStyles();
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState(new Set<number>());
   const [skipped, setSkipped] = useState(new Set<number>());
@@ -329,14 +297,6 @@ const QuickStartView = ({ show }: QuickStartViewProps) => {
               >
                 Back
               </Button>
-              {/* <Button
-                variant="contained"
-                color="primary"
-                onClick={handleNext}
-                className={classes.button}
-              >
-                Next
-              </Button> */}
               {isStepOptional(activeStep) && !completed.has(activeStep) && (
                 <Button
                   variant="contained"
