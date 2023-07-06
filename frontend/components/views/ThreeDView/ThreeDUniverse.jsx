@@ -8,10 +8,10 @@ import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
 import ClickedNodeDetail from './detailOfClickedNode';
 
-const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
+const ThreeDUniverse = ({ selectedDb, dbTables, dbType }) => {
 
   // Define the width and height of the universe container
-  const maxContainerWidth = window.innerWidth * 0.9 - 275;
+  const maxContainerWidth = window.innerWidth * 0.9 - 350;
   const width = Math.min(window.innerWidth, maxContainerWidth);
   const maxContainerHeight = window.innerHeight - 60;
   const height = Math.min(window.innerHeight, maxContainerHeight);
@@ -31,6 +31,14 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
   // State variable to track which node has been selected
   const [selectedNode, setSelectedNode] = useState(''); 
 
+  const divStyle = { 
+    position: 'absolute', 
+    top: '50px', 
+    left: '475px', 
+    'z-index': '9999',
+    display: 'flex',
+    gap: '1rem',
+  }
 
   useEffect(() => {
     const nodes = [];
@@ -149,8 +157,8 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
 
   // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// //
   // Shout out to Gundam Seed Stargazer 
-  // ParanoidUniverse Background Setting Up
-  // ParanoidUniverse Container
+  // ThreeDUniverse Background Setting Up
+  // ThreeDUniverse Container
   const toggleStars = () => {
     setShowStars((prevState) => !prevState);
   };
@@ -387,15 +395,17 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
 
 
   return (
-    <div>
+    <>
       {/* A button to trun off/on functionlity of nodes' labeling */}
-      <button onClick={() => setShowSprites(!showSprites)}>
-        {showSprites ? 'Hide Nodes\' Labeling' : 'Show Nodes\' Labeling'}
-      </button>
-      {/* A button to trun off/on functionlity of star's theme background, also clean the green board preview together */}
-      <button onClick={toggleStars}>
-        {showStars ? 'Hide Stars Backgorund' : 'Show Stars Backgorund'}
-      </button>
+      <div style={divStyle}>
+        <button className='hide-3d-btn' onClick={() => setShowSprites(!showSprites)}>
+          {showSprites ? 'Hide Nodes\' Labeling' : 'Show Nodes\' Labeling'}
+        </button>
+        {/* A button to trun off/on functionlity of star's theme background, also clean the green board preview together */}
+        <button className='hide-3d-btn' onClick={toggleStars}>
+          {showStars ? 'Hide Stars Backgorund' : 'Show Stars Backgorund'}
+        </button>
+      </div>
       <ForceGraph3D
         ref={graphRef}
         graphData={data}
@@ -438,8 +448,8 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
           selectedNode={selectedNode}
         />
       )}
-    </div>
+    </>
   );
 };
 
-export default ParanoidUniverse;
+export default ThreeDUniverse;

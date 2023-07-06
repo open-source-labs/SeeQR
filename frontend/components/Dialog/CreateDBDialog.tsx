@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import {
   DialogTitle,
+  Dialog,
+  Tooltip
 } from '@mui/material/';
-import { Dialog, Tooltip } from '@mui/material';
 import { ipcRenderer } from 'electron';
-import styled from 'styled-components';
 import { DatabaseInfo } from '../../types';
 import { DBType } from '../../../backend/BE_types';
 import { sendFeedback } from '../../lib/utils';
@@ -19,14 +19,13 @@ import {
   StyledNativeOption,
 } from '../../style-variables';
 
-const DBDialogBase = styled.div`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-`;
+interface CreateDBDialogProps {
+  show: boolean,
+  DBInfo: DatabaseInfo[] | undefined;
+  onClose: () => void;
+};
 
-const CreateDBDialog = function ({ show, DBInfo, onClose }) {
+const CreateDBDialog = ({ show, DBInfo, onClose }: CreateDBDialogProps) => {
   if (!show) return <></>;
 
   const [newDbName, setNewDbName] = useState('');
@@ -74,7 +73,7 @@ const CreateDBDialog = function ({ show, DBInfo, onClose }) {
   };
 
   const handleSubmit = () => {
-    //it needs to be as any because otherwise typescript thinks it doesn't have a 'value' param idk why
+    // it needs to be as any because otherwise typescript thinks it doesn't have a 'value' param idk why
     const dbt: DBType = (document.getElementById('dbTypeDropdown') as any)
       .value;
 
@@ -134,17 +133,6 @@ const CreateDBDialog = function ({ show, DBInfo, onClose }) {
             Database Type
           </StyledInputLabel>
 
-          {/* <StyledDropdown
-            labelId="dbtype-select-label"
-            id="dbtype-select"
-            value={DBType.Postgres}
-            label="Database Type"
-            onChange={handleChangeDB}
-            >
-                <StyledMenuItem value={DBType.Postgres}>Postgres</StyledMenuItem>
-                <StyledMenuItem value={DBType.MySQL}>MySQL</StyledMenuItem>
-            </StyledDropdown> */}
-
           <StyledNativeDropdown
             id="dbTypeDropdown"
             defaultValue={DBType.Postgres}
@@ -161,7 +149,6 @@ const CreateDBDialog = function ({ show, DBInfo, onClose }) {
             <StyledNativeOption value={DBType.RDSMySQL}>
               RDS MySQL
             </StyledNativeOption>
-            {/* Added this cloud db to create db dropdowns */}
             <StyledNativeOption value={DBType.CloudDB}>
               Cloud Database
             </StyledNativeOption>

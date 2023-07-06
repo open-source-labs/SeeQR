@@ -14,22 +14,17 @@ type TableFieldDropDownProps = {
   isDisabled?: boolean;
   otherTables: OtherTablesType[];
   setFkOptions?: (fkOptions: string[]) => void;
-  schemaStateCopy: any;
-  setSchemaState: (string) => {};
 };
 
-const TableFieldDropDown = (props: TableFieldDropDownProps) => {
-  const {
-    label,
-    idName,
-    options,
-    defaultValue,
-    isDisabled,
-    otherTables,
-    setFkOptions,
-    schemaStateCopy,
-    setSchemaState,
-  } = props;
+const TableFieldDropDown = ({
+  label,
+  idName,
+  options,
+  defaultValue,
+  isDisabled,
+  otherTables,
+  setFkOptions,
+}: TableFieldDropDownProps) => {
 
   const optionsArray = options.map((option, i) => (
     <TableFieldDropDownOption
@@ -53,7 +48,6 @@ const TableFieldDropDown = (props: TableFieldDropDownProps) => {
         setFkOptions(newTableFkOptions.column_names);
       }
     }
-    // setSchemaState(schemaStateCopy)
   };
 
   return (

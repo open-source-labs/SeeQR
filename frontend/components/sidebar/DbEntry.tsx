@@ -74,7 +74,10 @@ const DbEntry = ({
           <DialogTitle style={{color:'black'}} id="alert-dialog-title">Confirm deletion</DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
-              Are you sure you want to delete the database {db}?
+              Are you sure you want to delete the database 
+              {' '}
+              {db}
+              ?
             </DialogContentText>
           </DialogContent>
           <DialogActions>

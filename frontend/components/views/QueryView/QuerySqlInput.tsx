@@ -5,9 +5,6 @@ import { ButtonGroup, Button, Tooltip } from '@mui/material';
 import styled from 'styled-components';
 import { format } from 'sql-formatter';
 
-// import 'codemirror/lib/codemirror.css'; // Styline
-// import 'codemirror/mode/sql/sql'; // Language (Syntax Highlighting)
-// import 'codemirror/theme/lesser-dark.css'; // Theme
 import CodeMirror from '@uiw/react-codemirror';
 import { dracula } from '@uiw/codemirror-theme-dracula';
 
@@ -44,16 +41,6 @@ const QuerySqlInput = ({ sql, onChange, runQuery }: QuerySqlInputProps) => {
     onChange(formatted);
   };
 
-  // Codemirror module configuration options
-  const options = {
-    lineNumbers: true,
-    mode: 'sql',
-    theme: 'lesser-dark',
-    extraKeys: {
-      'Ctrl-Enter': runQuery,
-      'Ctrl-F': formatQuery,
-    },
-  };
   return (
     <Container>
       <Toolbar>

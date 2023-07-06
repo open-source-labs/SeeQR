@@ -13,6 +13,7 @@ const ToggleDisplay = styled.div<{ $isSelected: boolean }>`
   display: flex;
   flex-direction: column;
   width: 100%;
+  height: 200px;
   flex: 1;
 
   /* Hide unselected tab. This allows us to keep the execution plan always
