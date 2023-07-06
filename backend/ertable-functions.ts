@@ -372,12 +372,15 @@ function backendObjToQuery(backendObj: BackendObjType, dbType: DBType): string {
   }
 
   // addTable(backendObj.updates.addTables);
+  // TODO: refactor; invokes all functions even if changes are inapplicable
   addTable(backendObj.updates.addTables, backendObj.updates.alterTables);
   dropTable(backendObj.updates.dropTables);
   alterTable(backendObj.updates.alterTables);
   renameTablesColumns(backendObj.updates.alterTables);
 
+  // output: string; ALTER + CREATE queries to DB
   return outputArray.join('');
 }
+
 
 export default backendObjToQuery;
