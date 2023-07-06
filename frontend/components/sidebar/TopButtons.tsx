@@ -1,7 +1,8 @@
 import React from 'react';
 import { IconButton, Tooltip } from '@mui/material';
 import styled from 'styled-components';
-import { HelpOutline, Equalizer, Settings, Coronavirus } from '@mui/icons-material';
+import { Equalizer, Settings, Coronavirus } from '@mui/icons-material';
+import HomeIcon from '@mui/icons-material/Home'
 import { AppState } from '../../types';
 
 import { textColor, hoverColor, selectedColor } from '../../style-variables';
@@ -49,9 +50,9 @@ const TopButtons = ({
         </StyledIconButton>
       </Tooltip>
 
-      <Tooltip title="Help">
+      <Tooltip title="Home">
         <StyledIconButton onClick={() => setSelectedView('quickStartView')}>
-          <HelpOutline fontSize="large" />
+          <HomeIcon fontSize="large" />
         </StyledIconButton>
       </Tooltip>
 
