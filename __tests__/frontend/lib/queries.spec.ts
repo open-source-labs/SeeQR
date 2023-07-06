@@ -25,7 +25,7 @@ const first: Partial<QueryData> = {
     'Execution Time': 1,
     'numberOfSample': 1,
     'totalSampleTime': 2, 
-    'minmumSampleTime': 2, 
+    'minimumSampleTime': 2, 
     'maximumSampleTime': 2, 
     'averageSampleTime': 2
   },
