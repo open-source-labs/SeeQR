@@ -85,7 +85,7 @@ const DbList = ({
   };
 
   const selectHandler = (dbName: string, cdbt: DBType | undefined) => {
-    setSelectedView(selectedView === 'newChart' ?  'newChart' : 'dbView');
+    setSelectedView(selectedView === 'threeDView' ?  'threeDView' : 'dbView');
     if (dbName === selectedDb) return;
     ipcRenderer
       .invoke('select-db', dbName, cdbt)

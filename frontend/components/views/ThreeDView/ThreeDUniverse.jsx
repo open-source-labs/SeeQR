@@ -8,7 +8,7 @@ import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
 import ClickedNodeDetail from './detailOfClickedNode';
 
-const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
+const ThreeDUniverse = ({ selectedDb, dbTables, dbType }) => {
 
   // Define the width and height of the universe container
   const maxContainerWidth = window.innerWidth * 0.9 - 350;
@@ -157,8 +157,8 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
 
   // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// //
   // Shout out to Gundam Seed Stargazer 
-  // ParanoidUniverse Background Setting Up
-  // ParanoidUniverse Container
+  // ThreeDUniverse Background Setting Up
+  // ThreeDUniverse Container
   const toggleStars = () => {
     setShowStars((prevState) => !prevState);
   };
@@ -452,4 +452,4 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
   );
 };
 
-export default ParanoidUniverse;
+export default ThreeDUniverse;

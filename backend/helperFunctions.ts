@@ -131,7 +131,7 @@ const helperFunctions: HelperFunctions = {
     new Promise((resolve, reject) => {
       exec(cmd, {
         timeout: 5000,
-        // env: { PGPASSWORD: docConfig.getFullConfig().pg.password },
+        env: { PGPASSWORD: docConfig.getFullConfig().pg.password },
       }, (error, stdout, stderr) => {
         if (error) {
           // console.log(error)

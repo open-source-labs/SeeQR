@@ -1,5 +1,5 @@
 import React from 'react';
-import ParanoidUniverse from './bloom2';
+import ThreeDUniverse from './ThreeDUniverse';
 import { AppState, TableInfo } from '../../../types';
 import { DBType } from '../../../../backend/BE_types';
 
@@ -10,11 +10,11 @@ interface ThreeDModelProps {
   dbType: DBType | undefined;
 };
 
-const NewChart = ({ show, selectedDb, dbTables, dbType }: ThreeDModelProps) => {
+const ThreeDView = ({ show, selectedDb, dbTables, dbType }: ThreeDModelProps) => {
   if (!show) return null;
   return (
     <>
-      <ParanoidUniverse 
+      <ThreeDUniverse 
         selectedDb={selectedDb}
         dbTables={dbTables}
         dbType={dbType}
@@ -23,4 +23,4 @@ const NewChart = ({ show, selectedDb, dbTables, dbType }: ThreeDModelProps) => {
   );
 };
 
-export default NewChart;
+export default ThreeDView;

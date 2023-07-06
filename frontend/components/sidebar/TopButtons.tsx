@@ -65,7 +65,7 @@ const TopButtons = ({
       </Tooltip>
 
       <Tooltip title="New Page">
-        <StyledIconButton onClick={() => setSelectedView('newChart')}>
+        <StyledIconButton onClick={() => setSelectedView('threeDView')}>
           <Coronavirus fontSize="large" />
         </StyledIconButton>
       </Tooltip>

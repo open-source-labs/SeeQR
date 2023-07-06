@@ -139,7 +139,7 @@ const Sidebar = ({
             selectedView === 'dbView' ||
             selectedView === 'quickStartView' ||
             selectedView === 'newSchemaView' ||
-            selectedView === 'newChart'
+            selectedView === 'threeDView'
           }
           setSelectedView={setSelectedView}
           curDBType={curDBType}
