@@ -22,7 +22,6 @@ function backendObjToQuery(backendObj: BackendObjType, dbType: DBType): string {
   let firstAddingMySQLColumnName: string | null;
   // Add table to database
 
-
   /**
    * Function adding commands for adding queries to the output depending on tables that need to be added 
    * @param addTableArray holds array of properties of tables to be added to database
