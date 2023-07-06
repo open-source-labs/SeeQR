@@ -450,4 +450,4 @@ const ThreeDUniverse = ({ selectedDb, dbTables, dbType }) => {
   );
 };
 
-export default ParanoidUniverse;
+export default ThreeDUniverse;
