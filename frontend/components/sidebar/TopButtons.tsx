@@ -20,7 +20,7 @@ interface StyledCompareButtonProps {
   $isSelected: boolean;
 }
 
-const StyledCompareIcon = styled(Equalizer)<StyledCompareButtonProps>`
+const StyledCompareIcon = styled(Equalizer) <StyledCompareButtonProps>`
   color: ${({ $isSelected }) => ($isSelected ? selectedColor : textColor)};
   &:hover {
     color: ${hoverColor};
@@ -54,7 +54,7 @@ const TopButtons = ({
           <HelpOutline fontSize="large" />
         </StyledIconButton>
       </Tooltip>
-      
+
       <Tooltip title="Compare Queries">
         <StyledIconButton onClick={toggleCompareView}>
           <StyledCompareIcon
@@ -64,7 +64,7 @@ const TopButtons = ({
         </StyledIconButton>
       </Tooltip>
 
-      <Tooltip title="New Page">
+      <Tooltip title="3D View">
         <StyledIconButton onClick={() => setSelectedView('threeDView')}>
           <Coronavirus fontSize="large" />
         </StyledIconButton>
