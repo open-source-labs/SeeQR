@@ -22,7 +22,6 @@ function backendObjToQuery(backendObj: BackendObjType, dbType: DBType): string {
   let firstAddingMySQLColumnName: string | null;
   // Add table to database
 
-
   /**
    * Function adding commands for adding queries to the output depending on tables that need to be added 
    * @param addTableArray holds array of properties of tables to be added to database
@@ -373,12 +372,15 @@ function backendObjToQuery(backendObj: BackendObjType, dbType: DBType): string {
   }
 
   // addTable(backendObj.updates.addTables);
+  // TODO: refactor; invokes all functions even if changes are inapplicable
   addTable(backendObj.updates.addTables, backendObj.updates.alterTables);
   dropTable(backendObj.updates.dropTables);
   alterTable(backendObj.updates.alterTables);
   renameTablesColumns(backendObj.updates.alterTables);
 
+  // output: string; ALTER + CREATE queries to DB
   return outputArray.join('');
 }
+
 
 export default backendObjToQuery;
