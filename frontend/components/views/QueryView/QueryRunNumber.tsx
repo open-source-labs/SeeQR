@@ -12,7 +12,7 @@ const QueryRunNumber = ({ runNumber, onChange }: QueryRunProps) => (
     <TextField
       label="Number of Queries"
       value={runNumber}
-      onChange={(evt) => onChange(Number(evt.target.value))}
+      onChange={(evt) => onChange(Number(evt.target.value) || 1)}
     />
   </Box>
 );

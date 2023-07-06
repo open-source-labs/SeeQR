@@ -48,7 +48,6 @@ const generateDataByType = (columnObj: ColumnObj): string | number => {
         ? Math.floor(Math.random() * columnObj.character_maximum_length)
         : 3;
       return '\''.concat(faker.random.alphaNumeric(length)).concat('\'');
-    /////////////////////////////////////////eric for mySQL////////////////////////////////////////////////////////////////////
     case 'varchar':
       // defaulting length to 3 because faker.lorem defaults to a length of 3 if no length is specified
   
@@ -58,7 +57,6 @@ const generateDataByType = (columnObj: ColumnObj): string | number => {
       return '\''.concat(faker.random.alphaNumeric(length)).concat('\'');  
     case 'int':
       return faker.random.number({ min: -2147483648, max: 2147483647 });
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////  
     case 'date': {
       // generating a random date between 1500 and 2020
       const year = getRandomInt(1500, 2020).toString();
@@ -73,7 +71,6 @@ const generateDataByType = (columnObj: ColumnObj): string | number => {
       return '\''.concat(faker.random.boolean()).concat('\'');
     }
     default:
-      // console.log('Error generating dummy data by type');
       throw new Error('unhandled data type');
   }
 };
@@ -104,7 +101,7 @@ const generateDummyData: GenerateDummyData = async (tableInfo: ColumnObj[], numR
       
       // if there is a foreign key constraint, grab random key from foreign table 
       else if (tableInfo[j].constraint_type === 'FOREIGN KEY') {
-        // try {
+
           const foreignColumn = tableInfo[j].foreign_column;
           const foreignTable = tableInfo[j].foreign_table;
           const getForeignKeyQuery = `
@@ -122,10 +119,6 @@ const generateDummyData: GenerateDummyData = async (tableInfo: ColumnObj[], numR
             logger('There was an error while retrieving a valid foreign key while generating dummy data.', LogType.ERROR);
             throw new Error('There was an error while retrieving a valid foreign key.');
           }
-        // }
-        // catch(err) {
-        //   throw err;
-        // }
       }
     }
     dummyRecords.push(row);

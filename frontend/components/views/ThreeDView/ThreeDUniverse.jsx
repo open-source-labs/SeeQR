@@ -44,10 +44,10 @@ const ThreeDUniverse = ({ selectedDb, dbTables, dbType }) => {
     const nodes = [];
     const edges = [];
 
-    // ///// ***** Because the thing send back from backend to front end is not totally same between PostgreSQL and MySQL, So We specialize the condition ***** ///// //
+    // ///// ***** Distinguish between MySQL & PG DBs, due to differences in object structure (when obj is sent from backend to frontend) ***** ///// //
     // Handle the case when database is MySQL database
     if(dbType === 'mysql'){
-      // First one collect the real cloumn and table only, with considering the connection/ relationship between columns  
+      // First one collect the real column and table only, with considering the connection/ relationship between columns  
       const databaseCache = {};
       for (let i = 0; i < dbTables.length; i++) {
         databaseCache[dbTables[i].table_name] = [];
@@ -60,7 +60,7 @@ const ThreeDUniverse = ({ selectedDb, dbTables, dbType }) => {
 
       Object.keys(databaseCache).forEach((prop) => {
         const sourceNode = { id: `table:${prop}`, name: `table:${prop}`, size: 12, type: 'table', group: `${prop}` };
-        // adding the table to the nodes array in order to 3D visualize the table
+        // Add the table to the nodes array in order to 3D visualize the table
         nodes.push(sourceNode);
 
         const columns = databaseCache[prop];
@@ -75,11 +75,11 @@ const ThreeDUniverse = ({ selectedDb, dbTables, dbType }) => {
           };
           // Pushing each node to the nodes array
           nodes.push(targetNode);
-          // Build the connection between the table and corresponding columns what the table are having
+          // Build the connection between the table and corresponding columns
           edges.push({ source: sourceNode.id, target: targetNode.id });
         });
       });
-      // Second one just start to consider the connection/ relationship between columns  
+      // Second one: start to consider the connection/ relationship between columns  
       const databaseCacheAll = {};
       for (let i = 0; i < dbTables.length; i++) {
         databaseCacheAll[dbTables[i].table_name] = [];
@@ -91,15 +91,15 @@ const ThreeDUniverse = ({ selectedDb, dbTables, dbType }) => {
       Object.keys(databaseCacheAll).forEach((prop) => {
         const columns = databaseCacheAll[prop];
         columns.forEach((column) => {
-          // Verify if the current column already is in the nodes array; if not that means the current column could be the system config or the permission stuff which is not a 'real' column to saving our input data 
+          // Verify if the current column already is in the nodes array; if not, current column may be system config/permission/built-in columns 
           const foundCurrColumn = nodes.find(
             (colEl) => colEl.id === `table:${prop}-column:${column.column_name}`
           );
-          // Chech if the current column's foreign is in the nodes array when the current column's foreign_table and foreign_column is not null
+          // Check if the current column's foreign is in the nodes array when the current column's foreign_table and foreign_column is not null
           const foundForeignColumn = nodes.find(
             (colEl) => colEl.id === `table:${column.foreign_table}-column:${column.foreign_column}`
           );
-          // If current column and foreign column and foregin table all in the nodes array, than we can build the connection between the current column and foreign column
+          // If current column and foreign column and foreign table all in the nodes array, than we can build the connection between the current column and foreign column
           if (foundCurrColumn && foundForeignColumn) {
             edges.push({ source: foundForeignColumn.id, target: foundCurrColumn.id });
           }
@@ -118,7 +118,7 @@ const ThreeDUniverse = ({ selectedDb, dbTables, dbType }) => {
 
       Object.keys(databaseCache).forEach((prop) => {
         const sourceNode = { id: `table:${prop}`, name: `table:${prop}`, size: 12, type: 'table', group: `${prop}` };
-        // adding the table to the nodes array in order to 3D visualize the table
+        // add the table to the nodes array in order to 3D visualize the table
         nodes.push(sourceNode);
 
         const columns = databaseCache[prop];
@@ -142,7 +142,7 @@ const ThreeDUniverse = ({ selectedDb, dbTables, dbType }) => {
             // Connect the current table and corresponding column
             edges.push({ source: sourceNode.id, target: targetNode.id });
           }
-          // If the column has foreign, we do build the connection directly
+          // If the column has foreign, we build the connection directly
           if (column.foreign_table && column.foreign_column) {
             edges.push({ source: `table:${column.foreign_table}-column:${column.foreign_column}`, target: `table:${prop}-column:${column.column_name}` });
           }
@@ -155,7 +155,6 @@ const ThreeDUniverse = ({ selectedDb, dbTables, dbType }) => {
     setData({ nodes, links: edges });
   }, []);
 
-  // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// //
   // Shout out to Gundam Seed Stargazer 
   // ThreeDUniverse Background Setting Up
   // ThreeDUniverse Container
@@ -215,7 +214,6 @@ const ThreeDUniverse = ({ selectedDb, dbTables, dbType }) => {
     };
   }, [showStars]);
 
-  // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// //
 
 
   // Variable to store the current table
@@ -246,7 +244,7 @@ const ThreeDUniverse = ({ selectedDb, dbTables, dbType }) => {
           if(returnedRows){
             if(returnedRows.length === 0){
               setClickedNode(null)
-              strrr += "I am sorry,\nthere is nothing in this table currently..."
+              strrr += "This column is currently empty..."
             }
             else{
               setCachedReturnedRows(returnedRows);
@@ -284,7 +282,7 @@ const ThreeDUniverse = ({ selectedDb, dbTables, dbType }) => {
                 size: 4,
                 height: 2,
               });
-              // Declairing a new text 3D object with Three.MeshBasicMaterial method
+              // Declaring a new text 3D object with Three.MeshBasicMaterial method
               const textMaterial = new THREE.MeshBasicMaterial({ color: 'rgb(225, 255, 255)'});
               const textMesh = new THREE.Mesh(textGeometry, textMaterial);
               // Position the text on the cell
@@ -326,7 +324,7 @@ const ThreeDUniverse = ({ selectedDb, dbTables, dbType }) => {
           if(returnedRows){
             if(returnedRows.length === 0){
               setClickedNode(null)
-              strrr += "I am sorry,\nthere is nothing in this column currently..."
+              strrr += "This column is currently empty..."
             }
             else{
               setCachedReturnedRows(returnedRows);
@@ -396,16 +394,16 @@ const ThreeDUniverse = ({ selectedDb, dbTables, dbType }) => {
 
   return (
     <>
-      {/* A button to trun off/on functionlity of nodes' labeling */}
-      <div style={divStyle}>
-        <button className='hide-3d-btn' onClick={() => setShowSprites(!showSprites)}>
-          {showSprites ? 'Hide Nodes\' Labeling' : 'Show Nodes\' Labeling'}
-        </button>
-        {/* A button to trun off/on functionlity of star's theme background, also clean the green board preview together */}
-        <button className='hide-3d-btn' onClick={toggleStars}>
-          {showStars ? 'Hide Stars Backgorund' : 'Show Stars Backgorund'}
-        </button>
-      </div>
+    {/* A button to turn off/on functionality of nodes' labeling */}
+    <div style={divStyle}>
+      <button className='hide-3d-btn' onClick={() => setShowSprites(!showSprites)}>
+        {showSprites ? 'Hide Nodes\' Labeling' : 'Show Nodes\' Labeling'}
+      </button>
+      {/* A button to turn off/on functionality of star's theme background; also clean the green board preview together */}
+      <button className='hide-3d-btn' onClick={toggleStars}>
+        {showStars ? 'Hide Stars Backgorund' : 'Show Stars Backgorund'}
+      </button>
+    </div>
       <ForceGraph3D
         ref={graphRef}
         graphData={data}
@@ -438,7 +436,7 @@ const ThreeDUniverse = ({ selectedDb, dbTables, dbType }) => {
         nodeLabelColor="white" // Default labeling color is white
         onNodeClick={(node) => runQueryBloom(node)} // Click the node in order to display green board content preview
       >
-        {/* The light and shadow to make the nodes/balls look like more 3D */}
+        {/* The light and shadow to make the nodes/balls look 3D */}
         <ambientLight color="#ffffff" intensity={1} /> 
         <directionalLight color="#ffffff" intensity={0.6} position={[-1, 1, 4]} />
       </ForceGraph3D>

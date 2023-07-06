@@ -822,9 +822,6 @@ const DBFunctions: DBFunctions = {
                 reject(error);
               });
           })
-        // .catch((err) => {
-        //   reject(err);
-        // });
       }
     });
   },

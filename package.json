@@ -21,7 +21,10 @@
     "test": "jest --verbose",
     "electron-build": "electron-builder"
   },
-  "repository": "github:open-source-labs/SeeQR",
+  "repository": {
+    "type": "git",
+    "url": "github:open-source-labs/SeeQR"
+  },
   "keywords": [],
   "author": {
     "name": "Team SeeQR",
@@ -71,7 +74,8 @@
     "sqlite3": "^5.1.6",
     "styled-components": "^5.2.1",
     "three": "^0.153.0",
-    "three-spritetext": "^1.8.1"
+    "three-spritetext": "^1.8.1",
+    "update-electron-app": "^2.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.10.5",
