@@ -36,7 +36,7 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
     const nodes = [];
     const edges = [];
 
-    // ///// ***** Because the thing send back from backend to front end is not totally same between PostgreSQL and MySQL, So We specialize the condition ***** ///// //
+    // ///// ***** Distinguish between MySQL & PG DBs, due to differences in object structure (when obj is sent from backend to frontend) ***** ///// //
     // Handle the case when database is MySQL database
     if(dbType === 'mysql'){
       // First one collect the real cloumn and table only, with considering the connection/ relationship between columns  
@@ -52,7 +52,7 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
 
       Object.keys(databaseCache).forEach((prop) => {
         const sourceNode = { id: `table:${prop}`, name: `table:${prop}`, size: 12, type: 'table', group: `${prop}` };
-        // adding the table to the nodes array in order to 3D visualize the table
+        // Add the table to the nodes array in order to visualize the table
         nodes.push(sourceNode);
 
         const columns = databaseCache[prop];
@@ -67,11 +67,11 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
           };
           // Pushing each node to the nodes array
           nodes.push(targetNode);
-          // Build the connection between the table and corresponding columns what the table are having
+          // Build the connection between the table and corresponding columns
           edges.push({ source: sourceNode.id, target: targetNode.id });
         });
       });
-      // Second one just start to consider the connection/ relationship between columns  
+      // Second one: start to consider the connection/ relationship between columns  
       const databaseCacheAll = {};
       for (let i = 0; i < dbTables.length; i++) {
         databaseCacheAll[dbTables[i].table_name] = [];
@@ -83,22 +83,22 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
       Object.keys(databaseCacheAll).forEach((prop) => {
         const columns = databaseCacheAll[prop];
         columns.forEach((column) => {
-          // Verify if the current column already is in the nodes array; if not that means the current column could be the system config or the permission stuff which is not a 'real' column to saving our input data 
+          // Verify if the current column already is in the nodes array; if not, current column may be system config/permission/built-in columns
           const foundCurrColumn = nodes.find(
             (colEl) => colEl.id === `table:${prop}-column:${column.column_name}`
           );
-          // Chech if the current column's foreign is in the nodes array when the current column's foreign_table and foreign_column is not null
+          // Check if the current column's foreign is in the nodes array when the current column's foreign_table and foreign_column is not null
           const foundForeignColumn = nodes.find(
             (colEl) => colEl.id === `table:${column.foreign_table}-column:${column.foreign_column}`
           );
-          // If current column and foreign column and foregin table all in the nodes array, than we can build the connection between the current column and foreign column
+          // If current column and foreign column and foreign table all in the nodes array, than we can build the connection between the current column and foreign column
           if (foundCurrColumn && foundForeignColumn) {
             edges.push({ source: foundForeignColumn.id, target: foundCurrColumn.id });
           }
         });
       });
     }
-    // Handle the case when database is other database, current verified databases is: PostgreSQL
+    // Handle the case when database is other database; current verified databases is PostgreSQL
     else {
       const databaseCache = {};
       for (let i = 0; i < dbTables.length; i++) {
@@ -110,7 +110,7 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
 
       Object.keys(databaseCache).forEach((prop) => {
         const sourceNode = { id: `table:${prop}`, name: `table:${prop}`, size: 12, type: 'table', group: `${prop}` };
-        // adding the table to the nodes array in order to 3D visualize the table
+        // add the table to the nodes array in order to visualize the table
         nodes.push(sourceNode);
 
         const columns = databaseCache[prop];
@@ -134,7 +134,7 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
             // Connect the current table and corresponding column
             edges.push({ source: sourceNode.id, target: targetNode.id });
           }
-          // If the column has foreign, we do build the connection directly
+          // If the column has foreign, we build the connection directly
           if (column.foreign_table && column.foreign_column) {
             edges.push({ source: `table:${column.foreign_table}-column:${column.foreign_column}`, target: `table:${prop}-column:${column.column_name}` });
           }
@@ -147,7 +147,6 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
     setData({ nodes, links: edges });
   }, []);
 
-  // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// //
   // Shout out to Gundam Seed Stargazer 
   // ParanoidUniverse Background Setting Up
   // ParanoidUniverse Container
@@ -191,12 +190,12 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
 
     const starsMaterial = new THREE.PointsMaterial({ vertexColors: true });
     const starField = new THREE.Points(starsGeometry, starsMaterial);
-    // Condition to show stars or not show the stars
+    // Condition to show stars
     starField.visible = showStars;
     const graph = graphRef.current;
     if (graph) {
       setCamera(graph.camera());
-      // Saving the stars in to closure backpack of the graph.scene function
+      // Save the stars in closure of the graph.scene function
       graph.scene().add(starField);
     }
 
@@ -206,9 +205,6 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
       }
     };
   }, [showStars]);
-
-  // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// //
-
 
   // Variable to store the current table
   let table = null; 
@@ -222,7 +218,7 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
           'run-query',
           {
             targetDb: selectedDb,
-            // Run a single query to databases whenever user click the node
+            // Run a single query to databases whenever user clicks the node
             sqlString: `select * from ${node.group}`,
             selectedDb,
             runQueryNumber: 1,
@@ -388,11 +384,11 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
 
   return (
     <div>
-      {/* A button to trun off/on functionlity of nodes' labeling */}
+      {/* A button to turn off/on functionlity of nodes' labeling */}
       <button onClick={() => setShowSprites(!showSprites)}>
         {showSprites ? 'Hide Nodes\' Labeling' : 'Show Nodes\' Labeling'}
       </button>
-      {/* A button to trun off/on functionlity of star's theme background, also clean the green board preview together */}
+      {/* A button to turn off/on functionality of star's theme background; also clean the green board preview together */}
       <button onClick={toggleStars}>
         {showStars ? 'Hide Stars Backgorund' : 'Show Stars Backgorund'}
       </button>
@@ -428,7 +424,7 @@ const ParanoidUniverse = ({ selectedDb, dbTables, dbType }) => {
         nodeLabelColor="white" // Default labeling color is white
         onNodeClick={(node) => runQueryBloom(node)} // Click the node in order to display green board content preview
       >
-        {/* The light and shadow to make the nodes/balls look like more 3D */}
+        {/* The light and shadow to make the nodes/balls 3D */}
         <ambientLight color="#ffffff" intensity={1} /> 
         <directionalLight color="#ffffff" intensity={0.6} position={[-1, 1, 4]} />
       </ForceGraph3D>
