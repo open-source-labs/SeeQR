@@ -59,25 +59,6 @@ To get started on contributing and editing databases to this project:
 
 ## Interface & Features
 
-- 3D Database Visualization
-  - From the 'DATABASES' view, select the '3D View' tab on the far right of the sidebar to launch the brand new 3D database visualizer.
-    - Individual table nodes are distinguished by their different colors
-    - Column nodes are joined to table nodes and match their source table color
-    - Individual tables related by foreign keys are connected through their respective foreign and primary keys
-  - Navigate through the 3D space using left click to rotate, scroll wheel to zoom, and right click to pan.
-  - Click and drag nodes to visually organize them
-  - Click on a table or column node to quickly view the data stored within
-
-<div align="center">
-  <img src="./assets/readmeImages/gifs/3dhome.gif" width=800/>
-</div>
-<div align="center">
-  <img src="./assets/readmeImages/gifs/3dfk.gif" width=800/>
-</div>
-<div align="center">
-  <img src="./assets/readmeImages/gifs/3dtables.gif" width=800/>
-</div>
-
 - Overview
   - Upon application launch, navigate to the config menu by clicking on the gear icon on the top left.
   - Ensure that your usernames, passwords, and ports are accurate in the SeeQR config.
@@ -112,7 +93,30 @@ To get started on contributing and editing databases to this project:
   <div align="center">
     <img src="./assets/readmeImages/gifs/dummy_data.gif" width=800/>
   </div>
+<br>
+  
+- <strong>NEW</strong> 3D Database Visualization
+  - From the 'DATABASES' view, select the '3D View' tab on the far right of the sidebar to launch the brand new 3D database visualizer.
+    - Individual table nodes are distinguished by their different colors
+    - Column nodes are joined to table nodes and match their source table color
+    - Individual tables related by foreign keys are connected through their respective foreign and primary keys
+  - Navigate through the 3D space using left click to rotate, scroll wheel to zoom, and right click to pan.
+  - Click and drag nodes to visually organize them
+  - Click on a table or column node to quickly view the data stored within
+<br>
+<div align="center">
+  <img src="./assets/readmeImages/gifs/3dhome.gif" width=800/>
+</div>
+<br>
+<div align="center">
+  <img src="./assets/readmeImages/gifs/3dfk.gif" width=800/>
+</div>
+<br>
+<div align="center">
+  <img src="./assets/readmeImages/gifs/3dtables.gif" width=800/>
+</div>
 
+<br>
 - Create/Edit Database
 
   - Users can create a new database from scratch by clicking the `Create New Database` button at the bottom of the sidebar.
