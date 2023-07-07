@@ -4,9 +4,7 @@ import {
   AlterTablesObjType,
   AlterColumnsObjType,
   AddConstraintObjType,
-  ///eric////
   AddColumnsObjType,
-  ////////////
 } from '../frontend/types';
 
 import { BackendObjType, DBType } from './BE_types';
