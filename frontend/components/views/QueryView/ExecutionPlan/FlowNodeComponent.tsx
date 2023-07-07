@@ -1,5 +1,5 @@
 import React from 'react';
-import { Position, NodeProps, Handle } from 'react-flow-renderer';
+import { Position, NodeProps, Handle } from 'reactflow';
 import PlanCard from './PlanCard';
 import { SizedPlanNode, Totals } from '../../../../lib/flow';
 import { Thresholds } from '../../../../types';

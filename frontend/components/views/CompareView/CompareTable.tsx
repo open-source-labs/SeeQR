@@ -6,8 +6,8 @@ import {
   TableHead,
   TableRow,
   Tooltip,
-} from '@material-ui/core';
-import SpeedIcon from '@material-ui/icons/Speed';
+} from '@mui/material';
+import SpeedIcon from '@mui/icons-material/Speed';
 import styled from 'styled-components';
 import { AppState, QueryData } from '../../../types';
 import {

@@ -1,6 +1,7 @@
 import fs from 'fs';
 import { remote } from 'electron';
-import { MarkerType } from 'react-flow-renderer';
+import { MarkerType } from 'reactflow';
+import 'reactflow/dist/style.css';
 import { greenPrimary } from '../style-variables';
 import * as types from '../constants/constants';
 
@@ -57,6 +58,7 @@ class Table {
     ];
     const edges = [];
     let num = -1;
+
     // iterate through the columns data for this data, create a node for each column
     // create an edge (the connection line) for each column that has a designated
     // foreign table and foreign column name

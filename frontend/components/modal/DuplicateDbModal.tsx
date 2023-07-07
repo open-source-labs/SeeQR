@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import {
-  MuiThemeProvider,
+  ThemeProvider,
+  Theme,
+  StyledEngineProvider,
   Dialog,
   Checkbox,
   FormControlLabel,
   Tooltip,
-} from '@material-ui/core/';
+} from '@mui/material/';
 import { sendFeedback } from '../../lib/utils';
 import {
   ButtonContainer,
@@ -16,6 +18,13 @@ import {
   StyledDialogTitle,
 } from '../../style-variables';
 import { DBType } from '../../../backend/BE_types';
+
+
+declare module '@mui/material/styles/' {
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  interface DefaultTheme extends Theme {}
+}
+
 
 const { ipcRenderer } = window.require('electron');
 
@@ -128,67 +137,69 @@ const DuplicateDbModal = ({
 
   return (
     <div>
-      <MuiThemeProvider theme={MuiTheme}>
-        <Dialog
-          fullWidth
-          maxWidth="xs"
-          onClose={handleClose}
-          aria-labelledby="modal-title"
-          open={open}
-        >
-          <TextFieldContainer>
-            <StyledDialogTitle id="alert-dialog-title">
-              Copy Existing Database
-            </StyledDialogTitle>
-            <Tooltip
-              title={
-                checked ? 'Deselect to only copy shell' : 'Select to copy data'
-              }
-            >
-              <FormControlLabel
-                control={
-                  // eslint-disable-next-line react/jsx-wrap-multilines
-                  <Checkbox
-                    checked={checked}
-                    onChange={handleCopyData}
-                    color="primary"
-                  />
+      <StyledEngineProvider injectFirst>
+        <ThemeProvider theme={MuiTheme}>
+          <Dialog
+            fullWidth
+            maxWidth="xs"
+            onClose={handleClose}
+            aria-labelledby="modal-title"
+            open={open}
+          >
+            <TextFieldContainer>
+              <StyledDialogTitle id="alert-dialog-title">
+                Copy Existing Database
+              </StyledDialogTitle>
+              <Tooltip
+                title={
+                  checked ? 'Deselect to only copy shell' : 'Select to copy data'
                 }
-                label="Copy data"
+              >
+                <FormControlLabel
+                  control={
+                    // eslint-disable-next-line react/jsx-wrap-multilines
+                    <Checkbox
+                      checked={checked}
+                      onChange={handleCopyData}
+                      color="primary"
+                    />
+                  }
+                  label="Copy data"
+                />
+              </Tooltip>
+              <StyledTextField
+                required
+                error={isError || isEmpty}
+                helperText={errorMessage()}
+                id="filled-required"
+                label="Enter a database copy name"
+                variant="outlined"
+                defaultValue={newSchemaName}
+                onChange={handleSchemaName}
+                InputProps={{
+                  style: { color: '#575151' },
+                }}
               />
-            </Tooltip>
-            <StyledTextField
-              required
-              error={isError || isEmpty}
-              helperText={errorMessage()}
-              id="filled-required"
-              label="Enter a database copy name"
-              variant="outlined"
-              defaultValue={newSchemaName}
-              onChange={handleSchemaName}
-              InputProps={{
-                style: { color: '#575151' },
-              }}
-            />
-          </TextFieldContainer>
-          <ButtonContainer>
-            <StyledButton
-              variant="contained"
-              color="secondary"
-              onClick={handleClose}
-            >
-              Cancel
-            </StyledButton>
-            <StyledButton
-              variant="contained"
-              color="primary"
-              onClick={isEmpty || isError ? () => {} : handleCopyFilePath}
-            >
-              Copy
-            </StyledButton>
-          </ButtonContainer>
-        </Dialog>
-      </MuiThemeProvider>
+            </TextFieldContainer>
+            <ButtonContainer>
+              <StyledButton
+                variant="contained"
+                color="secondary"
+                onClick={handleClose}
+              >
+                Cancel
+              </StyledButton>
+              <StyledButton
+                variant="contained"
+                color="primary"
+                onClick={isEmpty || isError ? () => {} : handleCopyFilePath}
+              >
+                Copy
+              </StyledButton>
+            </ButtonContainer>
+          </Dialog>
+        </ThemeProvider>
+      </StyledEngineProvider>
     </div>
   );
 };

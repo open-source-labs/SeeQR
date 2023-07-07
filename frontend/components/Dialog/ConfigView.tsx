@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { IpcRendererEvent, ipcRenderer } from 'electron';
+import { IpcRendererEvent, ipcRenderer, remote } from 'electron';
 import {
   Box,
   Tab,
@@ -15,7 +15,7 @@ import {
   StyledButton,
   StyledTextField,
 } from '../../style-variables';
-import '../../lib/style.scss';
+import '../../lib/style.css';
 
 /*
 junaid
@@ -43,16 +43,17 @@ function TabPanel(props: TabPanelProps) {
       {...other}
     >
       {value === index && (
-      <Box sx={{
-        display:'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        pt: 2
-      }}
-      >
-        {children}
-      </Box>
-)}
+        <Box sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '.25rem',
+          alignItems: 'center',
+          pt: 2
+        }}
+        >
+          {children}
+        </Box>
+      )}
     </div>
   );
 }
@@ -70,6 +71,7 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
   const [pg, setpg] = useState({});
   const [rds_mysql, setrds_mysql] = useState({});
   const [rds_pg, setrds_pg] = useState({});
+  const [sqlite, setSqlite] = useState({}); // added sqlite
   // Toggle TabPanel display
   const [value, setValue] = useState(0);
   // Toggle show password in input fields
@@ -78,6 +80,7 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
     mysql: false,
     rds_mysql: false,
     rds_pg: false,
+    sqlite: false,
   });
   // Storing input StyledTextFields to render in state
   const [inputFieldsToRender, setInputFieldsToRender] = useState({
@@ -85,63 +88,96 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
     mysql: [],
     rds_mysql: [],
     rds_pg: [],
+    sqlite: [], // added sqlite
   });
+
+  // function to store user-selected file path in state
+  const designateFile = function (path, setPath) {
+    const { dialog } = remote;
+    const WIN = remote.getCurrentWindow();
+
+    const options = {
+      title: "Select SQLite File",
+      defaultPath: '',
+      buttonLabel: "Select File", filters: [
+        { name: 'db', extensions: ['db'] }
+      ]
+    }
+
+    dialog.showOpenDialog(WIN, options)
+      .then((res: any) => {
+        setPath({ path: res.filePaths[0] })
+      });
+  }
+
   // Function to make StyledTextFields and store them in inputFieldsToRender state
   function inputFieldMaker(dbTypeFromState, setDbTypeFromState, dbString) {
     // Push all StyledTextFields into this temporary array
     const arrayToRender: JSX.Element[] = [];
-    // Get key value pairs from passed in database connection info from state
-    Object.entries(dbTypeFromState).forEach((entry) => {
-      // entry looks like [user: 'username'] or [password: 'password]
-      const [dbEntryKey, dbEntryValue] = entry;
-      // If we are rendering a password StyledTextField, then add special props
-      let styledTextFieldProps;
-      if (dbEntryKey === 'password') {
-        styledTextFieldProps = {
-          type: showpass[dbString] ? 'text' : 'password',
-          InputProps: {
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton
-                  aria-label="toggle password visibility"
-                  onClick={() =>
-                    setShowpass({
-                      ...showpass,
-                      [dbString]: !showpass[dbString],
-                    })
-                  }
-                >
-                  {showpass[dbString] ? <Visibility /> : <VisibilityOff />}
-                </IconButton>
-              </InputAdornment>
-            ),
-          },
-        };
-      }
-      // Push StyledTextField to temporary render array for current key in database connection object from state
+    if (dbString === 'sqlite') {
       arrayToRender.push(
-        <StyledTextField
-          required
-          id="filled-basic"
-          label={`${dbString.toUpperCase()} ${dbEntryKey.toUpperCase()}`}
-          size="small"
-          variant="outlined"
-          key={`${dbString} ${dbEntryKey}`}
-          onChange={(event) => {
-            setDbTypeFromState({
-              ...dbTypeFromState,
-              [dbEntryKey]: event.target.value,
-            });
-          }}
-          defaultValue={dbEntryValue}
-          InputProps={{
-            style: { color: '#575151' },
-          }}
-          // Spread special password props if they exist
-          {...styledTextFieldProps}
-        />
-      );
-    });
+        <StyledButton variant="contained" color="primary" onClick={() => designateFile(dbTypeFromState, setDbTypeFromState)}>
+          Set db file location
+        </StyledButton>
+      )
+    } else {
+      // Get key value pairs from passed in database connection info from state
+      Object.entries(dbTypeFromState).forEach((entry) => {
+        // entry looks like [user: 'username'] or [password: 'password]
+        const [dbEntryKey, dbEntryValue] = entry;
+        // If we are rendering a password StyledTextField, then add special props
+        let styledTextFieldProps;
+        if (dbEntryKey === 'password') {
+          styledTextFieldProps = {
+            type: showpass[dbString] ? 'text' : 'password',
+            InputProps: {
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={() =>
+                      setShowpass({
+                        ...showpass,
+                        [dbString]: !showpass[dbString],
+                      })
+                    }
+                    size="large"
+                  >
+                    {showpass[dbString] ? <Visibility /> : <VisibilityOff />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            },
+          };
+        }
+        // Push StyledTextField to temporary render array for current key in database connection object from state
+
+
+        arrayToRender.push(
+          <StyledTextField
+            required
+            id="filled-basic"
+            label={`${dbString.toUpperCase()} ${dbEntryKey.toUpperCase()}`}
+            size="small"
+            variant="outlined"
+            key={`${dbString} ${dbEntryKey}`}
+            onChange={(event) => {
+              setDbTypeFromState({
+                ...dbTypeFromState,
+                [dbEntryKey]: event.target.value,
+              });
+            }}
+            defaultValue={dbEntryValue}
+            InputProps={{
+              style: { color: '#575151' },
+            }}
+            // Spread special password props if they exist
+            {...styledTextFieldProps}
+          />
+        );
+
+      });
+    }
     // Update state for our current database type passing in our temporary array of StyledTextField components
     setInputFieldsToRender({
       ...inputFieldsToRender,
@@ -157,6 +193,7 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
       setpg({ ...config.pg });
       setrds_mysql({ ...config.rds_mysql });
       setrds_pg({ ...config.rds_pg });
+      setSqlite({ ...config.sqlite }); // added sqlite
     };
     ipcRenderer.on('get-config', configFromBackend);
     ipcRenderer.invoke('get-config');
@@ -180,6 +217,9 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
   useEffect(() => {
     inputFieldMaker(rds_mysql, setrds_mysql, 'rds_mysql');
   }, [rds_mysql, showpass.rds_mysql]);
+  useEffect(() => {
+    inputFieldMaker(sqlite, setSqlite, 'sqlite'); // added sqlite
+  }, [sqlite]);
 
   const handleClose = () => {
     onClose();
@@ -193,6 +233,7 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
         pg: { ...pg },
         rds_mysql: { ...rds_mysql },
         rds_pg: { ...rds_pg },
+        sqlite: { ...sqlite }, // added sqlite
       })
       .then(() => {
         handleClose();
@@ -207,10 +248,13 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
   // Function to handle onChange -- when tab panels change
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     // On panel change reset all passwords to hidden
-    setShowpass({ mysql: false, pg: false, rds_mysql: false, rds_pg: false });
+    setShowpass({ mysql: false, pg: false, rds_mysql: false, rds_pg: false, sqlite: false });
     // Change which tab panel is hidden/shown
     setValue(newValue);
   };
+
+  // Array of all db names for login tabs
+  const dbNames = ['MySql', 'Postgres', 'RDS Mysql', 'RDS Postgres', 'Sqlite'];
 
   return (
     <Box sx={{ width: '100%' }}>
@@ -220,11 +264,11 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
           value={value}
           onChange={handleChange}
           aria-label="wrapped label basic tabs"
+          className='db-login-tabs'
         >
-          <Tab label="MySql" {...a11yProps(0)} />
-          <Tab label="Postgres" {...a11yProps(1)} />
-          <Tab label="RDS MySql" wrapped {...a11yProps(2)} />
-          <Tab label="RDS Postgres" wrapped {...a11yProps(3)} />
+          {dbNames.map((db, idx) =>
+            <Tab label={db} wrapped {...a11yProps(idx)} className='db-login-tab' key={db} />
+           )}
         </Tabs>
       </Box>
       <TabPanel value={value} index={0}>
@@ -238,6 +282,9 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
       </TabPanel>
       <TabPanel value={value} index={3}>
         {inputFieldsToRender.rds_pg}
+      </TabPanel>
+      <TabPanel value={value} index={4}>
+        {inputFieldsToRender.sqlite}
       </TabPanel>
 
       <ButtonContainer>

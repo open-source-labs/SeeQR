@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Tabs, Tab } from '@material-ui/core';
+import { Tabs, Tab } from '@mui/material';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import styled from 'styled-components';
@@ -124,17 +124,17 @@ const TablesTabs = ({
   };
 
   return (
-    <div>
+    <div style={{ height: 'calc(100vh - 300px)' }}>
       <StyledToggleButtonGroup
         value={active}
         exclusive
         onChange={handleView}
         aria-label="active-view"
       >
-        <ToggleButton value={true} aria-label="er">
+        <ToggleButton value aria-label="er" className='tables-view-btn'>
           ER diagram
         </ToggleButton>
-        <ToggleButton value={false} aria-label="table">
+        <ToggleButton value={false} aria-label="table" className='tables-view-btn'>
           Table
         </ToggleButton>
       </StyledToggleButtonGroup>

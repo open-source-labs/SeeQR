@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { IpcRendererEvent, ipcRenderer } from 'electron';
-import { Snackbar } from '@material-ui/core';
-import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
+import { Snackbar } from '@mui/material';
+import MuiAlert, { AlertProps } from '@mui/material/Alert';
 
 import { readingTime } from '../../lib/utils';
 import type { Feedback, FeedbackSeverity } from '../../types';
@@ -39,12 +39,14 @@ const FeedbackModal = () => {
       onClose={handleClose}
       autoHideDuration={readingTime(message)}
       anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-      // disable hiding on clickAway
+    // disable hiding on clickAway
       ClickAwayListenerProps={{ onClickAway: () => {} }}
     >
-      <Alert onClose={handleClose} severity={severity}>
-        {message}
-      </Alert>
+      <div>
+        <Alert onClose={handleClose} severity={severity}>
+          {message}
+        </Alert>
+      </div>
     </Snackbar>
   );
 };

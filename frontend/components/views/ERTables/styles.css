@@ -1,20 +1,24 @@
 .field-info-input {
   display: flex;
   justify-content: space-between;
+  color: black;
 }
 
 .field-info-input > input {
   text-align: center;
+  color: black;
 }
 
 .field-info-dropdown {
   display: flex;
   justify-content: space-between;
+  color: black;
 }
 
 .field-info-checkbox {
   display: flex;
   justify-content: space-between;
+  color: black;
 }
 
 .checkbox-wrapper {
@@ -27,10 +31,7 @@
   display: flex;
   justify-content: space-between;
   width: 100%;
-}
-
-.field-summary-wrapper > p {
-  width: 50%;
+  color: black;
 }
 
 .field-summary-wrapper > p {
@@ -42,11 +43,10 @@
   float: right;
 }
 
-.table-header > label {
-  color: '#57a777';
-  font-size: 25px;
-  font-weight: bold;
-  margin: 2px;
+.table-header label {
+  color: rgba(0, 0, 0, .6);
+  font-size: 1rem;
+
 }
 
 .table-header {
@@ -57,6 +57,19 @@
   padding: 15px;
   width: 350px;
   margin: 0px;
+}
+
+.table-header svg {
+  color: rgba(0, 0, 0, .54);
+}
+
+.table-header > div > div > input {
+  color: rgba(0, 0, 0, .87);
+}
+
+.add-column {
+  color: rgba(0, 0, 0, .54);
+  font-size: 1.5rem;
 }
 
 

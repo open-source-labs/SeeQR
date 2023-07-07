@@ -9,8 +9,9 @@ import ReactFlow, {
   Node,
   Edge,
   MiniMap,
-} from 'react-flow-renderer';
-import { Button } from '@material-ui/core';
+} from 'reactflow';
+import 'reactflow/dist/style.css'
+import { Button } from '@mui/material';
 import styled from 'styled-components';
 import stateToReactFlow from '../../../lib/convertStateToReactFlow';
 import nodeTypes from './NodeTypes';
@@ -37,6 +38,8 @@ const mmStyle: object = {
   backgroundColor: colors.bgColor,
   border: `2px solid ${colors.greenPrimary}`,
   borderRadius: '0.3rem',
+  height: 150,
+  overflow: 'hidden',
 };
 
 // defines the styling for the minimap nodes
@@ -50,6 +53,7 @@ const nodeColor = (node): string => {
       return 'red';
   }
 };
+
 
 type ERTablingProps = {
   tables;
@@ -138,7 +142,6 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
     const headerNodes = nodes.filter(
       (node) => node.type === 'tableHeader'
     ) as TableHeaderNodeType[];
-
     // create object for the current database
     type TablePosObjType = {
       table_name: string;
@@ -248,18 +251,20 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
   }, [schemaState]);
 
   return (
-    <div>
+    <div style={{ height: 'calc(100vh - 300px)' }}>
       <StyledViewButton
         variant="contained"
         id="add-table-btn"
         onClick={handleAddTable}
       >
         {' '}
-        Add New Table{' '}
+        Add New Table
+        {' '}
       </StyledViewButton>
       <StyledViewButton variant="contained" id="save" onClick={handleClickSave}>
         {' '}
-        Save{' '}
+        Save
+        {' '}
       </StyledViewButton>
       <ReactFlow
         nodes={nodes}
@@ -268,15 +273,20 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
         nodesConnectable={false}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
-        panOnScroll
+        zoomOnScroll
         minZoom={0.1}
         maxZoom={10}
-        defaultPosition={[0, 0]}
-        // fitView
+        fitView
         style={rfStyle}
         onlyRenderVisibleElements={false}
       >
-        <MiniMap nodeColor={nodeColor} style={mmStyle} nodeStrokeWidth={3} />
+        <MiniMap
+          nodeColor={nodeColor}
+          style={mmStyle}
+          nodeStrokeWidth={3}
+          pannable
+          inversePan
+        />
         <Background />
         <Controls />
       </ReactFlow>

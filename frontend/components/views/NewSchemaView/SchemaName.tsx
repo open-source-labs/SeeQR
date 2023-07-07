@@ -1,5 +1,6 @@
 import React from 'react';
-import { TextField, Box } from '@material-ui/core/';
+import { TextField } from '@mui/material/';
+import Box from '@mui/material/Box';
 
 interface SchemaNameProps {
   name? : string;

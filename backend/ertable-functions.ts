@@ -4,25 +4,70 @@ import {
   AlterTablesObjType,
   AlterColumnsObjType,
   AddConstraintObjType,
+  AddColumnsObjType,
 } from '../frontend/types';
 
 import { BackendObjType, DBType } from './BE_types';
 
+/**
+ * 
+ * @param backendObj object containing info as to what changes are to be made to the database
+ * @param dbType type of database
+ * @returns Query string containing all changes to be made to the database
+ */
 function backendObjToQuery(backendObj: BackendObjType, dbType: DBType): string {
   const outputArray: string[] = [];
-
+  let firstAddingMySQLColumnName: string | null;
   // Add table to database
-  function addTable(addTableArray: AddTablesObjType[]): void {
+
+  /**
+   * Function adding commands for adding queries to the output depending on tables that need to be added 
+   * @param addTableArray holds array of properties of tables to be added to database
+   * @param alterTablesArray holds table of properties of tables to be altered, and alterations to be made
+   */
+  function addTable(addTableArray: AddTablesObjType[], alterTablesArray: AlterTablesObjType[]): void {
     for (let i = 0; i < addTableArray.length; i += 1) {
+
       const currTable: AddTablesObjType = addTableArray[i];
-      if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres)
+      const currAlterTable: AlterTablesObjType = alterTablesArray[i];
+
+      if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) {
         outputArray.push(
           `CREATE TABLE ${currTable.table_schema}.${currTable.table_name}(); `
         );
-      if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL)
+      }
+      if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL) {
+        firstAddingMySQLColumnName = `${currAlterTable.addColumns[0].column_name}`;
         outputArray.push(
-          `CREATE TABLE ${currTable.table_name} (_id VARCHAR(20)); `
+          `CREATE TABLE ${currTable.table_name} 
+                          (${currAlterTable.addColumns[0].column_name}
+                          ${currAlterTable.addColumns[0].data_type}
+                          (${currAlterTable.addColumns[0].character_maximum_length}))
+                          ;`
         );
+      }
+
+      if (dbType === DBType.SQLite) {
+        console.log('TEST')
+        // for (let j = 0; j < alterTablesArray.length; j += 1) {
+        //   console.log(alterTablesArray[j])
+        //   if (addTableArray[i].table_name === alterTablesArray[j].table_name) {
+        //     if (alterTablesArray[j].alterColumns.length) {
+        //       for (let k = 0; k < alterTablesArray[j].alterColumns.length; k += 1) {
+        //         if (alterTablesArray[j].alterColumns[k].column_name === 'NewColumn1') {
+        //           firstAddingMySQLColumnName = alterTablesArray[j].alterColumns[k].new_column_name;
+        //           outputArray.push(
+        //             `CREATE TABLE ${currTable.table_name}(${alterTablesArray[j].alterColumns[k].new_column_name} ${alterTablesArray[j].alterColumns[k].data_type}(${alterTablesArray[j].alterColumns[k].character_maximum_length}));`
+        //           );
+        //         };
+        //       }
+        //     }
+        //   }
+        // }
+        outputArray.push(
+          `CREATE TABLE ${currTable.table_name}(id INTEGER PRIMARY KEY AUTOINCREMENT); `
+        );
+      }
     }
   }
 
@@ -36,6 +81,12 @@ function backendObjToQuery(backendObj: BackendObjType, dbType: DBType): string {
         );
       if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL)
         outputArray.push(`DROP TABLE ${currTable.table_name}; `);
+
+      if (dbType === DBType.SQLite) {
+        outputArray.push(
+          `DROP TABLE ${currTable.table_name}; `
+        );
+      }
     }
   }
 
@@ -53,8 +104,14 @@ function backendObjToQuery(backendObj: BackendObjType, dbType: DBType): string {
             if (currTable.addColumns[i].character_maximum_length != null) {
               lengthOfData = `(${currTable.addColumns[i].character_maximum_length})`;
             }
-            addColumnString += `ALTER TABLE ${currTable.table_name} ADD COLUMN ${currTable.addColumns[i].column_name} ${currTable.addColumns[i].data_type} ${lengthOfData}; `;
+            if (firstAddingMySQLColumnName === null || firstAddingMySQLColumnName !== `${currTable.addColumns[i].column_name}`) {
+              addColumnString += `ALTER TABLE ${currTable.table_name} ADD COLUMN ${currTable.addColumns[i].column_name} ${currTable.addColumns[i].data_type} ${lengthOfData}; `;
+
+            }
           }
+          if (dbType === DBType.SQLite)
+            addColumnString += `ALTER TABLE ${currTable.table_name} ADD COLUMN ${currTable.addColumns[i].column_name} ${currTable.addColumns[i].data_type}(${currTable.addColumns[i].character_maximum_length}); `;
+
         }
       }
       return addColumnString;
@@ -161,10 +218,17 @@ function backendObjToQuery(backendObj: BackendObjType, dbType: DBType): string {
       let alterTypeString: string = '';
       for (let i = 0; i < currTable.alterColumns.length; i += 1) {
         if (currTable.alterColumns[i].data_type !== null) {
-          if (currTable.alterColumns[i].data_type === 'date') {
-            alterTypeString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} ALTER COLUMN ${currTable.alterColumns[i].column_name} TYPE date USING ${currTable.alterColumns[i].column_name}::text::date; `;
-          } else {
-            alterTypeString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} ALTER COLUMN ${currTable.alterColumns[i].column_name} TYPE ${currTable.alterColumns[i].data_type} USING ${currTable.alterColumns[i].column_name}::${currTable.alterColumns[i].data_type}; `;
+          if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) {
+            if (currTable.alterColumns[i].data_type === 'date') {
+              alterTypeString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} ALTER COLUMN ${currTable.alterColumns[i].column_name} TYPE date USING ${currTable.alterColumns[i].column_name}::text::date; `;
+            } else {
+              alterTypeString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} ALTER COLUMN ${currTable.alterColumns[i].column_name} TYPE ${currTable.alterColumns[i].data_type} USING ${currTable.alterColumns[i].column_name}::${currTable.alterColumns[i].data_type}; `;
+            }
+          }
+          if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL) {
+            if (!currTable.alterColumns[i].character_maximum_length) {
+              alterTypeString += `ALTER TABLE ${currTable.table_name} MODIFY COLUMN ${currTable.alterColumns[i].column_name} ${currTable.alterColumns[i].data_type}; `;
+            }
           }
         }
       }
@@ -175,8 +239,15 @@ function backendObjToQuery(backendObj: BackendObjType, dbType: DBType): string {
     function alterMaxCharacterLength(currTable: AlterTablesObjType): string {
       let alterMaxCharacterLengthString: string = '';
       for (let i = 0; i < currTable.alterColumns.length; i += 1) {
-        if (currTable.alterColumns[i].character_maximum_length) {
-          alterMaxCharacterLengthString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} ALTER COLUMN ${currTable.alterColumns[i].column_name} TYPE varchar(${currTable.alterColumns[i].character_maximum_length}); `;
+        if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) {
+          if (currTable.alterColumns[i].character_maximum_length) {
+            alterMaxCharacterLengthString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} ALTER COLUMN ${currTable.alterColumns[i].column_name} TYPE varchar(${currTable.alterColumns[i].character_maximum_length}); `;
+          }
+        }
+        if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL) {
+          if (currTable.alterColumns[i].character_maximum_length) {
+            alterMaxCharacterLengthString += `ALTER TABLE ${currTable.table_name} MODIFY COLUMN ${currTable.alterColumns[i].column_name} ${currTable.alterColumns[i].data_type}(${currTable.alterColumns[i].character_maximum_length}); `;
+          }
         }
       }
       return alterMaxCharacterLengthString;
@@ -238,8 +309,8 @@ function backendObjToQuery(backendObj: BackendObjType, dbType: DBType): string {
               currAlterColumn.rename_constraint[0] === 'p'
                 ? 'pk'
                 : 'f'
-                ? 'fk'
-                : 'unique',
+                  ? 'fk'
+                  : 'unique',
             column_name: currAlterColumn.new_column_name
               ? currAlterColumn.new_column_name
               : currAlterColumn.column_name,
@@ -298,12 +369,16 @@ function backendObjToQuery(backendObj: BackendObjType, dbType: DBType): string {
     outputArray.push(renameString);
   }
 
-  addTable(backendObj.updates.addTables);
+  // addTable(backendObj.updates.addTables);
+  // TODO: refactor; invokes all functions even if changes are inapplicable
+  addTable(backendObj.updates.addTables, backendObj.updates.alterTables);
   dropTable(backendObj.updates.dropTables);
   alterTable(backendObj.updates.alterTables);
   renameTablesColumns(backendObj.updates.alterTables);
 
+  // output: string; ALTER + CREATE queries to DB
   return outputArray.join('');
 }
+
 
 export default backendObjToQuery;

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import '../lib/style.css'
 import styled from 'styled-components';
-import { MuiThemeProvider } from '@material-ui/core/';
-import { StylesProvider } from '@material-ui/core/styles';
-import CssBaseline from '@material-ui/core/CssBaseline';
+import { ThemeProvider, Theme, StyledEngineProvider } from '@mui/material/';
+import CssBaseline from '@mui/material/CssBaseline';
+import { IpcRendererEvent, ipcRenderer } from 'electron';
 import {
   MuiTheme,
   bgColor,
@@ -21,7 +22,7 @@ import {
   DbLists,
 } from '../types';
 import { DBType } from '../../backend/BE_types';
-import { createQuery, key } from '../lib/queries';
+import { createQuery } from '../lib/queries';
 import Sidebar from './sidebar/Sidebar';
 import QueryView from './views/QueryView/QueryView';
 import DbView from './views/DbView/DbView';
@@ -30,16 +31,21 @@ import QuickStartView from './views/QuickStartView';
 import NewSchemaView from './views/NewSchemaView/NewSchemaView';
 import FeedbackModal from './modal/FeedbackModal';
 import Spinner from './modal/Spinner';
-import { once } from './../lib/utils';
-import { IpcRendererEvent, ipcRenderer } from 'electron';
+import { once } from '../lib/utils';
 import CreateDBDialog from './Dialog/CreateDBDialog';
 import ConfigView from './Dialog/ConfigView';
+import ThreeDView from './views/ThreeDView/ThreeDView';
 
-///////eric//////Increase the maximum number of listeners to 20///////////////
+
+declare module '@mui/material/styles/' {
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  interface DefaultTheme extends Theme { }
+}
+
 const EventEmitter = require('events');
+
 const emitter = new EventEmitter();
 emitter.setMaxListeners(20);
-//////////////////////////////////////////////////////////////////////////////
 
 const AppContainer = styled.div`
   display: grid;
@@ -76,7 +82,6 @@ const App = () => {
 
   const [DBInfo, setDBInfo] = useState<DatabaseInfo[]>();
   const [curDBType, setDBType] = useState<DBType>();
-  // const [cdbt, setcdbt] = useState<DBType>();
 
   const [dbTables, setTables] = useState<TableInfo[]>([]);
   const [selectedTable, setSelectedTable] = useState<TableInfo | undefined>();
@@ -95,7 +100,7 @@ const App = () => {
         setPGStatus(dbLists.databaseConnected[0]);
         setMYSQLStatus(dbLists.databaseConnected[1]);
 
-        setSelectedTable(selectedTable ? selectedTable : dbTables[0]);
+        setSelectedTable(selectedTable || dbTables[0]);
       }
     };
     ipcRenderer.on('db-lists', dbListFromBackend); // dummy data error here?
@@ -144,6 +149,9 @@ const App = () => {
     case 'newSchemaView':
       shownView = 'newSchemaView';
       break;
+    case 'threeDView':                
+      shownView = 'threeDView';
+      break;
     case 'quickStartView':
     default:
       shownView = 'quickStartView';
@@ -151,8 +159,8 @@ const App = () => {
 
   return (
     // Styled Components must be injected last in order to override Material UI style: https://material-ui.com/guides/interoperability/#controlling-priority-3
-    <StylesProvider injectFirst>
-      <MuiThemeProvider theme={MuiTheme}>
+    <StyledEngineProvider injectFirst>
+      <ThemeProvider theme={MuiTheme}>
         <Spinner />
         <AppContainer>
           <CssBaseline />
@@ -176,14 +184,7 @@ const App = () => {
               setERView,
               curDBType,
               setDBType,
-              // cdbt,
-              // setcdbt,
               DBInfo,
-              setDBInfo,
-              dbTables,
-              setTables,
-              selectedTable,
-              setSelectedTable,
               showCreateDialog,
               setCreateDialog,
               setConfigDialog,
@@ -200,11 +201,8 @@ const App = () => {
               setERView={setERView}
               ERView={ERView}
               curDBType={curDBType}
-              setDBType={setDBType}
               DBInfo={DBInfo}
-              setDBInfo={setDBInfo}
               dbTables={dbTables}
-              setTables={setTables}
               selectedTable={selectedTable}
               setSelectedTable={setSelectedTable}
             />
@@ -219,23 +217,24 @@ const App = () => {
               curDBType={curDBType}
               setDBType={setDBType}
               DBInfo={DBInfo}
-              setDBInfo={setDBInfo}
             />
             <QuickStartView show={shownView === 'quickStartView'} />
+
+            <ThreeDView 
+              show={shownView === 'threeDView'}
+              selectedDb={selectedDb}
+              dbTables={dbTables} 
+              dbType={curDBType}
+            />
 
             <NewSchemaView
               query={workingQuery}
               setQuery={setWorkingQuery}
               selectedDb={selectedDb}
               setSelectedDb={setSelectedDb}
-              createNewQuery={createNewQuery}
               show={shownView === 'newSchemaView'}
               curDBType={curDBType}
-              setDBType={setDBType}
-              DBInfo={DBInfo}
-              setDBInfo={setDBInfo}
               dbTables={dbTables}
-              setTables={setTables}
               selectedTable={selectedTable}
               setSelectedTable={setSelectedTable}
             />
@@ -252,8 +251,8 @@ const App = () => {
           </Main>
           <FeedbackModal />
         </AppContainer>
-      </MuiThemeProvider>
-    </StylesProvider>
+      </ThemeProvider>
+    </StyledEngineProvider>
   );
 };
 
