@@ -4,44 +4,47 @@
 
 ### v11 roadmap for future iterators
 
+use .pgpass file instead of pgpassword environment variable for security
+
+swap between 3d views seamlessly
+
+work on explain function for mysql and sqlite, may have different metadata from existing postgres implementation
+
+ability to create multiple sqlite databases
+
+ability to load multiple sqlite databases
+
+ertable functionality in 3d
+
+vr
 
 - 3D visualization: 
 
-    - Update the timing of initialization of 3D rendering.
+    - Change the way the 3D page is rendered, to allow switching directly between different databases through the sidebar (currently you need to leave the 3D page before switching to a new database).
 
-    - Adding the auto-rotate functionality with the newest updated camera position.
+    - Make the camera auto rotate when initially opening the 3D page
 
-    - Adding the auto tumble functionality with the newest updated camera position.
+    - Better cache/memory management to speed up animations/rendering
 
-    - Adding the functionality of cache/memory management for preventing slowing down the app.
+    - Make the green table in the 3D view always face the user's camera
 
-    - Redesign the position of the preview green board in order to let the green board will follow the user’s camera position and ‘look at’ angel, also do not lose the drag and drop functionality.
+    - Implement ER table functions
 
-    - Implement the ER table function on the 3D preview green board.
-
-    - Adding VR functionality.
-
-    - Whenever the user clicks the node/ball, the detail database chart is right below the 3D rendering area the user has to keep scrolling up and down. Try to figure out if there is any possibility to get rid of this awkward operation style in order to level up the users' experience.
+    - Add VR functionality?
 
 - 2D visualization: 
 
-    - Modify the way it connects the source node and target node of MySQL database due to the current method it connects all of the attributes without any filter.
-
-    - Redesign the side of cable generation, too many 'folding' cables currently.
+    - Fix react flow bugs (tables moving on save, weird auto zooming, etc)
 
 - 2D ER table functionality:
 
     - Fix the bug for the MySQL database.
 
-    - Overwrite/Redesign the total of the ER table query strategy in order to make users able to run complicated queries on ER table.
+    - Redesign the ER table query strategy in order to make users able to run complicated queries with less overhead. (i.e. currently, if you add a table then delete it, and press save, instead of doing nothing, the backend will create and delete the table)
 
-    - Fix the “select” functionality there are some unknown reasons causing the “database is not selected.
+    - Fix the occasional bug with selecting
 
-    - Fix the automatic ‘re-focus’ issues that drop down the users' experience a lot.
-
-    - Redesign the ER table interaction logic in order to level up the users' experience.
-
-    - Increase the database type for ER table.
+    - Add support for more column types (according to the limitations of each database)
 
 - Small bugs need to be ironed out, will find through testing
 
