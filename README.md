@@ -11,7 +11,7 @@
 
 [seeqrapp.com](http://www.seeqrapp.com)
 
-<p>SeeQR is a <b>convenient one-stop shop</b> for efficient SQL database manipulation and performance testing. SeeQR can be used throughout the database life-cycle, from creation to testing.</p>
+<p>SeeQR is a <b>convenient one-stop shop</b> for efficient SQL database manipulation and performance testing. SeeQR can be used throughout the database lifecycle, from creation to testing.</p>
 
 </div>
 
