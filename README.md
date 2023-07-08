@@ -33,7 +33,7 @@
 
 To get started on contributing and editing databases to this project:
 
-1. Download and install [Postgres](https://www.postgresql.org/download/) to access SeeQR's Postgres features and/or [MySQL](https://dev.mysql.com/downloads/mysql/) to access it's MySQL features.
+1. Download and install [Postgres](https://www.postgresql.org/download/) to access SeeQR's Postgres features and/or [MySQL](https://dev.mysql.com/downloads/mysql/) to access its MySQL features.
 2. Ensure that psql and/or mysql are available in the `$PATH`.
 3. Create users with passwords and permissions for both [PostgreSQL](https://phoenixnap.com/kb/postgres-create-user) and [MySQL](https://www.digitalocean.com/community/tutorials/how-to-create-a-new-user-and-grant-permissions-in-mysql). Linked are instructions for Mac (Homebrew) and Linux/WSL.
 4. Download the latest version of [SeeQR](https://github.com/open-source-labs/seeqr/releases/latest).
