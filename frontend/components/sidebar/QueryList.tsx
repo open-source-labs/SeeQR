@@ -1,6 +1,6 @@
 import React from 'react';
-import { IconButton, Tooltip } from '@material-ui/core';
-import AddIcon from '@material-ui/icons/Add';
+import { IconButton, Tooltip } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import FileCopyIcon from '@mui/icons-material/FileCopy';
 import fs from 'fs';
@@ -177,7 +177,7 @@ const QueryList = ({
 
   // function to store user-selected file path in state
   const designateFile = function() {
-    const dialog = electron.remote.dialog;
+    const { dialog } = electron.remote;
     const WIN = electron.remote.getCurrentWindow();
   
     const options = {
@@ -198,19 +198,19 @@ const QueryList = ({
     <>
       <span>
         <Tooltip title="New Query">
-          <IconButton onClick={createQuery}>
+          <IconButton onClick={createQuery} size="large">
             <AddIcon fontSize="large" />
           </IconButton>
         </Tooltip>
 
         <Tooltip title="Import Query">
-          <IconButton onClick={loadQueryHandler}>
+          <IconButton onClick={loadQueryHandler} size="large">
             <UploadFileIcon fontSize="large" />
           </IconButton>
         </Tooltip>
 
         <Tooltip title="Designate Save Location">
-          <IconButton onClick={designateFile}> 
+          <IconButton onClick={designateFile} size="large"> 
             <FileCopyIcon fontSize='large' />
           </IconButton>
         </Tooltip>
@@ -224,8 +224,8 @@ const QueryList = ({
             <Accordion>
               <AccordionSummary 
                 sx={{
-                backgroundColor: `${greenPrimary}`, color: "black"
-              }} 
+              backgroundColor: `${greenPrimary}`, color: "black"
+            }} 
                 expandIcon={<ExpandMoreIcon />} 
                 aria-controls="panel1a-content" 
                 id="panel1a-header"
@@ -239,10 +239,9 @@ const QueryList = ({
               </AccordionDetails>
             </Accordion>
           </Tooltip>
-        ))}
+      ))}
       </StyledSidebarList>
     </>
-  );
-};
+)};
 
 export default QueryList;

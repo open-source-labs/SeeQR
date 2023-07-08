@@ -5,7 +5,7 @@ import {
   TableCell,
   TableContainer,
   TableRow,
-} from '@material-ui/core';
+} from '@mui/material';
 import styled from 'styled-components';
 import { QueryData } from '../../../types';
 
@@ -23,8 +23,11 @@ interface QuerySummaryProps {
 
 const QuerySummary = ({ executionPlan }: QuerySummaryProps) => {
   const summaryData = {
-    'Planning Time': executionPlan?.['Planning Time'],
-    'Execution Time': executionPlan?.['Execution Time'],
+    'Number of Sample': executionPlan?.numberOfSample,
+    'Total Sample Time': executionPlan?.totalSampleTime + 'ms',
+    'Minimum Sample Time': executionPlan?.minimumSampleTime + 'ms',
+    'Maximum Sample Time': executionPlan?.maximumSampleTime + 'ms',
+    'Average Sample Time': executionPlan?.averageSampleTime + 'ms',
   };
 
   if (!executionPlan) return null;

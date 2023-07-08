@@ -1,6 +1,7 @@
 import { ipcRenderer } from 'electron';
-import React from 'react';
-import { Button, Box } from '@material-ui/core/';
+import React, { useState } from 'react';
+import { Button } from '@mui/material/';
+import Box from '@mui/material/Box';
 import styled from 'styled-components';
 import {
   QueryData,
@@ -19,6 +20,7 @@ import QueryTopSummary from './QueryTopSummary';
 import QuerySqlInput from './QuerySqlInput';
 import QuerySummary from './QuerySummary';
 import QueryTabs from './QueryTabs';
+import QueryRunNumber from './QueryRunNumber';
 
 const TopRow = styled(Box)`
   display: flex;
@@ -53,7 +55,6 @@ interface QueryViewProps {
   curDBType: DBType | undefined;
   setDBType: (dbType: DBType | undefined) => void;
   DBInfo: DatabaseInfo[] | undefined;
-  setDBInfo: (dbInfo: DatabaseInfo[] | undefined) => void;
 }
 
 const QueryView = ({
@@ -67,9 +68,7 @@ const QueryView = ({
   curDBType,
   setDBType,
   DBInfo,
-  setDBInfo,
 }: QueryViewProps) => {
-  // const [databases, setDatabases] = useState<string[]>([]);
 
   // I think this returns undefined if DBInfo is falsy idk lol
   const dbNames = DBInfo?.map((dbi) => dbi.db_name);
@@ -80,13 +79,16 @@ const QueryView = ({
     db: selectedDb,
     sqlString: '',
     group: '',
+    numberOfSample: 0,
+    totalSampleTime: 0,
+    minimumSampleTime: 0,
+    maximumSampleTime: 0,
+    averageSampleTime: 0,
   };
 
   const localQuery = { ...defaultQuery, ...query };
-  // console.log('local query', localQuery);
-  // console.log('query', query);
-  // console.log('defaultQuery', defaultQuery);
-  // console.log('curDBType', curDBType);
+
+  const [ runQueryNumber, setRunQueryNumber ] = useState(1);
 
   const onLabelChange = (newLabel: string) => {
     setQuery({ ...localQuery, label: newLabel });
@@ -100,12 +102,6 @@ const QueryView = ({
     // when db is changed we must change selected db state on app, as well as
     // request updates for db and table information. Otherwise database view tab
     // will show wrong information
-
-    // console.log(
-    //   'when selecting a database from the dropdown menu, we first go here in queryview'
-    // );
-    // console.log('nextDBType in QueryView', nextDBType);
-    // console.log('newDB in Query View', newDb);
 
     setSelectedDb(newDb);
     setDBType(nextDBType);
@@ -152,24 +148,33 @@ const QueryView = ({
           targetDb: localQuery.db,
           sqlString: localQuery.sqlString,
           selectedDb,
+          runQueryNumber,
         },
         curDBType
       )
-      .then(({ db, sqlString, returnedRows, explainResults, error }) => {
+      .then(({ db, sqlString, returnedRows, explainResults, error,
+        numberOfSample,
+        totalSampleTime,
+        minimumSampleTime,
+        maximumSampleTime,
+        averageSampleTime, }) => {
         if (error) {
           throw error;
         }
         let transformedData;
-        // console.log('returnedRows after .then method', returnedRows);
-        // console.log('explainResult after .then method', explainResults);
-
-        // console.log('curDBType in QueryView', curDBType);
 
         if (curDBType === DBType.Postgres) {
           transformedData = {
             sqlString,
             returnedRows,
-            executionPlan: explainResults[0]['QUERY PLAN'][0],
+            executionPlan: {
+              numberOfSample,
+              totalSampleTime,
+              minimumSampleTime,
+              maximumSampleTime,
+              averageSampleTime,
+              ...explainResults[0]['QUERY PLAN'][0],
+            },
             label: localQuery.label,
             db,
             group: localQuery.group,
@@ -182,6 +187,32 @@ const QueryView = ({
             label: localQuery.label,
             db,
             group: localQuery.group,
+            executionPlan: {
+              numberOfSample,
+              totalSampleTime,
+              minimumSampleTime,
+              maximumSampleTime,
+              averageSampleTime,
+              // ...explainResults[0]['QUERY PLAN'][0],
+              ...explainResults,
+            },
+          };
+        }
+        if (curDBType === DBType.SQLite) {
+          transformedData = {
+            sqlString,
+            returnedRows,
+            label: localQuery.label,
+            db,
+            group: localQuery.group,
+            executionPlan: {
+              numberOfSample,
+              totalSampleTime,
+              minimumSampleTime,
+              maximumSampleTime,
+              averageSampleTime,
+              ...explainResults,
+            },
           };
         }
 
@@ -209,6 +240,10 @@ const QueryView = ({
       });
   };
 
+  const onRunQueryNumChange = (runNumber: number) => {
+    setRunQueryNumber(runNumber);
+  }
+
   if (!show) return null;
   return (
     <QueryViewContainer>
@@ -231,6 +266,7 @@ const QueryView = ({
         onChange={onSqlChange}
         runQuery={onRun}
       />
+      <QueryRunNumber runNumber={runQueryNumber} onChange={onRunQueryNumChange} />
       <CenterButton>
         <RunButton variant="contained" onClick={onRun}>
           Run Query

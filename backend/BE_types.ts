@@ -8,9 +8,9 @@ export interface ColumnObj {
   data_type: string;
   character_maximum_length: number | null;
   is_nullable: string;
-  constraint_type: string;
-  foreign_table: string;
-  foreign_column: string;
+  constraint_type: string | null;
+  foreign_table: string | null;
+  foreign_column: string | null;
 }
 export interface dbDetails {
   db_name: string;
@@ -25,7 +25,14 @@ export interface TableDetails {
   columns?: ColumnObj[];
 }
 export interface DBList {
-  databaseConnected: [boolean, boolean, boolean, boolean];
+  databaseConnected: {
+    PG: boolean,
+    MySQL: boolean,
+    RDSPG: boolean,
+    RDSMySQL: boolean,
+    SQLite: boolean,
+    directPGURI: boolean,
+  };
   databaseList: dbDetails[];
   tableList: TableDetails[];
 }
@@ -42,6 +49,9 @@ export enum DBType {
   MySQL = 'mysql',
   RDSPostgres = 'rds-pg',
   RDSMySQL = 'rds-mysql',
+  CloudDB = 'cloud-database', //added for cloud dbs
+  SQLite = 'sqlite',
+  directPGURI = 'directPGURI',
 }
 
 export enum LogType {
@@ -58,6 +68,8 @@ export interface DocConfigFile {
   pg: { user: string; password: string; port: number };
   rds_mysql: { user: string; password: string; port: number; host: string };
   rds_pg: { user: string; password: string; port: number; host: string };
+  sqlite: { path: '' };
+  directPGURI: { uri: '' };
 }
 
 type dbsInputted = {
@@ -65,7 +77,23 @@ type dbsInputted = {
   msql: boolean;
   rds_pg: boolean;
   rds_msql: boolean;
+  sqlite: boolean;
+  directPGURI: boolean;
 };
+
+type configExists = {
+  pg: boolean;
+  msql: boolean;
+  rds_pg: boolean;
+  rds_msql: boolean;
+  sqlite: boolean;
+  directPGURI: boolean;
+};
+
+type combined = {
+  dbsInputted: dbsInputted;
+  configExists: configExists;
+}
 
 export interface DBFunctions {
   pg_uri: string;
@@ -77,14 +105,25 @@ export interface DBFunctions {
     password: string;
     host: string;
   };
+  curSQLite_DB: { path: string };
+  curdirectPGURI_DB: string;
   dbsInputted: dbsInputted;
 
-  setBaseConnections: () => Promise<dbsInputted>;
+  setBaseConnections: () => Promise<combined>;
   query: (text: string, params: (string | number)[], dbType: DBType) => void;
   connectToDB: (db: string, dbType?: DBType) => Promise<void>;
+  disconnectToDrop: (dbType: DBType) => Promise<void>;
   getLists: (dbName: string, dbType?: DBType) => Promise<DBList>;
   getTableInfo: (tableName: string, dbType: DBType) => Promise<ColumnObj[]>;
   getDBNames: (dbType: DBType) => Promise<dbDetails[]>;
   getColumnObjects: (tableName: string, dbType: DBType) => Promise<ColumnObj[]>;
   getDBLists: (dbType: DBType, dbName: string) => Promise<TableDetails[]>;
+  sampler: (queryString: string) => Promise<number>;
+}
+
+export interface QueryPayload {
+  targetDb: string;
+  sqlString: string;
+  selectedDb: string;
+  runQueryNumber: number;
 }

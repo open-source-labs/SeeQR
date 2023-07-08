@@ -23,6 +23,11 @@ const first: Partial<QueryData> = {
     },
     'Planning Time': 1,
     'Execution Time': 1,
+    'numberOfSample': 1,
+    'totalSampleTime': 2, 
+    'minimumSampleTime': 2, 
+    'maximumSampleTime': 2, 
+    'averageSampleTime': 2
   },
 };
 
@@ -55,11 +60,11 @@ describe('getTotalTime', () => {
   it('should return sum of Execution Time and Planning Time', () => {
     const dummy = {
       executionPlan: {
-        'Execution Time': 1000,
-        'Planning Time': 2000,
+        'numberOfSample': 3,
+        'totalSampleTime': 6000, 
       },
     };
-    expect(queries.getTotalTime(dummy as QueryData)).toEqual(3000);
+    expect(queries.getTotalTime(dummy as QueryData)).toEqual(2000);
   });
 });
 
@@ -71,16 +76,16 @@ describe('getPrettyTime', () => {
   it('should return pretty string with rounded result', () => {
     const fractional = {
       executionPlan: {
-        'Execution Time': 0.2965242,
-        'Planning Time': 0.785523421,
+        'numberOfSample': 2,
+        'totalSampleTime': 0.2222, 
       },
     };
-    expect(queries.getPrettyTime(fractional as QueryData)).toBe('1.08 ms');
+    expect(queries.getPrettyTime(fractional as QueryData)).toBe('0.1111 ms');
 
     const integer = {
       executionPlan: {
-        'Execution Time': 1111,
-        'Planning Time': 1111,
+        'numberOfSample': 3,
+        'totalSampleTime': 6200, 
       },
     };
     expect(queries.getPrettyTime(integer as QueryData)).toBe('2 seconds');

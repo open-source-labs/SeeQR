@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { Handle, Position } from 'react-flow-renderer';
-import { AccordionSummary, AccordionDetails } from '@mui/material';
+import { Handle, Position } from 'reactflow';
+import { AccordionSummary, AccordionDetails, Button } from '@mui/material';
 import MuiAccordion, { AccordionProps } from '@mui/material/Accordion';
 import styled from 'styled-components';
-import { Button } from '@material-ui/core';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
   ERTableColumnData,
@@ -447,8 +446,6 @@ function TableField({ data }: TableFieldProps) {
             defaultValue={data_type}
             otherTables={data.otherTables}
             options={['varchar', 'bigint', 'integer', 'date']}
-            schemaStateCopy={schemaStateCopy}
-            setSchemaState={setSchemaState}
           />
           <TableFieldInput
             idName={`type-input-char_max_size-${tableColumn}`}
@@ -470,8 +467,6 @@ function TableField({ data }: TableFieldProps) {
             options={data.otherTables.map((table) => table.table_name)}
             setFkOptions={setFkOptions}
             otherTables={data.otherTables}
-            schemaStateCopy={schemaStateCopy}
-            setSchemaState={setSchemaState}
           />
           <TableFieldDropDown
             label="Field"
@@ -480,8 +475,6 @@ function TableField({ data }: TableFieldProps) {
             defaultValue={foreign_column}
             options={fkOptions}
             otherTables={data.otherTables}
-            schemaStateCopy={schemaStateCopy}
-            setSchemaState={setSchemaState}
           />
           <br />
           <TableFieldCheckBox

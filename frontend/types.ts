@@ -9,7 +9,8 @@ type ViewName =
   | 'dbView'
   | 'queryView'
   | 'quickStartView'
-  | 'newSchemaView';
+  | 'newSchemaView'
+  | 'threeDView'; // added for new chart
 
 export interface AppState {
   selectedView: ViewName;
@@ -29,14 +30,12 @@ export interface AppState {
   setERView?: (boolean) => void;
   curDBType: DBType | undefined;
   setDBType: (dbType: DBType | undefined) => void;
-  // cdbt: DBType | undefined;
-  // setcdbt: (cdbt: DBType | undefined) => void;
   DBInfo: DatabaseInfo[] | undefined;
-  setDBInfo: (dbInfo: DatabaseInfo[] | undefined) => void;
-  dbTables: TableInfo[];
-  setTables: (tableInfo: TableInfo[]) => void;
-  selectedTable: TableInfo | undefined;
-  setSelectedTable: (tableInfo: TableInfo | undefined) => void;
+  setDBInfo?: (dbInfo: DatabaseInfo[] | undefined) => void;
+  dbTables?: TableInfo[];
+  setTables?: (tableInfo: TableInfo[]) => void;
+  selectedTable?: TableInfo | undefined;
+  setSelectedTable?: (tableInfo: TableInfo | undefined) => void;
   showCreateDialog: boolean;
   setCreateDialog: (show: boolean) => void;
   setConfigDialog: (show: boolean) => void;
@@ -76,6 +75,12 @@ export interface QueryData {
   group: string;
 
   // flag: boolean
+
+  numberOfSample: number,
+  totalSampleTime: number | string,
+  minimumSampleTime: number | string,
+  maximumSampleTime: number | string,
+  averageSampleTime: number | string,
 }
 
 export type ValidTabs = 'Results' | 'Execution Plan';
@@ -102,7 +107,7 @@ export interface Thresholds {
  * Fake type guard that asserts a type to simplify tests inside real type guards
  */
 // type assertions don't work with arrow functions https://github.com/microsoft/TypeScript/issues/34523
-function assumeType<T>(x: unknown): asserts x is T {}
+function assumeType<T>(x: unknown): asserts x is T { }
 
 export interface DatabaseInfo {
   /**
@@ -226,6 +231,11 @@ export interface ExplainJson {
   Plan: PlanNode;
   'Planning Time': number;
   'Execution Time': number;
+  numberOfSample: number;
+  totalSampleTime: number;
+  minimumSampleTime: number;
+  maximumSampleTime: number;
+  averageSampleTime: number;
 }
 
 /**
@@ -265,6 +275,7 @@ export type ERTableColumnData = {
   auto_increment?: boolean; // optional until implemented
 };
 export type DataTypes = 'integer' | 'bigint' | 'varchar' | 'date' | null;
+export type DataTypesMySQL = 'int' | 'bigint' | 'varchar' | 'date' | null;
 
 export type AddColumnsObjType = {
   column_name: string | null;
@@ -302,6 +313,10 @@ export type AddTablesObjType = {
   table_name: string;
   table_schema: string;
   columns: ERTableColumnData[];
+  ericTestUnitTables?: any;
+  col_N?: any;
+  col_T?: any;
+  col_L?: any;
 };
 export type DropTablesObjType = {
   table_name: string;

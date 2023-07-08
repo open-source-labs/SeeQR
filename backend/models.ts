@@ -10,9 +10,18 @@ import {
 import logger from './Logging/masterlog';
 import pools from './poolVariables';
 import connectionFunctions from './databaseConnections';
+
+const fs = require('fs');
+const { performance } = require('perf_hooks');
 const docConfig = require('./_documentsConfig');
+
 // eslint-disable-next-line prefer-const
 
+/**
+ * This object contains info about the current database being accessed
+ *                      login info for rds
+ *                      highest level functions for accessing databases
+ */
 const DBFunctions: DBFunctions = {
   pg_uri: '',
   curPG_DB: '',
@@ -27,34 +36,52 @@ const DBFunctions: DBFunctions = {
     password: '',
     host: '',
   },
-  /*
-  junaid
-  object to check to true if that db was logged into
-  */
+  curSQLite_DB: { path: '' },
+  curdirectPGURI_DB: '',
+
+  /**
+   * Indicates whether the named database has been logged-in to, default to false
+   */
   dbsInputted: {
     pg: false,
     msql: false,
     rds_pg: false,
     rds_msql: false,
+    sqlite: false,
+    directPGURI: false,
   },
 
+  /**
+   * Saves login info to variables. Tries to log in to databases using configs
+   * @returns object containing login status of all database servers
+   */
   async setBaseConnections() {
     const PG_Cred = docConfig.getCredentials(DBType.Postgres);
     const MSQL_Cred = docConfig.getCredentials(DBType.MySQL);
     this.curRDS_PG_DB = docConfig.getCredentials(DBType.RDSPostgres);
     this.curRDS_MSQL_DB = docConfig.getCredentials(DBType.RDSMySQL);
+    this.curSQLite_DB = docConfig.getCredentials(DBType.SQLite);
+    this.curdirectPGURI_DB = docConfig.getCredentials(DBType.directPGURI);
+    const configExists = {
+      pg: false,
+      msql: false,
+      rds_pg: false,
+      rds_msql: false,
+      sqlite: false,
+      directPGURI: false,
+    }
     /*
-     junaid
      all the if/else and try/catch in this function are for various forms of error handling. incorrect passwords/removed entries after successful logins
     */
 
-    //  RDS PG POOL
+    //  RDS PG POOL: truthy values means user has inputted info into config -> try to log in
     if (
       this.curRDS_PG_DB.user &&
       this.curRDS_PG_DB.password &&
       this.curRDS_PG_DB.host
     ) {
       try {
+        configExists.rds_pg = true;
         await connectionFunctions.RDS_PG_DBConnect(this.curRDS_PG_DB);
         this.dbsInputted.rds_pg = true;
         logger('CONNECTED TO RDS PG DATABASE!', LogType.SUCCESS);
@@ -63,21 +90,21 @@ const DBFunctions: DBFunctions = {
         logger('FAILED TO CONNECT TO RDS PG DATABASE', LogType.ERROR);
       }
     } else {
+      configExists.rds_pg = false;
       this.dbsInputted.rds_pg = false;
     }
 
-    //  RDS MSQL POOL
+    //  RDS MSQL POOL: truthy values means user has inputted info into config -> try to log in
     if (
       this.curRDS_MSQL_DB.user &&
       this.curRDS_MSQL_DB.password &&
       this.curRDS_MSQL_DB.host
     ) {
       try {
+        configExists.rds_msql = true;
         await connectionFunctions.RDS_MSQL_DBConnect(this.curRDS_MSQL_DB);
-        /*
-        junaid
-        just a test query to make sure were connected. needed for the catch statement to hit incase we arent connected.
-        */
+
+        // test query to make sure were connected. needed for the catch statement to hit incase we arent connected.
         const testQuery = await pools.rds_msql_pool.query('SHOW DATABASES;');
         logger(`CONNECTED TO RDS MYSQL DATABASE!`, LogType.SUCCESS);
         this.dbsInputted.rds_msql = true;
@@ -86,13 +113,15 @@ const DBFunctions: DBFunctions = {
         logger('FAILED TO CONNECT TO RDS MSQL DATABASE', LogType.ERROR);
       }
     } else {
+      configExists.rds_msql = false;
       this.dbsInputted.rds_msql = false;
     }
 
-    //  LOCAL PG POOL
+    //  LOCAL PG POOL: truthy values means user has inputted info into config -> try to connect
     if (PG_Cred.user && PG_Cred.password) {
       this.pg_uri = `postgres://${PG_Cred.user}:${PG_Cred.password}@localhost:${PG_Cred.port}/`;
       try {
+        configExists.pg = true;
         await connectionFunctions.PG_DBConnect(this.pg_uri, this.curPG_DB);
         logger('CONNECTED TO LOCAL PG DATABASE', LogType.SUCCESS);
         this.dbsInputted.pg = true;
@@ -101,12 +130,14 @@ const DBFunctions: DBFunctions = {
         logger('FAILED TO CONNECT TO LOCAL PG DATABASE', LogType.ERROR);
       }
     } else {
+      configExists.pg = false;
       this.dbsInputted.pg = false;
     }
 
-    //  LOCAL MSQL POOL
+    //  LOCAL MSQL POOL: truthy values means user has inputted info into config -> try to log in
     if (MSQL_Cred.user && MSQL_Cred.password) {
       try {
+        configExists.msql = true;
         await connectionFunctions.MSQL_DBConnect({
           host: `localhost`,
           port: MSQL_Cred.port,
@@ -118,10 +149,8 @@ const DBFunctions: DBFunctions = {
           queueLimit: 0,
           multipleStatements: true,
         });
-        /*
-        junaid
-        just a test query to make sure were connected. needed for the catch statement to hit incase we arent connected.
-        */
+
+        // test query to make sure were connected. needed for the catch statement to hit incase we arent connected.
         const testQuery = await pools.msql_pool.query('SHOW DATABASES;');
         this.dbsInputted.msql = true;
         logger(`CONNECTED TO LOCAL MYSQL DATABASE!`, LogType.SUCCESS);
@@ -130,10 +159,29 @@ const DBFunctions: DBFunctions = {
         logger('FAILED TO CONNECT TO LOCAL MSQL DATABASE', LogType.ERROR);
       }
     } else {
+      configExists.msql = false;
       this.dbsInputted.msql = false;
     }
-    return this.dbsInputted;
+
+    //  RDS PG POOL: truthy values means user has inputted info into config -> try to log in
+    if (this.curSQLite_DB.path) {
+      try {
+        configExists.sqlite = true;
+        await connectionFunctions.SQLite_DBConnect(this.curSQLite_DB.path);
+        this.dbsInputted.sqlite = true;
+        logger('CONNECTED TO SQLITE DATABASE!', LogType.SUCCESS);
+      } catch (error) {
+        this.dbsInputted.sqlite = false;
+        logger('FAILED TO CONNECT TO SQLITE DATABASE', LogType.ERROR);
+      }
+    } else {
+      configExists.sqlite = false;
+      this.dbsInputted.sqlite = false;
+    }
+
+    return { dbsInputted: this.dbsInputted, configExists }
   },
+
 
   query(text, params, dbType) {
     // RUN ANY QUERY - function that will run query on database that is passed in.
@@ -156,16 +204,71 @@ const DBFunctions: DBFunctions = {
     }
 
     if (dbType === DBType.MySQL) {
-      return pools.msql_pool.query(
-        `USE ${this.curMSQL_DB}; ${text}`,
-        params,
-        dbType
-      );
+      // pools.msql_pool.query(`USE ${this.curMSQL_DB}`);
+      return pools.msql_pool.query(text, params, dbType);
     }
+
+    if (dbType === DBType.SQLite) {
+      // return pools.sqlite_db.all(text, (err, res) => {
+      //   if (err) logger(err.message, LogType.WARNING);
+      //   console.log('res', res);
+      //   return res;
+      // });
+      return new Promise((resolve, reject) => {
+        pools.sqlite_db.all(text, (err, res) => {
+          if (err) {
+            logger(err.message, LogType.WARNING);
+            reject(err);
+          } else {
+            resolve(res);
+          }
+        })
+      })
+    }
+
   },
 
+  sampler(queryString) {
+    return new Promise((resolve, reject) => {
+      pools.sqlite_db.run('BEGIN', (err) => {
+        if (err) {
+          console.error(err.message);
+          reject(err);
+        } else {
+          const startTime = performance.now();
+          pools.sqlite_db.all(queryString, (err, res) => {
+            if (err) {
+              console.error(err.message);
+              reject(err);
+            } else {
+              const endTime = performance.now();
+              pools.sqlite_db.run('ROLLBACK', (err) => {
+                if (err) {
+                  console.error(err.message);
+                  reject(err);
+                } else {
+                  const elapsedTime = endTime - startTime;
+                  // console.log(`Elapsed time: ${elapsedTime} milliseconds`);
+                  resolve(elapsedTime);
+                }
+              });
+            }
+          });
+        }
+      });
+    });
+  },
+
+
+  // asdf check this.curRDS_MSQL_DB typing sometime
+  /**
+   * Only connect to one database at a time
+   * @param db Name of database to connect to
+   * @param dbType Type of database to connect to
+   * 
+   */
   async connectToDB(db, dbType) {
-    //change current Db
+    // change current Db
     if (dbType === DBType.Postgres) {
       this.curPG_DB = db;
       await connectionFunctions.PG_DBConnect(this.pg_uri, db);
@@ -177,23 +280,62 @@ const DBFunctions: DBFunctions = {
       await connectionFunctions.RDS_MSQL_DBQuery(db);
     } else if (dbType === DBType.RDSPostgres) {
       await connectionFunctions.RDS_PG_DBConnect(this.curRDS_PG_DB);
+    } else if (dbType === DBType.SQLite) {
+      await connectionFunctions.SQLite_DBConnect(this.curSQLite_DB.path);
     }
   },
 
+  /**
+   * Function to disconnect the passed in database type, in order to drop database
+   * @param dbType type of database to disconnect
+   */
+  async disconnectToDrop(dbType) {
+    if (dbType === DBType.Postgres) {
+      // ending pool
+      await connectionFunctions.PG_DBDisconnect();
+    }
+    if (dbType === DBType.SQLite) {
+      try {
+        // disconnect from and delete sqlite .db file
+        pools.sqlite_db.close();
+        fs.unlinkSync(this.curSQLite_DB.path);
+        this.curSQLite_DB.path = '';
+      } catch (e) {
+        logger('FAILED TO DELETE SQLITE DB FILE', LogType.ERROR);
+
+      }
+    }
+  },
+
+  /**
+   * When called with no arguments, returns listObj with this.databaseList populated with data from all logged-in databases.
+   * When called with a dbName and dbType, additionally populates this.tableList with the tables under the named database
+   * @param dbName defaults to ''
+   * @param dbType optional argument
+   * @returns promise that resolves to a listObj, containing database connection statuses, list of all logged in databases, and optional list of all tables under the named database
+   */
   async getLists(dbName = '', dbType) {
     /*
     junaid
     this list object is what will be returned at the end of the function. function will get lists for all four databases depending on which is logged in
     */
     const listObj: DBList = {
-      databaseConnected: [false, false, false, false],
-      databaseList: [],
+      databaseConnected: {
+        PG: false,
+        MySQL: false,
+        RDSPG: false,
+        RDSMySQL: false,
+        SQLite: false,
+        directPGURI: false,
+      },
+      databaseList: [], // accumulates lists for each logged-in database
       tableList: [],
     };
     if (this.dbsInputted.pg) {
       try {
         const pgDBList = await this.getDBNames(DBType.Postgres);
-        listObj.databaseConnected[0] = true;
+        // console.log('pgDBList', pgDBList)
+        listObj.databaseConnected.PG = true;
         listObj.databaseList = [...listObj.databaseList, ...pgDBList];
       } catch (error) {
         logger('COULDNT GET NAMES FROM LOCAL PG', LogType.ERROR);
@@ -203,7 +345,7 @@ const DBFunctions: DBFunctions = {
     if (this.dbsInputted.msql) {
       try {
         const msqlDBList = await this.getDBNames(DBType.MySQL);
-        listObj.databaseConnected[1] = true;
+        listObj.databaseConnected.MySQL = true;
         listObj.databaseList = [...listObj.databaseList, ...msqlDBList];
       } catch (error) {
         logger('COULDNT GET NAMES FROM LOCAL MSQL', LogType.ERROR);
@@ -213,7 +355,7 @@ const DBFunctions: DBFunctions = {
     if (this.dbsInputted.rds_msql) {
       try {
         const RDSmsqlDBList = await this.getDBNames(DBType.RDSMySQL);
-        listObj.databaseConnected[2] = true;
+        listObj.databaseConnected.RDSMySQL = true;
         listObj.databaseList = [...listObj.databaseList, ...RDSmsqlDBList];
       } catch (error) {
         logger('COULDNT GET NAMES FROM RDS MSQL', LogType.ERROR);
@@ -223,10 +365,21 @@ const DBFunctions: DBFunctions = {
     if (this.dbsInputted.rds_pg) {
       try {
         const RDSpgDBList = await this.getDBNames(DBType.RDSPostgres);
-        listObj.databaseConnected[3] = true;
+        listObj.databaseConnected.RDSPG = true;
         listObj.databaseList = [...listObj.databaseList, ...RDSpgDBList];
       } catch (error) {
         logger('COULDNT GET NAMES FROM RDS PG', LogType.ERROR);
+      }
+    }
+
+    if (this.dbsInputted.sqlite) {
+      try {
+        const sqliteDBList = await this.getDBNames(DBType.SQLite);
+        // console.log('sqliteDBList', sqliteDBList)
+        listObj.databaseConnected.SQLite = true;
+        listObj.databaseList = [...listObj.databaseList, ...sqliteDBList];
+      } catch (error) {
+        logger('COULDNT GET NAMES FROM SQLite DB', LogType.ERROR);
       }
     }
 
@@ -245,14 +398,27 @@ const DBFunctions: DBFunctions = {
         );
       }
     }
+    // console.log(listObj);
     return listObj;
   },
 
+  /**
+   * 
+   * get column objects for the given tableName
+   * @param tableName name of table to get the columns of
+   * @param dbType type of database of the table 
+   * @returns 
+   */
   getTableInfo(tableName, dbType) {
     // Returns an array of columnObj given a tableName
     return this.getColumnObjects(tableName, dbType);
   },
 
+  /**
+   * Generate a dbList for the inputted database type
+   * @param dbType server to get database names off of
+   * @returns promise that resovles to a dbList (array of objects containing db_name, db_size, db_type)
+   */
   getDBNames(dbType) {
     return new Promise((resolve, reject) => {
       let query;
@@ -304,7 +470,6 @@ const DBFunctions: DBFunctions = {
         if (dbType === DBType.RDSMySQL) pool = pools.rds_msql_pool;
         const dbList: dbDetails[] = [];
         /*
-        junaid
         only run queries if pool is made
         */
         if (pool) {
@@ -347,13 +512,27 @@ const DBFunctions: DBFunctions = {
         } else {
           resolve(dbList);
         }
+      } else if (dbType === DBType.SQLite) {
+        const dbList: dbDetails[] = [];
+        const { path } = this.curSQLite_DB;
+        const filename = path.slice(path.lastIndexOf('\\') + 1, path.lastIndexOf('.db'));
+        const stats = fs.statSync(path)
+        const fileSizeInKB = stats.size / 1024;
+        // Convert the file size to megabytes (optional)
+        const data = { db_name: filename, db_size: `${fileSizeInKB}kB`, db_type: DBType.SQLite }
+        dbList.push(data);
+        resolve(dbList);
       }
     });
   },
 
+  /**
+   * Generates a list of column objects for the inputted table name 
+   * @param tableName name of table to get column properties of
+   * @param dbType type of database the table is in
+   * @returns promise that resolves to array of columnObjects (column_name, data_type, character_maximum_length, is_nullable, constraint_name, constraint_type, foreign_table, foreign_column)
+   */
   getColumnObjects(tableName, dbType) {
-    // function that takes in a tableName, creates the column objects,
-    // and returns a promise that resolves to an array of columnObjects
     let queryString;
     const value = [tableName];
     if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) {
@@ -443,11 +622,59 @@ const DBFunctions: DBFunctions = {
           });
       });
     }
+
+    if (dbType === DBType.SQLite) {
+      const sqliteDB = pools.sqlite_db;
+      queryString = `SELECT
+      m.name AS table_name, 
+      p.name AS column_name, 
+      p.type AS data_type, 
+      p.[notnull] AS not_null, 
+      p.pk AS pk,
+      fkl.[table] AS foreign_table, 
+      fkl.[to] AS foreign_column
+      FROM sqlite_master m
+      LEFT JOIN pragma_table_info(m.name) p
+      LEFT JOIN pragma_foreign_key_list(m.name) fkl
+      ON p.name = fkl.[from]
+      WHERE m.type = 'table' AND p.type != '' AND m.name = ?`;
+
+      return new Promise((resolve, reject) => {
+        sqliteDB
+          .all(queryString, value, (err, rows) => {
+            if (err) {
+              reject(err);
+            }
+            const columnInfoArray: ColumnObj[] = [];
+            for (let i = 0; i < rows.length; i++) {
+              const { column_name, data_type, not_null, pk, foreign_table, foreign_column } = rows[i];
+              const newColumnObj: ColumnObj = {
+                column_name,
+                data_type,
+                character_maximum_length: data_type.includes(`(`) ? parseInt(data_type.slice(1 + data_type.indexOf(`(`), data_type.indexOf(`)`)), 10) : null,
+                is_nullable: not_null === 1 ? 'NO' : 'YES',
+                constraint_type: pk === 1 ? 'PRIMARY KEY' : foreign_table ? 'FOREIGN KEY' : null,
+                foreign_table,
+                foreign_column,
+              }
+              columnInfoArray.push(newColumnObj);
+            }
+            resolve(columnInfoArray);
+          })
+      })
+    }
+
     logger('Trying to use unknown DB Type: ', LogType.ERROR, dbType);
     // eslint-disable-next-line no-throw-literal
     throw 'Unknown db type';
   },
 
+  /**
+   * Uses dbType and dbName to find the tables under the specified database
+   * @param dbType type of target database
+   * @param dbName name of target database
+   * @returns tableList (array of table detail objects containing table_catalog, table_schema, table_name, is_insertable_into, columns?)
+   */
   getDBLists(dbType, dbName) {
     return new Promise((resolve, reject) => {
       let query;
@@ -459,6 +686,7 @@ const DBFunctions: DBFunctions = {
         if (dbType === DBType.Postgres) pool = pools.pg_pool;
         if (dbType === DBType.RDSPostgres) pool = pools.rds_pg_pool;
 
+        // querying PG metadata
         query = `SELECT
         table_catalog,
         table_schema,
@@ -501,16 +729,37 @@ const DBFunctions: DBFunctions = {
         if (dbType === DBType.MySQL) pool = pools.msql_pool;
         if (dbType === DBType.RDSMySQL) pool = pools.rds_msql_pool;
 
-        query = `SELECT
-        TABLE_CATALOG as table_schema,
-        TABLE_SCHEMA as table_catalog,
-        TABLE_NAME as table_name
+        let query2 = `SELECT
+        table_catalog,
+        table_schema,
+        table_name,
+        is_insertable_into
         FROM information_schema.tables
-        WHERE TABLE_SCHEMA NOT IN("information_schema", "performance_schema", "mysql")
-        AND TABLE_SCHEMA = "${dbName}"
+        WHERE table_schema = 'public' or table_schema = 'base'
         ORDER BY table_name;`;
 
+        //  query = `
+        //  SELECT
+        //  TABLE_CATALOG as table_schema,
+        //  TABLE_SCHEMA as table_catalog,
+        //  TABLE_NAME as table_name
+        //  FROM information_schema.tables
+        //  WHERE TABLE_SCHEMA NOT IN('information_schema', 'performance_schema', 'mysql') 
+        //  AND TABLE_SCHEMA = '${dbName}'
+        //  ORDER BY table_name;`;
+
+        query = `
+         SELECT
+         TABLE_CATALOG as table_schema,
+         TABLE_SCHEMA as table_catalog,
+         TABLE_NAME as table_name
+         FROM information_schema.tables
+         WHERE TABLE_SCHEMA NOT IN('information_schema', 'performance_schema', 'mysql', 'sys') 
+         AND TABLE_SCHEMA = '${dbName}'
+         ORDER BY table_name;`;
+
         pool
+          // .query(query2)
           .query(query)
           .then((tables) => {
             for (let i = 0; i < tables[0].length; i++) {
@@ -528,7 +777,6 @@ const DBFunctions: DBFunctions = {
                 for (let i = 0; i < columnInfo.length; i++) {
                   tableList[i].columns = columnInfo[i];
                 }
-
                 logger("MySQL 'getDBLists' resolved.", LogType.SUCCESS);
                 resolve(tableList);
               })
@@ -539,6 +787,41 @@ const DBFunctions: DBFunctions = {
           .catch((err) => {
             reject(err);
           });
+      } else if (dbType === DBType.SQLite) {
+        const sqliteDB = pools.sqlite_db;
+
+        // querying SQLite metadata
+        query = `SELECT
+        m.name AS table_name 
+        FROM sqlite_master m
+        WHERE m.type = 'table' AND m.name != 'sqlite_stat1' AND m.name != 'sqlite_sequence'`;
+        sqliteDB
+          .all(query, (err, rows) => {
+            if (err) console.error(err.message)
+            for (let i = 0; i < rows.length; i += 1) {
+              const newTableDetails: TableDetails = {
+                table_catalog: this.curSQLite_DB.path.slice(this.curSQLite_DB.path.lastIndexOf('\\') + 1),
+                table_schema: 'asdf',
+                table_name: rows[i].table_name,
+                is_insertable_into: 'asdf',
+              }
+              tableList.push(newTableDetails);
+              promiseArray.push(
+                this.getColumnObjects(rows[i].table_name, dbType)
+              );
+            }
+            Promise.all(promiseArray)
+              .then((columnInfo) => {
+                for (let i = 0; i < columnInfo.length; i += 1) {
+                  tableList[i].columns = columnInfo[i];
+                }
+                logger("SQLite 'getDBLists' resolved.", LogType.SUCCESS);
+                resolve(tableList);
+              })
+              .catch((error) => {
+                reject(error);
+              });
+          })
       }
     });
   },

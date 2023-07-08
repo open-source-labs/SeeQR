@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button } from '@material-ui/core';
+import { Button } from '@mui/material';
 import styled from 'styled-components';
 import { AppState, DatabaseInfo, TableInfo } from '../../../types';
 import { DBType } from '../../../../backend/BE_types';
@@ -14,11 +14,8 @@ interface DbViewProps {
   setERView: (boolean) => void;
   ERView: boolean;
   curDBType: DBType | undefined;
-  setDBType: (dbType: DBType | undefined) => void;
   DBInfo: DatabaseInfo[] | undefined;
-  setDBInfo: (dbInfo: DatabaseInfo[] | undefined) => void;
   dbTables: TableInfo[];
-  setTables: (tableInfo: TableInfo[]) => void;
   selectedTable: TableInfo | undefined;
   setSelectedTable: (tableInfo: TableInfo | undefined) => void;
 }
@@ -29,13 +26,9 @@ const StyledDummyButton = styled(Button)`
   right: ${sidebarShowButtonSize};
 `;
 
-const DbView = ({ selectedDb, show, setERView, ERView, curDBType, setDBType, DBInfo, setDBInfo, dbTables, setTables, selectedTable, setSelectedTable}: DbViewProps) => {
-  // const [databases, setDatabases] = useState<DatabaseInfo[]>([]);
+const DbView = ({ selectedDb, show, setERView, ERView, curDBType, DBInfo, dbTables, selectedTable, setSelectedTable}: DbViewProps) => {
 
   const [open, setOpen] = useState(false);
-  
-// console.log('DB props', curDBType, selectedDb)
-  
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -53,7 +46,6 @@ const DbView = ({ selectedDb, show, setERView, ERView, curDBType, setDBType, DBI
       <DatabaseDetails db={db} />
       <br />
       <TablesTabs
-        // setTables={setTables}
         tables={dbTables}
         selectTable={(table: TableInfo) => setSelectedTable(table)}
         selectedTable={selectedTable}

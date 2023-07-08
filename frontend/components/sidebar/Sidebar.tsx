@@ -1,6 +1,7 @@
 import React from 'react';
-import { Drawer, IconButton, Tooltip } from '@material-ui/core/';
-import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
+import { Drawer, IconButton, Tooltip } from '@mui/material/';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import styled from 'styled-components';
 import { AppState } from '../../types';
 import TopButtons from './TopButtons';
@@ -24,6 +25,7 @@ const StyledDrawer = styled(Drawer)`
     display: flex;
     flex-direction: column;
     align-items: center;
+    overflow: hidden;
   }
 `;
 
@@ -40,11 +42,45 @@ const Logo = styled.img`
 `;
 
 const ShowSidebarBtn = styled(IconButton)`
-  width: ${sidebarShowButtonSize};
+  width: 40px;
   height: ${sidebarShowButtonSize};
   position: fixed;
   top: 50%;
   z-index: 200;
+  background: #57a777;
+  border-radius: 0 15px 15px 0;
+  transition: all .3s ease;
+  &:hover {
+    background: #57a777;
+    opacity: .6;
+    color: white;
+  }
+  `;
+  
+  const HideSidebarBtn = styled(IconButton)`
+  width: 40px;
+  height: ${sidebarShowButtonSize};
+  z-index: 200;
+  background: #57a777;
+  border-radius: 15px 0 0 15px;
+  transition: all .3s ease;
+  &:hover {
+    background: #57a777;
+    opacity: .6;
+    color: white;
+  }
+`;
+
+const HideSidebarBtnContainer = styled.div`
+  position: absolute;
+  display: flex;
+  width: 25px;
+  height: 100vh;
+  background: transparent;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  align-self: flex-end;
 `;
 
 const Sidebar = ({
@@ -65,14 +101,7 @@ const Sidebar = ({
   setERView,
   curDBType,
   setDBType,
-  // cdbt,
-  // setcdbt,
   DBInfo,
-  setDBInfo,
-  dbTables,
-  setTables,
-  selectedTable,
-  setSelectedTable,
   showCreateDialog,
   setCreateDialog,
   setConfigDialog,
@@ -95,30 +124,28 @@ const Sidebar = ({
         </ShowSidebarBtn>
       </Tooltip>
       <StyledDrawer variant="persistent" anchor="left" open={!sidebarIsHidden}>
-        <TopButtons
-          selectedView={selectedView}
-          setSelectedView={setSelectedView}
-          toggleOpen={toggleOpen}
-          setConfigDialog={setConfigDialog}
-        />
-        <ViewSelector {...{ selectedView, setSelectedView, setERView }} />
+        <div>
+          <TopButtons
+            selectedView={selectedView}
+            setSelectedView={setSelectedView}
+            setConfigDialog={setConfigDialog}
+          />
+          <ViewSelector {...{ selectedView, setSelectedView, setERView }} />
+        </div>
         <DbList
           selectedDb={selectedDb}
           setSelectedDb={setSelectedDb}
           show={
             selectedView === 'dbView' ||
             selectedView === 'quickStartView' ||
-            selectedView === 'newSchemaView'
+            selectedView === 'newSchemaView' ||
+            selectedView === 'threeDView'
           }
           setSelectedView={setSelectedView}
           curDBType={curDBType}
           setDBType={setDBType}
           DBInfo={DBInfo}
-          setDBInfo={setDBInfo}
-          dbTables={dbTables}
-          setTables={setTables}
-          selectedTable={selectedTable}
-          setSelectedTable={setSelectedTable}
+          selectedView={selectedView}
         />
         <QueryList
           setComparedQueries={setComparedQueries}
@@ -137,6 +164,13 @@ const Sidebar = ({
           setCreateDialog={setCreateDialog}
         />
         <Logo src={logo} alt="Logo" />
+        <HideSidebarBtnContainer>
+          <Tooltip title="Hide Sidebar">
+            <HideSidebarBtn onClick={toggleOpen} size="large">
+              <ArrowBackIosIcon />
+            </HideSidebarBtn>
+          </Tooltip>
+        </HideSidebarBtnContainer>
       </StyledDrawer>
     </>
   );

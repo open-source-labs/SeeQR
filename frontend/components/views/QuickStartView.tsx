@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
+import '../../lib/style.css';
 import styled from 'styled-components';
 import {
   Stepper,
@@ -8,40 +8,12 @@ import {
   StepLabel,
   Button,
   Typography,
-} from '@material-ui/core';
+} from '@mui/material';
 import logo from '../../../assets/logo/seeqr_dock.png';
 
 interface QuickStartViewProps {
   show: boolean;
 }
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    button: {
-      marginRight: theme.spacing(1),
-    },
-    backButton: {
-      marginRight: theme.spacing(1),
-    },
-    completed: {
-      display: 'inline-block',
-    },
-    instructions: {
-      marginBottom: theme.spacing(3),
-    },
-    image: {
-      marginTop: theme.spacing(2),
-      marginBottom: theme.spacing(-4),
-      width: '20vh',
-      height: '20vh',
-      maxHeight: '300px',
-      maxWidth: '300px',
-    },
-    stepper: {
-      fontSize: '50px',
-    },
-  })
-);
 
 const PageContainer = styled.a`
   display: flex;
@@ -200,7 +172,6 @@ function getStepContent(step: number) {
 
 const QuickStartView = ({ show }: QuickStartViewProps) => {
   if (!show) return null;
-  const classes = useStyles();
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState(new Set<number>());
   const [skipped, setSkipped] = useState(new Set<number>());
@@ -280,7 +251,7 @@ const QuickStartView = ({ show }: QuickStartViewProps) => {
       <StyledTypographyTitle align="center">
         Welcome to SeeQR
       </StyledTypographyTitle>
-      <img className={classes.image} src={logo} alt="Logo" />
+      <img className="step-img" src={logo} alt="Logo" />
       <StyledStepper alternativeLabel nonLinear activeStep={activeStep}>
         {steps.map((label, index) => {
           const stepProps: { completed?: boolean } = {};
@@ -294,13 +265,12 @@ const QuickStartView = ({ show }: QuickStartViewProps) => {
             stepProps.completed = false;
           }
           return (
-            <Step key={label} {...stepProps}>
+            <Step key={label} {...stepProps} completed={isStepComplete(index)}>
               <StepButton
                 onClick={handleStep(index)}
-                completed={isStepComplete(index)}
                 {...buttonProps}
               >
-                <StyledStepLabel className={classes.stepper}>
+                <StyledStepLabel className="stepper">
                   {label}
                 </StyledStepLabel>
               </StepButton>
@@ -311,7 +281,7 @@ const QuickStartView = ({ show }: QuickStartViewProps) => {
       <div>
         {allStepsCompleted() ? (
           <div>
-            <StyledTypographyInstructions className={classes.instructions}>
+            <StyledTypographyInstructions className="step-instructions">
               All steps completed - you&apos;re ready to use SeeQr!
             </StyledTypographyInstructions>
             <Button onClick={handleReset}>Reset</Button>
@@ -323,31 +293,23 @@ const QuickStartView = ({ show }: QuickStartViewProps) => {
               <Button
                 disabled={activeStep === 0}
                 onClick={handleBack}
-                className={classes.button}
+                className="step-btn"
               >
                 Back
               </Button>
-              {/* <Button
-                variant="contained"
-                color="primary"
-                onClick={handleNext}
-                className={classes.button}
-              >
-                Next
-              </Button> */}
               {isStepOptional(activeStep) && !completed.has(activeStep) && (
                 <Button
                   variant="contained"
                   color="primary"
                   onClick={handleSkip}
-                  className={classes.button}
+                  className="step-btn"
                 >
                   Skip
                 </Button>
               )}
               {activeStep !== steps.length &&
                 (completed.has(activeStep) ? (
-                  <Typography variant="caption" className={classes.completed}>
+                  <Typography variant="caption" className="step-completed">
                     Step
                     {` ${activeStep + 1} `}
                     already completed
