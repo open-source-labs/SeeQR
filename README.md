@@ -101,7 +101,7 @@ To get started on contributing and editing databases to this project:
     - Column nodes are joined to table nodes and match their source table color
     - Individual tables related by foreign keys are connected through their respective foreign and primary keys
   - Navigate through the 3D space using left click to rotate, scroll wheel to zoom, and right click to pan.
-  - Click and drag nodes to visually organize them
+  - Click and drag nodes for visual organization
   - Click on a table or column node to quickly view the data stored within
 <br>
 <div align="center">
