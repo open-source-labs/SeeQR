@@ -37,7 +37,6 @@
     "@mui/icons-material": "^5.4.2",
     "@mui/material": "^5.9.1",
     "@mui/styled-engine": "^5.4.2",
-    "@react-three/drei": "^7.5.1",
     "@types/react-router-dom": "^5.1.5",
     "@types/styled-components": "^5.1.7",
     "@uiw/codemirror-theme-dracula": "^4.21.4",
