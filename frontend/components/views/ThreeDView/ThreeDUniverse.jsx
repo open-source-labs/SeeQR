@@ -397,11 +397,11 @@ const ThreeDUniverse = ({ selectedDb, dbTables, dbType }) => {
     {/* A button to turn off/on functionality of nodes' labeling */}
     <div style={divStyle}>
       <button className='hide-3d-btn' onClick={() => setShowSprites(!showSprites)}>
-        {showSprites ? 'Hide Nodes\' Labeling' : 'Show Nodes\' Labeling'}
+        {showSprites ? 'Hide Node Labels' : 'Show Node Labels'}
       </button>
       {/* A button to turn off/on functionality of star's theme background; also clean the green board preview together */}
       <button className='hide-3d-btn' onClick={toggleStars}>
-        {showStars ? 'Hide Stars Backgorund' : 'Show Stars Backgorund'}
+        {showStars ? 'Hide Stars' : 'Show Stars'}
       </button>
     </div>
       <ForceGraph3D
