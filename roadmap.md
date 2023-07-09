@@ -6,43 +6,38 @@
 
 - General
 
-    - Small bugs need to be ironed out, will find through testing
-
-    - Support for amazon aurora (beware of billing)
-
-    - Fix importing MySQL databases (currently creating an extra hollow copy)
-
-    - Update ui of the initial landing page of application with cloud database instructions aswell
-
-    - fix outdated dependencies, currently packages must be force installed
+    - Update ui of the initial landing page of application with cloud database instructions
 
     - continue working on state management (usereducer, usecontext, etc)
 
-    - account for different constraint naming conventions (mostly mysql)
+    - fix outdated dependencies, currently packages must be force installed
 
-    - resolve issue of creating additional columns for each constraint (mostly mysql)
 
-    - rewrite get columns query to only query relevant column names and constraints
+- Database management
 
-    - queued backendObj changes are still there even when switching between different dbs in sidebar
+    - currently postgres imports/duplicates only works for either windows or osx/linux. main branch supports windows, devosx supports mac/linux, resolve this asap to not have to keep up with two branches
 
-    - use .pgpass file instead of pgpassword environment variable for security (for postgresql imports/duplicates)
+        - perhaps use .pgpass file instead of pgpassword environment variable for security (for postgresql imports/duplicates)
 
-    - currently postgres imports/duplicates only works for either windows or mac. main branch supports windows, devosx supports mac
+        - found in backend/helperFunctions.ts
 
-    - work on explain function for mysql and sqlite, may have different metadata from existing postgres implementation
+    - Fix importing MySQL databases (currently creating an extra hollow copy)
 
-    - ability to create multiple sqlite databases
+    - add ability to have multiple sqlite databases
 
-    - fix deleting sqlite databases (currently only works after initially opening SeeQR)
+    - fix deleting sqlite databases (currently only works randomly, likely not closing connection before attempting unlink)
     
     - support for amazon aurora (beware of billing)
 
-    - rds pg cloud queries seem to be creating the tables in more than just the selected database.
 
-    - rds my sql cloud queries wont let you create multiple tables at once. as in you have to create one table, then make another query to make your second table.
+- Queries page
 
-    - when you create a new cloud pg database, it seems to have all the other databases tables aswell.
+    - fix query execution plan table view, likely broke while updating frontend dependencies
+
+    - add colors back to special words in query view
+
+    - work on explain function for mysql and sqlite, may have different metadata from existing postgres implementation
+
 
 - 3D visualization: 
 
@@ -58,19 +53,29 @@
 
     - Add VR functionality?
 
-- 2D visualization: 
+
+- 2D visualization / ER tables: 
 
     - Fix react flow bugs (tables moving on save, weird auto zooming, etc), maybe rewrite layout save functionality
 
-
-- 2D ER table functionality:
-
-    - Fix bugs for MySQL and SQLite (they work differently from PostgreSQL which is the basis for all current ERtable funcitonality)
+    - Fix bugs for MySQL and SQLite (they work differently from PostgreSQL which is the basis for all current ERtable functionality)
 
         - i.e. SQLite doesn't support changing column names/data types after building them, but the ERtable currently creates columns and then alters them on the backend
 
-    - Redesign the ER table query strategy in order to make users able to run complicated queries with less overhead. (i.e. currently, if you add a table then delete it, and press save, instead of doing nothing, the backend will create and delete the table)
+    - Redesign the ER table query strategy in order to make users able to run queries with less overhead. (i.e. currently, if you add a table then delete it, and press save, instead of doing nothing, the backend will create and delete the table)
 
     - Fix the occasional bug with selecting
 
     - Add support for more column datatypes (according to the limitations of each database)
+
+    - queued backendObj changes are still there even when switching between different dbs in sidebar
+
+    - account for different constraint naming conventions (mostly mysql)
+
+    - resolve issue of creating additional columns for each constraint (mostly mysql)
+
+    - rds pg cloud queries seem to be creating the tables in more than just the selected database.
+
+    - rds my sql cloud queries wont let you create multiple tables at once. as in you have to create one table, then make another query to make your second table.
+
+    - when you create a new cloud pg database, it seems to have all the other databases tables aswell.
