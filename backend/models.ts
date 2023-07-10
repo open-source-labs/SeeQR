@@ -440,7 +440,7 @@ const DBFunctions: DBFunctions = {
           pool
             .query(query)
             .then((databases) => {
-              for (let i = 0; i < databases.rows.length; i++) {
+              for (let i = 0; i < databases.rows.length; i += 1) {
                 const data = databases.rows[i];
                 const { db_name } = data;
 
@@ -489,17 +489,11 @@ const DBFunctions: DBFunctions = {
           pool
             .query(query)
             .then((databases) => {
-              for (let i = 0; i < databases[0].length; i++) {
+              for (let i = 0; i < databases[0].length; i += 1) {
                 const data = databases[0][i];
-                const { db_name } = data;
-                if (
-                  db_name !== 'postgres' &&
-                  db_name !== 'template0' &&
-                  db_name !== 'template1'
-                ) {
-                  data.db_type = dbType;
-                  dbList.push(data);
-                }
+                data.db_type = dbType;
+                data.db_size = data.db_size ? `${data.db_size}KB` : '0KB';
+                dbList.push(data);
               }
 
               logger("MySQL 'getDBNames' resolved.", LogType.SUCCESS);
@@ -519,7 +513,7 @@ const DBFunctions: DBFunctions = {
         const stats = fs.statSync(path)
         const fileSizeInKB = stats.size / 1024;
         // Convert the file size to megabytes (optional)
-        const data = { db_name: filename, db_size: `${fileSizeInKB}kB`, db_type: DBType.SQLite }
+        const data = { db_name: filename, db_size: `${fileSizeInKB}KB`, db_type: DBType.SQLite }
         dbList.push(data);
         resolve(dbList);
       }
