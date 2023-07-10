@@ -97,8 +97,8 @@ const App = () => {
       if (isDbLists(dbLists)) {
         setDBInfo(dbLists.databaseList);
         setTables(dbLists.tableList);
-        setPGStatus(dbLists.databaseConnected[0]);
-        setMYSQLStatus(dbLists.databaseConnected[1]);
+        setPGStatus(dbLists.databaseConnected.PG);
+        setMYSQLStatus(dbLists.databaseConnected.MySQL);
 
         setSelectedTable(selectedTable || dbTables[0]);
       }
@@ -149,7 +149,7 @@ const App = () => {
     case 'newSchemaView':
       shownView = 'newSchemaView';
       break;
-    case 'threeDView':                
+    case 'threeDView':
       shownView = 'threeDView';
       break;
     case 'quickStartView':
@@ -220,10 +220,10 @@ const App = () => {
             />
             <QuickStartView show={shownView === 'quickStartView'} />
 
-            <ThreeDView 
+            <ThreeDView
               show={shownView === 'threeDView'}
               selectedDb={selectedDb}
-              dbTables={dbTables} 
+              dbTables={dbTables}
               dbType={curDBType}
             />
 
