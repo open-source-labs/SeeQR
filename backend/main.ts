@@ -11,11 +11,6 @@ const MainMenu = require('./mainMenu');
 // requiring channels file to initialize event listeners
 require('./channels');
 
-// drop-in module to check for updates to SeeQR based on GitHub Releases; set interval to 1 hr
-// require('update-electron-app')({
-//   updateInterval: '1 hour'
-// });
-
 fixPath();
 // Keep a global reference of the window objects, if you don't, the window will be closed automatically when the JavaScript object is garbage collected.
 let mainWindow: BrowserWindow | null;
