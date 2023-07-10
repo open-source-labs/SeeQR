@@ -12,9 +12,9 @@ const MainMenu = require('./mainMenu');
 require('./channels');
 
 // drop-in module to check for updates to SeeQR based on GitHub Releases; set interval to 1 hr
-require('update-electron-app')({
-  updateInterval: '1 hour'
-});
+// require('update-electron-app')({
+//   updateInterval: '1 hour'
+// });
 
 fixPath();
 // Keep a global reference of the window objects, if you don't, the window will be closed automatically when the JavaScript object is garbage collected.
@@ -25,10 +25,10 @@ let mainWindow: BrowserWindow | null;
 // devtools: https://github.com/facebook/react/issues/25843
 // https://github.com/mondaychen/react/raw/017f120369d80a21c0e122106bd7ca1faa48b8ee/packages/react-devtools-extensions/ReactDevTools.zip 
 // ******************** Comment out when done ******************** //
-const reactDevToolsPath = path.join(os.homedir(), '/Desktop/ReactDevTools');
-app.whenReady().then(async () => {
-  await session.defaultSession.loadExtension(reactDevToolsPath);
-});
+// const reactDevToolsPath = path.join(os.homedir(), '/Desktop/ReactDevTools');
+// app.whenReady().then(async () => {
+//   await session.defaultSession.loadExtension(reactDevToolsPath);
+// });
 // ******************** Comment out when done ******************** //
 
 
