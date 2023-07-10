@@ -163,7 +163,14 @@ export interface TableInfo {
 }
 
 export interface DbLists {
-  databaseConnected: boolean[];
+  databaseConnected: {
+    PG: boolean,
+    MySQL: boolean,
+    RDSPG: boolean,
+    RDSMySQL: boolean,
+    SQLite: boolean,
+    directPGURI: boolean,
+  };
   databaseList: DatabaseInfo[];
   tableList: TableInfo[];
   dbType: DBType;
@@ -180,8 +187,8 @@ export const isDbLists = (obj: unknown): obj is DbLists => {
       return false;
     if (obj.databaseList[0] && typeof obj.databaseList[0].db_name !== 'string')
       return false;
-    if (obj.databaseList[0] && typeof obj.databaseList[0].db_size !== 'string')
-      return false;
+    // if (obj.databaseList[0] && typeof obj.databaseList[0].db_size !== 'string' )
+    //   return false;
     if (obj.tableList[0] && typeof obj.tableList[0].table_name !== 'string')
       return false;
     if (obj.tableList[0] && typeof obj.tableList[0].table_catalog !== 'string')
