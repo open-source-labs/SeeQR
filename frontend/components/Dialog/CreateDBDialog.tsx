@@ -149,9 +149,9 @@ const CreateDBDialog = ({ show, DBInfo, onClose }: CreateDBDialogProps) => {
             <StyledNativeOption value={DBType.RDSMySQL}>
               RDS MySQL
             </StyledNativeOption>
-            <StyledNativeOption value={DBType.CloudDB}>
+            {/* <StyledNativeOption value={DBType.CloudDB}>
               Cloud Database
-            </StyledNativeOption>
+            </StyledNativeOption> */}
           </StyledNativeDropdown>
         </DropdownContainer>
 
@@ -167,7 +167,7 @@ const CreateDBDialog = ({ show, DBInfo, onClose }: CreateDBDialogProps) => {
           <StyledButton
             variant="contained"
             color="primary"
-            onClick={isEmpty || isError ? () => {} : handleSubmit}
+            onClick={isEmpty || isError ? () => { } : handleSubmit}
           >
             Confirm
           </StyledButton>
