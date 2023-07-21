@@ -22,6 +22,8 @@
         - found in backend/helperFunctions.ts
 
     - Fix importing MySQL databases (currently creating an extra hollow copy or not working at all)
+      
+        - Currently importing MySQL databases will work when only MySQL server is up on MAC OS.
 
     - add ability to have multiple sqlite databases
 
