@@ -32,7 +32,7 @@ const updateThresholds = debounce(
   (updater: (newThresholds: Thresholds) => void, newThresholds: Thresholds) => {
     updater(newThresholds);
   },
-  500
+  500,
 );
 
 interface ThresholdsDialogProps {
@@ -76,7 +76,7 @@ const ThresholdsDialog = ({
           // slots={{
           //   valueLabel: ValueLabelComponent,
           // }}
-          valueLabelDisplay='auto'
+          valueLabelDisplay="auto"
           value={durThres}
           aria-label="custom thumb label"
           onChange={handlePercentChange}
@@ -86,7 +86,7 @@ const ThresholdsDialog = ({
           // slots={{
           //   valueLabel: ValueLabelComponent,
           // }}
-          valueLabelDisplay='auto'
+          valueLabelDisplay="auto"
           value={accThres}
           aria-label="custom thumb label"
           onChange={handleAccuracyChange}

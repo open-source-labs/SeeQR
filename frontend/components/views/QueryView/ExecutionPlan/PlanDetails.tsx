@@ -35,8 +35,8 @@ const LightPaper = styled(DarkPaperFull)`
 `;
 
 const StyledRow = styled(TableRow)<{$i: number}>`
-  background: ${({$i}) => $i % 2 ? 'none' : greyLighter};
-`
+  background: ${({ $i }) => ($i % 2 ? 'none' : greyLighter)};
+`;
 
 const StyledCell = styled(TableCell)`
   color: ${greyDarkest};
@@ -63,18 +63,17 @@ const visibleProperties = ([property]: [string, any]) => {
   }
 };
 
-const detailRows = (plan: SizedPlanNode) =>
-  Object.entries(plan)
-    .filter(visibleProperties)
-    .map(([property, value], index) => (
-      <StyledRow key={property} $i={index}>
-        <StyledCell>{property}</StyledCell>
-        <StyledCell align="right">
-          {/* insert spaces after commas to ensure wrapping is possible. Necessary for long Output strings */}
-          {value?.toString().replace(/,/g, ', ') ?? ''}
-        </StyledCell>
-      </StyledRow>
-    ));
+const detailRows = (plan: SizedPlanNode) => Object.entries(plan)
+  .filter(visibleProperties)
+  .map(([property, value], index) => (
+    <StyledRow key={property} $i={index}>
+      <StyledCell>{property}</StyledCell>
+      <StyledCell align="right">
+        {/* insert spaces after commas to ensure wrapping is possible. Necessary for long Output strings */}
+        {value?.toString().replace(/,/g, ', ') ?? ''}
+      </StyledCell>
+    </StyledRow>
+  ));
 
 const PlanDetails = ({ plan, open, handleClose }: PlanDetailsProps) => (
   <StyledModal

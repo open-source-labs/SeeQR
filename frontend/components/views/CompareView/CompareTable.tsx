@@ -27,7 +27,7 @@ const StyledCell = styled(TableCell)<{
   $isMarker: boolean;
 }>`
   color: ${({ $isFastest }) => ($isFastest ? greenPrimary : 'inherit')};
-  ${({ $isMarker }) => $isMarker ? ` padding:0;` : ''}
+  ${({ $isMarker }) => ($isMarker ? ' padding:0;' : '')}
 `;
 
 const FastestMarker = () => (
@@ -65,16 +65,15 @@ const tableInfo: InfoColumn[] = [
 ];
 
 // Callback function for getFastestPerGroup
-function fastestCallback (acc, q) {
-  if (getTotalTime(q) === 0) {return acc}
+function fastestCallback(acc, q) {
+  if (getTotalTime(q) === 0) { return acc; }
   return {
     ...acc,
-    [q.group]: Math.min(acc[q.group] ?? Infinity, getTotalTime(q))
+    [q.group]: Math.min(acc[q.group] ?? Infinity, getTotalTime(q)),
   };
-};
+}
 
-const getFastestPerGroup = (queries: QueryData[]) =>
-  queries.reduce<Record<string, number>>( fastestCallback, {} );
+const getFastestPerGroup = (queries: QueryData[]) => queries.reduce<Record<string, number>>(fastestCallback, {});
 
 const analyze = (queries: QueryData[]): AnalysedQuery[] => {
   // fastest query in each group
@@ -95,9 +94,9 @@ const CompareTable = ({ queries }: CompareTableProps) => {
   comparedQueries.sort(
     (a, b) =>
       // sort by group alphabetically
-      a.group.localeCompare(b.group) ||
+      a.group.localeCompare(b.group)
       // if same group, sort by speed ascending
-      a.relativeSpeed - b.relativeSpeed
+      || a.relativeSpeed - b.relativeSpeed,
   );
 
   return (

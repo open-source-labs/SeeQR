@@ -43,9 +43,7 @@ const DbEntry = ({
         if (isSelected) select('', dbType);
         setIsDeleteDialogOpen(false);
       })
-      .catch(() =>
-        sendFeedback({ type: 'error', message: `Failed to delete ${db}` })
-      );
+      .catch(() => sendFeedback({ type: 'error', message: `Failed to delete ${db}` }));
   };
 
   return (
@@ -71,10 +69,10 @@ const DbEntry = ({
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
         >
-          <DialogTitle style={{color:'black'}} id="alert-dialog-title">Confirm deletion</DialogTitle>
+          <DialogTitle style={{ color: 'black' }} id="alert-dialog-title">Confirm deletion</DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
-              Are you sure you want to delete the database 
+              Are you sure you want to delete the database
               {' '}
               {db}
               ?

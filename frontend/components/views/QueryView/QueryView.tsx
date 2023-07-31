@@ -69,7 +69,6 @@ const QueryView = ({
   setDBType,
   DBInfo,
 }: QueryViewProps) => {
-
   // I think this returns undefined if DBInfo is falsy idk lol
   const dbNames = DBInfo?.map((dbi) => dbi.db_name);
   const dbTypes = DBInfo?.map((dbi) => dbi.db_type);
@@ -88,7 +87,7 @@ const QueryView = ({
 
   const localQuery = { ...defaultQuery, ...query };
 
-  const [ runQueryNumber, setRunQueryNumber ] = useState(1);
+  const [runQueryNumber, setRunQueryNumber] = useState(1);
 
   const onLabelChange = (newLabel: string) => {
     setQuery({ ...localQuery, label: newLabel });
@@ -112,12 +111,10 @@ const QueryView = ({
         setQuery({ ...localQuery, db: newDb });
       })
 
-      .catch(() =>
-        sendFeedback({
-          type: 'error',
-          message: `Failed to connect to ${newDb}`,
-        })
-      );
+      .catch(() => sendFeedback({
+        type: 'error',
+        message: `Failed to connect to ${newDb}`,
+      }));
   };
   const onSqlChange = (newSql: string) => {
     // because App's workingQuery changes ref
@@ -150,14 +147,16 @@ const QueryView = ({
           selectedDb,
           runQueryNumber,
         },
-        curDBType
+        curDBType,
       )
-      .then(({ db, sqlString, returnedRows, explainResults, error,
+      .then(({
+        db, sqlString, returnedRows, explainResults, error,
         numberOfSample,
         totalSampleTime,
         minimumSampleTime,
         maximumSampleTime,
-        averageSampleTime, }) => {
+        averageSampleTime,
+      }) => {
         if (error) {
           throw error;
         }
@@ -242,7 +241,7 @@ const QueryView = ({
 
   const onRunQueryNumChange = (runNumber: number) => {
     setRunQueryNumber(runNumber);
-  }
+  };
 
   if (!show) return null;
   return (

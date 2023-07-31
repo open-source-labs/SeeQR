@@ -1,5 +1,5 @@
-import ms from 'ms'
-import type {Feedback } from '../types'
+import ms from 'ms';
+import type { Feedback } from '../types';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -16,14 +16,14 @@ export const once = (func: Function) => {
 
 /**
  * Get reading time for string in ms. Calculated based on number of words
- * Minimum reading time is 3s 
+ * Minimum reading time is 3s
  */
 export const readingTime = (str: string) => {
   const averageWordsPerMinute = 200;
-  const totalWords = str.split(' ').length
-  const readTime = totalWords * ms('1m') / averageWordsPerMinute
-  return Math.max(ms('3s'), readTime)
-}
+  const totalWords = str.split(' ').length;
+  const readTime = totalWords * ms('1m') / averageWordsPerMinute;
+  return Math.max(ms('3s'), readTime);
+};
 
 /**
  * Emit feedback event that can be listened to by ipcRenderer.
@@ -31,6 +31,5 @@ export const readingTime = (str: string) => {
  */
 export const sendFeedback = (feedback: Feedback) => {
   const rendererId = window.require('electron').remote.getCurrentWebContents().id;
-  ipcRenderer.sendTo(rendererId, 'feedback', feedback)
-} 
-
+  ipcRenderer.sendTo(rendererId, 'feedback', feedback);
+};

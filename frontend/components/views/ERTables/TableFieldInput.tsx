@@ -14,6 +14,6 @@ const TableFieldInput = ({
     {`${label}:`}
     <input id={idName} defaultValue={defaultValue} />
   </div>
-  );
+);
 
 export default TableFieldInput;
