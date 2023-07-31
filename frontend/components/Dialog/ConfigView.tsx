@@ -32,7 +32,9 @@ interface TabPanelProps {
 }
 // Material UI TabPanel component
 function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
+  const {
+    children, value, index, ...other
+  } = props;
 
   return (
     <div
@@ -48,7 +50,7 @@ function TabPanel(props: TabPanelProps) {
           flexDirection: 'column',
           gap: '.25rem',
           alignItems: 'center',
-          pt: 2
+          pt: 2,
         }}
         >
           {children}
@@ -97,18 +99,19 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
     const WIN = remote.getCurrentWindow();
 
     const options = {
-      title: "Select SQLite File",
+      title: 'Select SQLite File',
       defaultPath: '',
-      buttonLabel: "Select File", filters: [
-        { name: 'db', extensions: ['db'] }
-      ]
-    }
+      buttonLabel: 'Select File',
+      filters: [
+        { name: 'db', extensions: ['db'] },
+      ],
+    };
 
     dialog.showOpenDialog(WIN, options)
       .then((res: any) => {
-        setPath({ path: res.filePaths[0] })
+        setPath({ path: res.filePaths[0] });
       });
-  }
+  };
 
   // Function to make StyledTextFields and store them in inputFieldsToRender state
   function inputFieldMaker(dbTypeFromState, setDbTypeFromState, dbString) {
@@ -118,8 +121,8 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
       arrayToRender.push(
         <StyledButton variant="contained" color="primary" onClick={() => designateFile(dbTypeFromState, setDbTypeFromState)}>
           Set db file location
-        </StyledButton>
-      )
+        </StyledButton>,
+      );
     } else {
       // Get key value pairs from passed in database connection info from state
       Object.entries(dbTypeFromState).forEach((entry) => {
@@ -135,12 +138,10 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
                 <InputAdornment position="end">
                   <IconButton
                     aria-label="toggle password visibility"
-                    onClick={() =>
-                      setShowpass({
-                        ...showpass,
-                        [dbString]: !showpass[dbString],
-                      })
-                    }
+                    onClick={() => setShowpass({
+                      ...showpass,
+                      [dbString]: !showpass[dbString],
+                    })}
                     size="large"
                   >
                     {showpass[dbString] ? <Visibility /> : <VisibilityOff />}
@@ -151,7 +152,6 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
           };
         }
         // Push StyledTextField to temporary render array for current key in database connection object from state
-
 
         arrayToRender.push(
           <StyledTextField
@@ -173,9 +173,8 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
             }}
             // Spread special password props if they exist
             {...styledTextFieldProps}
-          />
+          />,
         );
-
       });
     }
     // Update state for our current database type passing in our temporary array of StyledTextField components
@@ -248,7 +247,9 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
   // Function to handle onChange -- when tab panels change
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     // On panel change reset all passwords to hidden
-    setShowpass({ mysql: false, pg: false, rds_mysql: false, rds_pg: false, sqlite: false });
+    setShowpass({
+      mysql: false, pg: false, rds_mysql: false, rds_pg: false, sqlite: false,
+    });
     // Change which tab panel is hidden/shown
     setValue(newValue);
   };
@@ -264,11 +265,9 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
           value={value}
           onChange={handleChange}
           aria-label="wrapped label basic tabs"
-          className='db-login-tabs'
+          className="db-login-tabs"
         >
-          {dbNames.map((db, idx) =>
-            <Tab label={db} wrapped {...a11yProps(idx)} className='db-login-tab' key={db} />
-           )}
+          {dbNames.map((db, idx) => <Tab label={db} wrapped {...a11yProps(idx)} className="db-login-tab" key={db} />)}
         </Tabs>
       </Box>
       <TabPanel value={value} index={0}>

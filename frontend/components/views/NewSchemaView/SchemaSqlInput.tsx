@@ -8,7 +8,6 @@ import { format } from 'sql-formatter';
 import CodeMirror from '@uiw/react-codemirror';
 import { dracula } from '@uiw/codemirror-theme-dracula';
 
-
 const Container = styled.div`
   position: relative;
 `;
@@ -30,43 +29,40 @@ const Toolbar = styled.div`
   }
 `;
 
-
-
 interface SchemaSqlInputProps {
     sql: string;
     onChange: (newSql: string) => void;
     runQuery: () => void;
   }
-  
-  const SchemaSqlInput = ({ sql, onChange, runQuery }: SchemaSqlInputProps) => {
-    const formatQuery = () => {
-      const formatted = format(sql, { language: 'postgresql', uppercase: true });
-      onChange(formatted);
-    };
 
-    return (
-      <Container>
-        <Toolbar>
-          <ButtonGroup variant="contained">
-            <Tooltip title="Auto-Format Query">
-              <SquareBtn onClick={formatQuery}>
-                <FormatPaintIcon />
-              </SquareBtn>
-            </Tooltip>
-          </ButtonGroup>
-        </Toolbar>
-        <CodeMirror 
-          onChange={onChange}
-          theme={dracula}
-          height='300px'
-          value={sql}
-          basicSetup={{
-            highlightActiveLine: false
-          }}
-        />
-      </Container>
-    );
+const SchemaSqlInput = ({ sql, onChange, runQuery }: SchemaSqlInputProps) => {
+  const formatQuery = () => {
+    const formatted = format(sql, { language: 'postgresql', uppercase: true });
+    onChange(formatted);
   };
-  
-  export default SchemaSqlInput;
-  
+
+  return (
+    <Container>
+      <Toolbar>
+        <ButtonGroup variant="contained">
+          <Tooltip title="Auto-Format Query">
+            <SquareBtn onClick={formatQuery}>
+              <FormatPaintIcon />
+            </SquareBtn>
+          </Tooltip>
+        </ButtonGroup>
+      </Toolbar>
+      <CodeMirror
+        onChange={onChange}
+        theme={dracula}
+        height="300px"
+        value={sql}
+        basicSetup={{
+          highlightActiveLine: false,
+        }}
+      />
+    </Container>
+  );
+};
+
+export default SchemaSqlInput;

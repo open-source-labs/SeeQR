@@ -6,11 +6,10 @@ const { Pool } = require('pg');
 const mysql = require('mysql2/promise');
 const sqlite3 = require('sqlite3').verbose();
 
-
 export default {
   /**
    * For a local Postgres database.
-   * Uses passed in arguments to create a URI to create a pool, save it, and begin a connection. 
+   * Uses passed in arguments to create a URI to create a pool, save it, and begin a connection.
    * @param pg_uri URI created in models.ts using login info
    * @param db Name of target database that the login has access to. Initially empty string
    */
@@ -103,8 +102,8 @@ export default {
       sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE,
       (err) => {
         if (err) return console.error(err.message);
-      }
+      },
     );
     pools.sqlite_db = newDB;
-  }
+  },
 };

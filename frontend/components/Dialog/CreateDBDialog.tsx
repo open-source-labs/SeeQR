@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   DialogTitle,
   Dialog,
-  Tooltip
+  Tooltip,
 } from '@mui/material/';
 import { ipcRenderer } from 'electron';
 import { DatabaseInfo } from '../../types';
@@ -23,7 +23,7 @@ interface CreateDBDialogProps {
   show: boolean,
   DBInfo: DatabaseInfo[] | undefined;
   onClose: () => void;
-};
+}
 
 const CreateDBDialog = ({ show, DBInfo, onClose }: CreateDBDialogProps) => {
   if (!show) return <></>;
@@ -83,7 +83,7 @@ const CreateDBDialog = ({ show, DBInfo, onClose }: CreateDBDialogProps) => {
         {
           newDbName,
         },
-        dbt
+        dbt,
       )
       .then(() => {
         handleClose();
@@ -149,9 +149,9 @@ const CreateDBDialog = ({ show, DBInfo, onClose }: CreateDBDialogProps) => {
             <StyledNativeOption value={DBType.RDSMySQL}>
               RDS MySQL
             </StyledNativeOption>
-            <StyledNativeOption value={DBType.CloudDB}>
+            {/* <StyledNativeOption value={DBType.CloudDB}>
               Cloud Database
-            </StyledNativeOption>
+            </StyledNativeOption> */}
           </StyledNativeDropdown>
         </DropdownContainer>
 
@@ -167,7 +167,7 @@ const CreateDBDialog = ({ show, DBInfo, onClose }: CreateDBDialogProps) => {
           <StyledButton
             variant="contained"
             color="primary"
-            onClick={isEmpty || isError ? () => {} : handleSubmit}
+            onClick={isEmpty || isError ? () => { } : handleSubmit}
           >
             Confirm
           </StyledButton>

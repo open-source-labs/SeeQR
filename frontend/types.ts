@@ -183,18 +183,13 @@ export const isDbLists = (obj: unknown): obj is DbLists => {
   try {
     assumeType<DbLists>(obj);
     if (!obj.databaseList || !obj.tableList) return false;
-    if (!Array.isArray(obj.databaseList) || !Array.isArray(obj.tableList))
-      return false;
-    if (obj.databaseList[0] && typeof obj.databaseList[0].db_name !== 'string')
-      return false;
+    if (!Array.isArray(obj.databaseList) || !Array.isArray(obj.tableList)) return false;
+    if (obj.databaseList[0] && typeof obj.databaseList[0].db_name !== 'string') return false;
     // if (obj.databaseList[0] && typeof obj.databaseList[0].db_size !== 'string' )
     //   return false;
-    if (obj.tableList[0] && typeof obj.tableList[0].table_name !== 'string')
-      return false;
-    if (obj.tableList[0] && typeof obj.tableList[0].table_catalog !== 'string')
-      return false;
-    if (obj.tableList[0] && typeof obj.tableList[0].table_schema !== 'string')
-      return false;
+    if (obj.tableList[0] && typeof obj.tableList[0].table_name !== 'string') return false;
+    if (obj.tableList[0] && typeof obj.tableList[0].table_catalog !== 'string') return false;
+    if (obj.tableList[0] && typeof obj.tableList[0].table_schema !== 'string') return false;
   } catch (e) {
     return false;
   }

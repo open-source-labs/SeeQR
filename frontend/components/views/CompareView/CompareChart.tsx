@@ -1,6 +1,6 @@
 import React from 'react';
 import { Bar, defaults, ChartData } from 'react-chartjs-2';
-import styled from 'styled-components'
+import styled from 'styled-components';
 import { AppState } from '../../../types';
 import { getTotalTime } from '../../../lib/queries';
 import { compareChartColors, textColor } from '../../../style-variables';
@@ -8,16 +8,16 @@ import { compareChartColors, textColor } from '../../../style-variables';
 const ChartContainer = styled.div`
   height: 400px;
   width: 100%;
-`
+`;
 
-defaults.global.defaultFontColor = textColor
+defaults.global.defaultFontColor = textColor;
 
 /**
  * Builds Chart.js data from queries. Uses isCompared flag on each query to
  * determine which queries to include in comparison
  */
 const getChartData = (
-  queries: AppState['queries']
+  queries: AppState['queries'],
 ): ChartData<Chart.ChartData> => {
   /**
    * Gets next color from defined pallete.
@@ -31,8 +31,6 @@ const getChartData = (
       return color;
     };
   })();
-
- 
 
   const comparedQueries = Object.values(queries);
 
@@ -50,8 +48,8 @@ const getChartData = (
       groups[queries[uniqueLabels[i]].db].push(uniqueLabels[i]);
     } else {
       groups[queries[uniqueLabels[i]].db] = [uniqueLabels[i]];
-    };
-  };
+    }
+  }
   // array of objects representing each database that is being displayed
   const datasets = comparedDbs.map((db) => {
     const color = getColor();
@@ -90,8 +88,8 @@ const CompareChart = ({ queries }: CompareChartProps) => (
         scales: {
           yAxes: [{
             ticks: {
-            beginAtZero: true
-          }
+              beginAtZero: true,
+            },
           }],
         },
         maintainAspectRatio: false,
@@ -102,4 +100,3 @@ const CompareChart = ({ queries }: CompareChartProps) => (
 );
 
 export default CompareChart;
-

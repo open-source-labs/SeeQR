@@ -52,7 +52,7 @@ const QueryEntry = ({
       </Tooltip>
       <Tooltip title="Save Query">
         <IconButton onClick={saveThisQuery} size="large">
-          <SaveIcon fontSize='inherit' />
+          <SaveIcon fontSize="inherit" />
         </IconButton>
       </Tooltip>
       <Tooltip title="Forget Query">
@@ -63,7 +63,5 @@ const QueryEntry = ({
     </ListItemSecondaryAction>
   </SidebarListItem>
 );
-
-
 
 export default QueryEntry;

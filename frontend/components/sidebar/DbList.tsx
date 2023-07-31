@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { ipcRenderer } from 'electron';
-import { IconButton, Tooltip, Menu, MenuItem } from '@mui/material';
+import {
+  IconButton, Tooltip, Menu, MenuItem,
+} from '@mui/material';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import AddNewDbModal from '../modal/AddNewDbModalCorrect';
@@ -58,7 +60,7 @@ const DbList = ({
   const [openAdd, setOpenAdd] = useState(false);
   const [openDupe, setOpenDupe] = useState(false);
   const [dbToDupe, setDbToDupe] = useState('');
-  
+
   // filter button
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [filterBy, setFilterBy] = useState<string>('All');
@@ -85,7 +87,7 @@ const DbList = ({
   };
 
   const selectHandler = (dbName: string, cdbt: DBType | undefined) => {
-    setSelectedView(selectedView === 'threeDView' ?  'threeDView' : 'dbView');
+    setSelectedView(selectedView === 'threeDView' ? 'threeDView' : 'dbView');
     if (dbName === selectedDb) return;
     ipcRenderer
       .invoke('select-db', dbName, cdbt)
@@ -93,23 +95,21 @@ const DbList = ({
         setSelectedDb(dbName);
         setDBType(cdbt);
       })
-      .catch(() =>
-        sendFeedback({
-          type: 'error',
-          message: `Failed to connect to ${dbName}`,
-        })
-      );
+      .catch(() => sendFeedback({
+        type: 'error',
+        message: `Failed to connect to ${dbName}`,
+      }));
   };
 
   const handleClickFilter = (e: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(e.currentTarget);
-  }
-  
+  };
+
   const handleCloseFilter = (e) => {
     setAnchorEl(null);
     setFilterBy(e.currentTarget.innerText || filterBy);
-  }
-  
+  };
+
   //  filter options
   const dbNamesArr = ['All', 'MySql', 'Postgres', 'RDS Mysql', 'RDS Postgres', 'SQLite'];
 
@@ -120,22 +120,22 @@ const DbList = ({
     'RDS Mysql': 'rds-mysql',
     'RDS Postgres': 'rds-pg',
     SQLite: 'sqlite',
-  }
+  };
 
   if (!show) return null;
   return (
     <>
-      <div style={{ display: 'flex'}}>
+      <div style={{ display: 'flex' }}>
         <Tooltip title="Filter By Database">
           <IconButton onClick={handleClickFilter}>
             <FilterListIcon fontSize="large" />
-          </IconButton>         
+          </IconButton>
         </Tooltip>
         <Menu
           id="filter-menu"
           MenuListProps={{
-          'aria-labelledby': 'filter',
-        }}
+            'aria-labelledby': 'filter',
+          }}
           anchorEl={anchorEl}
           open={openFilter}
           onClose={handleCloseFilter}
@@ -144,7 +144,7 @@ const DbList = ({
             <MenuItem key={option} selected={option === filterBy} onClick={handleCloseFilter} sx={{ color: 'black' }}>
               {option}
             </MenuItem>
-        ))}
+          ))}
         </Menu>
         <Tooltip title="Import Database">
           <IconButton onClick={handleClickOpenAdd} size="large">
@@ -164,7 +164,7 @@ const DbList = ({
                 duplicate={() => handleClickOpenDupe(dbi.db_name)}
                 dbType={dbi.db_type}
               />
-              )
+            );
           }
         })}
         {openDupe ? (
@@ -175,7 +175,7 @@ const DbList = ({
             dbNames={dbNames}
             curDBType={curDBType}
           />
-      ) : null}
+        ) : null}
       </StyledSidebarList>
       <AddNewDbModal
         open={openAdd}
@@ -184,7 +184,7 @@ const DbList = ({
         curDBType={curDBType}
       />
     </>
-);
+  );
 };
 
 export default DbList;

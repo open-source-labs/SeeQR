@@ -1,6 +1,8 @@
 import fs from 'fs';
 import { ipcRenderer, remote } from 'electron';
-import React, { useCallback, useEffect, useState, useRef } from 'react';
+import React, {
+  useCallback, useEffect, useState, useRef,
+} from 'react';
 import ReactFlow, {
   Controls,
   applyEdgeChanges,
@@ -10,7 +12,7 @@ import ReactFlow, {
   Edge,
   MiniMap,
 } from 'reactflow';
-import 'reactflow/dist/style.css'
+import 'reactflow/dist/style.css';
 import { Button } from '@mui/material';
 import styled from 'styled-components';
 import stateToReactFlow from '../../../lib/convertStateToReactFlow';
@@ -53,7 +55,6 @@ const nodeColor = (node): string => {
       return 'red';
   }
 };
-
 
 type ERTablingProps = {
   tables;
@@ -109,12 +110,12 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
   // whenever the node changes, this callback gets invoked
   const onNodesChange = useCallback(
     (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
-    [setNodes]
+    [setNodes],
   );
   // whenever the edges changes, this callback gets invoked
   const onEdgesChange = useCallback(
     (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
-    [setEdges]
+    [setEdges],
   );
 
   // This function handles the add table button on the ER Diagram view
@@ -125,7 +126,7 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
     const addTableObj: AddTablesObjType = {
       is_insertable_into: 'yes',
       table_name: `NewTable${schemaStateCopy.tableList.length + 1}`,
-      table_schema: `public`,
+      table_schema: 'public',
       table_catalog: `${schemaStateCopy.database}`,
       columns: [],
     };
@@ -140,7 +141,7 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
   const handleSaveLayout = (): void => {
     // get the array of header nodes
     const headerNodes = nodes.filter(
-      (node) => node.type === 'tableHeader'
+      (node) => node.type === 'tableHeader',
     ) as TableHeaderNodeType[];
     // create object for the current database
     type TablePosObjType = {
@@ -181,7 +182,7 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
           JSON.stringify([currDatabaseLayout], null, 2),
           (error) => {
             if (error) console.log(error);
-          }
+          },
         );
 
         // check if file exists

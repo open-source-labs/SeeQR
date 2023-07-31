@@ -8,13 +8,15 @@ interface ThreeDModelProps {
   selectedDb: AppState['selectedDb'];
   dbTables: TableInfo[];
   dbType: DBType | undefined;
-};
+}
 
-const ThreeDView = ({ show, selectedDb, dbTables, dbType }: ThreeDModelProps) => {
+const ThreeDView = ({
+  show, selectedDb, dbTables, dbType,
+}: ThreeDModelProps) => {
   if (!show) return null;
   return (
     <>
-      <ThreeDUniverse 
+      <ThreeDUniverse
         selectedDb={selectedDb}
         dbTables={dbTables}
         dbType={dbType}

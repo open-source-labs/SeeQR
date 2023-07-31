@@ -3,7 +3,7 @@ import { ButtonGroup, Button } from '@mui/material';
 import Box from '@mui/material/Box';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
-import {useReactFlow} from 'reactflow';
+import { useReactFlow } from 'reactflow';
 import styled from 'styled-components';
 import {
   selectedColor,
@@ -21,11 +21,9 @@ interface ViewButtonProps {
 }
 
 const ViewButton = styled(Button)`
-  background: ${({ $isSelected }: ViewButtonProps) =>
-    $isSelected ? selectedColor : textColor};
+  background: ${({ $isSelected }: ViewButtonProps) => ($isSelected ? selectedColor : textColor)};
   &:hover {
-    background: ${({ $isSelected }: ViewButtonProps) =>
-      $isSelected ? selectedColor : textColor};
+    background: ${({ $isSelected }: ViewButtonProps) => ($isSelected ? selectedColor : textColor)};
   }
 `;
 
