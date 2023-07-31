@@ -29,11 +29,10 @@ const isNumber = (val: unknown) => {
   return false;
 };
 
-const buildColumns = (row: Record<string, unknown>): Column[] =>
-  Object.entries(row).map(([column, value]) => ({
-    name: column,
-    align: isNumber(value) ? 'right' : 'left',
-  }));
+const buildColumns = (row: Record<string, unknown>): Column[] => Object.entries(row).map(([column, value]) => ({
+  name: column,
+  align: isNumber(value) ? 'right' : 'left',
+}));
 interface QueryResultsProps {
   results: QueryData['returnedRows'];
 }

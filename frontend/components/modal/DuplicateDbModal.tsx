@@ -19,12 +19,10 @@ import {
 } from '../../style-variables';
 import { DBType } from '../../../backend/BE_types';
 
-
 declare module '@mui/material/styles/' {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
   interface DefaultTheme extends Theme {}
 }
-
 
 const { ipcRenderer } = window.require('electron');
 
@@ -62,11 +60,11 @@ const DuplicateDbModal = ({
   onClose,
   dbCopyName,
   dbNames,
-  curDBType
+  curDBType,
 }: copyDbModalProps) => {
   const [checked, setChecked] = useState(true);
   const [newSchemaName, setNewSchemaName] = useState(
-    handleDBName(dbCopyName, dbNames)
+    handleDBName(dbCopyName, dbNames),
   );
   const [isError, setIsError] = useState(false);
   const [isEmpty, setIsEmpty] = useState(false);
@@ -102,8 +100,7 @@ const DuplicateDbModal = ({
     dbSafeName = dbSafeName.replace(/[^\w-]/gi, '');
     if (dbNames?.includes(dbSafeName)) {
       setIsError(true);
-    }
-    else {
+    } else {
       setIsError(false);
     }
     // dbSafeName = dbSafeName.replace(/[^A-Z0-9]/gi, '');

@@ -17,7 +17,7 @@ const FeedbackModal = () => {
 
   useEffect(() => {
     const receiveFeedback = (evt: IpcRendererEvent, feedback: Feedback) => {
-      const validTypes: FeedbackSeverity[] = ['success','error', 'info', 'warning'];
+      const validTypes: FeedbackSeverity[] = ['success', 'error', 'info', 'warning'];
       // Ignore 'success' feedback.
       if (validTypes.includes(feedback.type)) {
         setSeverity(feedback.type);

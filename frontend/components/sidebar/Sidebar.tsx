@@ -56,8 +56,8 @@ const ShowSidebarBtn = styled(IconButton)`
     color: white;
   }
   `;
-  
-  const HideSidebarBtn = styled(IconButton)`
+
+const HideSidebarBtn = styled(IconButton)`
   width: 40px;
   height: ${sidebarShowButtonSize};
   z-index: 200;
@@ -136,10 +136,10 @@ const Sidebar = ({
           selectedDb={selectedDb}
           setSelectedDb={setSelectedDb}
           show={
-            selectedView === 'dbView' ||
-            selectedView === 'quickStartView' ||
-            selectedView === 'newSchemaView' ||
-            selectedView === 'threeDView'
+            selectedView === 'dbView'
+            || selectedView === 'quickStartView'
+            || selectedView === 'newSchemaView'
+            || selectedView === 'threeDView'
           }
           setSelectedView={setSelectedView}
           curDBType={curDBType}

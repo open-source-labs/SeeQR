@@ -13,11 +13,9 @@ interface ViewButtonProps {
 }
 
 const ViewButton = styled(Button)`
-  background: ${({ $isSelected }: ViewButtonProps) =>
-    $isSelected ? selectedColor : textColor};
+  background: ${({ $isSelected }: ViewButtonProps) => ($isSelected ? selectedColor : textColor)};
   &:hover {
-    background: ${({ $isSelected }: ViewButtonProps) =>
-      $isSelected ? selectedColor : textColor};
+    background: ${({ $isSelected }: ViewButtonProps) => ($isSelected ? selectedColor : textColor)};
   }
 `;
 

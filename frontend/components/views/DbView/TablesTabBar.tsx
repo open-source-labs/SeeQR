@@ -26,7 +26,9 @@ const StyledTabs = styled(Tabs)`
   border-radius: 5px;
 `;
 
-const TabPanel = ({ children, value, index, curDBType }: TabPanelProps) => (
+const TabPanel = ({
+  children, value, index, curDBType,
+}: TabPanelProps) => (
   <div
     role="tabpanel"
     hidden={value !== index}
@@ -64,7 +66,7 @@ const TablesTabs = ({
   };
 
   const tableIndex = tables.findIndex(
-    ({ table_name }) => table_name === selectedTable?.table_name
+    ({ table_name }) => table_name === selectedTable?.table_name,
   );
 
   const [active, setActive] = useState(true);
@@ -131,10 +133,10 @@ const TablesTabs = ({
         onChange={handleView}
         aria-label="active-view"
       >
-        <ToggleButton value aria-label="er" className='tables-view-btn'>
+        <ToggleButton value aria-label="er" className="tables-view-btn">
           ER diagram
         </ToggleButton>
-        <ToggleButton value={false} aria-label="table" className='tables-view-btn'>
+        <ToggleButton value={false} aria-label="table" className="tables-view-btn">
           Table
         </ToggleButton>
       </StyledToggleButtonGroup>

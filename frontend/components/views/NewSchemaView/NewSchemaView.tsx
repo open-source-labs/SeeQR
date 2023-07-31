@@ -90,7 +90,6 @@ const NewSchemaView = ({
   selectedTable,
   setSelectedTable,
 }: NewSchemaViewProps) => {
-
   const [currentSql, setCurrentSql] = useState('');
 
   const TEMP_DBTYPE = DBType.Postgres;
@@ -130,7 +129,7 @@ const NewSchemaView = ({
         {
           newDbName: localQuery.db,
         },
-        TEMP_DBTYPE
+        TEMP_DBTYPE,
       )
       .catch((err) => {
         sendFeedback({
@@ -148,7 +147,7 @@ const NewSchemaView = ({
         {
           sourceDb: selectedDb,
         },
-        curDBType
+        curDBType,
       )
       .catch((err) => {
         sendFeedback({
@@ -169,7 +168,7 @@ const NewSchemaView = ({
           sqlString: localQuery.sqlString,
           selectedDb,
         },
-        curDBType
+        curDBType,
       )
       .then(() => {
         setCurrentSql('');

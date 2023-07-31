@@ -106,13 +106,10 @@ const AddNewDbModal = ({
           filePath: result.filePaths[0],
         };
 
-
-        ipcRenderer.invoke('import-db', payload, dbt).catch(() =>
-          sendFeedback({
-            type: 'error',
-            message: 'Failed to import database',
-          })
-        );
+        ipcRenderer.invoke('import-db', payload, dbt).catch(() => sendFeedback({
+          type: 'error',
+          message: 'Failed to import database',
+        }));
       })
       .catch((err: object) => {
         // console.log(err);
@@ -154,7 +151,7 @@ const AddNewDbModal = ({
             Database Type
           </StyledInputLabel>
           <StyledNativeDropdown
-            id='dbTypeDropdown'
+            id="dbTypeDropdown"
             defaultValue={DBType.Postgres}
           >
             <StyledNativeOption value={DBType.Postgres}>Postgres</StyledNativeOption>

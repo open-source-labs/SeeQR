@@ -13,9 +13,13 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { AppState, QueryData } from '../../types';
-import { deleteQuery, setCompare, saveQuery, getAppDataPath, key as queryKey } from '../../lib/queries';
+import {
+  deleteQuery, setCompare, saveQuery, getAppDataPath, key as queryKey,
+} from '../../lib/queries';
 import QueryEntry from './QueryEntry';
-import { greyDarkest, greyDark, greenPrimary, SidebarList, StyledListItemText, textColor } from '../../style-variables';
+import {
+  greyDarkest, greyDark, greenPrimary, SidebarList, StyledListItemText, textColor,
+} from '../../style-variables';
 
 const QueryText = styled(StyledListItemText)`
   & .MuiListItemText-secondary {
@@ -58,53 +62,50 @@ const QueryList = ({
     setQueries(deleteQuery(queries, query));
     setComparedQueries(deleteQuery(comparedQueries, query));
   };
-  
+
   const setComparisonHandler = (query: QueryData) => (
-    evt: React.ChangeEvent<HTMLInputElement>
-    ) => {
-      setComparedQueries(setCompare(comparedQueries, queries, query, evt.target.checked));
-      // setComparedQueries(setCompare(comparedQueries, query));
-    };
-  
-  const saveQueryHandler = (query: QueryData, newFilePath: string) => () => { 
+    evt: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setComparedQueries(setCompare(comparedQueries, queries, query, evt.target.checked));
+    // setComparedQueries(setCompare(comparedQueries, query));
+  };
+
+  const saveQueryHandler = (query: QueryData, newFilePath: string) => () => {
     saveQuery(query, newFilePath);
-  }
+  };
 
-  const loadQueryHandler = async function () { 
-
+  const loadQueryHandler = async function () {
     const globalAny: any = global;
     // If the platform is not macOS
     if (process.platform !== 'darwin') {
     // Resolves to a Promise<Object>
-    electron.remote.dialog.showOpenDialog({
-      title: 'Select the File to be uploaded',
-      defaultPath: path.join(__dirname, '../assets/'),
-      buttonLabel: 'Upload',
-      // Restricting the user to only Text Files.
-      filters: [
-        {
-          name: 'Text Files',
-          extensions: ['json', 'docx', 'txt']
-        },],
-      // Specifying the File Selector Property
-      properties: ['openFile']
-    }).then((file: any) => {
+      electron.remote.dialog.showOpenDialog({
+        title: 'Select the File to be uploaded',
+        defaultPath: path.join(__dirname, '../assets/'),
+        buttonLabel: 'Upload',
+        // Restricting the user to only Text Files.
+        filters: [
+          {
+            name: 'Text Files',
+            extensions: ['json', 'docx', 'txt'],
+          }],
+        // Specifying the File Selector Property
+        properties: ['openFile'],
+      }).then((file: any) => {
       // Stating whether dialog operation was
       // cancelled or not.
-      if (!file.canceled) {
-        // Updating the GLOBAL filepath variable 
+        if (!file.canceled) {
+        // Updating the GLOBAL filepath variable
         // to user-selected file.
-        globalAny.filepath = file.filePaths[0].toString();
-        const data = JSON.parse(fs.readFileSync(globalAny.filepath).toString());
-        setQueries(data);
-      }
-      return undefined;
-    }).catch((err: object | undefined) => {
+          globalAny.filepath = file.filePaths[0].toString();
+          const data = JSON.parse(fs.readFileSync(globalAny.filepath).toString());
+          setQueries(data);
+        }
+        return undefined;
+      }).catch((err: object | undefined) =>
       // console.log(err);
-      return undefined;
-    });
-  }
-    else {
+        undefined);
+    } else {
       // If the platform is 'darwin' (macOS)
       electron.remote.dialog.showOpenDialog({
         title: 'Select the File to be uploaded',
@@ -113,11 +114,11 @@ const QueryList = ({
         filters: [
           {
             name: 'Text Files',
-            extensions: ['json', 'docx', 'txt']
-          },],
-        // Specifying the File Selector and Directory 
+            extensions: ['json', 'docx', 'txt'],
+          }],
+        // Specifying the File Selector and Directory
         // Selector Property In macOS
-        properties: ['openFile', 'openDirectory']
+        properties: ['openFile', 'openDirectory'],
       }).then((file: any) => {
         if (!file.canceled) {
           globalAny.filepath = file.filePaths[0].toString();
@@ -125,13 +126,11 @@ const QueryList = ({
           setQueries(data);
         }
         return undefined;
-      }).catch((err: object) => {
+      }).catch((err: object) =>
         // console.log(err);
-        return undefined;
-      });
+        undefined);
     }
-
-  }
+  };
 
   if (!show) return null;
 
@@ -139,8 +138,8 @@ const QueryList = ({
   const accordians:object = {};
 
   // Algorithm to create the entrys to be bundled into accoridans
-  const compQ: any = { ...comparedQueries }
-  if(values.length > 0) {
+  const compQ: any = { ...comparedQueries };
+  if (values.length > 0) {
     for (let i = 0; i < values.length; i++) {
       let compared = false;
       if (compQ[queryKey(values[i])]) {
@@ -149,8 +148,8 @@ const QueryList = ({
             compared = true;
           }
         }
-      };
-      
+      }
+
       const entry: JSX.Element = (
         <QueryEntry
           // This key is used in the .map to create the group label for accordians
@@ -166,33 +165,34 @@ const QueryList = ({
           saveThisQuery={saveQueryHandler(values[i], newFilePath)}
         />
       );
-      
-      if(!accordians[values[i].group]) {
+
+      if (!accordians[values[i].group]) {
         accordians[values[i].group] = [entry];
       } else {
         accordians[values[i].group].push([entry]);
-      };
-    };
-  };
+      }
+    }
+  }
 
   // function to store user-selected file path in state
-  const designateFile = function() {
+  const designateFile = function () {
     const { dialog } = electron.remote;
     const WIN = electron.remote.getCurrentWindow();
-  
+
     const options = {
-      title: "Choose File Path",
+      title: 'Choose File Path',
       defaultPath: `${getAppDataPath()}`,
-      buttonLabel: "Select Path",filters: [
-            { name: 'JSON', extensions: ['json'] }
-          ]
-    }
+      buttonLabel: 'Select Path',
+      filters: [
+        { name: 'JSON', extensions: ['json'] },
+      ],
+    };
 
     dialog.showSaveDialog(WIN, options)
       .then((res:any) => {
-          setFilePath(res.filePath)
+        setFilePath(res.filePath);
       });
-  }
+  };
 
   return (
     <>
@@ -210,24 +210,22 @@ const QueryList = ({
         </Tooltip>
 
         <Tooltip title="Designate Save Location">
-          <IconButton onClick={designateFile} size="large"> 
-            <FileCopyIcon fontSize='large' />
+          <IconButton onClick={designateFile} size="large">
+            <FileCopyIcon fontSize="large" />
           </IconButton>
         </Tooltip>
       </span>
-
-
 
       <StyledSidebarList>
         {Object.values(accordians).map((arrGroup: any) => (
           <Tooltip title="drop down">
             <Accordion>
-              <AccordionSummary 
+              <AccordionSummary
                 sx={{
-              backgroundColor: `${greenPrimary}`, color: "black"
-            }} 
-                expandIcon={<ExpandMoreIcon />} 
-                aria-controls="panel1a-content" 
+                  backgroundColor: `${greenPrimary}`, color: 'black',
+                }}
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel1a-content"
                 id="panel1a-header"
               >
                 <Typography sx={{ color: 'black' }}>
@@ -239,9 +237,10 @@ const QueryList = ({
               </AccordionDetails>
             </Accordion>
           </Tooltip>
-      ))}
+        ))}
       </StyledSidebarList>
     </>
-)};
+  );
+};
 
 export default QueryList;

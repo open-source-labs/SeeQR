@@ -83,7 +83,7 @@ function getStepContent(step: number) {
             <li> Set up usernames, passwords, and ports that match database server profiles. This can be done by clicking the gear on the top-left of the app. If you do not see your database(s), check that your information is correct. </li>
             <li> Run server(s) in the background. </li>
           </StepList>
-        </StyledTypographyInstructions> 
+        </StyledTypographyInstructions>
       );
     case 1:
       return (
@@ -97,7 +97,7 @@ function getStepContent(step: number) {
               file.
             </li>
             <li>Select your imported database on the sidebar to view table information.</li>
-        
+
             <li>
               To view each table, click the name of the table in the top tabs
               bar.
@@ -143,17 +143,17 @@ function getStepContent(step: number) {
           </StepList>
         </StyledTypographyInstructions>
       );
-      case 3: 
-        return (
-          <StyledTypographyInstructions>
-            <strong>Step 4:</strong>
-            <StepList>
-              <li>To save a query, declare a file location by clicking the &quot;Designate Save Location&quot; button in the queries tab</li>
-              <li>Then, save queries individually by clicking the &quot;Save Query&quot; button</li>
-              <li>To load data into SeeQR just click the &quot;Import Query&quot; button, select the file you wish to upload in your local file system and click &quot;Upload&quot;</li>
-            </StepList>
-          </StyledTypographyInstructions>
-        )
+    case 3:
+      return (
+        <StyledTypographyInstructions>
+          <strong>Step 4:</strong>
+          <StepList>
+            <li>To save a query, declare a file location by clicking the &quot;Designate Save Location&quot; button in the queries tab</li>
+            <li>Then, save queries individually by clicking the &quot;Save Query&quot; button</li>
+            <li>To load data into SeeQR just click the &quot;Import Query&quot; button, select the file you wish to upload in your local file system and click &quot;Upload&quot;</li>
+          </StepList>
+        </StyledTypographyInstructions>
+      );
     case 4:
       return (
         <StyledTypographyInstructions>
@@ -200,18 +200,16 @@ const QuickStartView = ({ show }: QuickStartViewProps) => {
 
   const completedSteps = () => completed.size;
 
-  const allStepsCompleted = () =>
-    completedSteps() === totalSteps() - skippedSteps();
+  const allStepsCompleted = () => completedSteps() === totalSteps() - skippedSteps();
 
   const isLastStep = () => activeStep === totalSteps() - 1;
 
   const handleNext = () => {
-    const newActiveStep =
-      isLastStep() && !allStepsCompleted()
-        ? // It's the last step, but not all steps have been completed
-          // find the first step that has been completed
-          steps.findIndex((step, i) => !completed.has(i))
-        : activeStep + 1;
+    const newActiveStep = isLastStep() && !allStepsCompleted()
+      ? // It's the last step, but not all steps have been completed
+      // find the first step that has been completed
+      steps.findIndex((step, i) => !completed.has(i))
+      : activeStep + 1;
 
     setActiveStep(newActiveStep);
   };
@@ -307,8 +305,8 @@ const QuickStartView = ({ show }: QuickStartViewProps) => {
                   Skip
                 </Button>
               )}
-              {activeStep !== steps.length &&
-                (completed.has(activeStep) ? (
+              {activeStep !== steps.length
+                && (completed.has(activeStep) ? (
                   <Typography variant="caption" className="step-completed">
                     Step
                     {` ${activeStep + 1} `}

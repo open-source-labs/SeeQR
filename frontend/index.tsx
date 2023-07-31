@@ -3,7 +3,7 @@ import { render } from 'react-dom';
 import App from './components/App';
 // import 'codemirror/lib/codemirror.css';
 
-import "fontsource-roboto" 
+import 'fontsource-roboto';
 
 const root = document.createElement('div');
 root.id = 'root';
@@ -13,5 +13,5 @@ render(
   <div>
     <App />
   </div>,
-  document.getElementById('root')
+  document.getElementById('root'),
 );

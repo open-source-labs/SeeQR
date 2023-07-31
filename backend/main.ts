@@ -1,5 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { BrowserWindow, Menu, app, session } from 'electron'; // added session here
+import {
+  BrowserWindow, Menu, app, session,
+} from 'electron'; // added session here
 
 const dev: boolean = process.env.NODE_ENV === 'development';
 const os = require('os');
@@ -11,7 +13,6 @@ const MainMenu = require('./mainMenu');
 // requiring channels file to initialize event listeners
 require('./channels');
 
-
 fixPath();
 // Keep a global reference of the window objects, if you don't, the window will be closed automatically when the JavaScript object is garbage collected.
 let mainWindow: BrowserWindow | null;
@@ -19,7 +20,7 @@ let mainWindow: BrowserWindow | null;
 // for react dev tools to work with electron
 // download react devtools and save them on desktop in folder named ReactDevTools
 // devtools: https://github.com/facebook/react/issues/25843
-// https://github.com/mondaychen/react/raw/017f120369d80a21c0e122106bd7ca1faa48b8ee/packages/react-devtools-extensions/ReactDevTools.zip 
+// https://github.com/mondaychen/react/raw/017f120369d80a21c0e122106bd7ca1faa48b8ee/packages/react-devtools-extensions/ReactDevTools.zip
 // ******************** Comment out when done ******************** //
 // const reactDevToolsPath = path.join(os.homedir(), '/Desktop/ReactDevTools');
 // app.whenReady().then(async () => {
@@ -34,8 +35,6 @@ process.on('uncaughtException', (error) => {
   // Hiding the error on the terminal as well
   console.error('Uncaught Exception:', error);
 });
-
-
 
 function createWindow() {
   mainWindow = new BrowserWindow({

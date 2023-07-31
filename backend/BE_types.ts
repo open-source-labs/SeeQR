@@ -49,7 +49,7 @@ export enum DBType {
   MySQL = 'mysql',
   RDSPostgres = 'rds-pg',
   RDSMySQL = 'rds-mysql',
-  CloudDB = 'cloud-database', //added for cloud dbs
+  CloudDB = 'cloud-database', // added for cloud dbs
   SQLite = 'sqlite',
   directPGURI = 'directPGURI',
 }

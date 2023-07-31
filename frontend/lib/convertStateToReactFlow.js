@@ -19,6 +19,7 @@ class Table {
     this.otherTables = otherTables;
     this.database = database;
   }
+
   // the render method converts the data into the form of react flow
   render() {
     // This method gets the table position from the stored file
@@ -30,10 +31,10 @@ class Table {
         // refactored code. parse json file, look for current db in saved file, look for current table inside db. return undefined if db or table doesn't exist
         const parsedData = JSON.parse(fs.readFileSync(location, 'utf8'));
         const foundCurrentDB = parsedData.find(
-          (db) => db.db_name === this.database
+          (db) => db.db_name === this.database,
         );
         const foundCurrentTable = foundCurrentDB?.db_tables.find(
-          (table) => table.table_name === this.name
+          (table) => table.table_name === this.name,
         );
         // return current table's saved position coordinates else return passed in coordinates if could not find saved coordinates in json
         return foundCurrentTable
@@ -65,8 +66,7 @@ class Table {
     this.columns.forEach((column) => {
       // check if column exists in the nodes array so duplicate nodes arent created in case there are duplicate columns. nums variable on line 63 starts at 0 and upon first incrementation on line 72 increases nnuber to 0 for the first node positioning on line 79
       const found = nodes.find(
-        (colEl) =>
-          colEl.id === `table-${this.name}_column-${column.column_name}`
+        (colEl) => colEl.id === `table-${this.name}_column-${column.column_name}`,
       );
       if (!found) {
         num += 1;
@@ -138,14 +138,12 @@ const convertStateToReactFlow = {
       const copyOfTable = JSON.parse(JSON.stringify(tables[i]));
       // create a list of other tables to pass into the Table constructor
       const otherTableList = localTableList.filter(
-        (localTable) => localTable.table_name !== tables[i].table_name
+        (localTable) => localTable.table_name !== tables[i].table_name,
       );
       // if current table has more columns than any other in its row, set columnGap to new max number of columns * 74(px)
       // filter for duplicate column names -- one imported test db was creating a new column for each constraint and this is a bandaid fix
       const columnsGapSet = new Set();
-      tables[i].columns.forEach((column) =>
-        columnsGapSet.add(column.column_name)
-      );
+      tables[i].columns.forEach((column) => columnsGapSet.add(column.column_name));
       columnGap = Math.max(columnsGapSet.size * 74, columnGap);
       // calculate a default rowLength based on sqrt of number of tables
       const rowLength = Math.floor(Math.sqrt(tables.length));
@@ -166,7 +164,7 @@ const convertStateToReactFlow = {
         schema.tableList[i].table_name,
         tableCoordinates,
         otherTableList,
-        schema.database
+        schema.database,
       );
       // assign the evaluated result of rendering the table into tablesNodesEdges
       const tableNodesAndEdges = table.render();
