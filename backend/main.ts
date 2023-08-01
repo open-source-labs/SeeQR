@@ -1,20 +1,20 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import {
-  BrowserWindow, Menu, app, session,
-} from 'electron'; // added session here
+import { app, BrowserWindow, Menu, session } from 'electron'; // added session here
+import fixPath from 'fix-path';
+import * as os from 'os';
+import * as path from 'path';
+import * as url from 'url';
 
 const dev: boolean = process.env.NODE_ENV === 'development';
-const os = require('os');
-const path = require('path');
-const url = require('url');
-const fixPath = require('fix-path');
+
 const MainMenu = require('./mainMenu');
 
 // requiring channels file to initialize event listeners
 require('./channels');
 
 fixPath();
-// Keep a global reference of the window objects, if you don't, the window will be closed automatically when the JavaScript object is garbage collected.
+// Keep a global reference of the window objects, if you don't,
+// the window will be closed automatically when the JavaScript object is garbage collected.
 let mainWindow: BrowserWindow | null;
 
 // for react dev tools to work with electron
@@ -86,7 +86,8 @@ app.on('ready', createWindow);
 
 // Quit when all windows are closed for Windows and Linux
 app.on('window-all-closed', () => {
-  // On macOS it is common for applications to stay active on their menu bar when the use closes the window
+  // On macOS it is common for applications to stay active on their menu bar
+  // when the use closes the window
   if (process.platform !== 'darwin') {
     app.quit();
   } else {
@@ -95,7 +96,8 @@ app.on('window-all-closed', () => {
 });
 
 app.on('activate', () => {
-  // On macOS it's common to re-create a window in the app when the dock icon is clicked and there are no other windows open.
+  // On macOS it's common to re-create a window in the app when the dock
+  // icon is clicked and there are no other windows open.
   if (mainWindow === null) {
     createWindow();
   }
