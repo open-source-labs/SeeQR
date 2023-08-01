@@ -13,7 +13,6 @@ const db = require('../models');
 /*     subsequently concatenated into the INSERT query generated   */
 /*     in channels.ts to generate the dummy records for the table  */
 
-
 // *************************************************** Helper Functions *************************************************** //
 
 // helper function to generate random numbers that will ultimately represent a random date
@@ -21,16 +20,15 @@ const getRandomInt = (min: number, max: number) => {
   const minInt = Math.ceil(min);
   const maxInt = Math.floor(max);
   // The maximum is exclusive and the minimum is inclusive
-  return Math.floor(Math.random() * (maxInt - minInt) + minInt); 
+  return Math.floor(Math.random() * (maxInt - minInt) + minInt);
 };
-
 
 // helper function to generate random data based on a given column's data type
 const generateDataByType = (columnObj: ColumnObj): string | number => {
   let length;
   // faker.js method to generate data by type
   // console.log('columnObj_datatype: ', columnObj.data_type)
-  
+
   switch (columnObj.data_type) {
     case 'smallint':
       return faker.random.number({ min: -32768, max: 32767 });
@@ -50,11 +48,11 @@ const generateDataByType = (columnObj: ColumnObj): string | number => {
       return '\''.concat(faker.random.alphaNumeric(length)).concat('\'');
     case 'varchar':
       // defaulting length to 3 because faker.lorem defaults to a length of 3 if no length is specified
-  
+
       length = columnObj.character_maximum_length && columnObj.character_maximum_length > 3
         ? Math.floor(Math.random() * columnObj.character_maximum_length)
         : 3;
-      return '\''.concat(faker.random.alphaNumeric(length)).concat('\'');  
+      return '\''.concat(faker.random.alphaNumeric(length)).concat('\'');
     case 'int':
       return faker.random.number({ min: -2147483648, max: 2147483647 });
     case 'date': {
@@ -82,7 +80,7 @@ type GenerateDummyData = (tableInfo: ColumnObj[], numRows: number) => Promise<Du
 const generateDummyData: GenerateDummyData = async (tableInfo: ColumnObj[], numRows: number) => {
   // assuming primary key is serial, get all the column names except for the column with the primary key
   const columnNames: Array<string> = [];
-  for(let i = 0; i < tableInfo.length; i++) {
+  for (let i = 0; i < tableInfo.length; i++) {
     columnNames.push(tableInfo[i].column_name);
   }
 
@@ -94,31 +92,29 @@ const generateDummyData: GenerateDummyData = async (tableInfo: ColumnObj[], numR
     // at each row, check the columns of the table and generate dummy data accordingly
     for (let j = 0; j < tableInfo.length; j += 1) {
       // if column has no foreign key constraint, then generate dummy data based on data type
-      if (tableInfo[j].constraint_type !== 'FOREIGN KEY'){ 
+      if (tableInfo[j].constraint_type !== 'FOREIGN KEY') {
         // && tableInfo[j].constraint_type !== 'PRIMARY KEY'
-        row.push(generateDataByType(tableInfo[j])) 
+        row.push(generateDataByType(tableInfo[j]));
       }
-      
-      // if there is a foreign key constraint, grab random key from foreign table 
-      else if (tableInfo[j].constraint_type === 'FOREIGN KEY') {
 
-          const foreignColumn = tableInfo[j].foreign_column;
-          const foreignTable = tableInfo[j].foreign_table;
-          const getForeignKeyQuery = `
+      // if there is a foreign key constraint, grab random key from foreign table
+      else if (tableInfo[j].constraint_type === 'FOREIGN KEY') {
+        const foreignColumn = tableInfo[j].foreign_column;
+        const foreignTable = tableInfo[j].foreign_table;
+        const getForeignKeyQuery = `
             SELECT ${foreignColumn}
             FROM ${foreignTable} TABLESAMPLE BERNOULLI(100)
             LIMIT 1
           `;
-          const foreignKey = await db.query(getForeignKeyQuery);
-          const chosenPrimaryValue = foreignKey.rows[0][Object.keys(foreignKey.rows[0])[0]]
-          if (foreignKey.rows.length) {
-            if (typeof chosenPrimaryValue === 'string') row.push(`'${chosenPrimaryValue}'`);
-            else row.push(chosenPrimaryValue);
-          }
-          else{
-            logger('There was an error while retrieving a valid foreign key while generating dummy data.', LogType.ERROR);
-            throw new Error('There was an error while retrieving a valid foreign key.');
-          }
+        const foreignKey = await db.query(getForeignKeyQuery);
+        const chosenPrimaryValue = foreignKey.rows[0][Object.keys(foreignKey.rows[0])[0]];
+        if (foreignKey.rows.length) {
+          if (typeof chosenPrimaryValue === 'string') row.push(`'${chosenPrimaryValue}'`);
+          else row.push(chosenPrimaryValue);
+        } else {
+          logger('There was an error while retrieving a valid foreign key while generating dummy data.', LogType.ERROR);
+          throw new Error('There was an error while retrieving a valid foreign key.');
+        }
       }
     }
     dummyRecords.push(row);

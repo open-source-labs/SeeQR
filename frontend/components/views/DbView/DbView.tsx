@@ -26,8 +26,9 @@ const StyledDummyButton = styled(Button)`
   right: ${sidebarShowButtonSize};
 `;
 
-const DbView = ({ selectedDb, show, setERView, ERView, curDBType, DBInfo, dbTables, selectedTable, setSelectedTable}: DbViewProps) => {
-
+const DbView = ({
+  selectedDb, show, setERView, ERView, curDBType, DBInfo, dbTables, selectedTable, setSelectedTable,
+}: DbViewProps) => {
   const [open, setOpen] = useState(false);
 
   const handleClickOpen = () => {

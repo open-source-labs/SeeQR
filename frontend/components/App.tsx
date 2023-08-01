@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import '../lib/style.css'
+import '../lib/style.css';
 import styled from 'styled-components';
 import { ThemeProvider, Theme, StyledEngineProvider } from '@mui/material/';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -36,7 +36,6 @@ import CreateDBDialog from './Dialog/CreateDBDialog';
 import ConfigView from './Dialog/ConfigView';
 import ThreeDView from './views/ThreeDView/ThreeDView';
 
-
 declare module '@mui/material/styles/' {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
   interface DefaultTheme extends Theme { }
@@ -69,11 +68,10 @@ const requestDbListOnce = once(() => ipcRenderer.send('return-db-list'));
 const App = () => {
   const [queries, setQueries] = useState<AppState['queries']>({});
   const [comparedQueries, setComparedQueries] = useState<AppState['queries']>(
-    {}
+    {},
   );
   const [workingQuery, setWorkingQuery] = useState<AppState['workingQuery']>();
-  const [selectedView, setSelectedView] =
-    useState<AppState['selectedView']>('dbView');
+  const [selectedView, setSelectedView] = useState<AppState['selectedView']>('dbView');
 
   const [selectedDb, setSelectedDb] = useState<AppState['selectedDb']>('');
   const [sidebarIsHidden, setSidebarHidden] = useState(false);

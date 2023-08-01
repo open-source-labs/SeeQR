@@ -16,13 +16,13 @@ const dagreToFlow = (
   totals: Totals,
   thresholds: Thresholds,
   nodeType: string,
-  edgeType: string
+  edgeType: string,
 ) => {
   const nodes = graphElements.nodes.map((node) => ({
     id: node.id,
     // NOTE: BREAKS IF  CIRCULAR STRUCTURES ARE PASSED IN
     data: { plan: node.nodeData, totals, thresholds },
-    position: { x: node.x , y: node.y },
+    position: { x: node.x, y: node.y },
     type: nodeType,
   }));
 
@@ -42,7 +42,7 @@ const dagreToFlow = (
 const traverse = (
   root: PlanNode,
   idGenerator: () => string,
-  cb: (node: SizedNode) => void
+  cb: (node: SizedNode) => void,
 ) => {
   const node: SizedPlanNode = {
     ...root,
@@ -89,7 +89,7 @@ const buildFlowGraph = (
   explain: ExplainJson,
   thresholds: Thresholds,
   nodeComponent: string,
-  edgeType: string
+  edgeType: string,
 ) => {
   const sizedNodes = getSizedNodes(explain.Plan);
 
@@ -103,7 +103,7 @@ const buildFlowGraph = (
     totals,
     thresholds,
     nodeComponent,
-    edgeType
+    edgeType,
   );
   return result;
 };

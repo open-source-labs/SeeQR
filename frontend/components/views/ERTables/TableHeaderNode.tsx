@@ -19,10 +19,12 @@ type TableHeaderProps = {
 };
 
 function TableHeader({ data }: TableHeaderProps) {
-  const { table_name, schemaStateCopy, setSchemaState, backendObj } = data;
+  const {
+    table_name, schemaStateCopy, setSchemaState, backendObj,
+  } = data;
   // find table we are editing in schemaStateCopy to use throughout all of our TableHeader functions
   const currentTable = schemaStateCopy.tableList.find(
-    (table) => table.table_name === table_name
+    (table) => table.table_name === table_name,
   );
   // This function handles the add column button on the table
   const handleAddColumn = (): void => {
@@ -75,7 +77,7 @@ function TableHeader({ data }: TableHeaderProps) {
     backendObj.current.updates.dropTables.push(dropTablesObj);
     // update frontend
     schemaStateCopy.tableList = schemaStateCopy.tableList.filter(
-      (table) => table.table_name !== table_name
+      (table) => table.table_name !== table_name,
     );
     // set the state with the modified copy
     setSchemaState(schemaStateCopy);
@@ -84,14 +86,14 @@ function TableHeader({ data }: TableHeaderProps) {
   const warnUser = (): void => {
     sendFeedback({
       type: 'error',
-      message: `WARNING: Changing table name will only rename constraints in fk_tableNameColumnName format. Use at your own discretion.`,
+      message: 'WARNING: Changing table name will only rename constraints in fk_tableNameColumnName format. Use at your own discretion.',
     });
   };
   // This function updates the table name when the user hits enter on the submit form
   const handleChangeTableName = (e): void => {
     if (e.key === 'Enter') {
       const tableInputField = document.getElementById(
-        `table-name-form-${data.table_name}`
+        `table-name-form-${data.table_name}`,
       ) as HTMLInputElement;
 
       // update backend
@@ -161,7 +163,7 @@ function TableHeader({ data }: TableHeaderProps) {
         />
       </Tooltip>
       <Tooltip title="Add Column">
-        <IconButton onClick={handleAddColumn} className='add-column' size="large">Add Column</IconButton>
+        <IconButton onClick={handleAddColumn} className="add-column" size="large">Add Column</IconButton>
       </Tooltip>
       <Tooltip title="Delete Table">
         <IconButton onClick={handleDeleteTable} size="large">

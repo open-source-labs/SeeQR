@@ -10,9 +10,9 @@ interface QueryTopSummaryProps {
   totalTime: string | undefined;
 }
 
-const QueryTopSummary = ({ rows, totalTime }: QueryTopSummaryProps) => { 
-  if (!rows || !totalTime) return null
-  return <Container>{`${rows} rows - ${totalTime}`}</Container>
- };
+const QueryTopSummary = ({ rows, totalTime }: QueryTopSummaryProps) => {
+  if (!rows || !totalTime) return null;
+  return <Container>{`${rows} rows - ${totalTime}`}</Container>;
+};
 
 export default QueryTopSummary;

@@ -30,14 +30,13 @@ const DummyDataModal = ({
   onClose,
   dbName,
   tableName,
-  curDBType
+  curDBType,
 }: DummyDataModalProps) => {
   const [rowNum, setRowNum] = useState(0);
   const [isError, setIsError] = useState(false);
   const [isEmpty, setIsEmpty] = useState(true);
 
   // console.log('curDBType:', curDBType);
-
 
   const handleClose = () => {
     setIsError(false);
@@ -84,11 +83,12 @@ const DummyDataModal = ({
   // Event handler to send rows to backend
   const handleClick = () => {
     // Check if dbName is given and not undefined
-    if (!dbName || !tableName)
+    if (!dbName || !tableName) {
       return sendFeedback({
         type: 'error',
         message: 'Failed to generate dummy data',
       });
+    }
 
     const payload: DummyPayload = {
       dbName,
@@ -97,19 +97,17 @@ const DummyDataModal = ({
     };
 
     ipcRenderer
-    .invoke('generate-dummy-data', payload, curDBType)
-    .catch(() =>
-    sendFeedback({
-      type: 'error',
-      message: 'Failed to generate dummy data',
-    })
-    )
-    .catch((err: object) => {
+      .invoke('generate-dummy-data', payload, curDBType)
+      .catch(() => sendFeedback({
+        type: 'error',
+        message: 'Failed to generate dummy data',
+      }))
+      .catch((err: object) => {
       // console.log(err);
-    })
-    .finally(handleClose);
+      })
+      .finally(handleClose);
   };
-  
+
   return (
     <div>
       <Dialog

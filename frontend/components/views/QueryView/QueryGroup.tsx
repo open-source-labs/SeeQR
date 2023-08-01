@@ -16,5 +16,5 @@ const QueryGroup = ({ group, onChange }: QueryGroupProps) => (
     />
   </Box>
 );
- 
+
 export default QueryGroup;

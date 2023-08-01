@@ -7,17 +7,14 @@ const StyledLinearProg = styled(LinearProgress)`
   /* Material Ui Drawer component used by sidebar has z-index: 1200 */
   z-index: 1300;
   height: 5px;
-  visibility: ${({ $show }: { $show: boolean }) =>
-    $show ? 'visible' : 'hidden'};
+  visibility: ${({ $show }: { $show: boolean }) => ($show ? 'visible' : 'hidden')};
 `;
-
 
 let delayTimer: NodeJS.Timeout;
 const delay = 500;
 
 const Spinner = () => {
   const [show, setShow] = useState(false);
-
 
   useEffect(() => {
     const showProgress = () => {

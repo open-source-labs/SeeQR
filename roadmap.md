@@ -21,7 +21,9 @@
 
         - found in backend/helperFunctions.ts
 
-    - Fix importing MySQL databases (currently creating an extra hollow copy)
+    - Fix importing MySQL databases (currently creating an extra hollow copy or not working at all)
+      
+        - Currently importing MySQL databases will work when only MySQL server is up on MAC OS.
 
     - add ability to have multiple sqlite databases
 
@@ -36,22 +38,7 @@
 
     - add colors back to special words in query view
 
-    - work on explain function for mysql and sqlite, may have different metadata from existing postgres implementation
-
-
-- 3D visualization: 
-
-    - Change the way the 3D page is rendered, to allow switching directly between different databases through the sidebar (currently you need to leave the 3D page before switching to a new database).
-
-    - Make the camera auto rotate when initially opening the 3D page
-
-    - Better cache/memory management to speed up animations/rendering
-
-    - Make the green table in the 3D view always face the user's camera
-
-    - Implement ER table functions
-
-    - Add VR functionality?
+    - work on explain function for mysql and sqlite, may have different metadata from existing postgres implementation, display whatever you can get 
 
 
 - 2D visualization / ER tables: 
@@ -79,3 +66,18 @@
     - rds my sql cloud queries wont let you create multiple tables at once. as in you have to create one table, then make another query to make your second table.
 
     - when you create a new cloud pg database, it seems to have all the other databases tables aswell.
+ 
+
+- 3D visualization: 
+
+    - Change the way the 3D page is rendered, to allow switching directly between different databases through the sidebar (currently you need to leave the 3D page before switching to a new database).
+
+    - Make the camera auto rotate when initially opening the 3D page
+
+    - Better cache/memory management to speed up animations/rendering
+
+    - Make the green table in the 3D view always face the user's camera
+
+    - Implement ER table functions
+
+    - Add VR functionality?

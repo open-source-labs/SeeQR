@@ -15,8 +15,7 @@ interface ViewButtonProps {
 }
 
 const ViewButton = styled(Button)`
-  background: ${({ $isSelected }: ViewButtonProps) =>
-    $isSelected ? textColor : selectedColor};
+  background: ${({ $isSelected }: ViewButtonProps) => ($isSelected ? textColor : selectedColor)};
 `;
 
 type BottomButtonProps = {

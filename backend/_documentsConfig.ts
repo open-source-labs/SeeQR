@@ -8,14 +8,18 @@ import { DBType, DocConfigFile, LogType } from './BE_types';
 import logger from './Logging/masterlog';
 
 const home = `${os.homedir()}/Documents/SeeQR`;
-const configFile = `config.json`;
+const configFile = 'config.json';
 const configPath = `${home}/${configFile}`;
 console.log(configFile, 'this is configFILE!!!');
 const defaultFile: DocConfigFile = {
   mysql: { user: '', password: '', port: 3306 },
   pg: { user: '', password: '', port: 5432 },
-  rds_mysql: { user: '', password: '', port: 3306, host: '' },
-  rds_pg: { user: '', password: '', port: 5432, host: '' },
+  rds_mysql: {
+    user: '', password: '', port: 3306, host: '',
+  },
+  rds_pg: {
+    user: '', password: '', port: 5432, host: '',
+  },
   sqlite: { path: '' },
   directPGURI: { uri: '' },
 };
@@ -53,8 +57,8 @@ const checkConfigFile = function (currConfig: DocConfigFile): DocConfigFile {
   } catch (err) {
     console.log(err);
     logger(
-      `Error caught checking config file. Resetting config to default.`,
-      LogType.WARNING
+      'Error caught checking config file. Resetting config to default.',
+      LogType.WARNING,
     );
     return writeConfigDefault();
   }
@@ -77,14 +81,14 @@ const checkConfigFile = function (currConfig: DocConfigFile): DocConfigFile {
 function readConfigFile(): DocConfigFile {
   try {
     const config = JSON.parse(
-      fs.readFileSync(configPath, 'utf-8')
+      fs.readFileSync(configPath, 'utf-8'),
     ) as DocConfigFile;
     return checkConfigFile(config);
   } catch (err: any) {
     console.log(err);
     logger(
-      `Error caught checking config file. Resetting config to default.`,
-      LogType.WARNING
+      'Error caught checking config file. Resetting config to default.',
+      LogType.WARNING,
     );
     return writeConfigDefault();
   }
@@ -115,7 +119,7 @@ const docConfig: DocConfig = {
     } else {
       logger(
         `Could not find documents directory. Creating at: ${home}`,
-        LogType.WARNING
+        LogType.WARNING,
       );
       fs.mkdirSync(home);
     }

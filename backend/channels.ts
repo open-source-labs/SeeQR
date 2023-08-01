@@ -6,7 +6,14 @@ import fs from 'fs';
 import os from 'os';
 import helperFunctions from './helperFunctions';
 import generateDummyData from './DummyD/dummyDataMain';
-import { ColumnObj, DBList, DummyRecords, DBType, LogType, QueryPayload } from './BE_types';
+import {
+  ColumnObj,
+  DBList,
+  DummyRecords,
+  DBType,
+  LogType,
+  QueryPayload,
+} from './BE_types';
 import backendObjToQuery from './ertable-functions';
 import logger from './Logging/masterlog';
 
@@ -40,16 +47,14 @@ interface Feedback {
 ipcMain.handle('set-config', async (event, configObj) => {
   docConfig.saveConfig(configObj); // saves login info from frontend into config file
 
-
   db.setBaseConnections() // tries to log in using config data
     .then(({ dbsInputted, configExists }) => {
-
       // error handling for trying and failing to log in to databases
       let errorStr = '';
       const dbs = Object.keys(dbsInputted);
-      dbs.forEach(e => {
+      dbs.forEach((e) => {
         if (!dbsInputted[e] && configExists[e]) errorStr += ` ${e}`;
-      })
+      });
       if (errorStr.length) {
         const err = `Unsuccessful login(s) for ${errorStr.toUpperCase()} database(s)`;
         const feedback: Feedback = {
@@ -87,7 +92,8 @@ ipcMain.handle('set-config', async (event, configObj) => {
  * Handles get-config request from frontend
  * sends configuration from config file
  */
-ipcMain.handle('get-config', async (event) => { // asdf is configObj used?
+ipcMain.handle('get-config', async (event) => {
+  // asdf is configObj used?
   event.sender.send('get-config', docConfig.getFullConfig());
 });
 
@@ -141,7 +147,6 @@ ipcMain.on('return-db-list', (event) => {
     });
 });
 
-
 /**
  * Handles select-db request from frontend
  * connect to selected db, then get object containing a list of all databases and a list of tables for the selected database, and sends to frontend
@@ -165,7 +170,6 @@ ipcMain.handle(
   }
 );
 
-
 /**
  * Handler for drop-db requests from frontend
  * Drops the passed in DB and returns updated DB List
@@ -184,7 +188,7 @@ ipcMain.handle(
 
     try {
       // if deleting currently connected db, disconnect from db
-      // end pool connection 
+      // end pool connection
       await db.disconnectToDrop(dbType);
       // reconnect to database server, but not the db that will be dropped
       await db.connectToDB('', dbType);
@@ -261,7 +265,7 @@ ipcMain.handle(
       try {
         await db.query(createDBFunc(newName, dbType), null, dbType);
       } catch (e) {
-        throw new Error(`Failed to create Database`);
+        throw new Error('Failed to create Database');
       }
 
       // run temp sql file on new database
@@ -346,7 +350,6 @@ ipcMain.handle(
   }
 );
 
-
 /*
 look at this to check the explain might not support query error
 */
@@ -375,12 +378,15 @@ ipcMain.handle(
     let averageSampleTime: number = 0;
 
     function parseExplainExplanation(explain) {
-      const regex = /actual time=(\d+\.\d+)\.\.(\d+\.\d+) rows=\d+ loops=(\d+)/g;
+      const regex =
+        /actual time=(\d+\.\d+)\.\.(\d+\.\d+) rows=\d+ loops=(\d+)/g;
       const matches: any[] = Array.from(explain.matchAll(regex));
       let result: number = 0;
 
       for (let i = 0; i < matches.length; i += 1) {
-        result += (parseFloat(matches[i][2]) - parseFloat(matches[i][1])) * parseFloat(matches[i][3]);
+        result +=
+          (parseFloat(matches[i][2]) - parseFloat(matches[i][1])) *
+          parseFloat(matches[i][3]);
       }
       return result;
     }
@@ -391,7 +397,7 @@ ipcMain.handle(
 
       if (selectedDb !== targetDb) await db.connectToDB(targetDb, dbType);
 
-      // Run Explain            
+      // Run Explain
       let explainResults;
       try {
         // console.log('start of try');
@@ -409,17 +415,20 @@ ipcMain.handle(
             // console.log('query plan including sample time data', results[1].rows[0]["QUERY PLAN"][0]);
 
             explainResults = results[1].rows;
-            const eachSampleTime: any = results[1].rows[0]["QUERY PLAN"][0]['Planning Time'] + results[1].rows[0]["QUERY PLAN"][0]['Execution Time'];
+            const eachSampleTime: any =
+              results[1].rows[0]['QUERY PLAN'][0]['Planning Time'] +
+              results[1].rows[0]['QUERY PLAN'][0]['Execution Time'];
             arr.push(eachSampleTime);
             totalSampleTime += eachSampleTime;
-
           } else if (dbType === DBType.MySQL) {
             const results = await db.query(
               explainQuery(sqlString, dbType),
               null,
               dbType
             );
-            const eachSampleTime: any = parseExplainExplanation(results[0][0].EXPLAIN);
+            const eachSampleTime: any = parseExplainExplanation(
+              results[0][0].EXPLAIN
+            );
             arr.push(eachSampleTime);
             totalSampleTime += eachSampleTime;
 
@@ -450,7 +459,7 @@ ipcMain.handle(
                 'Local Dirtied Blocks': 0,
                 'Local Written Blocks': 0,
                 'Temp Read Blocks': 0,
-                'Temp Written Blocks': 0
+                'Temp Written Blocks': 0,
               },
               Planning: {
                 'Shared Hit Blocks': 64,
@@ -462,17 +471,16 @@ ipcMain.handle(
                 'Local Dirtied Blocks': 0,
                 'Local Written Blocks': 0,
                 'Temp Read Blocks': 0,
-                'Temp Written Blocks': 0
+                'Temp Written Blocks': 0,
               },
               'Planning Time': 9999,
               Triggers: [],
-              'Execution Time': 9999
+              'Execution Time': 9999,
             };
-
           } else if (dbType === DBType.SQLite) {
             const sampleTime = await db.sampler(sqlString);
             arr.push(sampleTime);
-            totalSampleTime += sampleTime
+            totalSampleTime += sampleTime;
 
             // hard coded explainResults just to get it working for now
             explainResults = {
@@ -501,7 +509,7 @@ ipcMain.handle(
                 'Local Dirtied Blocks': 0,
                 'Local Written Blocks': 0,
                 'Temp Read Blocks': 0,
-                'Temp Written Blocks': 0
+                'Temp Written Blocks': 0,
               },
               Planning: {
                 'Shared Hit Blocks': 64,
@@ -513,21 +521,23 @@ ipcMain.handle(
                 'Local Dirtied Blocks': 0,
                 'Local Written Blocks': 0,
                 'Temp Read Blocks': 0,
-                'Temp Written Blocks': 0
+                'Temp Written Blocks': 0,
               },
               'Planning Time': 9999,
               Triggers: [],
-              'Execution Time': 9999
+              'Execution Time': 9999,
             };
           }
         }
         // get 5 decimal points for sample time
         minimumSampleTime = Math.round(Math.min(...arr) * 10 ** 5) / 10 ** 5;
         maximumSampleTime = Math.round(Math.max(...arr) * 10 ** 5) / 10 ** 5;
-        averageSampleTime = Math.round((totalSampleTime / numberOfSample) * 10 ** 5) / 10 ** 5;
+        averageSampleTime =
+          Math.round((totalSampleTime / numberOfSample) * 10 ** 5) / 10 ** 5;
         totalSampleTime = Math.round(totalSampleTime * 10 ** 5) / 10 ** 5;
       } catch (e) {
-        error = `Failed to get Execution Plan. EXPLAIN might not support this query.`;
+        error =
+          'Failed to get Execution Plan. EXPLAIN might not support this query.';
       }
 
       // Run Query
