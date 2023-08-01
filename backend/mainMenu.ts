@@ -7,7 +7,8 @@
  */
 
 // import shell so a new browser window can open for external links
-const { shell } = require('electron');
+// const { shell } = require('electron');
+import { shell } from 'electron';
 
 // darwin is the process platform for Macs
 const isMac = process.platform === 'darwin';
@@ -16,21 +17,21 @@ const arr = [
   // App menu
   ...(isMac
     ? [
-      {
-        label: 'Electron',
-        submenu: [
-          { role: 'about' },
-          { type: 'separator' },
-          { role: 'services' },
-          { type: 'separator' },
-          { role: 'hide' },
-          { role: 'hideothers' },
-          { role: 'unhide' },
-          { type: 'separator' },
-          { role: 'quit' },
-        ],
-      },
-    ]
+        {
+          label: 'Electron',
+          submenu: [
+            { role: 'about' },
+            { type: 'separator' },
+            { role: 'services' },
+            { type: 'separator' },
+            { role: 'hide' },
+            { role: 'hideothers' },
+            { role: 'unhide' },
+            { type: 'separator' },
+            { role: 'quit' },
+          ],
+        },
+      ]
     : []),
   // File menu
   {
@@ -49,14 +50,14 @@ const arr = [
       { role: 'paste' },
       ...(isMac
         ? [
-          { role: 'delete' },
-          { role: 'selectAll' },
-          { type: 'separator' },
-          {
-            label: 'Speech',
-            submenu: [{ role: 'startspeaking' }, { role: 'stopspeaking' }],
-          },
-        ]
+            { role: 'delete' },
+            { role: 'selectAll' },
+            { type: 'separator' },
+            {
+              label: 'Speech',
+              submenu: [{ role: 'startspeaking' }, { role: 'stopspeaking' }],
+            },
+          ]
         : [{ role: 'delete' }, { type: 'separator' }, { role: 'selectAll' }]),
     ],
   },
@@ -83,11 +84,11 @@ const arr = [
       { role: 'zoom' },
       ...(isMac
         ? [
-          { type: 'separator' },
-          { role: 'front' },
-          { type: 'separator' },
-          { role: 'window' },
-        ]
+            { type: 'separator' },
+            { role: 'front' },
+            { type: 'separator' },
+            { role: 'window' },
+          ]
         : [{ role: 'close' }]),
     ],
   },

@@ -29,6 +29,7 @@
   },
   "plugins": ["react", "react-hooks", "@typescript-eslint"],
   "rules": {
+    "indent": ["error", 2, { "offsetTernaryExpressions": true }],
     "react/jsx-filename-extension": [1, { "extensions": [".jsx", ".tsx"] }],
 
     "no-use-before-define": "off",
@@ -39,16 +40,16 @@
       "ignorePackages",
       { "js": "never", "jsx": "never", "ts": "never", "tsx": "never" }
     ],
-    
+
     "jsx-a11y/label-has-associated-control": "off",
-    
+
     // prevent wrong warning with typescript overloads
     "no-unused-vars": "off",
     "@typescript-eslint/no-unused-vars": ["error"],
-    
-    "no-dupe-class-members": "off", 
+
+    "no-dupe-class-members": "off",
     "@typescript-eslint/no-dupe-class-members": ["error"],
-    
+
     "lines-between-class-members": "off",
     "@typescript-eslint/lines-between-class-members": [
       "error",
@@ -56,7 +57,7 @@
       { "exceptAfterSingleLine": true }
     ],
 
-    // "react/jsx-curly-newline": "off", 
+    // "react/jsx-curly-newline": "off",
 
     // turned off because typescript, functional components and default props
     // don't seem to be good friends. Decided to manually handle defaults for
@@ -66,9 +67,9 @@
 
     "camelcase": "off"
 
-    // "import/no-extraneous-dependencies": ["error", { "devDependencies": true }], **trying to resolve the electron issue 
+    // "import/no-extraneous-dependencies": ["error", { "devDependencies": true }], **trying to resolve the electron issue
   },
-  // "settings": "import/core-modules: [ electron ]",  **trying to resolve the electron issue 
+  // "settings": "import/core-modules: [ electron ]",  **trying to resolve the electron issue
   "settings": {
     "react": {
       "version": "detect"
