@@ -21,7 +21,7 @@ export const once = (func: Function) => {
 export const readingTime = (str: string) => {
   const averageWordsPerMinute = 200;
   const totalWords = str.split(' ').length;
-  const readTime = totalWords * ms('1m') / averageWordsPerMinute;
+  const readTime = (totalWords * ms('1m')) / averageWordsPerMinute;
   return Math.max(ms('3s'), readTime);
 };
 
@@ -30,6 +30,8 @@ export const readingTime = (str: string) => {
  * Used to send messages to FeedbackModal.tsx
  */
 export const sendFeedback = (feedback: Feedback) => {
-  const rendererId = window.require('electron').remote.getCurrentWebContents().id;
+  const rendererId = window
+    .require('electron')
+    .remote.getCurrentWebContents().id;
   ipcRenderer.sendTo(rendererId, 'feedback', feedback);
 };

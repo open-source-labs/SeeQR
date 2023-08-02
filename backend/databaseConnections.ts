@@ -1,6 +1,6 @@
-import pools from './poolVariables';
-import logger from './Logging/masterlog';
 import { LogType } from './BE_types';
+import logger from './Logging/masterlog';
+import pools from './poolVariables';
 
 const { Pool } = require('pg');
 const mysql = require('mysql2/promise');
@@ -14,6 +14,8 @@ export default {
    * @param db Name of target database that the login has access to. Initially empty string
    */
   async PG_DBConnect(pg_uri: string, db: string) {
+    // eslint-disable-next-line no-console
+    console.log('THIS IS THE PGURI', pg_uri);
     const newURI = `${pg_uri}${db}`;
     const newPool = new Pool({ connectionString: newURI });
     pools.pg_pool = newPool;
