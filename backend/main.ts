@@ -36,6 +36,7 @@ process.on('uncaughtException', (error) => {
   console.error('Uncaught Exception:', error);
 });
 
+// this creates the new browserWindow. Had to delete remoteprocess from webPrefences since it was deprecated. It allowed driect access to remote objects and APIs in this main process, so instead we implement ipcRenderer.invoke. WebPreferences nodeintegration and contextisolation are set respectively to ensure api's can be used throughout the entire program without contextbridging
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1800,
@@ -44,7 +45,7 @@ function createWindow() {
     minHeight: 720,
     title: 'SeeQR',
     show: false,
-    webPreferences: { nodeIntegration: true, enableRemoteModule: true },
+    webPreferences: { nodeIntegration: true, contextIsolation: false },
     icon: path.join(__dirname, '../../assets/logo/seeqr_dock.png'),
   });
 

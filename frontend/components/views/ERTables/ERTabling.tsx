@@ -1,5 +1,5 @@
 import { Button } from '@mui/material';
-import { ipcRenderer, remote } from 'electron';
+import { app, ipcRenderer } from 'electron';
 import fs from 'fs';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import ReactFlow, {
@@ -169,7 +169,10 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
       currDatabaseLayout.db_tables.push(tablePosObj);
     });
 
-    const location: string = remote.app
+    // TODO: OLD CODE
+    // const location: string = remote.app
+    // REVIEW:
+    const location: string = app
       .getPath('temp')
       .concat('/UserTableLayouts.json');
     fs.readFile(location, 'utf-8', (err, data) => {

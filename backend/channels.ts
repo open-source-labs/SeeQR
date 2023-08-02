@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 /* eslint-disable prefer-destructuring */
-import { ipcMain } from 'electron'; // IPCMain: Communicate asynchronously from the main process to renderer processes
+import { BrowserWindow, dialog, ipcMain } from 'electron'; // IPCMain: Communicate asynchronously from the main process to renderer processes
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
@@ -854,3 +854,17 @@ ipcMain.handle(
     }
   },
 );
+
+// ipc handler for when the showOpenDialog occurs currently linked to ConfigView.tsx.
+// TODO: fix the type of any of the focused window. I cheated it.
+ipcMain.handle('showOpenDialog', async (event, options) => {
+  const focusedWindow: any = BrowserWindow.fromWebContents(event.sender);
+  const result = await dialog.showOpenDialog(focusedWindow, options);
+  return result.filePaths[0];
+});
+
+ipcMain.handle('showSaveDialog', async (event, options) => {
+  const focusedWindow: any = BrowserWindow.fromWebContents(event.sender);
+  const result = await dialog.showSaveDialog(focusedWindow, options);
+  return result.filePath;
+});

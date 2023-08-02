@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { IpcRendererEvent, ipcRenderer, remote } from 'electron';
+import { ipcRenderer, IpcRendererEvent } from 'electron';
 import {
   Box,
   Tab,
@@ -32,9 +32,7 @@ interface TabPanelProps {
 }
 // Material UI TabPanel component
 function TabPanel(props: TabPanelProps) {
-  const {
-    children, value, index, ...other
-  } = props;
+  const { children, value, index, ...other } = props;
 
   return (
     <div
@@ -45,13 +43,14 @@ function TabPanel(props: TabPanelProps) {
       {...other}
     >
       {value === index && (
-        <Box sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '.25rem',
-          alignItems: 'center',
-          pt: 2,
-        }}
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '.25rem',
+            alignItems: 'center',
+            pt: 2,
+          }}
         >
           {children}
         </Box>
@@ -94,23 +93,27 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
   });
 
   // function to store user-selected file path in state
-  const designateFile = function (path, setPath) {
-    const { dialog } = remote;
-    const WIN = remote.getCurrentWindow();
-
+  // REVIEW:
+  const designateFile = async function (path, setPath) {
     const options = {
       title: 'Select SQLite File',
       defaultPath: '',
       buttonLabel: 'Select File',
-      filters: [
-        { name: 'db', extensions: ['db'] },
-      ],
+      filters: [{ name: 'db', extensions: ['db'] }],
     };
-
-    dialog.showOpenDialog(WIN, options)
-      .then((res: any) => {
-        setPath({ path: res.filePaths[0] });
+    try {
+      const selectedFilePath = await ipcRenderer.invoke(
+        'showOpenDialog',
+        options,
+      );
+      setPath({ path: selectedFilePath });
+    } catch (err) {
+      sendFeedback({
+        type: 'error',
+        message: 'Error at designate file.',
       });
+      console.log(`error at the designate file in ConfigView.tsx ${err}`);
+    }
   };
 
   // Function to make StyledTextFields and store them in inputFieldsToRender state
@@ -119,7 +122,11 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
     const arrayToRender: JSX.Element[] = [];
     if (dbString === 'sqlite') {
       arrayToRender.push(
-        <StyledButton variant="contained" color="primary" onClick={() => designateFile(dbTypeFromState, setDbTypeFromState)}>
+        <StyledButton
+          variant="contained"
+          color="primary"
+          onClick={() => designateFile(dbTypeFromState, setDbTypeFromState)}
+        >
           Set db file location
         </StyledButton>,
       );
@@ -138,10 +145,12 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
                 <InputAdornment position="end">
                   <IconButton
                     aria-label="toggle password visibility"
-                    onClick={() => setShowpass({
-                      ...showpass,
-                      [dbString]: !showpass[dbString],
-                    })}
+                    onClick={() =>
+                      setShowpass({
+                        ...showpass,
+                        [dbString]: !showpass[dbString],
+                      })
+                    }
                     size="large"
                   >
                     {showpass[dbString] ? <Visibility /> : <VisibilityOff />}
@@ -248,7 +257,11 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     // On panel change reset all passwords to hidden
     setShowpass({
-      mysql: false, pg: false, rds_mysql: false, rds_pg: false, sqlite: false,
+      mysql: false,
+      pg: false,
+      rds_mysql: false,
+      rds_pg: false,
+      sqlite: false,
     });
     // Change which tab panel is hidden/shown
     setValue(newValue);
@@ -267,7 +280,15 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
           aria-label="wrapped label basic tabs"
           className="db-login-tabs"
         >
-          {dbNames.map((db, idx) => <Tab label={db} wrapped {...a11yProps(idx)} className="db-login-tab" key={db} />)}
+          {dbNames.map((db, idx) => (
+            <Tab
+              label={db}
+              wrapped
+              {...a11yProps(idx)}
+              className="db-login-tab"
+              key={db}
+            />
+          ))}
         </Tabs>
       </Box>
       <TabPanel value={value} index={0}>
@@ -287,10 +308,18 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
       </TabPanel>
 
       <ButtonContainer>
-        <StyledButton variant="contained" color="secondary" onClick={handleClose}>
+        <StyledButton
+          variant="contained"
+          color="secondary"
+          onClick={handleClose}
+        >
           Cancel
         </StyledButton>
-        <StyledButton variant="contained" color="primary" onClick={handleSubmit}>
+        <StyledButton
+          variant="contained"
+          color="primary"
+          onClick={handleSubmit}
+        >
           Save
         </StyledButton>
       </ButtonContainer>

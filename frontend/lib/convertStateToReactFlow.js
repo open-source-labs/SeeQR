@@ -1,9 +1,9 @@
+import { app } from 'electron';
 import fs from 'fs';
-import { remote } from 'electron';
 import { MarkerType } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { greenPrimary } from '../style-variables';
 import * as types from '../constants/constants';
+import { greenPrimary } from '../style-variables';
 
 /**
  * This class creates a table instance which will get the data for
@@ -24,9 +24,7 @@ class Table {
   render() {
     // This method gets the table position from the stored file
     const getTablePosition = () => {
-      const location = remote.app
-        .getPath('temp')
-        .concat('/UserTableLayouts.json');
+      const location = app.getPath('temp').concat('/UserTableLayouts.json');
       try {
         // refactored code. parse json file, look for current db in saved file, look for current table inside db. return undefined if db or table doesn't exist
         const parsedData = JSON.parse(fs.readFileSync(location, 'utf8'));
@@ -66,7 +64,8 @@ class Table {
     this.columns.forEach((column) => {
       // check if column exists in the nodes array so duplicate nodes arent created in case there are duplicate columns. nums variable on line 63 starts at 0 and upon first incrementation on line 72 increases nnuber to 0 for the first node positioning on line 79
       const found = nodes.find(
-        (colEl) => colEl.id === `table-${this.name}_column-${column.column_name}`,
+        (colEl) =>
+          colEl.id === `table-${this.name}_column-${column.column_name}`,
       );
       if (!found) {
         num += 1;
@@ -143,7 +142,9 @@ const convertStateToReactFlow = {
       // if current table has more columns than any other in its row, set columnGap to new max number of columns * 74(px)
       // filter for duplicate column names -- one imported test db was creating a new column for each constraint and this is a bandaid fix
       const columnsGapSet = new Set();
-      tables[i].columns.forEach((column) => columnsGapSet.add(column.column_name));
+      tables[i].columns.forEach((column) =>
+        columnsGapSet.add(column.column_name),
+      );
       columnGap = Math.max(columnsGapSet.size * 74, columnGap);
       // calculate a default rowLength based on sqrt of number of tables
       const rowLength = Math.floor(Math.sqrt(tables.length));
