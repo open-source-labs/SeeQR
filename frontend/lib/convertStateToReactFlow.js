@@ -24,8 +24,8 @@ class Table {
   render() {
     // This method gets the table position from the stored file
     const getTablePosition = () => {
-      const location = app.getPath('temp').concat('/UserTableLayouts.json');
       try {
+        const location = app.getPath('temp').concat('/UserTableLayouts.json');
         // refactored code. parse json file, look for current db in saved file, look for current table inside db. return undefined if db or table doesn't exist
         const parsedData = JSON.parse(fs.readFileSync(location, 'utf8'));
         const foundCurrentDB = parsedData.find(

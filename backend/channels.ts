@@ -868,3 +868,7 @@ ipcMain.handle('showSaveDialog', async (event, options) => {
   const result = await dialog.showSaveDialog(focusedWindow, options);
   return result.filePath;
 });
+
+ipcMain.handle('feedback', async (event, options: { feedback: Feedback }) => {
+  event.sender.send('feedback', options.feedback);
+});
