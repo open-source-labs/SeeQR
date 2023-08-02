@@ -18,7 +18,7 @@ export default {
     console.log('THIS IS THE PGURI', pg_uri);
     console.log('THIS IS THE DB', db);
     // ${db} removed this from newURI
-    const newURI = `${pg_uri}`;
+    const newURI = `${pg_uri}/${db}`;
     const newPool = await new Pool({ connectionString: newURI });
     pools.pg_pool = newPool;
     // await pools.pg_pool.connect(); this is unnecessary for making queries, and causes pg error when trying to drop db

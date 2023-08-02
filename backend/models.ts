@@ -126,9 +126,11 @@ const DBFunctions: DBFunctions = {
     if (PG_Cred.user && PG_Cred.password) {
       // eslint-disable-next-line no-console
       console.log('this is PG CRED!!!!', PG_Cred);
-      this.pg_uri = `postgres://${PG_Cred.user}:${PG_Cred.password}@localhost:${PG_Cred.port}/postgres`;
+      // add to end of pg uri /postgres
+      this.pg_uri = `postgres://${PG_Cred.user}:${PG_Cred.password}@localhost:${PG_Cred.port}`;
       console.log('this is this.pgURL~!!!!', this.pg_uri);
       console.log('this is the this.cur DB!!!!~~', this.curPG_DB);
+      this.curPG_DB = 'postgres';
       try {
         configExists.pg = true;
         await connectionFunctions.PG_DBConnect(this.pg_uri, this.curPG_DB);
