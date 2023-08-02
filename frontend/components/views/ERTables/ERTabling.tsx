@@ -1,30 +1,28 @@
-import fs from 'fs';
+import { Button } from '@mui/material';
 import { ipcRenderer, remote } from 'electron';
-import React, {
-  useCallback, useEffect, useState, useRef,
-} from 'react';
+import fs from 'fs';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import ReactFlow, {
-  Controls,
   applyEdgeChanges,
   applyNodeChanges,
   Background,
-  Node,
+  Controls,
   Edge,
   MiniMap,
+  Node,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { Button } from '@mui/material';
 import styled from 'styled-components';
+import { DBType } from '../../../../backend/BE_types';
 import stateToReactFlow from '../../../lib/convertStateToReactFlow';
-import nodeTypes from './NodeTypes';
 import {
-  UpdatesObjType,
   AddTablesObjType,
-  TableHeaderNodeType,
   AppState,
   SchemaStateObjType,
+  TableHeaderNodeType,
+  UpdatesObjType,
 } from '../../../types';
-import { DBType } from '../../../../backend/BE_types';
+import nodeTypes from './NodeTypes';
 
 import * as colors from '../../../style-variables';
 
@@ -259,13 +257,11 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
         onClick={handleAddTable}
       >
         {' '}
-        Add New Table
-        {' '}
+        Add New Table{' '}
       </StyledViewButton>
       <StyledViewButton variant="contained" id="save" onClick={handleClickSave}>
         {' '}
-        Save
-        {' '}
+        Save{' '}
       </StyledViewButton>
       <ReactFlow
         nodes={nodes}

@@ -5,9 +5,9 @@ import * as os from 'os';
 import * as path from 'path';
 import * as url from 'url';
 
-const dev: boolean = process.env.NODE_ENV === 'development';
+import MainMenu from './mainMenu';
 
-const MainMenu = require('./mainMenu');
+const dev: boolean = process.env.NODE_ENV === 'development';
 
 // requiring channels file to initialize event listeners
 require('./channels');
