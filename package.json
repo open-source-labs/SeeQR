@@ -48,7 +48,7 @@
     "d3": "^7.8.5",
     "dagre": "^0.8.5",
     "debounce": "^1.2.0",
-    "electron": "^11.5.0",
+    "electron": "^25.3.2",
     "electron-packager": "^14.2.1",
     "electron-reloader": "^1.1.0",
     "electron-store": "^6.0.0",

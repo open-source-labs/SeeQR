@@ -10,7 +10,7 @@ import logger from './Logging/masterlog';
 const home = `${os.homedir()}/Documents/SeeQR`;
 const configFile = 'config.json';
 const configPath = `${home}/${configFile}`;
-console.log(configFile, 'this is configFILE!!!');
+console.log(configPath, 'this is configFILE!!!');
 const defaultFile: DocConfigFile = {
   mysql: { user: '', password: '', port: 3306 },
   pg: { user: '', password: '', port: 5432 },
@@ -36,7 +36,7 @@ const defaultFile: DocConfigFile = {
  */
 function writeConfigDefault(): DocConfigFile {
   logger('Could not find config file. Creating default', LogType.WARNING);
-  fs.writeFileSync(configPath, JSON.stringify(defaultFile));
+  fs.writeFileSync(configPath, JSON.stringify(defaultFile, null, 2));
   return defaultFile;
 }
 

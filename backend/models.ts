@@ -58,6 +58,8 @@ const DBFunctions: DBFunctions = {
   async setBaseConnections() {
     const PG_Cred = docConfig.getCredentials(DBType.Postgres);
     const MSQL_Cred = docConfig.getCredentials(DBType.MySQL);
+    // added this
+    // this.curPG_DB = docConfig.getCredentials(DBType.Postgres);
     this.curRDS_PG_DB = docConfig.getCredentials(DBType.RDSPostgres);
     this.curRDS_MSQL_DB = docConfig.getCredentials(DBType.RDSMySQL);
     this.curSQLite_DB = docConfig.getCredentials(DBType.SQLite);
@@ -121,7 +123,7 @@ const DBFunctions: DBFunctions = {
     if (PG_Cred.user && PG_Cred.password) {
       // eslint-disable-next-line no-console
       console.log('this is PG CRED!!!!', PG_Cred);
-      this.pg_uri = `postgres://${PG_Cred.user}:${PG_Cred.password}@localhost:${PG_Cred.port}/`;
+      this.pg_uri = `postgres://${PG_Cred.user}:${PG_Cred.password}@localhost:${PG_Cred.port}/postgres`;
       console.log('this is this.pgURL~!!!!', this.pg_uri);
       console.log('this is the this.cur DB!!!!~~', this.curPG_DB);
       try {
@@ -130,6 +132,8 @@ const DBFunctions: DBFunctions = {
         logger('CONNECTED TO LOCAL PG DATABASE', LogType.SUCCESS);
         this.dbsInputted.pg = true;
       } catch (error) {
+        // eslint-disable-next-line no-console
+        console.log('THIS IS THE ERRORRR', error);
         this.dbsInputted.pg = false;
         // eslint-disable-next-line no-console
         console.log(PG_Cred, 'THIS IS THE PG CRED!!!');
@@ -275,9 +279,11 @@ const DBFunctions: DBFunctions = {
    */
   async connectToDB(db, dbType) {
     // change current Db
+    // eslint-disable-next-line no-console
     console.log(db, 'THIS IS THE DB dbdbdbdbdb');
     if (dbType === DBType.Postgres) {
       this.curPG_DB = db;
+      // eslint-disable-next-line no-console
       console.log('THIS IS in CONNECTTODB--curpgdb', this.curPG_DB);
       await connectionFunctions.PG_DBConnect(this.pg_uri, db);
     } else if (dbType === DBType.MySQL) {
