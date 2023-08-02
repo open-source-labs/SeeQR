@@ -1,7 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { app, BrowserWindow, Menu, session } from 'electron'; // added session here
 import fixPath from 'fix-path';
-import * as os from 'os';
 import * as path from 'path';
 import * as url from 'url';
 
