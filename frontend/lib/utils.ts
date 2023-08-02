@@ -31,19 +31,11 @@ export const readingTime = (str: string) => {
  * Used to send messages to FeedbackModal.tsx
  */
 // REVIEW: I need to revisit this because it definitely doesn't work
-export const sendFeedback = (feedback: Feedback) => {
+export const sendFeedback = async (feedback: Feedback) => {
   // TODO: Old code
   // const rendererId = window
   //   .require('electron')
   //   .remote.getCurrentWebContents().id;
   // ipcRenderer.sendTo(rendererId, 'feedback', feedback);
-
-  const getRendererId = async () => {
-    const currentWindow = await ipcRenderer.invoke('getCurrentWindow');
-    return currentWindow.webContents.id;
-  };
-
-  getRendererId().then((rendererId) => {
-    ipcRenderer.sendTo(rendererId, 'feedback', feedback);
-  });
+  await ipcRenderer.invoke('feedback', feedback);
 };
