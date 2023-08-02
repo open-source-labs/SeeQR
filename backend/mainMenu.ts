@@ -8,16 +8,16 @@
 
 // import shell so a new browser window can open for external links
 // const { shell } = require('electron');
-import { shell } from 'electron';
+import { MenuItem, shell } from 'electron';
 
 // darwin is the process platform for Macs
 const isMac = process.platform === 'darwin';
 
-const arr = [
+const arr: MenuItem[] = [
   // App menu
   ...(isMac
     ? [
-        {
+        new MenuItem({
           label: 'Electron',
           submenu: [
             { role: 'about' },
@@ -25,21 +25,21 @@ const arr = [
             { role: 'services' },
             { type: 'separator' },
             { role: 'hide' },
-            { role: 'hideothers' },
+            { role: 'hideOthers' },
             { role: 'unhide' },
             { type: 'separator' },
             { role: 'quit' },
           ],
-        },
+        }),
       ]
     : []),
   // File menu
-  {
+  new MenuItem({
     label: 'File',
     submenu: [isMac ? { role: 'close' } : { role: 'quit' }],
-  },
+  }),
   // Edit menu
-  {
+  new MenuItem({
     label: 'Edit',
     submenu: [
       { role: 'undo' },
@@ -48,53 +48,48 @@ const arr = [
       { role: 'cut' },
       { role: 'copy' },
       { role: 'paste' },
-      ...(isMac
-        ? [
-            { role: 'delete' },
-            { role: 'selectAll' },
-            { type: 'separator' },
-            {
-              label: 'Speech',
-              submenu: [{ role: 'startspeaking' }, { role: 'stopspeaking' }],
-            },
-          ]
-        : [{ role: 'delete' }, { type: 'separator' }, { role: 'selectAll' }]),
+      { role: 'delete' },
+      { role: 'selectAll' },
+      { type: 'separator' },
+      isMac
+        ? {
+            label: 'Speech',
+            submenu: [{ role: 'startSpeaking' }, { role: 'stopSpeaking' }],
+          }
+        : { label: 'Test' },
     ],
-  },
+  }),
   // View menu
-  {
+  new MenuItem({
     label: 'View',
     submenu: [
       { role: 'reload' },
-      { role: 'forcereload' },
-      { role: 'toggledevtools' },
+      { role: 'forceReload' },
+      { role: 'toggleDevTools' },
       { type: 'separator' },
-      { role: 'resetzoom' },
-      { role: 'zoomin' },
-      { role: 'zoomout' },
+      { role: 'resetZoom' },
+      { role: 'zoomIn' },
+      { role: 'zoomOut' },
       { type: 'separator' },
       { role: 'togglefullscreen' },
     ],
-  },
+  }),
   // Window Menu
-  {
+  new MenuItem({
     label: 'Window',
     submenu: [
       { role: 'minimize' },
       { role: 'zoom' },
-      ...(isMac
-        ? [
-            { type: 'separator' },
-            { role: 'front' },
-            { type: 'separator' },
-            { role: 'window' },
-          ]
-        : [{ role: 'close' }]),
+      isMac ? { type: 'separator' } : { label: 'Test' },
+      isMac ? { role: 'front' } : { label: 'Test' },
+      isMac ? { type: 'separator' } : { label: 'Test' },
+      isMac ? { role: 'window' } : { label: 'Test' },
+      isMac ? { label: 'Test' } : { role: 'close' },
     ],
-  },
+  }),
   // help menu
-  {
-    role: 'Help',
+  new MenuItem({
+    role: 'help',
     submenu: [
       {
         label: 'Electron Documentation',
@@ -109,7 +104,7 @@ const arr = [
         },
       },
     ],
-  },
+  }),
 ];
 
-module.exports = arr;
+export default arr;
