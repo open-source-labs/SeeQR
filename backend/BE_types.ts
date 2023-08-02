@@ -26,12 +26,12 @@ export interface TableDetails {
 }
 export interface DBList {
   databaseConnected: {
-    PG: boolean,
-    MySQL: boolean,
-    RDSPG: boolean,
-    RDSMySQL: boolean,
-    SQLite: boolean,
-    directPGURI: boolean,
+    PG: boolean;
+    MySQL: boolean;
+    RDSPG: boolean;
+    RDSMySQL: boolean;
+    SQLite: boolean;
+    directPGURI: boolean;
   };
   databaseList: dbDetails[];
   tableList: TableDetails[];
@@ -93,7 +93,7 @@ type configExists = {
 type combined = {
   dbsInputted: dbsInputted;
   configExists: configExists;
-}
+};
 
 export interface DBFunctions {
   pg_uri: string;
@@ -101,19 +101,19 @@ export interface DBFunctions {
   curMSQL_DB: string;
   curRDS_MSQL_DB: any;
   curRDS_PG_DB: {
-    user: string;
-    password: string;
-    host: string;
+    user?: string;
+    password?: string;
+    host?: string;
   };
   curSQLite_DB: { path: string };
   curdirectPGURI_DB: string;
   dbsInputted: dbsInputted;
 
   setBaseConnections: () => Promise<combined>;
-  query: (text: string, params: (string | number)[], dbType: DBType) => void;
+  query: (text: string, params: (string | number)[], dbType: DBType) => any;
   connectToDB: (db: string, dbType?: DBType) => Promise<void>;
   disconnectToDrop: (dbType: DBType) => Promise<void>;
-  getLists: (dbName: string, dbType?: DBType) => Promise<DBList>;
+  getLists: (dbName?: string, dbType?: DBType) => Promise<DBList>;
   getTableInfo: (tableName: string, dbType: DBType) => Promise<ColumnObj[]>;
   getDBNames: (dbType: DBType) => Promise<dbDetails[]>;
   getColumnObjects: (tableName: string, dbType: DBType) => Promise<ColumnObj[]>;
