@@ -1,7 +1,8 @@
 import ms from 'ms';
-import type { Feedback } from '../types';
 
-const { ipcRenderer } = window.require('electron');
+import { ipcRenderer } from 'electron';
+import { render } from 'enzyme';
+import type { Feedback } from '../types';
 
 /**
  * Execute function at most once. Doesn't passthrough functions returned value
@@ -21,7 +22,7 @@ export const once = (func: Function) => {
 export const readingTime = (str: string) => {
   const averageWordsPerMinute = 200;
   const totalWords = str.split(' ').length;
-  const readTime = totalWords * ms('1m') / averageWordsPerMinute;
+  const readTime = (totalWords * ms('1m')) / averageWordsPerMinute;
   return Math.max(ms('3s'), readTime);
 };
 
@@ -29,7 +30,12 @@ export const readingTime = (str: string) => {
  * Emit feedback event that can be listened to by ipcRenderer.
  * Used to send messages to FeedbackModal.tsx
  */
-export const sendFeedback = (feedback: Feedback) => {
-  const rendererId = window.require('electron').remote.getCurrentWebContents().id;
-  ipcRenderer.sendTo(rendererId, 'feedback', feedback);
+// REVIEW: I need to revisit this because it definitely doesn't work
+export const sendFeedback = async (feedback: Feedback) => {
+  // TODO: Old code
+  // const rendererId = window
+  //   .require('electron')
+  //   .remote.getCurrentWebContents().id;
+  // ipcRenderer.sendTo(rendererId, 'feedback', feedback);
+  await ipcRenderer.invoke('feedback', feedback);
 };

@@ -1,19 +1,18 @@
+import fs from 'fs';
+import { performance } from 'perf_hooks';
 import {
   ColumnObj,
   dbDetails,
-  TableDetails,
+  DBFunctions,
   DBList,
   DBType,
   LogType,
-  DBFunctions,
+  TableDetails,
 } from './BE_types';
+import connectionFunctions from './databaseConnections';
 import logger from './Logging/masterlog';
 import pools from './poolVariables';
-import connectionFunctions from './databaseConnections';
-
-const fs = require('fs');
-const { performance } = require('perf_hooks');
-const docConfig = require('./_documentsConfig');
+import docConfig from './_documentsConfig';
 
 // eslint-disable-next-line prefer-const
 
@@ -60,8 +59,10 @@ const DBFunctions: DBFunctions = {
     const MSQL_Cred = docConfig.getCredentials(DBType.MySQL);
     this.curRDS_PG_DB = docConfig.getCredentials(DBType.RDSPostgres);
     this.curRDS_MSQL_DB = docConfig.getCredentials(DBType.RDSMySQL);
-    this.curSQLite_DB = docConfig.getCredentials(DBType.SQLite);
-    this.curdirectPGURI_DB = docConfig.getCredentials(DBType.directPGURI);
+    this.curSQLite_DB.path =
+      docConfig.getCredentials(DBType.SQLite)?.path ?? '';
+    this.curdirectPGURI_DB =
+      docConfig.getCredentials(DBType.directPGURI)?.uri ?? '';
     const configExists = {
       pg: false,
       msql: false,
@@ -71,7 +72,8 @@ const DBFunctions: DBFunctions = {
       directPGURI: false,
     };
     /*
-     all the if/else and try/catch in this function are for various forms of error handling. incorrect passwords/removed entries after successful logins
+     all the if/else and try/catch in this function are for various forms of error handling.
+     incorrect passwords/removed entries after successful logins
     */
 
     //  RDS PG POOL: truthy values means user has inputted info into config -> try to log in
@@ -104,8 +106,9 @@ const DBFunctions: DBFunctions = {
         configExists.rds_msql = true;
         await connectionFunctions.RDS_MSQL_DBConnect(this.curRDS_MSQL_DB);
 
-        // test query to make sure were connected. needed for the catch statement to hit incase we arent connected.
-        const testQuery = await pools.rds_msql_pool.query('SHOW DATABASES;');
+        // test query to make sure were connected. needed for the
+        // catch statement to hit incase we arent connected.
+        await pools.rds_msql_pool.query('SHOW DATABASES;');
         logger('CONNECTED TO RDS MYSQL DATABASE!', LogType.SUCCESS);
         this.dbsInputted.rds_msql = true;
       } catch (error) {
@@ -151,7 +154,7 @@ const DBFunctions: DBFunctions = {
         });
 
         // test query to make sure were connected. needed for the catch statement to hit incase we arent connected.
-        const testQuery = await pools.msql_pool.query('SHOW DATABASES;');
+        await pools.msql_pool.query('SHOW DATABASES;');
         this.dbsInputted.msql = true;
         logger('CONNECTED TO LOCAL MYSQL DATABASE!', LogType.SUCCESS);
       } catch (error) {
@@ -840,5 +843,4 @@ const DBFunctions: DBFunctions = {
   },
 };
 
-module.exports = DBFunctions;
-// export default DBFunctions; switching to es6 later
+export default DBFunctions;

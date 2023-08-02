@@ -75,7 +75,7 @@ const requestDbListOnce = once(() => ipcRenderer.send('return-db-list'));
 const App = () => {
   const [queries, setQueries] = useState<AppState['queries']>({});
   const [comparedQueries, setComparedQueries] = useState<AppState['queries']>(
-    {}
+    {},
   );
   const [workingQuery, setWorkingQuery] = useState<AppState['workingQuery']>();
   const [selectedView, setSelectedView] =

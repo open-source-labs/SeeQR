@@ -1,26 +1,28 @@
 /* eslint-disable no-console */
 /* eslint-disable prefer-destructuring */
-import { ipcMain } from 'electron'; // IPCMain: Communicate asynchronously from the main process to renderer processes
-import path from 'path';
+import { BrowserWindow, dialog, ipcMain } from 'electron'; // IPCMain: Communicate asynchronously from the main process to renderer processes
 import fs from 'fs';
 import os from 'os';
-import helperFunctions from './helperFunctions';
-import generateDummyData from './DummyD/dummyDataMain';
+import path from 'path';
 import {
   ColumnObj,
   DBList,
-  DummyRecords,
   DBType,
+  DummyRecords,
   LogType,
   QueryPayload,
 } from './BE_types';
+import generateDummyData from './DummyD/dummyDataMain';
 import backendObjToQuery from './ertable-functions';
+import helperFunctions from './helperFunctions';
 import logger from './Logging/masterlog';
 import { Feedback } from '../shared/types/utilTypes';
 // import * as db from './models'; // to be integrated
 
-const db = require('./models');
-const docConfig = require('./_documentsConfig');
+import db from './models';
+import docConfig from './_documentsConfig';
+
+// import { Integer } from 'type-fest';
 
 const {
   createDBFunc,
@@ -203,7 +205,7 @@ ipcMain.handle(
       // }
 
       const dropDBScript = dropDBFunc(dbName, dbType);
-      if (dbType !== DBType.SQLite) await db.query(dropDBScript, null, dbType);
+      if (dbType !== DBType.SQLite) await db.query(dropDBScript, [], dbType);
 
       // send updated db info
       const dbsAndTables: DBList = await db.getLists(dbName, dbType);
@@ -259,7 +261,7 @@ ipcMain.handle(
 
       // create new empty database
       try {
-        await db.query(createDBFunc(newName, dbType), null, dbType);
+        await db.query(createDBFunc(newName, dbType), [], dbType);
       } catch (e) {
         throw new Error('Failed to create Database');
       }
@@ -271,7 +273,7 @@ ipcMain.handle(
         // cleanup: drop created db
         logger(`Dropping duplicate db because: ${e.message}`, LogType.WARNING);
         const dropDBScript = dropDBFunc(newName, dbType);
-        await db.query(dropDBScript, null, dbType);
+        await db.query(dropDBScript, [], dbType);
 
         throw new Error('Failed to populate newly created database');
       }
@@ -313,11 +315,12 @@ ipcMain.handle(
 
     try {
       // create new empty db
-      await db.query(createDBFunc(newDbName, dbType), null, dbType);
+      await db.query(createDBFunc(newDbName, dbType), [], dbType);
 
       const ext = path.extname(filePath).toLowerCase();
-      if (ext !== '.sql' && ext !== '.tar')
+      if (ext !== '.sql' && ext !== '.tar') {
         throw new Error('Invalid file extension');
+      }
 
       const restoreCmd =
         ext === '.sql'
@@ -331,7 +334,7 @@ ipcMain.handle(
         // cleanup: drop created db
         logger(`Dropping imported db because: ${e.message}`, LogType.WARNING);
         const dropDBScript = dropDBFunc(newDbName, dbType);
-        await db.query(dropDBScript, null, dbType);
+        await db.query(dropDBScript, [], dbType);
 
         throw new Error('Failed to populate database');
       }
@@ -402,7 +405,7 @@ ipcMain.handle(
           if (dbType === DBType.Postgres) {
             const results = await db.query(
               explainQuery(sqlString, dbType),
-              null,
+              [],
               dbType,
             );
 
@@ -419,7 +422,7 @@ ipcMain.handle(
           } else if (dbType === DBType.MySQL) {
             const results = await db.query(
               explainQuery(sqlString, dbType),
-              null,
+              [],
               dbType,
             );
             const eachSampleTime: any = parseExplainExplanation(
@@ -539,7 +542,7 @@ ipcMain.handle(
       // Run Query
       let returnedRows;
       try {
-        const results = await db.query(sqlString, null, dbType);
+        const results = await db.query(sqlString, [], dbType);
         if (dbType === DBType.MySQL) {
           // console.log('mySQL results', results);
           returnedRows = results[0];
@@ -547,7 +550,7 @@ ipcMain.handle(
         }
         if (dbType === DBType.Postgres) {
           // console.log('results in channels for Postgres', results);
-          returnedRows = results.rows;
+          returnedRows = results?.rows;
           // console.log('returnedRows in channels for Postgres', returnedRows);
         }
         if (dbType === DBType.SQLite) {
@@ -679,16 +682,16 @@ ipcMain.handle(
         .concat(');');
       insertQuery = insertQuery.concat(lastRecordStringified);
       // insert dummy records into DB
-      await db.query('Begin;', null, dbType);
-      await db.query(insertQuery, null, dbType);
-      await db.query('Commit;', null, dbType);
+      await db.query('Begin;', [], dbType);
+      await db.query(insertQuery, [], dbType);
+      await db.query('Commit;', [], dbType);
       feedback = {
         type: 'success',
         message: 'Dummy data successfully generated.',
       };
     } catch (err: any) {
       // rollback transaction if there's an error in insertion and send back feedback to FE
-      await db.query('Rollback;', null, dbType);
+      await db.query('Rollback;', [], dbType);
       feedback = {
         type: 'error',
         message: err,
@@ -732,7 +735,7 @@ ipcMain.handle(
 
     try {
       // create new empty db
-      await db.query(createDBFunc(newDbName, dbType), null, dbType);
+      await db.query(createDBFunc(newDbName, dbType), [], dbType);
       // connect to initialized db
       await db.connectToDB(newDbName, dbType);
 
@@ -779,7 +782,7 @@ ipcMain.handle(
 
       // Run Query
       try {
-        await db.query(sqlString, null, dbType);
+        await db.query(sqlString, [], dbType);
       } catch (e) {
         if (e) throw new Error('Failed to update schema');
       }
@@ -816,9 +819,9 @@ ipcMain.handle(
       const query = backendObjToQuery(backendObj, dbType);
 
       // run sql command
-      await db.query('Begin;', null, dbType);
-      await db.query(query, null, dbType);
-      await db.query('Commit;', null, dbType);
+      await db.query('Begin;', [], dbType);
+      await db.query(query, [], dbType);
+      await db.query('Commit;', [], dbType);
       feedback = {
         type: 'success',
         message: 'Database updated successfully.',
@@ -826,7 +829,7 @@ ipcMain.handle(
       return 'success';
     } catch (err: any) {
       // rollback transaction if there's an error in update and send back feedback to FE
-      await db.query('Rollback;', null, dbType);
+      await db.query('Rollback;', [], dbType);
 
       feedback = {
         type: 'error',
@@ -851,3 +854,21 @@ ipcMain.handle(
     }
   },
 );
+
+// ipc handler for when the showOpenDialog occurs currently linked to ConfigView.tsx.
+// TODO: fix the type of any of the focused window. I cheated it.
+ipcMain.handle('showOpenDialog', async (event, options) => {
+  const focusedWindow: any = BrowserWindow.fromWebContents(event.sender);
+  const result = await dialog.showOpenDialog(focusedWindow, options);
+  return result.filePaths[0];
+});
+
+ipcMain.handle('showSaveDialog', async (event, options) => {
+  const focusedWindow: any = BrowserWindow.fromWebContents(event.sender);
+  const result = await dialog.showSaveDialog(focusedWindow, options);
+  return result.filePath;
+});
+
+ipcMain.handle('feedback', async (event, options: { feedback: Feedback }) => {
+  event.sender.send('feedback', options.feedback);
+});
