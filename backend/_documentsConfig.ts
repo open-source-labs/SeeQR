@@ -14,10 +14,16 @@ const defaultFile: DocConfigFile = {
   mysql: { user: '', password: '', port: 3306 },
   pg: { user: '', password: '', port: 5432 },
   rds_mysql: {
-    user: '', password: '', port: 3306, host: '',
+    user: '',
+    password: '',
+    port: 3306,
+    host: '',
   },
   rds_pg: {
-    user: '', password: '', port: 5432, host: '',
+    user: '',
+    password: '',
+    port: 5432,
+    host: '',
   },
   sqlite: { path: '' },
   directPGURI: { uri: '' },
@@ -193,4 +199,4 @@ const docConfig: DocConfig = {
   },
 };
 
-module.exports = docConfig;
+export default docConfig;
