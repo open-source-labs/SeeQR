@@ -1,30 +1,28 @@
+import { Button } from '@mui/material';
+import { app, ipcRenderer } from 'electron';
 import fs from 'fs';
-import { ipcRenderer, remote } from 'electron';
-import React, {
-  useCallback, useEffect, useState, useRef,
-} from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import ReactFlow, {
-  Controls,
   applyEdgeChanges,
   applyNodeChanges,
   Background,
-  Node,
+  Controls,
   Edge,
   MiniMap,
+  Node,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { Button } from '@mui/material';
 import styled from 'styled-components';
+import { DBType } from '../../../../backend/BE_types';
 import stateToReactFlow from '../../../lib/convertStateToReactFlow';
-import nodeTypes from './NodeTypes';
 import {
-  UpdatesObjType,
   AddTablesObjType,
-  TableHeaderNodeType,
   AppState,
   SchemaStateObjType,
+  TableHeaderNodeType,
+  UpdatesObjType,
 } from '../../../types';
-import { DBType } from '../../../../backend/BE_types';
+import nodeTypes from './NodeTypes';
 
 import * as colors from '../../../style-variables';
 
@@ -171,7 +169,10 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
       currDatabaseLayout.db_tables.push(tablePosObj);
     });
 
-    const location: string = remote.app
+    // TODO: OLD CODE
+    // const location: string = remote.app
+    // REVIEW:
+    const location: string = app
       .getPath('temp')
       .concat('/UserTableLayouts.json');
     fs.readFile(location, 'utf-8', (err, data) => {
@@ -259,13 +260,11 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
         onClick={handleAddTable}
       >
         {' '}
-        Add New Table
-        {' '}
+        Add New Table{' '}
       </StyledViewButton>
       <StyledViewButton variant="contained" id="save" onClick={handleClickSave}>
         {' '}
-        Save
-        {' '}
+        Save{' '}
       </StyledViewButton>
       <ReactFlow
         nodes={nodes}

@@ -1,20 +1,20 @@
-import React from 'react';
-import { Drawer, IconButton, Tooltip } from '@mui/material/';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import { Drawer, IconButton, Tooltip } from '@mui/material/';
+import React from 'react';
 import styled from 'styled-components';
-import { AppState } from '../../types';
-import TopButtons from './TopButtons';
-import QueryList from './QueryList';
-import DbList from './DbList';
-import ViewSelector from './ViewSelector';
 import logo from '../../../assets/logo/seeqr_dock.png';
+import { AppState } from '../../types';
 import BottomButtons from './BottomButtons';
+import DbList from './DbList';
+import QueryList from './QueryList';
+import TopButtons from './TopButtons';
+import ViewSelector from './ViewSelector';
 
 import {
   greyDarkest,
-  sidebarWidth,
   sidebarShowButtonSize,
+  sidebarWidth,
 } from '../../style-variables';
 
 const StyledDrawer = styled(Drawer)`
@@ -49,13 +49,13 @@ const ShowSidebarBtn = styled(IconButton)`
   z-index: 200;
   background: #57a777;
   border-radius: 0 15px 15px 0;
-  transition: all .3s ease;
+  transition: all 0.3s ease;
   &:hover {
     background: #57a777;
-    opacity: .6;
+    opacity: 0.6;
     color: white;
   }
-  `;
+`;
 
 const HideSidebarBtn = styled(IconButton)`
   width: 40px;
@@ -63,10 +63,10 @@ const HideSidebarBtn = styled(IconButton)`
   z-index: 200;
   background: #57a777;
   border-radius: 15px 0 0 15px;
-  transition: all .3s ease;
+  transition: all 0.3s ease;
   &:hover {
     background: #57a777;
-    opacity: .6;
+    opacity: 0.6;
     color: white;
   }
 `;
@@ -136,10 +136,10 @@ const Sidebar = ({
           selectedDb={selectedDb}
           setSelectedDb={setSelectedDb}
           show={
-            selectedView === 'dbView'
-            || selectedView === 'quickStartView'
-            || selectedView === 'newSchemaView'
-            || selectedView === 'threeDView'
+            selectedView === 'dbView' ||
+            selectedView === 'quickStartView' ||
+            selectedView === 'newSchemaView' ||
+            selectedView === 'threeDView'
           }
           setSelectedView={setSelectedView}
           curDBType={curDBType}

@@ -5,7 +5,7 @@ import UploadFileIcon from '@mui/icons-material/UploadFile';
 import FileCopyIcon from '@mui/icons-material/FileCopy';
 import fs from 'fs';
 import path from 'path';
-import electron from 'electron';
+import { dialog, ipcRenderer } from 'electron';
 import styled from 'styled-components';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
@@ -14,11 +14,20 @@ import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { AppState, QueryData } from '../../types';
 import {
-  deleteQuery, setCompare, saveQuery, getAppDataPath, key as queryKey,
+  deleteQuery,
+  setCompare,
+  saveQuery,
+  getAppDataPath,
+  key as queryKey,
 } from '../../lib/queries';
 import QueryEntry from './QueryEntry';
 import {
-  greyDarkest, greyDark, greenPrimary, SidebarList, StyledListItemText, textColor,
+  greyDarkest,
+  greyDark,
+  greenPrimary,
+  SidebarList,
+  StyledListItemText,
+  textColor,
 } from '../../style-variables';
 
 const QueryText = styled(StyledListItemText)`
@@ -43,7 +52,7 @@ type QueryListProps = Pick<
 };
 
 const StyledSidebarList = styled(SidebarList)`
-background-color: ${greyDarkest};
+  background-color: ${greyDarkest};
 `;
 
 const QueryList = ({
@@ -63,12 +72,13 @@ const QueryList = ({
     setComparedQueries(deleteQuery(comparedQueries, query));
   };
 
-  const setComparisonHandler = (query: QueryData) => (
-    evt: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    setComparedQueries(setCompare(comparedQueries, queries, query, evt.target.checked));
-    // setComparedQueries(setCompare(comparedQueries, query));
-  };
+  const setComparisonHandler =
+    (query: QueryData) => (evt: React.ChangeEvent<HTMLInputElement>) => {
+      setComparedQueries(
+        setCompare(comparedQueries, queries, query, evt.target.checked),
+      );
+      // setComparedQueries(setCompare(comparedQueries, query));
+    };
 
   const saveQueryHandler = (query: QueryData, newFilePath: string) => () => {
     saveQuery(query, newFilePath);
@@ -78,64 +88,82 @@ const QueryList = ({
     const globalAny: any = global;
     // If the platform is not macOS
     if (process.platform !== 'darwin') {
-    // Resolves to a Promise<Object>
-      electron.remote.dialog.showOpenDialog({
-        title: 'Select the File to be uploaded',
-        defaultPath: path.join(__dirname, '../assets/'),
-        buttonLabel: 'Upload',
-        // Restricting the user to only Text Files.
-        filters: [
-          {
-            name: 'Text Files',
-            extensions: ['json', 'docx', 'txt'],
-          }],
-        // Specifying the File Selector Property
-        properties: ['openFile'],
-      }).then((file: any) => {
-      // Stating whether dialog operation was
-      // cancelled or not.
-        if (!file.canceled) {
-        // Updating the GLOBAL filepath variable
-        // to user-selected file.
-          globalAny.filepath = file.filePaths[0].toString();
-          const data = JSON.parse(fs.readFileSync(globalAny.filepath).toString());
-          setQueries(data);
-        }
-        return undefined;
-      }).catch((err: object | undefined) =>
-      // console.log(err);
-        undefined);
+      // Resolves to a Promise<Object>
+      // REVIEW: not sure if supposed to move this to it's own ipcMain
+      dialog
+        .showOpenDialog({
+          title: 'Select the File to be uploaded',
+          defaultPath: path.join(__dirname, '../assets/'),
+          buttonLabel: 'Upload',
+          // Restricting the user to only Text Files.
+          filters: [
+            {
+              name: 'Text Files',
+              extensions: ['json', 'docx', 'txt'],
+            },
+          ],
+          // Specifying the File Selector Property
+          properties: ['openFile'],
+        })
+        .then((file: any) => {
+          // Stating whether dialog operation was
+          // cancelled or not.
+          if (!file.canceled) {
+            // Updating the GLOBAL filepath variable
+            // to user-selected file.
+            globalAny.filepath = file.filePaths[0].toString();
+            const data = JSON.parse(
+              fs.readFileSync(globalAny.filepath).toString(),
+            );
+            setQueries(data);
+          }
+          return undefined;
+        })
+        .catch(
+          (err: object | undefined) =>
+            // console.log(err);
+            undefined,
+        );
     } else {
       // If the platform is 'darwin' (macOS)
-      electron.remote.dialog.showOpenDialog({
-        title: 'Select the File to be uploaded',
-        defaultPath: path.join(__dirname, '../assets/'),
-        buttonLabel: 'Upload',
-        filters: [
-          {
-            name: 'Text Files',
-            extensions: ['json', 'docx', 'txt'],
-          }],
-        // Specifying the File Selector and Directory
-        // Selector Property In macOS
-        properties: ['openFile', 'openDirectory'],
-      }).then((file: any) => {
-        if (!file.canceled) {
-          globalAny.filepath = file.filePaths[0].toString();
-          const data = JSON.parse(fs.readFileSync(globalAny.filepath).toString());
-          setQueries(data);
-        }
-        return undefined;
-      }).catch((err: object) =>
-        // console.log(err);
-        undefined);
+      // REVIEW: not sure if supposed to move this to it's own ipcMain
+      dialog
+        .showOpenDialog({
+          title: 'Select the File to be uploaded',
+          defaultPath: path.join(__dirname, '../assets/'),
+          buttonLabel: 'Upload',
+          filters: [
+            {
+              name: 'Text Files',
+              extensions: ['json', 'docx', 'txt'],
+            },
+          ],
+          // Specifying the File Selector and Directory
+          // Selector Property In macOS
+          properties: ['openFile', 'openDirectory'],
+        })
+        .then((file: any) => {
+          if (!file.canceled) {
+            globalAny.filepath = file.filePaths[0].toString();
+            const data = JSON.parse(
+              fs.readFileSync(globalAny.filepath).toString(),
+            );
+            setQueries(data);
+          }
+          return undefined;
+        })
+        .catch(
+          (err: object) =>
+            // console.log(err);
+            undefined,
+        );
     }
   };
 
   if (!show) return null;
 
   const values: Array<QueryData> = Object.values(queries);
-  const accordians:object = {};
+  const accordians: object = {};
 
   // Algorithm to create the entrys to be bundled into accoridans
   const compQ: any = { ...comparedQueries };
@@ -144,7 +172,9 @@ const QueryList = ({
       let compared = false;
       if (compQ[queryKey(values[i])]) {
         if (compQ[queryKey(values[i])].hasOwnProperty('executionPlan')) {
-          if (compQ[queryKey(values[i])].executionPlan['Execution Time'] !== 0) {
+          if (
+            compQ[queryKey(values[i])].executionPlan['Execution Time'] !== 0
+          ) {
             compared = true;
           }
         }
@@ -175,23 +205,22 @@ const QueryList = ({
   }
 
   // function to store user-selected file path in state
-  const designateFile = function () {
-    const { dialog } = electron.remote;
-    const WIN = electron.remote.getCurrentWindow();
 
+  const designateFile = async function () {
+    // REVIEW: not sure if supposed to move this to it's own ipcMain
     const options = {
       title: 'Choose File Path',
       defaultPath: `${getAppDataPath()}`,
       buttonLabel: 'Select Path',
-      filters: [
-        { name: 'JSON', extensions: ['json'] },
-      ],
+      filters: [{ name: 'JSON', extensions: ['json'] }],
     };
 
-    dialog.showSaveDialog(WIN, options)
-      .then((res:any) => {
-        setFilePath(res.filePath);
-      });
+    try {
+      const filePath = await ipcRenderer.invoke('showSaveDialog', options);
+      setFilePath(filePath);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -222,17 +251,24 @@ const QueryList = ({
             <Accordion>
               <AccordionSummary
                 sx={{
-                  backgroundColor: `${greenPrimary}`, color: 'black',
+                  backgroundColor: `${greenPrimary}`,
+                  color: 'black',
                 }}
                 expandIcon={<ExpandMoreIcon />}
                 aria-controls="panel1a-content"
                 id="panel1a-header"
               >
                 <Typography sx={{ color: 'black' }}>
-                  <QueryText primary={arrGroup[0].key.slice(arrGroup[0].key.indexOf('group:::') + 8)} />
+                  <QueryText
+                    primary={arrGroup[0].key.slice(
+                      arrGroup[0].key.indexOf('group:::') + 8,
+                    )}
+                  />
                 </Typography>
               </AccordionSummary>
-              <AccordionDetails sx={{ backgroundColor: `${greyDark}`, color: `${textColor}` }}>
+              <AccordionDetails
+                sx={{ backgroundColor: `${greyDark}`, color: `${textColor}` }}
+              >
                 {arrGroup}
               </AccordionDetails>
             </Accordion>
