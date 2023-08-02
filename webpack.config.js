@@ -2,7 +2,6 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { spawn } = require('child_process');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
-const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const webpack = require('webpack');
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
@@ -60,16 +59,8 @@ module.exports = {
       {
         test: /\.(jpg|jpeg|png|ttf|svg)$/,
         use: [
-          'file-loader',
           {
-            loader: 'image-webpack-loader',
-            options: {
-              bypassOnDebug: true,
-              disable: true,
-              mozjpeg: {
-                quality: 10,
-              },
-            },
+            loader: 'file-loader',
           },
         ],
         exclude: /node_modules/,

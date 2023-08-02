@@ -13,7 +13,7 @@
   "scripts": {
     "postinstall": "electron-builder install-app-deps",
     "build": "cross-env NODE_ENV=production tsc && cross-env NODE_ENV=production webpack",
-    "start": "cross-env NODE_ENV=production electron --no-sandbox --noDevServer .",
+    "start": "concurrently \"cross-env NODE_ENV=production\" \"electron --no-sandbox --noDevServer .\" ",
     "dev": "run-p tsc-dev electron-dev webpack-dev",
     "webpack-dev": "cross-env NODE_ENV=development webpack serve",
     "electron-dev": "nodemon --watch tsCompiled/backend --exec \"npx cross-env NODE_ENV=development electron --no-sandbox .\"",
@@ -112,7 +112,6 @@
     "file-loader": "^6.2.0",
     "fork-ts-checker-webpack-plugin": "^6.1.0",
     "html-webpack-plugin": "^5.2.0",
-    "image-webpack-loader": "^7.0.1",
     "jest": "^26.4.2",
     "mini-css-extract-plugin": "^1.3.8",
     "nodemon": "^2.0.4",
