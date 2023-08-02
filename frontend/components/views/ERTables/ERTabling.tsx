@@ -1,8 +1,6 @@
 import fs from 'fs';
-import { ipcRenderer, remote } from 'electron';
-import React, {
-  useCallback, useEffect, useState, useRef,
-} from 'react';
+import { ipcRenderer, app } from 'electron';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import ReactFlow, {
   Controls,
   applyEdgeChanges,
@@ -171,7 +169,10 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
       currDatabaseLayout.db_tables.push(tablePosObj);
     });
 
-    const location: string = remote.app
+    // TODO: OLD CODE
+    // const location: string = remote.app
+    // REVIEW:
+    const location: string = app
       .getPath('temp')
       .concat('/UserTableLayouts.json');
     fs.readFile(location, 'utf-8', (err, data) => {
@@ -259,13 +260,11 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
         onClick={handleAddTable}
       >
         {' '}
-        Add New Table
-        {' '}
+        Add New Table{' '}
       </StyledViewButton>
       <StyledViewButton variant="contained" id="save" onClick={handleClickSave}>
         {' '}
-        Save
-        {' '}
+        Save{' '}
       </StyledViewButton>
       <ReactFlow
         nodes={nodes}

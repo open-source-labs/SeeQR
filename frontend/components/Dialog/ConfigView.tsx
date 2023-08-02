@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ipcMain, dialog, BrowserWindow } from 'electron';
+import { ipcRenderer, IpcRendererEvent } from 'electron';
 import {
   Box,
   Tab,
@@ -93,19 +93,27 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
   });
 
   // function to store user-selected file path in state
-  const designateFile = function (path, setPath) {
-    const WIN = remote.getCurrentWindow();
-
+  // REVIEW:
+  const designateFile = async function (path, setPath) {
     const options = {
       title: 'Select SQLite File',
       defaultPath: '',
       buttonLabel: 'Select File',
       filters: [{ name: 'db', extensions: ['db'] }],
     };
-
-    dialog.showOpenDialog(WIN, options).then((res: any) => {
-      setPath({ path: res.filePaths[0] });
-    });
+    try {
+      const selectedFilePath = await ipcRenderer.invoke(
+        'showOpenDialog',
+        options,
+      );
+      setPath({ path: selectedFilePath });
+    } catch (err) {
+      sendFeedback({
+        type: 'error',
+        message: 'Error at designate file.',
+      });
+      console.log(`error at the designate file in ConfigView.tsx ${err}`);
+    }
   };
 
   // Function to make StyledTextFields and store them in inputFieldsToRender state
@@ -120,7 +128,7 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
           onClick={() => designateFile(dbTypeFromState, setDbTypeFromState)}
         >
           Set db file location
-        </StyledButton>
+        </StyledButton>,
       );
     } else {
       // Get key value pairs from passed in database connection info from state
@@ -174,7 +182,7 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
             }}
             // Spread special password props if they exist
             {...styledTextFieldProps}
-          />
+          />,
         );
       });
     }
