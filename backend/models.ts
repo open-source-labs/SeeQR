@@ -76,9 +76,9 @@ const DBFunctions: DBFunctions = {
 
     //  RDS PG POOL: truthy values means user has inputted info into config -> try to log in
     if (
-      this.curRDS_PG_DB.user
-      && this.curRDS_PG_DB.password
-      && this.curRDS_PG_DB.host
+      this.curRDS_PG_DB.user &&
+      this.curRDS_PG_DB.password &&
+      this.curRDS_PG_DB.host
     ) {
       try {
         configExists.rds_pg = true;
@@ -96,9 +96,9 @@ const DBFunctions: DBFunctions = {
 
     //  RDS MSQL POOL: truthy values means user has inputted info into config -> try to log in
     if (
-      this.curRDS_MSQL_DB.user
-      && this.curRDS_MSQL_DB.password
-      && this.curRDS_MSQL_DB.host
+      this.curRDS_MSQL_DB.user &&
+      this.curRDS_MSQL_DB.password &&
+      this.curRDS_MSQL_DB.host
     ) {
       try {
         configExists.rds_msql = true;
@@ -441,9 +441,9 @@ const DBFunctions: DBFunctions = {
                 const { db_name } = data;
 
                 if (
-                  db_name !== 'postgres'
-                  && db_name !== 'template0'
-                  && db_name !== 'template1'
+                  db_name !== 'postgres' &&
+                  db_name !== 'template0' &&
+                  db_name !== 'template1'
                 ) {
                   data.db_type = dbType;
                   dbList.push(data);
@@ -505,11 +505,18 @@ const DBFunctions: DBFunctions = {
       } else if (dbType === DBType.SQLite) {
         const dbList: dbDetails[] = [];
         const { path } = this.curSQLite_DB;
-        const filename = path.slice(path.lastIndexOf('\\') + 1, path.lastIndexOf('.db'));
+        const filename = path.slice(
+          path.lastIndexOf('\\') + 1,
+          path.lastIndexOf('.db'),
+        );
         const stats = fs.statSync(path);
         const fileSizeInKB = stats.size / 1024;
         // Convert the file size to megabytes (optional)
-        const data = { db_name: filename, db_size: `${fileSizeInKB}KB`, db_type: DBType.SQLite };
+        const data = {
+          db_name: filename,
+          db_size: `${fileSizeInKB}KB`,
+          db_type: DBType.SQLite,
+        };
         dbList.push(data);
         resolve(dbList);
       }
@@ -630,29 +637,42 @@ const DBFunctions: DBFunctions = {
       WHERE m.type = 'table' AND p.type != '' AND m.name = ?`;
 
       return new Promise((resolve, reject) => {
-        sqliteDB
-          .all(queryString, value, (err, rows) => {
-            if (err) {
-              reject(err);
-            }
-            const columnInfoArray: ColumnObj[] = [];
-            for (let i = 0; i < rows.length; i++) {
-              const {
-                column_name, data_type, not_null, pk, foreign_table, foreign_column,
-              } = rows[i];
-              const newColumnObj: ColumnObj = {
-                column_name,
-                data_type,
-                character_maximum_length: data_type.includes('(') ? parseInt(data_type.slice(1 + data_type.indexOf('('), data_type.indexOf(')')), 10) : null,
-                is_nullable: not_null === 1 ? 'NO' : 'YES',
-                constraint_type: pk === 1 ? 'PRIMARY KEY' : foreign_table ? 'FOREIGN KEY' : null,
-                foreign_table,
-                foreign_column,
-              };
-              columnInfoArray.push(newColumnObj);
-            }
-            resolve(columnInfoArray);
-          });
+        sqliteDB.all(queryString, value, (err, rows) => {
+          if (err) {
+            reject(err);
+          }
+          const columnInfoArray: ColumnObj[] = [];
+          for (let i = 0; i < rows.length; i++) {
+            const {
+              column_name,
+              data_type,
+              not_null,
+              pk,
+              foreign_table,
+              foreign_column,
+            } = rows[i];
+            const newColumnObj: ColumnObj = {
+              column_name,
+              data_type,
+              character_maximum_length: data_type.includes('(')
+                ? parseInt(
+                    data_type.slice(
+                      1 + data_type.indexOf('('),
+                      data_type.indexOf(')'),
+                    ),
+                    10,
+                  )
+                : null,
+              is_nullable: not_null === 1 ? 'NO' : 'YES',
+              constraint_type:
+                pk === 1 ? 'PRIMARY KEY' : foreign_table ? 'FOREIGN KEY' : null,
+              foreign_table,
+              foreign_column,
+            };
+            columnInfoArray.push(newColumnObj);
+          }
+          resolve(columnInfoArray);
+        });
       });
     }
 
@@ -787,36 +807,38 @@ const DBFunctions: DBFunctions = {
         m.name AS table_name 
         FROM sqlite_master m
         WHERE m.type = 'table' AND m.name != 'sqlite_stat1' AND m.name != 'sqlite_sequence'`;
-        sqliteDB
-          .all(query, (err, rows) => {
-            if (err) console.error(err.message);
-            for (let i = 0; i < rows.length; i += 1) {
-              const newTableDetails: TableDetails = {
-                table_catalog: this.curSQLite_DB.path.slice(this.curSQLite_DB.path.lastIndexOf('\\') + 1),
-                table_schema: 'asdf',
-                table_name: rows[i].table_name,
-                is_insertable_into: 'asdf',
-              };
-              tableList.push(newTableDetails);
-              promiseArray.push(
-                this.getColumnObjects(rows[i].table_name, dbType),
-              );
-            }
-            Promise.all(promiseArray)
-              .then((columnInfo) => {
-                for (let i = 0; i < columnInfo.length; i += 1) {
-                  tableList[i].columns = columnInfo[i];
-                }
-                logger("SQLite 'getDBLists' resolved.", LogType.SUCCESS);
-                resolve(tableList);
-              })
-              .catch((error) => {
-                reject(error);
-              });
-          });
+        sqliteDB.all(query, (err, rows) => {
+          if (err) console.error(err.message);
+          for (let i = 0; i < rows.length; i += 1) {
+            const newTableDetails: TableDetails = {
+              table_catalog: this.curSQLite_DB.path.slice(
+                this.curSQLite_DB.path.lastIndexOf('\\') + 1,
+              ),
+              table_schema: 'asdf',
+              table_name: rows[i].table_name,
+              is_insertable_into: 'asdf',
+            };
+            tableList.push(newTableDetails);
+            promiseArray.push(
+              this.getColumnObjects(rows[i].table_name, dbType),
+            );
+          }
+          Promise.all(promiseArray)
+            .then((columnInfo) => {
+              for (let i = 0; i < columnInfo.length; i += 1) {
+                tableList[i].columns = columnInfo[i];
+              }
+              logger("SQLite 'getDBLists' resolved.", LogType.SUCCESS);
+              resolve(tableList);
+            })
+            .catch((error) => {
+              reject(error);
+            });
+        });
       }
     });
   },
 };
 
-module.exports = DBFunctions;
+// module.exports = DBFunctions;
+export default DBFunctions;

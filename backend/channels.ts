@@ -16,10 +16,10 @@ import {
 } from './BE_types';
 import backendObjToQuery from './ertable-functions';
 import logger from './Logging/masterlog';
+import { Feedback } from '../shared/types/utilTypes';
+import * as db from './models';
 
-// import { Integer } from 'type-fest';
-
-const db = require('./models');
+// const db = require('./models');
 const docConfig = require('./_documentsConfig');
 
 const {
@@ -34,17 +34,13 @@ const {
 } = helperFunctions;
 
 // *************************************************** IPC Event Listeners *************************************************** //
-interface Feedback {
-  type: string;
-  message: string;
-}
 
 /**
  * Handles set-config requests from frontend
  * triggered whenever save is pressed on the config/login page
  * establishes connections to database, logs failed connections, sends contents of config file
  */
-ipcMain.handle('set-config', async (event, configObj) => {
+ipcMain.handle('set-config', (event, configObj) => {
   docConfig.saveConfig(configObj); // saves login info from frontend into config file
 
   db.setBaseConnections() // tries to log in using config data
@@ -71,7 +67,7 @@ ipcMain.handle('set-config', async (event, configObj) => {
     .catch((err) => {
       logger(
         `Error trying to set base connections on 'reset-connection': ${err.message}`,
-        LogType.ERROR
+        LogType.ERROR,
       );
       const feedback: Feedback = {
         type: 'error',
@@ -80,7 +76,7 @@ ipcMain.handle('set-config', async (event, configObj) => {
       event.sender.send('feedback', feedback);
       logger(
         "Sent 'feedback' from 'reset-connection' (Note: This is an ERROR!)",
-        LogType.ERROR
+        LogType.ERROR,
       );
     })
     .finally(() => {
@@ -104,7 +100,7 @@ ipcMain.handle('get-config', async (event) => {
 ipcMain.on('return-db-list', (event) => {
   logger(
     "Received 'return-db-list' (Note: No Async being sent here)",
-    LogType.RECEIVE
+    LogType.RECEIVE,
   );
 
   db.setBaseConnections()
@@ -117,7 +113,7 @@ ipcMain.on('return-db-list', (event) => {
         .catch((err) => {
           logger(
             `Error trying to get lists on 'return-db-list': ${err.message}`,
-            LogType.ERROR
+            LogType.ERROR,
           );
           const feedback: Feedback = {
             type: 'error',
@@ -126,14 +122,14 @@ ipcMain.on('return-db-list', (event) => {
           event.sender.send('feedback', feedback);
           logger(
             "Sent 'feedback' from 'return-db-list' (Note: This is an ERROR!)",
-            LogType.SEND
+            LogType.SEND,
           );
         });
     })
     .catch((err) => {
       logger(
         `Error trying to set base connections on 'return-db-list': ${err.message}`,
-        LogType.ERROR
+        LogType.ERROR,
       );
       const feedback: Feedback = {
         type: 'error',
@@ -142,7 +138,7 @@ ipcMain.on('return-db-list', (event) => {
       event.sender.send('feedback', feedback);
       logger(
         "Sent 'feedback' from 'return-db-list' (Note: This is an ERROR!)",
-        LogType.SEND
+        LogType.SEND,
       );
     });
 });
@@ -167,7 +163,7 @@ ipcMain.handle(
     } finally {
       event.sender.send('async-complete');
     }
-  }
+  },
 );
 
 /**
@@ -180,7 +176,7 @@ ipcMain.handle(
     event,
     dbName: string,
     currDB: boolean,
-    dbType: DBType
+    dbType: DBType,
   ): Promise<void> => {
     logger("Received 'drop-db'", LogType.RECEIVE);
 
@@ -216,7 +212,7 @@ ipcMain.handle(
     } finally {
       event.sender.send('async-complete');
     }
-  }
+  },
 );
 
 interface DuplicatePayload {
@@ -234,18 +230,18 @@ ipcMain.handle(
   async (
     event,
     { newName, sourceDb, withData }: DuplicatePayload,
-    dbType: DBType
+    dbType: DBType,
   ) => {
     logger(
       `Received 'duplicate-db'" of dbType: ${dbType} and: `,
-      LogType.RECEIVE
+      LogType.RECEIVE,
     );
 
     event.sender.send('async-started');
 
     const tempFilePath = path.resolve(
       `${docConfig.getConfigFolder()}/`,
-      `temp_${newName}.sql`
+      `temp_${newName}.sql`,
     );
 
     try {
@@ -257,7 +253,7 @@ ipcMain.handle(
         await promExecute(dumpCmd);
       } catch (e) {
         throw new Error(
-          `Failed to dump ${sourceDb} to temp file at ${tempFilePath}`
+          `Failed to dump ${sourceDb} to temp file at ${tempFilePath}`,
         );
       }
 
@@ -297,7 +293,7 @@ ipcMain.handle(
 
       event.sender.send('async-complete');
     }
-  }
+  },
 );
 
 interface ImportPayload {
@@ -347,7 +343,7 @@ ipcMain.handle(
     } finally {
       event.sender.send('async-complete');
     }
-  }
+  },
 );
 
 /*
@@ -362,12 +358,12 @@ ipcMain.handle(
   async (
     event,
     { targetDb, sqlString, selectedDb, runQueryNumber }: QueryPayload,
-    dbType: DBType
+    dbType: DBType,
   ) => {
     logger(
       "Received 'run-query'",
       LogType.RECEIVE,
-      `selectedDb: ${selectedDb} and dbType: ${dbType} and runQueryNumber: ${runQueryNumber}`
+      `selectedDb: ${selectedDb} and dbType: ${dbType} and runQueryNumber: ${runQueryNumber}`,
     );
     event.sender.send('async-started');
     const arr: any[] = []; // array of sample
@@ -407,7 +403,7 @@ ipcMain.handle(
             const results = await db.query(
               explainQuery(sqlString, dbType),
               null,
-              dbType
+              dbType,
             );
 
             // console.log('query results', results);
@@ -424,10 +420,10 @@ ipcMain.handle(
             const results = await db.query(
               explainQuery(sqlString, dbType),
               null,
-              dbType
+              dbType,
             );
             const eachSampleTime: any = parseExplainExplanation(
-              results[0][0].EXPLAIN
+              results[0][0].EXPLAIN,
             );
             arr.push(eachSampleTime);
             totalSampleTime += eachSampleTime;
@@ -586,11 +582,11 @@ ipcMain.handle(
       logger(
         "Sent 'db-lists' from 'run-query'",
         LogType.SEND,
-        `selectedDb: ${selectedDb} -- targetDb: ${targetDb} -- dbType: ${dbType}`
+        `selectedDb: ${selectedDb} -- targetDb: ${targetDb} -- dbType: ${dbType}`,
       );
       event.sender.send('async-complete');
     }
-  }
+  },
 );
 
 interface ExportPayload {
@@ -629,9 +625,10 @@ ipcMain.handle(
     } finally {
       event.sender.send('async-complete');
     }
-  }
+  },
 );
 
+// leave this here since it is only used in this context
 interface dummyDataRequestPayload {
   dbName: string;
   tableName: string;
@@ -656,14 +653,14 @@ ipcMain.handle(
       // Retrieves the Primary Keys and Foreign Keys for all the tables
       const tableInfo: ColumnObj[] = await db.getTableInfo(
         data.tableName,
-        dbType
+        dbType,
       ); // passed in dbType to second argument
       // console.log('tableInfo in generate-dummy-data', tableInfo); // working
 
       // generate dummy data
       const dummyArray: DummyRecords = await generateDummyData(
         tableInfo,
-        data.rows
+        data.rows,
       );
       // console.log('dummyArray output: ', dummyArray)
       // generate insert query string to insert dummy records
@@ -711,10 +708,10 @@ ipcMain.handle(
 
       logger(
         "Sent 'db-lists and feedback' from 'generate-dummy-data'",
-        LogType.SEND
+        LogType.SEND,
       );
     }
-  }
+  },
 );
 
 // handle initialization of a new schema from frontend (newSchemaView)
@@ -728,7 +725,7 @@ ipcMain.handle(
     logger(
       `Received 'initialize-db' of dbType: ${dbType} and: `,
       LogType.RECEIVE,
-      payload
+      payload,
     );
     event.sender.send('async-started');
     const { newDbName } = payload;
@@ -758,7 +755,7 @@ ipcMain.handle(
     } finally {
       event.sender.send('async-complete');
     }
-  }
+  },
 );
 
 // handle updating schemas from the frontend (newSchemaView)
@@ -795,7 +792,7 @@ ipcMain.handle(
 
       event.sender.send('async-complete');
     }
-  }
+  },
 );
 
 // Generate and run query from react-flow ER diagram
@@ -805,7 +802,7 @@ ipcMain.handle(
     logger(
       `Received 'ertable-schemaupdate' with dbType: ${dbType}, dbName: ${dbName}, and backendObj: `,
       LogType.RECEIVE,
-      backendObj
+      backendObj,
     );
     // send notice to front end that schema update has started
     event.sender.send('async-started');
@@ -849,8 +846,8 @@ ipcMain.handle(
 
       logger(
         "Sent 'db-lists and feedback' from 'ertable-schemaupdate'",
-        LogType.SEND
+        LogType.SEND,
       );
     }
-  }
+  },
 );
