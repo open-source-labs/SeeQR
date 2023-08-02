@@ -25,7 +25,6 @@ const TableFieldDropDown = ({
   otherTables,
   setFkOptions,
 }: TableFieldDropDownProps) => {
-
   const optionsArray = options.map((option, i) => (
     <TableFieldDropDownOption
       key={idName + i}
@@ -41,7 +40,7 @@ const TableFieldDropDown = ({
       // check to see if otherTables is truthy
       // set the FK options to rerender a new list depending on the table name
       const newTableFkOptions = otherTables.find(
-        (el) => el.table_name === e.target.value
+        (el) => el.table_name === e.target.value,
       );
 
       if (newTableFkOptions) {

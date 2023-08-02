@@ -1,7 +1,7 @@
-import React, { useState, memo  } from 'react';
+import React, { useState, memo } from 'react';
 import styled from 'styled-components';
 import ReactFlow, { Background } from 'reactflow';
-import 'reactflow/dist/style.css'
+import 'reactflow/dist/style.css';
 import buildFlowGraph from '../../../../lib/flow';
 import { ExplainJson, Thresholds } from '../../../../types';
 import { DarkPaperFull } from '../../../../style-variables';
@@ -11,10 +11,10 @@ import nodeTypes from './ExecutionPlanNodeTypes';
 interface FlowTreeProps {
   data: ExplainJson;
   thresholds: Thresholds;
-};
+}
 
 const FlowTree = ({ data, thresholds }: FlowTreeProps) => {
-  const result = buildFlowGraph(data,thresholds,'flowNode','smoothstep');
+  const result = buildFlowGraph(data, thresholds, 'flowNode', 'smoothstep');
   return (
     <ReactFlow
       nodes={result.nodes}
@@ -32,14 +32,15 @@ const FlowTree = ({ data, thresholds }: FlowTreeProps) => {
     >
       <Background gap={32} />
     </ReactFlow>
-)};
+  );
+};
 
 // Memoise to prevent rerender on fullscreen toggle
 const MemoFlowTree = memo(FlowTree);
 
 // prettier-ignore
 const TreeContainer = styled(DarkPaperFull)<{$fullscreen: boolean}>`
-${({$fullscreen}) => $fullscreen ? `
+${({ $fullscreen }) => ($fullscreen ? `
   position: fixed;
   top: 0;
   left: 0;
@@ -49,7 +50,7 @@ ${({$fullscreen}) => $fullscreen ? `
 ` : `
   position: relative;
   flex: 1;
-`}`;
+`)}`;
 
 const defaultThresholds: Thresholds = {
   percentDuration: 30,

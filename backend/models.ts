@@ -69,16 +69,16 @@ const DBFunctions: DBFunctions = {
       rds_msql: false,
       sqlite: false,
       directPGURI: false,
-    }
+    };
     /*
      all the if/else and try/catch in this function are for various forms of error handling. incorrect passwords/removed entries after successful logins
     */
 
     //  RDS PG POOL: truthy values means user has inputted info into config -> try to log in
     if (
-      this.curRDS_PG_DB.user &&
-      this.curRDS_PG_DB.password &&
-      this.curRDS_PG_DB.host
+      this.curRDS_PG_DB.user
+      && this.curRDS_PG_DB.password
+      && this.curRDS_PG_DB.host
     ) {
       try {
         configExists.rds_pg = true;
@@ -96,9 +96,9 @@ const DBFunctions: DBFunctions = {
 
     //  RDS MSQL POOL: truthy values means user has inputted info into config -> try to log in
     if (
-      this.curRDS_MSQL_DB.user &&
-      this.curRDS_MSQL_DB.password &&
-      this.curRDS_MSQL_DB.host
+      this.curRDS_MSQL_DB.user
+      && this.curRDS_MSQL_DB.password
+      && this.curRDS_MSQL_DB.host
     ) {
       try {
         configExists.rds_msql = true;
@@ -106,7 +106,7 @@ const DBFunctions: DBFunctions = {
 
         // test query to make sure were connected. needed for the catch statement to hit incase we arent connected.
         const testQuery = await pools.rds_msql_pool.query('SHOW DATABASES;');
-        logger(`CONNECTED TO RDS MYSQL DATABASE!`, LogType.SUCCESS);
+        logger('CONNECTED TO RDS MYSQL DATABASE!', LogType.SUCCESS);
         this.dbsInputted.rds_msql = true;
       } catch (error) {
         this.dbsInputted.rds_msql = false;
@@ -139,7 +139,7 @@ const DBFunctions: DBFunctions = {
       try {
         configExists.msql = true;
         await connectionFunctions.MSQL_DBConnect({
-          host: `localhost`,
+          host: 'localhost',
           port: MSQL_Cred.port,
           user: MSQL_Cred.user,
           password: MSQL_Cred.password,
@@ -153,7 +153,7 @@ const DBFunctions: DBFunctions = {
         // test query to make sure were connected. needed for the catch statement to hit incase we arent connected.
         const testQuery = await pools.msql_pool.query('SHOW DATABASES;');
         this.dbsInputted.msql = true;
-        logger(`CONNECTED TO LOCAL MYSQL DATABASE!`, LogType.SUCCESS);
+        logger('CONNECTED TO LOCAL MYSQL DATABASE!', LogType.SUCCESS);
       } catch (error) {
         this.dbsInputted.msql = false;
         logger('FAILED TO CONNECT TO LOCAL MSQL DATABASE', LogType.ERROR);
@@ -179,9 +179,8 @@ const DBFunctions: DBFunctions = {
       this.dbsInputted.sqlite = false;
     }
 
-    return { dbsInputted: this.dbsInputted, configExists }
+    return { dbsInputted: this.dbsInputted, configExists };
   },
-
 
   query(text, params, dbType) {
     // RUN ANY QUERY - function that will run query on database that is passed in.
@@ -222,10 +221,9 @@ const DBFunctions: DBFunctions = {
           } else {
             resolve(res);
           }
-        })
-      })
+        });
+      });
     }
-
   },
 
   sampler(queryString) {
@@ -259,13 +257,12 @@ const DBFunctions: DBFunctions = {
     });
   },
 
-
   // asdf check this.curRDS_MSQL_DB typing sometime
   /**
    * Only connect to one database at a time
    * @param db Name of database to connect to
    * @param dbType Type of database to connect to
-   * 
+   *
    */
   async connectToDB(db, dbType) {
     // change current Db
@@ -302,7 +299,6 @@ const DBFunctions: DBFunctions = {
         this.curSQLite_DB.path = '';
       } catch (e) {
         logger('FAILED TO DELETE SQLITE DB FILE', LogType.ERROR);
-
       }
     }
   },
@@ -388,13 +384,13 @@ const DBFunctions: DBFunctions = {
         const listData = await this.getDBLists(dbType, dbName);
         logger(
           `RESOLVING DB DETAILS: Fetched DB names along with Table List for DBType: ${dbType} and DB: ${dbName}`,
-          LogType.SUCCESS
+          LogType.SUCCESS,
         );
         listObj.tableList = listData;
       } catch (error) {
         logger(
           `COULNT GET DATABASE LIST FOR ${dbType} ${dbName} DATABASE`,
-          LogType.ERROR
+          LogType.ERROR,
         );
       }
     }
@@ -403,11 +399,11 @@ const DBFunctions: DBFunctions = {
   },
 
   /**
-   * 
+   *
    * get column objects for the given tableName
    * @param tableName name of table to get the columns of
-   * @param dbType type of database of the table 
-   * @returns 
+   * @param dbType type of database of the table
+   * @returns
    */
   getTableInfo(tableName, dbType) {
     // Returns an array of columnObj given a tableName
@@ -445,9 +441,9 @@ const DBFunctions: DBFunctions = {
                 const { db_name } = data;
 
                 if (
-                  db_name !== 'postgres' &&
-                  db_name !== 'template0' &&
-                  db_name !== 'template1'
+                  db_name !== 'postgres'
+                  && db_name !== 'template0'
+                  && db_name !== 'template1'
                 ) {
                   data.db_type = dbType;
                   dbList.push(data);
@@ -510,10 +506,10 @@ const DBFunctions: DBFunctions = {
         const dbList: dbDetails[] = [];
         const { path } = this.curSQLite_DB;
         const filename = path.slice(path.lastIndexOf('\\') + 1, path.lastIndexOf('.db'));
-        const stats = fs.statSync(path)
+        const stats = fs.statSync(path);
         const fileSizeInKB = stats.size / 1024;
         // Convert the file size to megabytes (optional)
-        const data = { db_name: filename, db_size: `${fileSizeInKB}KB`, db_type: DBType.SQLite }
+        const data = { db_name: filename, db_size: `${fileSizeInKB}KB`, db_type: DBType.SQLite };
         dbList.push(data);
         resolve(dbList);
       }
@@ -521,7 +517,7 @@ const DBFunctions: DBFunctions = {
   },
 
   /**
-   * Generates a list of column objects for the inputted table name 
+   * Generates a list of column objects for the inputted table name
    * @param tableName name of table to get column properties of
    * @param dbType type of database the table is in
    * @returns promise that resolves to array of columnObjects (column_name, data_type, character_maximum_length, is_nullable, constraint_name, constraint_type, foreign_table, foreign_column)
@@ -641,21 +637,23 @@ const DBFunctions: DBFunctions = {
             }
             const columnInfoArray: ColumnObj[] = [];
             for (let i = 0; i < rows.length; i++) {
-              const { column_name, data_type, not_null, pk, foreign_table, foreign_column } = rows[i];
+              const {
+                column_name, data_type, not_null, pk, foreign_table, foreign_column,
+              } = rows[i];
               const newColumnObj: ColumnObj = {
                 column_name,
                 data_type,
-                character_maximum_length: data_type.includes(`(`) ? parseInt(data_type.slice(1 + data_type.indexOf(`(`), data_type.indexOf(`)`)), 10) : null,
+                character_maximum_length: data_type.includes('(') ? parseInt(data_type.slice(1 + data_type.indexOf('('), data_type.indexOf(')')), 10) : null,
                 is_nullable: not_null === 1 ? 'NO' : 'YES',
                 constraint_type: pk === 1 ? 'PRIMARY KEY' : foreign_table ? 'FOREIGN KEY' : null,
                 foreign_table,
                 foreign_column,
-              }
+              };
               columnInfoArray.push(newColumnObj);
             }
             resolve(columnInfoArray);
-          })
-      })
+          });
+      });
     }
 
     logger('Trying to use unknown DB Type: ', LogType.ERROR, dbType);
@@ -695,7 +693,7 @@ const DBFunctions: DBFunctions = {
             for (let i = 0; i < tables.rows.length; i++) {
               tableList.push(tables.rows[i]);
               promiseArray.push(
-                this.getColumnObjects(tables.rows[i].table_name, dbType)
+                this.getColumnObjects(tables.rows[i].table_name, dbType),
               );
             }
 
@@ -723,7 +721,7 @@ const DBFunctions: DBFunctions = {
         if (dbType === DBType.MySQL) pool = pools.msql_pool;
         if (dbType === DBType.RDSMySQL) pool = pools.rds_msql_pool;
 
-        let query2 = `SELECT
+        const query2 = `SELECT
         table_catalog,
         table_schema,
         table_name,
@@ -738,7 +736,7 @@ const DBFunctions: DBFunctions = {
         //  TABLE_SCHEMA as table_catalog,
         //  TABLE_NAME as table_name
         //  FROM information_schema.tables
-        //  WHERE TABLE_SCHEMA NOT IN('information_schema', 'performance_schema', 'mysql') 
+        //  WHERE TABLE_SCHEMA NOT IN('information_schema', 'performance_schema', 'mysql')
         //  AND TABLE_SCHEMA = '${dbName}'
         //  ORDER BY table_name;`;
 
@@ -762,7 +760,7 @@ const DBFunctions: DBFunctions = {
               // Sys returns way too much stuff idk
               if (tableList[i].table_schema !== 'sys') {
                 promiseArray.push(
-                  this.getColumnObjects(tableList[i].table_name, dbType)
+                  this.getColumnObjects(tableList[i].table_name, dbType),
                 );
               }
             }
@@ -791,17 +789,17 @@ const DBFunctions: DBFunctions = {
         WHERE m.type = 'table' AND m.name != 'sqlite_stat1' AND m.name != 'sqlite_sequence'`;
         sqliteDB
           .all(query, (err, rows) => {
-            if (err) console.error(err.message)
+            if (err) console.error(err.message);
             for (let i = 0; i < rows.length; i += 1) {
               const newTableDetails: TableDetails = {
                 table_catalog: this.curSQLite_DB.path.slice(this.curSQLite_DB.path.lastIndexOf('\\') + 1),
                 table_schema: 'asdf',
                 table_name: rows[i].table_name,
                 is_insertable_into: 'asdf',
-              }
+              };
               tableList.push(newTableDetails);
               promiseArray.push(
-                this.getColumnObjects(rows[i].table_name, dbType)
+                this.getColumnObjects(rows[i].table_name, dbType),
               );
             }
             Promise.all(promiseArray)
@@ -815,7 +813,7 @@ const DBFunctions: DBFunctions = {
               .catch((error) => {
                 reject(error);
               });
-          })
+          });
       }
     });
   },

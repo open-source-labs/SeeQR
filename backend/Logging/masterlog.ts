@@ -14,7 +14,7 @@ const logger = function (
   message: string,
   logType: LogType = LogType.NORMAL,
   opt1?,
-  opt2?
+  opt2?,
 ) {
   // Code for the log color
   let colorCode = 0;
@@ -61,8 +61,8 @@ const logger = function (
   if (opt2) moreText += JSON.stringify(opt2);
 
   console.log(
-    `\u001b[1;${colorCode}m ${`[${logType}] ${message + moreText}`}` +
-      `\u001b[1;0m`
+    `\u001b[1;${colorCode}m ${`[${logType}] ${message + moreText}`}`
+      + '\u001b[1;0m',
   );
   saveLogMessage(`[${logType}] ${message}`);
 };

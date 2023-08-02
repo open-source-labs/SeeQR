@@ -6,9 +6,9 @@
  * Each object represents a click action the user can take or something cosemetic like a separate line
  */
 
-
 // import shell so a new browser window can open for external links
- const { shell } = require('electron');
+// const { shell } = require('electron');
+import { shell } from 'electron';
 
 // darwin is the process platform for Macs
 const isMac = process.platform === 'darwin';

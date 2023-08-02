@@ -63,7 +63,7 @@ const helperFunctions: HelperFunctions = {
     const PG = `BEGIN; EXPLAIN (FORMAT JSON, ANALYZE, VERBOSE, BUFFERS) ${sqlString}; ROLLBACK`;
     // const MYSQL = `BEGIN; EXPLAIN ANALYZE ${sqlString}`;
     const MYSQL = `EXPLAIN ANALYZE ${sqlString}`;
-    const SQLite = `EXPLAIN QUERY PLAN ${sqlString}`
+    const SQLite = `EXPLAIN QUERY PLAN ${sqlString}`;
 
     if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) return PG;
     if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL) return MYSQL;
@@ -74,7 +74,7 @@ const helperFunctions: HelperFunctions = {
   // import SQL file into new DB created
   runSQLFunc: function runSQLFunc(dbName, file, dbType: DBType) {
     const SQL_data = docConfig.getFullConfig();
-    const PG = `psql -U ${SQL_data.pg.user} -d "${dbName}" -f "${file}" -p ${SQL_data.pg.port}`;
+    const PG = `PGPASSWORD=${SQL_data.pg.password} psql -U ${SQL_data.pg.user} -d "${dbName}" -f "${file}" -p ${SQL_data.pg.port}`;
     const MYSQL = `export MYSQL_PWD='${SQL_data.mysql.password}'; mysql -u${SQL_data.mysql.user} --port=${SQL_data.mysql.port} ${dbName} < ${file}`;
     if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) return PG;
     if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL) return MYSQL;
@@ -84,7 +84,7 @@ const helperFunctions: HelperFunctions = {
   // import TAR file into new DB created
   runTARFunc: function runTARFunc(dbName, file, dbType: DBType) {
     const SQL_data = docConfig.getFullConfig();
-    const PG = `pg_restore -U ${SQL_data.pg.user} -p ${SQL_data.pg.port} -d "${dbName}" "${file}" `;
+    const PG = `PGPASSWORD=${SQL_data.pg.password} pg_restore -U ${SQL_data.pg.user} -p ${SQL_data.pg.port} -d "${dbName}" "${file}" `;
     const MYSQL = `export MYSQL_PWD='${SQL_data.mysql.password}'; mysqldump -u ${SQL_data.mysql.user} --port=${SQL_data.mysql.port}  ${dbName} > ${file}`;
     if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) return PG;
     if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL) return MYSQL;
@@ -95,10 +95,10 @@ const helperFunctions: HelperFunctions = {
   runFullCopyFunc: function runFullCopyFunc(
     dbCopyName,
     newFile,
-    dbType: DBType
+    dbType: DBType,
   ) {
     const SQL_data = docConfig.getFullConfig();
-    const PG = `pg_dump -U ${SQL_data.pg.user}  -p ${SQL_data.pg.port} -Fp -d ${dbCopyName} > "${newFile}"`;
+    const PG = `PGPASSWORD=${SQL_data.pg.password} pg_dump -s -U ${SQL_data.pg.user} -p ${SQL_data.pg.port} -Fp -d ${dbCopyName} > "${newFile}"`;
     const MYSQL = `export MYSQL_PWD='${SQL_data.mysql.password}'; mysqldump -h localhost -u ${SQL_data.mysql.user}  ${dbCopyName} > ${newFile}`;
     if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) return PG;
     if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL) return MYSQL;
@@ -109,10 +109,10 @@ const helperFunctions: HelperFunctions = {
   runHollowCopyFunc: function runHollowCopyFunc(
     dbCopyName,
     file,
-    dbType: DBType
+    dbType: DBType,
   ) {
     const SQL_data = docConfig.getFullConfig();
-    const PG = `pg_dump -s -U ${SQL_data.pg.user}  -p ${SQL_data.pg.port} -F p -d "${dbCopyName}" > "${file}"`;
+    const PG = ` PGPASSWORD=${SQL_data.pg.password} pg_dump -s -U ${SQL_data.pg.user} -p ${SQL_data.pg.port} -F p -d "${dbCopyName}" > "${file}"`;
     const MYSQL = `export MYSQL_PWD='${SQL_data.mysql.password}'; mysqldump -h localhost -u ${SQL_data.mysql.user} --port=${SQL_data.mysql.port}  ${dbCopyName} > ${file}`;
     if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) return PG;
     if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL) return MYSQL;
@@ -120,19 +120,18 @@ const helperFunctions: HelperFunctions = {
   },
 
   // promisified execute to execute commands in the child process
-  promExecute: (cmd: string) =>
-    new Promise((resolve, reject) => {
-      exec(cmd, {
-        timeout: 5000,
-        env: { PGPASSWORD: docConfig.getFullConfig().pg.password },
-      }, (error, stdout, stderr) => {
-        if (error) {
-          return reject(error);
-        }
-        if (stderr) return reject(new Error(stderr));
-        return resolve({ stdout, stderr });
-      });
-    }),
+  promExecute: (cmd: string) => new Promise((resolve, reject) => {
+    exec(cmd, {
+      timeout: 5000,
+      // env: { PGPASSWORD: docConfig.getFullConfig().pg.password },
+    }, (error, stdout, stderr) => {
+      if (error) {
+        return reject(error);
+      }
+      if (stderr) return reject(new Error(stderr));
+      return resolve({ stdout, stderr });
+    });
+  }),
 };
 
 export default helperFunctions;

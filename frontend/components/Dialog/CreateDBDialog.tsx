@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   DialogTitle,
   Dialog,
-  Tooltip
+  Tooltip,
 } from '@mui/material/';
 import { ipcRenderer } from 'electron';
 import { DatabaseInfo } from '../../types';
@@ -23,7 +23,7 @@ interface CreateDBDialogProps {
   show: boolean,
   DBInfo: DatabaseInfo[] | undefined;
   onClose: () => void;
-};
+}
 
 const CreateDBDialog = ({ show, DBInfo, onClose }: CreateDBDialogProps) => {
   if (!show) return <></>;
@@ -83,7 +83,7 @@ const CreateDBDialog = ({ show, DBInfo, onClose }: CreateDBDialogProps) => {
         {
           newDbName,
         },
-        dbt
+        dbt,
       )
       .then(() => {
         handleClose();

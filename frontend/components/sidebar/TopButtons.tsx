@@ -2,7 +2,7 @@ import React from 'react';
 import { IconButton, Tooltip } from '@mui/material';
 import styled from 'styled-components';
 import { Equalizer, Settings, Coronavirus } from '@mui/icons-material';
-import HomeIcon from '@mui/icons-material/Home'
+import HomeIcon from '@mui/icons-material/Home';
 import { AppState } from '../../types';
 
 import { textColor, hoverColor, selectedColor } from '../../style-variables';

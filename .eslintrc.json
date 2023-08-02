@@ -7,13 +7,16 @@
   },
   "globals": { "JSX": "readonly", "Chart": "readonly", "NodeJS": "readonly" },
   "extends": [
+    "eslint:recommended",
     "plugin:react/recommended",
+    "plugin:react-hooks/recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
+
     "airbnb",
-    "plugin:import/errors",
-    "plugin:import/warnings",
-    "plugin:import/typescript",
-    // "plugin:@typescript-eslint/recommended",
-    "prettier"
+
+    "plugin:import/recommended",
+    "plugin:import/typescript"
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
@@ -21,38 +24,56 @@
       "jsx": true
     },
     "ecmaVersion": 12,
-    "sourceType": "module"
+    "sourceType": "module",
+    "project": "./tsconfig.json"
   },
-  "plugins": ["react", "@typescript-eslint"],
+  "plugins": ["react", "react-hooks", "@typescript-eslint"],
   "rules": {
-    "react/jsx-filename-extension": [2, { "extensions": [".jsx", ".tsx"] }],
+    "indent": ["error", 2, { "offsetTernaryExpressions": true }],
+    "react/jsx-filename-extension": [1, { "extensions": [".jsx", ".tsx"] }],
+
     "no-use-before-define": "off",
     "@typescript-eslint/no-use-before-define": ["error"],
+
     "import/extensions": [
       "error",
       "ignorePackages",
       { "js": "never", "jsx": "never", "ts": "never", "tsx": "never" }
     ],
-    // "import/no-extraneous-dependencies": ["error", { "devDependencies": true }], **trying to resolve the electron issue 
+
     "jsx-a11y/label-has-associated-control": "off",
+
     // prevent wrong warning with typescript overloads
     "no-unused-vars": "off",
     "@typescript-eslint/no-unused-vars": ["error"],
-    "no-dupe-class-members": "off", 
+
+    "no-dupe-class-members": "off",
     "@typescript-eslint/no-dupe-class-members": ["error"],
+
     "lines-between-class-members": "off",
     "@typescript-eslint/lines-between-class-members": [
       "error",
+      "always",
       { "exceptAfterSingleLine": true }
     ],
-    "react/jsx-curly-newline": "off",
+
+    // "react/jsx-curly-newline": "off",
+
     // turned off because typescript, functional components and default props
     // don't seem to be good friends. Decided to manually handle defaults for
     // optional props instead
     "react/require-default-props": "off",
     "react/jsx-props-no-spreading": "off",
+
     "camelcase": "off"
+
+    // "import/no-extraneous-dependencies": ["error", { "devDependencies": true }], **trying to resolve the electron issue
   },
-  // "settings": "import/core-modules: [ electron ]",  **trying to resolve the electron issue 
+  // "settings": "import/core-modules: [ electron ]",  **trying to resolve the electron issue
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  },
   "root": true
 }

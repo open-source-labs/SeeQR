@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Dialog, DialogTitle, Tooltip } from '@mui/material/';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import { ipcRenderer, remote } from 'electron';
+import { ipcRenderer, dialog } from 'electron';
 import { sendFeedback } from '../../lib/utils';
 import {
   ButtonContainer,
@@ -14,8 +14,6 @@ import {
   StyledNativeOption,
 } from '../../style-variables';
 import { DBType } from '../../../backend/BE_types';
-
-const { dialog } = remote;
 
 interface ImportPayload {
   newDbName: string;
@@ -79,11 +77,11 @@ const AddNewDbModal = ({
   };
 
   // Opens modal to select file and sends the selected file to backend
+  // TODO: fix the any type.
+  // REVIEW:
   const handleFileClick = () => {
-    const dbt: DBType = (document.getElementById('dbTypeDropdown') as any).value;
-    // console.log('curDBType in addnewdbmodalcorrect', curDBType)
-    // console.log('newdbName in addnewdbmodalcorrect', newDbName)
-    // console.log('dbt in addnewdbmodalcorrect', dbt)
+    const dbt: DBType = (document.getElementById('dbTypeDropdown') as any)
+      .value;
     dialog
       .showOpenDialog({
         properties: ['openFile'],
@@ -106,12 +104,11 @@ const AddNewDbModal = ({
           filePath: result.filePaths[0],
         };
 
-
         ipcRenderer.invoke('import-db', payload, dbt).catch(() =>
           sendFeedback({
             type: 'error',
             message: 'Failed to import database',
-          })
+          }),
         );
       })
       .catch((err: object) => {
@@ -150,14 +147,20 @@ const AddNewDbModal = ({
           </Tooltip>
         </TextFieldContainer>
         <DropdownContainer>
-          <StyledInputLabel id="dbtype-select-label" variant="standard" htmlFor="uncontrolled-native">
+          <StyledInputLabel
+            id="dbtype-select-label"
+            variant="standard"
+            htmlFor="uncontrolled-native"
+          >
             Database Type
           </StyledInputLabel>
           <StyledNativeDropdown
-            id='dbTypeDropdown'
+            id="dbTypeDropdown"
             defaultValue={DBType.Postgres}
           >
-            <StyledNativeOption value={DBType.Postgres}>Postgres</StyledNativeOption>
+            <StyledNativeOption value={DBType.Postgres}>
+              Postgres
+            </StyledNativeOption>
             <StyledNativeOption value={DBType.MySQL}>MySQL</StyledNativeOption>
           </StyledNativeDropdown>
         </DropdownContainer>

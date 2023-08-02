@@ -41,7 +41,9 @@ const createLayout = <T>(nodes: SizedNode[]): Graph<T> => {
 
   // Set an object for the graph label
   // for horizontal graph, rankdir: 'LR'
-  g.setGraph({ rankdir: 'TB', ranksep: 100, nodesep: 100, edgesep: 100 });
+  g.setGraph({
+    rankdir: 'TB', ranksep: 100, nodesep: 100, edgesep: 100,
+  });
 
   // Default to assigning a new object as a label for each new edge.
   g.setDefaultEdgeLabel(() => ({}));

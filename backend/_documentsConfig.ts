@@ -8,15 +8,19 @@ import { DBType, DocConfigFile, LogType } from './BE_types';
 import logger from './Logging/masterlog';
 
 const home = `${os.homedir()}/Documents/SeeQR`;
-const configFile = `config.json`;
+const configFile = 'config.json';
 const configPath = `${home}/${configFile}`;
 const defaultFile: DocConfigFile = {
   mysql: { user: '', password: '', port: 3306 },
   pg: { user: '', password: '', port: 5432 },
-  rds_mysql: { user: '', password: '', port: 3306, host: '' },
-  rds_pg: { user: '', password: '', port: 5432, host: '' },
+  rds_mysql: {
+    user: '', password: '', port: 3306, host: '',
+  },
+  rds_pg: {
+    user: '', password: '', port: 5432, host: '',
+  },
   sqlite: { path: '' },
-  directPGURI: { uri: '' }
+  directPGURI: { uri: '' },
 };
 
 /**
@@ -27,7 +31,7 @@ function writeConfigDefault(): DocConfigFile {
   logger('Could not find config file. Creating default', LogType.WARNING);
   fs.writeFileSync(configPath, JSON.stringify(defaultFile));
   return defaultFile;
-};
+}
 
 /**
  * Check if config.json object has the correct database properties (mysql, pg, etc.), tries to replace only the properties that are missing and return either the original or new object. Doesn't care about additional properties in the object besides those in const defaultFile.
@@ -51,8 +55,8 @@ const checkConfigFile = function (currConfig: DocConfigFile): DocConfigFile {
   } catch (err) {
     console.log(err);
     logger(
-      `Error caught checking config file. Resetting config to default.`,
-      LogType.WARNING
+      'Error caught checking config file. Resetting config to default.',
+      LogType.WARNING,
     );
     return writeConfigDefault();
   }
@@ -69,24 +73,24 @@ const checkConfigFile = function (currConfig: DocConfigFile): DocConfigFile {
 
 /**
  * Reads config file data and sends it into checkConfigFile, then returns the result
- * If an error occurs during read, the config file will be set back to default 
+ * If an error occurs during read, the config file will be set back to default
  * @returns config file contents (login info for each database type)
  */
 function readConfigFile(): DocConfigFile {
   try {
     const config = JSON.parse(
-      fs.readFileSync(configPath, 'utf-8')
+      fs.readFileSync(configPath, 'utf-8'),
     ) as DocConfigFile;
     return checkConfigFile(config);
   } catch (err: any) {
     console.log(err);
     logger(
-      `Error caught checking config file. Resetting config to default.`,
-      LogType.WARNING
+      'Error caught checking config file. Resetting config to default.',
+      LogType.WARNING,
     );
     return writeConfigDefault();
   }
-};
+}
 
 interface DocConfig {
   getConfigFolder: () => string;
@@ -113,7 +117,7 @@ const docConfig: DocConfig = {
     } else {
       logger(
         `Could not find documents directory. Creating at: ${home}`,
-        LogType.WARNING
+        LogType.WARNING,
       );
       fs.mkdirSync(home);
     }
@@ -126,7 +130,7 @@ const docConfig: DocConfig = {
    * @returns login info for the desired database type
    */
   getCredentials: function getCredentials(dbType: DBType) {
-    this.getConfigFolder(); // ensure directory exists 
+    this.getConfigFolder(); // ensure directory exists
     let configFile: DocConfigFile;
     try {
       configFile = readConfigFile(); // all login info now in configFile
@@ -177,7 +181,7 @@ const docConfig: DocConfig = {
 
   /**
    * Takes config data object sent from frontend, stringifies it and saves in config file
-   * @param config 
+   * @param config
    */
   saveConfig: function saveConfig(config: Object) {
     try {

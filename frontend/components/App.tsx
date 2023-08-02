@@ -1,48 +1,53 @@
-import React, { useState, useEffect } from 'react';
-import '../lib/style.css'
-import styled from 'styled-components';
-import { ThemeProvider, Theme, StyledEngineProvider } from '@mui/material/';
+import { StyledEngineProvider, Theme, ThemeProvider } from '@mui/material/';
 import CssBaseline from '@mui/material/CssBaseline';
-import { IpcRendererEvent, ipcRenderer } from 'electron';
-import {
-  MuiTheme,
-  bgColor,
-  sidebarWidth,
-  defaultMargin,
-  sidebarShowButtonSize,
-} from '../style-variables';
+import { ipcRenderer, IpcRendererEvent } from 'electron';
+import { EventEmitter } from 'events';
+import React, { useEffect, useState } from 'react';
+import styled from 'styled-components';
+
 import GlobalStyle from '../GlobalStyle';
+
+import { DBType } from '../../backend/BE_types';
+import { createQuery } from '../lib/queries';
+import '../lib/style.css';
+import { once } from '../lib/utils';
 import {
   AppState,
   CreateNewQuery,
-  QueryData,
-  isDbLists,
   DatabaseInfo,
-  TableInfo,
   DbLists,
+  isDbLists,
+  QueryData,
+  TableInfo,
 } from '../types';
-import { DBType } from '../../backend/BE_types';
-import { createQuery } from '../lib/queries';
+
+import {
+  bgColor,
+  defaultMargin,
+  MuiTheme,
+  sidebarShowButtonSize,
+  sidebarWidth,
+} from '../style-variables';
+
 import Sidebar from './sidebar/Sidebar';
-import QueryView from './views/QueryView/QueryView';
-import DbView from './views/DbView/DbView';
+
 import CompareView from './views/CompareView/CompareView';
-import QuickStartView from './views/QuickStartView';
+import DbView from './views/DbView/DbView';
 import NewSchemaView from './views/NewSchemaView/NewSchemaView';
-import FeedbackModal from './modal/FeedbackModal';
-import Spinner from './modal/Spinner';
-import { once } from '../lib/utils';
-import CreateDBDialog from './Dialog/CreateDBDialog';
-import ConfigView from './Dialog/ConfigView';
+import QueryView from './views/QueryView/QueryView';
+import QuickStartView from './views/QuickStartView';
 import ThreeDView from './views/ThreeDView/ThreeDView';
 
+import FeedbackModal from './modal/FeedbackModal';
+import Spinner from './modal/Spinner';
+
+import ConfigView from './Dialog/ConfigView';
+import CreateDBDialog from './Dialog/CreateDBDialog';
 
 declare module '@mui/material/styles/' {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  interface DefaultTheme extends Theme { }
+  interface DefaultTheme extends Theme {}
 }
-
-const EventEmitter = require('events');
 
 const emitter = new EventEmitter();
 emitter.setMaxListeners(20);
@@ -58,7 +63,8 @@ const Main = styled.main<{ $fullwidth: boolean }>`
   grid-area: ${({ $fullwidth }) => ($fullwidth ? '1 / 1 / -1 / -1' : 'main')};
   background: ${bgColor};
   height: calc(100vh - (2 * ${defaultMargin}));
-  max-width: ${({ $fullwidth }) => ($fullwidth ? '' : `calc(90vw - ${sidebarWidth} )`)};
+  max-width: ${({ $fullwidth }) =>
+    $fullwidth ? '' : `calc(90vw - ${sidebarWidth} )`};
   padding: ${defaultMargin} ${sidebarShowButtonSize};
   margin: 0;
 `;

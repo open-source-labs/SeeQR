@@ -52,14 +52,14 @@ const QuerySqlInput = ({ sql, onChange, runQuery }: QuerySqlInputProps) => {
           </Tooltip>
         </ButtonGroup>
       </Toolbar>
-      <CodeMirror 
+      <CodeMirror
         onChange={onChange}
         theme={dracula}
-        height='300px'
+        height="300px"
         value={sql}
         basicSetup={{
-            highlightActiveLine: false
-          }}
+          highlightActiveLine: false,
+        }}
       />
     </Container>
   );
