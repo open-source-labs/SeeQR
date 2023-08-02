@@ -201,4 +201,4 @@ const docConfig: DocConfig = {
   },
 };
 
-module.exports = docConfig;
+export default docConfig;

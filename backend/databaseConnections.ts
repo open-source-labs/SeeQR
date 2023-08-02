@@ -1,9 +1,9 @@
+import mysql from 'mysql2/promise';
+import { Pool } from 'pg';
 import { LogType } from './BE_types';
 import logger from './Logging/masterlog';
 import pools from './poolVariables';
 
-const { Pool } = require('pg');
-const mysql = require('mysql2/promise');
 const sqlite3 = require('sqlite3').verbose();
 
 export default {
