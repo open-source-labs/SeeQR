@@ -17,9 +17,9 @@ import {
 import backendObjToQuery from './ertable-functions';
 import logger from './Logging/masterlog';
 import { Feedback } from '../shared/types/utilTypes';
-import * as db from './models';
+// import * as db from './models'; // to be integrated
 
-// const db = require('./models');
+const db = require('./models');
 const docConfig = require('./_documentsConfig');
 
 const {

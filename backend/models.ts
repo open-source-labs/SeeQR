@@ -840,5 +840,5 @@ const DBFunctions: DBFunctions = {
   },
 };
 
-// module.exports = DBFunctions;
-export default DBFunctions;
+module.exports = DBFunctions;
+// export default DBFunctions; switching to es6 later
