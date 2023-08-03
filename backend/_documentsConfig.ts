@@ -10,7 +10,6 @@ import logger from './Logging/masterlog';
 const home = `${os.homedir()}/Documents/SeeQR`;
 const configFile = 'config.json';
 const configPath = `${home}/${configFile}`;
-console.log(configPath, 'this is configFILE!!!');
 const defaultFile: DocConfigFile = {
   mysql: { user: '', password: '', port: 3306 },
   pg: { user: '', password: '', port: 5432 },
@@ -46,7 +45,10 @@ function writeConfigDefault(): DocConfigFile {
  * @returns configuration with only valid key value properties
  */
 const checkConfigFile = function (currConfig: DocConfigFile): DocConfigFile {
-  console.log('this is the current config', currConfig);
+  console.log(
+    'This is the current config and it runs this function 4-6 times!! NOT SURE WHY!!!',
+    currConfig,
+  );
   const invalidKeys: string[] = [];
   try {
     Object.keys(defaultFile).forEach((key) => {
