@@ -91,9 +91,6 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
     database: schemaState.database,
     updates,
   });
-  useEffect(() => {
-    backendObj.current.database = selectedDb;
-  }, [selectedDb]);
 
   const backendColumnObj = useRef({
     database: schemaState.database,
