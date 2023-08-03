@@ -52,7 +52,7 @@
     "electron-packager": "^17.1.1",
     "electron-reloader": "^1.2.3",
     "electron-store": "^8.1.0",
-    "fix-path": "^3.0.0",
+    "fix-path": "^4.0.0",
     "fontsource-roboto": "^4.0.0",
     "fs": "0.0.1-security",
     "html-entities": "^2.4.0",
