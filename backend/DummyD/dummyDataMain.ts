@@ -1,4 +1,4 @@
-import faker from 'faker';
+import { faker } from '@faker-js/faker';
 import { ColumnObj, DummyRecords, LogType } from '../BE_types';
 import logger from '../Logging/masterlog';
 
@@ -16,6 +16,7 @@ const db = require('../models');
 // *************************************************** Helper Functions *************************************************** //
 
 // helper function to generate random numbers that will ultimately represent a random date
+
 const getRandomInt = (min: number, max: number) => {
   const minInt = Math.ceil(min);
   const maxInt = Math.floor(max);
@@ -29,32 +30,38 @@ const generateDataByType = (columnObj: ColumnObj): string | number => {
   // faker.js method to generate data by type
   // console.log('columnObj_datatype: ', columnObj.data_type)
 
+  // REVIEW: updated faker so it has different methods. need to double check this.
   switch (columnObj.data_type) {
     case 'smallint':
-      return faker.random.number({ min: -32768, max: 32767 });
+      return faker.number.int({ min: -32768, max: 32767 });
     case 'integer':
-      return faker.random.number({ min: -2147483648, max: 2147483647 });
+      return faker.number.int({ min: -2147483648, max: 2147483647 });
     case 'bigint':
-      return faker.random.number({
+      return faker.number.int({
         min: -9223372036854775808,
         max: 9223372036854775807,
       });
     case 'character varying':
       // defaulting length to 3 because faker.lorem defaults to a length of 3 if no length is specified
 
-      length = columnObj.character_maximum_length && columnObj.character_maximum_length > 3
-        ? Math.floor(Math.random() * columnObj.character_maximum_length)
-        : 3;
-      return '\''.concat(faker.random.alphaNumeric(length)).concat('\'');
+      length =
+        columnObj.character_maximum_length &&
+        columnObj.character_maximum_length > 3
+          ? Math.floor(Math.random() * columnObj.character_maximum_length)
+          : 3;
+      return "'".concat(faker.random.alphaNumeric(length)).concat("'");
     case 'varchar':
       // defaulting length to 3 because faker.lorem defaults to a length of 3 if no length is specified
 
-      length = columnObj.character_maximum_length && columnObj.character_maximum_length > 3
-        ? Math.floor(Math.random() * columnObj.character_maximum_length)
-        : 3;
-      return '\''.concat(faker.random.alphaNumeric(length)).concat('\'');
+      length =
+        columnObj.character_maximum_length &&
+        columnObj.character_maximum_length > 3
+          ? Math.floor(Math.random() * columnObj.character_maximum_length)
+          : 3;
+      // REVIEW: updated faker so it has different methods. need to double check this.
+      return "'".concat(faker.random.alphaNumeric(length)).concat("'");
     case 'int':
-      return faker.random.number({ min: -2147483648, max: 2147483647 });
+      return faker.number.int({ min: -2147483648, max: 2147483647 });
     case 'date': {
       // generating a random date between 1500 and 2020
       const year = getRandomInt(1500, 2020).toString();
@@ -63,10 +70,11 @@ const generateDataByType = (columnObj: ColumnObj): string | number => {
       let day = getRandomInt(1, 29).toString();
       if (day.length === 1) day = `0${day}`;
       const result = `${year}/${month}/${day}`;
-      return '\''.concat(result).concat('\'');
+      return "'".concat(result).concat("'");
     }
+    // REVIEW: updated faker so it has different methods. need to double check this. Had to convert the bool to string.
     case 'boolean': {
-      return '\''.concat(faker.random.boolean()).concat('\'');
+      return "'".concat(faker.datatype.boolean().toString()).concat("'");
     }
     default:
       throw new Error('unhandled data type');
@@ -75,9 +83,15 @@ const generateDataByType = (columnObj: ColumnObj): string | number => {
 
 // *************************************************** Main Function to Generate Dummy Data *************************************************** //
 
-type GenerateDummyData = (tableInfo: ColumnObj[], numRows: number) => Promise<DummyRecords>;
+type GenerateDummyData = (
+  tableInfo: ColumnObj[],
+  numRows: number,
+) => Promise<DummyRecords>;
 
-const generateDummyData: GenerateDummyData = async (tableInfo: ColumnObj[], numRows: number) => {
+const generateDummyData: GenerateDummyData = async (
+  tableInfo: ColumnObj[],
+  numRows: number,
+) => {
   // assuming primary key is serial, get all the column names except for the column with the primary key
   const columnNames: Array<string> = [];
   for (let i = 0; i < tableInfo.length; i++) {
@@ -107,13 +121,20 @@ const generateDummyData: GenerateDummyData = async (tableInfo: ColumnObj[], numR
             LIMIT 1
           `;
         const foreignKey = await db.query(getForeignKeyQuery);
-        const chosenPrimaryValue = foreignKey.rows[0][Object.keys(foreignKey.rows[0])[0]];
+        const chosenPrimaryValue =
+          foreignKey.rows[0][Object.keys(foreignKey.rows[0])[0]];
         if (foreignKey.rows.length) {
-          if (typeof chosenPrimaryValue === 'string') row.push(`'${chosenPrimaryValue}'`);
+          if (typeof chosenPrimaryValue === 'string')
+            row.push(`'${chosenPrimaryValue}'`);
           else row.push(chosenPrimaryValue);
         } else {
-          logger('There was an error while retrieving a valid foreign key while generating dummy data.', LogType.ERROR);
-          throw new Error('There was an error while retrieving a valid foreign key.');
+          logger(
+            'There was an error while retrieving a valid foreign key while generating dummy data.',
+            LogType.ERROR,
+          );
+          throw new Error(
+            'There was an error while retrieving a valid foreign key.',
+          );
         }
       }
     }
