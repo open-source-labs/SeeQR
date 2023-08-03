@@ -115,7 +115,7 @@
     "fork-ts-checker-webpack-plugin": "^8.0.0",
     "html-webpack-plugin": "^5.5.3",
     "jest": "^29.6.2",
-    "mini-css-extract-plugin": "^1.3.8",
+    "mini-css-extract-plugin": "^2.7.6",
     "nodemon": "^3.0.1",
     "npm-run-all": "^4.1.5",
     "postcss": "^8.4.27",
