@@ -4,22 +4,23 @@
  * App.state.comparedQueries
  */
 
+import fs from 'fs';
 import ms from 'ms';
+import path from 'path';
 import { AppState, QueryData } from '../types';
 import { sendFeedback } from './utils';
-
-const path = require('path');
-const fs = require('fs');
 
 /**
  * create identifiew from label and database name
  */
-export const keyFromData = (label: string, db: string, group: string) => `label:${label} db:${db} group:${group}`;
+export const keyFromData = (label: string, db: string, group: string) =>
+  `label:${label} db:${db} group:${group}`;
 
 /**
  * create identifiew from query object
  */
-export const key = (query: QueryData) => `label:${query.label} db:${query.db} group:${query.group}`;
+export const key = (query: QueryData) =>
+  `label:${query.label} db:${query.db} group:${query.group}`;
 
 /**
  * Creates new query in collection
@@ -53,13 +54,16 @@ type GetAppDataPath = () => string;
 export const getAppDataPath: GetAppDataPath = () => {
   switch (process.platform) {
     case 'darwin': {
-      return path.join(process.env.HOME, 'Library', 'SeeQR Data.json');
+      return path.join(process.env.HOME ?? '', 'Library', 'SeeQR Data.json');
     }
     case 'win32': {
-      return path.join(process.env.APPDATA, '../../Documents/SeeQR Data.json');
+      return path.join(
+        process.env.APPDATA ?? '',
+        '../../Documents/SeeQR Data.json',
+      );
     }
     case 'linux': {
-      return path.join(process.env.HOME, '.SeeQR Data.json');
+      return path.join(process.env.HOME ?? '', '.SeeQR Data.json');
     }
     default: {
       // console.log("Unsupported platform!");
@@ -69,9 +73,9 @@ export const getAppDataPath: GetAppDataPath = () => {
 };
 
 // saves query data locally
-type SaveQuery = (query: QueryData, filepath: string) => void
+type SaveQuery = (query: QueryData, filepath: string) => void;
 
-export const saveQuery:SaveQuery = (query: QueryData, filePath: string) => {
+export const saveQuery: SaveQuery = (query: QueryData, filePath: string) => {
   // Open electron prompt and async writes to file
   fs.access(filePath, (err: unknown) => {
     if (err) {
@@ -112,7 +116,7 @@ export const setCompare = (
   isCompared: boolean,
 ) => {
   const tempQueries: any = JSON.parse(JSON.stringify(comparedQueries));
-  const queriess:any = { ...queries };
+  const queriess: any = { ...queries };
   const qKey = key(query);
 
   if (!isCompared) {
@@ -122,8 +126,10 @@ export const setCompare = (
   }
 
   if (tempQueries.hasOwnProperty(qKey)) {
-    tempQueries[qKey].executionPlan['Execution Time'] = queriess[qKey].executionPlan['Execution Time'];
-    tempQueries[qKey].executionPlan['Planning Time'] = queriess[qKey].executionPlan['Planning Time'];
+    tempQueries[qKey].executionPlan['Execution Time'] =
+      queriess[qKey].executionPlan['Execution Time'];
+    tempQueries[qKey].executionPlan['Planning Time'] =
+      queriess[qKey].executionPlan['Planning Time'];
   } else {
     tempQueries[qKey] = query;
   }
