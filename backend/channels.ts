@@ -17,6 +17,10 @@ import logger from './Logging/masterlog';
 import docConfig from './_documentsConfig';
 import backendObjToQuery from './ertable-functions';
 import helperFunctions from './helperFunctions';
+
+import { Feedback } from '../shared/types/utilTypes';
+// import * as db from './models'; // to be integrated
+
 import db from './models';
 
 // import { Integer } from 'type-fest';
@@ -33,17 +37,13 @@ const {
 } = helperFunctions;
 
 // *************************************************** IPC Event Listeners *************************************************** //
-interface Feedback {
-  type: string;
-  message: string;
-}
 
 /**
  * Handles set-config requests from frontend
  * triggered whenever save is pressed on the config/login page
  * establishes connections to database, logs failed connections, sends contents of config file
  */
-ipcMain.handle('set-config', async (event, configObj) => {
+ipcMain.handle('set-config', (event, configObj) => {
   docConfig.saveConfig(configObj); // saves login info from frontend into config file
 
   db.setBaseConnections() // tries to log in using config data
@@ -637,6 +637,7 @@ ipcMain.handle(
   },
 );
 
+// leave this here since it is only used in this context
 interface dummyDataRequestPayload {
   dbName: string;
   tableName: string;
