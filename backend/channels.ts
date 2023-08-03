@@ -13,14 +13,15 @@ import {
   QueryPayload,
 } from './BE_types';
 import generateDummyData from './DummyD/dummyDataMain';
+import logger from './Logging/masterlog';
+import docConfig from './_documentsConfig';
 import backendObjToQuery from './ertable-functions';
 import helperFunctions from './helperFunctions';
-import logger from './Logging/masterlog';
+
 import { Feedback } from '../shared/types/utilTypes';
 // import * as db from './models'; // to be integrated
 
 import db from './models';
-import docConfig from './_documentsConfig';
 
 // import { Integer } from 'type-fest';
 
@@ -152,6 +153,11 @@ ipcMain.on('return-db-list', (event) => {
 ipcMain.handle(
   'select-db',
   async (event, dbName: string, dbType: DBType): Promise<void> => {
+    console.log(
+      dbName,
+      dbType,
+      'THIS IS IN CHANNELS.TS -- DB NAME AND DB TYPE',
+    );
     logger("Received 'select-db'", LogType.RECEIVE);
 
     event.sender.send('async-started');
