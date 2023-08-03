@@ -49,17 +49,17 @@ const checkConfigFile = function (currConfig: DocConfigFile): DocConfigFile {
   console.log('this is the current config', currConfig);
   const invalidKeys: string[] = [];
   try {
-    // Object.keys(defaultFile).forEach((key) => {
-    //   if (!Object.prototype.hasOwnProperty.call(currConfig, key)) {
-    //     invalidKeys.push(key);
-    //   } else {
-    //     Object.keys(defaultFile[key]).forEach((field) => {
-    //       if (!Object.prototype.hasOwnProperty.call(currConfig[key], field)) {
-    //         invalidKeys.push(key);
-    //       }
-    //     });
-    //   }
-    // });
+    Object.keys(defaultFile).forEach((key) => {
+      if (!Object.prototype.hasOwnProperty.call(currConfig, key)) {
+        invalidKeys.push(key);
+      } else {
+        Object.keys(defaultFile[key]).forEach((field) => {
+          if (!Object.prototype.hasOwnProperty.call(currConfig[key], field)) {
+            invalidKeys.push(key);
+          }
+        });
+      }
+    });
   } catch (err) {
     console.log(err);
     logger(
