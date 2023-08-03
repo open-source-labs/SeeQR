@@ -57,14 +57,12 @@
     "react-chartjs-2": "^2.11.1",
     "react-dom": "^18.2.0",
     "react-force-graph": "^1.43.0",
-    "react-loading": "^2.0.3",
     "reactflow": "^11.7.4",
     "sql-formatter": "^4.0.2",
     "sqlite3": "^5.1.6",
     "styled-components": "^5.2.1",
     "three": "^0.155.0",
-    "three-spritetext": "^1.8.1",
-    "update-electron-app": "^2.0.1"
+    "three-spritetext": "^1.8.1"
   },
   "devDependencies": {
     "@babel/core": "^7.22.9",
@@ -94,6 +92,7 @@
     "css-loader": "^6.8.1",
     "electron-builder": "^24.6.3",
     "electron-react-devtools": "^0.5.3",
+    "enzyme": "^3.11.0",
     "eslint": "^8.46.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-prettier": "^8.10.0",
