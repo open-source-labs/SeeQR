@@ -1,3 +1,0 @@
-1. authentication 
-2. database generation 
-3. helper functions
