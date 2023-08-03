@@ -57,7 +57,7 @@ interface QueryViewProps {
   DBInfo: DatabaseInfo[] | undefined;
 }
 
-const QueryView = ({
+function QueryView({
   query,
   createNewQuery,
   selectedDb,
@@ -68,7 +68,7 @@ const QueryView = ({
   curDBType,
   setDBType,
   DBInfo,
-}: QueryViewProps) => {
+}: QueryViewProps) {
   // I think this returns undefined if DBInfo is falsy idk lol
   const dbNames = DBInfo?.map((dbi) => dbi.db_name);
   const dbTypes = DBInfo?.map((dbi) => dbi.db_type);
@@ -278,6 +278,6 @@ const QueryView = ({
       />
     </QueryViewContainer>
   );
-};
+}
 
 export default QueryView;

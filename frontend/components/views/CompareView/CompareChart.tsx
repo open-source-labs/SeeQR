@@ -1,9 +1,9 @@
 import React from 'react';
-import { Bar, defaults, ChartData } from 'react-chartjs-2';
+import { Bar, ChartData, defaults } from 'react-chartjs-2';
 import styled from 'styled-components';
-import { AppState } from '../../../types';
 import { getTotalTime } from '../../../lib/queries';
 import { compareChartColors, textColor } from '../../../style-variables';
+import { AppState } from '../../../types';
 
 const ChartContainer = styled.div`
   height: 400px;
@@ -35,14 +35,20 @@ const getChartData = (
   const comparedQueries = Object.values(queries);
 
   // unique query labels
-  const uniqueLabels = [...new Set(comparedQueries.map((query) => `label:${query.label} db:${query.db} group:${query.group}`))];
+  const uniqueLabels = [
+    ...new Set(
+      comparedQueries.map(
+        (query) => `label:${query.label} db:${query.db} group:${query.group}`,
+      ),
+    ),
+  ];
   const labels = [...new Set(comparedQueries.map((query) => query.group))];
 
   // unique dbs in comparison
   const comparedDbs = [...new Set(comparedQueries.map((query) => query.db))];
 
   // Algorithm for grouping speeds by group
-  const groups:object = {};
+  const groups: object = {};
   for (let i = 0; i < uniqueLabels.length; i++) {
     if (groups[queries[uniqueLabels[i]].db]) {
       groups[queries[uniqueLabels[i]].db].push(uniqueLabels[i]);
@@ -70,33 +76,35 @@ interface CompareChartProps {
   queries: AppState['queries'];
 }
 
-const CompareChart = ({ queries }: CompareChartProps) => (
-  <ChartContainer>
-    <Bar
-      data={getChartData(queries)}
-      options={{
-
-        title: {
-          display: true,
-          text: 'QUERY GROUP VS RUNTIME (ms)',
-          fontSize: 16,
-        },
-        legend: {
-          display: true,
-          position: 'right',
-        },
-        scales: {
-          yAxes: [{
-            ticks: {
-              beginAtZero: true,
-            },
-          }],
-        },
-        maintainAspectRatio: false,
-
-      }}
-    />
-  </ChartContainer>
-);
+function CompareChart({ queries }: CompareChartProps) {
+  return (
+    <ChartContainer>
+      <Bar
+        data={getChartData(queries)}
+        options={{
+          title: {
+            display: true,
+            text: 'QUERY GROUP VS RUNTIME (ms)',
+            fontSize: 16,
+          },
+          legend: {
+            display: true,
+            position: 'right',
+          },
+          scales: {
+            yAxes: [
+              {
+                ticks: {
+                  beginAtZero: true,
+                },
+              },
+            ],
+          },
+          maintainAspectRatio: false,
+        }}
+      />
+    </ChartContainer>
+  );
+}
 
 export default CompareChart;

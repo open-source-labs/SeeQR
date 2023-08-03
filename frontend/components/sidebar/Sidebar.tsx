@@ -83,7 +83,7 @@ const HideSidebarBtnContainer = styled.div`
   align-self: flex-end;
 `;
 
-const Sidebar = ({
+function Sidebar({
   setQueries,
   comparedQueries,
   setComparedQueries,
@@ -105,7 +105,7 @@ const Sidebar = ({
   showCreateDialog,
   setCreateDialog,
   setConfigDialog,
-}: AppState) => {
+}: AppState) {
   const toggleOpen = () => setSidebarHidden(!sidebarIsHidden);
   /**
    * Show empty query view for user to create new query.
@@ -174,6 +174,6 @@ const Sidebar = ({
       </StyledDrawer>
     </>
   );
-};
+}
 
 export default Sidebar;

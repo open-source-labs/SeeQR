@@ -41,27 +41,25 @@ interface QueryTabsProps {
   executionPlan: QueryData['executionPlan'];
 }
 
-const QueryTabs = ({ results, executionPlan }: QueryTabsProps) => {
+function QueryTabs({ results, executionPlan }: QueryTabsProps) {
   const [selectedTab, setSelectedTab] = useState<ValidTabs>('Results');
 
   if (!results && !executionPlan) return null;
   return (
-    <>
-      <ReactFlowProvider>
-        <TabSelector
-          selectedTab={selectedTab}
-          select={(tab: ValidTabs) => setSelectedTab(tab)}
-        />
-        <ToggleDisplay $isSelected={selectedTab === 'Results'}>
-          <QueryResults results={results} />
-        </ToggleDisplay>
+    <ReactFlowProvider>
+      <TabSelector
+        selectedTab={selectedTab}
+        select={(tab: ValidTabs) => setSelectedTab(tab)}
+      />
+      <ToggleDisplay $isSelected={selectedTab === 'Results'}>
+        <QueryResults results={results} />
+      </ToggleDisplay>
 
-        <ToggleDisplay $isSelected={selectedTab === 'Execution Plan'}>
-          <PlanTree data={executionPlan} />
-        </ToggleDisplay>
-      </ReactFlowProvider>
-    </>
+      <ToggleDisplay $isSelected={selectedTab === 'Execution Plan'}>
+        <PlanTree data={executionPlan} />
+      </ToggleDisplay>
+    </ReactFlowProvider>
   );
-};
+}
 
 export default QueryTabs;

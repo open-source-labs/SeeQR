@@ -170,7 +170,7 @@ function getStepContent(step: number) {
   }
 }
 
-const QuickStartView = ({ show }: QuickStartViewProps) => {
+function QuickStartView({ show }: QuickStartViewProps) {
   if (!show) return null;
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState(new Set<number>());
@@ -329,6 +329,6 @@ const QuickStartView = ({ show }: QuickStartViewProps) => {
       </div>
     </PageContainer>
   );
-};
+}
 
 export default QuickStartView;

@@ -26,11 +26,11 @@ type BottomButtonProps = {
 /**
  * Selector for view on sidebar. Updates App state with selected view
  */
-const BottomButtons = ({
+function BottomButtons({
   showCreateDialog,
   setCreateDialog,
-}: BottomButtonProps) => (
-  <ViewBtnGroup variant="contained" fullWidth>
+}: BottomButtonProps) {
+  return <ViewBtnGroup variant="contained" fullWidth>
     <ViewButton
       onClick={() => {
         setCreateDialog(true);
@@ -40,5 +40,5 @@ const BottomButtons = ({
       Create New Database
     </ViewButton>
   </ViewBtnGroup>
-);
+}
 export default BottomButtons;

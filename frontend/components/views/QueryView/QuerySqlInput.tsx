@@ -35,7 +35,7 @@ interface QuerySqlInputProps {
   runQuery: () => void;
 }
 
-const QuerySqlInput = ({ sql, onChange, runQuery }: QuerySqlInputProps) => {
+function QuerySqlInput({ sql, onChange, runQuery }: QuerySqlInputProps) {
   const formatQuery = () => {
     const formatted = format(sql, { language: 'postgresql', uppercase: true });
     onChange(formatted);
@@ -63,6 +63,6 @@ const QuerySqlInput = ({ sql, onChange, runQuery }: QuerySqlInputProps) => {
       />
     </Container>
   );
-};
+}
 
 export default QuerySqlInput;

@@ -25,13 +25,13 @@ type DummyDataModalProps = {
   curDBType: DBType | undefined;
 };
 
-const DummyDataModal = ({
+function DummyDataModal({
   open,
   onClose,
   dbName,
   tableName,
   curDBType,
-}: DummyDataModalProps) => {
+}: DummyDataModalProps) {
   const [rowNum, setRowNum] = useState(0);
   const [isError, setIsError] = useState(false);
   const [isEmpty, setIsEmpty] = useState(true);
@@ -154,6 +154,6 @@ const DummyDataModal = ({
       </Dialog>
     </div>
   );
-};
+}
 
 export default DummyDataModal;

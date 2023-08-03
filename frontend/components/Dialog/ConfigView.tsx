@@ -66,7 +66,7 @@ function a11yProps(index: number) {
   };
 }
 
-const BasicTabs = ({ onClose }: BasicTabsProps) => {
+function BasicTabs({ onClose }: BasicTabsProps) {
   // useState hooks for database connection information
   const [mysql, setmysql] = useState({});
   const [pg, setpg] = useState({});
@@ -325,13 +325,13 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
       </ButtonContainer>
     </Box>
   );
-};
+}
 interface ConfigViewProps {
   show: boolean;
   onClose: () => void;
 }
 
-const ConfigView = ({ show, onClose }: ConfigViewProps) => {
+function ConfigView({ show, onClose }: ConfigViewProps) {
   const handleClose = () => {
     onClose();
   };
@@ -350,6 +350,6 @@ const ConfigView = ({ show, onClose }: ConfigViewProps) => {
       </Dialog>
     </div>
   );
-};
+}
 
 export default ConfigView;

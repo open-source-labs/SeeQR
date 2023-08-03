@@ -47,7 +47,7 @@ type DbListProps = Pick<
   selectedView: AppState['selectedView'];
 };
 
-const DbList = ({
+function DbList({
   selectedDb,
   setSelectedDb,
   setSelectedView,
@@ -56,7 +56,7 @@ const DbList = ({
   setDBType,
   DBInfo,
   selectedView,
-}: DbListProps) => {
+}: DbListProps) {
   const [openAdd, setOpenAdd] = useState(false);
   const [openDupe, setOpenDupe] = useState(false);
   const [dbToDupe, setDbToDupe] = useState('');
@@ -185,6 +185,6 @@ const DbList = ({
       />
     </>
   );
-};
+}
 
 export default DbList;

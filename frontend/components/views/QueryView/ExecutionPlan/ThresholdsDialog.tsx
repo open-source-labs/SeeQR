@@ -42,12 +42,12 @@ interface ThresholdsDialogProps {
   setThresholds: (newThresholds: Thresholds) => void;
 }
 
-const ThresholdsDialog = ({
+function ThresholdsDialog({
   thresholds,
   setThresholds,
   handleClose,
   open,
-}: ThresholdsDialogProps) => {
+}: ThresholdsDialogProps) {
   // Maintain local state with threshold value in order to control sliders without affecting debouncing
   const [durThres, setDurThres] = useState(thresholds.percentDuration);
   const [accThres, setAccThres] = useState(thresholds.percentDuration);
@@ -94,6 +94,6 @@ const ThresholdsDialog = ({
       </DialogContent>
     </Dialog>
   );
-};
+}
 
 export default ThresholdsDialog;

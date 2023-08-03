@@ -55,13 +55,13 @@ const handleDBName = (dbCopyName, dbNames) => {
   return dbName;
 };
 
-const DuplicateDbModal = ({
+function DuplicateDbModal({
   open,
   onClose,
   dbCopyName,
   dbNames,
   curDBType,
-}: copyDbModalProps) => {
+}: copyDbModalProps) {
   const [checked, setChecked] = useState(true);
   const [newSchemaName, setNewSchemaName] = useState(
     handleDBName(dbCopyName, dbNames),
@@ -199,6 +199,6 @@ const DuplicateDbModal = ({
       </StyledEngineProvider>
     </div>
   );
-};
+}
 
 export default DuplicateDbModal;
