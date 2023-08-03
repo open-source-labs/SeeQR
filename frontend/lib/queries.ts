@@ -5,8 +5,8 @@
  */
 
 import fs from 'fs';
-import ms from 'ms';
 import path from 'path';
+import ms from 'ms';
 import { AppState, QueryData } from '../types';
 import { sendFeedback } from './utils';
 
@@ -53,22 +53,21 @@ type GetAppDataPath = () => string;
 // used to determine default filepath for saving query information locally
 export const getAppDataPath: GetAppDataPath = () => {
   switch (process.platform) {
-    case 'darwin': {
+    case 'darwin':
       return path.join(process.env.HOME ?? '', 'Library', 'SeeQR Data.json');
-    }
-    case 'win32': {
+
+    case 'win32':
       return path.join(
         process.env.APPDATA ?? '',
         '../../Documents/SeeQR Data.json',
       );
-    }
-    case 'linux': {
+
+    case 'linux':
       return path.join(process.env.HOME ?? '', '.SeeQR Data.json');
-    }
-    default: {
+
+    default:
       // console.log("Unsupported platform!");
-      process.exit(1);
-    }
+      return process.exit(1);
   }
 };
 
