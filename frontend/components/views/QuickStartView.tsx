@@ -86,7 +86,7 @@ function getStepContent(step: number) {
               Install PostgreSQL and/or MySQL servers (for Mac, use Homebrew)
             </li>
             <li> Run server(s) in the background</li>
-            <li>Ensure that PATH is enabled (***DO WE NEED THIS??)</li>
+            <li>Ensure that PATH is enabled</li>
             <li>
               If existing user - sign in with user and password using gear icon
               - top of left panel

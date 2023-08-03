@@ -1,10 +1,10 @@
+import fs from 'fs';
+import path from 'path';
 import React from 'react';
 import { IconButton, Tooltip } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import FileCopyIcon from '@mui/icons-material/FileCopy';
-import fs from 'fs';
-import path from 'path';
 import { dialog, ipcRenderer } from 'electron';
 import styled from 'styled-components';
 import Accordion from '@mui/material/Accordion';
@@ -55,7 +55,7 @@ const StyledSidebarList = styled(SidebarList)`
   background-color: ${greyDarkest};
 `;
 
-const QueryList = ({
+function QueryList({
   queries,
   createQuery,
   setQueries,
@@ -66,7 +66,7 @@ const QueryList = ({
   setFilePath,
   newFilePath,
   show,
-}: QueryListProps) => {
+}: QueryListProps) {
   const deleteQueryHandler = (query: QueryData) => () => {
     setQueries(deleteQuery(queries, query));
     setComparedQueries(deleteQuery(comparedQueries, query));
@@ -84,79 +84,101 @@ const QueryList = ({
     saveQuery(query, newFilePath);
   };
 
-  const loadQueryHandler = async function () {
-    const globalAny: any = global;
-    // If the platform is not macOS
-    if (process.platform !== 'darwin') {
-      // Resolves to a Promise<Object>
-      // REVIEW: not sure if supposed to move this to it's own ipcMain
-      dialog
-        .showOpenDialog({
-          title: 'Select the File to be uploaded',
-          defaultPath: path.join(__dirname, '../assets/'),
-          buttonLabel: 'Upload',
-          // Restricting the user to only Text Files.
-          filters: [
-            {
-              name: 'Text Files',
-              extensions: ['json', 'docx', 'txt'],
-            },
-          ],
-          // Specifying the File Selector Property
-          properties: ['openFile'],
-        })
-        .then((file: any) => {
-          // Stating whether dialog operation was
-          // cancelled or not.
-          if (!file.canceled) {
-            // Updating the GLOBAL filepath variable
-            // to user-selected file.
-            globalAny.filepath = file.filePaths[0].toString();
-            const data = JSON.parse(
-              fs.readFileSync(globalAny.filepath).toString(),
-            );
-            setQueries(data);
-          }
-          return undefined;
-        })
-        .catch(
-          (err: object | undefined) =>
-            // console.log(err);
-            undefined,
-        );
-    } else {
-      // If the platform is 'darwin' (macOS)
-      // REVIEW: not sure if supposed to move this to it's own ipcMain
-      dialog
-        .showOpenDialog({
-          title: 'Select the File to be uploaded',
-          defaultPath: path.join(__dirname, '../assets/'),
-          buttonLabel: 'Upload',
-          filters: [
-            {
-              name: 'Text Files',
-              extensions: ['json', 'docx', 'txt'],
-            },
-          ],
-          // Specifying the File Selector and Directory
-          // Selector Property In macOS
-          properties: ['openFile', 'openDirectory'],
-        })
-        .then((file: any) => {
-          if (!file.canceled) {
-            globalAny.filepath = file.filePaths[0].toString();
-            const data = JSON.parse(
-              fs.readFileSync(globalAny.filepath).toString(),
-            );
-            setQueries(data);
-          }
-          return undefined;
-        })
-        .catch(
-          (err: object) =>
-            // console.log(err);
-            undefined,
-        );
+  // const loadQueryHandler = async function () {
+  //   const globalAny: any = global;
+  //   // If the platform is not macOS
+  //   if (process.platform !== 'darwin') {
+  //     // Resolves to a Promise<Object>
+  //     // REVIEW: not sure if supposed to move this to it's own ipcMain
+  //     dialog
+  //       .showOpenDialog({
+  //         title: 'Select the File to be uploaded',
+  //         defaultPath: path.join(__dirname, '../assets/'),
+  //         buttonLabel: 'Upload',
+  //         // Restricting the user to only Text Files.
+  //         filters: [
+  //           {
+  //             name: 'Text Files',
+  //             extensions: ['json', 'docx', 'txt'],
+  //           },
+  //         ],
+  //         // Specifying the File Selector Property
+  //         properties: ['openFile'],
+  //       })
+  //       .then((file: any) => {
+  //         // Stating whether dialog operation was
+  //         // cancelled or not.
+  //         if (!file.canceled) {
+  //           // Updating the GLOBAL filepath variable
+  //           // to user-selected file.
+  //           globalAny.filepath = file.filePaths[0].toString();
+  //           const data = JSON.parse(
+  //             fs.readFileSync(globalAny.filepath).toString(),
+  //           );
+  //           setQueries(data);
+  //         }
+  //         return undefined;
+  //       })
+  //       .catch(
+  //         (err: object | undefined) =>
+  //           // console.log(err);
+  //           undefined,
+  //       );
+  //   } else {
+  //     // If the platform is 'darwin' (macOS)
+  //     // REVIEW: not sure if supposed to move this to it's own ipcMain
+  //     dialog
+  //       .showOpenDialog({
+  //         title: 'Select the File to be uploaded',
+  //         defaultPath: path.join(__dirname, '../assets/'),
+  //         buttonLabel: 'Upload',
+  //         filters: [
+  //           {
+  //             name: 'Text Files',
+  //             extensions: ['json', 'docx', 'txt'],
+  //           },
+  //         ],
+  //         // Specifying the File Selector and Directory
+  //         // Selector Property In macOS
+  //         properties: ['openFile', 'openDirectory'],
+  //       })
+  //       .then((file: any) => {
+  //         if (!file.canceled) {
+  //           globalAny.filepath = file.filePaths[0].toString();
+  //           const data = JSON.parse(
+  //             fs.readFileSync(globalAny.filepath).toString(),
+  //           );
+  //           setQueries(data);
+  //         }
+  //         return undefined;
+  //       })
+  //       .catch(
+  //         (err: object) =>
+  //           // console.log(err);
+  //           undefined,
+  //       );
+  //   }
+  // };
+
+  const loadQueryHandler = async () => {
+    // annabelle's refactor
+    const options = {
+      title: 'Upload Query',
+      defaultPath: path.join(__dirname, '../assets/'),
+      buttonLabel: 'Upload',
+      filters: [
+        {
+          name: 'Text Files',
+          extensions: ['json', 'docx', 'txt'],
+        },
+      ],
+    };
+
+    try {
+      const filePath = await ipcRenderer.invoke('showOpenDialog', options);
+      setFilePath(filePath);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -277,6 +299,6 @@ const QueryList = ({
       </StyledSidebarList>
     </>
   );
-};
+}
 
 export default QueryList;
