@@ -75,8 +75,8 @@ const detailRows = (plan: SizedPlanNode) => Object.entries(plan)
     </StyledRow>
   ));
 
-const PlanDetails = ({ plan, open, handleClose }: PlanDetailsProps) => (
-  <StyledModal
+function PlanDetails({ plan, open, handleClose }: PlanDetailsProps) {
+  return <StyledModal
     aria-labelledby="transition-modal-title"
     aria-describedby="transition-modal-description"
     open={open}
@@ -95,6 +95,6 @@ const PlanDetails = ({ plan, open, handleClose }: PlanDetailsProps) => (
       </TableContainer>
     </Fade>
   </StyledModal>
-);
+}
 
 export default PlanDetails;

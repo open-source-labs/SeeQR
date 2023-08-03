@@ -1,34 +1,34 @@
 import fs from 'fs';
 import path from 'path';
-import React from 'react';
-import { IconButton, Tooltip } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import UploadFileIcon from '@mui/icons-material/UploadFile';
-import FileCopyIcon from '@mui/icons-material/FileCopy';
-import { dialog, ipcRenderer } from 'electron';
-import styled from 'styled-components';
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { AppState, QueryData } from '../../types';
+import FileCopyIcon from '@mui/icons-material/FileCopy';
+import UploadFileIcon from '@mui/icons-material/UploadFile';
+import { IconButton, Tooltip } from '@mui/material';
+import Accordion from '@mui/material/Accordion';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import Typography from '@mui/material/Typography';
+import { dialog, ipcRenderer } from 'electron';
+import React from 'react';
+import styled from 'styled-components';
 import {
   deleteQuery,
-  setCompare,
-  saveQuery,
   getAppDataPath,
   key as queryKey,
+  saveQuery,
+  setCompare,
 } from '../../lib/queries';
-import QueryEntry from './QueryEntry';
 import {
-  greyDarkest,
-  greyDark,
   greenPrimary,
+  greyDark,
+  greyDarkest,
   SidebarList,
   StyledListItemText,
   textColor,
 } from '../../style-variables';
+import { AppState, QueryData } from '../../types';
+import QueryEntry from './QueryEntry';
 
 const QueryText = styled(StyledListItemText)`
   & .MuiListItemText-secondary {

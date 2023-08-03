@@ -21,7 +21,7 @@ interface QuerySummaryProps {
   executionPlan: QueryData['executionPlan'];
 }
 
-const QuerySummary = ({ executionPlan }: QuerySummaryProps) => {
+function QuerySummary({ executionPlan }: QuerySummaryProps) {
   const summaryData = {
     'Number of Sample': executionPlan?.numberOfSample,
     'Total Sample Time': `${executionPlan?.totalSampleTime}ms`,
@@ -47,6 +47,6 @@ const QuerySummary = ({ executionPlan }: QuerySummaryProps) => {
       </Table>
     </FlexChild>
   );
-};
+}
 
 export default QuerySummary;

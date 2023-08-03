@@ -32,7 +32,7 @@ interface TabSelectorProps {
   select: (tab: ValidTabs) => void;
 }
 
-const TabSelector = ({ selectedTab, select }: TabSelectorProps) => {
+function TabSelector({ selectedTab, select }: TabSelectorProps) {
   const { fitView } = useReactFlow();
 
   const handleSelect = (tabName: ValidTabs) => () => {
@@ -60,6 +60,6 @@ const TabSelector = ({ selectedTab, select }: TabSelectorProps) => {
       </ViewBtnGroup>
     </Box>
   );
-};
+}
 
 export default TabSelector;

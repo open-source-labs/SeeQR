@@ -79,7 +79,7 @@ interface NewSchemaViewProps {
   setSelectedTable: (tableInfo: TableInfo | undefined) => void;
 }
 
-const NewSchemaView = ({
+function NewSchemaView({
   query,
   setQuery,
   setSelectedDb,
@@ -89,7 +89,7 @@ const NewSchemaView = ({
   dbTables,
   selectedTable,
   setSelectedTable,
-}: NewSchemaViewProps) => {
+}: NewSchemaViewProps) {
   const [currentSql, setCurrentSql] = useState('');
 
   const TEMP_DBTYPE = DBType.Postgres;
@@ -215,5 +215,5 @@ const NewSchemaView = ({
       />
     </NewSchemaViewContainer>
   );
-};
+}
 export default NewSchemaView;

@@ -13,7 +13,7 @@ interface FlowTreeProps {
   thresholds: Thresholds;
 }
 
-const FlowTree = ({ data, thresholds }: FlowTreeProps) => {
+function FlowTree({ data, thresholds }: FlowTreeProps) {
   const result = buildFlowGraph(data, thresholds, 'flowNode', 'smoothstep');
   return (
     <ReactFlow
@@ -33,7 +33,7 @@ const FlowTree = ({ data, thresholds }: FlowTreeProps) => {
       <Background gap={32} />
     </ReactFlow>
   );
-};
+}
 
 // Memoise to prevent rerender on fullscreen toggle
 const MemoFlowTree = memo(FlowTree);
@@ -60,7 +60,7 @@ const defaultThresholds: Thresholds = {
 interface PlanTreeProps {
   data: ExplainJson | undefined;
 }
-const PlanTree = ({ data }: PlanTreeProps) => {
+function PlanTree({ data }: PlanTreeProps) {
   const [isFullscreen, setFullscreen] = useState(false);
   const [userThresholds, setUserThresholds] = useState(defaultThresholds);
 
@@ -76,6 +76,6 @@ const PlanTree = ({ data }: PlanTreeProps) => {
       />
     </TreeContainer>
   );
-};
+}
 
 export default memo(PlanTree);

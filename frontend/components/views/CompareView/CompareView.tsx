@@ -9,7 +9,7 @@ interface CompareViewProps {
   show: boolean;
 }
 
-const CompareView = ({ queries, show }: CompareViewProps) => {
+function CompareView({ queries, show }: CompareViewProps) {
   if (!show) return null;
   return (
     <div>
@@ -17,6 +17,6 @@ const CompareView = ({ queries, show }: CompareViewProps) => {
       <CompareTable queries={queries} />
     </div>
   );
-};
+}
 
 export default CompareView;

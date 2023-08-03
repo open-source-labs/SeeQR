@@ -678,12 +678,12 @@ const DBFunctions: DBFunctions = {
               data_type,
               character_maximum_length: data_type.includes('(')
                 ? parseInt(
-                    data_type.slice(
-                      1 + data_type.indexOf('('),
-                      data_type.indexOf(')'),
-                    ),
-                    10,
-                  )
+                  data_type.slice(
+                    1 + data_type.indexOf('('),
+                    data_type.indexOf(')'),
+                  ),
+                  10,
+                )
                 : null,
               is_nullable: not_null === 1 ? 'NO' : 'YES',
               constraint_type:

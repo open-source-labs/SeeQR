@@ -1,4 +1,4 @@
-import React from 'react';
+import SpeedIcon from '@mui/icons-material/Speed';
 import {
   Table,
   TableBody,
@@ -7,15 +7,15 @@ import {
   TableRow,
   Tooltip,
 } from '@mui/material';
-import SpeedIcon from '@mui/icons-material/Speed';
+import React from 'react';
 import styled from 'styled-components';
-import { AppState, QueryData } from '../../../types';
+import { getPrettyTime, getTotalTime } from '../../../lib/queries';
 import {
   DarkPaperFull,
   defaultMargin,
   greenPrimary,
 } from '../../../style-variables';
-import { getPrettyTime, getTotalTime } from '../../../lib/queries';
+import { AppState, QueryData } from '../../../types';
 
 const TableBg = styled(DarkPaperFull)`
   margin-top: ${defaultMargin};
@@ -30,11 +30,13 @@ const StyledCell = styled(TableCell)<{
   ${({ $isMarker }) => ($isMarker ? ' padding:0;' : '')}
 `;
 
-const FastestMarker = () => (
-  <Tooltip title="Fastest Query in group">
-    <SpeedIcon style={{ margin: 0 }} />
-  </Tooltip>
-);
+function FastestMarker() {
+  return (
+    <Tooltip title="Fastest Query in group">
+      <SpeedIcon style={{ margin: 0 }} />
+    </Tooltip>
+  );
+}
 
 type AnalysedQuery = QueryData & {
   relativeSpeed: number;
@@ -45,7 +47,7 @@ type Alignment = 'left' | 'right' | 'center';
 type InfoColumn = [
   string,
   Alignment,
-  (q: AnalysedQuery) => string | number | undefined | JSX.Element
+  (q: AnalysedQuery) => string | number | undefined | JSX.Element,
 ];
 
 // Array of columns names and transformers that receive query and return printable value
@@ -66,14 +68,17 @@ const tableInfo: InfoColumn[] = [
 
 // Callback function for getFastestPerGroup
 function fastestCallback(acc, q) {
-  if (getTotalTime(q) === 0) { return acc; }
+  if (getTotalTime(q) === 0) {
+    return acc;
+  }
   return {
     ...acc,
     [q.group]: Math.min(acc[q.group] ?? Infinity, getTotalTime(q)),
   };
 }
 
-const getFastestPerGroup = (queries: QueryData[]) => queries.reduce<Record<string, number>>(fastestCallback, {});
+const getFastestPerGroup = (queries: QueryData[]) =>
+  queries.reduce<Record<string, number>>(fastestCallback, {});
 
 const analyze = (queries: QueryData[]): AnalysedQuery[] => {
   // fastest query in each group
@@ -89,14 +94,14 @@ interface CompareTableProps {
   queries: AppState['queries'];
 }
 
-const CompareTable = ({ queries }: CompareTableProps) => {
+function CompareTable({ queries }: CompareTableProps) {
   const comparedQueries = analyze(Object.values(queries));
   comparedQueries.sort(
     (a, b) =>
       // sort by group alphabetically
-      a.group.localeCompare(b.group)
+      a.group.localeCompare(b.group) ||
       // if same group, sort by speed ascending
-      || a.relativeSpeed - b.relativeSpeed,
+      a.relativeSpeed - b.relativeSpeed,
   );
 
   return (
@@ -130,6 +135,6 @@ const CompareTable = ({ queries }: CompareTableProps) => {
       </Table>
     </TableBg>
   );
-};
+}
 
 export default CompareTable;

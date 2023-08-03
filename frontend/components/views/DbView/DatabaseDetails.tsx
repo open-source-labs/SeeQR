@@ -13,7 +13,7 @@ const Container = styled.a`
   justify-content: space-between;
 `;
 
-const DatabaseDetails = ({ db }: DatabaseDetailsProps) => {
+function DatabaseDetails({ db }: DatabaseDetailsProps) {
   if (!db) return null;
   return (
     <Container>
@@ -24,6 +24,6 @@ const DatabaseDetails = ({ db }: DatabaseDetailsProps) => {
       </Typography>
     </Container>
   );
-};
+}
 
 export default DatabaseDetails;

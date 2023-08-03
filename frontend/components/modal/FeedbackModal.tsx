@@ -10,7 +10,7 @@ function Alert(props: AlertProps) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
-const FeedbackModal = () => {
+function FeedbackModal() {
   const [isOpen, setOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [severity, setSeverity] = useState<FeedbackSeverity>('info');
@@ -54,6 +54,6 @@ const FeedbackModal = () => {
       </div>
     </Snackbar>
   );
-};
+}
 
 export default FeedbackModal;

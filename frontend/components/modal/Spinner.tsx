@@ -13,7 +13,7 @@ const StyledLinearProg = styled(LinearProgress)`
 let delayTimer: NodeJS.Timeout;
 const delay = 500;
 
-const Spinner = () => {
+function Spinner() {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
@@ -41,6 +41,6 @@ const Spinner = () => {
   });
 
   return <StyledLinearProg $show={show} />;
-};
+}
 
 export default Spinner;

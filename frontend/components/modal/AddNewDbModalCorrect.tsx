@@ -27,12 +27,12 @@ type AddNewDbModalProps = {
   curDBType: DBType | undefined;
 };
 
-const AddNewDbModal = ({
+function AddNewDbModal({
   open,
   onClose,
   dbNames,
   curDBType,
-}: AddNewDbModalProps) => {
+}: AddNewDbModalProps) {
   const [newDbName, setNewDbName] = useState('');
   const [isError, setIsError] = useState(false);
   const [isEmpty, setIsEmpty] = useState(true);
@@ -184,6 +184,6 @@ const AddNewDbModal = ({
       </Dialog>
     </div>
   );
-};
+}
 
 export default AddNewDbModal;

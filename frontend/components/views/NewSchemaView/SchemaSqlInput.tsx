@@ -35,7 +35,7 @@ interface SchemaSqlInputProps {
     runQuery: () => void;
   }
 
-const SchemaSqlInput = ({ sql, onChange, runQuery }: SchemaSqlInputProps) => {
+function SchemaSqlInput({ sql, onChange, runQuery }: SchemaSqlInputProps) {
   const formatQuery = () => {
     const formatted = format(sql, { language: 'postgresql', uppercase: true });
     onChange(formatted);
@@ -63,6 +63,6 @@ const SchemaSqlInput = ({ sql, onChange, runQuery }: SchemaSqlInputProps) => {
       />
     </Container>
   );
-};
+}
 
 export default SchemaSqlInput;

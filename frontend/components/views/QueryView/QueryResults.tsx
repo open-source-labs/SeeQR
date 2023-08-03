@@ -37,7 +37,7 @@ interface QueryResultsProps {
   results: QueryData['returnedRows'];
 }
 
-const QueryResults = ({ results }: QueryResultsProps) => {
+function QueryResults({ results }: QueryResultsProps) {
   if (!results || !results.length) return null;
   const [page, setPage] = React.useState(0);
   const rowsPerPage = 10;
@@ -101,6 +101,6 @@ const QueryResults = ({ results }: QueryResultsProps) => {
       />
     </DarkPaperFull>
   );
-};
+}
 
 export default QueryResults;
