@@ -53,6 +53,19 @@ interface TablesTabBarProps {
   curDBType: DBType | undefined;
 }
 
+interface HandleChangeFunc {
+  (event: React.ChangeEvent<{}>, newValue: number): void;
+}
+
+interface ErViewProps {
+  active: boolean;
+  tables: TableInfo[];
+  selectedDb: AppState['selectedDb'];
+  curDBType: DBType | undefined;
+  tableIndex: number;
+  handleChange: HandleChangeFunc;
+}
+
 function ErView({
   active,
   tables,
@@ -60,7 +73,7 @@ function ErView({
   curDBType,
   tableIndex,
   handleChange,
-}) {
+}: ErViewProps) {
   return (
     <div>
       {active ? (
@@ -110,7 +123,7 @@ function TablesTabs({
   setERView,
   curDBType,
 }: TablesTabBarProps) {
-  const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
+  const handleChange: HandleChangeFunc = (event, newValue) => {
     selectTable(tables[newValue]);
   };
 
