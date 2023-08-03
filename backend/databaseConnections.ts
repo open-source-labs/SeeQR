@@ -14,8 +14,12 @@ export default {
    * @param db Name of target database that the login has access to. Initially empty string
    */
   async PG_DBConnect(pg_uri: string, db: string) {
-    const newURI = `${pg_uri}${db}`;
-    const newPool = new Pool({ connectionString: newURI });
+    // eslint-disable-next-line no-console
+    console.log('THIS IS THE PGURI', pg_uri);
+    console.log('THIS IS THE DB', db);
+    // ${db} removed this from newURI
+    const newURI = `${pg_uri}/${db}`;
+    const newPool = await new Pool({ connectionString: newURI });
     pools.pg_pool = newPool;
     // await pools.pg_pool.connect(); this is unnecessary for making queries, and causes pg error when trying to drop db
     await pools.pg_pool.query('SELECT pg_database.datname FROM pg_database'); // this test query will throw an error if connection failed
