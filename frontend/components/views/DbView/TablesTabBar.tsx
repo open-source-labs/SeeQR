@@ -11,9 +11,9 @@ import ERTables from '../ERTables/ERTabling';
 
 interface TabPanelProps {
   children?: React.ReactNode;
-  index: any;
-  value: any;
-  curDBType: DBType | undefined;
+  index: number;
+  value: number;
+  /* curDBType: DBType | undefined; */
 }
 const StyledToggleButtonGroup = styled(ToggleButtonGroup)`
   background-color: ${greenPrimary};
@@ -26,7 +26,7 @@ const StyledTabs = styled(Tabs)`
   border-radius: 5px;
 `;
 
-function TabPanel({ children, value, index, curDBType }: TabPanelProps) {
+function TabPanel({ children, value, index /* curDBType */ }: TabPanelProps) {
   return (
     <div
       role="tabpanel"
@@ -39,7 +39,7 @@ function TabPanel({ children, value, index, curDBType }: TabPanelProps) {
   );
 }
 
-const a11yProps = (index: any) => ({
+const a11yProps = (index: number) => ({
   id: `scrollable-auto-tab-${index}`,
   'aria-controls': `scrollable-auto-tabpanel-${index}`,
 });
@@ -49,12 +49,12 @@ interface TablesTabBarProps {
   selectTable: (table: TableInfo) => void;
   selectedTable: TableInfo | undefined;
   selectedDb: AppState['selectedDb'];
-  setERView?: (boolean) => void;
+  setERView?: (boolean: boolean) => void;
   curDBType: DBType | undefined;
 }
 
 interface HandleChangeFunc {
-  (event: React.ChangeEvent<{}>, newValue: number): void;
+  (event: React.ChangeEvent<unknown>, newValue: number): void;
 }
 
 interface ErViewProps {
@@ -92,7 +92,7 @@ function ErView({
             scrollButtons="auto"
             aria-label="scrollable auto tabs example"
           >
-            {tables.map(({ table_name: name }, index) => (
+            {tables.map(({ table_name: name }, index: number) => (
               <Tab label={name} {...a11yProps(index)} key={name} />
             ))}
             ;
@@ -104,7 +104,7 @@ function ErView({
               value={tableIndex}
               index={index}
               key={tableMap.table_name}
-              curDBType={curDBType}
+              /* curDBType={curDBType} */
             >
               <TableDetails table={tableMap} />
             </TabPanel>
@@ -133,7 +133,7 @@ function TablesTabs({
 
   const [active, setActive] = useState(true);
 
-  const handleView = (e, newActive) => {
+  const handleView = (e, newActive: boolean | null) => {
     // force at least one selected view
     if (newActive !== null) {
       // set the new view to the currect view
