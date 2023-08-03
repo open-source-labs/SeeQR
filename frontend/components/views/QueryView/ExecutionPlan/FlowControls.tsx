@@ -29,12 +29,12 @@ interface FlowControlsProps {
   setThresholds: (newThresholds: Thresholds) => void;
 }
 
-const FlowControls = ({
+function FlowControls({
   toggleFullscreen,
   fullscreen,
   thresholds,
   setThresholds,
-}: FlowControlsProps) => {
+}: FlowControlsProps) {
   const [showThresholdsDialog, setShowThresholdsDialog] = useState(false);
   const { fitView, zoomIn, zoomOut } = useReactFlow();
   const tooltipDelay = 1000;
@@ -78,6 +78,6 @@ const FlowControls = ({
       />
     </>
   );
-};
+}
 
 export default FlowControls;

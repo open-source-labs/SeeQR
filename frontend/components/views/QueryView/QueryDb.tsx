@@ -21,9 +21,9 @@ interface QueryDbProps {
   dbTypes: DBType[] | undefined;
 }
 
-const QueryDb = ({
+function QueryDb({
   db, onDbChange, dbNames, dbTypes,
-}: QueryDbProps) => {
+}: QueryDbProps) {
   const menuitems: any = [];
   const values: any = {};
 
@@ -56,6 +56,6 @@ const QueryDb = ({
       </Select>
     </SpacedBox>
   );
-};
+}
 
 export default QueryDb;

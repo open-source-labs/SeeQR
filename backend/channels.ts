@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
 /* eslint-disable prefer-destructuring */
-import { BrowserWindow, dialog, ipcMain } from 'electron'; // IPCMain: Communicate asynchronously from the main process to renderer processes
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
+import { BrowserWindow, dialog, ipcMain } from 'electron'; // IPCMain: Communicate asynchronously from the main process to renderer processes
 import {
   ColumnObj,
   DBList,

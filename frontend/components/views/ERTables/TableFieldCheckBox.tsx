@@ -7,9 +7,9 @@ type TableFieldCheckBoxProps = {
   onChange? : ((any) => void)[] | ((any) => void);
 }
 
-const TableFieldCheckBox = ({
+function TableFieldCheckBox({
   label, idName, isChecked, onChange,
-}: TableFieldCheckBoxProps) => {
+}: TableFieldCheckBoxProps) {
   const onChangeHandler = (e) => {
     // confirm that onChange is given
     if (!onChange) return;
@@ -35,6 +35,6 @@ const TableFieldCheckBox = ({
       </div>
     </div>
   );
-};
+}
 
 export default TableFieldCheckBox;

@@ -1,7 +1,7 @@
+import { EventEmitter } from 'events';
 import { StyledEngineProvider, Theme, ThemeProvider } from '@mui/material/';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ipcRenderer, IpcRendererEvent } from 'electron';
-import { EventEmitter } from 'events';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
@@ -72,7 +72,7 @@ const Main = styled.main<{ $fullwidth: boolean }>`
 // emitting with no payload requests backend to send back a db-lists event with list of dbs
 const requestDbListOnce = once(() => ipcRenderer.send('return-db-list'));
 
-const App = () => {
+function App() {
   const [queries, setQueries] = useState<AppState['queries']>({});
   const [comparedQueries, setComparedQueries] = useState<AppState['queries']>(
     {},
@@ -260,6 +260,6 @@ const App = () => {
       </ThemeProvider>
     </StyledEngineProvider>
   );
-};
+}
 
 export default App;

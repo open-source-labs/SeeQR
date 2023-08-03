@@ -8,14 +8,14 @@ interface QueryLabelProps {
   onChange: (newLabel: string) => void;
 }
 
-const QueryLabel = ({ label, onChange }: QueryLabelProps) => (
-  <Box paddingRight={defaultMargin}>
+function QueryLabel({ label, onChange }: QueryLabelProps) {
+  return <Box paddingRight={defaultMargin}>
     <TextField
       label="Label"
       value={label}
       onChange={(evt) => onChange(evt.target.value)}
     />
   </Box>
-);
+}
 
 export default QueryLabel;

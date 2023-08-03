@@ -7,14 +7,14 @@ interface QueryRunProps {
   onChange: (runNumber: number) => void;
 }
 
-const QueryRunNumber = ({ runNumber, onChange }: QueryRunProps) => (
-  <Box className="query-run-box">
+function QueryRunNumber({ runNumber, onChange }: QueryRunProps) {
+  return <Box className="query-run-box">
     <TextField
       label="Number of Queries"
       value={runNumber}
       onChange={(evt) => onChange(Number(evt.target.value) || 1)}
     />
   </Box>
-);
+}
 
 export default QueryRunNumber;

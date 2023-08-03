@@ -27,13 +27,13 @@ interface DbEntryProps {
   dbType: DBType;
 }
 
-const DbEntry = ({
+function DbEntry({
   db,
   isSelected,
   select,
   duplicate,
   dbType,
-}: DbEntryProps) => {
+}: DbEntryProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const handleDelete = () => {
@@ -90,6 +90,6 @@ const DbEntry = ({
       </ListItemSecondaryAction>
     </SidebarListItem>
   );
-};
+}
 
 export default DbEntry;

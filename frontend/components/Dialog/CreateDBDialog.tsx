@@ -25,7 +25,7 @@ interface CreateDBDialogProps {
   onClose: () => void;
 }
 
-const CreateDBDialog = ({ show, DBInfo, onClose }: CreateDBDialogProps) => {
+function CreateDBDialog({ show, DBInfo, onClose }: CreateDBDialogProps) {
   if (!show) return <></>;
 
   const [newDbName, setNewDbName] = useState('');
@@ -175,6 +175,6 @@ const CreateDBDialog = ({ show, DBInfo, onClose }: CreateDBDialogProps) => {
       </Dialog>
     </div>
   );
-};
+}
 
 export default CreateDBDialog;

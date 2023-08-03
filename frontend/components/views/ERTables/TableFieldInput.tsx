@@ -5,15 +5,15 @@ type TableFieldInputProps = {
   label: string;
   idName: string;
 };
-const TableFieldInput = ({
+function TableFieldInput({
   defaultValue,
   label,
   idName,
-}: TableFieldInputProps) => (
-  <div className="field-info-input">
+}: TableFieldInputProps) {
+  return <div className="field-info-input">
     {`${label}:`}
     <input id={idName} defaultValue={defaultValue} />
   </div>
-);
+}
 
 export default TableFieldInput;

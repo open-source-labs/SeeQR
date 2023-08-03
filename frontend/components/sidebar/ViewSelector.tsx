@@ -27,12 +27,12 @@ type ViewSelectorProps = Pick<
 /**
  * Selector for view on sidebar. Updates App state with selected view
  */
-const ViewSelector = ({
+function ViewSelector({
   selectedView,
   setSelectedView,
   setERView,
-}: ViewSelectorProps) => (
-  <ViewBtnGroup variant="contained" fullWidth>
+}: ViewSelectorProps) {
+  return <ViewBtnGroup variant="contained" fullWidth>
     <ViewButton
       onClick={() => setSelectedView('queryView')}
       $isSelected={
@@ -53,6 +53,6 @@ const ViewSelector = ({
       Databases
     </ViewButton>
   </ViewBtnGroup>
-);
+}
 
 export default ViewSelector;

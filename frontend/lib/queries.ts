@@ -92,7 +92,7 @@ export const saveQuery: SaveQuery = (query: QueryData, filePath: string) => {
       }
     } else {
       // console.log('File is found');
-      const data: object = JSON.parse(fs.readFileSync(filePath));
+      const data: object = JSON.parse(fs.readFileSync(filePath).toString());
       const label: string = `label:${query.label} db:${query.db} group:${query.group}`;
       data[label] = query;
       fs.writeFileSync(filePath, JSON.stringify(data));

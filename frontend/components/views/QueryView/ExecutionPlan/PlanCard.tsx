@@ -99,7 +99,7 @@ interface PlanCardProps {
 const isSameCard = (prevProps: PlanCardProps, nextProps: PlanCardProps) => prevProps.plan.id === nextProps.plan.id
   && prevProps.thresholds === nextProps.thresholds;
 
-const PlanCard = ({ plan, totals, thresholds }: PlanCardProps) => {
+function PlanCard({ plan, totals, thresholds }: PlanCardProps) {
   const [detailIsOpen, setDetailOpen] = useState(false);
   const rowRatio = plan['Plan Rows'] / plan['Actual Rows'];
   const exclusive = exclusiveTime(plan);
@@ -172,7 +172,7 @@ const PlanCard = ({ plan, totals, thresholds }: PlanCardProps) => {
       />
     </>
   );
-};
+}
 
 // memoize cards by id to improve performance on Zoom
 export default memo(PlanCard, isSameCard);
