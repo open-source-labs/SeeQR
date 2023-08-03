@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
-import '../../lib/style.css';
-import styled from 'styled-components';
 import {
-  Stepper,
+  Button,
   Step,
   StepButton,
   StepLabel,
-  Button,
+  Stepper,
   Typography,
 } from '@mui/material';
+import React, { useState } from 'react';
+import styled from 'styled-components';
 import logo from '../../../assets/logo/seeqr_dock.png';
+import '../../lib/style.css';
 
 interface QuickStartViewProps {
   show: boolean;
@@ -66,7 +66,13 @@ const StepList = styled.ul`
 `;
 
 function getSteps() {
-  return ['Set Up Servers and Permissions', 'Import a Database', 'Create New Queries', 'Saving/Loading Queries', 'Compare Queries'];
+  return [
+    'Set Up Servers and Permissions',
+    'Import a Database',
+    'Create New Queries',
+    'Saving/Loading Queries',
+    'Compare Queries',
+  ];
 }
 
 function getStepContent(step: number) {
@@ -76,12 +82,24 @@ function getStepContent(step: number) {
         <StyledTypographyInstructions>
           <strong>Step 1:</strong>
           <StepList>
-            <li>Install PostgreSQL and/or MySQL servers (for Mac, use Homebrew). </li>
-            <li> Ensure that PATH is enabled.</li>
-            <li> Set up a username, password, port, and full permissions for database mainpulation. </li>
-            <li> PostgreSQL username, password, and port is defaulted to &quot;postgres,&quot; &quot;postgres,&quot; and &quot;5432,&quot; respectively. Similarly, MySQL username, password, and port is defaulted to &quot;mysql,&quot;  &quot;mysql,&quot; and &quot;3306,&quot; respectively. </li>
-            <li> Set up usernames, passwords, and ports that match database server profiles. This can be done by clicking the gear on the top-left of the app. If you do not see your database(s), check that your information is correct. </li>
-            <li> Run server(s) in the background. </li>
+            <li>
+              Install PostgreSQL and/or MySQL servers (for Mac, use Homebrew)
+            </li>
+            <li> Run server(s) in the background</li>
+            <li>Ensure that PATH is enabled (***DO WE NEED THIS??)</li>
+            <li>
+              If existing user - sign in with user and password using gear icon
+              - top of left panel
+            </li>
+            <li>
+              Ports for PostgresSQL and MySQL are defaulted to ‘5432’ and
+              ‘3306’, respectively
+            </li>
+            <li>
+              Postgres new user: create user and password: eg. CREATE USER
+              davide WITH PASSWORD 'jw8s0F4’;
+            </li>
+            <li>Enable full permissions for database manipulation</li>
           </StepList>
         </StyledTypographyInstructions>
       );
@@ -96,7 +114,10 @@ function getStepContent(step: number) {
               Click the green &quot;Import File&quot; button and select a .sql
               file.
             </li>
-            <li>Select your imported database on the sidebar to view table information.</li>
+            <li>
+              Select your imported database on the sidebar to view table
+              information.
+            </li>
 
             <li>
               To view each table, click the name of the table in the top tabs
@@ -120,8 +141,8 @@ function getStepContent(step: number) {
               in the sidebar.
             </li>
             <li>
-              Select the + icon in the sidebar and give the query a label and a group on the
-              right side.
+              Select the + icon in the sidebar and give the query a label and a
+              group on the right side.
             </li>
             <li>
               Optionally: You can change the database to create the query in
@@ -148,9 +169,19 @@ function getStepContent(step: number) {
         <StyledTypographyInstructions>
           <strong>Step 4:</strong>
           <StepList>
-            <li>To save a query, declare a file location by clicking the &quot;Designate Save Location&quot; button in the queries tab</li>
-            <li>Then, save queries individually by clicking the &quot;Save Query&quot; button</li>
-            <li>To load data into SeeQR just click the &quot;Import Query&quot; button, select the file you wish to upload in your local file system and click &quot;Upload&quot;</li>
+            <li>
+              To save a query, declare a file location by clicking the
+              &quot;Designate Save Location&quot; button in the queries tab
+            </li>
+            <li>
+              Then, save queries individually by clicking the &quot;Save
+              Query&quot; button
+            </li>
+            <li>
+              To load data into SeeQR just click the &quot;Import Query&quot;
+              button, select the file you wish to upload in your local file
+              system and click &quot;Upload&quot;
+            </li>
           </StepList>
         </StyledTypographyInstructions>
       );
@@ -159,9 +190,14 @@ function getStepContent(step: number) {
         <StyledTypographyInstructions>
           <strong>Step 5:</strong>
           <StepList>
-            <li>Select the checkbox of the queries inside the groups you would like to compare.</li>
+            <li>
+              Select the checkbox of the queries inside the groups you would
+              like to compare.
+            </li>
             <li>Then, click the Chart Icon at the top of the sidebar.</li>
-            <li>Feel free to continually select and deselect queries to compare.</li>
+            <li>
+              Feel free to continually select and deselect queries to compare.
+            </li>
           </StepList>
         </StyledTypographyInstructions>
       );
@@ -170,7 +206,7 @@ function getStepContent(step: number) {
   }
 }
 
-const QuickStartView = ({ show }: QuickStartViewProps) => {
+function QuickStartView({ show }: QuickStartViewProps) {
   if (!show) return null;
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState(new Set<number>());
@@ -200,16 +236,18 @@ const QuickStartView = ({ show }: QuickStartViewProps) => {
 
   const completedSteps = () => completed.size;
 
-  const allStepsCompleted = () => completedSteps() === totalSteps() - skippedSteps();
+  const allStepsCompleted = () =>
+    completedSteps() === totalSteps() - skippedSteps();
 
   const isLastStep = () => activeStep === totalSteps() - 1;
 
   const handleNext = () => {
-    const newActiveStep = isLastStep() && !allStepsCompleted()
-      ? // It's the last step, but not all steps have been completed
-      // find the first step that has been completed
-      steps.findIndex((step, i) => !completed.has(i))
-      : activeStep + 1;
+    const newActiveStep =
+      isLastStep() && !allStepsCompleted()
+        ? // It's the last step, but not all steps have been completed
+          // find the first step that has been completed
+          steps.findIndex((step, i) => !completed.has(i))
+        : activeStep + 1;
 
     setActiveStep(newActiveStep);
   };
@@ -264,13 +302,8 @@ const QuickStartView = ({ show }: QuickStartViewProps) => {
           }
           return (
             <Step key={label} {...stepProps} completed={isStepComplete(index)}>
-              <StepButton
-                onClick={handleStep(index)}
-                {...buttonProps}
-              >
-                <StyledStepLabel className="stepper">
-                  {label}
-                </StyledStepLabel>
+              <StepButton onClick={handleStep(index)} {...buttonProps}>
+                <StyledStepLabel className="stepper">{label}</StyledStepLabel>
               </StepButton>
             </Step>
           );
@@ -305,8 +338,8 @@ const QuickStartView = ({ show }: QuickStartViewProps) => {
                   Skip
                 </Button>
               )}
-              {activeStep !== steps.length
-                && (completed.has(activeStep) ? (
+              {activeStep !== steps.length &&
+                (completed.has(activeStep) ? (
                   <Typography variant="caption" className="step-completed">
                     Step
                     {` ${activeStep + 1} `}
@@ -329,6 +362,6 @@ const QuickStartView = ({ show }: QuickStartViewProps) => {
       </div>
     </PageContainer>
   );
-};
+}
 
 export default QuickStartView;
