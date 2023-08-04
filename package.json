@@ -58,7 +58,7 @@
     "react-dom": "^18.2.0",
     "react-force-graph": "^1.43.0",
     "reactflow": "^11.7.4",
-    "sql-formatter": "^4.0.2",
+    "sql-formatter": "^12.2.4",
     "sqlite3": "^5.1.6",
     "styled-components": "^5.2.1",
     "three": "^0.155.0",
