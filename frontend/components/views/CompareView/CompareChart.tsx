@@ -1,5 +1,16 @@
 import React from 'react';
-import { Bar, ChartData, defaults } from 'react-chartjs-2';
+// REVIEW: old import data:
+// import { Bar, ChartData, defaults } from 'react-chartjs-2';
+import { Bar } from 'react-chartjs-2';
+import {
+  Chart as ChartJs,
+  Colors,
+  BarController,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Legend,
+} from 'chart.js';
 import styled from 'styled-components';
 import { getTotalTime } from '../../../lib/queries';
 import { compareChartColors, textColor } from '../../../style-variables';
@@ -9,16 +20,26 @@ const ChartContainer = styled.div`
   height: 400px;
   width: 100%;
 `;
+ChartJs.register(
+  Colors,
+  BarController,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Legend,
+);
 
-defaults.global.defaultFontColor = textColor;
+// defaults.set('color', textColor);
 
 /**
  * Builds Chart.js data from queries. Uses isCompared flag on each query to
  * determine which queries to include in comparison
  */
+
 const getChartData = (
   queries: AppState['queries'],
-): ChartData<Chart.ChartData> => {
+  // REVIEW: Changed type from ChartData<Chart.ChartData> to any. need to fix this.
+): any => {
   /**
    * Gets next color from defined pallete.
    */
@@ -76,29 +97,60 @@ interface CompareChartProps {
   queries: AppState['queries'];
 }
 
+// REVIEW: old code
+// function CompareChart({ queries }: CompareChartProps) {
+//   return (
+//     <ChartContainer>
+//       <Bar
+//         data={getChartData(queries)}
+//         options={{
+//           title: {
+//             display: true,
+//             text: 'QUERY GROUP VS RUNTIME (ms)',
+//             fontSize: 16,
+//           },
+//           legend: {
+//             display: true,
+//             position: 'right',
+//           },
+//           scales: {
+//             yAxes: [
+//               {
+//                 ticks: {
+//                   beginAtZero: true,
+//                 },
+//               },
+//             ],
+//           },
+//           maintainAspectRatio: false,
+//         }}
+//       />
+//     </ChartContainer>
+//   );
+// }
+
+// REVIEW: it's probably broken, but i'll get to this later.
 function CompareChart({ queries }: CompareChartProps) {
   return (
     <ChartContainer>
       <Bar
         data={getChartData(queries)}
         options={{
-          title: {
-            display: true,
-            text: 'QUERY GROUP VS RUNTIME (ms)',
-            fontSize: 16,
-          },
-          legend: {
-            display: true,
-            position: 'right',
+          plugins: {
+            title: {
+              display: true,
+              text: 'QUERY GROUP VS RUNTIME (ms)',
+              font: { size: 16 },
+            },
+            legend: {
+              display: true,
+              position: 'right',
+            },
           },
           scales: {
-            yAxes: [
-              {
-                ticks: {
-                  beginAtZero: true,
-                },
-              },
-            ],
+            y: {
+              beginAtZero: true,
+            },
           },
           maintainAspectRatio: false,
         }}
