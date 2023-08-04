@@ -98,7 +98,6 @@ const helperFunctions: HelperFunctions = {
     dbType: DBType,
   ) {
     const SQL_data = docConfig.getFullConfig();
-    console.log('THIS IS IN HELPER FUNC SQL DATA', SQL_data);
     const PG = `PGPASSWORD=${SQL_data.pg.password} pg_dump -s -U ${SQL_data.pg.user} -p ${SQL_data.pg.port} -Fp -d ${dbCopyName} > "${newFile}"`;
     const MYSQL = `export MYSQL_PWD='${SQL_data.mysql.password}'; mysqldump -h localhost -u ${SQL_data.mysql.user}  ${dbCopyName} > ${newFile}`;
     if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) return PG;
@@ -113,7 +112,6 @@ const helperFunctions: HelperFunctions = {
     dbType: DBType,
   ) {
     const SQL_data = docConfig.getFullConfig();
-    console.log('THIS IS IN HELPER FUNC SQL DATA', SQL_data);
     const PG = ` PGPASSWORD=${SQL_data.pg.password} pg_dump -s -U ${SQL_data.pg.user} -p ${SQL_data.pg.port} -F p -d "${dbCopyName}" > "${file}"`;
     const MYSQL = `export MYSQL_PWD='${SQL_data.mysql.password}'; mysqldump -h localhost -u ${SQL_data.mysql.user} --port=${SQL_data.mysql.port}  ${dbCopyName} > ${file}`;
     if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) return PG;

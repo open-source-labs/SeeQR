@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
-import '../../lib/style.css';
-import styled from 'styled-components';
 import {
-  Stepper,
+  Button,
   Step,
   StepButton,
   StepLabel,
-  Button,
+  Stepper,
   Typography,
 } from '@mui/material';
+import React, { useState } from 'react';
+import styled from 'styled-components';
 import logo from '../../../assets/logo/seeqr_dock.png';
+import '../../lib/style.css';
 
 interface QuickStartViewProps {
   show: boolean;
@@ -83,30 +83,23 @@ function getStepContent(step: number) {
           <strong>Step 1:</strong>
           <StepList>
             <li>
-              Install PostgreSQL and/or MySQL servers (for Mac, use Homebrew).{' '}
+              Install PostgreSQL and/or MySQL servers (for Mac, use Homebrew)
             </li>
-            <li> Ensure that PATH is enabled.</li>
+            <li> Run server(s) in the background</li>
+            <li>Ensure that PATH is enabled</li>
             <li>
-              {' '}
-              Set up a username, password, port, and full permissions for
-              database mainpulation.{' '}
-            </li>
-            <li>
-              {' '}
-              PostgreSQL username, password, and port is defaulted to
-              &quot;postgres,&quot; &quot;postgres,&quot; and &quot;5432,&quot;
-              respectively. Similarly, MySQL username, password, and port is
-              defaulted to &quot;mysql,&quot; &quot;mysql,&quot; and
-              &quot;3306,&quot; respectively.{' '}
+              If existing user - sign in with user and password using gear icon
+              - top of left panel
             </li>
             <li>
-              {' '}
-              Set up usernames, passwords, and ports that match database server
-              profiles. This can be done by clicking the gear on the top-left of
-              the app. If you do not see your database(s), check that your
-              information is correct.{' '}
+              Ports for PostgresSQL and MySQL are defaulted to ‘5432’ and
+              ‘3306’, respectively
             </li>
-            <li> Run server(s) in the background. </li>
+            <li>
+              Postgres new user: create user and password: eg. CREATE USER
+              davide WITH PASSWORD 'jw8s0F4’;
+            </li>
+            <li>Enable full permissions for database manipulation</li>
           </StepList>
         </StyledTypographyInstructions>
       );

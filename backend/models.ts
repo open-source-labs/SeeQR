@@ -124,12 +124,7 @@ const DBFunctions: DBFunctions = {
 
     //  LOCAL PG POOL: truthy values means user has inputted info into config -> try to connect
     if (PG_Cred.user && PG_Cred.password) {
-      // eslint-disable-next-line no-console
-      console.log('this is PG CRED!!!!', PG_Cred);
-      // add to end of pg uri /postgres
       this.pg_uri = `postgres://${PG_Cred.user}:${PG_Cred.password}@localhost:${PG_Cred.port}`;
-      console.log('this is this.pgURL~!!!!', this.pg_uri);
-      console.log('this is the this.cur DB!!!!~~', this.curPG_DB);
       this.curPG_DB = 'postgres';
       try {
         configExists.pg = true;
@@ -137,15 +132,8 @@ const DBFunctions: DBFunctions = {
         logger('CONNECTED TO LOCAL PG DATABASE', LogType.SUCCESS);
         this.dbsInputted.pg = true;
       } catch (error) {
-        // eslint-disable-next-line no-console
-        console.log('THIS IS THE ERRORRR', error);
         this.dbsInputted.pg = false;
-        // eslint-disable-next-line no-console
-        console.log(PG_Cred, 'THIS IS THE PG CRED!!!');
-        logger(
-          'FAILED TO CONNECT TO LOCAL PG DATABASE, hellohello',
-          LogType.ERROR,
-        );
+        logger('FAILED TO CONNECT TO LOCAL PG DATABASE', LogType.ERROR);
       }
     } else {
       configExists.pg = false;
@@ -284,12 +272,8 @@ const DBFunctions: DBFunctions = {
    */
   async connectToDB(db, dbType) {
     // change current Db
-    // eslint-disable-next-line no-console
-    console.log(db, 'THIS IS THE DB dbdbdbdbdb');
     if (dbType === DBType.Postgres) {
       this.curPG_DB = db;
-      // eslint-disable-next-line no-console
-      console.log('THIS IS in CONNECTTODB--curpgdb', this.curPG_DB);
       await connectionFunctions.PG_DBConnect(this.pg_uri, db);
     } else if (dbType === DBType.MySQL) {
       this.curMSQL_DB = db;
@@ -678,12 +662,12 @@ const DBFunctions: DBFunctions = {
               data_type,
               character_maximum_length: data_type.includes('(')
                 ? parseInt(
-                  data_type.slice(
-                    1 + data_type.indexOf('('),
-                    data_type.indexOf(')'),
-                  ),
-                  10,
-                )
+                    data_type.slice(
+                      1 + data_type.indexOf('('),
+                      data_type.indexOf(')'),
+                    ),
+                    10,
+                  )
                 : null,
               is_nullable: not_null === 1 ? 'NO' : 'YES',
               constraint_type:
