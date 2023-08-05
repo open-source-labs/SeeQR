@@ -20,12 +20,24 @@ interface ViewButtonProps {
   $isSelected: boolean;
 }
 
-const ViewButton = styled(Button)`
-  background: ${({ $isSelected }: ViewButtonProps) => ($isSelected ? selectedColor : textColor)};
+const ViewButton = styled(Button)<ViewButtonProps>`
+  background: ${({ $isSelected }: { $isSelected: boolean }) =>
+    $isSelected ? selectedColor : textColor};
   &:hover {
-    background: ${({ $isSelected }: ViewButtonProps) => ($isSelected ? selectedColor : textColor)};
+    background: ${({ $isSelected }: ViewButtonProps) =>
+      $isSelected ? selectedColor : textColor};
   }
 `;
+
+// REVIEW: old code: (also same exact code from ViewSelector.tsx) maybe consider modularizing this
+// const ViewButton = styled(Button)`
+//   background: ${({ $isSelected }: ViewButtonProps) =>
+//     $isSelected ? selectedColor : textColor};
+//   &:hover {
+//     background: ${({ $isSelected }: ViewButtonProps) =>
+//       $isSelected ? selectedColor : textColor};
+//   }
+// `;
 
 interface TabSelectorProps {
   selectedTab: ValidTabs;

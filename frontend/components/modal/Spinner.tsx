@@ -1,15 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { LinearProgress } from '@mui/material';
-import styled from 'styled-components';
+import React, { useEffect, useState } from 'react';
+import { BackdropProps, LinearProgress } from '@mui/material';
 import { ipcRenderer } from 'electron';
+import styled, { ExecutionContext } from 'styled-components';
 
-const StyledLinearProg = styled(LinearProgress)`
+interface Props {
+  $show: boolean;
+}
+
+const StyledLinearProg = styled(LinearProgress)<Props>`
   /* Material Ui Drawer component used by sidebar has z-index: 1200 */
   z-index: 1300;
   height: 5px;
-  visibility: ${({ show }: { show: boolean }) => (show ? 'visible' : 'hidden')};
+  visibility: ${(props?) => (props.$show ? 'visible' : 'hidden')};
 `;
-
+// REVIEW: old code for line 10
+// ${({ $show? }: { $show: boolean }) => ($show ? 'visible' : 'hidden')};
 let delayTimer: NodeJS.Timeout;
 const delay = 500;
 
@@ -40,7 +45,7 @@ function Spinner() {
     };
   });
 
-  return <StyledLinearProg show={show} />;
+  return <StyledLinearProg $show={show} />;
 }
 
 export default Spinner;
