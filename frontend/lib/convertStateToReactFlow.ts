@@ -1,6 +1,15 @@
 import fs from 'fs';
 import { app } from 'electron';
-import { MarkerType } from 'reactflow';
+import ReactFlow, {
+  applyEdgeChanges,
+  applyNodeChanges,
+  Background,
+  Controls,
+  Edge,
+  MarkerType,
+  MiniMap,
+  Node,
+} from 'reactflow';
 import 'reactflow/dist/style.css';
 import * as types from '../constants/constants';
 import { greenPrimary } from '../style-variables';
@@ -9,13 +18,21 @@ import { greenPrimary } from '../style-variables';
 // Need interface for convertStateToReactFlow obect (methods)
 // rename Table render method because wtf this makes it look like a react comp
 
-interface TableProps {
-  id: number;
-  columns: any;
-  name: any;
-  tableCoordinates: any;
-  otherTables: any;
-  database: any;
+interface TableConstructor {
+  new (
+    id: any,
+    columns: any,
+    name: any,
+    tableCoordinates: any,
+    otherTables: any,
+    database: any,
+  ): TableInterface;
+}
+
+interface TableProps {}
+
+interface TableInterface {
+  render: () => { nodes: Node[]; edges: Edge[] };
 }
 
 /**
@@ -23,8 +40,9 @@ interface TableProps {
  * the individual table and convert it to the form that react-flow is expecting
  * for its nodes
  */
-class Table {
-  constructor(id, columns, name, tableCoordinates, otherTables, database) {
+const Table: TableConstructor = class Table implements TableInterface {
+  private props: TableProps;
+  constructor({ id, columns, name, tableCoordinates, otherTables, database }) {
     this.id = id;
     this.columns = columns;
     this.name = name;
@@ -117,7 +135,7 @@ class Table {
       edges,
     };
   }
-}
+};
 
 const convertStateToReactFlow = {
   // generates nodes and edges to position tables in a dynamic grid formation based on total number of tables and columns
