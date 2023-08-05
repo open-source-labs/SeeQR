@@ -5,6 +5,19 @@ import 'reactflow/dist/style.css';
 import * as types from '../constants/constants';
 import { greenPrimary } from '../style-variables';
 
+// Need interface for table props
+// Need interface for convertStateToReactFlow obect (methods)
+// rename Table render method because wtf this makes it look like a react comp
+
+interface TableProps {
+  id: number;
+  columns: any;
+  name: any;
+  tableCoordinates: any;
+  otherTables: any;
+  database: any;
+}
+
 /**
  * This class creates a table instance which will get the data for
  * the individual table and convert it to the form that react-flow is expecting

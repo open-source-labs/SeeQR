@@ -74,11 +74,13 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
   });
   const [nodes, setNodes] = useState<Node[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
+
   // state for custom controls toggle
   // when tables (which is the database that is selected changes, update SchemaState)
   useEffect(() => {
     setSchemaState({ database: selectedDb, tableList: tables });
   }, [tables, selectedDb]);
+
   // define an object using the useRef hook to maintain its value throughout all rerenders
   // this object will hold the data that needs to get sent to the backend to update the
   // SQL database. Each node will have access to this backendObj
@@ -92,14 +94,16 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
     updates,
   });
 
-  const backendColumnObj = useRef({
-    database: schemaState.database,
-    updates,
-  });
+  // No idea why this is here. It doesn't seem to be used anywhere
+  // const backendColumnObj = useRef({
+  //   database: schemaState.database,
+  //   updates,
+  // });
+
   // whenever the selectedDb changes, reassign the backendObj to contain this selectedDb
   useEffect(() => {
     backendObj.current.database = selectedDb;
-    backendColumnObj.current.database = selectedDb;
+    // backendColumnObj.current.database = selectedDb;
   }, [selectedDb]);
 
   // whenever the node changes, this callback gets invoked
