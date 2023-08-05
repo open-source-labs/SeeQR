@@ -30,7 +30,6 @@
   },
   "plugins": ["react", "react-hooks", "@typescript-eslint"],
   "rules": {
-    "indent": ["error", 2, { "SwitchCase": 1 }],
     "react/jsx-filename-extension": [1, { "extensions": [".jsx", ".tsx"] }],
 
     "no-use-before-define": "off",
