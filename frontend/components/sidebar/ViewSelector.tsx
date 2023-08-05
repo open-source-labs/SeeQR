@@ -12,10 +12,20 @@ interface ViewButtonProps {
   $isSelected: boolean;
 }
 
-const ViewButton = styled(Button)`
-  background: ${({ $isSelected }: ViewButtonProps) => ($isSelected ? selectedColor : textColor)};
+// REVIEW: old code:
+// const ViewButton = styled(Button)`
+//   background: ${({ $isSelected }: ViewButtonProps) => ($isSelected ? selectedColor : textColor)};
+//   &:hover {
+//     background: ${({ $isSelected }: ViewButtonProps) => ($isSelected ? selectedColor : textColor)};
+//   }
+// `;
+
+const ViewButton = styled(Button)<ViewButtonProps>`
+  background: ${({ $isSelected }: { $isSelected: boolean }) =>
+    $isSelected ? selectedColor : textColor};
   &:hover {
-    background: ${({ $isSelected }: ViewButtonProps) => ($isSelected ? selectedColor : textColor)};
+    background: ${({ $isSelected }: ViewButtonProps) =>
+      $isSelected ? selectedColor : textColor};
   }
 `;
 
@@ -32,27 +42,29 @@ function ViewSelector({
   setSelectedView,
   setERView,
 }: ViewSelectorProps) {
-  return <ViewBtnGroup variant="contained" fullWidth>
-    <ViewButton
-      onClick={() => setSelectedView('queryView')}
-      $isSelected={
-        selectedView === 'queryView' || selectedView === 'compareView'
-      }
-    >
-      Queries
-    </ViewButton>
-    <ViewButton
-      onClick={() => {
-        setSelectedView('dbView');
-        if (setERView) setERView(true);
-      }}
-      $isSelected={
-        selectedView === 'dbView' || selectedView === 'quickStartView'
-      }
-    >
-      Databases
-    </ViewButton>
-  </ViewBtnGroup>
+  return (
+    <ViewBtnGroup variant="contained" fullWidth>
+      <ViewButton
+        onClick={() => setSelectedView('queryView')}
+        $isSelected={
+          selectedView === 'queryView' || selectedView === 'compareView'
+        }
+      >
+        Queries
+      </ViewButton>
+      <ViewButton
+        onClick={() => {
+          setSelectedView('dbView');
+          if (setERView) setERView(true);
+        }}
+        $isSelected={
+          selectedView === 'dbView' || selectedView === 'quickStartView'
+        }
+      >
+        Databases
+      </ViewButton>
+    </ViewBtnGroup>
+  );
 }
 
 export default ViewSelector;
