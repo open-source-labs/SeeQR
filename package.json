@@ -60,7 +60,7 @@
     "reactflow": "^11.7.4",
     "sql-formatter": "^12.2.4",
     "sqlite3": "^5.1.6",
-    "styled-components": "^5.2.1",
+    "styled-components": "^6.0.7",
     "three": "^0.155.0",
     "three-spritetext": "^1.8.1"
   },

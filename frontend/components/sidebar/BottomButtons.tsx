@@ -14,8 +14,14 @@ interface ViewButtonProps {
   $isSelected: boolean;
 }
 
-const ViewButton = styled(Button)`
-  background: ${({ $isSelected }: ViewButtonProps) => ($isSelected ? textColor : selectedColor)};
+// REVIEW: old code:
+// const ViewButton = styled(Button)`
+//   background: ${({ $isSelected }: ViewButtonProps) => ($isSelected ? textColor : selectedColor)};
+// `;
+
+const ViewButton = styled(Button)<ViewButtonProps>`
+  background: ${({ $isSelected }: { $isSelected?: boolean }) =>
+    $isSelected ? textColor : selectedColor};
 `;
 
 type BottomButtonProps = {
@@ -30,15 +36,17 @@ function BottomButtons({
   showCreateDialog,
   setCreateDialog,
 }: BottomButtonProps) {
-  return <ViewBtnGroup variant="contained" fullWidth>
-    <ViewButton
-      onClick={() => {
-        setCreateDialog(true);
-      }}
-      $isSelected={showCreateDialog}
-    >
-      Create New Database
-    </ViewButton>
-  </ViewBtnGroup>
+  return (
+    <ViewBtnGroup variant="contained" fullWidth>
+      <ViewButton
+        onClick={() => {
+          setCreateDialog(true);
+        }}
+        $isSelected={showCreateDialog}
+      >
+        Create New Database
+      </ViewButton>
+    </ViewBtnGroup>
+  );
 }
 export default BottomButtons;
