@@ -11,7 +11,7 @@ import { sidebarShowButtonSize } from '../../../style-variables';
 interface DbViewProps {
   selectedDb: AppState['selectedDb'];
   show: boolean;
-  setERView: (boolean) => void;
+  setERView: (boolean: boolean) => void;
   ERView: boolean;
   curDBType: DBType | undefined;
   DBInfo: DatabaseInfo[] | undefined;
