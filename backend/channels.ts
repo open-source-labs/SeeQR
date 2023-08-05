@@ -153,11 +153,6 @@ ipcMain.on('return-db-list', (event) => {
 ipcMain.handle(
   'select-db',
   async (event, dbName: string, dbType: DBType): Promise<void> => {
-    console.log(
-      dbName,
-      dbType,
-      'THIS IS IN CHANNELS.TS -- DB NAME AND DB TYPE',
-    );
     logger("Received 'select-db'", LogType.RECEIVE);
 
     event.sender.send('async-started');
