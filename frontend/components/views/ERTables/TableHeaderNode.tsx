@@ -19,9 +19,7 @@ type TableHeaderProps = {
 };
 
 function TableHeader({ data }: TableHeaderProps) {
-  const {
-    table_name, schemaStateCopy, setSchemaState, backendObj,
-  } = data;
+  const { table_name, schemaStateCopy, setSchemaState, backendObj } = data;
   // find table we are editing in schemaStateCopy to use throughout all of our TableHeader functions
   const currentTable = schemaStateCopy.tableList.find(
     (table) => table.table_name === table_name,
@@ -86,7 +84,8 @@ function TableHeader({ data }: TableHeaderProps) {
   const warnUser = (): void => {
     sendFeedback({
       type: 'error',
-      message: 'WARNING: Changing table name will only rename constraints in fk_tableNameColumnName format. Use at your own discretion.',
+      message:
+        'WARNING: Changing table name will only rename constraints in fk_tableNameColumnName format. Use at your own discretion.',
     });
   };
   // This function updates the table name when the user hits enter on the submit form
@@ -163,7 +162,13 @@ function TableHeader({ data }: TableHeaderProps) {
         />
       </Tooltip>
       <Tooltip title="Add Column">
-        <IconButton onClick={handleAddColumn} className="add-column" size="large">Add Column</IconButton>
+        <IconButton
+          onClick={handleAddColumn}
+          className="add-column"
+          size="large"
+        >
+          Add Column
+        </IconButton>
       </Tooltip>
       <Tooltip title="Delete Table">
         <IconButton onClick={handleDeleteTable} size="large">
