@@ -52,6 +52,7 @@ const dBFunctions: DBFunctions = {
   async setBaseConnections() {
     this.mysql_options = docConfig.getCredentials(DBType.MySQL);
     this.pg_options = docConfig.getCredentials(DBType.Postgres);
+    console.log(this.pg_options);
     this.rds_pg_options = docConfig.getCredentials(DBType.RDSPostgres);
     this.rds_mysql_options = docConfig.getCredentials(DBType.RDSMySQL);
     this.sqlite_options = docConfig.getCredentials(DBType.SQLite);
@@ -123,6 +124,7 @@ const dBFunctions: DBFunctions = {
       //   const calledPass = PG_Cred.password();
       //   PG_Cred.password = await Promise.resolve(calledPass);
       // }
+      console.log('SHOULD SEE THIS');
       this.pg_options.connectionString = `postgres://${this.pg_options.user}:${this.pg_options.password}@localhost:${this.pg_options.port}`;
       this.pg_options.database = 'postgres';
       try {
@@ -279,7 +281,10 @@ const dBFunctions: DBFunctions = {
     // change current Db
     if (dbType === DBType.Postgres) {
       this.pg_options.database = db;
-      await connectionFunctions.PG_DBConnect(this.pg_uri, db);
+      await connectionFunctions.PG_DBConnect(
+        this.pg_options.connectionString || '',
+        db,
+      );
     } else if (dbType === DBType.MySQL) {
       this.mysql_options.database = db;
       await connectionFunctions.MSQL_DBQuery(db);

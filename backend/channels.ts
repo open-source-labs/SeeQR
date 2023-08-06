@@ -105,11 +105,15 @@ ipcMain.on('return-db-list', (event) => {
     "Received 'return-db-list' (Note: No Async being sent here)",
     LogType.RECEIVE,
   );
-
+  console.log('Setting database connections...');
   db.setBaseConnections()
     .then(() => {
+      console.log('Database connections set. Getting dblists...');
       db.getLists()
         .then((data: DBList) => {
+          console.log(
+            `Dblists acquired: ${JSON.stringify(data)}\nSending to frontend...`,
+          );
           event.sender.send('db-lists', data);
           logger("Sent 'db-lists' from 'return-db-list'", LogType.SEND);
         })
