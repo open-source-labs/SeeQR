@@ -3,7 +3,6 @@ import fs from 'fs';
 import os from 'os';
 import { DBType, DocConfigFile, LogType } from './BE_types';
 import logger from './Logging/masterlog';
-import { once } from '../frontend/lib/utils';
 
 // HELPER FUNCTIONS
 
@@ -83,8 +82,6 @@ const checkConfigFile = (currConfig: DocConfigFile): DocConfigFile => {
   return currConfig;
 };
 
-const checkConfigFileOnce = once(checkConfigFile);
-
 /**
  * Reads config file data and sends it into checkConfigFile, then returns the result
  * If an error occurs during read, the config file will be set back to default
@@ -144,9 +141,7 @@ const docConfig = {
    * @returns login info for the desired database type
    */
   getCredentials<K extends DBType>(dbType: K): GetCredentialsReturnType[K] {
-    checkConfigFileOnce(); // ensure directory exists
-
-    // readConfigFile gives us default file when it can't read
+    this.getConfigFolder(); // ensure directory exists
     const config = readConfigFile(); // all login info now in configFile
 
     return {
