@@ -1,6 +1,8 @@
 /**
  * This file contains common types that need to be used across the backend
  */
+import { PoolOptions } from 'mysql2';
+import { PoolConfig } from 'pg';
 import { UpdatesObjType } from '../frontend/types';
 
 export interface ColumnObj {
@@ -64,12 +66,22 @@ export enum LogType {
 }
 
 export interface DocConfigFile {
-  mysql: { user: string; password: string; port: number };
-  pg: { user: string; password: string; port: number };
-  rds_mysql: { user: string; password: string; port: number; host: string };
-  rds_pg: { user: string; password: string; port: number; host: string };
-  sqlite: { path: '' };
-  directPGURI: { uri: '' };
+  mysql_options: { user: string; password: string; port: number } & PoolOptions;
+  pg_options: { user: string; password: string; port: number } & PoolConfig;
+  rds_mysql_options: {
+    user: string;
+    password: string;
+    port: number;
+    host: string;
+  } & PoolOptions;
+  rds_pg_options: {
+    user: string;
+    password: string;
+    port: number;
+    host: string;
+  } & PoolConfig;
+  sqlite_options: { filename: string };
+  directPGURI_options: { connectionString: string } & PoolConfig;
 }
 
 type dbsInputted = {
@@ -95,18 +107,10 @@ type combined = {
   configExists: configExists;
 };
 
-export interface DBFunctions {
+export interface MysqlQueryResolve {}
+
+export interface DBFunctions extends DocConfigFile {
   pg_uri: string;
-  curPG_DB: string;
-  curMSQL_DB: string;
-  curRDS_MSQL_DB: any;
-  curRDS_PG_DB: {
-    user?: string;
-    password?: string;
-    host?: string;
-  };
-  curSQLite_DB: { path: string };
-  curdirectPGURI_DB: string;
   dbsInputted: dbsInputted;
 
   setBaseConnections: () => Promise<combined>;

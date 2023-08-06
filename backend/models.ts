@@ -1,6 +1,9 @@
 import fs from 'fs';
 import { performance } from 'perf_hooks';
-import docConfig from './_documentsConfig';
+import { Pool } from 'pg';
+import { Pool as MSQLPool } from 'mysql2/promise';
+import { RowDataPacket } from 'mysql2';
+import docConfig, { defaultFile } from './_documentsConfig';
 import {
   ColumnObj,
   dbDetails,
@@ -21,22 +24,14 @@ import pools from './poolVariables';
  *                      login info for rds
  *                      highest level functions for accessing databases
  */
-const DBFunctions: DBFunctions = {
+const dBFunctions: DBFunctions = {
   pg_uri: '',
-  curPG_DB: '',
-  curMSQL_DB: '',
-  curRDS_MSQL_DB: {
-    user: '',
-    password: '',
-    host: '',
-  },
-  curRDS_PG_DB: {
-    user: '',
-    password: '',
-    host: '',
-  },
-  curSQLite_DB: { path: '' },
-  curdirectPGURI_DB: '',
+  pg_options: defaultFile.pg_options,
+  mysql_options: defaultFile.mysql_options,
+  rds_mysql_options: defaultFile.rds_mysql_options,
+  rds_pg_options: defaultFile.rds_pg_options,
+  sqlite_options: defaultFile.sqlite_options,
+  directPGURI_options: defaultFile.directPGURI_options,
 
   /**
    * Indicates whether the named database has been logged-in to, default to false
@@ -55,16 +50,13 @@ const DBFunctions: DBFunctions = {
    * @returns object containing login status of all database servers
    */
   async setBaseConnections() {
-    const PG_Cred = docConfig.getCredentials(DBType.Postgres);
-    const MSQL_Cred = docConfig.getCredentials(DBType.MySQL);
-    // added this
-    // this.curPG_DB = docConfig.getCredentials(DBType.Postgres);
-    this.curRDS_PG_DB = docConfig.getCredentials(DBType.RDSPostgres);
-    this.curRDS_MSQL_DB = docConfig.getCredentials(DBType.RDSMySQL);
-    this.curSQLite_DB.path =
-      docConfig.getCredentials(DBType.SQLite)?.path ?? '';
-    this.curdirectPGURI_DB =
-      docConfig.getCredentials(DBType.directPGURI)?.uri ?? '';
+    this.mysql_options = docConfig.getCredentials(DBType.MySQL);
+    this.pg_options = docConfig.getCredentials(DBType.Postgres);
+    this.rds_pg_options = docConfig.getCredentials(DBType.RDSPostgres);
+    this.rds_mysql_options = docConfig.getCredentials(DBType.RDSMySQL);
+    this.sqlite_options = docConfig.getCredentials(DBType.SQLite);
+    this.directPGURI_options = docConfig.getCredentials(DBType.directPGURI);
+
     const configExists = {
       pg: false,
       msql: false,
@@ -80,13 +72,13 @@ const DBFunctions: DBFunctions = {
 
     //  RDS PG POOL: truthy values means user has inputted info into config -> try to log in
     if (
-      this.curRDS_PG_DB.user &&
-      this.curRDS_PG_DB.password &&
-      this.curRDS_PG_DB.host
+      this.rds_pg_options.user &&
+      this.rds_pg_options.password &&
+      this.rds_pg_options.host
     ) {
       try {
         configExists.rds_pg = true;
-        await connectionFunctions.RDS_PG_DBConnect(this.curRDS_PG_DB);
+        await connectionFunctions.RDS_PG_DBConnect(this.rds_pg_options);
         this.dbsInputted.rds_pg = true;
         logger('CONNECTED TO RDS PG DATABASE!', LogType.SUCCESS);
       } catch (error) {
@@ -100,16 +92,18 @@ const DBFunctions: DBFunctions = {
 
     //  RDS MSQL POOL: truthy values means user has inputted info into config -> try to log in
     if (
-      this.curRDS_MSQL_DB.user &&
-      this.curRDS_MSQL_DB.password &&
-      this.curRDS_MSQL_DB.host
+      this.rds_mysql_options.user &&
+      this.rds_mysql_options.password &&
+      this.rds_mysql_options.host
     ) {
       try {
         configExists.rds_msql = true;
-        await connectionFunctions.RDS_MSQL_DBConnect(this.curRDS_MSQL_DB);
+        await connectionFunctions.RDS_MSQL_DBConnect(this.rds_mysql_options);
 
         // test query to make sure were connected. needed for the
         // catch statement to hit incase we arent connected.
+        if (pools.rds_msql_pool === undefined)
+          throw new Error('No RDS msql pool connected');
         await pools.rds_msql_pool.query('SHOW DATABASES;');
         logger('CONNECTED TO RDS MYSQL DATABASE!', LogType.SUCCESS);
         this.dbsInputted.rds_msql = true;
@@ -123,12 +117,20 @@ const DBFunctions: DBFunctions = {
     }
 
     //  LOCAL PG POOL: truthy values means user has inputted info into config -> try to connect
-    if (PG_Cred.user && PG_Cred.password) {
-      this.pg_uri = `postgres://${PG_Cred.user}:${PG_Cred.password}@localhost:${PG_Cred.port}`;
-      this.curPG_DB = 'postgres';
+    if (this.pg_options.user && this.pg_options.password) {
+      // Commented this out because switched to intersection type in DocConfigFile interface
+      // if (typeof PG_Cred.password !== 'string') {
+      //   const calledPass = PG_Cred.password();
+      //   PG_Cred.password = await Promise.resolve(calledPass);
+      // }
+      this.pg_options.connectionString = `postgres://${this.pg_options.user}:${this.pg_options.password}@localhost:${this.pg_options.port}`;
+      this.pg_options.database = 'postgres';
       try {
         configExists.pg = true;
-        await connectionFunctions.PG_DBConnect(this.pg_uri, this.curPG_DB);
+        await connectionFunctions.PG_DBConnect(
+          this.pg_options.connectionString,
+          this.pg_options.database,
+        );
         logger('CONNECTED TO LOCAL PG DATABASE', LogType.SUCCESS);
         this.dbsInputted.pg = true;
       } catch (error) {
@@ -141,22 +143,22 @@ const DBFunctions: DBFunctions = {
     }
 
     //  LOCAL MSQL POOL: truthy values means user has inputted info into config -> try to log in
-    if (MSQL_Cred.user && MSQL_Cred.password) {
+    if (this.mysql_options.user && this.mysql_options.password) {
       try {
         configExists.msql = true;
-        await connectionFunctions.MSQL_DBConnect({
+        this.mysql_options = {
+          ...this.mysql_options,
           host: 'localhost',
-          port: MSQL_Cred.port,
-          user: MSQL_Cred.user,
-          password: MSQL_Cred.password,
-          database: this.curMSQL_DB,
           waitForConnections: true,
           connectionLimit: 10,
           queueLimit: 0,
           multipleStatements: true,
-        });
+        };
+        await connectionFunctions.MSQL_DBConnect(this.mysql_options);
 
         // test query to make sure were connected. needed for the catch statement to hit incase we arent connected.
+        if (pools.msql_pool === undefined)
+          throw new Error('No active msql pool');
         await pools.msql_pool.query('SHOW DATABASES;');
         this.dbsInputted.msql = true;
         logger('CONNECTED TO LOCAL MYSQL DATABASE!', LogType.SUCCESS);
@@ -170,10 +172,10 @@ const DBFunctions: DBFunctions = {
     }
 
     //  RDS PG POOL: truthy values means user has inputted info into config -> try to log in
-    if (this.curSQLite_DB.path) {
+    if (this.sqlite_options.filename) {
       try {
         configExists.sqlite = true;
-        await connectionFunctions.SQLite_DBConnect(this.curSQLite_DB.path);
+        connectionFunctions.SQLite_DBConnect(this.sqlite_options.filename);
         this.dbsInputted.sqlite = true;
         logger('CONNECTED TO SQLITE DATABASE!', LogType.SUCCESS);
       } catch (error) {
@@ -188,29 +190,29 @@ const DBFunctions: DBFunctions = {
     return { dbsInputted: this.dbsInputted, configExists };
   },
 
-  query(text, params, dbType) {
+  query(text, params, dbType): Promise<unknown> | undefined {
     // RUN ANY QUERY - function that will run query on database that is passed in.
     logger(`Attempting to run query: \n ${text} for: \n ${dbType}`);
 
     if (dbType === DBType.RDSPostgres) {
-      return pools.rds_pg_pool.query(text, params).catch((err) => {
+      return pools.rds_pg_pool?.query(text, params).catch((err) => {
         logger(err.message, LogType.WARNING);
       });
     }
 
     if (dbType === DBType.RDSMySQL) {
-      return pools.rds_msql_pool.query(text, params, dbType);
+      return pools.rds_msql_pool?.query(text, params);
     }
 
     if (dbType === DBType.Postgres) {
-      return pools.pg_pool.query(text, params).catch((err) => {
+      return pools.pg_pool?.query(text, params).catch((err) => {
         logger(err.message, LogType.WARNING);
       });
     }
 
     if (dbType === DBType.MySQL) {
       // pools.msql_pool.query(`USE ${this.curMSQL_DB}`);
-      return pools.msql_pool.query(text, params, dbType);
+      return pools.msql_pool?.query(text, params);
     }
 
     if (dbType === DBType.SQLite) {
@@ -220,7 +222,7 @@ const DBFunctions: DBFunctions = {
       //   return res;
       // });
       return new Promise((resolve, reject) => {
-        pools.sqlite_db.all(text, (err, res) => {
+        pools.sqlite_db?.all(text, (err, res) => {
           if (err) {
             logger(err.message, LogType.WARNING);
             reject(err);
@@ -230,26 +232,29 @@ const DBFunctions: DBFunctions = {
         });
       });
     }
+    return new Promise((resolve, reject) => {
+      reject(Error('Invalid DB Type'));
+    });
   },
 
   sampler(queryString) {
     return new Promise((resolve, reject) => {
-      pools.sqlite_db.run('BEGIN', (err) => {
+      pools.sqlite_db?.run('BEGIN', (err) => {
         if (err) {
           console.error(err.message);
           reject(err);
         } else {
           const startTime = performance.now();
-          pools.sqlite_db.all(queryString, (err, res) => {
-            if (err) {
-              console.error(err.message);
-              reject(err);
+          pools.sqlite_db?.all(queryString, (err1) => {
+            if (err1) {
+              console.error(err1.message);
+              reject(err1);
             } else {
               const endTime = performance.now();
-              pools.sqlite_db.run('ROLLBACK', (err) => {
-                if (err) {
-                  console.error(err.message);
-                  reject(err);
+              pools.sqlite_db?.run('ROLLBACK', (err2) => {
+                if (err2) {
+                  console.error(err2.message);
+                  reject(err2);
                 } else {
                   const elapsedTime = endTime - startTime;
                   // console.log(`Elapsed time: ${elapsedTime} milliseconds`);
@@ -273,18 +278,18 @@ const DBFunctions: DBFunctions = {
   async connectToDB(db, dbType) {
     // change current Db
     if (dbType === DBType.Postgres) {
-      this.curPG_DB = db;
+      this.pg_options.database = db;
       await connectionFunctions.PG_DBConnect(this.pg_uri, db);
     } else if (dbType === DBType.MySQL) {
-      this.curMSQL_DB = db;
+      this.mysql_options.database = db;
       await connectionFunctions.MSQL_DBQuery(db);
     } else if (dbType === DBType.RDSMySQL) {
-      this.curRDS_MSQL_DB = db;
+      this.rds_mysql_options.database = db;
       await connectionFunctions.RDS_MSQL_DBQuery(db);
     } else if (dbType === DBType.RDSPostgres) {
-      await connectionFunctions.RDS_PG_DBConnect(this.curRDS_PG_DB);
+      await connectionFunctions.RDS_PG_DBConnect(this.rds_pg_options);
     } else if (dbType === DBType.SQLite) {
-      await connectionFunctions.SQLite_DBConnect(this.curSQLite_DB.path);
+      connectionFunctions.SQLite_DBConnect(this.sqlite_options.filename);
     }
   },
 
@@ -300,9 +305,9 @@ const DBFunctions: DBFunctions = {
     if (dbType === DBType.SQLite) {
       try {
         // disconnect from and delete sqlite .db file
-        pools.sqlite_db.close();
-        fs.unlinkSync(this.curSQLite_DB.path);
-        this.curSQLite_DB.path = '';
+        pools.sqlite_db?.close();
+        fs.unlinkSync(this.sqlite_options.filename);
+        this.sqlite_options.filename = '';
       } catch (e) {
         logger('FAILED TO DELETE SQLITE DB FILE', LogType.ERROR);
       }
@@ -316,6 +321,7 @@ const DBFunctions: DBFunctions = {
    * @param dbType optional argument
    * @returns promise that resolves to a listObj, containing database connection statuses, list of all logged in databases, and optional list of all tables under the named database
    */
+  // eslint-disable-next-line default-param-last
   async getLists(dbName = '', dbType) {
     /*
     junaid
@@ -335,6 +341,7 @@ const DBFunctions: DBFunctions = {
     };
     if (this.dbsInputted.pg) {
       try {
+        console.log('trying to populate pg dbs');
         const pgDBList = await this.getDBNames(DBType.Postgres);
         // console.log('pgDBList', pgDBList)
         listObj.databaseConnected.PG = true;
@@ -423,12 +430,16 @@ const DBFunctions: DBFunctions = {
    */
   getDBNames(dbType) {
     return new Promise((resolve, reject) => {
-      let query;
+      let query: string;
       if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) {
-        let pool; // changes which pool is being queried based on dbType
+        let pool: Pool | undefined; // changes which pool is being queried based on dbType
 
         if (dbType === DBType.Postgres) pool = pools.pg_pool;
         if (dbType === DBType.RDSPostgres) pool = pools.rds_pg_pool;
+        if (pool === undefined) {
+          reject(Error('No pool for Postgres DB'));
+          return;
+        }
         const dbList: dbDetails[] = [];
         /*
         junaid
@@ -440,7 +451,7 @@ const DBFunctions: DBFunctions = {
           FROM pg_database dbs
           ORDER BY db_name`;
           pool
-            .query(query)
+            .query<{ db_name: string; db_size: string }>(query)
             .then((databases) => {
               for (let i = 0; i < databases.rows.length; i += 1) {
                 const data = databases.rows[i];
@@ -451,8 +462,7 @@ const DBFunctions: DBFunctions = {
                   db_name !== 'template0' &&
                   db_name !== 'template1'
                 ) {
-                  data.db_type = dbType;
-                  dbList.push(data);
+                  dbList.push({ ...data, db_type: dbType });
                 }
               }
 
@@ -467,9 +477,14 @@ const DBFunctions: DBFunctions = {
           resolve(dbList);
         }
       } else if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL) {
-        let pool; // changes which pool is being queried based on dbType
+        let pool: MSQLPool | undefined; // changes which pool is being queried based on dbType
         if (dbType === DBType.MySQL) pool = pools.msql_pool;
         if (dbType === DBType.RDSMySQL) pool = pools.rds_msql_pool;
+        if (pool === undefined) {
+          reject(Error('No pool for MySQL DB'));
+          return;
+        }
+
         const dbList: dbDetails[] = [];
         /*
         only run queries if pool is made
@@ -489,13 +504,20 @@ const DBFunctions: DBFunctions = {
           ORDER BY db_name ASC;`;
 
           pool
-            .query(query)
+            .query<RowDataPacket[]>(query)
             .then((databases) => {
               for (let i = 0; i < databases[0].length; i += 1) {
                 const data = databases[0][i];
+                const filterData: dbDetails = {
+                  db_type: dbType,
+                  db_size: data.db_size ? `${data.db_size}KB` : '0KB',
+                  db_name:
+                    typeof data.db_name === 'string' ? data.db_name : 'ERROR',
+                };
                 data.db_type = dbType;
                 data.db_size = data.db_size ? `${data.db_size}KB` : '0KB';
-                dbList.push(data);
+                data.db_name ??= 'ERROR';
+                dbList.push(filterData);
               }
 
               logger("MySQL 'getDBNames' resolved.", LogType.SUCCESS);
@@ -510,12 +532,12 @@ const DBFunctions: DBFunctions = {
         }
       } else if (dbType === DBType.SQLite) {
         const dbList: dbDetails[] = [];
-        const { path } = this.curSQLite_DB;
-        const filename = path.slice(
-          path.lastIndexOf('\\') + 1,
-          path.lastIndexOf('.db'),
+        let { filename } = this.sqlite_options;
+        filename = filename.slice(
+          filename.lastIndexOf('\\') + 1,
+          filename.lastIndexOf('.db'),
         );
-        const stats = fs.statSync(path);
+        const stats = fs.statSync(filename);
         const fileSizeInKB = stats.size / 1024;
         // Convert the file size to megabytes (optional)
         const data = {
@@ -536,13 +558,16 @@ const DBFunctions: DBFunctions = {
    * @returns promise that resolves to array of columnObjects (column_name, data_type, character_maximum_length, is_nullable, constraint_name, constraint_type, foreign_table, foreign_column)
    */
   getColumnObjects(tableName, dbType) {
-    let queryString;
+    let queryString: string;
     const value = [tableName];
     if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) {
       // added to check for RDS
-      let pool; // changes which pool is being queried based on dbType
+      let pool: Pool | undefined; // changes which pool is being queried based on dbType
       if (dbType === DBType.Postgres) pool = pools.pg_pool;
       if (dbType === DBType.RDSPostgres) pool = pools.rds_pg_pool;
+      if (pool === undefined) {
+        throw Error('No pool for psql DB');
+      }
       // query string to get constraints and table references as well
       queryString = `SELECT DISTINCT cols.column_name,
       cols.data_type,
@@ -570,10 +595,10 @@ const DBFunctions: DBFunctions = {
 
       return new Promise((resolve, reject) => {
         pool
-          .query(queryString, value)
+          ?.query<ColumnObj>(queryString, value)
           .then((result) => {
             const columnInfoArray: ColumnObj[] = [];
-            for (let i = 0; i < result.rows.length; i++) {
+            for (let i = 0; i < result.rows.length; i += 1) {
               columnInfoArray.push(result.rows[i]);
             }
             resolve(columnInfoArray);
@@ -586,9 +611,12 @@ const DBFunctions: DBFunctions = {
     if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL) {
       // added to check for RDS
 
-      let pool; // changes which pool is being queried based on dbType
+      let pool: MSQLPool | undefined; // changes which pool is being queried based on dbType
       if (dbType === DBType.MySQL) pool = pools.msql_pool;
       if (dbType === DBType.RDSMySQL) pool = pools.rds_msql_pool;
+      if (pool === undefined) {
+        throw Error('No pool for mysql db');
+      }
       queryString = `SELECT DISTINCT
       cols.column_name AS column_name,
       cols.data_type AS data_type,
@@ -612,11 +640,36 @@ const DBFunctions: DBFunctions = {
 
       return new Promise((resolve, reject) => {
         pool
-          .query(queryString, value)
+          ?.query<RowDataPacket[]>(queryString, value)
           .then((result) => {
             const columnInfoArray: ColumnObj[] = [];
             for (let i = 0; i < result[0].length; i += 1) {
-              columnInfoArray.push(result[0][i]);
+              const data = result[0][i];
+              const colObjFromData: ColumnObj = {
+                column_name:
+                  typeof data.column_data === 'string' ? data.column_data : '',
+                data_type:
+                  typeof data.data_type === 'string' ? data.data_type : '',
+                character_maximum_length:
+                  typeof data.character_maximum_length === 'number'
+                    ? data.character_maximum_length
+                    : null,
+                is_nullable:
+                  typeof data.is_nullable === 'string' ? data.is_nullable : '',
+                constraint_type:
+                  typeof data.constraint_type === 'string'
+                    ? data.constraint_type
+                    : null,
+                foreign_table:
+                  typeof data.foreign_table === 'string'
+                    ? data.foreign_table
+                    : null,
+                foreign_column:
+                  typeof data.foreign_column === 'string'
+                    ? data.foreign_column
+                    : null,
+              };
+              columnInfoArray.push(colObjFromData);
             }
             resolve(columnInfoArray);
           })
@@ -643,7 +696,14 @@ const DBFunctions: DBFunctions = {
       WHERE m.type = 'table' AND p.type != '' AND m.name = ?`;
 
       return new Promise((resolve, reject) => {
-        sqliteDB.all(queryString, value, (err, rows) => {
+        sqliteDB?.all<{
+          column_name: string;
+          data_type: string;
+          not_null: 0 | 1;
+          pk: 0 | 1;
+          foreign_table: string;
+          foreign_column: string;
+        }>(queryString, value, (err, rows) => {
           if (err) {
             reject(err);
           }
@@ -695,12 +755,12 @@ const DBFunctions: DBFunctions = {
    */
   getDBLists(dbType, dbName) {
     return new Promise((resolve, reject) => {
-      let query;
+      let query: string;
       const tableList: TableDetails[] = [];
       const promiseArray: Promise<ColumnObj[]>[] = [];
 
       if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) {
-        let pool;
+        let pool: Pool | undefined;
         if (dbType === DBType.Postgres) pool = pools.pg_pool;
         if (dbType === DBType.RDSPostgres) pool = pools.rds_pg_pool;
 
@@ -714,7 +774,7 @@ const DBFunctions: DBFunctions = {
         WHERE table_schema = 'public' or table_schema = 'base'
         ORDER BY table_name;`;
         pool
-          .query(query)
+          ?.query<TableDetails>(query)
           .then((tables) => {
             for (let i = 0; i < tables.rows.length; i++) {
               tableList.push(tables.rows[i]);
@@ -743,18 +803,21 @@ const DBFunctions: DBFunctions = {
         // And that TABLE_SCHEMA is set to table_catalog
         // This is because PG and MySQL have these flipped (For whatever reason)
 
-        let pool;
+        let pool: MSQLPool | undefined;
         if (dbType === DBType.MySQL) pool = pools.msql_pool;
-        if (dbType === DBType.RDSMySQL) pool = pools.rds_msql_pool;
+        else pool = pools.rds_msql_pool;
+        if (pool === undefined) {
+          throw Error('No pool for msql DB');
+        }
 
-        const query2 = `SELECT
-        table_catalog,
-        table_schema,
-        table_name,
-        is_insertable_into
-        FROM information_schema.tables
-        WHERE table_schema = 'public' or table_schema = 'base'
-        ORDER BY table_name;`;
+        // const query2 = `SELECT
+        // table_catalog,
+        // table_schema,
+        // table_name,
+        // is_insertable_into
+        // FROM information_schema.tables
+        // WHERE table_schema = 'public' or table_schema = 'base'
+        // ORDER BY table_name;`;
 
         //  query = `
         //  SELECT
@@ -778,10 +841,27 @@ const DBFunctions: DBFunctions = {
 
         pool
           // .query(query2)
-          .query(query)
+          .query<RowDataPacket[]>(query)
           .then((tables) => {
             for (let i = 0; i < tables[0].length; i++) {
-              tableList.push(tables[0][i]);
+              const data = tables[0][i];
+              const tableDetailsFromData: TableDetails = {
+                table_catalog:
+                  typeof data.table_catalog === 'string'
+                    ? data.table_catalog
+                    : '',
+                table_schema:
+                  typeof data.table_schema === 'string'
+                    ? data.table_schema
+                    : '',
+                table_name:
+                  typeof data.table_name === 'string' ? data.table_name : '',
+                is_insertable_into:
+                  typeof data.is_insertable_into === 'string'
+                    ? data.is_insertable_into
+                    : '',
+              };
+              tableList.push(tableDetailsFromData);
 
               // Sys returns way too much stuff idk
               if (tableList[i].table_schema !== 'sys') {
@@ -813,12 +893,12 @@ const DBFunctions: DBFunctions = {
         m.name AS table_name 
         FROM sqlite_master m
         WHERE m.type = 'table' AND m.name != 'sqlite_stat1' AND m.name != 'sqlite_sequence'`;
-        sqliteDB.all(query, (err, rows) => {
+        sqliteDB?.all<{ table_name: string }>(query, (err, rows) => {
           if (err) console.error(err.message);
           for (let i = 0; i < rows.length; i += 1) {
             const newTableDetails: TableDetails = {
-              table_catalog: this.curSQLite_DB.path.slice(
-                this.curSQLite_DB.path.lastIndexOf('\\') + 1,
+              table_catalog: this.sqlite_options.filename.slice(
+                this.sqlite_options.filename.lastIndexOf('\\') + 1,
               ),
               table_schema: 'asdf',
               table_name: rows[i].table_name,
@@ -846,4 +926,4 @@ const DBFunctions: DBFunctions = {
   },
 };
 
-export default DBFunctions;
+export default dBFunctions;
