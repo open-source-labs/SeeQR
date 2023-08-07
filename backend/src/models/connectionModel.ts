@@ -161,8 +161,6 @@ const connectionModel: connectionModelType = {
     // change current Db
 
     if (dbType === DBType.Postgres) {
-      console.log('this is the connection string in connectionModels::', dbState.pg_options.connectionString)
-      console.log('This is the DB in connectionModels:::', db)
       dbState.pg_options.database = db;
       // console.log('THIS IS THE PG URI', this.pg_uri);
       // console.log('THIS IS THE CUR PG DB', this.curPG_DB);
@@ -172,10 +170,10 @@ const connectionModel: connectionModelType = {
           dbState.pg_options.connectionString,
           db,
         );
+      } else {
+        // handle case where connection string is undefined}
       }
-      else {//handle case where connection string is undefined}
     }
-
     // if (dbType === DBType.Postgres) {
     //   dbState.pg_options.database = db;
     //   await connectionFunctions.PG_DBConnect(

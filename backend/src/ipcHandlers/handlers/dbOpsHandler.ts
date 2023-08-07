@@ -125,6 +125,9 @@ export async function selectDb(
 
   event.sender.send('async-started');
   try {
+    if (dbName === '') {
+      dbName = 'postgres';
+    }
     await connectionModel.connectToDB(dbName, dbType);
 
     // send updated db info
@@ -188,9 +191,9 @@ export async function dropDb(
     //   // await db.closeTheDB(dbName, dbType);
     // }
 
-    const dropDBScript = dropDBFunc(dbName, dbType);
+    // const dropDBScript = dropDBFunc(dbName, dbType);
     if (dbType !== DBType.SQLite)
-      await queryModel.query(dropDBScript, [], dbType);
+      await queryModel.query(dropDBFunc(dbName, dbType), [], dbType);
 
     // send updated db info
     const dbsAndTables: DBList = await databaseModel.getLists(dbName, dbType);
