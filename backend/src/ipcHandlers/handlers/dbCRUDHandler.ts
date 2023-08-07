@@ -1,4 +1,5 @@
 // Types
+import { connect } from 'http2';
 import { DBList, DBType, LogType } from '../../../BE_types';
 import { Feedback } from '../../../../shared/types/utilTypes';
 
@@ -8,10 +9,10 @@ import backendObjToQuery from '../../../ertable-functions';
 import helperFunctions from '../../../helperFunctions';
 
 // Models used
-// import connectionModel from '../../models/connectionModel';
-// import databaseModel from '../../models/databaseModel';
-// import queryModel from '../../models/queryModel';
-import db from '../../../models';
+import connectionModel from '../../models/connectionModel';
+import databaseModel from '../../models/databaseModel';
+import queryModel from '../../models/queryModel';
+// import db from '../../../models';
 
 const { createDBFunc } = helperFunctions;
 
@@ -56,12 +57,15 @@ export async function intializeDb(
 
   try {
     // create new empty db
-    await db.query(createDBFunc(newDbName, dbType), [], dbType);
+    await queryModel.query(createDBFunc(newDbName, dbType), [], dbType);
     // connect to initialized db
-    await db.connectToDB(newDbName, dbType);
+    await connectionModel.connectToDB(newDbName, dbType);
 
     // update DBList in the sidebar to show this new db
-    const dbsAndTableInfo: DBList = await db.getLists(newDbName, dbType);
+    const dbsAndTableInfo: DBList = await databaseModel.getLists(
+      newDbName,
+      dbType,
+    );
     event.sender.send('db-lists', dbsAndTableInfo);
     ///
     logger("Sent 'db-lists' from 'initialize-db'", LogType.SEND);
@@ -105,18 +109,18 @@ export async function updateDb(
 
   try {
     // connect to db to run query
-    await db.connectToDB(selectedDb, dbType);
+    await connectionModel.connectToDB(selectedDb, dbType);
 
     // Run Query
     try {
-      await db.query(sqlString, [], dbType);
+      await queryModel.query(sqlString, [], dbType);
     } catch (e) {
       if (e) throw new Error('Failed to update schema');
     }
   } finally {
     // send updated db info in case query affected table or database information
     // must be run after we connect back to the originally selected so tables information is accurate
-    const dbsAndTables: DBList = await db.getLists('', dbType);
+    const dbsAndTables: DBList = await databaseModel.getLists('', dbType);
     event.sender.send('db-lists', dbsAndTables);
     logger("Sent 'db-lists' from 'update-db'", LogType.SEND);
 
@@ -163,9 +167,9 @@ export async function erTableSchemaUpdate(
     const query = backendObjToQuery(backendObj, dbType);
 
     // run sql command
-    await db.query('Begin;', [], dbType);
-    await db.query(query, [], dbType);
-    await db.query('Commit;', [], dbType);
+    await queryModel.query('Begin;', [], dbType);
+    await queryModel.query(query, [], dbType);
+    await queryModel.query('Commit;', [], dbType);
     feedback = {
       type: 'success',
       message: 'Database updated successfully.',
@@ -173,7 +177,7 @@ export async function erTableSchemaUpdate(
     return 'success';
   } catch (err: any) {
     // rollback transaction if there's an error in update and send back feedback to FE
-    await db.query('Rollback;', [], dbType);
+    await queryModel.query('Rollback;', [], dbType);
 
     feedback = {
       type: 'error',
@@ -182,7 +186,7 @@ export async function erTableSchemaUpdate(
   } finally {
     // send updated db info
 
-    const updatedDb: DBList = await db.getLists(dbName, dbType);
+    const updatedDb: DBList = await databaseModel.getLists(dbName, dbType);
     event.sender.send('db-lists', updatedDb);
 
     // send feedback back to FE

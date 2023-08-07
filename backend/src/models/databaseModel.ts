@@ -38,10 +38,10 @@ const databaseModel: databaseModelType = {
       databaseList: [], // accumulates lists for each logged-in database
       tableList: [],
     };
-    if (this.dbsInputted.pg) {
+    if (dbState.dbsInputted.pg) {
       try {
         console.log('trying to populate pg dbs');
-        const pgDBList = await this.getDBNames(DBType.Postgres);
+        const pgDBList = await databaseModel.getDBNames(DBType.Postgres);
         // console.log('pgDBList', pgDBList)
         listObj.databaseConnected.PG = true;
         listObj.databaseList = [...listObj.databaseList, ...pgDBList];
@@ -50,9 +50,9 @@ const databaseModel: databaseModelType = {
       }
     }
 
-    if (this.dbsInputted.msql) {
+    if (dbState.dbsInputted.msql) {
       try {
-        const msqlDBList = await this.getDBNames(DBType.MySQL);
+        const msqlDBList = await databaseModel.getDBNames(DBType.MySQL);
         listObj.databaseConnected.MySQL = true;
         listObj.databaseList = [...listObj.databaseList, ...msqlDBList];
       } catch (error) {
@@ -60,9 +60,9 @@ const databaseModel: databaseModelType = {
       }
     }
 
-    if (this.dbsInputted.rds_msql) {
+    if (dbState.dbsInputted.rds_msql) {
       try {
-        const RDSmsqlDBList = await this.getDBNames(DBType.RDSMySQL);
+        const RDSmsqlDBList = await databaseModel.getDBNames(DBType.RDSMySQL);
         listObj.databaseConnected.RDSMySQL = true;
         listObj.databaseList = [...listObj.databaseList, ...RDSmsqlDBList];
       } catch (error) {
@@ -70,9 +70,9 @@ const databaseModel: databaseModelType = {
       }
     }
 
-    if (this.dbsInputted.rds_pg) {
+    if (dbState.dbsInputted.rds_pg) {
       try {
-        const RDSpgDBList = await this.getDBNames(DBType.RDSPostgres);
+        const RDSpgDBList = await databaseModel.getDBNames(DBType.RDSPostgres);
         listObj.databaseConnected.RDSPG = true;
         listObj.databaseList = [...listObj.databaseList, ...RDSpgDBList];
       } catch (error) {
@@ -80,9 +80,9 @@ const databaseModel: databaseModelType = {
       }
     }
 
-    if (this.dbsInputted.sqlite) {
+    if (dbState.dbsInputted.sqlite) {
       try {
-        const sqliteDBList = await this.getDBNames(DBType.SQLite);
+        const sqliteDBList = await databaseModel.getDBNames(DBType.SQLite);
         // console.log('sqliteDBList', sqliteDBList)
         listObj.databaseConnected.SQLite = true;
         listObj.databaseList = [...listObj.databaseList, ...sqliteDBList];
@@ -93,7 +93,7 @@ const databaseModel: databaseModelType = {
 
     if (dbType) {
       try {
-        const listData = await this.getDBLists(dbType, dbName);
+        const listData = await databaseModel.getDBLists(dbType, dbName);
         logger(
           `RESOLVING DB DETAILS: Fetched DB names along with Table List for DBType: ${dbType} and DB: ${dbName}`,
           LogType.SUCCESS,
@@ -112,14 +112,13 @@ const databaseModel: databaseModelType = {
 
   // NEED TO LOOK INTO getTableInfo
 
-  getTableInfo: (tableName, dbType) => {
-    return this.getColumnObjects(tableName, dbType);
-  },
+  getTableInfo: (tableName, dbType) =>
+    databaseModel.getColumnObjects(tableName, dbType),
 
   // NEED TO LOOK INTO getDBNames
 
-  getDBNames: (dbType) => {
-    return new Promise((resolve, reject) => {
+  getDBNames: (dbType) =>
+    new Promise((resolve, reject) => {
       let query: string;
       if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) {
         let pool: Pool | undefined; // changes which pool is being queried based on dbType
@@ -222,7 +221,7 @@ const databaseModel: databaseModelType = {
         }
       } else if (dbType === DBType.SQLite) {
         const dbList: dbDetails[] = [];
-        let { filename } = this.sqlite_options;
+        let { filename } = dbState.sqlite_options;
         filename = filename.slice(
           filename.lastIndexOf('\\') + 1,
           filename.lastIndexOf('.db'),
@@ -238,8 +237,7 @@ const databaseModel: databaseModelType = {
         dbList.push(data);
         resolve(dbList);
       }
-    });
-  },
+    }),
 
   // THIS FUNCTION IS FKED
 
@@ -433,8 +431,8 @@ const databaseModel: databaseModelType = {
     throw 'Unknown db type';
   },
 
-  getDBLists: (dbType, dbName) => {
-    return new Promise((resolve, reject) => {
+  getDBLists: (dbType, dbName) =>
+    new Promise((resolve, reject) => {
       let query: string;
       const tableList: TableDetails[] = [];
       const promiseArray: Promise<ColumnObj[]>[] = [];
@@ -459,7 +457,10 @@ const databaseModel: databaseModelType = {
             for (let i = 0; i < tables.rows.length; i++) {
               tableList.push(tables.rows[i]);
               promiseArray.push(
-                this.getColumnObjects(tables.rows[i].table_name, dbType),
+                databaseModel.getColumnObjects(
+                  tables.rows[i].table_name,
+                  dbType,
+                ),
               );
             }
 
@@ -546,7 +547,10 @@ const databaseModel: databaseModelType = {
               // Sys returns way too much stuff idk
               if (tableList[i].table_schema !== 'sys') {
                 promiseArray.push(
-                  this.getColumnObjects(tableList[i].table_name, dbType),
+                  databaseModel.getColumnObjects(
+                    tableList[i].table_name,
+                    dbType,
+                  ),
                 );
               }
             }
@@ -577,8 +581,8 @@ const databaseModel: databaseModelType = {
           if (err) console.error(err.message);
           for (let i = 0; i < rows.length; i += 1) {
             const newTableDetails: TableDetails = {
-              table_catalog: this.sqlite_options.filename.slice(
-                this.sqlite_options.filename.lastIndexOf('\\') + 1,
+              table_catalog: dbState.sqlite_options.filename.slice(
+                dbState.sqlite_options.filename.lastIndexOf('\\') + 1,
               ),
               table_schema: 'asdf',
               table_name: rows[i].table_name,
@@ -586,7 +590,7 @@ const databaseModel: databaseModelType = {
             };
             tableList.push(newTableDetails);
             promiseArray.push(
-              this.getColumnObjects(rows[i].table_name, dbType),
+              databaseModel.getColumnObjects(rows[i].table_name, dbType),
             );
           }
           Promise.all(promiseArray)
@@ -602,8 +606,7 @@ const databaseModel: databaseModelType = {
             });
         });
       }
-    });
-  },
+    }),
 };
 
 export default databaseModel;

@@ -1,29 +1,31 @@
 import { dbsInputted } from '../../../shared/types/dbTypes';
-import docConfig, { defaultFile } from './configModel';
+import { DocConfigFile } from '../../BE_types';
+import { defaultFile } from './configModel';
 
 // type declaration
-type dbStateType = {
-  pg_uri: string;
-  curPG_DB: string;
-  curMSQL_DB: string;
-  curRDS_MSQL_DB: any;
-  curRDS_PG_DB: {
-    user?: string;
-    password?: string;
-    host?: string;
-  };
-  curSQLite_DB: {
-    path: string;
-  };
-  curdirectPGURI_DB: string;
-  dbsInputted: dbsInputted;
-};
+// type dbStateType = {
+//   pg_uri: string;
+//   curPG_DB: string;
+//   curMSQL_DB: string;
+//   curRDS_MSQL_DB: any;
+//   curRDS_PG_DB: {
+//     user?: string;
+//     password?: string;
+//     host?: string;
+//   };
+//   curSQLite_DB: {
+//     path: string;
+//   };
+//   curdirectPGURI_DB: string;
+//   dbsInputted: dbsInputted;
+// };
+
+type DBState = DocConfigFile & { dbsInputted: dbsInputted };
 
 // dbState holds info about current databse accessed. Functionalities from other models are assigned to it
 
-const dbState: dbStateType = {
+const dbState: DBState = {
   // NEEDS UPDATE TO PETERS NEW SYNTAX
-  pg_uri: '',
   pg_options: defaultFile.pg_options,
   mysql_options: defaultFile.mysql_options,
   rds_mysql_options: defaultFile.rds_mysql_options,

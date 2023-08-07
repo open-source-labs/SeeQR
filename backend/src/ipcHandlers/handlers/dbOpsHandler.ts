@@ -12,10 +12,10 @@ import docConfig from '../../models/configModel';
 import helperFunctions from '../../../helperFunctions';
 
 // Models
-// import connectionModel from '../../models/connectionModel';
-// import databaseModel from '../../models/databaseModel';
-// import queryModel from '../../models/queryModel';
-import db from '../../../models';
+import connectionModel from '../../models/connectionModel';
+import databaseModel from '../../models/databaseModel';
+import queryModel from '../../models/queryModel';
+// import db from '../../../models';
 
 const {
   createDBFunc,
@@ -59,10 +59,12 @@ export function returnDbList(event) {
     LogType.RECEIVE,
   );
   console.log('Setting database connections...');
-  db.setBaseConnections()
+  connectionModel
+    .setBaseConnections()
     .then(() => {
       console.log('Database connections set. Getting dblists...');
-      db.getLists()
+      databaseModel
+        .getLists()
         .then((data: DBList) => {
           console.log(
             `Dblists acquired: ${JSON.stringify(data)}\nSending to frontend...`,
@@ -123,10 +125,10 @@ export async function selectDb(
 
   event.sender.send('async-started');
   try {
-    await db.connectToDB(dbName, dbType);
+    await connectionModel.connectToDB(dbName, dbType);
 
     // send updated db info
-    const dbsAndTables: DBList = await db.getLists(dbName, dbType);
+    const dbsAndTables: DBList = await databaseModel.getLists(dbName, dbType);
     event.sender.send('db-lists', dbsAndTables);
     logger("Sent 'db-lists' from 'select-db'", LogType.SEND);
   } finally {
@@ -160,16 +162,16 @@ export async function dropDb(
   try {
     // if deleting currently connected db, disconnect from db
     // end pool connection
-    await db.disconnectToDrop(dbType);
+    await connectionModel.disconnectToDrop(dbType);
     // reconnect to database server, but not the db that will be dropped
-    await db.connectToDB('', dbType);
+    await connectionModel.connectToDB('', dbType);
 
     // IN CASE OF EMERGENCY USE THIS CODE TO DROP DATABASES
     // WILL THROW UNCAUGHT ERRORS LAST RESORT ONLY!!!
     // await db.connectToDB('', dbType);
     // if(dbType === DBType.Postgres){
-    //   await db.query(`UPDATE pg_database SET datallowconn = 'false' WHERE datname = '${dbName}'`, null, dbType);
-    //   await db.query(`
+    //   await queryModel.query(`UPDATE pg_database SET datallowconn = 'false' WHERE datname = '${dbName}'`, null, dbType);
+    //   await queryModel.query(`
     //   SELECT pid, pg_terminate_backend(pid)
     //   FROM pg_stat_activity
     //   WHERE datname = '${dbName}' AND pid <> pg_backend_pid();
@@ -178,10 +180,11 @@ export async function dropDb(
     // }
 
     const dropDBScript = dropDBFunc(dbName, dbType);
-    if (dbType !== DBType.SQLite) await db.query(dropDBScript, [], dbType);
+    if (dbType !== DBType.SQLite)
+      await queryModel.query(dropDBScript, [], dbType);
 
     // send updated db info
-    const dbsAndTables: DBList = await db.getLists(dbName, dbType);
+    const dbsAndTables: DBList = await databaseModel.getLists(dbName, dbType);
     event.sender.send('db-lists', dbsAndTables);
     logger("Sent 'db-lists' from 'drop-db'", LogType.SEND);
   } finally {
@@ -236,7 +239,7 @@ export async function duplicateDb(
 
     // create new empty database
     try {
-      await db.query(createDBFunc(newName, dbType), [], dbType);
+      await queryModel.query(createDBFunc(newName, dbType), [], dbType);
     } catch (e) {
       throw new Error('Failed to create Database');
     }
@@ -248,13 +251,13 @@ export async function duplicateDb(
       // cleanup: drop created db
       logger(`Dropping duplicate db because: ${e.message}`, LogType.WARNING);
       const dropDBScript = dropDBFunc(newName, dbType);
-      await db.query(dropDBScript, [], dbType);
+      await queryModel.query(dropDBScript, [], dbType);
 
       throw new Error('Failed to populate newly created database');
     }
 
     // update frontend with new db list
-    const dbsAndTableInfo: DBList = await db.getLists('', dbType);
+    const dbsAndTableInfo: DBList = await databaseModel.getLists('', dbType);
     event.sender.send('db-lists', dbsAndTableInfo);
     logger("Sent 'db-lists' from 'duplicate-db'", LogType.SEND);
   } finally {
@@ -294,7 +297,7 @@ export async function importDb(
 
   try {
     // create new empty db
-    await db.query(createDBFunc(newDbName, dbType), [], dbType);
+    await queryModel.query(createDBFunc(newDbName, dbType), [], dbType);
 
     const ext = path.extname(filePath).toLowerCase();
     if (ext !== '.sql' && ext !== '.tar') {
@@ -313,13 +316,13 @@ export async function importDb(
       // cleanup: drop created db
       logger(`Dropping imported db because: ${e.message}`, LogType.WARNING);
       const dropDBScript = dropDBFunc(newDbName, dbType);
-      await db.query(dropDBScript, [], dbType);
+      await queryModel.query(dropDBScript, [], dbType);
 
       throw new Error('Failed to populate database');
     }
 
     // update frontend with new db list
-    const dbsAndTableInfo: DBList = await db.getLists('', dbType);
+    const dbsAndTableInfo: DBList = await databaseModel.getLists('', dbType);
     event.sender.send('db-lists', dbsAndTableInfo);
     logger("Sent 'db-lists' from 'import-db'", LogType.SEND);
   } finally {

@@ -6,10 +6,10 @@ import logger from '../../../Logging/masterlog';
 import helperFunctions from '../../../helperFunctions';
 
 // Models used
-// import connectionModel from '../../models/connectionModel';
-// import queryModel from '../../models/queryModel';
-// import databaseModel from '../../models/databaseModel';
-import db from '../../../models';
+import connectionModel from '../../models/connectionModel';
+import queryModel from '../../models/queryModel';
+import databaseModel from '../../models/databaseModel';
+// import db from '../../../models';
 
 const { explainQuery } = helperFunctions;
 
@@ -68,7 +68,8 @@ export default async function runQuery(
     let error: string | undefined;
     // connect to db to run query
 
-    if (selectedDb !== targetDb) await db.connectToDB(targetDb, dbType);
+    if (selectedDb !== targetDb)
+      await connectionModel.connectToDB(targetDb, dbType);
 
     // Run Explain
     let explainResults;
@@ -77,7 +78,7 @@ export default async function runQuery(
       for (let i = 0; i < numberOfSample; i++) {
         // console.log('start of for loopo');
         if (dbType === DBType.Postgres) {
-          const results = await db.query(
+          const results = await queryModel.query(
             explainQuery(sqlString, dbType),
             [],
             dbType,
@@ -94,7 +95,7 @@ export default async function runQuery(
           arr.push(eachSampleTime);
           totalSampleTime += eachSampleTime;
         } else if (dbType === DBType.MySQL) {
-          const results = await db.query(
+          const results = await queryModel.query(
             explainQuery(sqlString, dbType),
             [],
             dbType,
@@ -151,7 +152,7 @@ export default async function runQuery(
             'Execution Time': 9999,
           };
         } else if (dbType === DBType.SQLite) {
-          const sampleTime = await db.sampler(sqlString);
+          const sampleTime = await queryModel.sampler(sqlString);
           arr.push(sampleTime);
           totalSampleTime += sampleTime;
 
@@ -216,7 +217,7 @@ export default async function runQuery(
     // Run Query
     let returnedRows;
     try {
-      const results = await db.query(sqlString, [], dbType);
+      const results = await queryModel.query(sqlString, [], dbType);
       if (dbType === DBType.MySQL) {
         // console.log('mySQL results', results);
         returnedRows = results[0];
@@ -250,11 +251,12 @@ export default async function runQuery(
   } finally {
     // connect back to initialDb
 
-    if (selectedDb !== targetDb) await db.connectToDB(selectedDb, dbType);
+    if (selectedDb !== targetDb)
+      await connectionModel.connectToDB(selectedDb, dbType);
 
     // send updated db info in case query affected table or database information
     // must be run after we connect back to the originally selected so tables information is accurate
-    const dbsAndTables: DBList = await db.getLists('', dbType);
+    const dbsAndTables: DBList = await databaseModel.getLists('', dbType);
     event.sender.send('db-lists', dbsAndTables);
     logger(
       "Sent 'db-lists' from 'run-query'",

@@ -7,11 +7,11 @@ import logger from '../../../Logging/masterlog';
 
 // Models used
 import docConfig from '../../models/configModel';
-// import connectionModel from '../../models/connectionModel';
-// import databaseModel from '../../models/databaseModel';
+import connectionModel from '../../models/connectionModel';
+import databaseModel from '../../models/databaseModel';
 
 // TESTING GROUND:
-import db from '../../../models';
+// import db from '../../../models';
 
 /**
  * EVENT: 'set-config'
@@ -28,7 +28,8 @@ export function setConfig(event, configObj) {
   // at some point change this name docConfig as well
   docConfig.saveConfig(configObj); // saves login info from frontend into config file
 
-  db.setBaseConnections() // tries to log in using config data
+  connectionModel
+    .setBaseConnections() // tries to log in using config data
     .then(({ dbsInputted, configExists }) => {
       // error handling for trying and failing to log in to databases
       let errorStr = '';
@@ -45,7 +46,7 @@ export function setConfig(event, configObj) {
         event.sender.send('feedback', feedback);
       }
       logger('Successfully reset base connections', LogType.SUCCESS);
-      return db.getLists().then((data: DBList) => {
+      return databaseModel.getLists().then((data: DBList) => {
         event.sender.send('db-lists', data); // used to populate sidebar
       });
     })
