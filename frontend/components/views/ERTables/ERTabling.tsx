@@ -1,6 +1,6 @@
 import fs from 'fs';
 import { Button } from '@mui/material';
-import { app, ipcRenderer } from 'electron';
+import { ipcRenderer } from 'electron';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import ReactFlow, {
   applyEdgeChanges,
