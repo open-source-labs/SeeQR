@@ -10,6 +10,8 @@ const dev: boolean = process.env.NODE_ENV === 'development';
 
 // requiring channels file to initialize event listeners
 require('./channels');
+// require('./src/ipcHandlers/channels/authHandler');
+// require('./src/ipcHandlers/handlerIndex'); // tester
 
 fixPath();
 // Keep a global reference of the window objects, if you don't,

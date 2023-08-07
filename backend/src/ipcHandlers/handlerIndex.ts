@@ -38,16 +38,16 @@ ipcMain.handle('duplicate-db', duplicateDb);
 ipcMain.handle('import-db', importDb);
 ipcMain.handle('export-db', exportDb);
 
-// db CRUD functionalities
-ipcMain.handle('initialize-db', intializeDb);
-ipcMain.handle('update-db', updateDb);
-ipcMain.handle('ertable-schemaupdate', erTableSchemaUpdate);
+// // db CRUD functionalities
+// ipcMain.handle('initialize-db', intializeDb);
+// ipcMain.handle('update-db', updateDb);
+// ipcMain.handle('ertable-schemaupdate', erTableSchemaUpdate);
 
-// query
-ipcMain.handle('run-query', runQuery);
+// // query
+// ipcMain.handle('run-query', runQuery);
 
-// misc (other events bundled together)
-ipcMain.handle('generate-dummy-date', dummyData);
-ipcMain.handle('showOpenDialog', showOpenDialog);
-ipcMain.handle('showSaveDialog', showSaveDialog);
-ipcMain.handle('feedback', feedback);
+// // misc (other events bundled together)
+// ipcMain.handle('generate-dummy-date', dummyData);
+// ipcMain.handle('showOpenDialog', showOpenDialog);
+// ipcMain.handle('showSaveDialog', showSaveDialog);
+// ipcMain.handle('feedback', feedback);
