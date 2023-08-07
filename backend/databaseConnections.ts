@@ -13,11 +13,8 @@ export default {
    * @param db Name of target database that the login has access to. Initially empty string
    */
   async PG_DBConnect(pg_uri: string, db: string) {
-    console.log('connecting to pg db...');
     const newURI = `${pg_uri}/${db}`;
-    console.log('THIS IS THE NEW URI', newURI);
     const newPool = new Pool({ connectionString: newURI });
-    console.log('THIS IS THE DB', db);
     pools.pg_pool = newPool;
     console.log('pool created. test querying...');
     // await pools.pg_pool.connect(); this is unnecessary for making queries, and causes pg error when trying to drop db
