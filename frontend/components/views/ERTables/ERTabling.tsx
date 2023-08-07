@@ -138,12 +138,15 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
     setSchemaState(schemaStateCopy);
   };
 
-  const handleSaveLayout = (): void => {
+  // REVIEW: derek - old code :  const handleSaveLayout = (): void => {
+  const handleSaveLayout = async (): Promise<void> => {
     // get the array of header nodes
     const headerNodes = nodes.filter(
       (node) => node.type === 'tableHeader',
     ) as TableHeaderNodeType[];
     // create object for the current database
+
+    console.log(headerNodes);
     type TablePosObjType = {
       table_name: string;
       table_position: {
@@ -174,9 +177,21 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
     // TODO: OLD CODE
     // const location: string = remote.app
     // REVIEW:
-    const location: string = app
-      .getPath('temp')
-      .concat('/UserTableLayouts.json');
+    // const location: string = app
+    //   .getPath('temp')
+    //   .concat('/UserTableLayouts.json');
+    // fs.readFile(location, 'utf-8', (err, data) => {
+    //   // check if error exists (no file found)
+    //   if (err) {
+    //     fs.writeFile(
+    //       location,
+    //       JSON.stringify([currDatabaseLayout], null, 2),
+    //       (error) => {
+    //         if (error) console.log(error);
+    //       },
+    //     );
+    const location: string = await ipcRenderer.invoke('get-path', 'temp');
+    location.concat('/UserTableLayouts.json');
     fs.readFile(location, 'utf-8', (err, data) => {
       // check if error exists (no file found)
       if (err) {
@@ -187,7 +202,6 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
             if (error) console.log(error);
           },
         );
-
         // check if file exists
       } else {
         const dbLayouts = JSON.parse(data) as DatabaseLayoutObjType[];
