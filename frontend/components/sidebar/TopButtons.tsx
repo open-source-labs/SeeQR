@@ -32,11 +32,11 @@ type TopButtonsProps = Pick<AppState, 'selectedView' | 'setSelectedView'> & {
   setConfigDialog: (show: boolean) => void;
 };
 
-const TopButtons = ({
+function TopButtons({
   selectedView,
   setSelectedView,
   setConfigDialog,
-}: TopButtonsProps) => {
+}: TopButtonsProps) {
   const toggleCompareView = () => {
     if (selectedView === 'compareView') return setSelectedView('queryView');
     return setSelectedView('compareView');
@@ -72,6 +72,6 @@ const TopButtons = ({
       </Tooltip>
     </Container>
   );
-};
+}
 
 export default TopButtons;

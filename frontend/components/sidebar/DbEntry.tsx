@@ -27,13 +27,7 @@ interface DbEntryProps {
   dbType: DBType;
 }
 
-const DbEntry = ({
-  db,
-  isSelected,
-  select,
-  duplicate,
-  dbType,
-}: DbEntryProps) => {
+function DbEntry({ db, isSelected, select, duplicate, dbType }: DbEntryProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const handleDelete = () => {
@@ -43,7 +37,9 @@ const DbEntry = ({
         if (isSelected) select('', dbType);
         setIsDeleteDialogOpen(false);
       })
-      .catch(() => sendFeedback({ type: 'error', message: `Failed to delete ${db}` }));
+      .catch(() =>
+        sendFeedback({ type: 'error', message: `Failed to delete ${db}` }),
+      );
   };
 
   return (
@@ -59,7 +55,11 @@ const DbEntry = ({
           </IconButton>
         </Tooltip>
         <Tooltip title="Drop Database">
-          <IconButton edge="end" onClick={() => setIsDeleteDialogOpen(true)} size="large">
+          <IconButton
+            edge="end"
+            onClick={() => setIsDeleteDialogOpen(true)}
+            size="large"
+          >
             <DeleteIcon />
           </IconButton>
         </Tooltip>
@@ -69,17 +69,19 @@ const DbEntry = ({
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
         >
-          <DialogTitle style={{ color: 'black' }} id="alert-dialog-title">Confirm deletion</DialogTitle>
+          <DialogTitle style={{ color: 'black' }} id="alert-dialog-title">
+            Confirm deletion
+          </DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
-              Are you sure you want to delete the database
-              {' '}
-              {db}
-              ?
+              Are you sure you want to delete the database {db}?
             </DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setIsDeleteDialogOpen(false)} color="primary">
+            <Button
+              onClick={() => setIsDeleteDialogOpen(false)}
+              color="primary"
+            >
               Cancel
             </Button>
             <Button onClick={handleDelete} color="primary" autoFocus>
@@ -90,6 +92,6 @@ const DbEntry = ({
       </ListItemSecondaryAction>
     </SidebarListItem>
   );
-};
+}
 
 export default DbEntry;

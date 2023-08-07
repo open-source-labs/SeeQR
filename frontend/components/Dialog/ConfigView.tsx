@@ -16,6 +16,7 @@ import {
   StyledTextField,
 } from '../../style-variables';
 import '../../lib/style.css';
+import { DocConfigFile } from '../../../backend/BE_types';
 
 /*
 junaid
@@ -66,7 +67,7 @@ function a11yProps(index: number) {
   };
 }
 
-const BasicTabs = ({ onClose }: BasicTabsProps) => {
+function BasicTabs({ onClose }: BasicTabsProps) {
   // useState hooks for database connection information
   const [mysql, setmysql] = useState({});
   const [pg, setpg] = useState({});
@@ -195,13 +196,16 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
 
   useEffect(() => {
     // Listen to backend for updates to list of available databases
-    const configFromBackend = (evt: IpcRendererEvent, config) => {
+    const configFromBackend = (
+      evt: IpcRendererEvent,
+      config: DocConfigFile,
+    ) => {
       // Set state based on parsed config.json object received from backend
-      setmysql({ ...config.mysql });
-      setpg({ ...config.pg });
-      setrds_mysql({ ...config.rds_mysql });
-      setrds_pg({ ...config.rds_pg });
-      setSqlite({ ...config.sqlite }); // added sqlite
+      setmysql({ ...config.mysql_options });
+      setpg({ ...config.pg_options });
+      setrds_mysql({ ...config.rds_mysql_options });
+      setrds_pg({ ...config.rds_pg_options });
+      setSqlite({ ...config.sqlite_options }); // added sqlite
     };
     ipcRenderer.on('get-config', configFromBackend);
     ipcRenderer.invoke('get-config');
@@ -237,11 +241,11 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
     // Pass database connection values from state to backend
     ipcRenderer
       .invoke('set-config', {
-        mysql: { ...mysql },
-        pg: { ...pg },
-        rds_mysql: { ...rds_mysql },
-        rds_pg: { ...rds_pg },
-        sqlite: { ...sqlite }, // added sqlite
+        mysql_options: { ...mysql },
+        pg_options: { ...pg },
+        rds_mysql_options: { ...rds_mysql },
+        rds_pg_options: { ...rds_pg },
+        sqlite_options: { ...sqlite }, // added sqlite
       })
       .then(() => {
         handleClose();
@@ -325,13 +329,13 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
       </ButtonContainer>
     </Box>
   );
-};
+}
 interface ConfigViewProps {
   show: boolean;
   onClose: () => void;
 }
 
-const ConfigView = ({ show, onClose }: ConfigViewProps) => {
+function ConfigView({ show, onClose }: ConfigViewProps) {
   const handleClose = () => {
     onClose();
   };
@@ -350,6 +354,6 @@ const ConfigView = ({ show, onClose }: ConfigViewProps) => {
       </Dialog>
     </div>
   );
-};
+}
 
 export default ConfigView;

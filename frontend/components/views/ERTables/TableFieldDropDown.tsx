@@ -16,7 +16,7 @@ type TableFieldDropDownProps = {
   setFkOptions?: (fkOptions: string[]) => void;
 };
 
-const TableFieldDropDown = ({
+function TableFieldDropDown({
   label,
   idName,
   options,
@@ -24,7 +24,7 @@ const TableFieldDropDown = ({
   isDisabled,
   otherTables,
   setFkOptions,
-}: TableFieldDropDownProps) => {
+}: TableFieldDropDownProps) {
   const optionsArray = options.map((option, i) => (
     <TableFieldDropDownOption
       key={idName + i}
@@ -64,6 +64,6 @@ const TableFieldDropDown = ({
       </select>
     </div>
   );
-};
+}
 
 export default TableFieldDropDown;

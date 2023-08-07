@@ -1,6 +1,7 @@
-window.require = ((str: string) => str) as any
 import * as queries from '../../../frontend/lib/queries';
 import type { QueryData } from '../../../frontend/types';
+
+window.require = ((str: string) => str) as any
 
 const first: Partial<QueryData> = {
   label: 'firstQuery',
@@ -175,7 +176,7 @@ describe('setCompare', () => {
   });
 
   it('should set execution time to 0 if given false for isCompared', () => {
-    let qs:any = { [`${queries.key(first as QueryData)}`]: first };
+    const qs:any = { [`${queries.key(first as QueryData)}`]: first };
     expect(Object.keys(collection).length).toBe(0);
     const newCollection = queries.setCompare({}, qs, first as QueryData, true);
     expect(Object.keys(newCollection).length).toBe(1);

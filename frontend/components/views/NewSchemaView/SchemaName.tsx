@@ -7,15 +7,14 @@ interface SchemaNameProps {
   onChange: (newName: string) => void;
 }
 
-const SchemaName = ({ name, onChange }: SchemaNameProps) => (
-
-  <Box>
+function SchemaName({ name, onChange }: SchemaNameProps) {
+  return <Box>
     <TextField
       value={name}
       label="Database Name"
       onChange={(evt) => onChange(evt.target.value)}
     />
   </Box>
-);
+}
 
 export default SchemaName;

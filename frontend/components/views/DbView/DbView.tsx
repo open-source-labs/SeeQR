@@ -11,7 +11,7 @@ import { sidebarShowButtonSize } from '../../../style-variables';
 interface DbViewProps {
   selectedDb: AppState['selectedDb'];
   show: boolean;
-  setERView: (boolean) => void;
+  setERView: (boolean: boolean) => void;
   ERView: boolean;
   curDBType: DBType | undefined;
   DBInfo: DatabaseInfo[] | undefined;
@@ -26,9 +26,17 @@ const StyledDummyButton = styled(Button)`
   right: ${sidebarShowButtonSize};
 `;
 
-const DbView = ({
-  selectedDb, show, setERView, ERView, curDBType, DBInfo, dbTables, selectedTable, setSelectedTable,
-}: DbViewProps) => {
+function DbView({
+  selectedDb,
+  show,
+  setERView,
+  ERView,
+  curDBType,
+  DBInfo,
+  dbTables,
+  selectedTable,
+  setSelectedTable,
+}: DbViewProps) {
   const [open, setOpen] = useState(false);
 
   const handleClickOpen = () => {
@@ -56,7 +64,7 @@ const DbView = ({
       />
       <br />
       <br />
-      {(selectedTable && !ERView) ? (
+      {selectedTable && !ERView ? (
         <StyledDummyButton
           variant="contained"
           color="primary"
@@ -74,6 +82,6 @@ const DbView = ({
       />
     </>
   );
-};
+}
 
 export default DbView;

@@ -1,17 +1,64 @@
-import { app } from 'electron';
 import fs from 'fs';
-import { MarkerType } from 'reactflow';
+import { app } from 'electron';
+import { Edge, MarkerType, Node } from 'reactflow';
 import 'reactflow/dist/style.css';
 import * as types from '../constants/constants';
 import { greenPrimary } from '../style-variables';
+import { ERTableColumnData, ERTableData, SchemaStateObjType } from '../types';
+import {
+  DatabaseLayoutObjType,
+  isDatabaseLayoutObjTypeArr,
+} from '../components/views/ERTables/NodeTypes';
+
+// Need interface for table props
+// Need interface for convertStateToReactFlow obect (methods)
+// rename Table render method because wtf this makes it look like a react comp
+
+interface TableConstructor {
+  new (
+    id: number,
+    columns: ERTableColumnData[],
+    name: string,
+    tableCoordinates: { x: number; y: number },
+    otherTables: {
+      table_name: string;
+      column_names: string[];
+    }[],
+    database: string,
+  ): TableInterface;
+}
+
+interface TableInterface {
+  render: () => { nodes: Node[]; edges: Edge[] };
+}
 
 /**
  * This class creates a table instance which will get the data for
  * the individual table and convert it to the form that react-flow is expecting
  * for its nodes
  */
-class Table {
-  constructor(id, columns, name, tableCoordinates, otherTables, database) {
+const Table: TableConstructor = class Table implements TableInterface {
+  private id: number;
+  private columns: ERTableColumnData[];
+  private name: string;
+  private tableCoordinates: { x: number; y: number };
+  private otherTables: {
+    table_name: string;
+    column_names: string[];
+  }[];
+
+  private database: string;
+  constructor(
+    id: number,
+    columns: ERTableColumnData[],
+    name: string,
+    tableCoordinates: { x: number; y: number },
+    otherTables: {
+      table_name: string;
+      column_names: string[];
+    }[],
+    database: string,
+  ) {
     this.id = id;
     this.columns = columns;
     this.name = name;
@@ -23,14 +70,18 @@ class Table {
   // the render method converts the data into the form of react flow
   render() {
     // This method gets the table position from the stored file
-    const getTablePosition = () => {
+    const getTablePosition = (): { x: number; y: number } => {
       try {
         const location = app.getPath('temp').concat('/UserTableLayouts.json');
         // refactored code. parse json file, look for current db in saved file, look for current table inside db. return undefined if db or table doesn't exist
-        const parsedData = JSON.parse(fs.readFileSync(location, 'utf8'));
-        const foundCurrentDB = parsedData.find(
-          (db) => db.db_name === this.database,
+        const parsedData: unknown = JSON.parse(
+          fs.readFileSync(location, 'utf8'),
         );
+        const foundCurrentDB = isDatabaseLayoutObjTypeArr(parsedData)
+          ? parsedData.find(
+              (db: DatabaseLayoutObjType) => db?.db_name === this.database,
+            )
+          : undefined;
         const foundCurrentTable = foundCurrentDB?.db_tables.find(
           (table) => table.table_name === this.name,
         );
@@ -44,18 +95,17 @@ class Table {
     };
     // create a nodes array for react flow, the first element will always be a
     // TABLE_HEADER type of node
-    const nodes = [
+    const nodes: Node[] = [
       {
         id: `table-${this.name}`,
         type: types.TABLE_HEADER,
-        position: getTablePosition(this.name, this.id),
-        tableName: this.name,
+        position: getTablePosition(),
         data: {
           table_name: this.name,
         },
       },
     ];
-    const edges = [];
+    const edges: Edge[] = [];
     let num = -1;
 
     // iterate through the columns data for this data, create a node for each column
@@ -104,14 +154,14 @@ class Table {
       edges,
     };
   }
-}
+};
 
 const convertStateToReactFlow = {
   // generates nodes and edges to position tables in a dynamic grid formation based on total number of tables and columns
-  convert: (schema) => {
-    const nodes = [];
-    const edges = [];
-    const localTableList = [];
+  convert: (schema: SchemaStateObjType) => {
+    const nodes: Node[] = [];
+    const edges: Edge[] = [];
+    const localTableList: { table_name: string; column_names: string[] }[] = [];
     const tables = schema.tableList;
     const tableCoordinates = {
       x: 0,
@@ -134,7 +184,7 @@ const convertStateToReactFlow = {
 
     for (let i = 0; i < tables.length; i += 1) {
       // make a deep copy so that modifying these values will not affect the data
-      const copyOfTable = JSON.parse(JSON.stringify(tables[i]));
+      const copyOfTable = JSON.parse(JSON.stringify(tables[i])) as ERTableData;
       // create a list of other tables to pass into the Table constructor
       const otherTableList = localTableList.filter(
         (localTable) => localTable.table_name !== tables[i].table_name,

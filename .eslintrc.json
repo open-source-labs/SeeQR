@@ -8,8 +8,10 @@
   "globals": { "JSX": "readonly", "Chart": "readonly", "NodeJS": "readonly" },
   "extends": [
     "eslint:recommended",
+
     "plugin:react/recommended",
     "plugin:react-hooks/recommended",
+
     "plugin:@typescript-eslint/recommended",
     "plugin:@typescript-eslint/recommended-requiring-type-checking",
 
@@ -17,6 +19,7 @@
 
     "plugin:import/recommended",
     "plugin:import/typescript",
+
     "prettier"
   ],
   "parser": "@typescript-eslint/parser",
@@ -30,11 +33,6 @@
   },
   "plugins": ["react", "react-hooks", "@typescript-eslint"],
   "rules": {
-    "indent": [
-      "error",
-      2,
-      { "offsetTernaryExpressions": true, "SwitchCase": 1 }
-    ],
     "react/jsx-filename-extension": [1, { "extensions": [".jsx", ".tsx"] }],
 
     "no-use-before-define": "off",
