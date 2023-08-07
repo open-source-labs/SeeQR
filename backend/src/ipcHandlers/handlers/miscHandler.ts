@@ -163,6 +163,6 @@ export async function showSaveDialog(event, options) {
  * 1. sends feedback to frontend
  */
 
-export async function feedback(event, options: { feedback: Feedback }) {
+export function feedback(event, options: { feedback: Feedback }) {
   event.sender.send('feedback', options);
 }
