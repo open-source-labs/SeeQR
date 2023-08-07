@@ -58,8 +58,8 @@ const queryModel: queryModelType = {
     });
   },
 
-  sampler: (queryString) => {
-    return new Promise((resolve, reject) => {
+  sampler: (queryString) =>
+    new Promise((resolve, reject) => {
       pools.sqlite_db?.run('BEGIN', (err) => {
         if (err) {
           console.error(err.message);
@@ -86,8 +86,7 @@ const queryModel: queryModelType = {
           });
         }
       });
-    });
-  },
+    }),
 };
 
 export default queryModel;

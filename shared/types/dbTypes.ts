@@ -84,7 +84,7 @@ export interface DocConfigFile {
   directPGURI_options: { connectionString: string } & PoolConfig;
 }
 
-type dbsInputted = {
+export type dbsInputted = {
   pg: boolean;
   msql: boolean;
   rds_pg: boolean;
