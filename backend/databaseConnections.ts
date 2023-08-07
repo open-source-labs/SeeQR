@@ -13,6 +13,7 @@ export default {
    * @param db Name of target database that the login has access to. Initially empty string
    */
   async PG_DBConnect(pg_uri: string, db: string) {
+    console.log('connecting to pg db...');
     const newURI = `${pg_uri}/${db}`;
     const newPool = new Pool({ connectionString: newURI });
     pools.pg_pool = newPool;
