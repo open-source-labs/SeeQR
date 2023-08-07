@@ -159,13 +159,29 @@ const connectionModel: connectionModelType = {
 
   connectToDB: async (db, dbType) => {
     // change current Db
+
     if (dbType === DBType.Postgres) {
       dbState.pg_options.database = db;
-      await connectionFunctions.PG_DBConnect(
-        dbState.pg_options.connectionString || '',
-        db,
-      );
-    } else if (dbType === DBType.MySQL) {
+      // console.log('THIS IS THE PG URI', this.pg_uri);
+      // console.log('THIS IS THE CUR PG DB', this.curPG_DB);
+      // console.log('THIS IS THE DB', db);
+      if (dbState.pg_options.connectionString) {
+        await connectionFunctions.PG_DBConnect(
+          dbState.pg_options.connectionString,
+          db,
+        );
+      } else {
+        // handle case where connection string is undefined}
+      }
+    }
+    // if (dbType === DBType.Postgres) {
+    //   dbState.pg_options.database = db;
+    //   await connectionFunctions.PG_DBConnect(
+    //     dbState.pg_options.connectionString || '',
+    //     db,
+    //   );
+    // }
+    else if (dbType === DBType.MySQL) {
       dbState.mysql_options.database = db;
       await connectionFunctions.MSQL_DBQuery(db);
     } else if (dbType === DBType.RDSMySQL) {

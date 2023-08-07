@@ -125,6 +125,9 @@ export async function selectDb(
 
   event.sender.send('async-started');
   try {
+    if (dbName === '') {
+      dbName = 'postgres';
+    }
     await connectionModel.connectToDB(dbName, dbType);
 
     // send updated db info
@@ -164,7 +167,16 @@ export async function dropDb(
     // end pool connection
     await connectionModel.disconnectToDrop(dbType);
     // reconnect to database server, but not the db that will be dropped
-    await connectionModel.connectToDB('', dbType);
+    if (dbType === DBType.Postgres) {
+      await connectionModel.connectToDB('postgres', dbType);
+    } else {
+      await connectionModel.connectToDB('', dbType);
+    }
+
+    // await connectionModel.disconnectToDrop(dbType);
+    // reconnect to database server, but not the db that will be dropped
+
+    // await connectionModel.connectToDB('', dbType);
 
     // IN CASE OF EMERGENCY USE THIS CODE TO DROP DATABASES
     // WILL THROW UNCAUGHT ERRORS LAST RESORT ONLY!!!
@@ -179,9 +191,9 @@ export async function dropDb(
     //   // await db.closeTheDB(dbName, dbType);
     // }
 
-    const dropDBScript = dropDBFunc(dbName, dbType);
+    // const dropDBScript = dropDBFunc(dbName, dbType);
     if (dbType !== DBType.SQLite)
-      await queryModel.query(dropDBScript, [], dbType);
+      await queryModel.query(dropDBFunc(dbName, dbType), [], dbType);
 
     // send updated db info
     const dbsAndTables: DBList = await databaseModel.getLists(dbName, dbType);
