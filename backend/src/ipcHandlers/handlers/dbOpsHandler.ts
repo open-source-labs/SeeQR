@@ -162,9 +162,15 @@ export async function dropDb(
   try {
     // if deleting currently connected db, disconnect from db
     // end pool connection
-    await connectionModel.disconnectToDrop(dbType);
+    if (dbType === DBType.Postgres) {
+      await connectionModel.connectToDB('postgres', dbType);
+    } else {
+      await connectionModel.connectToDB('', dbType);
+    }
+    // await connectionModel.disconnectToDrop(dbType);
     // reconnect to database server, but not the db that will be dropped
-    await connectionModel.connectToDB('', dbType);
+
+    // await connectionModel.connectToDB('', dbType);
 
     // IN CASE OF EMERGENCY USE THIS CODE TO DROP DATABASES
     // WILL THROW UNCAUGHT ERRORS LAST RESORT ONLY!!!
