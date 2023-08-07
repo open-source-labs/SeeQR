@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { ColumnObj, DummyRecords, LogType } from '../BE_types';
-import logger from '../Logging/masterlog';
+import logger from '../src/utils/logging/masterlog';
 
 const db = require('../models');
 

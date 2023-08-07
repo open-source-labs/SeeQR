@@ -4,9 +4,9 @@ import { DBList, DBType, LogType } from '../../../BE_types';
 import { Feedback } from '../../../../shared/types/utilTypes';
 
 // Helpers
-import logger from '../../../Logging/masterlog';
-import backendObjToQuery from '../../../ertable-functions';
-import helperFunctions from '../../../helperFunctions';
+import logger from '../../utils/logging/masterlog';
+import backendObjToQuery from '../../utils/ertable-functions';
+import helperFunctions from '../../utils/helperFunctions';
 
 // Models used
 import connectionModel from '../../models/connectionModel';

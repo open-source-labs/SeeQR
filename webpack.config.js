@@ -81,6 +81,10 @@ module.exports = {
   resolve: {
     // Enable importing JS / JSX files without specifying their extension
     modules: [path.resolve(__dirname, 'node_modules')],
+    alias: {
+      '@mytypes': path.resolve(__dirname, './shared/types/'),
+      // ... any other path aliases ...
+    },
     extensions: [
       '.js',
       '.jsx',
@@ -134,4 +138,7 @@ module.exports = {
     }),
     isDevelopment && new ReactRefreshWebpackPlugin(),
   ].filter(Boolean),
+  externals: {
+    '@mytypes/dbTypes': 'commonjs @mytypes/dbTypes',
+  },
 };

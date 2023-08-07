@@ -7,9 +7,9 @@ import { DBList, DBType, LogType } from '../../../BE_types';
 import { Feedback } from '../../../../shared/types/utilTypes';
 
 // Helpers
-import logger from '../../../Logging/masterlog';
+import logger from '../../utils/logging/masterlog';
 import docConfig from '../../models/configModel';
-import helperFunctions from '../../../helperFunctions';
+import helperFunctions from '../../utils/helperFunctions';
 
 // Models
 import connectionModel from '../../models/connectionModel';

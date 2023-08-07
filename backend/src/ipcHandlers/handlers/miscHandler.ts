@@ -12,7 +12,7 @@ import { Feedback } from '../../../../shared/types/utilTypes';
 
 // Helpers
 import generateDummyData from '../../../DummyD/dummyDataMain';
-import logger from '../../../Logging/masterlog';
+import logger from '../../utils/logging/masterlog';
 
 // Models used
 import databaseModel from '../../models/databaseModel';
@@ -163,6 +163,6 @@ export async function showSaveDialog(event, options) {
  * 1. sends feedback to frontend
  */
 
-export async function feedback(event, options: { feedback: Feedback }) {
-  event.sender.send('feedback', options.feedback);
+export function feedback(event, options: { feedback: Feedback }) {
+  event.sender.send('feedback', options);
 }
