@@ -3,7 +3,7 @@ import { DBList, LogType } from '../../../BE_types';
 import { Feedback } from '../../../../shared/types/utilTypes';
 
 // Helpers
-import logger from '../../../Logging/masterlog';
+import logger from '../../utils/logging/masterlog';
 
 // Models used
 import docConfig from '../../models/configModel';

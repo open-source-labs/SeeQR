@@ -2,9 +2,9 @@ import fs from 'fs';
 import docConfig from './configModel';
 import { LogType } from '../../BE_types';
 import { DBType, connectionModelType } from '../../../shared/types/dbTypes';
-import connectionFunctions from '../../databaseConnections';
-import logger from '../../Logging/masterlog';
-import pools from '../../poolVariables';
+import connectionFunctions from '../db/databaseConnections';
+import logger from '../utils/logging/masterlog';
+import pools from '../db/poolVariables';
 
 import dbState from './stateModel';
 

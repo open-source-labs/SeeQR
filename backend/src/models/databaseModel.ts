@@ -11,8 +11,8 @@ import {
   TableDetails,
   databaseModelType,
 } from '../../../shared/types/dbTypes';
-import logger from '../../Logging/masterlog';
-import pools from '../../poolVariables';
+import logger from '../utils/logging/masterlog';
+import pools from '../db/poolVariables';
 
 import dbState from './stateModel';
 

@@ -12,7 +12,7 @@ import { Feedback } from '../../../../shared/types/utilTypes';
 
 // Helpers
 import generateDummyData from '../../../DummyD/dummyDataMain';
-import logger from '../../../Logging/masterlog';
+import logger from '../../utils/logging/masterlog';
 
 // Models used
 import databaseModel from '../../models/databaseModel';
