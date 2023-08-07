@@ -87,10 +87,10 @@ ipcMain.handle('set-config', (event, configObj: DocConfigFile) => {
     });
 });
 
-/**
- * Handles get-config request from frontend
- * sends configuration from config file
- */
+// /**
+//  * Handles get-config request from frontend
+//  * sends configuration from config file
+//  */
 ipcMain.handle('get-config', (event) => {
   // asdf is configObj used?
   event.sender.send('get-config', docConfig.getFullConfig());
