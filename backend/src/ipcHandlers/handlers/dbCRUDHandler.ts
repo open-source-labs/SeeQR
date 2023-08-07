@@ -1,5 +1,5 @@
 // Types
-import { connect } from 'http2';
+import { app } from 'electron';
 import { DBList, DBType, LogType } from '../../../BE_types';
 import { Feedback } from '../../../../shared/types/utilTypes';
 
@@ -200,4 +200,8 @@ export async function erTableSchemaUpdate(
       LogType.SEND,
     );
   }
+}
+
+export function getPath(event, pathType) {
+  return app.getPath(pathType);
 }

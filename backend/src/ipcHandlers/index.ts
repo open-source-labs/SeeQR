@@ -7,6 +7,8 @@ import {
   intializeDb,
   updateDb,
   erTableSchemaUpdate,
+  // REVIEW: Derek added getPath function.
+  getPath,
 } from './handlers/dbCRUDHandler';
 import {
   returnDbList,
@@ -37,6 +39,8 @@ ipcMain.handle('drop-db', dropDb);
 ipcMain.handle('duplicate-db', duplicateDb);
 ipcMain.handle('import-db', importDb);
 ipcMain.handle('export-db', exportDb);
+// REVIEW: Derek adding new handler for get file path.
+ipcMain.handle('get-path', getPath);
 
 // // db CRUD functionalities
 ipcMain.handle('initialize-db', intializeDb);
@@ -51,5 +55,3 @@ ipcMain.handle('generate-dummy-date', dummyData);
 ipcMain.handle('showOpenDialog', showOpenDialog);
 ipcMain.handle('showSaveDialog', showSaveDialog);
 ipcMain.handle('feedback', feedback);
-
-console.log('here');
