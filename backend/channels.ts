@@ -1,5 +1,4 @@
 /* eslint-disable no-console */
-/* eslint-disable prefer-destructuring */
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
@@ -8,6 +7,7 @@ import {
   ColumnObj,
   DBList,
   DBType,
+  DocConfigFile,
   DummyRecords,
   LogType,
   QueryPayload,
@@ -43,7 +43,7 @@ const {
  * triggered whenever save is pressed on the config/login page
  * establishes connections to database, logs failed connections, sends contents of config file
  */
-ipcMain.handle('set-config', (event, configObj) => {
+ipcMain.handle('set-config', (event, configObj: DocConfigFile) => {
   docConfig.saveConfig(configObj); // saves login info from frontend into config file
 
   db.setBaseConnections() // tries to log in using config data
@@ -63,7 +63,7 @@ ipcMain.handle('set-config', (event, configObj) => {
         event.sender.send('feedback', feedback);
       }
       logger('Successfully reset base connections', LogType.SUCCESS);
-      db.getLists().then((data: DBList) => {
+      return db.getLists().then((data: DBList) => {
         event.sender.send('db-lists', data); // used to populate sidebar
       });
     })
@@ -91,7 +91,7 @@ ipcMain.handle('set-config', (event, configObj) => {
  * Handles get-config request from frontend
  * sends configuration from config file
  */
-ipcMain.handle('get-config', async (event) => {
+ipcMain.handle('get-config', (event) => {
   // asdf is configObj used?
   event.sender.send('get-config', docConfig.getFullConfig());
 });
@@ -105,11 +105,15 @@ ipcMain.on('return-db-list', (event) => {
     "Received 'return-db-list' (Note: No Async being sent here)",
     LogType.RECEIVE,
   );
-
+  console.log('Setting database connections...');
   db.setBaseConnections()
     .then(() => {
+      console.log('Database connections set. Getting dblists...');
       db.getLists()
         .then((data: DBList) => {
+          console.log(
+            `Dblists acquired: ${JSON.stringify(data)}\nSending to frontend...`,
+          );
           event.sender.send('db-lists', data);
           logger("Sent 'db-lists' from 'return-db-list'", LogType.SEND);
         })
@@ -120,7 +124,7 @@ ipcMain.on('return-db-list', (event) => {
           );
           const feedback: Feedback = {
             type: 'error',
-            message: err,
+            message: JSON.stringify(err),
           };
           event.sender.send('feedback', feedback);
           logger(
@@ -377,12 +381,11 @@ ipcMain.handle(
     let maximumSampleTime: number = 0;
     let averageSampleTime: number = 0;
 
-    function parseExplainExplanation(explain) {
+    function parseExplainExplanation(explain: string) {
       const regex =
         /actual time=(\d+\.\d+)\.\.(\d+\.\d+) rows=\d+ loops=(\d+)/g;
-      const matches: any[] = Array.from(explain.matchAll(regex));
+      const matches: string[][] = Array.from(explain.matchAll(regex));
       let result: number = 0;
-
       for (let i = 0; i < matches.length; i += 1) {
         result +=
           (parseFloat(matches[i][2]) - parseFloat(matches[i][1])) *

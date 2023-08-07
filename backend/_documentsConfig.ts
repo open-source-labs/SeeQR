@@ -1,32 +1,32 @@
-/* eslint-disable no-throw-literal */
-/* eslint-disable no-shadow */
-/* eslint-disable object-shorthand */
 // import path from 'path';
 import fs from 'fs';
 import os from 'os';
 import { DBType, DocConfigFile, LogType } from './BE_types';
 import logger from './Logging/masterlog';
 
+// HELPER FUNCTIONS
+
 const home = `${os.homedir()}/Documents/SeeQR`;
 const configFile = 'config.json';
 const configPath = `${home}/${configFile}`;
-const defaultFile: DocConfigFile = {
-  mysql: { user: '', password: '', port: 3306 },
-  pg: { user: '', password: '', port: 5432 },
-  rds_mysql: {
+
+export const defaultFile: DocConfigFile = {
+  mysql_options: { user: '', password: '', port: 3306 },
+  pg_options: { user: '', password: '', port: 5432 },
+  rds_mysql_options: {
     user: '',
     password: '',
     port: 3306,
     host: '',
   },
-  rds_pg: {
+  rds_pg_options: {
     user: '',
     password: '',
     port: 5432,
     host: '',
   },
-  sqlite: { path: '' },
-  directPGURI: { uri: '' },
+  sqlite_options: { filename: '' },
+  directPGURI_options: { connectionString: '' },
 };
 
 /**
@@ -44,13 +44,14 @@ function writeConfigDefault(): DocConfigFile {
  * @param currConfig current configuration
  * @returns configuration with only valid key value properties
  */
-const checkConfigFile = function (currConfig: DocConfigFile): DocConfigFile {
-  console.log(
-    'This is the current config and it runs this function 4-6 times!! NOT SURE WHY!!!',
-    currConfig,
-  );
+const checkConfigFile = (currConfig: DocConfigFile): DocConfigFile => {
+  // console.log(
+  //   'This is the current config and it runs this function 4-6 times!! NOT SURE WHY!!!',
+  //   currConfig,
+  // );
   const invalidKeys: string[] = [];
   try {
+    // pushes extra data from configFile to invalidKeys array
     Object.keys(defaultFile).forEach((key) => {
       if (!Object.prototype.hasOwnProperty.call(currConfig, key)) {
         invalidKeys.push(key);
@@ -73,6 +74,7 @@ const checkConfigFile = function (currConfig: DocConfigFile): DocConfigFile {
   if (invalidKeys.length) {
     const newConfig = { ...currConfig };
     invalidKeys.forEach((key) => {
+      console.log('invalid key: ', key);
       newConfig[key] = defaultFile[key];
     });
     fs.writeFileSync(configPath, JSON.stringify(newConfig));
@@ -92,7 +94,7 @@ function readConfigFile(): DocConfigFile {
       fs.readFileSync(configPath, 'utf-8'),
     ) as DocConfigFile;
     return checkConfigFile(config);
-  } catch (err: any) {
+  } catch (err) {
     console.log(err);
     logger(
       'Error caught checking config file. Resetting config to default.',
@@ -102,26 +104,26 @@ function readConfigFile(): DocConfigFile {
   }
 }
 
-interface DocConfig {
-  getConfigFolder: () => string;
-  getCredentials: (dbType: DBType) => {
-    user?: string;
-    password?: string;
-    host?: string;
-    port?: number | string;
-    uri?: string;
-    path?: string;
-  };
-  getFullConfig: () => Object;
-  saveConfig: (config: Object) => void;
+interface GetCredentialsReturnType {
+  [DBType.MySQL]: DocConfigFile['mysql_options'];
+  [DBType.RDSMySQL]: DocConfigFile['rds_mysql_options'];
+  [DBType.Postgres]: DocConfigFile['pg_options'];
+  [DBType.RDSPostgres]: DocConfigFile['rds_pg_options'];
+  [DBType.directPGURI]: DocConfigFile['directPGURI_options'];
+  [DBType.CloudDB]: undefined;
+  [DBType.SQLite]: DocConfigFile['sqlite_options'];
 }
 
-const docConfig: DocConfig = {
+// ------------------------------
+// MAIN FUNCTIONALITY
+//
+
+const docConfig = {
   /**
    * Checks if config file directory exists. If not, creates one
    * @returns config file directory
    */
-  getConfigFolder: function getConfigFolder() {
+  getConfigFolder(): string {
     if (fs.existsSync(home)) {
       logger(`Found documents directory: ${home}`, LogType.SUCCESS);
     } else {
@@ -139,53 +141,42 @@ const docConfig: DocConfig = {
    * @param dbType: desired database type for login info
    * @returns login info for the desired database type
    */
-  getCredentials: function getCredentials(dbType: DBType) {
+  getCredentials<K extends DBType>(dbType: K): GetCredentialsReturnType[K] {
     this.getConfigFolder(); // ensure directory exists
-    let configFile: DocConfigFile;
-    try {
-      configFile = readConfigFile(); // all login info now in configFile
-    } catch (err: any) {
-      logger(err.message, LogType.WARNING);
-      return { user: '', password: '', port: 1 };
-    }
+    const config = readConfigFile(); // all login info now in configFile
 
-    if (dbType === DBType.Postgres) {
-      return { ...configFile.pg };
-    }
-    if (dbType === DBType.MySQL) {
-      return { ...configFile.mysql };
-    }
-    if (dbType === DBType.RDSMySQL) {
-      return { ...configFile.rds_mysql };
-    }
-    if (dbType === DBType.RDSPostgres) {
-      return { ...configFile.rds_pg };
-    }
-    // asdf check sqlite and directpguri and format for return in case of error
-    if (dbType === DBType.SQLite) {
-      return { ...configFile.sqlite };
-    }
-    // if (dbType === DBType.directPGURI) {
-    //   return { ...configFile.directPGURI };
-    // }
-
-    logger('Could not get credentials of DBType: ', LogType.ERROR, dbType);
-    return { user: '', password: '', port: 1 };
+    return {
+      [DBType.MySQL]: { ...config.mysql_options },
+      [DBType.RDSMySQL]: { ...config.rds_mysql_options },
+      [DBType.Postgres]: { ...config.pg_options },
+      [DBType.RDSPostgres]: { ...config.rds_pg_options },
+      [DBType.directPGURI]: { connectionString: '' },
+      [DBType.CloudDB]: undefined,
+      [DBType.SQLite]: { ...config.sqlite_options },
+    }[dbType];
   },
 
   /**
    * Reads config file contents and returns it all.
    * @returns all login info from config file
    */
-  getFullConfig: function getFullConfig() {
+  getFullConfig() {
     this.getConfigFolder();
-    let configFile: DocConfigFile;
+    let config: DocConfigFile;
     try {
-      configFile = readConfigFile();
-      return configFile;
-    } catch (err: any) {
-      logger(err.message, LogType.WARNING);
-      return 'Failed to retrieve data.';
+      config = readConfigFile();
+      return config;
+    } catch (err) {
+      logger(
+        typeof err === 'object' &&
+          err !== null &&
+          'message' in err &&
+          typeof err.message === 'string'
+          ? err.message
+          : `Error occurred in getFullConfig : ${err}`,
+        LogType.WARNING,
+      );
+      return undefined;
     }
   },
 
@@ -193,7 +184,7 @@ const docConfig: DocConfig = {
    * Takes config data object sent from frontend, stringifies it and saves in config file
    * @param config
    */
-  saveConfig: function saveConfig(config: Object) {
+  saveConfig(config: DocConfigFile) {
     try {
       fs.writeFileSync(configPath, JSON.stringify(config));
       logger('Saved new config: ', LogType.NORMAL, config);

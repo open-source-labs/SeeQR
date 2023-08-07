@@ -20,6 +20,7 @@ import {
   AppState,
   SchemaStateObjType,
   TableHeaderNodeType,
+  TableInfo,
   UpdatesObjType,
 } from '../../../types';
 import nodeTypes from './NodeTypes';
@@ -43,7 +44,7 @@ const mmStyle: object = {
 };
 
 // defines the styling for the minimap nodes
-const nodeColor = (node): string => {
+const nodeColor = (node: Node): string => {
   switch (node.type) {
     case 'tableHeader':
       return colors.greyLightest;
@@ -55,7 +56,7 @@ const nodeColor = (node): string => {
 };
 
 type ERTablingProps = {
-  tables;
+  tables: TableInfo[];
   selectedDb: AppState['selectedDb'];
   curDBType: DBType | undefined;
 };
