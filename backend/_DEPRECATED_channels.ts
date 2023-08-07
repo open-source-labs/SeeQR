@@ -14,7 +14,7 @@ import {
 } from './BE_types';
 import generateDummyData from './DummyD/dummyDataMain';
 import logger from './Logging/masterlog';
-import docConfig from './_documentsConfig';
+import docConfig from './_DEPRECATED_documentsConfig';
 import backendObjToQuery from './ertable-functions';
 import helperFunctions from './helperFunctions';
 

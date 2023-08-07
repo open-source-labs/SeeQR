@@ -1,7 +1,15 @@
 // import path from 'path';
 import fs from 'fs';
 import os from 'os';
-import { DBType, DocConfigFile, LogType } from '../../BE_types';
+import {
+  ColumnObj,
+  dbDetails,
+  DBFunctions,
+  DBList,
+  DBType,
+  LogType,
+  TableDetails,
+} from '../../../shared/types/dbTypes';
 import logger from '../../Logging/masterlog';
 
 // HELPER FUNCTIONS

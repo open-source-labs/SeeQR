@@ -3,7 +3,7 @@ import { performance } from 'perf_hooks';
 import { Pool } from 'pg';
 import { Pool as MSQLPool } from 'mysql2/promise';
 import { RowDataPacket } from 'mysql2';
-import docConfig, { defaultFile } from './_documentsConfig';
+import docConfig, { defaultFile } from './_DEPRECATED_documentsConfig';
 import {
   ColumnObj,
   dbDetails,

@@ -78,7 +78,7 @@ export function setConfig(event, configObj) {
  * 1. send back to event from configModel.ts docConfig.getFullConfig()
  */
 
-export async function getConfig(event) {
+export function getConfig(event) {
   // asdf is configObj used?
   event.sender.send('get-config', docConfig.getFullConfig());
 }

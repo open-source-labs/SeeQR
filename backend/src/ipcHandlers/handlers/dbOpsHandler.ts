@@ -8,7 +8,7 @@ import { Feedback } from '../../../../shared/types/utilTypes';
 
 // Helpers
 import logger from '../../../Logging/masterlog';
-// import docConfig from '../../models/configModel';
+import docConfig from '../../models/configModel';
 import helperFunctions from '../../../helperFunctions';
 
 // Models
@@ -204,73 +204,73 @@ export async function dropDb(
  * 7. will cleanup the temp file after these operations
  */
 
-// export async function duplicateDb(
-//   event,
-//   { newName, sourceDb, withData }: DuplicatePayload,
-//   dbType: DBType,
-// ) {
-//   logger(
-//     `Received 'duplicate-db'" of dbType: ${dbType} and: `,
-//     LogType.RECEIVE,
-//   );
+export async function duplicateDb(
+  event,
+  { newName, sourceDb, withData }: DuplicatePayload,
+  dbType: DBType,
+) {
+  logger(
+    `Received 'duplicate-db'" of dbType: ${dbType} and: `,
+    LogType.RECEIVE,
+  );
 
-//   event.sender.send('async-started');
+  event.sender.send('async-started');
 
-//   const tempFilePath = path.resolve(
-//     `${docConfig.getConfigFolder()}/`,
-//     `temp_${newName}.sql`,
-//   );
+  const tempFilePath = path.resolve(
+    `${docConfig.getConfigFolder()}/`,
+    `temp_${newName}.sql`,
+  );
 
-//   try {
-//     // dump database to temp file
-//     const dumpCmd = withData
-//       ? runFullCopyFunc(sourceDb, tempFilePath, dbType)
-//       : runHollowCopyFunc(sourceDb, tempFilePath, dbType);
-//     try {
-//       await promExecute(dumpCmd);
-//     } catch (e) {
-//       throw new Error(
-//         `Failed to dump ${sourceDb} to temp file at ${tempFilePath}`,
-//       );
-//     }
+  try {
+    // dump database to temp file
+    const dumpCmd = withData
+      ? runFullCopyFunc(sourceDb, tempFilePath, dbType)
+      : runHollowCopyFunc(sourceDb, tempFilePath, dbType);
+    try {
+      await promExecute(dumpCmd);
+    } catch (e) {
+      throw new Error(
+        `Failed to dump ${sourceDb} to temp file at ${tempFilePath}`,
+      );
+    }
 
-//     // create new empty database
-//     try {
-//       await db.query(createDBFunc(newName, dbType), [], dbType);
-//     } catch (e) {
-//       throw new Error('Failed to create Database');
-//     }
+    // create new empty database
+    try {
+      await db.query(createDBFunc(newName, dbType), [], dbType);
+    } catch (e) {
+      throw new Error('Failed to create Database');
+    }
 
-//     // run temp sql file on new database
-//     try {
-//       await promExecute(runSQLFunc(newName, tempFilePath, dbType));
-//     } catch (e: any) {
-//       // cleanup: drop created db
-//       logger(`Dropping duplicate db because: ${e.message}`, LogType.WARNING);
-//       const dropDBScript = dropDBFunc(newName, dbType);
-//       await db.query(dropDBScript, [], dbType);
+    // run temp sql file on new database
+    try {
+      await promExecute(runSQLFunc(newName, tempFilePath, dbType));
+    } catch (e: any) {
+      // cleanup: drop created db
+      logger(`Dropping duplicate db because: ${e.message}`, LogType.WARNING);
+      const dropDBScript = dropDBFunc(newName, dbType);
+      await db.query(dropDBScript, [], dbType);
 
-//       throw new Error('Failed to populate newly created database');
-//     }
+      throw new Error('Failed to populate newly created database');
+    }
 
-//     // update frontend with new db list
-//     const dbsAndTableInfo: DBList = await db.getLists('', dbType);
-//     event.sender.send('db-lists', dbsAndTableInfo);
-//     logger("Sent 'db-lists' from 'duplicate-db'", LogType.SEND);
-//   } finally {
-//     // clean up temp file
-//     try {
-//       fs.unlinkSync(tempFilePath);
-//     } catch (e) {
-//       event.sender.send('feedback', {
-//         type: 'error',
-//         message: `Failed to cleanup temp files. ${tempFilePath} could not be removed.`,
-//       });
-//     }
+    // update frontend with new db list
+    const dbsAndTableInfo: DBList = await db.getLists('', dbType);
+    event.sender.send('db-lists', dbsAndTableInfo);
+    logger("Sent 'db-lists' from 'duplicate-db'", LogType.SEND);
+  } finally {
+    // clean up temp file
+    try {
+      fs.unlinkSync(tempFilePath);
+    } catch (e) {
+      event.sender.send('feedback', {
+        type: 'error',
+        message: `Failed to cleanup temp files. ${tempFilePath} could not be removed.`,
+      });
+    }
 
-//     event.sender.send('async-complete');
-//   }
-// }
+    event.sender.send('async-complete');
+  }
+}
 
 /**
  * EVENT: 'import-db'
