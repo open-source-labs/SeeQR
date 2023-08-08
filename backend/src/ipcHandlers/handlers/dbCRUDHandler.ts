@@ -151,13 +151,14 @@ export async function erTableSchemaUpdate(
   dbType: DBType,
 ) {
   logger(
-    `Received 'ertable-schemaupdate' with dbType: ${dbType}, dbName: ${dbName}, and backendObj: `,
+    `backendObj: ${dbType}, \n
+    dbName: ${dbName}, \n`,
     LogType.RECEIVE,
-    backendObj,
   );
+  console.log(backendObj.updates);
+
   // send notice to front end that schema update has started
   event.sender.send('async-started');
-
   let feedback: Feedback = {
     type: '',
     message: '',
