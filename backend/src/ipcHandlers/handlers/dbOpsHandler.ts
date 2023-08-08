@@ -3,6 +3,7 @@ import os from 'os';
 import path from 'path';
 
 // Types
+import { error } from 'console';
 import { DBList, DBType, LogType } from '../../../BE_types';
 import { Feedback } from '../../../../shared/types/utilTypes';
 
@@ -325,6 +326,7 @@ export async function importDb(
       // populate new db with data from file
       await promExecute(restoreCmd);
     } catch (e: any) {
+      console.log('THIS IS THE ERROR IN OPS from promExecute::', error);
       // cleanup: drop created db
       logger(`Dropping imported db because: ${e.message}`, LogType.WARNING);
       const dropDBScript = dropDBFunc(newDbName, dbType);
@@ -337,6 +339,8 @@ export async function importDb(
     const dbsAndTableInfo: DBList = await databaseModel.getLists('', dbType);
     event.sender.send('db-lists', dbsAndTableInfo);
     logger("Sent 'db-lists' from 'import-db'", LogType.SEND);
+  } catch (error) {
+    console.log('THIS IS THE MAIN ERROR IN OPS - importDB', error);
   } finally {
     event.sender.send('async-complete');
   }
