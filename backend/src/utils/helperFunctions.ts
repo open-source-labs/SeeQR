@@ -121,6 +121,7 @@ const helperFunctions: HelperFunctions = {
   // promisified execute to execute commands in the child process
   promExecute: (cmd: string) =>
     new Promise((resolve, reject) => {
+      console.log('THIS IS THE CMD in helper - prom', cmd);
       exec(
         cmd,
         {
@@ -128,7 +129,9 @@ const helperFunctions: HelperFunctions = {
           // env: { PGPASSWORD: docConfig.getFullConfig().pg.password },
         },
         (error, stdout, stderr) => {
+          console.log('WHAT IS STDOUT', stdout, 'WHAT IS STDERR', stderr);
           if (error) {
+            console.log('THIS IS THE ERROR in helper - prom', error);
             return reject(error);
           }
           if (stderr) return reject(new Error(stderr));
