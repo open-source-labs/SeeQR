@@ -51,7 +51,7 @@ ipcMain.handle('ertable-schemaupdate', erTableSchemaUpdate);
 ipcMain.handle('run-query', runQuery);
 
 // // // misc (other events bundled together)
-ipcMain.handle('generate-dummy-date', dummyData);
+ipcMain.handle('generate-dummy-data', dummyData);
 ipcMain.handle('showOpenDialog', showOpenDialog);
 ipcMain.handle('showSaveDialog', showSaveDialog);
 ipcMain.handle('feedback', feedback);
