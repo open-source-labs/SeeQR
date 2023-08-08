@@ -1,7 +1,7 @@
 /* eslint-disable object-shorthand */
 import { exec } from 'child_process'; // Child_Process: Importing Node.js' child_process API
-import { DBType } from './BE_types';
-import docConfig from './_documentsConfig';
+import { DBType } from '../../../shared/types/dbTypes';
+import docConfig from '../models/configModel';
 // ************************************** CLI COMMANDS & SQL Queries TO CREATE, DELETE, COPY DB SCHEMA, etc. ************************************** //
 
 // Generate SQL queries & CLI commands to be executed in pg and child process respectively

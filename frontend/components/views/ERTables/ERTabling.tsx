@@ -1,6 +1,6 @@
 import fs from 'fs';
 import { Button } from '@mui/material';
-import { app, ipcRenderer } from 'electron';
+import { ipcRenderer } from 'electron';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import ReactFlow, {
   applyEdgeChanges,
@@ -104,6 +104,8 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
   // whenever the selectedDb changes, reassign the backendObj to contain this selectedDb
   useEffect(() => {
     backendObj.current.database = selectedDb;
+    console.log('backendObj: ', backendObj);
+
     // backendColumnObj.current.database = selectedDb;
   }, [selectedDb]);
 
@@ -138,12 +140,15 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
     setSchemaState(schemaStateCopy);
   };
 
-  const handleSaveLayout = (): void => {
+  // REVIEW: derek - old code :  const handleSaveLayout = (): void => {
+  const handleSaveLayout = async (): Promise<void> => {
     // get the array of header nodes
     const headerNodes = nodes.filter(
       (node) => node.type === 'tableHeader',
     ) as TableHeaderNodeType[];
     // create object for the current database
+
+    console.log(headerNodes);
     type TablePosObjType = {
       table_name: string;
       table_position: {
@@ -174,20 +179,32 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
     // TODO: OLD CODE
     // const location: string = remote.app
     // REVIEW:
-    const location: string = app
-      .getPath('temp')
-      .concat('/UserTableLayouts.json');
-    fs.readFile(location, 'utf-8', (err, data) => {
+    // const location: string = app
+    //   .getPath('temp')
+    //   .concat('/UserTableLayouts.json');
+    // fs.readFile(location, 'utf-8', (err, data) => {
+    //   // check if error exists (no file found)
+    //   if (err) {
+    //     fs.writeFile(
+    //       location,
+    //       JSON.stringify([currDatabaseLayout], null, 2),
+    //       (error) => {
+    //         if (error) console.log(error);
+    //       },
+    //     );
+    const location: string = await ipcRenderer.invoke('get-path', 'temp');
+    const filePath = location.concat('/UserTableLayouts.json');
+
+    fs.readFile(filePath, 'utf-8', (err, data) => {
       // check if error exists (no file found)
       if (err) {
         fs.writeFile(
-          location,
+          filePath,
           JSON.stringify([currDatabaseLayout], null, 2),
           (error) => {
             if (error) console.log(error);
           },
         );
-
         // check if file exists
       } else {
         const dbLayouts = JSON.parse(data) as DatabaseLayoutObjType[];
@@ -203,7 +220,7 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
         if (!dbExists) dbLayouts.push(currDatabaseLayout);
 
         // write changes to the file
-        fs.writeFile(location, JSON.stringify(dbLayouts, null, 2), (error) => {
+        fs.writeFile(filePath, JSON.stringify(dbLayouts, null, 2), (error) => {
           if (error) console.log(error);
         });
       }
@@ -217,6 +234,7 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
       .invoke('ertable-schemaupdate', backendObj.current, selectedDb, curDBType)
       .then(async () => {
         // resets the backendObj
+        console.log('inside the handleClick save', backendObj.current);
         backendObj.current = {
           database: schemaState.database,
           updates,

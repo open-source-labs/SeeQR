@@ -9,7 +9,9 @@ import MainMenu from './mainMenu';
 const dev: boolean = process.env.NODE_ENV === 'development';
 
 // requiring channels file to initialize event listeners
-require('./channels');
+
+// require('./_DEPRECATED_channels');
+require('./src/ipcHandlers/index');
 
 fixPath();
 // Keep a global reference of the window objects, if you don't,
