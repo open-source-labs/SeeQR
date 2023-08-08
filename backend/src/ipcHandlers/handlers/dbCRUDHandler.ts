@@ -165,7 +165,6 @@ export async function erTableSchemaUpdate(
   try {
     // Generates query from backendObj
     const query = backendObjToQuery(backendObj, dbType);
-    console.log('Wewrewrewrw', backendObj);
     // run sql command
     await queryModel.query('Begin;', [], dbType);
     await queryModel.query(query, [], dbType);
