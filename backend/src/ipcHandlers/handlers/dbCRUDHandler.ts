@@ -1,6 +1,6 @@
 // Types
 import { app } from 'electron';
-import { DBList, DBType, LogType } from '../../../BE_types';
+import { BackendObjType, DBList, DBType, LogType } from '../../../BE_types';
 import { Feedback } from '../../../../shared/types/utilTypes';
 
 // Helpers
@@ -146,7 +146,7 @@ export async function updateDb(
 
 export async function erTableSchemaUpdate(
   event,
-  backendObj,
+  backendObj: BackendObjType,
   dbName: string,
   dbType: DBType,
 ) {
@@ -166,7 +166,6 @@ export async function erTableSchemaUpdate(
   try {
     // Generates query from backendObj
     const query = backendObjToQuery(backendObj, dbType);
-
     // run sql command
     await queryModel.query('Begin;', [], dbType);
     await queryModel.query(query, [], dbType);
