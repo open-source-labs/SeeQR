@@ -1,3 +1,4 @@
+import path from 'path';
 import React, { useState } from 'react';
 import { Dialog, DialogTitle, Tooltip } from '@mui/material/';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
@@ -79,42 +80,36 @@ function AddNewDbModal({
   // Opens modal to select file and sends the selected file to backend
   // TODO: fix the any type.
   // REVIEW:
-  const handleFileClick = () => {
+  const handleDBimport = async () => {
     const dbt: DBType = (document.getElementById('dbTypeDropdown') as any)
       .value;
-    dialog
-      .showOpenDialog({
-        properties: ['openFile'],
-        filters: [{ name: 'Custom File Type', extensions: ['sql', 'tar'] }],
-        message: 'Please upload .sql or .tar database file',
-      })
-      .then((result) => {
-        if (result.canceled) return;
 
-        if (!result.filePaths.length) {
-          sendFeedback({
-            type: 'warning',
-            message: 'No file was selected',
-          });
-          return;
-        }
+    const options = {
+      title: 'Import DB',
+      defaultPath: path.join(__dirname, '../assets/'),
+      buttonLabel: 'Import',
+      filters: [
+        {
+          name: 'Custom File Type',
+          extensions: ['sql', 'tar'],
+        },
+      ],
+    };
 
-        const payload: ImportPayload = {
-          newDbName,
-          filePath: result.filePaths[0],
-        };
+    try {
+      const filePath = await ipcRenderer.invoke('showOpenDialog', options);
 
-        ipcRenderer.invoke('import-db', payload, dbt).catch(() =>
-          sendFeedback({
-            type: 'error',
-            message: 'Failed to import database',
-          }),
-        );
-      })
-      .catch((err: object) => {
-        // console.log(err);
-      })
-      .finally(handleClose);
+      const payload: ImportPayload = {
+        newDbName,
+        filePath,
+      };
+
+      const importDB = await ipcRenderer.invoke('import-db', payload, dbt);
+    } catch (error) {
+      console.log('THIS IS A FRONT END ERROR', error);
+    } finally {
+      handleClose();
+    }
   };
 
   return (
@@ -176,7 +171,7 @@ function AddNewDbModal({
             variant="contained"
             color="primary"
             startIcon={<CloudUploadIcon />}
-            onClick={isEmpty || isError ? () => {} : handleFileClick}
+            onClick={isEmpty || isError ? () => {} : handleDBimport}
           >
             Import
           </StyledButton>
