@@ -317,6 +317,7 @@ export type AddTablesObjType = {
   col_T?: any;
   col_L?: any;
 };
+
 export type DropTablesObjType = {
   table_name: string;
   table_schema: string;
@@ -332,17 +333,17 @@ export type AlterTablesObjType = {
   alterColumns: AlterColumnsObjType[];
 };
 
-export type UpdatesObjType = {
-  addTables: AddTablesObjType[];
-  dropTables: DropTablesObjType[];
-  alterTables: AlterTablesObjType[];
-};
-
 export type BackendObjType = {
   current: {
     database: string;
     updates: UpdatesObjType;
   };
+};
+
+export type UpdatesObjType = {
+  addTables: AddTablesObjType[];
+  dropTables: DropTablesObjType[];
+  alterTables: AlterTablesObjType[];
 };
 
 export type SchemaStateObjType = {

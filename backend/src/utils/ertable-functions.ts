@@ -7,6 +7,7 @@ import {
 } from '../../../frontend/types';
 
 import { BackendObjType, DBType } from '../../../shared/types/dbTypes';
+import { ErdObjType, UpdatesObjType } from '../../../shared/types/erTypes';
 
 /**
  *
@@ -50,21 +51,7 @@ function backendObjToQuery(backendObj: BackendObjType, dbType: DBType): string {
 
       if (dbType === DBType.SQLite) {
         console.log('TEST');
-        // for (let j = 0; j < alterTablesArray.length; j += 1) {
-        //   console.log(alterTablesArray[j])
-        //   if (addTableArray[i].table_name === alterTablesArray[j].table_name) {
-        //     if (alterTablesArray[j].alterColumns.length) {
-        //       for (let k = 0; k < alterTablesArray[j].alterColumns.length; k += 1) {
-        //         if (alterTablesArray[j].alterColumns[k].column_name === 'NewColumn1') {
-        //           firstAddingMySQLColumnName = alterTablesArray[j].alterColumns[k].new_column_name;
-        //           outputArray.push(
-        //             `CREATE TABLE ${currTable.table_name}(${alterTablesArray[j].alterColumns[k].new_column_name} ${alterTablesArray[j].alterColumns[k].data_type}(${alterTablesArray[j].alterColumns[k].character_maximum_length}));`
-        //           );
-        //         };
-        //       }
-        //     }
-        //   }
-        // }
+
         outputArray.push(
           `CREATE TABLE ${currTable.table_name}(id INTEGER PRIMARY KEY AUTOINCREMENT); `,
         );
@@ -383,3 +370,61 @@ function backendObjToQuery(backendObj: BackendObjType, dbType: DBType): string {
 }
 
 export default backendObjToQuery;
+
+export function erdObjToQuery(backendObj: BackendObjType): string {
+  let outputArray: string[];
+
+  // check current dbType of active ERD table and pick a query method
+  const erdDbType = 'item from dbState';
+  if (erdDbType === DBType.Postgres || erdDbType === DBType.RDSPostgres) {
+    queryPostgres(backendObj.updates, outputArray);
+  }
+  if (erdDbType === DBType.MySQL || erdDbType === DBType.RDSPostgres) {
+    queryMySql(backendObj.updates, outputArray);
+  }
+  if (erdDbType === DBType.SQLite) {
+    querySQLite(backendObj.updates, outputArray);
+  }
+
+  return outputArray.join('');
+}
+
+function queryPostgres(erdObject: ErdObjType, outputArray: string[]) {
+  // ADD
+  erdObject.updates.addTables.forEach((object: AddTablesObjType) => {
+    outputArray.push(
+      `CREATE TABLE ${object.table_schema}.${object.table_name}(); `,
+    );
+  });
+  // DELETE
+  erdObject.updates.dropTables.forEach((object: DropTablesObjType) => {
+    outputArray.push(
+      `DROP TABLE ${object.table_schema}.${object.table_name}; `,
+    );
+  });
+  // ALTER
+  erdObject.updates.alterTables.forEach((object: AlterTablesObjType) => {
+    //
+  });
+  return outputArray;
+}
+
+function queryMySql(backendObj: BackendObjType, outputArray: string[]) {
+  // ADD
+  backendObj.updates.addTables.forEach((object: Object) => {});
+  // DELETE
+  backendObj.updates.dropTables.forEach((object: Object) => {});
+  // ALTER
+  backendObj.updates.addTables.forEach((object: Object) => {});
+  return outputArray;
+}
+
+function querySQLite(backendObj: BackendObjType, outputArray: string[]) {
+  // ADD
+  backendObj.updates.addTables.forEach((object: Object) => {});
+  // DELETE
+  backendObj.updates.dropTables.forEach((object: Object) => {});
+  // ALTER
+  backendObj.updates.addTables.forEach((object: Object) => {});
+  return outputArray;
+}
