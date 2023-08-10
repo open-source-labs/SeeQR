@@ -1,4 +1,79 @@
 // MASTER TYPE FOR ERD OBJECT
+export type ErdUpdatesType = OperationType[];
+
+// SQL UNION
+export type OperationType =
+  | PsqlOperationType
+  | MySqlOperationType
+  | SqLiteOperationType;
+
+// @peter we need some generics to avoid repetition
+interface BaseOperation<Action extends string, dbAlterType = any> {
+  action: Action;
+  tableName: string;
+  tableSchema: string;
+  alterOperations?: dbAlterType;
+}
+
+// PSQL
+type PsqlOperationType =
+  | BaseOperation<'add'>
+  | BaseOperation<'drop'>
+  | BaseOperation<'alter', PsqlAlterOperations>;
+
+export interface PsqlAlterOperations {
+  // specific things for alter like primary key etc
+  tableAction:
+    | 'rename'
+    | 'addColumn'
+    | 'dropColumn'
+    | 'alterColumnType'
+    | 'renameColumn'
+    | 'togglePrimary' // paired with default
+    | 'toggleForeign'
+    | 'toggleUnique';
+
+  rename?: string;
+  newTableName?: string;
+  columnName?: string;
+  newColumnName?: string; // this is for addColumn only
+  type?: string; // could be for addColumn or alterColumm
+  hasPrimary?: boolean;
+
+  // foreign stuff
+  hasForeign?: boolean;
+  foreignConstraint?: string;
+  foreignTable?: string;
+  foreignColumn?: string;
+
+  // unique:
+  hasUnique?: boolean;
+  uniqueConstraint?: string;
+}
+
+// MYSQL
+type MySqlOperationType =
+  | BaseOperation<'add'>
+  | BaseOperation<'drop'>
+  | BaseOperation<'alter', MySqlAlterOperations>;
+
+interface MySqlAlterOperations {
+  table_name: string;
+  // more
+}
+
+// SQLITE
+type SqLiteOperationType =
+  | BaseOperation<'add'>
+  | BaseOperation<'drop'>
+  | BaseOperation<'alter', SqLiteAlterOperations>;
+
+interface SqLiteAlterOperations {
+  table_name: string;
+  // more
+}
+
+// old stuff
 export type ErdObjType = {
   dbName: string; // maybe this can go to dbState (save for later)
   updates: UpdatesObjType;
