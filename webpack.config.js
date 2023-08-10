@@ -2,6 +2,8 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+const BundleAnalyzerPlugin =
+  require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -130,6 +132,11 @@ module.exports = {
           'style-src': true,
         },
       },
+    }),
+    new BundleAnalyzerPlugin({
+      analyzerMode: 'json',
+      openAnalzyer: true,
+      generateStatsFile: true,
     }),
     new ForkTsCheckerWebpackPlugin({
       // // Lint files on error.  Uncomment for Hard Mode :)
