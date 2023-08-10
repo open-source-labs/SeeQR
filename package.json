@@ -52,7 +52,7 @@
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.2.0",
     "react-force-graph": "^1.43.0",
-    "reactflow": "^11.7.4",
+    "reactflow": "^11.8.0",
     "sql-formatter": "^12.2.4",
     "sqlite3": "^5.1.6",
     "styled-components": "^6.0.7",
