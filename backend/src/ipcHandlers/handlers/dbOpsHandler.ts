@@ -321,7 +321,7 @@ export async function importDb(
       ext === '.sql'
         ? runSQLFunc(newDbName, filePath, dbType)
         : runTARFunc(newDbName, filePath, dbType);
-
+    console.log('THIS IS restoreCmd', restoreCmd);
     try {
       // populate new db with data from file
       await promExecute(restoreCmd);
