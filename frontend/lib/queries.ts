@@ -48,22 +48,22 @@ export const deleteQuery = (
 };
 
 // Finds proper data path for saving based on operating system
-type GetAppDataPath = () => string;
+// type GetAppDataPath = (file: string) => string;
 
 // used to determine default filepath for saving query information locally
-export const getAppDataPath: GetAppDataPath = () => {
+export const getAppDataPath = (file: 'sql' | 'json' = 'json') => {
   switch (process.platform) {
     case 'darwin':
-      return path.join(process.env.HOME ?? '', 'Library', 'SeeQR Data.json');
+      return path.join(process.env.HOME ?? '', 'Library', `SeeQR Data.${file}`);
 
     case 'win32':
       return path.join(
         process.env.APPDATA ?? '',
-        '../../Documents/SeeQR Data.json',
+        `../../Documents/SeeQR Data.${file}`,
       );
 
     case 'linux':
-      return path.join(process.env.HOME ?? '', '.SeeQR Data.json');
+      return path.join(process.env.HOME ?? '', `.SeeQR Data.${file}`);
 
     default:
       // console.log("Unsupported platform!");
