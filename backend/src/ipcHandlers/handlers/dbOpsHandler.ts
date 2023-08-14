@@ -1,10 +1,10 @@
 import fs from 'fs';
-import os from 'os';
 import path from 'path';
 
 // Types
-import { DBList, DBType, LogType } from '../../../BE_types';
+import { DBList, LogType } from '../../../BE_types';
 import { Feedback } from '../../../../shared/types/utilTypes';
+import { DBType } from '../../../../shared/types/dbTypes';
 
 // Helpers
 import logger from '../../utils/logging/masterlog';
@@ -15,13 +15,13 @@ import helperFunctions from '../../utils/helperFunctions';
 import connectionModel from '../../models/connectionModel';
 import databaseModel from '../../models/databaseModel';
 import queryModel from '../../models/queryModel';
-// import db from '../../../models';
+import dbState from '../../models/stateModel';
 
 const {
   createDBFunc,
   dropDBFunc,
   runSQLFunc,
-  runTARFunc,
+  // runTARFunc,
   runFullCopyFunc,
   runHollowCopyFunc,
   promExecute,
@@ -92,7 +92,7 @@ export async function returnDbList(event) {
 /**
  * EVENT: 'select-db'
  *
- * DEFINITION: connect to selected db, then get object containing a list of all databases abd tables for the selected database, and sends to frontend. This is for ERD table view? check with Peter
+ * DEFINITION: connect to selected db on the sidebar, then get object containing a list of all databases abd tables for the selected database, and sends to frontend.
  *
  * Process involes the following steps:
  * 1. connectionModel.connectToDB
@@ -112,7 +112,13 @@ export async function selectDb(
     if (dbName === '') {
       dbName = 'postgres';
     }
+
     await connectionModel.connectToDB(dbName, dbType);
+
+    // assign currentERD to dbType (string) of selected ERD
+    dbState.currentERD = dbType;
+    // assign dbType to dbType (string) of selected ERD
+    dbState.currentDb = dbName;
 
     // send updated db info
     const dbsAndTables: DBList = await databaseModel.getLists(dbName, dbType);

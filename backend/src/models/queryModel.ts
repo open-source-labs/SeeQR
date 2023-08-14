@@ -12,6 +12,10 @@ FUNCTIONS: query, sampler
 
 // Functions
 const queryModel: queryModelType = {
+  /**
+   * 'query':
+   * runs sql command depending on the database
+   */
   query: (text, params, dbType): Promise<unknown> | undefined => {
     logger(`Attempting to run query: \n ${text} for: \n ${dbType}`);
 
