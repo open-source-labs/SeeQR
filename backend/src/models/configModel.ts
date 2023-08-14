@@ -11,6 +11,7 @@ const home = `${os.homedir()}/Documents/SeeQR`;
 const configFile = 'config.json';
 const configPath = `${home}/${configFile}`;
 
+// ideally, we want to keep this config in a seperate file as well
 export const defaultFile: DocConfigFile = {
   mysql_options: { user: '', password: '', port: 3306 },
   pg_options: { user: '', password: '', port: 5432 },
