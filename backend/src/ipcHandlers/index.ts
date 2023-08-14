@@ -33,7 +33,7 @@ ipcMain.handle('set-config', setConfig);
 ipcMain.handle('get-config', getConfig);
 
 // // db Operations
-ipcMain.on('return-db-list', returnDbList);
+ipcMain.handle('return-db-list', returnDbList);
 ipcMain.handle('select-db', selectDb);
 ipcMain.handle('drop-db', dropDb);
 ipcMain.handle('duplicate-db', duplicateDb);

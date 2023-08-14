@@ -1,5 +1,7 @@
 import { ipcRenderer } from 'electron';
-import databaseActions from '../Actions/databaseActions';
+import { DBList, DBType } from '@mytypes/dbTypes';
+import databaseActions from '../Actions/DatabaseActions';
+import { TableInfo } from '../types';
 
 type TableChange<C extends 'CREATE' | 'ALTER' | 'DELETE'> = {
   dbName: string;
@@ -82,11 +84,11 @@ function databaseReducer<C extends 'CREATE' | 'ALTER' | 'DELETE'>(
 
       return state;
     }
-    case 'SELECT_TABLE': {
-      // change active table on current active db
+    // case 'SELECT_TABLE': {
+    //   // change active table on current active db
 
-      return { ...state, selectedTable: action.table };
-    }
+    //   return { ...state, selectedTable: action.table };
+    // }
     case 'CREATE_DATABASE': {
       // send database name and type to backend to add
       // TODO: MORE ASYNC TO DO ONCE I GET IT ALL IN ORDER
@@ -96,13 +98,13 @@ function databaseReducer<C extends 'CREATE' | 'ALTER' | 'DELETE'>(
       // keep to local state in DBList.tsx for now
       return state;
     } */
-    case 'SELECT_DATABASE': {
-      // change active database
-      return {
-        ...state,
-        selectedDb: { name: action.dbName, type: action.dbType },
-      };
-    }
+    // case 'SELECT_DATABASE': {
+    //   // change active database
+    //   return {
+    //     ...state,
+    //     selectedDb: { name: action.dbName, type: action.dbType },
+    //   };
+    // }
     case 'IMPORT_DATABASE': {
       // invoke event to backend to get a db from a file
       // TODO: MORE ASYNC TO DO

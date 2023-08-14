@@ -1,7 +1,7 @@
 /**
  * This file contains common types that need to be used across the backend
  */
-import { UpdatesObjType } from '../frontend/types';
+import { UpdatesObjType } from '../../frontend/types';
 
 export interface ColumnObj {
   column_name: string;

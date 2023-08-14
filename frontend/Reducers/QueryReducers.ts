@@ -1,4 +1,5 @@
 import QueryActions from '../Actions/QueryActions';
+import { QueryData } from '../types';
 
 type Field = {
   title: string;

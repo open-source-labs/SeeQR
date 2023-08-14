@@ -2,9 +2,9 @@ type databaseActions =
   | { type: 'ADD_TABLE' }
   | { type: 'SAVE_CHANGES' }
   | { type: 'EDIT_TABLE' }
-  | { type: 'SELECT_TABLE'; table: TableInfo }
+  // | { type: 'SELECT_TABLE'; table: TableInfo }
   | { type: 'GENERATE_DATA'; rows: any }
-  | { type: 'SELECT_DATABASE'; dbName: string; dbType: DBType }
+  // | { type: 'SELECT_DATABASE'; dbName: string; dbType: DBType }
   | { type: 'CREATE_DATABASE'; dbName: string }
   | { type: 'IMPORT_DATABASE' }
   | { type: 'DUPLICATE_DATABASE' }
