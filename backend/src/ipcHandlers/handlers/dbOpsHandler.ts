@@ -130,6 +130,8 @@ export async function selectDb(
     }
     await connectionModel.connectToDB(dbName, dbType);
 
+    // we need a function that sends the dbType to the current "state" in the backend
+
     // send updated db info
     const dbsAndTables: DBList = await databaseModel.getLists(dbName, dbType);
     event.sender.send('db-lists', dbsAndTables);

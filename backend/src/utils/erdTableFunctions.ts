@@ -1,5 +1,5 @@
 import { ErdUpdatesType } from '../../../shared/types/erTypes';
-import queryPostgres from './erdAlters/psqlAlter';
+import { queryPostgres } from './erdAlters/pSqlCUD';
 import { DBType } from '../../../shared/types/dbTypes';
 
 export function erdUpdatesToQuery(updatesArray: ErdUpdatesType): string {

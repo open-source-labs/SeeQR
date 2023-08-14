@@ -32,21 +32,7 @@ const dbState: DBState = {
   rds_pg_options: defaultFile.rds_pg_options,
   sqlite_options: defaultFile.sqlite_options,
   directPGURI_options: defaultFile.directPGURI_options,
-  // pg_uri: '',
-  // curPG_DB: '',
-  // curMSQL_DB: '',
-  // curRDS_MSQL_DB: {
-  //   user: '',
-  //   password: '',
-  //   host: '',
-  // },
-  // curRDS_PG_DB: {
-  //   user: '',
-  //   password: '',
-  //   host: '',
-  // },
-  // curSQLite_DB: { path: '' },
-  // curdirectPGURI_DB: '',
+
   dbsInputted: {
     pg: false,
     msql: false,
