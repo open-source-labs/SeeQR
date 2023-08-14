@@ -18,7 +18,7 @@ import {
   importDb,
   exportDb,
 } from './handlers/dbOpsHandler';
-import runQuery from './handlers/queryHandler';
+import { runQuery, readQuery } from './handlers/queryHandler';
 import {
   dummyData,
   showOpenDialog,
@@ -49,6 +49,7 @@ ipcMain.handle('ertable-schemaupdate', erTableSchemaUpdate);
 
 // // // query
 ipcMain.handle('run-query', runQuery);
+ipcMain.handle('read-query', readQuery);
 
 // // // misc (other events bundled together)
 ipcMain.handle('generate-dummy-date', dummyData);

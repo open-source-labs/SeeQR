@@ -173,6 +173,7 @@ function App() {
           <GlobalStyle />
           <Sidebar
             {...{
+              createNewQuery,
               queries,
               setQueries,
               comparedQueries,

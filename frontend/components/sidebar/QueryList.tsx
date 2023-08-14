@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import AddIcon from '@mui/icons-material/Add';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import FileCopyIcon from '@mui/icons-material/FileCopy';
+import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import { IconButton, Tooltip } from '@mui/material';
 import Accordion from '@mui/material/Accordion';
@@ -29,6 +29,7 @@ import {
 } from '../../style-variables';
 import { AppState, QueryData } from '../../types';
 import QueryEntry from './QueryEntry';
+import createNewQuery from '../App';
 
 const QueryText = styled(StyledListItemText)`
   & .MuiListItemText-secondary {
@@ -99,8 +100,14 @@ function QueryList({
     };
 
     try {
-      const filePath = await ipcRenderer.invoke('showOpenDialog', options);
-      setFilePath(filePath);
+      const newFilePath = await ipcRenderer.invoke('showOpenDialog', options);
+
+      console.log('THIS IS THE NEW FILE PATH', newFilePath);
+
+      const data = await ipcRenderer.invoke('read-query', newFilePath);
+      const newData = JSON.parse(data);
+      console.log('THIS IS NEW DATA', newData);
+      createNewQuery(newData);
     } catch (error) {
       console.log(error);
     }
@@ -186,7 +193,7 @@ function QueryList({
 
         <Tooltip title="Designate Save Location">
           <IconButton onClick={designateFile} size="large">
-            <FileCopyIcon fontSize="large" />
+            <DriveFileMoveIcon fontSize="large" />
           </IconButton>
         </Tooltip>
       </span>

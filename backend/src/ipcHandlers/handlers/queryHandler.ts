@@ -1,3 +1,5 @@
+import fs from 'fs';
+
 // Types
 import { DBList, DBType, LogType, QueryPayload } from '../../../BE_types';
 
@@ -34,7 +36,7 @@ const { explainQuery } = helperFunctions;
  * CRUD is not distringuished
  */
 
-export default async function runQuery(
+export async function runQuery(
   event,
   { targetDb, sqlString, selectedDb, runQueryNumber }: QueryPayload,
   dbType: DBType,
@@ -264,5 +266,15 @@ export default async function runQuery(
       `selectedDb: ${selectedDb} -- targetDb: ${targetDb} -- dbType: ${dbType}`,
     );
     event.sender.send('async-complete');
+  }
+}
+
+export function readQuery(event, filepath) {
+  try {
+    const data = fs.readFileSync(filepath, 'utf8');
+    console.log(data);
+    return data;
+  } catch (err) {
+    console.log('this is error in read-query', err);
   }
 }
