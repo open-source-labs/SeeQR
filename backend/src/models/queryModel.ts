@@ -2,8 +2,8 @@ import { performance } from 'perf_hooks';
 
 import { DBType, LogType, queryModelType } from '../../../shared/types/dbTypes';
 
-import logger from '../../Logging/masterlog';
-import pools from '../../poolVariables';
+import logger from '../utils/logging/masterlog';
+import pools from '../db/poolVariables';
 
 /*
 README: "queryModel" deals with business logic of any incoming queries from the query sidebar*?. Implement furthur query functionalities here NOT ERDtable

@@ -1,12 +1,12 @@
 // Types
 import { app } from 'electron';
-import { DBList, DBType, LogType } from '../../../BE_types';
+import { BackendObjType, DBList, DBType, LogType } from '../../../BE_types';
 import { Feedback } from '../../../../shared/types/utilTypes';
 
 // Helpers
-import logger from '../../../Logging/masterlog';
-import backendObjToQuery from '../../../ertable-functions';
-import helperFunctions from '../../../helperFunctions';
+import logger from '../../utils/logging/masterlog';
+import backendObjToQuery from '../../utils/ertable-functions';
+import helperFunctions from '../../utils/helperFunctions';
 
 // Models used
 import connectionModel from '../../models/connectionModel';
@@ -146,18 +146,21 @@ export async function updateDb(
 
 export async function erTableSchemaUpdate(
   event,
-  backendObj,
+  backendObj: BackendObjType,
   dbName: string,
   dbType: DBType,
 ) {
   logger(
-    `Received 'ertable-schemaupdate' with dbType: ${dbType}, dbName: ${dbName}, and backendObj: `,
+    `backendObj: ${dbType}, \n
+    dbName: ${dbName}, \n`,
     LogType.RECEIVE,
     backendObj,
   );
+
+  console.log('backendObj: ', backendObj);
+
   // send notice to front end that schema update has started
   event.sender.send('async-started');
-
   let feedback: Feedback = {
     type: '',
     message: '',
@@ -165,7 +168,6 @@ export async function erTableSchemaUpdate(
   try {
     // Generates query from backendObj
     const query = backendObjToQuery(backendObj, dbType);
-
     // run sql command
     await queryModel.query('Begin;', [], dbType);
     await queryModel.query(query, [], dbType);
