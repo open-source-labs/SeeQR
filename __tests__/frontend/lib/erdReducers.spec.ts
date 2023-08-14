@@ -1,8 +1,9 @@
 import {
   erdReducer,
   ERDState,
-} from '../../frontend/state_management/Reducers/ERDReducers';
-import { ERDActions } from '../../frontend/state_management/Actions/ERDActions';
+} from '../../../frontend/state_management/Reducers/ERDReducers';
+
+import { ERDActions } from '../../../frontend/state_management/Actions/ERDActions';
 
 const initialState: ERDState[] = [];
 let actionObject: ERDActions;
