@@ -133,11 +133,11 @@ module.exports = {
         },
       },
     }),
-    new BundleAnalyzerPlugin({
-      analyzerMode: 'json',
-      openAnalzyer: true,
-      generateStatsFile: true,
-    }),
+    // new BundleAnalyzerPlugin({
+    //   analyzerMode: 'json',
+    //   openAnalzyer: true,
+    //   generateStatsFile: true,
+    // }),
     new ForkTsCheckerWebpackPlugin({
       // // Lint files on error.  Uncomment for Hard Mode :)
       // eslint: {
