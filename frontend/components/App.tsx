@@ -84,6 +84,8 @@ function App() {
     [menuState],
   );
 
+  // tablesReducer stuff here
+
   // ---
   const [queries, setQueries] = useState<AppState['queries']>({});
   const [comparedQueries, setComparedQueries] = useState<AppState['queries']>(
@@ -147,8 +149,6 @@ function App() {
       payload: {
         event: 'return-db-list',
         callback: dbListFromBackend,
-        args: [],
-        payload: null,
       },
     });
   }, []);
