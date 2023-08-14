@@ -3,7 +3,6 @@ import os from 'os';
 import path from 'path';
 
 // Types
-import { error } from 'console';
 import { DBList, DBType, LogType } from '../../../BE_types';
 import { Feedback } from '../../../../shared/types/utilTypes';
 
