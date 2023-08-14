@@ -40,6 +40,10 @@ interface ImportPayload {
   filePath: string;
 }
 
+interface ExportPayload extends ImportPayload {
+  db: string;
+}
+
 interface ExportPayload {
   sourceDb: string;
 }
@@ -350,24 +354,11 @@ export async function importDb(
  * 4. send back a feedback to frontend based on pormExecute.
  */
 
-export async function exportDb(event, payload, dbType: DBType) {
+export async function exportDb(event, payload: ExportPayload, dbType: DBType) {
   logger("Received 'export-db'", LogType.RECEIVE);
   event.sender.send('async-started');
 
   const { db, filePath } = payload;
-  // store temporary file in user desktop
-  const newfilePath = path.resolve(
-    `${docConfig.getConfigFolder()}/`,
-    `${db}.sql`,
-  );
-
-  console.log('THIS IS THE PAYLOAD', payload);
-  console.log('this is the db TYPE:::::', dbType); // undefined
-  console.log('this is the newFILE PATH::::::', newfilePath); // ok
-  console.log('THIS IS THE FILEPATH I WANT::::', filePath); // pg
-  console.log('THIS IS THE SOURCE db::::', db); // payload
-  // payload.db
-  // payload.filepath
 
   const feedback: Feedback = {
     type: '',
@@ -376,9 +367,7 @@ export async function exportDb(event, payload, dbType: DBType) {
 
   try {
     // dump database to file
-
     const dumpCmd = runFullCopyFunc(db, filePath, dbType);
-
     try {
       await promExecute(dumpCmd);
     } catch (e) {
