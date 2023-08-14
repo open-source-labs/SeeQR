@@ -39,6 +39,10 @@ interface ImportPayload {
   filePath: string;
 }
 
+interface ExportPayload extends ImportPayload {
+  db: string;
+}
+
 interface ExportPayload {
   sourceDb: string;
 }
@@ -288,35 +292,30 @@ export async function importDb(
   event.sender.send('async-started');
 
   try {
-    // create new empty db
-    await queryModel.query(createDBFunc(newDbName, dbType), [], dbType);
-
-    const ext = path.extname(filePath).toLowerCase();
-    if (ext !== '.sql' && ext !== '.tar') {
-      throw new Error('Invalid file extension');
+    // create new empty database
+    try {
+      await queryModel.query(createDBFunc(newDbName, dbType), [], dbType);
+    } catch (e) {
+      throw new Error('Failed to create Database');
     }
 
-    const restoreCmd =
-      ext === '.sql'
-        ? runSQLFunc(newDbName, filePath, dbType)
-        : runTARFunc(newDbName, filePath, dbType);
-
+    // run temp sql file on new database
     try {
-      // populate new db with data from file
-      await promExecute(restoreCmd);
+      await promExecute(runSQLFunc(newDbName, filePath, dbType));
     } catch (e: any) {
+      console.log('this is error in run temp', e);
       // cleanup: drop created db
-      logger(`Dropping imported db because: ${e.message}`, LogType.WARNING);
+      logger(`Dropping duplicate db because: ${e.message}`, LogType.WARNING);
       const dropDBScript = dropDBFunc(newDbName, dbType);
       await queryModel.query(dropDBScript, [], dbType);
 
-      throw new Error('Failed to populate database');
+      throw new Error('Failed to populate newly created database');
     }
 
     // update frontend with new db list
     const dbsAndTableInfo: DBList = await databaseModel.getLists('', dbType);
     event.sender.send('db-lists', dbsAndTableInfo);
-    logger("Sent 'db-lists' from 'import-db'", LogType.SEND);
+    logger("Sent 'db-lists' from 'duplicate-db'", LogType.SEND);
   } finally {
     event.sender.send('async-complete');
   }
@@ -334,36 +333,24 @@ export async function importDb(
  * 4. send back a feedback to frontend based on pormExecute.
  */
 
-export async function exportDb(
-  event,
-  { sourceDb }: ExportPayload,
-  dbType: DBType,
-) {
+export async function exportDb(event, payload: ExportPayload, dbType: DBType) {
   logger("Received 'export-db'", LogType.RECEIVE);
   event.sender.send('async-started');
 
-  // store temporary file in user desktop
-  const FilePath = path.resolve(os.homedir(), 'desktop', `${sourceDb}.sql`);
+  const { db, filePath } = payload;
 
-  let feedback: Feedback = {
+  const feedback: Feedback = {
     type: '',
     message: '',
   };
 
   try {
-    // dump database to new file
-    const dumpCmd = runFullCopyFunc(sourceDb, FilePath, dbType);
-
+    // dump database to file
+    const dumpCmd = runFullCopyFunc(db, filePath, dbType);
     try {
       await promExecute(dumpCmd);
-      feedback = {
-        type: 'success',
-        message: `${sourceDb} Schema successfully exported to ${FilePath}`,
-      };
-      event.sender.send('feedback', feedback);
-      logger("Sent 'feedback' from 'export-db'", LogType.SEND);
     } catch (e) {
-      throw new Error(`Failed to dump ${sourceDb} to a file at ${FilePath}`);
+      throw new Error(`Failed to dump ${db} to temp file at ${filePath}`);
     }
   } finally {
     event.sender.send('async-complete');

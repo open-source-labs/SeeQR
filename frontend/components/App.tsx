@@ -41,11 +41,11 @@ import Spinner from './modal/Spinner';
 import ConfigView from './Dialog/ConfigView';
 import CreateDBDialog from './Dialog/CreateDBDialog';
 
-import MenuContext from '../Contexts/MenuContext';
+import MenuContext from '../state_management/Contexts/MenuContext';
 import menuReducer, {
   initialMenuState,
   submitAsyncToBackend,
-} from '../Reducers/MenuReducers';
+} from '../state_management/Reducers/MenuReducers';
 import invoke from '../lib/electronHelper';
 
 declare module '@mui/material/styles/' {

@@ -1,7 +1,7 @@
 import { ipcRenderer } from 'electron';
 import { DBList, DBType } from '@mytypes/dbTypes';
 import databaseActions from '../Actions/DatabaseActions';
-import { TableInfo } from '../types';
+import { TableInfo } from '../../types';
 
 type TableChange<C extends 'CREATE' | 'ALTER' | 'DELETE'> = {
   dbName: string;

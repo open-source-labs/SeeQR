@@ -1,4 +1,4 @@
-import { Dialogs, ViewName } from '../../shared/types/frontendTypes';
+import { Dialogs, ViewName } from '../../../shared/types/frontendTypes';
 
 export type async = {
   callback?: any;

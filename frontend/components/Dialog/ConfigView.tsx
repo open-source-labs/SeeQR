@@ -17,7 +17,7 @@ import {
 } from '../../style-variables';
 import '../../lib/style.css';
 import { DocConfigFile } from '../../../backend/BE_types';
-import MenuContext from '../../Contexts/MenuContext';
+import MenuContext from '../../state_management/Contexts/MenuContext';
 
 /*
 junaid
