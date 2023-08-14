@@ -23,3 +23,15 @@ type MenuActions =
     };
 
 export default MenuActions;
+
+// menuDispatch({type: 'ASYNC_TRIGGER', payload: {
+//   dispatch: databaseDispatch,
+//   action: 'UPDATE_DBLIST',
+//   event: 'create-db',
+//   payload: {name: 'newdbname', type: DBType}
+// }})
+
+// useEffect(()=>{
+//   const result = await ipcRenderer.invoke(event, payload)
+//   dispatch({type: action, payload: result})
+// }, [menuState.loading.queue])
