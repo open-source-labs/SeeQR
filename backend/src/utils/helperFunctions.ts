@@ -129,6 +129,7 @@ const helperFunctions: HelperFunctions = {
         },
         (error, stdout, stderr) => {
           if (error) {
+            console.log('ERROR in helperfunctions - promExecute', error);
             return reject(error);
           }
           if (stderr) return reject(new Error(stderr));
