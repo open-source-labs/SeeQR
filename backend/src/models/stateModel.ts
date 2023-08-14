@@ -2,27 +2,26 @@ import { dbsInputted } from '../../../shared/types/dbTypes';
 import { DocConfigFile } from '../../BE_types';
 import { defaultFile } from './configModel';
 
-// type declaration
-// type dbStateType = {
-//   pg_uri: string;
-//   curPG_DB: string;
-//   curMSQL_DB: string;
-//   curRDS_MSQL_DB: any;
-//   curRDS_PG_DB: {
-//     user?: string;
-//     password?: string;
-//     host?: string;
-//   };
-//   curSQLite_DB: {
-//     path: string;
-//   };
-//   curdirectPGURI_DB: string;
-//   dbsInputted: dbsInputted;
+// export const defaultFile: DocConfigFile = {
+//   mysql_options: { user: '', password: '', port: 3306 },
+//   pg_options: { user: '', password: '', port: 5432 },
+//   rds_mysql_options: {
+//     user: '',
+//     password: '',
+//     port: 3306,
+//     host: '',
+//   },
+//   rds_pg_options: {
+//     user: '',
+//     password: '',
+//     port: 5432,
+//     host: '',
+//   },
+//   sqlite_options: { filename: '' },
+//   directPGURI_options: { connectionString: '' },
 // };
 
 type DBState = DocConfigFile & { dbsInputted: dbsInputted };
-
-// dbState holds info about current databse accessed. Functionalities from other models are assigned to it
 
 const dbState: DBState = {
   // NEEDS UPDATE TO PETERS NEW SYNTAX
@@ -41,6 +40,8 @@ const dbState: DBState = {
     sqlite: false,
     directPGURI: false,
   },
+
+  // current ERD Db type
 };
 
 export default dbState;

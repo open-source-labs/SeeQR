@@ -3,9 +3,9 @@ import os from 'os';
 import path from 'path';
 
 // Types
-import { DBList, DBType, LogType } from '../../../BE_types';
+import { DBList, LogType } from '../../../BE_types';
 import { Feedback } from '../../../../shared/types/utilTypes';
-
+import { DBType } from '../../../../shared/types/dbTypes';
 // Helpers
 import logger from '../../utils/logging/masterlog';
 import docConfig from '../../models/configModel';
