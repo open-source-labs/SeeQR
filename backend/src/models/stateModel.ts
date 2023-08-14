@@ -1,4 +1,4 @@
-import { dbsInputted } from '../../../shared/types/dbTypes';
+import { dbsInputted, DBType } from '../../../shared/types/dbTypes';
 import { DocConfigFile } from '../../BE_types';
 import { defaultFile } from './configModel';
 
@@ -21,7 +21,11 @@ import { defaultFile } from './configModel';
 //   directPGURI_options: { connectionString: '' },
 // };
 
-type DBState = DocConfigFile & { dbsInputted: dbsInputted };
+type DBState = DocConfigFile & {
+  dbsInputted: dbsInputted;
+  currentERD: DBType;
+  currentDb: string;
+};
 
 const dbState: DBState = {
   // NEEDS UPDATE TO PETERS NEW SYNTAX
@@ -42,6 +46,10 @@ const dbState: DBState = {
   },
 
   // current ERD Db type
+  currentERD: DBType.Postgres,
+
+  // current Database
+  currentDb: '',
 };
 
 export default dbState;
