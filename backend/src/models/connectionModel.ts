@@ -2,9 +2,9 @@ import fs from 'fs';
 import docConfig from './configModel';
 import { LogType } from '../../BE_types';
 import { DBType, connectionModelType } from '../../../shared/types/dbTypes';
-import connectionFunctions from '../../databaseConnections';
-import logger from '../../Logging/masterlog';
-import pools from '../../poolVariables';
+import connectionFunctions from '../db/databaseConnections';
+import logger from '../utils/logging/masterlog';
+import pools from '../db/poolVariables';
 
 import dbState from './stateModel';
 
@@ -157,14 +157,13 @@ const connectionModel: connectionModelType = {
     return { dbsInputted: dbState.dbsInputted, configExists };
   },
 
+  // connectToDB : chooses what kind of database this is based on received dbType.
   connectToDB: async (db, dbType) => {
     // change current Db
 
     if (dbType === DBType.Postgres) {
       dbState.pg_options.database = db;
-      // console.log('THIS IS THE PG URI', this.pg_uri);
-      // console.log('THIS IS THE CUR PG DB', this.curPG_DB);
-      // console.log('THIS IS THE DB', db);
+
       if (dbState.pg_options.connectionString) {
         await connectionFunctions.PG_DBConnect(
           dbState.pg_options.connectionString,
@@ -173,15 +172,7 @@ const connectionModel: connectionModelType = {
       } else {
         // handle case where connection string is undefined}
       }
-    }
-    // if (dbType === DBType.Postgres) {
-    //   dbState.pg_options.database = db;
-    //   await connectionFunctions.PG_DBConnect(
-    //     dbState.pg_options.connectionString || '',
-    //     db,
-    //   );
-    // }
-    else if (dbType === DBType.MySQL) {
+    } else if (dbType === DBType.MySQL) {
       dbState.mysql_options.database = db;
       await connectionFunctions.MSQL_DBQuery(db);
     } else if (dbType === DBType.RDSMySQL) {

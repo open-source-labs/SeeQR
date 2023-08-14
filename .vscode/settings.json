@@ -1,15 +1,13 @@
 {
-    "liveSassCompile.settings.formats": [
-        {
-        "format": "expanded",
-        "savePath": "/frontend/assets/stylesheets/css",
-        "extensionName": ".css"
-        }
-    ],
-    "liveSassCompile.settings.generateMap": false,
-    "yaml.schemas": {
-        "https://json.schemastore.org/electron-builder": [
-            "electron-builder.yml"
-        ]
+  "liveSassCompile.settings.formats": [
+    {
+      "format": "expanded",
+      "savePath": "/frontend/assets/stylesheets/css",
+      "extensionName": ".css"
     }
+  ],
+  "liveSassCompile.settings.generateMap": false,
+  "yaml.schemas": {
+    "https://json.schemastore.org/electron-builder": ["electron-builder.yml"]
+  }
 }

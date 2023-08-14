@@ -4,9 +4,9 @@ import {
   AlterTablesObjType,
   AlterColumnsObjType,
   AddConstraintObjType,
-} from '../frontend/types';
+} from '../../../frontend/types';
 
-import { BackendObjType, DBType } from '../shared/types/dbTypes';
+import { BackendObjType, DBType } from '../../../shared/types/dbTypes';
 
 /**
  *

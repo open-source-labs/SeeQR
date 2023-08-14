@@ -1,3 +1,5 @@
+// where is this file used?
+
 const foreignAndPrimaryKeys = {
   /**
    * The information schema itself is a schema named information_schema. This schema automatically exists in all

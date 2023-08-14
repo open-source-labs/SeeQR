@@ -1,8 +1,7 @@
 import { faker } from '@faker-js/faker';
-import { ColumnObj, DummyRecords, LogType } from '../BE_types';
-import logger from '../Logging/masterlog';
-
-const db = require('../models');
+import { ColumnObj, DummyRecords, LogType } from '../../../BE_types';
+import logger from '../logging/masterlog';
+import queryModel from '../../models/queryModel';
 
 /*   THIS FILE CONTAINS THE ALGORITHMS THAT GENERATE DUMMY DATA    */
 /*                                                                 */
@@ -120,7 +119,11 @@ const generateDummyData: GenerateDummyData = async (
             FROM ${foreignTable} TABLESAMPLE BERNOULLI(100)
             LIMIT 1
           `;
-        const foreignKey = await db.query(getForeignKeyQuery);
+
+        // const foreignKey = await queryModel.query(getForeignKeyQuery);
+        // ISSUE CO-76: SINCE DB IS UPDATED, WE NEED TO ADJUST THIS LOGIC FOR GETTING FOREIGN KEY
+        const foreignKey = { rows: 'nothing here' };
+        // CO-76: temp values to prevent file from breaking. get rid of this after you fix queryModel.query(getForeignKeyQuery)
         const chosenPrimaryValue =
           foreignKey.rows[0][Object.keys(foreignKey.rows[0])[0]];
         if (foreignKey.rows.length) {

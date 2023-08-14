@@ -2,8 +2,8 @@
 import { DBList, DBType, LogType, QueryPayload } from '../../../BE_types';
 
 // Helpers
-import logger from '../../../Logging/masterlog';
-import helperFunctions from '../../../helperFunctions';
+import logger from '../../utils/logging/masterlog';
+import helperFunctions from '../../utils/helperFunctions';
 
 // Models used
 import connectionModel from '../../models/connectionModel';
