@@ -29,7 +29,6 @@ import {
 } from '../../style-variables';
 import { AppState, QueryData } from '../../types';
 import QueryEntry from './QueryEntry';
-import createNewQuery from '../App';
 
 const QueryText = styled(StyledListItemText)`
   & .MuiListItemText-secondary {
@@ -56,18 +55,22 @@ const StyledSidebarList = styled(SidebarList)`
   background-color: ${greyDarkest};
 `;
 
-function QueryList({
-  queries,
-  createQuery,
-  setQueries,
-  comparedQueries,
-  setComparedQueries,
-  workingQuery,
-  setWorkingQuery,
-  setFilePath,
-  newFilePath,
-  show,
-}: QueryListProps) {
+function QueryList(props) {
+  const {
+    queries,
+    createQuery,
+    setQueries,
+    comparedQueries,
+    setComparedQueries,
+    workingQuery,
+    setWorkingQuery,
+    setFilePath,
+    newFilePath,
+    show,
+  }: QueryListProps = props;
+
+  const { createNewQuery } = props;
+
   const deleteQueryHandler = (query: QueryData) => () => {
     setQueries(deleteQuery(queries, query));
     setComparedQueries(deleteQuery(comparedQueries, query));
@@ -107,6 +110,7 @@ function QueryList({
       const data = await ipcRenderer.invoke('read-query', newFilePath);
       const newData = JSON.parse(data);
       console.log('THIS IS NEW DATA', newData);
+      console.log('THIS IS CREATE NEW QUERY', createNewQuery);
       createNewQuery(newData);
     } catch (error) {
       console.log(error);

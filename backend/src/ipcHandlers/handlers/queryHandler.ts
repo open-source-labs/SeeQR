@@ -272,7 +272,7 @@ export async function runQuery(
 export function readQuery(event, filepath) {
   try {
     const data = fs.readFileSync(filepath, 'utf8');
-    console.log(data);
+    // console.log(data);
     return data;
   } catch (err) {
     console.log('this is error in read-query', err);
