@@ -109,6 +109,7 @@ function AddNewDbModal({
   // };
 
   const handleDBimport = (dbName: string, closeModal: () => void) => {
+    // TODO: fix the any type.
     const dbt: DBType = (document.getElementById('dbTypeDropdown') as any)
       .value;
     const options = {
