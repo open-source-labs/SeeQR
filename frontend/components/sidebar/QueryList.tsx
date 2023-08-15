@@ -10,7 +10,7 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Typography from '@mui/material/Typography';
 import { dialog, ipcRenderer } from 'electron';
-import React from 'react';
+import React, { useContext } from 'react';
 import styled from 'styled-components';
 import {
   deleteQuery,
@@ -29,6 +29,7 @@ import {
 } from '../../style-variables';
 import { AppState, QueryData } from '../../types';
 import QueryEntry from './QueryEntry';
+import MenuContext from '../../state_management/Contexts/MenuContext';
 
 const QueryText = styled(StyledListItemText)`
   & .MuiListItemText-secondary {
@@ -67,6 +68,7 @@ function QueryList({
   newFilePath,
   show,
 }: QueryListProps) {
+  const { dispatch: menuDispatch } = useContext(MenuContext);
   const deleteQueryHandler = (query: QueryData) => () => {
     setQueries(deleteQuery(queries, query));
     setComparedQueries(deleteQuery(comparedQueries, query));
@@ -80,12 +82,33 @@ function QueryList({
       // setComparedQueries(setCompare(comparedQueries, query));
     };
 
-  const saveQueryHandler = (query: QueryData, newFilePath: string) => () => {
-    saveQuery(query, newFilePath);
+  const saveQueryHandler = (query: QueryData, filePath: string) => () => {
+    saveQuery(query, filePath);
   };
 
-  const loadQueryHandler = async () => {
-    // annabelle's refactor
+  // const loadQueryHandler = async () => {
+  //   // annabelle's refactor
+  //   const options = {
+  //     title: 'Upload Query',
+  //     defaultPath: path.join(__dirname, '../assets/'),
+  //     buttonLabel: 'Upload',
+  //     filters: [
+  //       {
+  //         name: 'Text Files',
+  //         extensions: ['json', 'docx', 'txt'],
+  //       },
+  //     ],
+  //   };
+
+  //   try {
+  //     const filePath = await ipcRenderer.invoke('showOpenDialog', options);
+  //     setFilePath(filePath);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+
+  const loadQueryHandler = (setFilePath) => {
     const options = {
       title: 'Upload Query',
       defaultPath: path.join(__dirname, '../assets/'),
@@ -97,13 +120,16 @@ function QueryList({
         },
       ],
     };
-
-    try {
-      const filePath = await ipcRenderer.invoke('showOpenDialog', options);
-      setFilePath(filePath);
-    } catch (error) {
-      console.log(error);
-    }
+    const setFilepathCallback = (val) => setFilePath(val);
+    menuDispatch({
+      type: 'ASYNC_TRIGGER',
+      loading: 'LOADING',
+      options: {
+        event: 'showOpenDialog',
+        payload: options,
+        callback: setFilepathCallback,
+      },
+    });
   };
 
   if (!show) return null;
@@ -152,21 +178,40 @@ function QueryList({
 
   // function to store user-selected file path in state
 
-  const designateFile = async function () {
-    // REVIEW: not sure if supposed to move this to it's own ipcMain
+  // const designateFile = async function () {
+  //   // REVIEW: not sure if supposed to move this to it's own ipcMain
+  //   const options = {
+  //     title: 'Choose File Path',
+  //     defaultPath: `${getAppDataPath()}`,
+  //     buttonLabel: 'Select Path',
+  //     filters: [{ name: 'JSON', extensions: ['json'] }],
+  //   };
+
+  //   try {
+  //     const filePath = await ipcRenderer.invoke('showSaveDialog', options);
+  //     setFilePath(filePath);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+
+  const designateFile = (setFilePath) => {
     const options = {
       title: 'Choose File Path',
       defaultPath: `${getAppDataPath()}`,
       buttonLabel: 'Select Path',
       filters: [{ name: 'JSON', extensions: ['json'] }],
     };
-
-    try {
-      const filePath = await ipcRenderer.invoke('showSaveDialog', options);
-      setFilePath(filePath);
-    } catch (error) {
-      console.log(error);
-    }
+    const setFilePathCallback = (val) => setFilePath(val);
+    menuDispatch({
+      type: 'ASYNC_TRIGGER',
+      loading: 'LOADING',
+      options: {
+        event: 'showSaveDialog',
+        payload: options,
+        callback: setFilePathCallback,
+      },
+    });
   };
 
   return (
@@ -179,13 +224,16 @@ function QueryList({
         </Tooltip>
 
         <Tooltip title="Import Query">
-          <IconButton onClick={loadQueryHandler} size="large">
+          <IconButton
+            onClick={() => loadQueryHandler(setFilePath)}
+            size="large"
+          >
             <UploadFileIcon fontSize="large" />
           </IconButton>
         </Tooltip>
 
         <Tooltip title="Designate Save Location">
-          <IconButton onClick={designateFile} size="large">
+          <IconButton onClick={() => designateFile(setFilePath)} size="large">
             <FileCopyIcon fontSize="large" />
           </IconButton>
         </Tooltip>
