@@ -146,7 +146,7 @@ function App() {
     menuDispatch({
       type: 'ASYNC_TRIGGER',
       loading: 'LOADING',
-      payload: {
+      options: {
         event: 'return-db-list',
         callback: dbListFromBackend,
       },

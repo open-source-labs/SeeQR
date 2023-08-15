@@ -40,25 +40,25 @@ function databaseReducer<C extends 'CREATE' | 'ALTER' | 'DELETE'>(
       // invoke event to populate selected table on selected db with dummy data
       // TODO: initiate Loading, move this stuff to a useEffect
 
-      ipcRenderer
-        .invoke(
-          'generate-dummy-data',
-          {
-            dbName: state.selectedDb.name,
-            tableName: state.selectedTable,
-            rows: action.rows,
-          },
-          state.selectedDb.type,
-        )
-        .then(({ newDbList, feedback }) =>
-          // TODO: do something with the feedback
-          ({ ...state, dbList: newDbList }),
-        )
-        .catch(
-          (err) =>
-            // TODO: feedback modal integration
-            state,
-        );
+      // ipcRenderer
+      //   .invoke(
+      //     'generate-dummy-data',
+      //     {
+      //       dbName: state.selectedDb.name,
+      //       tableName: state.selectedTable,
+      //       rows: action.rows,
+      //     },
+      //     state.selectedDb.type,
+      //   )
+      //   .then(({ newDbList, feedback }) =>
+      //     // TODO: do something with the feedback
+      //     ({ ...state, dbList: newDbList }),
+      //   )
+      //   .catch(
+      //     (err) =>
+      //       // TODO: feedback modal integration
+      //       state,
+      //   );
       return state;
     }
     case 'SAVE_CHANGES': {

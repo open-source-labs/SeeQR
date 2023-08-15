@@ -202,6 +202,7 @@ function BasicTabs({ onClose }: BasicTabsProps) {
     // Listen to backend for updates to list of available databases
     const configFromBackend = (config: DocConfigFile) => {
       // Set state based on parsed config.json object received from backend
+      console.log(config);
       setmysql({ ...config.mysql_options });
       setpg({ ...config.pg_options });
       setrds_mysql({ ...config.rds_mysql_options });
@@ -212,7 +213,7 @@ function BasicTabs({ onClose }: BasicTabsProps) {
     menuDispatch({
       type: 'ASYNC_TRIGGER',
       loading: 'LOADING',
-      payload: {
+      options: {
         event: 'get-config',
         callback: configFromBackend,
       },
@@ -265,7 +266,7 @@ function BasicTabs({ onClose }: BasicTabsProps) {
     menuDispatch({
       type: 'ASYNC_TRIGGER',
       loading: 'LOADING',
-      payload: {
+      options: {
         event: 'set-config',
         payload: {
           mysql_options: { ...mysql },
@@ -274,6 +275,7 @@ function BasicTabs({ onClose }: BasicTabsProps) {
           rds_pg_options: { ...rds_pg },
           sqlite_options: { ...sqlite },
         },
+        callback: handleClose,
       },
     });
   };
