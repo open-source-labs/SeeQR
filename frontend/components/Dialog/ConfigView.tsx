@@ -99,26 +99,45 @@ function BasicTabs({ onClose }: BasicTabsProps) {
 
   // function to store user-selected file path in state
   // REVIEW:
-  const designateFile = async function (path, setPath) {
+  // const designateFile = async function (path, setPath) {
+  //   const options = {
+  //     title: 'Select SQLite File',
+  //     defaultPath: '',
+  //     buttonLabel: 'Select File',
+  //     filters: [{ name: 'db', extensions: ['db'] }],
+  //   };
+  //   try {
+  //     const selectedFilePath = await ipcRenderer.invoke(
+  //       'showOpenDialog',
+  //       options,
+  //     );
+  //     setPath({ path: selectedFilePath });
+  //   } catch (err) {
+  //     sendFeedback({
+  //       type: 'error',
+  //       message: 'Error at designate file.',
+  //     });
+  //     console.log(`error at the designate file in ConfigView.tsx ${err}`);
+  //   }
+  // };
+
+  const designateFile = (setPath) => {
     const options = {
       title: 'Select SQLite File',
       defaultPath: '',
       buttonLabel: 'Select File',
       filters: [{ name: 'db', extensions: ['db'] }],
     };
-    try {
-      const selectedFilePath = await ipcRenderer.invoke(
-        'showOpenDialog',
-        options,
-      );
-      setPath({ path: selectedFilePath });
-    } catch (err) {
-      sendFeedback({
-        type: 'error',
-        message: 'Error at designate file.',
-      });
-      console.log(`error at the designate file in ConfigView.tsx ${err}`);
-    }
+    const setPathCallback = (val) => setPath({ path: val });
+    menuDispatch({
+      type: 'ASYNC_TRIGGER',
+      loading: 'LOADING',
+      options: {
+        event: 'showOpenDialog',
+        payload: options,
+        callback: setPathCallback,
+      },
+    });
   };
 
   // Function to make StyledTextFields and store them in inputFieldsToRender state
@@ -130,7 +149,7 @@ function BasicTabs({ onClose }: BasicTabsProps) {
         <StyledButton
           variant="contained"
           color="primary"
-          onClick={() => designateFile(dbTypeFromState, setDbTypeFromState)}
+          onClick={() => designateFile(setDbTypeFromState)}
         >
           Set db file location
         </StyledButton>,
@@ -202,7 +221,6 @@ function BasicTabs({ onClose }: BasicTabsProps) {
     // Listen to backend for updates to list of available databases
     const configFromBackend = (config: DocConfigFile) => {
       // Set state based on parsed config.json object received from backend
-      console.log(config);
       setmysql({ ...config.mysql_options });
       setpg({ ...config.pg_options });
       setrds_mysql({ ...config.rds_mysql_options });
