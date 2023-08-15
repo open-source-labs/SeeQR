@@ -1,8 +1,7 @@
 import { EventEmitter } from 'events';
 import { StyledEngineProvider, Theme, ThemeProvider } from '@mui/material/';
 import CssBaseline from '@mui/material/CssBaseline';
-import { ipcRenderer, IpcRendererEvent } from 'electron';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import GlobalStyle from '../GlobalStyle';
@@ -10,13 +9,11 @@ import GlobalStyle from '../GlobalStyle';
 import { DBType } from '../../backend/BE_types';
 import { createQuery } from '../lib/queries';
 import '../lib/style.css';
-import { once } from '../lib/utils';
 import {
   AppState,
   CreateNewQuery,
   DatabaseInfo,
   DbLists,
-  isDbLists,
   QueryData,
   TableInfo,
 } from '../types';
@@ -44,6 +41,13 @@ import Spinner from './modal/Spinner';
 import ConfigView from './Dialog/ConfigView';
 import CreateDBDialog from './Dialog/CreateDBDialog';
 
+import MenuContext from '../state_management/Contexts/MenuContext';
+import menuReducer, {
+  initialMenuState,
+  submitAsyncToBackend,
+} from '../state_management/Reducers/MenuReducers';
+import invoke from '../lib/electronHelper';
+
 declare module '@mui/material/styles/' {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
   interface DefaultTheme extends Theme {}
@@ -69,10 +73,20 @@ const Main = styled.main<{ $fullwidth: boolean }>`
   margin: 0;
 `;
 
-// emitting with no payload requests backend to send back a db-lists event with list of dbs
-const requestDbListOnce = once(() => ipcRenderer.send('return-db-list'));
-
 function App() {
+  /**
+   * Reducers
+   * useMemo prevents rerenders when state does not change. necessary because of useContext
+   */
+  const [menuState, menuDispatch] = useReducer(menuReducer, initialMenuState);
+  const menuProvider = useMemo(
+    () => ({ state: menuState, dispatch: menuDispatch }),
+    [menuState],
+  );
+
+  // tablesReducer stuff here
+
+  // ---
   const [queries, setQueries] = useState<AppState['queries']>({});
   const [comparedQueries, setComparedQueries] = useState<AppState['queries']>(
     {},
@@ -97,26 +111,47 @@ function App() {
   const [showCreateDialog, setCreateDialog] = useState(false);
   const [showConfigDialog, setConfigDialog] = useState(false);
 
+  /**
+   * New central source of async calls
+   */
+  const asyncCount = useRef(0);
   useEffect(() => {
-    // Listen to backend for updates to list of available databases
-    const dbListFromBackend = (evt: IpcRendererEvent, dbLists: DbLists) => {
-      if (isDbLists(dbLists)) {
-        setDBInfo(dbLists.databaseList);
-        setTables(dbLists.tableList);
-        setPGStatus(dbLists.databaseConnected.PG);
-        setMYSQLStatus(dbLists.databaseConnected.MySQL);
+    const { issued, resolved, asyncList } = menuState.loading;
+    // Check that we are here because a new async was issued
+    if (issued - resolved > asyncCount.current) {
+      /**
+       * FLOW: new async request
+       * - async call submitted by component
+       * - menuReducer adds request to tracked ongoing asyncs
+       * - this useEffect triggers; something in the state contains necessary info to launch invoke
+       *
+       * NOTE: moved this logic to MenuReducers to keep logic localized and utilize
+       *       dependency injection for testing purposes
+       */
+      submitAsyncToBackend(issued, asyncList, invoke, menuDispatch);
+    }
+    // keep track of ongoing asyncs in this useRef, even when arriving here as an async resolves
+    asyncCount.current = issued - resolved;
+  }, [menuState.loading]);
 
-        setSelectedTable(selectedTable || dbTables[0]);
-      }
+  // populate initial dblist
+  useEffect(() => {
+    const dbListFromBackend = (dbLists: DbLists) => {
+      setDBInfo(dbLists.databaseList);
+      setTables(dbLists.tableList);
+      setPGStatus(dbLists.databaseConnected.PG);
+      setMYSQLStatus(dbLists.databaseConnected.MySQL);
+      // setSelectedTable(selectedTable || dbTables[0]);
     };
-    ipcRenderer.on('db-lists', dbListFromBackend); // dummy data error here?
-    requestDbListOnce();
-
-    // return cleanup function
-    return () => {
-      ipcRenderer.removeListener('db-lists', dbListFromBackend);
-    };
-  });
+    menuDispatch({
+      type: 'ASYNC_TRIGGER',
+      loading: 'LOADING',
+      payload: {
+        event: 'return-db-list',
+        callback: dbListFromBackend,
+      },
+    });
+  }, []);
 
   /**
    * Hook to create new Query from data
@@ -176,98 +211,97 @@ function App() {
     // Styled Components must be injected last in order to override Material UI style: https://material-ui.com/guides/interoperability/#controlling-priority-3
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={MuiTheme}>
-        <Spinner />
-        <AppContainer>
-          <CssBaseline />
-          <GlobalStyle />
-          <Sidebar
-            {...{
-              createNewQuery,
-              queries,
-              setQueries,
-              comparedQueries,
-              setComparedQueries,
-              selectedView,
-              setSelectedView,
-              selectedDb,
-              setSelectedDb,
-              workingQuery,
-              setWorkingQuery,
-              setSidebarHidden,
-              sidebarIsHidden,
-              setFilePath,
-              newFilePath,
-              setERView,
-              curDBType,
-              setDBType,
-              DBInfo,
-              showCreateDialog,
-              setCreateDialog,
-              setConfigDialog,
-            }}
-            createNewQuery={createNewQuery}
-          />
-          <Main $fullwidth={sidebarIsHidden}>
-            <CompareView
-              queries={comparedQueries}
-              show={shownView === 'compareView'}
-            />
-            <DbView
-              selectedDb={selectedDb}
-              show={shownView === 'dbView'}
-              setERView={setERView}
-              ERView={ERView}
-              curDBType={curDBType}
-              DBInfo={DBInfo}
-              dbTables={dbTables}
-              selectedTable={selectedTable}
-              setSelectedTable={setSelectedTable}
-            />
-            <QueryView
-              query={workingQuery}
-              setQuery={setWorkingQuery}
-              selectedDb={selectedDb}
-              setSelectedDb={setSelectedDb}
+        <MenuContext.Provider value={menuProvider}>
+          <Spinner />
+          <AppContainer>
+            <CssBaseline />
+            <GlobalStyle />
+            <Sidebar
+              {...{
+                createNewQuery,
+                queries,
+                setQueries,
+                comparedQueries,
+                setComparedQueries,
+                selectedView,
+                setSelectedView,
+                selectedDb,
+                setSelectedDb,
+                workingQuery,
+                setWorkingQuery,
+                setSidebarHidden,
+                sidebarIsHidden,
+                setFilePath,
+                newFilePath,
+                setERView,
+                curDBType,
+                setDBType,
+                DBInfo,
+                showCreateDialog,
+                setCreateDialog,
+                setConfigDialog,
+              }}
               createNewQuery={createNewQuery}
-              show={shownView === 'queryView'}
-              queries={queries}
-              curDBType={curDBType}
-              setDBType={setDBType}
-              DBInfo={DBInfo}
             />
-            <QuickStartView show={shownView === 'quickStartView'} />
-
-            <ThreeDView
-              show={shownView === 'threeDView'}
-              selectedDb={selectedDb}
-              dbTables={dbTables}
-              dbType={curDBType}
-            />
-
-            <NewSchemaView
-              query={workingQuery}
-              setQuery={setWorkingQuery}
-              selectedDb={selectedDb}
-              setSelectedDb={setSelectedDb}
-              show={shownView === 'newSchemaView'}
-              curDBType={curDBType}
-              dbTables={dbTables}
-              selectedTable={selectedTable}
-              setSelectedTable={setSelectedTable}
-            />
-
-            <ConfigView
-              show={showConfigDialog}
-              onClose={() => setConfigDialog(false)}
-            />
-            <CreateDBDialog
-              show={showCreateDialog}
-              DBInfo={DBInfo}
-              onClose={() => setCreateDialog(false)}
-            />
-          </Main>
-          <FeedbackModal />
-        </AppContainer>
+            <Main $fullwidth={sidebarIsHidden}>
+              <CompareView
+                queries={comparedQueries}
+                show={shownView === 'compareView'}
+              />
+              <DbView
+                selectedDb={selectedDb}
+                show={shownView === 'dbView'}
+                setERView={setERView}
+                ERView={ERView}
+                curDBType={curDBType}
+                DBInfo={DBInfo}
+                dbTables={dbTables}
+                selectedTable={selectedTable}
+                setSelectedTable={setSelectedTable}
+              />
+              <QueryView
+                query={workingQuery}
+                setQuery={setWorkingQuery}
+                selectedDb={selectedDb}
+                setSelectedDb={setSelectedDb}
+                createNewQuery={createNewQuery}
+                show={shownView === 'queryView'}
+                queries={queries}
+                curDBType={curDBType}
+                setDBType={setDBType}
+                DBInfo={DBInfo}
+              />
+              <QuickStartView show={shownView === 'quickStartView'} />
+              <ThreeDView
+                show={shownView === 'threeDView'}
+                selectedDb={selectedDb}
+                dbTables={dbTables}
+                dbType={curDBType}
+              />
+              <NewSchemaView
+                query={workingQuery}
+                setQuery={setWorkingQuery}
+                selectedDb={selectedDb}
+                setSelectedDb={setSelectedDb}
+                show={shownView === 'newSchemaView'}
+                curDBType={curDBType}
+                dbTables={dbTables}
+                selectedTable={selectedTable}
+                setSelectedTable={setSelectedTable}
+              />
+              <ConfigView
+                show={showConfigDialog}
+                onClose={() => setConfigDialog(false)}
+              />
+              <CreateDBDialog
+                show={showCreateDialog}
+                DBInfo={DBInfo}
+                onClose={() => setCreateDialog(false)}
+              />
+            </Main>
+            <FeedbackModal />
+          </AppContainer>
+        </MenuContext.Provider>
       </ThemeProvider>
     </StyledEngineProvider>
   );

@@ -31,7 +31,7 @@
     "sourceType": "module",
     "project": "./tsconfig.json"
   },
-  "plugins": ["react", "react-hooks", "@typescript-eslint"],
+  "plugins": ["react", "react-hooks", "@typescript-eslint", "import"],
   "rules": {
     "react/jsx-filename-extension": [1, { "extensions": [".jsx", ".tsx"] }],
 
@@ -76,6 +76,14 @@
   "settings": {
     "react": {
       "version": "detect"
+    },
+    "import/parsers": {
+      "@typescript-eslint/parser": [".ts", ".tsx"]
+    },
+    "import/resolver": {
+      "typescript": {
+        "alwaysTryTypes": true
+      }
     }
   },
   "root": true

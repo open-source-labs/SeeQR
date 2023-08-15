@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { ipcRenderer, IpcRendererEvent } from 'electron';
+import React, { useState, useEffect, useContext } from 'react';
+import { ipcRenderer } from 'electron';
 import {
   Box,
   Tab,
@@ -17,6 +17,7 @@ import {
 } from '../../style-variables';
 import '../../lib/style.css';
 import { DocConfigFile } from '../../../backend/BE_types';
+import MenuContext from '../../state_management/Contexts/MenuContext';
 
 /*
 junaid
@@ -68,6 +69,9 @@ function a11yProps(index: number) {
 }
 
 function BasicTabs({ onClose }: BasicTabsProps) {
+  // context for async calls
+  const { dispatch: menuDispatch } = useContext(MenuContext);
+
   // useState hooks for database connection information
   const [mysql, setmysql] = useState({});
   const [pg, setpg] = useState({});
@@ -196,10 +200,7 @@ function BasicTabs({ onClose }: BasicTabsProps) {
 
   useEffect(() => {
     // Listen to backend for updates to list of available databases
-    const configFromBackend = (
-      evt: IpcRendererEvent,
-      config: DocConfigFile,
-    ) => {
+    const configFromBackend = (config: DocConfigFile) => {
       // Set state based on parsed config.json object received from backend
       setmysql({ ...config.mysql_options });
       setpg({ ...config.pg_options });
@@ -207,13 +208,16 @@ function BasicTabs({ onClose }: BasicTabsProps) {
       setrds_pg({ ...config.rds_pg_options });
       setSqlite({ ...config.sqlite_options }); // added sqlite
     };
-    ipcRenderer.on('get-config', configFromBackend);
-    ipcRenderer.invoke('get-config');
-    // return cleanup function
-    return () => {
-      ipcRenderer.removeListener('get-config', configFromBackend);
-    };
-  }, []);
+
+    menuDispatch({
+      type: 'ASYNC_TRIGGER',
+      loading: 'LOADING',
+      payload: {
+        event: 'get-config',
+        callback: configFromBackend,
+      },
+    });
+  }, [menuDispatch]);
 
   // Invoke functions to generate input StyledTextFields components -- passing in state, setstate hook, and database name string.
   // have it subscribed to changes in db connection info or show password button. Separate hooks to not rerender all fields each time
@@ -239,24 +243,41 @@ function BasicTabs({ onClose }: BasicTabsProps) {
 
   const handleSubmit = () => {
     // Pass database connection values from state to backend
-    ipcRenderer
-      .invoke('set-config', {
-        mysql_options: { ...mysql },
-        pg_options: { ...pg },
-        rds_mysql_options: { ...rds_mysql },
-        rds_pg_options: { ...rds_pg },
-        sqlite_options: { ...sqlite }, // added sqlite
-      })
-      .then(() => {
-        handleClose();
-      })
-      .catch((err) => {
-        sendFeedback({
-          type: 'error',
-          message: err ?? 'Failed to save config.',
-        });
-      });
+    // OLD CODE
+    // ipcRenderer
+    //   .invoke('set-config', {
+    //     mysql_options: { ...mysql },
+    //     pg_options: { ...pg },
+    //     rds_mysql_options: { ...rds_mysql },
+    //     rds_pg_options: { ...rds_pg },
+    //     sqlite_options: { ...sqlite }, // added sqlite
+    //   })
+    //   .then(() => {
+    //     handleClose();
+    //   })
+    //   .catch((err) => {
+    //     sendFeedback({
+    //       type: 'error',
+    //       message: err ?? 'Failed to save config.',
+    //     });
+    //   });
+
+    menuDispatch({
+      type: 'ASYNC_TRIGGER',
+      loading: 'LOADING',
+      payload: {
+        event: 'set-config',
+        payload: {
+          mysql_options: { ...mysql },
+          pg_options: { ...pg },
+          rds_mysql_options: { ...rds_mysql },
+          rds_pg_options: { ...rds_pg },
+          sqlite_options: { ...sqlite },
+        },
+      },
+    });
   };
+
   // Function to handle onChange -- when tab panels change
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     // On panel change reset all passwords to hidden

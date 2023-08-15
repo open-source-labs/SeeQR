@@ -1,10 +1,10 @@
 import fs from 'fs';
-import os from 'os';
 import path from 'path';
 
 // Types
-import { DBList, DBType, LogType } from '../../../BE_types';
+import { DBList, LogType } from '../../../BE_types';
 import { Feedback } from '../../../../shared/types/utilTypes';
+import { DBType } from '../../../../shared/types/dbTypes';
 
 // Helpers
 import logger from '../../utils/logging/masterlog';
@@ -15,13 +15,13 @@ import helperFunctions from '../../utils/helperFunctions';
 import connectionModel from '../../models/connectionModel';
 import databaseModel from '../../models/databaseModel';
 import queryModel from '../../models/queryModel';
-// import db from '../../../models';
+import dbState from '../../models/stateModel';
 
 const {
   createDBFunc,
   dropDBFunc,
   runSQLFunc,
-  runTARFunc,
+  // runTARFunc,
   runFullCopyFunc,
   runHollowCopyFunc,
   promExecute,
@@ -57,62 +57,42 @@ interface ExportPayload {
  * 2. get listObj from databaseModel.getLists
  */
 
-export function returnDbList(event) {
+export async function returnDbList(event) {
   logger(
     "Received 'return-db-list' (Note: No Async being sent here)",
     LogType.RECEIVE,
   );
   console.log('Setting database connections...');
-  connectionModel
-    .setBaseConnections()
-    .then(() => {
-      console.log('Database connections set. Getting dblists...');
-      databaseModel
-        .getLists()
-        .then((data: DBList) => {
-          console.log(
-            `Dblists acquired: ${JSON.stringify(data)}\nSending to frontend...`,
-          );
-          event.sender.send('db-lists', data);
-          logger("Sent 'db-lists' from 'return-db-list'", LogType.SEND);
-        })
-        .catch((err) => {
-          logger(
-            `Error trying to get lists on 'return-db-list': ${err.message}`,
-            LogType.ERROR,
-          );
-          const feedback: Feedback = {
-            type: 'error',
-            message: JSON.stringify(err),
-          };
-          event.sender.send('feedback', feedback);
-          logger(
-            "Sent 'feedback' from 'return-db-list' (Note: This is an ERROR!)",
-            LogType.SEND,
-          );
-        });
-    })
-    .catch((err) => {
-      logger(
-        `Error trying to set base connections on 'return-db-list': ${err.message}`,
-        LogType.ERROR,
-      );
-      const feedback: Feedback = {
-        type: 'error',
-        message: err,
-      };
-      event.sender.send('feedback', feedback);
-      logger(
-        "Sent 'feedback' from 'return-db-list' (Note: This is an ERROR!)",
-        LogType.SEND,
-      );
-    });
+  try {
+    await connectionModel.setBaseConnections();
+    console.log('Database connections set. Getting dblists...');
+    const data = await databaseModel.getLists();
+    console.log(
+      `Dblists acquired: ${JSON.stringify(data)}\nSending to frontend...`,
+    );
+    logger("Sent 'db-lists' from 'return-db-list'", LogType.SEND);
+    return data;
+  } catch (err: any) {
+    logger(
+      `Error trying to set base connections on 'return-db-list': ${err.message}`,
+      LogType.ERROR,
+    );
+    const feedback: Feedback = {
+      type: 'error',
+      message: err,
+    };
+    event.sender.send('feedback', feedback);
+    logger(
+      "Sent 'feedback' from 'return-db-list' (Note: This is an ERROR!)",
+      LogType.SEND,
+    );
+  }
 }
 
 /**
  * EVENT: 'select-db'
  *
- * DEFINITION: connect to selected db, then get object containing a list of all databases abd tables for the selected database, and sends to frontend. This is for ERD table view? check with Peter
+ * DEFINITION: connect to selected db on the sidebar, then get object containing a list of all databases abd tables for the selected database, and sends to frontend.
  *
  * Process involes the following steps:
  * 1. connectionModel.connectToDB
@@ -132,7 +112,13 @@ export async function selectDb(
     if (dbName === '') {
       dbName = 'postgres';
     }
+
     await connectionModel.connectToDB(dbName, dbType);
+
+    // assign currentERD to dbType (string) of selected ERD
+    dbState.currentERD = dbType;
+    // assign dbType to dbType (string) of selected ERD
+    dbState.currentDb = dbName;
 
     // send updated db info
     const dbsAndTables: DBList = await databaseModel.getLists(dbName, dbType);
