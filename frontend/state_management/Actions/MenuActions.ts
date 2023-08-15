@@ -1,20 +1,29 @@
-export type Views =
-  | 'compareView'
-  | 'dbView'
-  | 'queryView'
-  | 'quickStartView'
-  | 'newSchemaView'
-  | 'threeDView';
+import { Dialogs, ViewName } from '../../../shared/types/frontendTypes';
 
-// Edited by Derek. Added fillers to remove error codes for these types.
-export type Dialogs = string | null; // REVIEW: filler
-export type Filter = string | null; // REVIEW: filler
+export type async = {
+  callback?: any;
+  args?: any[];
+  event: string;
+  payload?: any;
+};
 
-export type MenuActions =
+type MenuActions =
   | { type: 'TOGGLE_DIALOG'; dialog: Dialogs }
-  | { type: 'CHANGE_VIEW'; newView: Views }
-  | { type: 'TOGGLE_SIDEBAR' }
-  | { type: 'SELECT_DATABASE'; dbName: string }
-  | { type: 'SELECT_QUERY' }
-  | { type: 'CREATE_DATABASE'; dbName: string }
-  | { type: 'FILTER_DATABASE'; filter: Filter };
+  | { type: 'CHANGE_VIEW'; newView: ViewName }
+  | {
+      type: 'ASYNC_TRIGGER';
+      loading: 'LOADING';
+      payload: async;
+    }
+  | {
+      type: 'ASYNC_TRIGGER';
+      loading: 'IDLE';
+      payload: { key: number };
+    }
+  | { type: 'CHANGE_SAVE_LOCATION' }
+  | {
+      type: 'TOGGLE_SIDEBAR';
+      sidebarState: 'CLOSED' | 'QUERIES' | 'DATABASES';
+    };
+
+export default MenuActions;

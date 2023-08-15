@@ -1,4 +1,4 @@
-Model Modules:
+Models write to databases and perform business logics. I want to point out "dbStateModel" is the special model here, becuse it encompasses the state of the backend, of which saves which users are currently logged in and which database is the "active one" for ERDtable.
 
 configModel:
 

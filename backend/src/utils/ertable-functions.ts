@@ -50,21 +50,7 @@ function backendObjToQuery(backendObj: BackendObjType, dbType: DBType): string {
 
       if (dbType === DBType.SQLite) {
         console.log('TEST');
-        // for (let j = 0; j < alterTablesArray.length; j += 1) {
-        //   console.log(alterTablesArray[j])
-        //   if (addTableArray[i].table_name === alterTablesArray[j].table_name) {
-        //     if (alterTablesArray[j].alterColumns.length) {
-        //       for (let k = 0; k < alterTablesArray[j].alterColumns.length; k += 1) {
-        //         if (alterTablesArray[j].alterColumns[k].column_name === 'NewColumn1') {
-        //           firstAddingMySQLColumnName = alterTablesArray[j].alterColumns[k].new_column_name;
-        //           outputArray.push(
-        //             `CREATE TABLE ${currTable.table_name}(${alterTablesArray[j].alterColumns[k].new_column_name} ${alterTablesArray[j].alterColumns[k].data_type}(${alterTablesArray[j].alterColumns[k].character_maximum_length}));`
-        //           );
-        //         };
-        //       }
-        //     }
-        //   }
-        // }
+
         outputArray.push(
           `CREATE TABLE ${currTable.table_name}(id INTEGER PRIMARY KEY AUTOINCREMENT); `,
         );

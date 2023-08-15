@@ -33,7 +33,7 @@ ipcMain.handle('set-config', setConfig);
 ipcMain.handle('get-config', getConfig);
 
 // // db Operations
-ipcMain.on('return-db-list', returnDbList);
+ipcMain.handle('return-db-list', returnDbList);
 ipcMain.handle('select-db', selectDb);
 ipcMain.handle('drop-db', dropDb);
 ipcMain.handle('duplicate-db', duplicateDb);
@@ -51,7 +51,7 @@ ipcMain.handle('ertable-schemaupdate', erTableSchemaUpdate);
 ipcMain.handle('run-query', runQuery);
 
 // // // misc (other events bundled together)
-ipcMain.handle('generate-dummy-date', dummyData);
+ipcMain.handle('generate-dummy-data', dummyData);
 ipcMain.handle('showOpenDialog', showOpenDialog);
 ipcMain.handle('showSaveDialog', showSaveDialog);
 ipcMain.handle('feedback', feedback);
