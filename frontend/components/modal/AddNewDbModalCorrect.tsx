@@ -1,9 +1,7 @@
 import path from 'path';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Dialog, DialogTitle, Tooltip } from '@mui/material/';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import { ipcRenderer, dialog } from 'electron';
-import { sendFeedback } from '../../lib/utils';
 import {
   ButtonContainer,
   TextFieldContainer,
@@ -15,11 +13,7 @@ import {
   StyledNativeOption,
 } from '../../style-variables';
 import { DBType } from '../../../backend/BE_types';
-
-interface ImportPayload {
-  newDbName: string;
-  filePath: string;
-}
+import MenuContext from '../../state_management/Contexts/MenuContext';
 
 type AddNewDbModalProps = {
   open: boolean;
@@ -34,6 +28,8 @@ function AddNewDbModal({
   dbNames,
   curDBType,
 }: AddNewDbModalProps) {
+  const { dispatch: menuDispatch } = useContext(MenuContext);
+
   const [newDbName, setNewDbName] = useState('');
   const [isError, setIsError] = useState(false);
   const [isEmpty, setIsEmpty] = useState(true);
@@ -80,10 +76,41 @@ function AddNewDbModal({
   // Opens modal to select file and sends the selected file to backend
   // TODO: fix the any type.
   // REVIEW:
-  const handleDBimport = async () => {
+  // const handleDBimport = async () => {
+  //   const dbt: DBType = (document.getElementById('dbTypeDropdown') as any)
+  //     .value;
+
+  //   const options = {
+  //     title: 'Import DB',
+  //     defaultPath: path.join(__dirname, '../assets/'),
+  //     buttonLabel: 'Import',
+  //     filters: [
+  //       {
+  //         name: 'Custom File Type',
+  //         extensions: ['sql', 'tar'],
+  //       },
+  //     ],
+  //   };
+
+  //   try {
+  //     const filePath = await ipcRenderer.invoke('showOpenDialog', options);
+
+  //     const payload: ImportPayload = {
+  //       newDbName,
+  //       filePath,
+  //     };
+
+  //     const importDB = await ipcRenderer.invoke('import-db', payload, dbt);
+  //   } catch (error) {
+  //     console.log('THIS IS A FRONT END ERROR', error);
+  //   } finally {
+  //     handleClose();
+  //   }
+  // };
+
+  const handleDBimport = (dbName: string, closeModal: () => void) => {
     const dbt: DBType = (document.getElementById('dbTypeDropdown') as any)
       .value;
-
     const options = {
       title: 'Import DB',
       defaultPath: path.join(__dirname, '../assets/'),
@@ -95,21 +122,28 @@ function AddNewDbModal({
         },
       ],
     };
-
-    try {
-      const filePath = await ipcRenderer.invoke('showOpenDialog', options);
-
-      const payload: ImportPayload = {
-        newDbName,
-        filePath,
-      };
-
-      const importDB = await ipcRenderer.invoke('import-db', payload, dbt);
-    } catch (error) {
-      console.log('THIS IS A FRONT END ERROR', error);
-    } finally {
-      handleClose();
-    }
+    // this runs after opendialog resolves, use as callback
+    const importdb = (filePath: string) => {
+      menuDispatch({
+        type: 'ASYNC_TRIGGER',
+        loading: 'LOADING',
+        options: {
+          event: 'import-db',
+          payload: { newDbName: dbName, filePath, dbType: dbt }, // see importDb for type reqs
+          callback: closeModal,
+        },
+      });
+    };
+    // initial async call
+    menuDispatch({
+      type: 'ASYNC_TRIGGER',
+      loading: 'LOADING',
+      options: {
+        event: 'showOpenDialog',
+        payload: options,
+        callback: importdb,
+      },
+    });
   };
 
   return (
@@ -171,7 +205,11 @@ function AddNewDbModal({
             variant="contained"
             color="primary"
             startIcon={<CloudUploadIcon />}
-            onClick={isEmpty || isError ? () => {} : handleDBimport}
+            onClick={
+              isEmpty || isError
+                ? () => {}
+                : () => handleDBimport(newDbName, handleClose)
+            }
           >
             Import
           </StyledButton>
