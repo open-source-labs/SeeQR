@@ -1,7 +1,6 @@
 import ms from 'ms';
 
 import { ipcRenderer } from 'electron';
-import { render } from 'enzyme';
 import type { Feedback } from '../types';
 
 /**
