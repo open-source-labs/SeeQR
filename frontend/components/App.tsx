@@ -157,14 +157,9 @@ function App() {
    * Hook to create new Query from data
    */
   const createNewQuery: CreateNewQuery = (query: QueryData) => {
-    console.log('IN CREATE NEW QUERY!');
-    console.log('THIS IS THE QUERY IN CREATE NEW', query);
-    console.log('THIS IS LABLE', query.label);
-
     try {
       // Only save query to saved queries if it contains all minimum information
       if (query.label && query.db && query.sqlString && query.group) {
-        console.log('TRUEEEEEE');
         const newQueries = createQuery(queries, query);
         setQueries(newQueries);
       }
@@ -218,7 +213,6 @@ function App() {
             <GlobalStyle />
             <Sidebar
               {...{
-                createNewQuery,
                 queries,
                 setQueries,
                 comparedQueries,

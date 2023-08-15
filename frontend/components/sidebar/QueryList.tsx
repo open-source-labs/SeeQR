@@ -103,15 +103,14 @@ function QueryList(props) {
     };
 
     try {
+      // grab the file path of where the query is saved
       const newFilePath = await ipcRenderer.invoke('showOpenDialog', options);
-
-      console.log('THIS IS THE NEW FILE PATH', newFilePath);
-
+      // grab the file data from the back end
       const data = await ipcRenderer.invoke('read-query', newFilePath);
       const newData = JSON.parse(data);
-      console.log('THIS IS NEW DATA', newData);
-      console.log('THIS IS CREATE NEW QUERY', createNewQuery);
-      createNewQuery(newData);
+      const query = Object.values(newData);
+      // create a new query
+      createNewQuery(query[0]);
     } catch (error) {
       console.log(error);
     }

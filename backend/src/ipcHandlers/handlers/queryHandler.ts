@@ -269,10 +269,11 @@ export async function runQuery(
   }
 }
 
+// Reads the query JSON file and send it to the front end
 export function readQuery(event, filepath) {
   try {
     const data = fs.readFileSync(filepath, 'utf8');
-    // console.log(data);
+
     return data;
   } catch (err) {
     console.log('this is error in read-query', err);
