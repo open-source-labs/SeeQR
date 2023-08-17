@@ -1,7 +1,13 @@
 import fs from 'fs';
 import { Button } from '@mui/material';
 import { ipcRenderer } from 'electron';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useReducer,
+} from 'react';
 import ReactFlow, {
   applyEdgeChanges,
   applyNodeChanges,
@@ -25,14 +31,18 @@ import {
 } from '../../../types';
 import nodeTypes from './NodeTypes';
 import {
+  ErdTables,
+  TableType,
   ErdUpdatesType,
+  TableOperationAction,
   OperationType,
+  ColumnOperationAction,
 } from '../../../../shared/types/erTypes';
 
 import * as colors from '../../../style-variables';
 
 /**
- * COSMETIC STUFF
+ * FRONTEND COSMETIC STUFF
  */
 
 // defines the styling for the ERDiagram window
@@ -76,7 +86,67 @@ const StyledViewButton = styled(Button)`
   padding: 0.45em;
 `;
 
-function ERDisplayWindow({ tables, selectedDb, curDBType }: ERTablingProps) {
+/**
+ * USEREDUCER
+ * */
+
+function tableReducer(state, action: TableOperationAction): ErdUpdatesType {
+  let erdUpdatesArray: ErdUpdatesType = [...state];
+
+  let erdUpdatedObject: OperationType | undefined;
+
+  switch (action) {
+    case TableOperationAction.add:
+      erdUpdatedObject.action = TableOperationAction.add;
+      break;
+
+    case TableOperationAction.drop:
+      erdUpdatedObject.action = TableOperationAction.drop;
+      break;
+
+    case TableOperationAction.alter:
+      erdUpdatedObject.action = TableOperationAction.alter;
+      break;
+
+    case TableOperationAction.column: {
+      erdUpdatedObject.action = TableOperationAction.alter;
+      break;
+    }
+  }
+
+  erdUpdatesArray.push(erdUpdatedObject);
+  return erdUpdatesArray;
+}
+
+function columnReducer(
+  state,
+  erdUpdatedObject: OperationType,
+  action: ColumnOperationAction,
+) {
+  switch (action) {
+    case ColumnOperationAction.add_column:
+      erdUpdatedObject.columnOperations.columnAction =
+        ColumnOperationAction.add_column;
+      break;
+
+    case ColumnOperationAction.drop_column:
+      erdUpdatedObject.columnOperations = ColumnOperationAction.drop_column;
+      break;
+
+    case ColumnOperationAction.rename_column:
+      erdUpdatedObject.columnOperations = ColumnOperationAction.rename_column;
+      break;
+
+    case ColumnOperationAction.alter_column:
+      erdUpdatedObject.columnOperations = ColumnOperationAction.alter_column;
+      break;
+  }
+}
+
+/**
+ * MAIN FUNCTION
+ * */
+function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
   const [schemaState, setSchemaState] = useState<SchemaStateObjType>({
     database: 'initial',
     tableList: [],
@@ -103,9 +173,12 @@ function ERDisplayWindow({ tables, selectedDb, curDBType }: ERTablingProps) {
     updates,
   });
 
-  const erdUpdateArray: ErdUpdatesType = [];
+  // NEW updates array
+  const erdUpdatesArray: ErdUpdatesType = [];
 
-  // whenever the selectedDb changes, reassign the backendObj to contain this selectedDb ***TG: WE NO LONGER NEED THIS***
+  //define useReducer for all actions that can trigger from table
+
+  // whenever the selectedDb changes, reassign the backendObj to contain this selectedDb
   useEffect(() => {
     backendObj.current.database = selectedDb;
     console.log('backendObj: ', backendObj);
@@ -197,8 +270,6 @@ function ERDisplayWindow({ tables, selectedDb, curDBType }: ERTablingProps) {
     //       },
     //     );
     const location: string = await ipcRenderer.invoke('get-path', 'temp');
-
-    // lets put this in the backend
     const filePath = location.concat('/UserTableLayouts.json');
 
     fs.readFile(filePath, 'utf-8', (err, data) => {
@@ -232,7 +303,6 @@ function ERDisplayWindow({ tables, selectedDb, curDBType }: ERTablingProps) {
       }
     });
   };
-
   function handleClickSave(): void {
     // This function sends a message to the back end with
     // the data in backendObj.current
@@ -321,4 +391,4 @@ function ERDisplayWindow({ tables, selectedDb, curDBType }: ERTablingProps) {
   );
 }
 
-export default ERDisplayWindow;
+export default ERTabling;
