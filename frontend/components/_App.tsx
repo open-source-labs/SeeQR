@@ -100,7 +100,7 @@ function App() {
     initialViewState,
   );
 
-  const ViewContext = createContext(viewState, viewDispatch);
+  const ViewContext = createContext(viewState);
 
   const [selectedDb, setSelectedDb] = useState<AppState['selectedDb']>('');
   // const [sidebarIsHidden, setSidebarHidden] = useState(false);
