@@ -2,7 +2,7 @@ import { EventEmitter } from 'events';
 import { StyledEngineProvider, Theme, ThemeProvider } from '@mui/material/';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ipcRenderer, IpcRendererEvent } from 'electron';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useReducer, createContext } from 'react';
 import styled from 'styled-components';
 
 import GlobalStyle from '../GlobalStyle';
@@ -44,6 +44,11 @@ import Spinner from './modal/Spinner';
 import ConfigView from './Dialog/ConfigView';
 import CreateDBDialog from './Dialog/CreateDBDialog';
 
+import {
+  viewStateReducer,
+  ViewState,
+} from '../state_management/Reducers/AppViewReducer';
+
 declare module '@mui/material/styles/' {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
   interface DefaultTheme extends Theme {}
@@ -78,11 +83,27 @@ function App() {
     {},
   );
   const [workingQuery, setWorkingQuery] = useState<AppState['workingQuery']>();
-  const [selectedView, setSelectedView] =
-    useState<AppState['selectedView']>('dbView');
+  // const [selectedView, setSelectedView] =
+  //   useState<AppState['selectedView']>('dbView');
+
+  const initialViewState: ViewState = {
+    selectedView: 'dbView',
+    sideBarIsHidden: false,
+    showConfigDialog: false,
+    showCreateDialog: false,
+    PG_isConnected: false,
+    MYSQL_isConnected: false,
+  };
+
+  const [viewState, viewDispatch] = useReducer(
+    viewStateReducer,
+    initialViewState,
+  );
+
+  const ViewContext = createContext(viewState, viewDispatch);
 
   const [selectedDb, setSelectedDb] = useState<AppState['selectedDb']>('');
-  const [sidebarIsHidden, setSidebarHidden] = useState(false);
+  // const [sidebarIsHidden, setSidebarHidden] = useState(false);
   const [newFilePath, setFilePath] = useState<AppState['newFilePath']>('');
   const [ERView, setERView] = useState(true);
 
@@ -92,10 +113,10 @@ function App() {
   const [dbTables, setTables] = useState<TableInfo[]>([]);
   const [selectedTable, setSelectedTable] = useState<TableInfo | undefined>();
 
-  const [PG_isConnected, setPGStatus] = useState(false);
-  const [MYSQL_isConnected, setMYSQLStatus] = useState(false);
-  const [showCreateDialog, setCreateDialog] = useState(false);
-  const [showConfigDialog, setConfigDialog] = useState(false);
+  // const [PG_isConnected, setPGStatus] = useState(false);
+  // const [MYSQL_isConnected, setMYSQLStatus] = useState(false);
+  // const [showCreateDialog, setCreateDialog] = useState(false);
+  // const [showConfigDialog, setConfigDialog] = useState(false);
 
   useEffect(() => {
     // Listen to backend for updates to list of available databases
