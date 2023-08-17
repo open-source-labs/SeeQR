@@ -5,6 +5,16 @@ import { PoolOptions } from 'mysql2';
 import { PoolConfig } from 'pg';
 import { UpdatesObjType } from '../../frontend/types';
 
+export enum DBType {
+  Postgres = 'pg',
+  MySQL = 'mysql',
+  RDSPostgres = 'rds-pg',
+  RDSMySQL = 'rds-mysql',
+  CloudDB = 'cloud-database', // added for cloud dbs
+  SQLite = 'sqlite',
+  directPGURI = 'directPGURI',
+}
+
 export interface ColumnObj {
   column_name: string;
   data_type: string;
@@ -45,16 +55,6 @@ export type BackendObjType = {
   database: string;
   updates: UpdatesObjType;
 };
-
-export enum DBType {
-  Postgres = 'pg',
-  MySQL = 'mysql',
-  RDSPostgres = 'rds-pg',
-  RDSMySQL = 'rds-mysql',
-  CloudDB = 'cloud-database', // added for cloud dbs
-  SQLite = 'sqlite',
-  directPGURI = 'directPGURI',
-}
 
 export enum LogType {
   SUCCESS = 'SUCCESS',
@@ -112,17 +112,6 @@ export interface MysqlQueryResolve {}
 export interface DBFunctions extends DocConfigFile {
   pg_uri: string;
   dbsInputted: dbsInputted;
-
-  // setBaseConnections: () => Promise<combined>;
-  // query: (text: string, params: (string | number)[], dbType: DBType) => any;
-  // connectToDB: (db: string, dbType?: DBType) => Promise<void>;
-  // disconnectToDrop: (dbType: DBType) => Promise<void>;
-  // getLists: (dbName?: string, dbType?: DBType) => Promise<DBList>;
-  // getTableInfo: (tableName: string, dbType: DBType) => Promise<ColumnObj[]>;
-  // getDBNames: (dbType: DBType) => Promise<dbDetails[]>;
-  // getColumnObjects: (tableName: string, dbType: DBType) => Promise<ColumnObj[]>;
-  // getDBLists: (dbType: DBType, dbName: string) => Promise<TableDetails[]>;
-  // sampler: (queryString: string) => Promise<number>;
 }
 
 export interface QueryPayload {
