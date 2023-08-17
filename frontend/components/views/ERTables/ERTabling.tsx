@@ -24,6 +24,7 @@ import {
   UpdatesObjType,
 } from '../../../types';
 import nodeTypes from './NodeTypes';
+import { ErdUpdatesType, OperationType } from '@mytypes/erTypes';
 
 import * as colors from '../../../style-variables';
 
@@ -95,13 +96,9 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
     updates,
   });
 
-  // No idea why this is here. It doesn't seem to be used anywhere
-  // const backendColumnObj = useRef({
-  //   database: schemaState.database,
-  //   updates,
-  // });
+  const erdUpdateArray: ErdUpdatesType = [];
 
-  // whenever the selectedDb changes, reassign the backendObj to contain this selectedDb
+  // whenever the selectedDb changes, reassign the backendObj to contain this selectedDb ***TG: WE NO LONGER NEED THIS***
   useEffect(() => {
     backendObj.current.database = selectedDb;
     console.log('backendObj: ', backendObj);
@@ -228,6 +225,7 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
       }
     });
   };
+
   function handleClickSave(): void {
     // This function sends a message to the back end with
     // the data in backendObj.current
