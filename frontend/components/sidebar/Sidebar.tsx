@@ -83,29 +83,33 @@ const HideSidebarBtnContainer = styled.div`
   align-self: flex-end;
 `;
 
-function Sidebar({
-  setQueries,
-  comparedQueries,
-  setComparedQueries,
-  selectedView,
-  setSelectedView,
-  selectedDb,
-  setSelectedDb,
-  queries,
-  workingQuery,
-  setWorkingQuery,
-  setSidebarHidden,
-  sidebarIsHidden,
-  setFilePath,
-  newFilePath,
-  setERView,
-  curDBType,
-  setDBType,
-  DBInfo,
-  showCreateDialog,
-  setCreateDialog,
-  setConfigDialog,
-}: AppState) {
+function Sidebar(props) {
+  const {
+    setQueries,
+    comparedQueries,
+    setComparedQueries,
+    selectedView,
+    setSelectedView,
+    selectedDb,
+    setSelectedDb,
+    queries,
+    workingQuery,
+    setWorkingQuery,
+    setSidebarHidden,
+    sidebarIsHidden,
+    setFilePath,
+    newFilePath,
+    setERView,
+    curDBType,
+    setDBType,
+    DBInfo,
+    showCreateDialog,
+    setCreateDialog,
+    setConfigDialog,
+  }: AppState = props;
+
+  const { createNewQuery } = props;
+
   const toggleOpen = () => setSidebarHidden(!sidebarIsHidden);
   /**
    * Show empty query view for user to create new query.
@@ -148,6 +152,7 @@ function Sidebar({
           selectedView={selectedView}
         />
         <QueryList
+          createNewQuery={createNewQuery}
           setComparedQueries={setComparedQueries}
           comparedQueries={comparedQueries}
           setQueries={setQueries}

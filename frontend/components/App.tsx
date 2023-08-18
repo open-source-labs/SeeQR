@@ -157,13 +157,17 @@ function App() {
    * Hook to create new Query from data
    */
   const createNewQuery: CreateNewQuery = (query: QueryData) => {
-    // Only save query to saved queries if it contains all minimum information
-    if (query.label && query.db && query.sqlString && query.group) {
-      const newQueries = createQuery(queries, query);
-      setQueries(newQueries);
+    try {
+      // Only save query to saved queries if it contains all minimum information
+      if (query.label && query.db && query.sqlString && query.group) {
+        const newQueries = createQuery(queries, query);
+        setQueries(newQueries);
+      }
+      // we must set working query to newly created query otherwise query view won't update
+      setWorkingQuery(query);
+    } catch (err) {
+      console.log(err);
     }
-    // we must set working query to newly created query otherwise query view won't update
-    setWorkingQuery(query);
   };
 
   // determine which view should be visible depending on selected view and
@@ -231,6 +235,7 @@ function App() {
                 setCreateDialog,
                 setConfigDialog,
               }}
+              createNewQuery={createNewQuery}
             />
             <Main $fullwidth={sidebarIsHidden}>
               <CompareView
