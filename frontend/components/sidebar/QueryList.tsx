@@ -153,7 +153,6 @@ function QueryList({
   // function to store user-selected file path in state
 
   const designateFile = async function () {
-    // REVIEW: not sure if supposed to move this to it's own ipcMain
     const options = {
       title: 'Choose File Path',
       defaultPath: `${getAppDataPath()}`,

@@ -140,7 +140,6 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
     setSchemaState(schemaStateCopy);
   };
 
-  // REVIEW: derek - old code :  const handleSaveLayout = (): void => {
   const handleSaveLayout = async (): Promise<void> => {
     // get the array of header nodes
     const headerNodes = nodes.filter(
@@ -148,7 +147,6 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
     ) as TableHeaderNodeType[];
     // create object for the current database
 
-    console.log(headerNodes);
     type TablePosObjType = {
       table_name: string;
       table_position: {

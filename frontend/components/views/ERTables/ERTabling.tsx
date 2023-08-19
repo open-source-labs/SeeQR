@@ -140,7 +140,6 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
     setSchemaState(schemaStateCopy);
   };
 
-  // REVIEW: derek - old code :  const handleSaveLayout = (): void => {
   const handleSaveLayout = async (): Promise<void> => {
     // get the array of header nodes
     const headerNodes = nodes.filter(
@@ -176,22 +175,6 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
       currDatabaseLayout.db_tables.push(tablePosObj);
     });
 
-    // TODO: OLD CODE
-    // const location: string = remote.app
-    // REVIEW:
-    // const location: string = app
-    //   .getPath('temp')
-    //   .concat('/UserTableLayouts.json');
-    // fs.readFile(location, 'utf-8', (err, data) => {
-    //   // check if error exists (no file found)
-    //   if (err) {
-    //     fs.writeFile(
-    //       location,
-    //       JSON.stringify([currDatabaseLayout], null, 2),
-    //       (error) => {
-    //         if (error) console.log(error);
-    //       },
-    //     );
     const location: string = await ipcRenderer.invoke('get-path', 'temp');
     const filePath = location.concat('/UserTableLayouts.json');
 

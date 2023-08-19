@@ -18,11 +18,6 @@ interface ViewButtonProps {
   $isSelected: boolean;
 }
 
-// REVIEW: old code:
-// const ViewButton = styled(Button)`
-//   background: ${({ $isSelected }: ViewButtonProps) => ($isSelected ? textColor : selectedColor)};
-// `;
-
 const ViewButton = styled(Button)<ViewButtonProps>`
   background: ${({ $isSelected }: { $isSelected?: boolean }) =>
     $isSelected ? textColor : selectedColor};

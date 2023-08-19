@@ -32,10 +32,6 @@ const StyledCompareIcon = styled(Equalizer)<StyledCompareButtonProps>`
   }
 `;
 
-// type TopButtonsProps = Pick<AppState, 'selectedView'> & {
-//   setConfigDialog: (show: boolean) => void;
-// };
-
 function TopButtons() {
   const appViewStateContext = useAppViewContext();
   const appViewDispatchContext = useAppViewDispatch();
