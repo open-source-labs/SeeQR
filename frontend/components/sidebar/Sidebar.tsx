@@ -89,6 +89,7 @@ const HideSidebarBtnContainer = styled.div`
 
 function Sidebar({
   setQueries,
+  createNewQuery,
   comparedQueries,
   setComparedQueries,
   selectedDb,
@@ -152,6 +153,7 @@ function Sidebar({
         />
         {/* this is the view for all your queries that were saved whenever you ran a query */}
         <QueryList
+          createNewQuery={createNewQuery}
           setComparedQueries={setComparedQueries}
           comparedQueries={comparedQueries}
           setQueries={setQueries}

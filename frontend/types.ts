@@ -13,6 +13,7 @@ export type ViewName =
   | 'threeDView'; // added for new chart
 
 export interface AppState {
+  createNewQuery: CreateNewQuery;
   selectedDb: string;
   setSelectedDb: (selDb: string) => void;
   workingQuery: QueryData | undefined;

@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import AddIcon from '@mui/icons-material/Add';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import FileCopyIcon from '@mui/icons-material/FileCopy';
+import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import { IconButton, Tooltip } from '@mui/material';
 import Accordion from '@mui/material/Accordion';
@@ -55,18 +55,22 @@ const StyledSidebarList = styled(SidebarList)`
   background-color: ${greyDarkest};
 `;
 
-function QueryList({
-  queries,
-  createQuery,
-  setQueries,
-  comparedQueries,
-  setComparedQueries,
-  workingQuery,
-  setWorkingQuery,
-  setFilePath,
-  newFilePath,
-  show,
-}: QueryListProps) {
+function QueryList(props) {
+  const {
+    queries,
+    createQuery,
+    setQueries,
+    comparedQueries,
+    setComparedQueries,
+    workingQuery,
+    setWorkingQuery,
+    setFilePath,
+    newFilePath,
+    show,
+  }: QueryListProps = props;
+
+  const { createNewQuery } = props;
+
   const deleteQueryHandler = (query: QueryData) => () => {
     setQueries(deleteQuery(queries, query));
     setComparedQueries(deleteQuery(comparedQueries, query));
@@ -99,8 +103,14 @@ function QueryList({
     };
 
     try {
-      const filePath = await ipcRenderer.invoke('showOpenDialog', options);
-      setFilePath(filePath);
+      // grab the file path of where the query is saved
+      const newFilePath = await ipcRenderer.invoke('showOpenDialog', options);
+      // grab the file data from the back end
+      const data = await ipcRenderer.invoke('read-query', newFilePath);
+      const newData = JSON.parse(data);
+      const query = Object.values(newData);
+      // create a new query
+      createNewQuery(query[0]);
     } catch (error) {
       console.log(error);
     }
@@ -185,7 +195,7 @@ function QueryList({
 
         <Tooltip title="Designate Save Location">
           <IconButton onClick={designateFile} size="large">
-            <FileCopyIcon fontSize="large" />
+            <DriveFileMoveIcon fontSize="large" />
           </IconButton>
         </Tooltip>
       </span>

@@ -111,10 +111,12 @@ function QueryView({
         setQuery({ ...localQuery, db: newDb });
       })
 
-      .catch(() => sendFeedback({
-        type: 'error',
-        message: `Failed to connect to ${newDb}`,
-      }));
+      .catch(() =>
+        sendFeedback({
+          type: 'error',
+          message: `Failed to connect to ${newDb}`,
+        }),
+      );
   };
   const onSqlChange = (newSql: string) => {
     // because App's workingQuery changes ref
@@ -149,85 +151,91 @@ function QueryView({
         },
         curDBType,
       )
-      .then(({
-        db, sqlString, returnedRows, explainResults, error,
-        numberOfSample,
-        totalSampleTime,
-        minimumSampleTime,
-        maximumSampleTime,
-        averageSampleTime,
-      }) => {
-        if (error) {
-          throw error;
-        }
-        let transformedData;
-
-        if (curDBType === DBType.Postgres) {
-          transformedData = {
-            sqlString,
-            returnedRows,
-            executionPlan: {
-              numberOfSample,
-              totalSampleTime,
-              minimumSampleTime,
-              maximumSampleTime,
-              averageSampleTime,
-              ...explainResults[0]['QUERY PLAN'][0],
-            },
-            label: localQuery.label,
-            db,
-            group: localQuery.group,
-          };
-        }
-        if (curDBType === DBType.MySQL) {
-          transformedData = {
-            sqlString,
-            returnedRows,
-            label: localQuery.label,
-            db,
-            group: localQuery.group,
-            executionPlan: {
-              numberOfSample,
-              totalSampleTime,
-              minimumSampleTime,
-              maximumSampleTime,
-              averageSampleTime,
-              // ...explainResults[0]['QUERY PLAN'][0],
-              ...explainResults,
-            },
-          };
-        }
-        if (curDBType === DBType.SQLite) {
-          transformedData = {
-            sqlString,
-            returnedRows,
-            label: localQuery.label,
-            db,
-            group: localQuery.group,
-            executionPlan: {
-              numberOfSample,
-              totalSampleTime,
-              minimumSampleTime,
-              maximumSampleTime,
-              averageSampleTime,
-              ...explainResults,
-            },
-          };
-        }
-
-        const keys: string[] = Object.keys(queries);
-        for (let i = 0; i < keys.length; i++) {
-          if (
-            keys[i].includes(`db:${localQuery.db} group:${localQuery.group}`)
-          ) {
-            return sendFeedback({
-              type: 'info',
-              message: `${localQuery.db} already exists in ${localQuery.group}`,
-            });
+      .then(
+        ({
+          db,
+          sqlString,
+          returnedRows,
+          explainResults,
+          error,
+          numberOfSample,
+          totalSampleTime,
+          minimumSampleTime,
+          maximumSampleTime,
+          averageSampleTime,
+        }) => {
+          if (error) {
+            throw error;
           }
-        }
-        createNewQuery(transformedData);
-      })
+          let transformedData;
+
+          if (curDBType === DBType.Postgres) {
+            transformedData = {
+              sqlString,
+              returnedRows,
+              executionPlan: {
+                numberOfSample,
+                totalSampleTime,
+                minimumSampleTime,
+                maximumSampleTime,
+                averageSampleTime,
+                ...explainResults[0]['QUERY PLAN'][0],
+              },
+              label: localQuery.label,
+              db,
+              group: localQuery.group,
+            };
+          }
+          if (curDBType === DBType.MySQL) {
+            transformedData = {
+              sqlString,
+              returnedRows,
+              label: localQuery.label,
+              db,
+              group: localQuery.group,
+              executionPlan: {
+                numberOfSample,
+                totalSampleTime,
+                minimumSampleTime,
+                maximumSampleTime,
+                averageSampleTime,
+                // ...explainResults[0]['QUERY PLAN'][0],
+                ...explainResults,
+              },
+            };
+          }
+          if (curDBType === DBType.SQLite) {
+            transformedData = {
+              sqlString,
+              returnedRows,
+              label: localQuery.label,
+              db,
+              group: localQuery.group,
+              executionPlan: {
+                numberOfSample,
+                totalSampleTime,
+                minimumSampleTime,
+                maximumSampleTime,
+                averageSampleTime,
+                ...explainResults,
+              },
+            };
+          }
+
+          const keys: string[] = Object.keys(queries);
+          for (let i = 0; i < keys.length; i++) {
+            if (
+              keys[i].includes(`db:${localQuery.db} group:${localQuery.group}`)
+            ) {
+              return sendFeedback({
+                type: 'info',
+                message: `${localQuery.db} already exists in ${localQuery.group}`,
+              });
+            }
+          }
+          createNewQuery(transformedData);
+        },
+      )
       .then(() => {
         localQuery.sqlString = '';
       })
@@ -265,7 +273,10 @@ function QueryView({
         onChange={onSqlChange}
         runQuery={onRun}
       />
-      <QueryRunNumber runNumber={runQueryNumber} onChange={onRunQueryNumChange} />
+      <QueryRunNumber
+        runNumber={runQueryNumber}
+        onChange={onRunQueryNumChange}
+      />
       <CenterButton>
         <RunButton variant="contained" onClick={onRun}>
           Run Query
