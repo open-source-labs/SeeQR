@@ -3,6 +3,10 @@ import { ButtonGroup, Button } from '@mui/material/';
 import styled from 'styled-components';
 import { AppState } from '../../types';
 import { selectedColor, textColor, defaultMargin } from '../../style-variables';
+import {
+  useAppViewContext,
+  useAppViewDispatch,
+} from '../../state_management/Contexts/AppViewContext';
 
 const ViewBtnGroup = styled(ButtonGroup)`
   margin: ${defaultMargin} 5px;
@@ -11,14 +15,6 @@ const ViewBtnGroup = styled(ButtonGroup)`
 interface ViewButtonProps {
   $isSelected: boolean;
 }
-
-// REVIEW: old code:
-// const ViewButton = styled(Button)`
-//   background: ${({ $isSelected }: ViewButtonProps) => ($isSelected ? selectedColor : textColor)};
-//   &:hover {
-//     background: ${({ $isSelected }: ViewButtonProps) => ($isSelected ? selectedColor : textColor)};
-//   }
-// `;
 
 const ViewButton = styled(Button)<ViewButtonProps>`
   background: ${({ $isSelected }: { $isSelected: boolean }) =>
@@ -29,36 +25,42 @@ const ViewButton = styled(Button)<ViewButtonProps>`
   }
 `;
 
-type ViewSelectorProps = Pick<
-  AppState,
-  'selectedView' | 'setSelectedView' | 'setERView'
->;
+type ViewSelectorProps = Pick<AppState, 'setERView'>;
 
 /**
  * Selector for view on sidebar. Updates App state with selected view
  */
-function ViewSelector({
-  selectedView,
-  setSelectedView,
-  setERView,
-}: ViewSelectorProps) {
+function ViewSelector({ setERView }: ViewSelectorProps) {
+  // using the dispatch and state from the providers to avoid any prop drilling.
+  const appViewStateContext = useAppViewContext();
+  const appViewDispatchContext = useAppViewDispatch();
   return (
     <ViewBtnGroup variant="contained" fullWidth>
       <ViewButton
-        onClick={() => setSelectedView('queryView')}
+        onClick={() =>
+          appViewDispatchContext!({
+            type: 'SELECTED_VIEW',
+            payload: 'queryView',
+          })
+        }
         $isSelected={
-          selectedView === 'queryView' || selectedView === 'compareView'
+          appViewStateContext?.selectedView === 'queryView' ||
+          appViewStateContext?.selectedView === 'compareView'
         }
       >
         Queries
       </ViewButton>
       <ViewButton
         onClick={() => {
-          setSelectedView('dbView');
+          appViewDispatchContext!({
+            type: 'SELECTED_VIEW',
+            payload: 'dbView',
+          });
           if (setERView) setERView(true);
         }}
         $isSelected={
-          selectedView === 'dbView' || selectedView === 'quickStartView'
+          appViewStateContext?.selectedView === 'dbView' ||
+          appViewStateContext?.selectedView === 'quickStartView'
         }
       >
         Databases

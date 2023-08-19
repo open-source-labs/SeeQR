@@ -16,6 +16,10 @@ import {
   sidebarShowButtonSize,
   sidebarWidth,
 } from '../../style-variables';
+import {
+  useAppViewContext,
+  useAppViewDispatch,
+} from '../../state_management/Contexts/AppViewContext';
 
 const StyledDrawer = styled(Drawer)`
   & .MuiDrawer-paper {
@@ -83,74 +87,71 @@ const HideSidebarBtnContainer = styled.div`
   align-self: flex-end;
 `;
 
-function Sidebar(props) {
-  const {
-    setQueries,
-    comparedQueries,
-    setComparedQueries,
-    selectedView,
-    setSelectedView,
-    selectedDb,
-    setSelectedDb,
-    queries,
-    workingQuery,
-    setWorkingQuery,
-    setSidebarHidden,
-    sidebarIsHidden,
-    setFilePath,
-    newFilePath,
-    setERView,
-    curDBType,
-    setDBType,
-    DBInfo,
-    showCreateDialog,
-    setCreateDialog,
-    setConfigDialog,
-  }: AppState = props;
-
-  const { createNewQuery } = props;
-
-  const toggleOpen = () => setSidebarHidden(!sidebarIsHidden);
+function Sidebar({
+  setQueries,
+  createNewQuery,
+  comparedQueries,
+  setComparedQueries,
+  selectedDb,
+  setSelectedDb,
+  queries,
+  workingQuery,
+  setWorkingQuery,
+  setFilePath,
+  newFilePath,
+  setERView,
+  curDBType,
+  setDBType,
+  DBInfo,
+}: AppState) {
+  // allowing the use of context and dispatch from the parent provider.
+  const appViewStateContext = useAppViewContext();
+  const appViewDispatchContext = useAppViewDispatch();
+  const toggleOpen = () => appViewDispatchContext!({ type: 'TOGGLE_SIDEBAR' });
   /**
    * Show empty query view for user to create new query.
    * Deselects all queries and goes to queryView
    */
   const showEmptyQuery = () => {
-    setSelectedView('queryView');
+    appViewDispatchContext!({ type: 'SELECTED_VIEW', payload: 'queryView' });
     setWorkingQuery(undefined);
   };
 
   return (
     <>
+      {/* this componenet just shows tooltip when you hover your mouse over the sidebar open and close button. */}
       <Tooltip title="Show Sidebar">
         <ShowSidebarBtn onClick={toggleOpen} size="small">
           <ArrowForwardIosIcon />
         </ShowSidebarBtn>
       </Tooltip>
-      <StyledDrawer variant="persistent" anchor="left" open={!sidebarIsHidden}>
+
+      {/* shows if the default menu is open or closed. */}
+      <StyledDrawer
+        variant="persistent"
+        anchor="left"
+        open={!appViewStateContext?.sideBarIsHidden}
+      >
         <div>
-          <TopButtons
-            selectedView={selectedView}
-            setSelectedView={setSelectedView}
-            setConfigDialog={setConfigDialog}
-          />
-          <ViewSelector {...{ selectedView, setSelectedView, setERView }} />
+          <TopButtons />
+          <ViewSelector {...{ setERView }} />
         </div>
+        {/* this is just the list of all the connected dbs */}
         <DbList
           selectedDb={selectedDb}
           setSelectedDb={setSelectedDb}
+          // the question marks are just for typescript because it thinks there could be a null value, so we're just letting it abide by that strict rule that there is a possibility of a null value.
           show={
-            selectedView === 'dbView' ||
-            selectedView === 'quickStartView' ||
-            selectedView === 'newSchemaView' ||
-            selectedView === 'threeDView'
+            appViewStateContext?.selectedView === 'dbView' ||
+            appViewStateContext?.selectedView === 'quickStartView' ||
+            appViewStateContext?.selectedView === 'newSchemaView' ||
+            appViewStateContext?.selectedView === 'threeDView'
           }
-          setSelectedView={setSelectedView}
           curDBType={curDBType}
           setDBType={setDBType}
           DBInfo={DBInfo}
-          selectedView={selectedView}
         />
+        {/* this is the view for all your queries that were saved whenever you ran a query */}
         <QueryList
           createNewQuery={createNewQuery}
           setComparedQueries={setComparedQueries}
@@ -160,14 +161,14 @@ function Sidebar(props) {
           createQuery={showEmptyQuery}
           workingQuery={workingQuery}
           setWorkingQuery={setWorkingQuery}
-          show={selectedView === 'queryView' || selectedView === 'compareView'}
+          show={
+            appViewStateContext?.selectedView === 'queryView' ||
+            appViewStateContext?.selectedView === 'compareView'
+          }
           setFilePath={setFilePath}
           newFilePath={newFilePath}
         />
-        <BottomButtons
-          showCreateDialog={showCreateDialog}
-          setCreateDialog={setCreateDialog}
-        />
+        <BottomButtons />
         <Logo src={logo} alt="Logo" />
         <HideSidebarBtnContainer>
           <Tooltip title="Hide Sidebar">

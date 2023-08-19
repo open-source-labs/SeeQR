@@ -79,7 +79,6 @@ function AddNewDbModal({
 
   // Opens modal to select file and sends the selected file to backend
   // TODO: fix the any type.
-  // REVIEW:
   const handleDBimport = async () => {
     const dbt: DBType = (document.getElementById('dbTypeDropdown') as any)
       .value;

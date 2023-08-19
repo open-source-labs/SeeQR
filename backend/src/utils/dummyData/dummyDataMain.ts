@@ -26,10 +26,7 @@ const getRandomInt = (min: number, max: number) => {
 // helper function to generate random data based on a given column's data type
 const generateDataByType = (columnObj: ColumnObj): string | number => {
   let length;
-  // faker.js method to generate data by type
-  // console.log('columnObj_datatype: ', columnObj.data_type)
-
-  // REVIEW: updated faker so it has different methods. need to double check this.
+  // updated the new faker package so updated to follow proper documentation.
   switch (columnObj.data_type) {
     case 'smallint':
       return faker.number.int({ min: -32768, max: 32767 });
@@ -48,6 +45,7 @@ const generateDataByType = (columnObj: ColumnObj): string | number => {
         columnObj.character_maximum_length > 3
           ? Math.floor(Math.random() * columnObj.character_maximum_length)
           : 3;
+      // TODO: need to properly deal with the deprecated faker.random.alphaNumeric(length) method
       return "'".concat(faker.random.alphaNumeric(length)).concat("'");
     case 'varchar':
       // defaulting length to 3 because faker.lorem defaults to a length of 3 if no length is specified
@@ -57,7 +55,7 @@ const generateDataByType = (columnObj: ColumnObj): string | number => {
         columnObj.character_maximum_length > 3
           ? Math.floor(Math.random() * columnObj.character_maximum_length)
           : 3;
-      // REVIEW: updated faker so it has different methods. need to double check this.
+      // TODO: need to properly deal with the deprecated faker.random.alphaNumeric(length) method
       return "'".concat(faker.random.alphaNumeric(length)).concat("'");
     case 'int':
       return faker.number.int({ min: -2147483648, max: 2147483647 });
@@ -71,7 +69,6 @@ const generateDataByType = (columnObj: ColumnObj): string | number => {
       const result = `${year}/${month}/${day}`;
       return "'".concat(result).concat("'");
     }
-    // REVIEW: updated faker so it has different methods. need to double check this. Had to convert the bool to string.
     case 'boolean': {
       return "'".concat(faker.datatype.boolean().toString()).concat("'");
     }

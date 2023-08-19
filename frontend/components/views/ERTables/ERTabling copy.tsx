@@ -147,7 +147,6 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
     ) as TableHeaderNodeType[];
     // create object for the current database
 
-    console.log(headerNodes);
     type TablePosObjType = {
       table_name: string;
       table_position: {
