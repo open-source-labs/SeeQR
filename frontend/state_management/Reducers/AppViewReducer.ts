@@ -1,5 +1,7 @@
 // Define the state type
-export interface ViewState {
+import { AppViewStateAction } from '../Actions/AppViewActions';
+// notice in the view state for sidebarishidden, showconfig dialog, and show create dialog, those are just toggles, so there is no payload. When invoked with the specific action type, it just toggles true or false for the variable.
+export interface AppViewState {
   selectedView: string;
   sideBarIsHidden: boolean;
   showConfigDialog: boolean;
@@ -8,28 +10,24 @@ export interface ViewState {
   MYSQL_isConnected: boolean;
 }
 
-interface Action {
-  type: string;
-  payload?: string | boolean;
-}
-
 // eslint-disable-next-line import/prefer-default-export
-export const viewStateReducer = (
-  state: ViewState,
-  action: Action,
-): ViewState => {
+// This reducer is for all the pieces of viewstate. When you select a view, toggle the sidebar, etc/
+export const appViewStateReducer = (
+  state: AppViewState,
+  action: AppViewStateAction,
+): AppViewState => {
   switch (action.type) {
-    case 'setSelectedView':
+    case 'SELECTED_VIEW':
       return { ...state, selectedView: action.payload };
-    case 'toggleSideBar':
+    case 'TOGGLE_SIDEBAR':
       return { ...state, sideBarIsHidden: !state.sideBarIsHidden };
-    case 'toggleConfigDialog':
+    case 'TOGGLE_CONFIG_DIALOG':
       return { ...state, showConfigDialog: !state.showConfigDialog };
-    case 'toggleCreateDialog':
+    case 'TOGGLE_CREATE_DIALOG':
       return { ...state, showCreateDialog: !state.showCreateDialog };
-    case 'setPG_isConnected':
+    case 'IS_PG_CONNECTED':
       return { ...state, PG_isConnected: action.payload };
-    case 'setMYSQL_isConnected':
+    case 'IS_MYSQL_CONNECTED':
       return { ...state, MYSQL_isConnected: action.payload };
     default:
       return state;

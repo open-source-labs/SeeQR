@@ -48,6 +48,15 @@ import menuReducer, {
 } from '../state_management/Reducers/MenuReducers';
 import invoke from '../lib/electronHelper';
 
+import {
+  appViewStateReducer,
+  AppViewState,
+} from '../state_management/Reducers/AppViewReducer';
+import {
+  AppViewContextState,
+  AppViewContextDispatch,
+} from '../state_management/Contexts/AppViewContext';
+
 declare module '@mui/material/styles/' {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
   interface DefaultTheme extends Theme {}
@@ -84,6 +93,23 @@ function App() {
     [menuState],
   );
 
+  // initializing the initial viewState object
+
+  const initialAppViewState: AppViewState = {
+    selectedView: 'dbView',
+    sideBarIsHidden: false,
+    showConfigDialog: false,
+    showCreateDialog: false,
+    PG_isConnected: false,
+    MYSQL_isConnected: false,
+  };
+
+  // creating the reducer to reduce all state changes to a single state object
+  const [appViewState, appViewDispatch] = useReducer(
+    appViewStateReducer,
+    initialAppViewState,
+  );
+
   // tablesReducer stuff here
 
   // ---
@@ -92,11 +118,8 @@ function App() {
     {},
   );
   const [workingQuery, setWorkingQuery] = useState<AppState['workingQuery']>();
-  const [selectedView, setSelectedView] =
-    useState<AppState['selectedView']>('dbView');
 
   const [selectedDb, setSelectedDb] = useState<AppState['selectedDb']>('');
-  const [sidebarIsHidden, setSidebarHidden] = useState(false);
   const [newFilePath, setFilePath] = useState<AppState['newFilePath']>('');
   const [ERView, setERView] = useState(true);
 
@@ -105,11 +128,6 @@ function App() {
 
   const [dbTables, setTables] = useState<TableInfo[]>([]);
   const [selectedTable, setSelectedTable] = useState<TableInfo | undefined>();
-
-  const [PG_isConnected, setPGStatus] = useState(false);
-  const [MYSQL_isConnected, setMYSQLStatus] = useState(false);
-  const [showCreateDialog, setCreateDialog] = useState(false);
-  const [showConfigDialog, setConfigDialog] = useState(false);
 
   /**
    * New central source of async calls
@@ -139,8 +157,16 @@ function App() {
     const dbListFromBackend = (dbLists: DbLists) => {
       setDBInfo(dbLists.databaseList);
       setTables(dbLists.tableList);
-      setPGStatus(dbLists.databaseConnected.PG);
-      setMYSQLStatus(dbLists.databaseConnected.MySQL);
+      appViewDispatch({
+        type: 'IS_PG_CONNECTED',
+        payload: dbLists.databaseConnected.PG,
+      });
+
+      appViewDispatch({
+        type: 'IS_MYSQL_CONNECTED',
+        payload: dbLists.databaseConnected.MySQL,
+      });
+
       // setSelectedTable(selectedTable || dbTables[0]);
     };
     menuDispatch({
@@ -168,8 +194,8 @@ function App() {
 
   // determine which view should be visible depending on selected view and
   // prerequisites for each view
-  let shownView: AppState['selectedView'];
-  switch (selectedView) {
+  let shownView;
+  switch (appViewState.selectedView) {
     case 'compareView':
       shownView = 'compareView';
       break;
@@ -207,32 +233,29 @@ function App() {
           <AppContainer>
             <CssBaseline />
             <GlobalStyle />
-            <Sidebar
-              {...{
-                queries,
-                setQueries,
-                comparedQueries,
-                setComparedQueries,
-                selectedView,
-                setSelectedView,
-                selectedDb,
-                setSelectedDb,
-                workingQuery,
-                setWorkingQuery,
-                setSidebarHidden,
-                sidebarIsHidden,
-                setFilePath,
-                newFilePath,
-                setERView,
-                curDBType,
-                setDBType,
-                DBInfo,
-                showCreateDialog,
-                setCreateDialog,
-                setConfigDialog,
-              }}
-            />
-            <Main $fullwidth={sidebarIsHidden}>
+            <AppViewContextState.Provider value={appViewState}>
+              <AppViewContextDispatch.Provider value={appViewDispatch}>
+                <Sidebar
+                  {...{
+                    queries,
+                    setQueries,
+                    comparedQueries,
+                    setComparedQueries,
+                    selectedDb,
+                    setSelectedDb,
+                    workingQuery,
+                    setWorkingQuery,
+                    setFilePath,
+                    newFilePath,
+                    setERView,
+                    curDBType,
+                    setDBType,
+                    DBInfo,
+                  }}
+                />
+              </AppViewContextDispatch.Provider>
+            </AppViewContextState.Provider>
+            <Main $fullwidth={appViewState.sideBarIsHidden}>
               <CompareView
                 queries={comparedQueries}
                 show={shownView === 'compareView'}
@@ -279,13 +302,17 @@ function App() {
                 setSelectedTable={setSelectedTable}
               />
               <ConfigView
-                show={showConfigDialog}
-                onClose={() => setConfigDialog(false)}
+                show={appViewState.showConfigDialog}
+                onClose={() =>
+                  appViewDispatch({ type: 'TOGGLE_CONFIG_DIALOG' })
+                }
               />
               <CreateDBDialog
-                show={showCreateDialog}
+                show={appViewState.showCreateDialog}
                 DBInfo={DBInfo}
-                onClose={() => setCreateDialog(false)}
+                onClose={() =>
+                  appViewDispatch({ type: 'TOGGLE_CREATE_DIALOG' })
+                }
               />
             </Main>
             <FeedbackModal />

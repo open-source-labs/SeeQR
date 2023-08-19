@@ -4,7 +4,7 @@ import { DBType } from '../backend/BE_types';
  * This file contains common types that need to be used across the frontend
  */
 
-type ViewName =
+export type ViewName =
   | 'compareView'
   | 'dbView'
   | 'queryView'
@@ -13,8 +13,6 @@ type ViewName =
   | 'threeDView'; // added for new chart
 
 export interface AppState {
-  selectedView: ViewName;
-  setSelectedView: (selView: ViewName) => void;
   selectedDb: string;
   setSelectedDb: (selDb: string) => void;
   workingQuery: QueryData | undefined;
@@ -23,8 +21,6 @@ export interface AppState {
   setQueries: (queries: Record<string, QueryData>) => void;
   comparedQueries: Record<string, QueryData>;
   setComparedQueries: (comparedQueries: Record<string, QueryData>) => void;
-  setSidebarHidden: (isHidden: boolean) => void;
-  sidebarIsHidden: boolean;
   setFilePath: (filePath: string) => void;
   newFilePath: string;
   setERView?: (boolean) => void;
@@ -36,9 +32,6 @@ export interface AppState {
   setTables?: (tableInfo: TableInfo[]) => void;
   selectedTable?: TableInfo | undefined;
   setSelectedTable?: (tableInfo: TableInfo | undefined) => void;
-  showCreateDialog: boolean;
-  setCreateDialog: (show: boolean) => void;
-  setConfigDialog: (show: boolean) => void;
 }
 
 export interface FilePath {
