@@ -17,7 +17,7 @@ export interface AppState {
   selectedDb: string;
   setSelectedDb: (selDb: string) => void;
   workingQuery: QueryData | undefined;
-  setWorkingQuery: (selQuery: QueryData | undefined) => void;
+  setWorkingQuery: (selQuery: any) => void;
   queries: Record<string, QueryData>;
   setQueries: (queries: Record<string, QueryData>) => void;
   comparedQueries: Record<string, QueryData>;
@@ -40,7 +40,7 @@ export interface FilePath {
   filePath: string;
 }
 
-export type CreateNewQuery = (query: QueryData) => void;
+export type CreateNewQuery = (query: QueryData, queries: any) => void;
 
 export interface QueryData {
   /**

@@ -18,6 +18,7 @@ import {
   key as queryKey,
   saveQuery,
   setCompare,
+  createNewQuery,
 } from '../../lib/queries';
 import {
   greenPrimary,
@@ -110,7 +111,8 @@ function QueryList(props) {
       const newData = JSON.parse(data);
       const query = Object.values(newData);
       // create a new query
-      createNewQuery(query[0]);
+      createNewQuery(query[0], queries);
+      setWorkingQuery(query[0]);
     } catch (error) {
       console.log(error);
     }
