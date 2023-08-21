@@ -98,7 +98,7 @@ function BasicTabs({ onClose }: BasicTabsProps) {
   });
 
   // function to store user-selected file path in state
-  // REVIEW:
+
   const designateFile = async function (path, setPath) {
     const options = {
       title: 'Select SQLite File',

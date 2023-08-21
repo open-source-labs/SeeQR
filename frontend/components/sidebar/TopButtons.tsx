@@ -3,9 +3,13 @@ import { IconButton, Tooltip } from '@mui/material';
 import styled from 'styled-components';
 import { Equalizer, Settings, Coronavirus } from '@mui/icons-material';
 import HomeIcon from '@mui/icons-material/Home';
-import { AppState } from '../../types';
 
 import { textColor, hoverColor, selectedColor } from '../../style-variables';
+
+import {
+  useAppViewContext,
+  useAppViewDispatch,
+} from '../../state_management/Contexts/AppViewContext';
 
 const Container = styled.div`
   display: flex;
@@ -21,37 +25,52 @@ interface StyledCompareButtonProps {
   $isSelected: boolean;
 }
 
-const StyledCompareIcon = styled(Equalizer) <StyledCompareButtonProps>`
+const StyledCompareIcon = styled(Equalizer)<StyledCompareButtonProps>`
   color: ${({ $isSelected }) => ($isSelected ? selectedColor : textColor)};
   &:hover {
     color: ${hoverColor};
   }
 `;
 
-type TopButtonsProps = Pick<AppState, 'selectedView' | 'setSelectedView'> & {
-  setConfigDialog: (show: boolean) => void;
-};
-
-function TopButtons({
-  selectedView,
-  setSelectedView,
-  setConfigDialog,
-}: TopButtonsProps) {
+function TopButtons() {
+  const appViewStateContext = useAppViewContext();
+  const appViewDispatchContext = useAppViewDispatch();
   const toggleCompareView = () => {
-    if (selectedView === 'compareView') return setSelectedView('queryView');
-    return setSelectedView('compareView');
+    if (appViewStateContext?.selectedView === 'compareView') {
+      return appViewDispatchContext!({
+        type: 'SELECTED_VIEW',
+        payload: 'queryView',
+      });
+    }
+    return appViewDispatchContext!({
+      type: 'SELECTED_VIEW',
+      payload: 'compareView',
+    });
   };
 
   return (
     <Container>
       <Tooltip title="Config">
-        <StyledIconButton onClick={() => setConfigDialog(true)}>
+        <StyledIconButton
+          onClick={() =>
+            appViewDispatchContext!({
+              type: 'TOGGLE_CONFIG_DIALOG',
+            })
+          }
+        >
           <Settings fontSize="large" />
         </StyledIconButton>
       </Tooltip>
 
       <Tooltip title="Home">
-        <StyledIconButton onClick={() => setSelectedView('quickStartView')}>
+        <StyledIconButton
+          onClick={() =>
+            appViewDispatchContext!({
+              type: 'SELECTED_VIEW',
+              payload: 'quickStartView',
+            })
+          }
+        >
           <HomeIcon fontSize="large" />
         </StyledIconButton>
       </Tooltip>
@@ -60,13 +79,20 @@ function TopButtons({
         <StyledIconButton onClick={toggleCompareView}>
           <StyledCompareIcon
             fontSize="large"
-            $isSelected={selectedView === 'compareView'}
+            $isSelected={appViewStateContext?.selectedView === 'compareView'}
           />
         </StyledIconButton>
       </Tooltip>
 
       <Tooltip title="3D View">
-        <StyledIconButton onClick={() => setSelectedView('threeDView')}>
+        <StyledIconButton
+          onClick={() =>
+            appViewDispatchContext!({
+              type: 'SELECTED_VIEW',
+              payload: 'threeDView',
+            })
+          }
+        >
           <Coronavirus fontSize="large" />
         </StyledIconButton>
       </Tooltip>

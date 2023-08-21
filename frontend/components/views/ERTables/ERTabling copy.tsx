@@ -24,7 +24,6 @@ import {
   UpdatesObjType,
 } from '../../../types';
 import nodeTypes from './NodeTypes';
-import { ErdUpdatesType, OperationType } from '@mytypes/erTypes';
 
 import * as colors from '../../../style-variables';
 
@@ -96,9 +95,13 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
     updates,
   });
 
-  const erdUpdateArray: ErdUpdatesType = [];
+  // No idea why this is here. It doesn't seem to be used anywhere
+  // const backendColumnObj = useRef({
+  //   database: schemaState.database,
+  //   updates,
+  // });
 
-  // whenever the selectedDb changes, reassign the backendObj to contain this selectedDb ***TG: WE NO LONGER NEED THIS***
+  // whenever the selectedDb changes, reassign the backendObj to contain this selectedDb
   useEffect(() => {
     backendObj.current.database = selectedDb;
     console.log('backendObj: ', backendObj);
@@ -144,7 +147,6 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
     ) as TableHeaderNodeType[];
     // create object for the current database
 
-    console.log(headerNodes);
     type TablePosObjType = {
       table_name: string;
       table_position: {
@@ -173,8 +175,6 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
     });
 
     const location: string = await ipcRenderer.invoke('get-path', 'temp');
-
-    // lets put this in the backend
     const filePath = location.concat('/UserTableLayouts.json');
 
     fs.readFile(filePath, 'utf-8', (err, data) => {
@@ -208,7 +208,6 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
       }
     });
   };
-
   function handleClickSave(): void {
     // This function sends a message to the back end with
     // the data in backendObj.current
