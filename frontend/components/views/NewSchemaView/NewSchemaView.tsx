@@ -15,6 +15,11 @@ import SchemaName from './SchemaName';
 import TablesTabs from '../DbView/TablesTabBar';
 import SchemaSqlInput from './SchemaSqlInput';
 
+import {
+  useQueryContext,
+  useQueryDispatch,
+} from '../../../state_management/Contexts/QueryContext';
+
 // top row container
 const TopRow = styled(Box)`
   display: flex;
@@ -64,9 +69,6 @@ const NewSchemaViewContainer = styled.div`
 
 // props interface
 interface NewSchemaViewProps {
-  query?: AppState['workingQuery'];
-  // setQuery: AppState['setWorkingQuery'];
-  queryDispatch: any;
   setSelectedDb: AppState['setSelectedDb'];
   selectedDb: AppState['selectedDb'];
   show: boolean;
@@ -77,9 +79,6 @@ interface NewSchemaViewProps {
 }
 
 function NewSchemaView({
-  query,
-  // setQuery,
-  queryDispatch,
   setSelectedDb,
   selectedDb,
   show,
@@ -88,6 +87,10 @@ function NewSchemaView({
   selectedTable,
   setSelectedTable,
 }: NewSchemaViewProps) {
+  // using query state context and dispatch functions
+  const queryStateContext = useQueryContext();
+  const queryDispatchContext = useQueryDispatch();
+
   const [currentSql, setCurrentSql] = useState('');
 
   const TEMP_DBTYPE = DBType.Postgres;
@@ -104,15 +107,15 @@ function NewSchemaView({
     averageSampleTime: 0,
   };
 
-  const localQuery = { ...defaultQuery, ...query };
+  const localQuery = { ...defaultQuery, ...queryStateContext!.workingQuery };
 
   // handles naming of schema
   const onNameChange = (newName: string) => {
-    queryDispatch({
+    queryDispatchContext!({
       type: 'UPDATE_WORKING_QUERIES',
       payload: { ...localQuery, db: newName },
     });
-    // setQuery({ ...localQuery, db: newName });
+
     setSelectedDb(newName);
   };
 
@@ -120,11 +123,10 @@ function NewSchemaView({
   const onSqlChange = (newSql: string) => {
     // because App's workingQuery changes ref
     setCurrentSql(newSql);
-    queryDispatch({
+    queryDispatchContext!({
       type: 'UPDATE_WORKING_QUERIES',
       payload: { ...localQuery, sqlString: newSql },
     });
-    // setQuery({ ...localQuery, sqlString: newSql });
   };
 
   // handle intializing new schema

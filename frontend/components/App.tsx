@@ -289,8 +289,6 @@ function App() {
                     dbType={curDBType}
                   />
                   <NewSchemaView
-                    query={queryState.workingQuery}
-                    queryDispatch={queryDispatch}
                     selectedDb={selectedDb}
                     setSelectedDb={setSelectedDb}
                     show={shownView === 'newSchemaView'}
