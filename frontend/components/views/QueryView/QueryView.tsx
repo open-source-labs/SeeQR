@@ -253,11 +253,20 @@ function QueryView({
               });
             }
           }
-          createNewQuery(transformedData, queryStateContext?.queries);
+          const newQueries = createNewQuery(
+            transformedData,
+            queryStateContext?.queries,
+          );
+          queryDispatchContext!({
+            type: 'UPDATE_QUERIES',
+            payload: newQueries,
+          });
+
           queryDispatchContext!({
             type: 'UPDATE_WORKING_QUERIES',
             payload: transformedData,
           });
+
           // setQuery(transformedData);
         },
       )
