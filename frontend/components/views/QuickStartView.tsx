@@ -68,7 +68,7 @@ const StepList = styled.ul`
 function getSteps() {
   return [
     'Set Up Servers and Permissions',
-    'Import a Database',
+    'Import/ Export a Database',
     'Create New Queries',
     'Saving/Loading Queries',
     'Compare Queries',
@@ -108,24 +108,26 @@ function getStepContent(step: number) {
         <StyledTypographyInstructions>
           <strong>Step 2:</strong>
           <StepList>
-            <li>To import a database, select the + icon in the sidebar.</li>
-            <li>Enter a name for your database.</li>
+            <li>
+              To import a database, select the file upload icon in the sidebar
+            </li>
+            <li>Enter a unique name for your database</li>
             <li>
               Click the green &quot;Import File&quot; button and select a .sql
-              file.
+              file
             </li>
-            <li>
-              Select your imported database on the sidebar to view table
-              information.
-            </li>
-
+            <li>Select your imported database on the sidebar to view</li>
             <li>
               To view each table, click the name of the table in the top tabs
-              bar.
+              bar
             </li>
             <li>
               The chart will include column names, types, and if they are
-              nullable.
+              nullable
+            </li>
+            <li>
+              To export a database, select the file download icon next to the
+              databse name
             </li>
           </StepList>
         </StyledTypographyInstructions>
@@ -135,31 +137,28 @@ function getStepContent(step: number) {
         <StyledTypographyInstructions>
           <strong>Step 3:</strong>
           <StepList>
-            <li>Select which database you want to create a query in.</li>
+            <li>Select which database you want to query with</li>
             <li>
               Go into the queries tab by selecting the &quot;QUERIES&quot; tab
-              in the sidebar.
+              in the sidebar
             </li>
+            <li>Give the query a label and a group</li>
             <li>
-              Select the + icon in the sidebar and give the query a label and a
-              group on the right side.
-            </li>
-            <li>
-              Optionally: You can change the database to create the query in
-              from the &quot;Database&quot; dropdown.
+              Optionally: You can change the database from the
+              &quot;Database&quot; dropdown
             </li>
             <li>
               Use the &quot;Auto-Format&quot; button on the top-left to
-              automatically format the query.
+              automatically format the query
             </li>
-            <li>Select the &quot;RUN QUERY&quot; button to execute.</li>
+            <li>Select the &quot;RUN QUERY&quot; button to execute</li>
             <li>
-              The planning time, execution time, and actual total time now show.
+              The planning time, execution time, and actual total time now show
             </li>
-            <li>The results from the query are in the table below.</li>
+            <li>The results from the query are in the table below</li>
             <li>
               Select the &quot;Execution Plan&quot; button to view the analysis
-              of running the query.
+              of running the query
             </li>
           </StepList>
         </StyledTypographyInstructions>
@@ -169,18 +168,16 @@ function getStepContent(step: number) {
         <StyledTypographyInstructions>
           <strong>Step 4:</strong>
           <StepList>
+            <li>To save a query, click the folder icon in the queries tab</li>
+            <li>Designate a file location and click &quot;Select Path&quot;</li>
             <li>
-              To save a query, declare a file location by clicking the
-              &quot;Designate Save Location&quot; button in the queries tab
+              Click the save icon in the query drop down to save queries
+              individually
             </li>
             <li>
-              Then, save queries individually by clicking the &quot;Save
-              Query&quot; button
-            </li>
-            <li>
-              To load data into SeeQR just click the &quot;Import Query&quot;
-              button, select the file you wish to upload in your local file
-              system and click &quot;Upload&quot;
+              To import a query file, click the import icon, select the file you
+              wish to upload (.json) in your local file system and click
+              &quot;Upload&quot;
             </li>
           </StepList>
         </StyledTypographyInstructions>
@@ -192,12 +189,9 @@ function getStepContent(step: number) {
           <StepList>
             <li>
               Select the checkbox of the queries inside the groups you would
-              like to compare.
+              like to compare
             </li>
-            <li>Then, click the Chart Icon at the top of the sidebar.</li>
-            <li>
-              Feel free to continually select and deselect queries to compare.
-            </li>
+            <li>Click the chart icon at the top of the sidebar</li>
           </StepList>
         </StyledTypographyInstructions>
       );
