@@ -47,6 +47,7 @@ function DbView({
     setOpen(false);
   };
 
+  // if the program can't find the database, it will return null. else it will return the selected db.
   const db = DBInfo?.find((dbi) => dbi.db_name === selectedDb);
 
   if (!show) return null;
