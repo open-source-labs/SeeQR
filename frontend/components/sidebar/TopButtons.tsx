@@ -51,6 +51,7 @@ function TopButtons() {
     });
   };
 
+  // Any of the tool tips are just for whenver you hover over the button, a tooltip will appear.
   return (
     <Container>
       <Tooltip title="Config">
