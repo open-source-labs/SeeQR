@@ -131,8 +131,13 @@ function QueryList({ createQuery, show }: QueryListProps) {
         const newQueries = createNewQuery(query[0], queryStateContext!.queries);
 
         queryDispatchContext!({
-          type: 'UPDATE_WORKING_QUERIES',
+          type: 'UPDATE_QUERIES',
           payload: newQueries,
+        });
+
+        queryDispatchContext!({
+          type: 'UPDATE_WORKING_QUERIES',
+          payload: query[0],
         });
       }
 
