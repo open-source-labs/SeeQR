@@ -56,8 +56,6 @@ function QueryList({ createQuery, show }: QueryListProps) {
   const queryStateContext = useQueryContext();
   const queryDispatchContext = useQueryDispatch();
 
-  // const { createNewQuery } = props;
-
   const deleteQueryHandler = (query: QueryData) => () => {
     const tempQueries = deleteQuery(queryStateContext!.queries, query);
 
@@ -65,7 +63,6 @@ function QueryList({ createQuery, show }: QueryListProps) {
       type: 'UPDATE_QUERIES',
       payload: tempQueries,
     });
-    // setQueries(deleteQuery(queries, query));
 
     const tempComparedQueries = deleteQuery(
       queryStateContext!.comparedQueries,
@@ -76,8 +73,6 @@ function QueryList({ createQuery, show }: QueryListProps) {
       type: 'UPDATE_COMPARED_QUERIES',
       payload: tempComparedQueries,
     });
-
-    // setComparedQueries(deleteQuery(comparedQueries, query));
   };
 
   const setComparisonHandler =
@@ -93,11 +88,6 @@ function QueryList({ createQuery, show }: QueryListProps) {
         type: 'UPDATE_COMPARED_QUERIES',
         payload: tempQueries,
       });
-
-      // setComparedQueries(
-      //   setCompare(comparedQueries, queries, query, evt.target.checked),
-      // );
-      // setComparedQueries(setCompare(comparedQueries, query));
     };
 
   const saveQueryHandler = (query: QueryData, newFilePath: string) => () => {
@@ -105,7 +95,6 @@ function QueryList({ createQuery, show }: QueryListProps) {
   };
 
   const loadQueryHandler = async () => {
-    // annabelle's refactor
     const options = {
       title: 'Upload Query',
       defaultPath: path.join(__dirname, '../assets/'),
@@ -140,8 +129,6 @@ function QueryList({ createQuery, show }: QueryListProps) {
           payload: query[0],
         });
       }
-
-      // setWorkingQuery(query[0]);
     } catch (error) {
       console.log(error);
     }
@@ -172,14 +159,11 @@ function QueryList({ createQuery, show }: QueryListProps) {
           // This key is used in the .map to create the group label for accordians
           key={`QueryList_${values[i].label}_${values[i].db}_group:::${values[i].group}`}
           query={values[i]}
-          select={
-            () =>
-              queryDispatchContext!({
-                type: 'UPDATE_WORKING_QUERIES',
-                payload: values[i],
-              })
-
-            // setWorkingQuery(values[i])
+          select={() =>
+            queryDispatchContext!({
+              type: 'UPDATE_WORKING_QUERIES',
+              payload: values[i],
+            })
           }
           isSelected={
             !!queryStateContext?.workingQuery &&
@@ -220,8 +204,6 @@ function QueryList({ createQuery, show }: QueryListProps) {
         type: 'UPDATE_FILEPATH',
         payload: filePath,
       });
-
-      // setFilePath(filePath);
     } catch (error) {
       console.log(error);
     }

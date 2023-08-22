@@ -1,24 +1,5 @@
 import { QueryActions } from '../Actions/QueryActions';
-import { QueryData, AppState } from '../../types';
-
-// type Field = {
-//   title: string;
-//   contents: string;
-// };
-
-// type Query = {
-//   group: string;
-//   label: string;
-//   database: string;
-//   active: boolean;
-//   compare: boolean;
-//   details: QueryData;
-// };
-
-// type QueryState = {
-//   fields: Field[];
-//   savedQueries: Query[];
-// };
+import { AppState } from '../../types';
 
 export interface QueryState {
   queries: AppState['queries'];
@@ -26,7 +7,7 @@ export interface QueryState {
   workingQuery: AppState['workingQuery'];
   newFilePath: AppState['newFilePath'];
 }
-// state: QueryState, action: QueryActions
+
 export const queryReducer = (
   state: QueryState,
   action: QueryActions,

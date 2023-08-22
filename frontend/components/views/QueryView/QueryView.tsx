@@ -45,26 +45,18 @@ const QueryViewContainer = styled.div`
 `;
 
 interface QueryViewProps {
-  // query?: AppState['workingQuery'];
-  // createNewQuery: CreateNewQuery;
   selectedDb: AppState['selectedDb'];
   setSelectedDb: AppState['setSelectedDb'];
-  // setQuery: AppState['setWorkingQuery'];
   show: boolean;
-  // queries: Record<string, QueryData>;
   curDBType: DBType | undefined;
   setDBType: (dbType: DBType | undefined) => void;
   DBInfo: DatabaseInfo[] | undefined;
 }
 
 function QueryView({
-  // query, //this is workingQuery
-  // createNewQuery, //this func is moved to queries
   selectedDb,
   setSelectedDb,
-  // setQuery, //this is setWorkingQuery
   show,
-  // queries,
   curDBType,
   setDBType,
   DBInfo,
@@ -98,7 +90,6 @@ function QueryView({
       type: 'UPDATE_WORKING_QUERIES',
       payload: { ...localQuery, label: newLabel },
     });
-    // setQuery({ ...localQuery, label: newLabel });
   };
 
   const onGroupChange = (newGroup: string) => {
@@ -106,7 +97,6 @@ function QueryView({
       type: 'UPDATE_WORKING_QUERIES',
       payload: { ...localQuery, group: newGroup },
     });
-    // setQuery({ ...localQuery, group: newGroup });
   };
 
   const onDbChange = (newDb: string, nextDBType: DBType) => {
@@ -124,7 +114,6 @@ function QueryView({
           type: 'UPDATE_WORKING_QUERIES',
           payload: { ...localQuery, db: newDb },
         });
-        // setQuery({ ...localQuery, db: newDb });
       })
 
       .catch(() =>
@@ -140,7 +129,6 @@ function QueryView({
       type: 'UPDATE_WORKING_QUERIES',
       payload: { ...localQuery, sqlString: newSql },
     });
-    // setQuery({ ...localQuery, sqlString: newSql });
   };
 
   const onRun = () => {
@@ -266,8 +254,6 @@ function QueryView({
             type: 'UPDATE_WORKING_QUERIES',
             payload: transformedData,
           });
-
-          // setQuery(transformedData);
         },
       )
       .then(() => {

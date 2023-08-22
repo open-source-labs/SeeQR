@@ -1,5 +1,6 @@
 import { ViewName } from '../../types';
 
+// these are currently the only possible actions that the app view can take
 export type AppViewStateAction =
   | { type: 'SELECTED_VIEW'; payload: ViewName }
   | { type: 'TOGGLE_SIDEBAR' }

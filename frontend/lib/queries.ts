@@ -79,11 +79,9 @@ export const createNewQuery: CreateNewQuery = (query: QueryData, queries) => {
     // Only save query to saved queries if it contains all minimum information
     if (query.label && query.db && query.sqlString && query.group) {
       const newQueries = createQuery(queries, query);
-      // setQueries(newQueries);
+
       return newQueries;
     }
-    // we must set working query to newly created query otherwise query view won't update
-    // setWorkingQuery(query);
   } catch (err) {
     console.log(err);
   }
