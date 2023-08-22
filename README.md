@@ -3,7 +3,7 @@
 <img src="./assets/readmeImages/logo_readme.png" height=300/>
 
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/oslabs-beta/SeeQR)
-![Release: 11.0.0](https://img.shields.io/badge/Release-11.0.0-red)
+![Release: 12.0.0](https://img.shields.io/badge/Release-11.0.0-red)
 ![License: MIT](https://img.shields.io/badge/License-MIT-orange.svg)
 ![Contributions Welcome](https://img.shields.io/badge/Contributions-welcome-blue.svg)
 [![Twitter](https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Ftwitter.com%2Ftheseeqr)](https://twitter.com/theseeqr)
@@ -15,7 +15,7 @@
 
 </div>
 
-### For the latest in-depth docs for v11.0.0, please visit our [docs site](http://www.seeqrapp.com/docs).
+### For the latest in-depth docs for v12.0.0, please visit our [docs site](http://www.seeqrapp.com/docs).
 
 ## Table of Contents
 
@@ -27,7 +27,6 @@
 - [Contributing](#contributing)
 - [Core Team](#core-team)
 - [License](#license)
-
 
 ## Getting Started
 
@@ -56,7 +55,6 @@ To get started on contributing and editing databases to this project:
 - [D3.js](https://github.com/d3/d3)
 - [Three-Spritetext](https://github.com/vasturiano/three-spritetext)
 
-
 ## Interface & Features
 
 - Overview
@@ -79,22 +77,25 @@ To get started on contributing and editing databases to this project:
 
   - In the 'DATABASES' view, an interactive Entity Relationship Diagram (`ER DIAGRAM`) is displayed for the selected database.
   - Users can select `TABLE` to see selected database in tabular form.
+
     - Users can select a table from a list of all the tables in the schema of the currently selected database.
+
       - Information about the selected table is then displayed.
       - The name and size of the selected database are also displayed at the top of the page.
       - Users can also generate large amounts of foreign-key compliant dummy data for the selected table in the current database. Currently supported data types are:
+
         - INT
         - BIGINT
         - VARCHAR
         - BOOLEAN
         - DATE
 
-  <br>
-  <div align="center">
-    <img src="./assets/readmeImages/gifs/dummy_data.gif" width=800/>
-  </div>
-<br>
-  
+          <br>
+          <div align="center">
+            <img src="./assets/readmeImages/gifs/dummy_data.gif" width=800/>
+          </div>
+        <br>
+
 - <strong>NEW</strong> 3D Database Visualization
   - From the 'DATABASES' view, select the '3D View' tab on the far right of the sidebar to launch the brand new 3D database visualizer.
     - Individual table nodes are distinguished by their different colors
@@ -103,25 +104,25 @@ To get started on contributing and editing databases to this project:
   - Navigate through the 3D space using left click to rotate, scroll wheel to zoom, and right click to pan.
   - Click and drag nodes to visually organize them
   - Click on a table or column node to quickly view the data stored within
-<br>
-<div align="center">
-  <img src="./assets/readmeImages/gifs/3dhome.gif" width=800/>
-</div>
-<br>
-<div align="center">
-  <img src="./assets/readmeImages/gifs/3dfk.gif" width=800/>
-</div>
-<br>
-<div align="center">
-  <img src="./assets/readmeImages/gifs/3dtables.gif" width=800/>
-</div>
+  <br>
+  <div align="center">
+    <img src="./assets/readmeImages/gifs/3dhome.gif" width=800/>
+  </div>
+  <br>
+  <div align="center">
+    <img src="./assets/readmeImages/gifs/3dfk.gif" width=800/>
+  </div>
+  <br>
+  <div align="center">
+    <img src="./assets/readmeImages/gifs/3dtables.gif" width=800/>
+  </div>
 
 <br>
 - Create/Edit Database
 
-  - Users can create a new database from scratch by clicking the `Create New Database` button at the bottom of the sidebar.
-  - Users can modify the newly created database as well as any existing databases using the `ER Diagram` to create/change/delete tables and columns.
-  - The `Export` button will write a .sql file on the user's desktop of the selected database.
+- Users can create a new database from scratch by clicking the `Create New Database` button at the bottom of the sidebar.
+- Users can modify the newly created database as well as any existing databases using the `ER Diagram` to create/change/delete tables and columns.
+- The `Export` button will write a .sql file on the user's desktop of the selected database.
 
 <br>
 <div align="center">
@@ -137,7 +138,7 @@ To get started on contributing and editing databases to this project:
     - Please note that only labelled queries will be saved in the current session for future references.
   - To execute the query, simply select the 'RUN QUERY' button at the bottom of the panel or press 'Ctrl-Enter' on the keyboard.
   - The 11th version now includes the functionality to run multiple queries, allowing users to obtain more reliable testing results.
-    <br />
+  <br />
   <div align="center">
     <img src="./assets/readmeImages/gifs/multisample.gif" width=800/>
   </div>
@@ -201,7 +202,7 @@ We've released SeeQR because it's a useful tool to help optimize SQL databases. 
 
 ## Core Team
 
-[Ching-Yuan Lai (Eric)](https://github.com/paranoidFrappe) | [Jamie Zhang](https://github.com/haemie) | [Julian Macalalag](https://github.com/juzi3) | [Nathan Chong](https://github.com/nathanhchong) | [Junaid Ahmed](https://github.com/junaid-ahmed7) | [Chase Sizemore](https://github.com/ChaseSizemore) | [Oscar Romero](https://github.com/creaturenex) | [Anthony Deng](https://github.com/anthonyadeng) | [Aya Moosa](https://github.com/Hiya-its-Aya) | [Trevor Ferguson](https://github.com/TrevorJFerguson) | [Pauline Nguyen](https://github.com/paulinekpn) | [Utkarsh Uppal](https://github.com/utyvert) | [Fred Jeong](https://github.com/fred-jeong) | [Gabriel Kime](https://github.com/wizardbusiness) | [Chris Fryer](github.com/frynoceros) | [Ian Grepo](https://github.com/RadiantGH) | [Michelle Chang](https://github.com/mkchang168) | [Jake Bradbeer](https://github.com/JBradbeer) | [Bryan Santos](https://github.com/santosb93) | [William Trey Lewis](https://github.com/treyfrog128) | [Brandon Lee](https://github.com/BrandonW-Lee) | [Casey Escovedo](https://github.com/caseyescovedo) | [Casey Walker](https://github.com/cwalker3011) | [Catherine Chiu](https://github.com/catherinechiu) | [Chris Akinrinade](https://github.com/chrisakinrinade) | [Cindy Chau](https://github.com/cindychau) | [Claudio Santos](https://github.com/Claudiohbsantos) | [Eric Han](https://github.com/ericJH92) | [Faraz Akhtar](https://github.com/faraza22) | [Frank Norton](https://github.com/FrankNorton32) | [Harrison Nam](https://github.com/harrynam07) | [James Kolotouros](https://github.com/dkolotouros) | [Jennifer Courtner](https://github.com/jcourtner) | [John Wagner](https://github.com/jwagner988) | [Justin Dury-Agri](https://github.com/justinD-A) | [Justin Hicks](https://github.com/JuiceBawks) | [Katie Klochan](https://github.com/kklochan) | [May Wirapa Boonyasurat](https://github.com/mimiwrp) | [Mercer Stronck](https://github.com/mercerstronck) | [Muhammad Trad](https://github.com/muhammadtrad) | [Richard Guo](https://github.com/richardguoo) | [Richard Lam](https://github.com/rlam108) | [Sam Frakes](https://github.com/frakes413) | [Serena Kuo](https://github.com/serenackuo) | [Timothy Sin](https://github.com/timothysin) | [Vincent Trang](https://github.com/vincentt114)
+[Annabelle Ni](https://github.com/annni11) | [Derek Koh](https://github.com/derekoko) | [Peter Zepf](https://github.com/peterzepf) | [Tony Gao](https://github.com/tgao17) | [Ching-Yuan Lai (Eric)](https://github.com/paranoidFrappe) | [Jamie Zhang](https://github.com/haemie) | [Julian Macalalag](https://github.com/juzi3) | [Nathan Chong](https://github.com/nathanhchong) | [Junaid Ahmed](https://github.com/junaid-ahmed7) | [Chase Sizemore](https://github.com/ChaseSizemore) | [Oscar Romero](https://github.com/creaturenex) | [Anthony Deng](https://github.com/anthonyadeng) | [Aya Moosa](https://github.com/Hiya-its-Aya) | [Trevor Ferguson](https://github.com/TrevorJFerguson) | [Pauline Nguyen](https://github.com/paulinekpn) | [Utkarsh Uppal](https://github.com/utyvert) | [Fred Jeong](https://github.com/fred-jeong) | [Gabriel Kime](https://github.com/wizardbusiness) | [Chris Fryer](github.com/frynoceros) | [Ian Grepo](https://github.com/RadiantGH) | [Michelle Chang](https://github.com/mkchang168) | [Jake Bradbeer](https://github.com/JBradbeer) | [Bryan Santos](https://github.com/santosb93) | [William Trey Lewis](https://github.com/treyfrog128) | [Brandon Lee](https://github.com/BrandonW-Lee) | [Casey Escovedo](https://github.com/caseyescovedo) | [Casey Walker](https://github.com/cwalker3011) | [Catherine Chiu](https://github.com/catherinechiu) | [Chris Akinrinade](https://github.com/chrisakinrinade) | [Cindy Chau](https://github.com/cindychau) | [Claudio Santos](https://github.com/Claudiohbsantos) | [Eric Han](https://github.com/ericJH92) | [Faraz Akhtar](https://github.com/faraza22) | [Frank Norton](https://github.com/FrankNorton32) | [Harrison Nam](https://github.com/harrynam07) | [James Kolotouros](https://github.com/dkolotouros) | [Jennifer Courtner](https://github.com/jcourtner) | [John Wagner](https://github.com/jwagner988) | [Justin Dury-Agri](https://github.com/justinD-A) | [Justin Hicks](https://github.com/JuiceBawks) | [Katie Klochan](https://github.com/kklochan) | [May Wirapa Boonyasurat](https://github.com/mimiwrp) | [Mercer Stronck](https://github.com/mercerstronck) | [Muhammad Trad](https://github.com/muhammadtrad) | [Richard Guo](https://github.com/richardguoo) | [Richard Lam](https://github.com/rlam108) | [Sam Frakes](https://github.com/frakes413) | [Serena Kuo](https://github.com/serenackuo) | [Timothy Sin](https://github.com/timothysin) | [Vincent Trang](https://github.com/vincentt114)
 
 ## License
 

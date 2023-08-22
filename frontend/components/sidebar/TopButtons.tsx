@@ -33,8 +33,11 @@ const StyledCompareIcon = styled(Equalizer)<StyledCompareButtonProps>`
 `;
 
 function TopButtons() {
+  // using the context from use context hook, all the app view state is from this.
   const appViewStateContext = useAppViewContext();
   const appViewDispatchContext = useAppViewDispatch();
+
+  // this function toggles the compare view
   const toggleCompareView = () => {
     if (appViewStateContext?.selectedView === 'compareView') {
       return appViewDispatchContext!({
@@ -48,6 +51,7 @@ function TopButtons() {
     });
   };
 
+  // Any of the tool tips are just for whenver you hover over the button, a tooltip will appear.
   return (
     <Container>
       <Tooltip title="Config">
