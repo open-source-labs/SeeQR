@@ -1,10 +1,16 @@
+// Mui imports
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { Drawer, IconButton, Tooltip } from '@mui/material/';
+
 import React from 'react';
 import styled from 'styled-components';
 import logo from '../../../assets/logo/seeqr_dock.png';
-import { AppState } from '../../types';
+
+// Types
+import { AppState, DatabaseInfo } from '../../types';
+import { DBType } from '../../../backend/BE_types';
+
 import BottomButtons from './BottomButtons';
 import DbList from './DbList';
 import QueryList from './QueryList';
@@ -87,23 +93,24 @@ const HideSidebarBtnContainer = styled.div`
   align-self: flex-end;
 `;
 
+interface SideBarProps {
+  selectedDb: AppState['selectedDb'];
+  setSelectedDb: AppState['setSelectedDb'];
+  setERView: AppState['setERView'];
+  curDBType: DBType | undefined;
+  setDBType: (dbType: DBType | undefined) => void;
+  DBInfo: DatabaseInfo[] | undefined;
+  queryDispatch: ({ type, payload }) => void;
+}
 function Sidebar({
-  setQueries,
-  createNewQuery,
-  comparedQueries,
-  setComparedQueries,
   selectedDb,
   setSelectedDb,
-  queries,
-  workingQuery,
-  setWorkingQuery,
-  setFilePath,
-  newFilePath,
   setERView,
   curDBType,
   setDBType,
   DBInfo,
-}: AppState) {
+  queryDispatch,
+}: SideBarProps) {
   // allowing the use of context and dispatch from the parent provider.
   const appViewStateContext = useAppViewContext();
   const appViewDispatchContext = useAppViewDispatch();
@@ -114,7 +121,12 @@ function Sidebar({
    */
   const showEmptyQuery = () => {
     appViewDispatchContext!({ type: 'SELECTED_VIEW', payload: 'queryView' });
-    setWorkingQuery(undefined);
+
+    queryDispatch({
+      type: 'UPDATE_WORKING_QUERIES',
+      payload: undefined,
+    });
+    // setWorkingQuery(undefined);
   };
 
   return (
@@ -153,20 +165,11 @@ function Sidebar({
         />
         {/* this is the view for all your queries that were saved whenever you ran a query */}
         <QueryList
-          createNewQuery={createNewQuery}
-          setComparedQueries={setComparedQueries}
-          comparedQueries={comparedQueries}
-          setQueries={setQueries}
-          queries={queries}
           createQuery={showEmptyQuery}
-          workingQuery={workingQuery}
-          setWorkingQuery={setWorkingQuery}
           show={
             appViewStateContext?.selectedView === 'queryView' ||
             appViewStateContext?.selectedView === 'compareView'
           }
-          setFilePath={setFilePath}
-          newFilePath={newFilePath}
         />
         <BottomButtons />
         <Logo src={logo} alt="Logo" />
