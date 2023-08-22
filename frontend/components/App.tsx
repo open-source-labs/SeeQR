@@ -94,7 +94,7 @@ function App() {
   );
 
   // initializing the initial viewState object
-
+  // this is the app views that will be passed through a provider to any children components wrapped in it. Right now, only sidebar is wrapped in it.
   const initialAppViewState: AppViewState = {
     selectedView: 'dbView',
     sideBarIsHidden: false,
@@ -105,6 +105,7 @@ function App() {
   };
 
   // creating the reducer to reduce all state changes to a single state object
+  // This reducer manages all the state calls for the app views
   const [appViewState, appViewDispatch] = useReducer(
     appViewStateReducer,
     initialAppViewState,
@@ -113,6 +114,7 @@ function App() {
   // tablesReducer stuff here
 
   // ---
+  // In the future, we'd love to see all of these state varaiables to be condensed to their own reducer.
   const [queries, setQueries] = useState<AppState['queries']>({});
   const [comparedQueries, setComparedQueries] = useState<AppState['queries']>(
     {},
