@@ -127,10 +127,14 @@ function App() {
     initialAppViewState,
   );
 
+  console.log('THIS IS APP VIEW STATE', appViewState);
+
   const [queryState, queryDispatch] = useReducer(
     queryReducer,
     initialQueryState,
   );
+
+  console.log('THIS IS QUERY STATE', queryState);
 
   // tablesReducer stuff here
 
@@ -264,21 +268,13 @@ function App() {
                   <AppViewContextDispatch.Provider value={appViewDispatch}>
                     <Sidebar
                       {...{
-                        queries,
-                        setQueries,
-                        comparedQueries,
-                        createNewQuery,
-                        setComparedQueries,
                         selectedDb,
                         setSelectedDb,
-                        workingQuery,
-                        setWorkingQuery,
-                        setFilePath,
-                        newFilePath,
                         setERView,
                         curDBType,
                         setDBType,
                         DBInfo,
+                        queryDispatch,
                       }}
                     />
                   </AppViewContextDispatch.Provider>
@@ -286,7 +282,7 @@ function App() {
 
                 <Main $fullwidth={appViewState.sideBarIsHidden}>
                   <CompareView
-                    queries={comparedQueries}
+                    queries={queryState.comparedQueries}
                     show={shownView === 'compareView'}
                   />
                   <DbView
@@ -301,13 +297,9 @@ function App() {
                     setSelectedTable={setSelectedTable}
                   />
                   <QueryView
-                    query={workingQuery}
-                    setQuery={setWorkingQuery}
                     selectedDb={selectedDb}
                     setSelectedDb={setSelectedDb}
-                    createNewQuery={createNewQuery}
                     show={shownView === 'queryView'}
-                    queries={queries}
                     curDBType={curDBType}
                     setDBType={setDBType}
                     DBInfo={DBInfo}
@@ -320,8 +312,8 @@ function App() {
                     dbType={curDBType}
                   />
                   <NewSchemaView
-                    query={workingQuery}
-                    setQuery={setWorkingQuery}
+                    query={queryState.workingQuery}
+                    queryDispatch={queryDispatch}
                     selectedDb={selectedDb}
                     setSelectedDb={setSelectedDb}
                     show={shownView === 'newSchemaView'}

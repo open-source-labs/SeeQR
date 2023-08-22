@@ -3,12 +3,7 @@ import React, { useState } from 'react';
 import { Button } from '@mui/material/';
 import Box from '@mui/material/Box';
 import styled from 'styled-components';
-import {
-  QueryData,
-  CreateNewQuery,
-  AppState,
-  DatabaseInfo,
-} from '../../../types';
+import { QueryData, AppState, DatabaseInfo } from '../../../types';
 import { DBType } from '../../../../backend/BE_types';
 import { defaultMargin } from '../../../style-variables';
 import { getPrettyTime, createNewQuery } from '../../../lib/queries';
@@ -50,13 +45,13 @@ const QueryViewContainer = styled.div`
 `;
 
 interface QueryViewProps {
-  query?: AppState['workingQuery'];
-  createNewQuery: CreateNewQuery;
+  // query?: AppState['workingQuery'];
+  // createNewQuery: CreateNewQuery;
   selectedDb: AppState['selectedDb'];
   setSelectedDb: AppState['setSelectedDb'];
-  setQuery: AppState['setWorkingQuery'];
+  // setQuery: AppState['setWorkingQuery'];
   show: boolean;
-  queries: Record<string, QueryData>;
+  // queries: Record<string, QueryData>;
   curDBType: DBType | undefined;
   setDBType: (dbType: DBType | undefined) => void;
   DBInfo: DatabaseInfo[] | undefined;
@@ -74,7 +69,7 @@ function QueryView({
   setDBType,
   DBInfo,
 }: QueryViewProps) {
-  // using query state and dispatch functions
+  // using query state context and dispatch functions
   const queryStateContext = useQueryContext();
   const queryDispatchContext = useQueryDispatch();
 
@@ -94,7 +89,7 @@ function QueryView({
     averageSampleTime: 0,
   };
 
-  const localQuery = { ...defaultQuery, ...queryStateContext.workingQuery };
+  const localQuery = { ...defaultQuery, ...queryStateContext?.workingQuery };
 
   const [runQueryNumber, setRunQueryNumber] = useState(1);
 
@@ -247,7 +242,7 @@ function QueryView({
             };
           }
 
-          const keys: string[] = Object.keys(queries);
+          const keys: string[] = Object.keys(queryStateContext!.queries);
           for (let i = 0; i < keys.length; i++) {
             if (
               keys[i].includes(`db:${localQuery.db} group:${localQuery.group}`)
@@ -258,7 +253,7 @@ function QueryView({
               });
             }
           }
-          createNewQuery(transformedData, queryStateContext.queries);
+          createNewQuery(transformedData, queryStateContext?.queries);
           queryDispatchContext!({
             type: 'UPDATE_WORKING_QUERIES',
             payload: transformedData,
@@ -294,8 +289,8 @@ function QueryView({
           dbTypes={dbTypes}
         />
         <QueryTopSummary
-          rows={queryStateContext.workingQuery?.returnedRows?.length}
-          totalTime={getPrettyTime(queryStateContext.workingQuery)}
+          rows={queryStateContext?.workingQuery?.returnedRows?.length}
+          totalTime={getPrettyTime(queryStateContext?.workingQuery)}
         />
       </TopRow>
       <QuerySqlInput
@@ -313,11 +308,11 @@ function QueryView({
         </RunButton>
       </CenterButton>
       <QuerySummary
-        executionPlan={queryStateContext.workingQuery?.executionPlan}
+        executionPlan={queryStateContext?.workingQuery?.executionPlan}
       />
       <QueryTabs
-        results={queryStateContext.workingQuery?.returnedRows}
-        executionPlan={queryStateContext.workingQuery?.executionPlan}
+        results={queryStateContext?.workingQuery?.returnedRows}
+        executionPlan={queryStateContext?.workingQuery?.executionPlan}
       />
     </QueryViewContainer>
   );

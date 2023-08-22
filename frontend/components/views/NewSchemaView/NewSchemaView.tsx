@@ -3,11 +3,7 @@ import React, { useState } from 'react';
 import { Button, Typography } from '@mui/material/';
 import Box from '@mui/material/Box';
 import styled from 'styled-components';
-import {
-  QueryData,
-  AppState,
-  TableInfo,
-} from '../../../types';
+import { QueryData, AppState, TableInfo } from '../../../types';
 import { DBType } from '../../../../backend/BE_types';
 import { defaultMargin } from '../../../style-variables';
 
@@ -69,7 +65,8 @@ const NewSchemaViewContainer = styled.div`
 // props interface
 interface NewSchemaViewProps {
   query?: AppState['workingQuery'];
-  setQuery: AppState['setWorkingQuery'];
+  // setQuery: AppState['setWorkingQuery'];
+  queryDispatch: any;
   setSelectedDb: AppState['setSelectedDb'];
   selectedDb: AppState['selectedDb'];
   show: boolean;
@@ -81,7 +78,8 @@ interface NewSchemaViewProps {
 
 function NewSchemaView({
   query,
-  setQuery,
+  // setQuery,
+  queryDispatch,
   setSelectedDb,
   selectedDb,
   show,
@@ -110,7 +108,11 @@ function NewSchemaView({
 
   // handles naming of schema
   const onNameChange = (newName: string) => {
-    setQuery({ ...localQuery, db: newName });
+    queryDispatch({
+      type: 'UPDATE_WORKING_QUERIES',
+      payload: { ...localQuery, db: newName },
+    });
+    // setQuery({ ...localQuery, db: newName });
     setSelectedDb(newName);
   };
 
@@ -118,7 +120,11 @@ function NewSchemaView({
   const onSqlChange = (newSql: string) => {
     // because App's workingQuery changes ref
     setCurrentSql(newSql);
-    setQuery({ ...localQuery, sqlString: newSql });
+    queryDispatch({
+      type: 'UPDATE_WORKING_QUERIES',
+      payload: { ...localQuery, sqlString: newSql },
+    });
+    // setQuery({ ...localQuery, sqlString: newSql });
   };
 
   // handle intializing new schema
