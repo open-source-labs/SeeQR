@@ -232,12 +232,15 @@ function QueryView({
 
           const keys: string[] = Object.keys(queryStateContext!.queries);
           for (let i = 0; i < keys.length; i++) {
+            console.log(keys[i]);
             if (
-              keys[i].includes(`db:${localQuery.db} group:${localQuery.group}`)
+              keys[i].includes(
+                `label:${localQuery?.label} group:${localQuery?.group}`,
+              )
             ) {
               return sendFeedback({
                 type: 'info',
-                message: `${localQuery.db} already exists in ${localQuery.group}`,
+                message: `${localQuery.label} already exists in ${localQuery.group}`,
               });
             }
           }
