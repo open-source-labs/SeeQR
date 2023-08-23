@@ -13,7 +13,7 @@ type MenuActions =
   | {
       type: 'ASYNC_TRIGGER';
       loading: 'LOADING';
-      payload: async;
+      options: async;
     }
   | {
       type: 'ASYNC_TRIGGER';

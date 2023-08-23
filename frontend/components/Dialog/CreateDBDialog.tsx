@@ -1,9 +1,5 @@
-import React, { useState } from 'react';
-import {
-  DialogTitle,
-  Dialog,
-  Tooltip,
-} from '@mui/material/';
+import React, { useContext, useState } from 'react';
+import { DialogTitle, Dialog, Tooltip } from '@mui/material/';
 import { ipcRenderer } from 'electron';
 import { DatabaseInfo } from '../../types';
 import { DBType } from '../../../backend/BE_types';
@@ -18,15 +14,18 @@ import {
   StyledNativeDropdown,
   StyledNativeOption,
 } from '../../style-variables';
+import MenuContext from '../../state_management/Contexts/MenuContext';
 
 interface CreateDBDialogProps {
-  show: boolean,
+  show: boolean;
   DBInfo: DatabaseInfo[] | undefined;
   onClose: () => void;
 }
 
 function CreateDBDialog({ show, DBInfo, onClose }: CreateDBDialogProps) {
   if (!show) return <></>;
+  console.log('arrived here');
+  const { dispatch: menuDispatch } = useContext(MenuContext);
 
   const [newDbName, setNewDbName] = useState('');
   const [isError, setIsError] = useState(false);
@@ -72,28 +71,34 @@ function CreateDBDialog({ show, DBInfo, onClose }: CreateDBDialogProps) {
     setNewDbName(dbSafeName);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (handleClose) => {
     // it needs to be as any because otherwise typescript thinks it doesn't have a 'value' param idk why
     const dbt: DBType = (document.getElementById('dbTypeDropdown') as any)
       .value;
 
-    ipcRenderer
-      .invoke(
-        'initialize-db',
-        {
-          newDbName,
-        },
-        dbt,
-      )
-      .then(() => {
-        handleClose();
-      })
-      .catch((err) => {
-        sendFeedback({
-          type: 'error',
-          message: err ?? 'Failed to initialize db',
-        });
-      });
+    // ipcRenderer
+    //   .invoke('initialize-db', {
+    //     newDbName,
+    //     dbType: dbt,
+    //   })
+    //   .then(() => {
+    //     handleClose();
+    //   })
+    //   .catch((err) => {
+    //     sendFeedback({
+    //       type: 'error',
+    //       message: err ?? 'Failed to initialize db',
+    //     });
+    //   });
+    menuDispatch({
+      type: 'ASYNC_TRIGGER',
+      loading: 'LOADING',
+      options: {
+        event: 'initialize-db',
+        payload: { newDbName, dbType: dbt },
+        callback: handleClose,
+      },
+    });
   };
 
   return (
@@ -140,9 +145,7 @@ function CreateDBDialog({ show, DBInfo, onClose }: CreateDBDialogProps) {
             <StyledNativeOption value={DBType.Postgres}>
               Postgres
             </StyledNativeOption>
-            <StyledNativeOption value={DBType.MySQL}>
-              MySQL
-            </StyledNativeOption>
+            <StyledNativeOption value={DBType.MySQL}>MySQL</StyledNativeOption>
             <StyledNativeOption value={DBType.RDSPostgres}>
               RDS Postgres
             </StyledNativeOption>
@@ -167,7 +170,9 @@ function CreateDBDialog({ show, DBInfo, onClose }: CreateDBDialogProps) {
           <StyledButton
             variant="contained"
             color="primary"
-            onClick={isEmpty || isError ? () => { } : handleSubmit}
+            onClick={
+              isEmpty || isError ? () => {} : () => handleSubmit(handleClose)
+            }
           >
             Confirm
           </StyledButton>

@@ -37,6 +37,7 @@ interface DuplicatePayload {
 interface ImportPayload {
   newDbName: string;
   filePath: string;
+  dbType: DBType;
 }
 
 interface ExportPayload extends ImportPayload {
@@ -291,8 +292,7 @@ export async function duplicateDb(
 
 export async function importDb(
   event,
-  { newDbName, filePath }: ImportPayload,
-  dbType: DBType,
+  { newDbName, filePath, dbType }: ImportPayload,
 ) {
   logger(`Received 'import-db'" of dbType: ${dbType} and: `, LogType.RECEIVE);
   event.sender.send('async-started');

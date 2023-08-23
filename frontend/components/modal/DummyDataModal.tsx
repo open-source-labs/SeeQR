@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Dialog } from '@mui/material/';
 import { ipcRenderer } from 'electron';
 import {
@@ -10,11 +10,13 @@ import {
 } from '../../style-variables';
 import { sendFeedback } from '../../lib/utils';
 import { DBType } from '../../../backend/BE_types';
+import MenuContext from '../../state_management/Contexts/MenuContext';
 
 interface DummyPayload {
   dbName: string;
   tableName: string;
   rows: number;
+  dbType: DBType;
 }
 
 type DummyDataModalProps = {
@@ -32,6 +34,8 @@ function DummyDataModal({
   tableName,
   curDBType,
 }: DummyDataModalProps) {
+  const { dispatch: menuDispatch } = useContext(MenuContext);
+
   const [rowNum, setRowNum] = useState(0);
   const [isError, setIsError] = useState(false);
   const [isEmpty, setIsEmpty] = useState(true);
@@ -81,9 +85,16 @@ function DummyDataModal({
   };
 
   // Event handler to send rows to backend
-  const handleClick = () => {
+  const handleClick = (
+    close: () => void,
+    db: string,
+    table: string,
+    rows: number,
+    dbType: DBType,
+  ) => {
     // Check if dbName is given and not undefined
     if (!dbName || !tableName) {
+      // TODO feedback
       return sendFeedback({
         type: 'error',
         message: 'Failed to generate dummy data',
@@ -91,21 +102,34 @@ function DummyDataModal({
     }
 
     const payload: DummyPayload = {
-      dbName,
-      tableName,
-      rows: rowNum,
+      dbName: db,
+      tableName: table,
+      rows,
+      dbType,
     };
 
-    ipcRenderer
-      .invoke('generate-dummy-data', payload, curDBType)
-      .catch(() => sendFeedback({
-        type: 'error',
-        message: 'Failed to generate dummy data',
-      }))
-      .catch((err: object) => {
-      // console.log(err);
-      })
-      .finally(handleClose);
+    // ipcRenderer
+    //   .invoke('generate-dummy-data', payload)
+    //   .catch(() =>
+    //     sendFeedback({
+    //       type: 'error',
+    //       message: 'Failed to generate dummy data',
+    //     }),
+    //   )
+    //   .catch((err: object) => {
+    //     // console.log(err);
+    //   })
+    //   .finally(close);
+
+    menuDispatch({
+      type: 'ASYNC_TRIGGER',
+      loading: 'LOADING',
+      options: {
+        event: 'generate-dummy-data',
+        payload,
+        callback: close,
+      },
+    });
   };
 
   return (
@@ -146,7 +170,19 @@ function DummyDataModal({
           <StyledButton
             variant="contained"
             color="primary"
-            onClick={isError || isEmpty ? () => {} : handleClick}
+            onClick={
+              isError || isEmpty
+                ? () => {}
+                : () =>
+                    // the ORs are here bc typescript doesn't know about the isError isEmpty checks
+                    handleClick(
+                      handleClose,
+                      dbName || '',
+                      tableName || '',
+                      rowNum,
+                      curDBType || DBType.Postgres,
+                    )
+            }
           >
             Generate
           </StyledButton>
