@@ -3,11 +3,7 @@ import React, { useState } from 'react';
 import { Button, Typography } from '@mui/material/';
 import Box from '@mui/material/Box';
 import styled from 'styled-components';
-import {
-  QueryData,
-  AppState,
-  TableInfo,
-} from '../../../types';
+import { QueryData, AppState, TableInfo } from '../../../types';
 import { DBType } from '../../../../backend/BE_types';
 import { defaultMargin } from '../../../style-variables';
 
@@ -18,6 +14,11 @@ import { sendFeedback } from '../../../lib/utils';
 import SchemaName from './SchemaName';
 import TablesTabs from '../DbView/TablesTabBar';
 import SchemaSqlInput from './SchemaSqlInput';
+
+import {
+  useQueryContext,
+  useQueryDispatch,
+} from '../../../state_management/Contexts/QueryContext';
 
 // top row container
 const TopRow = styled(Box)`
@@ -68,8 +69,6 @@ const NewSchemaViewContainer = styled.div`
 
 // props interface
 interface NewSchemaViewProps {
-  query?: AppState['workingQuery'];
-  setQuery: AppState['setWorkingQuery'];
   setSelectedDb: AppState['setSelectedDb'];
   selectedDb: AppState['selectedDb'];
   show: boolean;
@@ -80,8 +79,6 @@ interface NewSchemaViewProps {
 }
 
 function NewSchemaView({
-  query,
-  setQuery,
   setSelectedDb,
   selectedDb,
   show,
@@ -90,6 +87,10 @@ function NewSchemaView({
   selectedTable,
   setSelectedTable,
 }: NewSchemaViewProps) {
+  // using query state context and dispatch functions
+  const queryStateContext = useQueryContext();
+  const queryDispatchContext = useQueryDispatch();
+
   const [currentSql, setCurrentSql] = useState('');
 
   const TEMP_DBTYPE = DBType.Postgres;
@@ -106,11 +107,15 @@ function NewSchemaView({
     averageSampleTime: 0,
   };
 
-  const localQuery = { ...defaultQuery, ...query };
+  const localQuery = { ...defaultQuery, ...queryStateContext!.workingQuery };
 
   // handles naming of schema
   const onNameChange = (newName: string) => {
-    setQuery({ ...localQuery, db: newName });
+    queryDispatchContext!({
+      type: 'UPDATE_WORKING_QUERIES',
+      payload: { ...localQuery, db: newName },
+    });
+
     setSelectedDb(newName);
   };
 
@@ -118,7 +123,10 @@ function NewSchemaView({
   const onSqlChange = (newSql: string) => {
     // because App's workingQuery changes ref
     setCurrentSql(newSql);
-    setQuery({ ...localQuery, sqlString: newSql });
+    queryDispatchContext!({
+      type: 'UPDATE_WORKING_QUERIES',
+      payload: { ...localQuery, sqlString: newSql },
+    });
   };
 
   // handle intializing new schema

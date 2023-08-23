@@ -7,7 +7,6 @@ import {
   intializeDb,
   updateDb,
   erTableSchemaUpdate,
-  // REVIEW: Derek added getPath function.
   getPath,
 } from './handlers/dbCRUDHandler';
 import {
@@ -39,7 +38,6 @@ ipcMain.handle('drop-db', dropDb);
 ipcMain.handle('duplicate-db', duplicateDb);
 ipcMain.handle('import-db', importDb);
 ipcMain.handle('export-db', exportDb);
-// REVIEW: Derek adding new handler for get file path.
 ipcMain.handle('get-path', getPath);
 
 // // db CRUD functionalities

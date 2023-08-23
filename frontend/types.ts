@@ -13,16 +13,16 @@ export type ViewName =
   | 'threeDView'; // added for new chart
 
 export interface AppState {
-  createNewQuery: CreateNewQuery;
+  // createNewQuery: CreateNewQuery;
   selectedDb: string;
   setSelectedDb: (selDb: string) => void;
   workingQuery: QueryData | undefined;
-  setWorkingQuery: (selQuery: QueryData | undefined) => void;
+  // setWorkingQuery: (selQuery: any) => void;
   queries: Record<string, QueryData>;
-  setQueries: (queries: Record<string, QueryData>) => void;
+  // setQueries: (queries: Record<string, QueryData>) => void;
   comparedQueries: Record<string, QueryData>;
-  setComparedQueries: (comparedQueries: Record<string, QueryData>) => void;
-  setFilePath: (filePath: string) => void;
+  // setComparedQueries: (comparedQueries: Record<string, QueryData>) => void;
+  // setFilePath: (filePath: string) => void;
   newFilePath: string;
   setERView?: (boolean) => void;
   curDBType: DBType | undefined;
@@ -40,7 +40,7 @@ export interface FilePath {
   filePath: string;
 }
 
-export type CreateNewQuery = (query: QueryData) => void;
+export type CreateNewQuery = (query: QueryData, queries: any) => void;
 
 export interface QueryData {
   /**

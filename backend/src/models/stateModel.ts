@@ -2,25 +2,6 @@ import { dbsInputted, DBType } from '../../../shared/types/dbTypes';
 import { DocConfigFile } from '../../BE_types';
 import { defaultFile } from './configModel';
 
-// export const defaultFile: DocConfigFile = {
-//   mysql_options: { user: '', password: '', port: 3306 },
-//   pg_options: { user: '', password: '', port: 5432 },
-//   rds_mysql_options: {
-//     user: '',
-//     password: '',
-//     port: 3306,
-//     host: '',
-//   },
-//   rds_pg_options: {
-//     user: '',
-//     password: '',
-//     port: 5432,
-//     host: '',
-//   },
-//   sqlite_options: { filename: '' },
-//   directPGURI_options: { connectionString: '' },
-// };
-
 type DBState = DocConfigFile & {
   dbsInputted: dbsInputted;
   currentERD: DBType;
