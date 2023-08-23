@@ -77,11 +77,12 @@ export const getAppDataPath = (file: 'sql' | 'json' = 'json') => {
 export const createNewQuery: CreateNewQuery = (query: QueryData, queries) => {
   try {
     // Only save query to saved queries if it contains all minimum information
-    if (query.label && query.db && query.sqlString && query.group) {
+    if (query?.label && query?.db && query?.sqlString && query?.group) {
       const newQueries = createQuery(queries, query);
 
       return newQueries;
     }
+    return [];
   } catch (err) {
     console.log(err);
   }
