@@ -8,7 +8,7 @@ import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
 import ClickedNodeDetail from './detailOfClickedNode';
 
-const ThreeDUniverse = ({ selectedDb, dbTables, dbType }) => {
+function ThreeDUniverse({ selectedDb, dbTables, dbType }) {
   // Define the width and height of the universe container
   const maxContainerWidth = window.innerWidth * 0.9 - 350;
   const width = Math.min(window.innerWidth, maxContainerWidth);
@@ -181,8 +181,8 @@ const ThreeDUniverse = ({ selectedDb, dbTables, dbType }) => {
   };
   const graphRef = useRef();
   useEffect(() => {
-    var positions = [];
-    var colors = [];
+    const positions = [];
+    const colors = [];
 
     // Get the random coordinate at distance is radius
     function getRandomInSphere(radius) {
@@ -201,9 +201,9 @@ const ThreeDUniverse = ({ selectedDb, dbTables, dbType }) => {
     d3.range(7777).map((d, i) => {
       // Generate random coordinate for each star
       const arr = getRandomInSphere(3351);
-      var x = arr[0];
-      var y = arr[1];
-      var z = arr[2];
+      const x = arr[0];
+      const y = arr[1];
+      const z = arr[2];
       // stars' coordinate
       positions.push(x, y, z);
       // stars' color
@@ -302,7 +302,7 @@ const ThreeDUniverse = ({ selectedDb, dbTables, dbType }) => {
             (font) => {
               // Create a text mesh for the cell
               const textGeometry = new TextGeometry(strrr, {
-                font: font,
+                font,
                 size: 4,
                 height: 2,
               });
@@ -331,7 +331,8 @@ const ThreeDUniverse = ({ selectedDb, dbTables, dbType }) => {
               node.__threeObj.add(table);
             },
           );
-        });
+        })
+        .catch((err) => console.log(err));
     }
 
     if (node.type === 'column') {
@@ -401,7 +402,7 @@ const ThreeDUniverse = ({ selectedDb, dbTables, dbType }) => {
             (font) => {
               // Create a text mesh for the cell
               const textGeometry = new TextGeometry(strrr, {
-                font: font,
+                font,
                 size: 4,
                 height: 2,
               });
@@ -430,7 +431,8 @@ const ThreeDUniverse = ({ selectedDb, dbTables, dbType }) => {
               node.__threeObj.add(table);
             },
           );
-        });
+        })
+        .catch((err) => console.log(err));
     }
   }
 
@@ -497,6 +499,6 @@ const ThreeDUniverse = ({ selectedDb, dbTables, dbType }) => {
       )}
     </>
   );
-};
+}
 
 export default ThreeDUniverse;

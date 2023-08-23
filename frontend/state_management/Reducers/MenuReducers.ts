@@ -73,7 +73,7 @@ function menuReducer(state: MenuState, action: MenuActions): MenuState {
       oldLoading.issued += 1;
       // construct element of async tracker
       const queueItem = {
-        ...action.payload,
+        ...action.options,
       };
 
       // add this async request to the asyncList using its issued count as an id

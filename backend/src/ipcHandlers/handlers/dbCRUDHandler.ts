@@ -21,6 +21,7 @@ const { createDBFunc } = helperFunctions;
 interface InitializePayload {
   // handle initialization of a new schema from frontend (newSchemaView)
   newDbName: string;
+  dbType: DBType;
 }
 
 interface UpdatePayload {
@@ -42,18 +43,14 @@ interface UpdatePayload {
  * 4. send a feedback back to frontend
  */
 
-export async function intializeDb(
-  event,
-  payload: InitializePayload,
-  dbType: DBType,
-) {
+export async function intializeDb(event, payload: InitializePayload) {
+  const { newDbName, dbType } = payload;
   logger(
     `Received 'initialize-db' of dbType: ${dbType} and: `,
     LogType.RECEIVE,
     payload,
   );
   event.sender.send('async-started');
-  const { newDbName } = payload;
 
   try {
     // create new empty db

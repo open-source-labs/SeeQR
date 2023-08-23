@@ -1,4 +1,3 @@
-import fs from 'fs';
 import path from 'path';
 import AddIcon from '@mui/icons-material/Add';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -9,9 +8,9 @@ import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Typography from '@mui/material/Typography';
-import { dialog, ipcRenderer } from 'electron';
-import React from 'react';
+import React, { useContext } from 'react';
 import styled from 'styled-components';
+import { ipcRenderer } from 'electron';
 import {
   deleteQuery,
   getAppDataPath,
@@ -35,6 +34,7 @@ import {
   useQueryContext,
   useQueryDispatch,
 } from '../../state_management/Contexts/QueryContext';
+import MenuContext from '../../state_management/Contexts/MenuContext';
 
 const QueryText = styled(StyledListItemText)`
   & .MuiListItemText-secondary {
@@ -52,12 +52,15 @@ type QueryListProps = {
 };
 
 function QueryList({ createQuery, show }: QueryListProps) {
+  const { dispatch: menuDispatch } = useContext(MenuContext);
+
   // using query state context and dispatch functions
   const queryStateContext = useQueryContext();
   const queryDispatchContext = useQueryDispatch();
 
   const deleteQueryHandler = (query: QueryData) => () => {
-    const tempQueries = deleteQuery(queryStateContext!.queries, query);
+    if (!queryStateContext) return;
+    const tempQueries = deleteQuery(queryStateContext.queries, query);
 
     queryDispatchContext!({
       type: 'UPDATE_QUERIES',
@@ -65,7 +68,7 @@ function QueryList({ createQuery, show }: QueryListProps) {
     });
 
     const tempComparedQueries = deleteQuery(
-      queryStateContext!.comparedQueries,
+      queryStateContext.comparedQueries,
       query,
     );
 
@@ -77,9 +80,10 @@ function QueryList({ createQuery, show }: QueryListProps) {
 
   const setComparisonHandler =
     (query: QueryData) => (evt: React.ChangeEvent<HTMLInputElement>) => {
+      if (!queryStateContext) return;
       const tempQueries = setCompare(
-        queryStateContext!.comparedQueries,
-        queryStateContext!.queries,
+        queryStateContext.comparedQueries,
+        queryStateContext.queries,
         query,
         evt.target.checked,
       );
@@ -90,9 +94,31 @@ function QueryList({ createQuery, show }: QueryListProps) {
       });
     };
 
-  const saveQueryHandler = (query: QueryData, newFilePath: string) => () => {
-    saveQuery(query, newFilePath);
+  const saveQueryHandler = (query: QueryData, filePath: string) => () => {
+    saveQuery(query, filePath);
   };
+
+  // const loadQueryHandler = async () => {
+  //   // annabelle's refactor
+  //   const options = {
+  //     title: 'Upload Query',
+  //     defaultPath: path.join(__dirname, '../assets/'),
+  //     buttonLabel: 'Upload',
+  //     filters: [
+  //       {
+  //         name: 'Text Files',
+  //         extensions: ['json', 'docx', 'txt'],
+  //       },
+  //     ],
+  //   };
+
+  //   try {
+  //     const filePath = await ipcRenderer.invoke('showOpenDialog', options);
+  //     setFilePath(filePath);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   const loadQueryHandler = async () => {
     const options = {
@@ -106,6 +132,16 @@ function QueryList({ createQuery, show }: QueryListProps) {
         },
       ],
     };
+    // const setFilepathCallback = (val) => setFilePath(val);
+    // menuDispatch({
+    //   type: 'ASYNC_TRIGGER',
+    //   loading: 'LOADING',
+    //   options: {
+    //     event: 'showOpenDialog',
+    //     payload: options,
+    //     callback: setFilepathCallback,
+    //   },
+    // });
 
     try {
       // grab the file path of where the query is saved
@@ -117,7 +153,8 @@ function QueryList({ createQuery, show }: QueryListProps) {
 
       // create a new query
       if (query) {
-        const newQueries = createNewQuery(query[0], queryStateContext!.queries);
+        if (!queryStateContext) return;
+        const newQueries = createNewQuery(query[0], queryStateContext?.queries);
 
         queryDispatchContext!({
           type: 'UPDATE_QUERIES',
@@ -135,8 +172,8 @@ function QueryList({ createQuery, show }: QueryListProps) {
   };
 
   if (!show) return null;
-
-  const values: Array<QueryData> = Object.values(queryStateContext!.queries);
+  if (!queryStateContext) return null;
+  const values: Array<QueryData> = Object.values(queryStateContext.queries);
   const accordians: object = {};
 
   // Algorithm to create the entrys to be bundled into accoridans
@@ -174,7 +211,7 @@ function QueryList({ createQuery, show }: QueryListProps) {
           setComparison={setComparisonHandler(values[i])}
           saveThisQuery={saveQueryHandler(
             values[i],
-            queryStateContext!.newFilePath,
+            queryStateContext.newFilePath,
           )}
         />
       );
@@ -189,24 +226,28 @@ function QueryList({ createQuery, show }: QueryListProps) {
 
   // function to store user-selected file path in state
 
-  const designateFile = async () => {
+  const designateFile = () => {
+    // REVIEW: not sure if supposed to move this to it's own ipcMain
     const options = {
       title: 'Choose File Path',
       defaultPath: `${getAppDataPath()}`,
       buttonLabel: 'Select Path',
       filters: [{ name: 'JSON', extensions: ['json'] }],
     };
-
-    try {
-      const filePath = await ipcRenderer.invoke('showSaveDialog', options);
-
+    const setFilePathCallback = (val) =>
       queryDispatchContext!({
         type: 'UPDATE_FILEPATH',
-        payload: filePath,
+        payload: val,
       });
-    } catch (error) {
-      console.log(error);
-    }
+    menuDispatch({
+      type: 'ASYNC_TRIGGER',
+      loading: 'LOADING',
+      options: {
+        event: 'showSaveDialog',
+        payload: options,
+        callback: setFilePathCallback,
+      },
+    });
   };
 
   return (
@@ -219,13 +260,13 @@ function QueryList({ createQuery, show }: QueryListProps) {
         </Tooltip>
 
         <Tooltip title="Import Query">
-          <IconButton onClick={loadQueryHandler} size="large">
+          <IconButton onClick={() => loadQueryHandler()} size="large">
             <UploadFileIcon fontSize="large" />
           </IconButton>
         </Tooltip>
 
         <Tooltip title="Designate Save Location">
-          <IconButton onClick={designateFile} size="large">
+          <IconButton onClick={() => designateFile()} size="large">
             <DriveFileMoveIcon fontSize="large" />
           </IconButton>
         </Tooltip>
