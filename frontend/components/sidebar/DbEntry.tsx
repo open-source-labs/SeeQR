@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import {
   IconButton,
   ListItemSecondaryAction,
@@ -18,7 +18,6 @@ import { SidebarListItem, StyledListItemText } from '../../style-variables';
 import { sendFeedback } from '../../lib/utils';
 import { DBType } from '../../../backend/BE_types';
 import { getAppDataPath } from '../../lib/queries';
-import MenuContext from '../../state_management/Contexts/MenuContext';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -31,37 +30,21 @@ interface DbEntryProps {
 }
 
 function DbEntry({ db, isSelected, select, duplicate, dbType }: DbEntryProps) {
-  const { dispatch: menuDispatch } = useContext(MenuContext);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
-  const handleDelete = (dbName: string, dbt: DBType) => {
-    // ipcRenderer
-    //   .invoke('drop-db', db, isSelected, dbType)
-    //   .then(() => {
-    //    if (isSelected) select('', dbType);
-    //     setIsDeleteDialogOpen(false);
-    //   })
-    //   .catch(() =>
-    //     sendFeedback({ type: 'error', message: `Failed to delete ${db}` }),
-    //   );
-    menuDispatch({
-      type: 'ASYNC_TRIGGER',
-      loading: 'LOADING',
-      options: {
-        event: 'drop-db',
-        payload: {
-          dbName,
-          dbType: dbt,
-        },
-        callback: () => {
-          if (isSelected) select('', dbt);
-          setIsDeleteDialogOpen(false);
-        },
-      },
-    });
+  const handleDelete = () => {
+    ipcRenderer
+      .invoke('drop-db', db, isSelected, dbType)
+      .then(() => {
+        if (isSelected) select('', dbType);
+        setIsDeleteDialogOpen(false);
+      })
+      .catch(() =>
+        sendFeedback({ type: 'error', message: `Failed to delete ${db}` }),
+      );
   };
 
-  /*   const handleExportDB = async () => {
+  const handleExportDB = async () => {
     const options = {
       title: 'Choose File Path',
       defaultPath: `${getAppDataPath('sql')}`,
@@ -81,35 +64,6 @@ function DbEntry({ db, isSelected, select, duplicate, dbType }: DbEntryProps) {
     } catch (error) {
       console.log(error);
     }
-  }; */
-
-  const handleExportDB = () => {
-    const options = {
-      title: 'Choose File Path',
-      defaultPath: `${getAppDataPath('sql')}`,
-      buttonLabel: 'Save',
-      filters: [{ name: 'SQL', extensions: ['sql'] }],
-    };
-
-    const callback = (result) => {
-      menuDispatch({
-        type: 'ASYNC_TRIGGER',
-        loading: 'LOADING',
-        options: {
-          event: 'export-db',
-          payload: { db, filePath: result, dbType },
-        },
-      });
-    };
-    menuDispatch({
-      type: 'ASYNC_TRIGGER',
-      loading: 'LOADING',
-      options: {
-        event: 'showSaveDialog',
-        payload: options,
-        callback,
-      },
-    });
   };
 
   return (
@@ -160,11 +114,7 @@ function DbEntry({ db, isSelected, select, duplicate, dbType }: DbEntryProps) {
             >
               Cancel
             </Button>
-            <Button
-              onClick={() => handleDelete(db, dbType)}
-              color="primary"
-              autoFocus
-            >
+            <Button onClick={handleDelete} color="primary" autoFocus>
               Delete
             </Button>
           </DialogActions>
