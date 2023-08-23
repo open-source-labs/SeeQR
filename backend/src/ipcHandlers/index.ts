@@ -7,7 +7,6 @@ import {
   intializeDb,
   updateDb,
   erTableSchemaUpdate,
-  // REVIEW: Derek added getPath function.
   getPath,
 } from './handlers/dbCRUDHandler';
 import {
@@ -18,7 +17,7 @@ import {
   importDb,
   exportDb,
 } from './handlers/dbOpsHandler';
-import runQuery from './handlers/queryHandler';
+import { runQuery, readQuery } from './handlers/queryHandler';
 import {
   dummyData,
   showOpenDialog,
@@ -39,7 +38,6 @@ ipcMain.handle('drop-db', dropDb);
 ipcMain.handle('duplicate-db', duplicateDb);
 ipcMain.handle('import-db', importDb);
 ipcMain.handle('export-db', exportDb);
-// REVIEW: Derek adding new handler for get file path.
 ipcMain.handle('get-path', getPath);
 
 // // db CRUD functionalities
@@ -49,6 +47,7 @@ ipcMain.handle('ertable-schemaupdate', erTableSchemaUpdate);
 
 // // // query
 ipcMain.handle('run-query', runQuery);
+ipcMain.handle('read-query', readQuery);
 
 // // // misc (other events bundled together)
 ipcMain.handle('generate-dummy-data', dummyData);

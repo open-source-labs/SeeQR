@@ -9,6 +9,7 @@ interface CompareViewProps {
   show: boolean;
 }
 
+// compare view literally shows the compared view of the statistics of the queries.
 function CompareView({ queries, show }: CompareViewProps) {
   if (!show) return null;
   return (

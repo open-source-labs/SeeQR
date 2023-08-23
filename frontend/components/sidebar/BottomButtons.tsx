@@ -2,6 +2,10 @@ import React from 'react';
 import { ButtonGroup, Button } from '@mui/material/';
 import styled from 'styled-components';
 import { selectedColor, textColor, defaultMargin } from '../../style-variables';
+import {
+  useAppViewContext,
+  useAppViewDispatch,
+} from '../../state_management/Contexts/AppViewContext';
 
 const ViewBtnGroup = styled(ButtonGroup)`
   margin: ${defaultMargin} 5px;
@@ -14,35 +18,27 @@ interface ViewButtonProps {
   $isSelected: boolean;
 }
 
-// REVIEW: old code:
-// const ViewButton = styled(Button)`
-//   background: ${({ $isSelected }: ViewButtonProps) => ($isSelected ? textColor : selectedColor)};
-// `;
-
 const ViewButton = styled(Button)<ViewButtonProps>`
   background: ${({ $isSelected }: { $isSelected?: boolean }) =>
     $isSelected ? textColor : selectedColor};
 `;
 
-type BottomButtonProps = {
-  showCreateDialog: boolean;
-  setCreateDialog: (show: boolean) => void;
-};
-
 /**
  * Selector for view on sidebar. Updates App state with selected view
  */
-function BottomButtons({
-  showCreateDialog,
-  setCreateDialog,
-}: BottomButtonProps) {
+function BottomButtons() {
+  const appViewStateContext = useAppViewContext();
+  const appViewDispatchContext = useAppViewDispatch();
   return (
     <ViewBtnGroup variant="contained" fullWidth>
       <ViewButton
         onClick={() => {
-          setCreateDialog(true);
+          if (!appViewStateContext?.showCreateDialog)
+            appViewDispatchContext!({
+              type: 'TOGGLE_CONFIG_DIALOG',
+            });
         }}
-        $isSelected={showCreateDialog}
+        $isSelected={appViewStateContext!.showCreateDialog}
       >
         Create New Database
       </ViewButton>

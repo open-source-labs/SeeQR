@@ -4,7 +4,7 @@ import { DBType } from '../backend/BE_types';
  * This file contains common types that need to be used across the frontend
  */
 
-type ViewName =
+export type ViewName =
   | 'compareView'
   | 'dbView'
   | 'queryView'
@@ -13,19 +13,16 @@ type ViewName =
   | 'threeDView'; // added for new chart
 
 export interface AppState {
-  selectedView: ViewName;
-  setSelectedView: (selView: ViewName) => void;
+  // createNewQuery: CreateNewQuery;
   selectedDb: string;
   setSelectedDb: (selDb: string) => void;
   workingQuery: QueryData | undefined;
-  setWorkingQuery: (selQuery: QueryData | undefined) => void;
+  // setWorkingQuery: (selQuery: any) => void;
   queries: Record<string, QueryData>;
-  setQueries: (queries: Record<string, QueryData>) => void;
+  // setQueries: (queries: Record<string, QueryData>) => void;
   comparedQueries: Record<string, QueryData>;
-  setComparedQueries: (comparedQueries: Record<string, QueryData>) => void;
-  setSidebarHidden: (isHidden: boolean) => void;
-  sidebarIsHidden: boolean;
-  setFilePath: (filePath: string) => void;
+  // setComparedQueries: (comparedQueries: Record<string, QueryData>) => void;
+  // setFilePath: (filePath: string) => void;
   newFilePath: string;
   setERView?: (boolean) => void;
   curDBType: DBType | undefined;
@@ -36,9 +33,6 @@ export interface AppState {
   setTables?: (tableInfo: TableInfo[]) => void;
   selectedTable?: TableInfo | undefined;
   setSelectedTable?: (tableInfo: TableInfo | undefined) => void;
-  showCreateDialog: boolean;
-  setCreateDialog: (show: boolean) => void;
-  setConfigDialog: (show: boolean) => void;
 }
 
 export interface FilePath {
@@ -46,7 +40,7 @@ export interface FilePath {
   filePath: string;
 }
 
-export type CreateNewQuery = (query: QueryData) => void;
+export type CreateNewQuery = (query: QueryData, queries: any) => void;
 
 export interface QueryData {
   /**

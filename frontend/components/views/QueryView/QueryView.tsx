@@ -3,15 +3,10 @@ import React, { useState } from 'react';
 import { Button } from '@mui/material/';
 import Box from '@mui/material/Box';
 import styled from 'styled-components';
-import {
-  QueryData,
-  CreateNewQuery,
-  AppState,
-  DatabaseInfo,
-} from '../../../types';
+import { QueryData, AppState, DatabaseInfo } from '../../../types';
 import { DBType } from '../../../../backend/BE_types';
 import { defaultMargin } from '../../../style-variables';
-import { getPrettyTime } from '../../../lib/queries';
+import { getPrettyTime, createNewQuery } from '../../../lib/queries';
 import { sendFeedback } from '../../../lib/utils';
 import QueryGroup from './QueryGroup';
 import QueryLabel from './QueryLabel';
@@ -21,6 +16,11 @@ import QuerySqlInput from './QuerySqlInput';
 import QuerySummary from './QuerySummary';
 import QueryTabs from './QueryTabs';
 import QueryRunNumber from './QueryRunNumber';
+
+import {
+  useQueryContext,
+  useQueryDispatch,
+} from '../../../state_management/Contexts/QueryContext';
 
 const TopRow = styled(Box)`
   display: flex;
@@ -45,30 +45,26 @@ const QueryViewContainer = styled.div`
 `;
 
 interface QueryViewProps {
-  query?: AppState['workingQuery'];
-  createNewQuery: CreateNewQuery;
   selectedDb: AppState['selectedDb'];
   setSelectedDb: AppState['setSelectedDb'];
-  setQuery: AppState['setWorkingQuery'];
   show: boolean;
-  queries: Record<string, QueryData>;
   curDBType: DBType | undefined;
   setDBType: (dbType: DBType | undefined) => void;
   DBInfo: DatabaseInfo[] | undefined;
 }
 
 function QueryView({
-  query,
-  createNewQuery,
   selectedDb,
   setSelectedDb,
-  setQuery,
   show,
-  queries,
   curDBType,
   setDBType,
   DBInfo,
 }: QueryViewProps) {
+  // using query state context and dispatch functions
+  const queryStateContext = useQueryContext();
+  const queryDispatchContext = useQueryDispatch();
+
   // I think this returns undefined if DBInfo is falsy idk lol
   const dbNames = DBInfo?.map((dbi) => dbi.db_name);
   const dbTypes = DBInfo?.map((dbi) => dbi.db_type);
@@ -85,16 +81,22 @@ function QueryView({
     averageSampleTime: 0,
   };
 
-  const localQuery = { ...defaultQuery, ...query };
+  const localQuery = { ...defaultQuery, ...queryStateContext?.workingQuery };
 
   const [runQueryNumber, setRunQueryNumber] = useState(1);
 
   const onLabelChange = (newLabel: string) => {
-    setQuery({ ...localQuery, label: newLabel });
+    queryDispatchContext!({
+      type: 'UPDATE_WORKING_QUERIES',
+      payload: { ...localQuery, label: newLabel },
+    });
   };
 
   const onGroupChange = (newGroup: string) => {
-    setQuery({ ...localQuery, group: newGroup });
+    queryDispatchContext!({
+      type: 'UPDATE_WORKING_QUERIES',
+      payload: { ...localQuery, group: newGroup },
+    });
   };
 
   const onDbChange = (newDb: string, nextDBType: DBType) => {
@@ -108,17 +110,25 @@ function QueryView({
     ipcRenderer
       .invoke('select-db', newDb, nextDBType)
       .then(() => {
-        setQuery({ ...localQuery, db: newDb });
+        queryDispatchContext!({
+          type: 'UPDATE_WORKING_QUERIES',
+          payload: { ...localQuery, db: newDb },
+        });
       })
 
-      .catch(() => sendFeedback({
-        type: 'error',
-        message: `Failed to connect to ${newDb}`,
-      }));
+      .catch(() =>
+        sendFeedback({
+          type: 'error',
+          message: `Failed to connect to ${newDb}`,
+        }),
+      );
   };
   const onSqlChange = (newSql: string) => {
     // because App's workingQuery changes ref
-    setQuery({ ...localQuery, sqlString: newSql });
+    queryDispatchContext!({
+      type: 'UPDATE_WORKING_QUERIES',
+      payload: { ...localQuery, sqlString: newSql },
+    });
   };
 
   const onRun = () => {
@@ -149,85 +159,103 @@ function QueryView({
         },
         curDBType,
       )
-      .then(({
-        db, sqlString, returnedRows, explainResults, error,
-        numberOfSample,
-        totalSampleTime,
-        minimumSampleTime,
-        maximumSampleTime,
-        averageSampleTime,
-      }) => {
-        if (error) {
-          throw error;
-        }
-        let transformedData;
-
-        if (curDBType === DBType.Postgres) {
-          transformedData = {
-            sqlString,
-            returnedRows,
-            executionPlan: {
-              numberOfSample,
-              totalSampleTime,
-              minimumSampleTime,
-              maximumSampleTime,
-              averageSampleTime,
-              ...explainResults[0]['QUERY PLAN'][0],
-            },
-            label: localQuery.label,
-            db,
-            group: localQuery.group,
-          };
-        }
-        if (curDBType === DBType.MySQL) {
-          transformedData = {
-            sqlString,
-            returnedRows,
-            label: localQuery.label,
-            db,
-            group: localQuery.group,
-            executionPlan: {
-              numberOfSample,
-              totalSampleTime,
-              minimumSampleTime,
-              maximumSampleTime,
-              averageSampleTime,
-              // ...explainResults[0]['QUERY PLAN'][0],
-              ...explainResults,
-            },
-          };
-        }
-        if (curDBType === DBType.SQLite) {
-          transformedData = {
-            sqlString,
-            returnedRows,
-            label: localQuery.label,
-            db,
-            group: localQuery.group,
-            executionPlan: {
-              numberOfSample,
-              totalSampleTime,
-              minimumSampleTime,
-              maximumSampleTime,
-              averageSampleTime,
-              ...explainResults,
-            },
-          };
-        }
-
-        const keys: string[] = Object.keys(queries);
-        for (let i = 0; i < keys.length; i++) {
-          if (
-            keys[i].includes(`db:${localQuery.db} group:${localQuery.group}`)
-          ) {
-            return sendFeedback({
-              type: 'info',
-              message: `${localQuery.db} already exists in ${localQuery.group}`,
-            });
+      .then(
+        ({
+          db,
+          sqlString,
+          returnedRows,
+          explainResults,
+          error,
+          numberOfSample,
+          totalSampleTime,
+          minimumSampleTime,
+          maximumSampleTime,
+          averageSampleTime,
+        }) => {
+          if (error) {
+            throw error;
           }
-        }
-        createNewQuery(transformedData);
-      })
+          let transformedData;
+
+          if (curDBType === DBType.Postgres) {
+            transformedData = {
+              sqlString,
+              returnedRows,
+              executionPlan: {
+                numberOfSample,
+                totalSampleTime,
+                minimumSampleTime,
+                maximumSampleTime,
+                averageSampleTime,
+                ...explainResults[0]['QUERY PLAN'][0],
+              },
+              label: localQuery.label,
+              db,
+              group: localQuery.group,
+            };
+          }
+          if (curDBType === DBType.MySQL) {
+            transformedData = {
+              sqlString,
+              returnedRows,
+              label: localQuery.label,
+              db,
+              group: localQuery.group,
+              executionPlan: {
+                numberOfSample,
+                totalSampleTime,
+                minimumSampleTime,
+                maximumSampleTime,
+                averageSampleTime,
+                // ...explainResults[0]['QUERY PLAN'][0],
+                ...explainResults,
+              },
+            };
+          }
+          if (curDBType === DBType.SQLite) {
+            transformedData = {
+              sqlString,
+              returnedRows,
+              label: localQuery.label,
+              db,
+              group: localQuery.group,
+              executionPlan: {
+                numberOfSample,
+                totalSampleTime,
+                minimumSampleTime,
+                maximumSampleTime,
+                averageSampleTime,
+                ...explainResults,
+              },
+            };
+          }
+
+          const keys: string[] = Object.keys(queryStateContext!.queries);
+          for (let i = 0; i < keys.length; i++) {
+            if (
+              keys[i].includes(`db:${localQuery.db} group:${localQuery.group}`)
+            ) {
+              return sendFeedback({
+                type: 'info',
+                message: `${localQuery.db} already exists in ${localQuery.group}`,
+              });
+            }
+          }
+          const newQueries = createNewQuery(
+            transformedData,
+            queryStateContext?.queries,
+          );
+          queryDispatchContext!({
+            type: 'UPDATE_QUERIES',
+            payload: newQueries,
+          });
+
+          queryDispatchContext!({
+            type: 'UPDATE_WORKING_QUERIES',
+            payload: transformedData,
+          });
+        },
+      )
       .then(() => {
         localQuery.sqlString = '';
       })
@@ -256,8 +284,8 @@ function QueryView({
           dbTypes={dbTypes}
         />
         <QueryTopSummary
-          rows={query?.returnedRows?.length}
-          totalTime={getPrettyTime(query)}
+          rows={queryStateContext?.workingQuery?.returnedRows?.length}
+          totalTime={getPrettyTime(queryStateContext?.workingQuery)}
         />
       </TopRow>
       <QuerySqlInput
@@ -265,16 +293,21 @@ function QueryView({
         onChange={onSqlChange}
         runQuery={onRun}
       />
-      <QueryRunNumber runNumber={runQueryNumber} onChange={onRunQueryNumChange} />
+      <QueryRunNumber
+        runNumber={runQueryNumber}
+        onChange={onRunQueryNumChange}
+      />
       <CenterButton>
         <RunButton variant="contained" onClick={onRun}>
           Run Query
         </RunButton>
       </CenterButton>
-      <QuerySummary executionPlan={query?.executionPlan} />
+      <QuerySummary
+        executionPlan={queryStateContext?.workingQuery?.executionPlan}
+      />
       <QueryTabs
-        results={query?.returnedRows}
-        executionPlan={query?.executionPlan}
+        results={queryStateContext?.workingQuery?.returnedRows}
+        executionPlan={queryStateContext?.workingQuery?.executionPlan}
       />
     </QueryViewContainer>
   );

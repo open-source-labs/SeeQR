@@ -1,21 +1,20 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { ipcRenderer } from 'electron';
-import {
-  IconButton, Tooltip, Menu, MenuItem,
-} from '@mui/material';
+import { IconButton, Tooltip, Menu, MenuItem } from '@mui/material';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import AddNewDbModal from '../modal/AddNewDbModalCorrect';
-import {
-  AppState,
-  DatabaseInfo,
-} from '../../types';
+import { AppState, DatabaseInfo } from '../../types';
 import { DBType } from '../../../backend/BE_types';
 import { sendFeedback } from '../../lib/utils';
 import DuplicateDbModal from '../modal/DuplicateDbModal';
 import DbEntry from './DbEntry';
 import { SidebarList, greyDarkest } from '../../style-variables';
+import {
+  useAppViewContext,
+  useAppViewDispatch,
+} from '../../state_management/Contexts/AppViewContext';
 
 const StyledSidebarList = styled(SidebarList)`
   background-color: ${greyDarkest};
@@ -28,7 +27,7 @@ const StyledSidebarList = styled(SidebarList)`
   }
   ::-webkit-scrollbar-track {
     border-radius: 5px;
-    background: rgba(255, 255, 255, .1);
+    background: rgba(255, 255, 255, 0.1);
   }
   ::-webkit-scrollbar-thumb {
     background: white;
@@ -36,26 +35,20 @@ const StyledSidebarList = styled(SidebarList)`
   }
 `;
 
-type DbListProps = Pick<
-  AppState,
-  'selectedDb' | 'setSelectedDb' | 'setSelectedView'
-> & {
+type DbListProps = Pick<AppState, 'selectedDb' | 'setSelectedDb'> & {
   show: boolean;
   curDBType: DBType | undefined;
   setDBType: (dbType: DBType | undefined) => void;
   DBInfo: DatabaseInfo[] | undefined;
-  selectedView: AppState['selectedView'];
 };
 
 function DbList({
   selectedDb,
   setSelectedDb,
-  setSelectedView,
   show,
   curDBType,
   setDBType,
   DBInfo,
-  selectedView,
 }: DbListProps) {
   const [openAdd, setOpenAdd] = useState(false);
   const [openDupe, setOpenDupe] = useState(false);
@@ -68,6 +61,9 @@ function DbList({
 
   // I think this returns undefined if DBInfo is falsy idk lol
   const dbNames = DBInfo?.map((dbi) => dbi.db_name);
+
+  const appViewStateContext = useAppViewContext();
+  const appViewDispatchContext = useAppViewDispatch();
 
   const handleClickOpenAdd = () => {
     setOpenAdd(true);
@@ -87,7 +83,17 @@ function DbList({
   };
 
   const selectHandler = (dbName: string, cdbt: DBType | undefined) => {
-    setSelectedView(selectedView === 'threeDView' ? 'threeDView' : 'dbView');
+    if (appViewStateContext?.selectedView === 'threeDView') {
+      appViewDispatchContext!({
+        type: 'SELECTED_VIEW',
+        payload: 'threeDView',
+      });
+    } else {
+      appViewDispatchContext!({
+        type: 'SELECTED_VIEW',
+        payload: 'dbView',
+      });
+    }
     if (dbName === selectedDb) return;
     ipcRenderer
       .invoke('select-db', dbName, cdbt)
@@ -95,10 +101,12 @@ function DbList({
         setSelectedDb(dbName);
         setDBType(cdbt);
       })
-      .catch(() => sendFeedback({
-        type: 'error',
-        message: `Failed to connect to ${dbName}`,
-      }));
+      .catch(() =>
+        sendFeedback({
+          type: 'error',
+          message: `Failed to connect to ${dbName}`,
+        }),
+      );
   };
 
   const handleClickFilter = (e: React.MouseEvent<HTMLElement>) => {
@@ -111,7 +119,14 @@ function DbList({
   };
 
   //  filter options
-  const dbNamesArr = ['All', 'MySql', 'Postgres', 'RDS Mysql', 'RDS Postgres', 'SQLite'];
+  const dbNamesArr = [
+    'All',
+    'MySql',
+    'Postgres',
+    'RDS Mysql',
+    'RDS Postgres',
+    'SQLite',
+  ];
 
   const dbNamesObj = {
     All: 'all',
@@ -141,7 +156,12 @@ function DbList({
           onClose={handleCloseFilter}
         >
           {dbNamesArr.map((option) => (
-            <MenuItem key={option} selected={option === filterBy} onClick={handleCloseFilter} sx={{ color: 'black' }}>
+            <MenuItem
+              key={option}
+              selected={option === filterBy}
+              onClick={handleCloseFilter}
+              sx={{ color: 'black' }}
+            >
               {option}
             </MenuItem>
           ))}

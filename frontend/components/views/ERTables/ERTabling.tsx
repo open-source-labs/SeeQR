@@ -68,6 +68,7 @@ const StyledViewButton = styled(Button)`
   padding: 0.45em;
 `;
 
+// the ERTabling componenet is what deals with the ER Diagram view and it's positioning. All of this gets converted to react flow, as for the backendObj, this is what gets sent to the backend to run all the queries.
 function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
   const [schemaState, setSchemaState] = useState<SchemaStateObjType>({
     database: 'initial',
@@ -95,18 +96,9 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
     updates,
   });
 
-  // No idea why this is here. It doesn't seem to be used anywhere
-  // const backendColumnObj = useRef({
-  //   database: schemaState.database,
-  //   updates,
-  // });
-
   // whenever the selectedDb changes, reassign the backendObj to contain this selectedDb
   useEffect(() => {
     backendObj.current.database = selectedDb;
-    console.log('backendObj: ', backendObj);
-
-    // backendColumnObj.current.database = selectedDb;
   }, [selectedDb]);
 
   // whenever the node changes, this callback gets invoked
@@ -136,11 +128,11 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
     backendObj.current.updates.addTables.push(addTableObj);
     // push a new object with blank properties
     schemaStateCopy.tableList.push(addTableObj);
-    // set the state
+    // set the state, which worries about the table positions.
     setSchemaState(schemaStateCopy);
   };
 
-  // REVIEW: derek - old code :  const handleSaveLayout = (): void => {
+  // This function is supposed to handle the layout saving of the positions of the tables.
   const handleSaveLayout = async (): Promise<void> => {
     // get the array of header nodes
     const headerNodes = nodes.filter(
@@ -148,7 +140,6 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
     ) as TableHeaderNodeType[];
     // create object for the current database
 
-    console.log(headerNodes);
     type TablePosObjType = {
       table_name: string;
       table_position: {
@@ -176,22 +167,7 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
       currDatabaseLayout.db_tables.push(tablePosObj);
     });
 
-    // TODO: OLD CODE
-    // const location: string = remote.app
-    // REVIEW:
-    // const location: string = app
-    //   .getPath('temp')
-    //   .concat('/UserTableLayouts.json');
-    // fs.readFile(location, 'utf-8', (err, data) => {
-    //   // check if error exists (no file found)
-    //   if (err) {
-    //     fs.writeFile(
-    //       location,
-    //       JSON.stringify([currDatabaseLayout], null, 2),
-    //       (error) => {
-    //         if (error) console.log(error);
-    //       },
-    //     );
+    // what this is doing is it's creating a json file in your temp folder and saving the layout of the tables in there. so positioning is all saved locally.
     const location: string = await ipcRenderer.invoke('get-path', 'temp');
     const filePath = location.concat('/UserTableLayouts.json');
 
@@ -226,6 +202,8 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
       }
     });
   };
+
+  // When you click the save button, you save the layout of the tables and you send a very large object to the backend containing all of the changes.
   function handleClickSave(): void {
     // This function sends a message to the back end with
     // the data in backendObj.current
@@ -234,7 +212,6 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
       .invoke('ertable-schemaupdate', backendObj.current, selectedDb, curDBType)
       .then(async () => {
         // resets the backendObj
-        console.log('inside the handleClick save', backendObj.current);
         backendObj.current = {
           database: schemaState.database,
           updates,

@@ -48,6 +48,25 @@ import menuReducer, {
 } from '../state_management/Reducers/MenuReducers';
 import invoke from '../lib/electronHelper';
 
+import {
+  appViewStateReducer,
+  AppViewState,
+} from '../state_management/Reducers/AppViewReducer';
+import {
+  AppViewContextState,
+  AppViewContextDispatch,
+} from '../state_management/Contexts/AppViewContext';
+
+// Query Context and Reducer Imports
+import {
+  QueryContextState,
+  QueryContextDispatch,
+} from '../state_management/Contexts/QueryContext';
+import {
+  queryReducer,
+  QueryState,
+} from '../state_management/Reducers/QueryReducers';
+
 declare module '@mui/material/styles/' {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
   interface DefaultTheme extends Theme {}
@@ -84,20 +103,43 @@ function App() {
     [menuState],
   );
 
+  // initializing the initial viewState object
+  // this is the app views that will be passed through a provider to any children components wrapped in it. Right now, only sidebar is wrapped in it.
+  const initialAppViewState: AppViewState = {
+    selectedView: 'dbView',
+    sideBarIsHidden: false,
+    showConfigDialog: false,
+    showCreateDialog: false,
+    PG_isConnected: false,
+    MYSQL_isConnected: false,
+  };
+
+  const initialQueryState: QueryState = {
+    queries: {},
+    comparedQueries: {},
+    workingQuery: undefined,
+    newFilePath: '',
+  };
+
+  // creating the reducer to reduce all state changes to a single state object
+  // This reducer manages all the state calls for the app views
+  const [appViewState, appViewDispatch] = useReducer(
+    appViewStateReducer,
+    initialAppViewState,
+  );
+  // this reducer manages query states
+  const [queryState, queryDispatch] = useReducer(
+    queryReducer,
+    initialQueryState,
+  );
+
   // tablesReducer stuff here
 
   // ---
-  const [queries, setQueries] = useState<AppState['queries']>({});
-  const [comparedQueries, setComparedQueries] = useState<AppState['queries']>(
-    {},
-  );
-  const [workingQuery, setWorkingQuery] = useState<AppState['workingQuery']>();
-  const [selectedView, setSelectedView] =
-    useState<AppState['selectedView']>('dbView');
+  // In the future, we'd love to see all of these state varaiables to be condensed to their own reducer.
 
   const [selectedDb, setSelectedDb] = useState<AppState['selectedDb']>('');
-  const [sidebarIsHidden, setSidebarHidden] = useState(false);
-  const [newFilePath, setFilePath] = useState<AppState['newFilePath']>('');
+
   const [ERView, setERView] = useState(true);
 
   const [DBInfo, setDBInfo] = useState<DatabaseInfo[]>();
@@ -105,11 +147,6 @@ function App() {
 
   const [dbTables, setTables] = useState<TableInfo[]>([]);
   const [selectedTable, setSelectedTable] = useState<TableInfo | undefined>();
-
-  const [PG_isConnected, setPGStatus] = useState(false);
-  const [MYSQL_isConnected, setMYSQLStatus] = useState(false);
-  const [showCreateDialog, setCreateDialog] = useState(false);
-  const [showConfigDialog, setConfigDialog] = useState(false);
 
   /**
    * New central source of async calls
@@ -139,8 +176,16 @@ function App() {
     const dbListFromBackend = (dbLists: DbLists) => {
       setDBInfo(dbLists.databaseList);
       setTables(dbLists.tableList);
-      setPGStatus(dbLists.databaseConnected.PG);
-      setMYSQLStatus(dbLists.databaseConnected.MySQL);
+      appViewDispatch({
+        type: 'IS_PG_CONNECTED',
+        payload: dbLists.databaseConnected.PG,
+      });
+
+      appViewDispatch({
+        type: 'IS_MYSQL_CONNECTED',
+        payload: dbLists.databaseConnected.MySQL,
+      });
+
       // setSelectedTable(selectedTable || dbTables[0]);
     };
     menuDispatch({
@@ -153,23 +198,10 @@ function App() {
     });
   }, []);
 
-  /**
-   * Hook to create new Query from data
-   */
-  const createNewQuery: CreateNewQuery = (query: QueryData) => {
-    // Only save query to saved queries if it contains all minimum information
-    if (query.label && query.db && query.sqlString && query.group) {
-      const newQueries = createQuery(queries, query);
-      setQueries(newQueries);
-    }
-    // we must set working query to newly created query otherwise query view won't update
-    setWorkingQuery(query);
-  };
-
   // determine which view should be visible depending on selected view and
   // prerequisites for each view
-  let shownView: AppState['selectedView'];
-  switch (selectedView) {
+  let shownView;
+  switch (appViewState.selectedView) {
     case 'compareView':
       shownView = 'compareView';
       break;
@@ -181,7 +213,7 @@ function App() {
       shownView = 'dbView';
       break;
     case 'queryView':
-      if (!queries.selected && !selectedDb) {
+      if (!queryState.queries.selected && !selectedDb) {
         shownView = 'quickStartView';
         break;
       }
@@ -207,88 +239,82 @@ function App() {
           <AppContainer>
             <CssBaseline />
             <GlobalStyle />
-            <Sidebar
-              {...{
-                queries,
-                setQueries,
-                comparedQueries,
-                setComparedQueries,
-                selectedView,
-                setSelectedView,
-                selectedDb,
-                setSelectedDb,
-                workingQuery,
-                setWorkingQuery,
-                setSidebarHidden,
-                sidebarIsHidden,
-                setFilePath,
-                newFilePath,
-                setERView,
-                curDBType,
-                setDBType,
-                DBInfo,
-                showCreateDialog,
-                setCreateDialog,
-                setConfigDialog,
-              }}
-            />
-            <Main $fullwidth={sidebarIsHidden}>
-              <CompareView
-                queries={comparedQueries}
-                show={shownView === 'compareView'}
-              />
-              <DbView
-                selectedDb={selectedDb}
-                show={shownView === 'dbView'}
-                setERView={setERView}
-                ERView={ERView}
-                curDBType={curDBType}
-                DBInfo={DBInfo}
-                dbTables={dbTables}
-                selectedTable={selectedTable}
-                setSelectedTable={setSelectedTable}
-              />
-              <QueryView
-                query={workingQuery}
-                setQuery={setWorkingQuery}
-                selectedDb={selectedDb}
-                setSelectedDb={setSelectedDb}
-                createNewQuery={createNewQuery}
-                show={shownView === 'queryView'}
-                queries={queries}
-                curDBType={curDBType}
-                setDBType={setDBType}
-                DBInfo={DBInfo}
-              />
-              <QuickStartView show={shownView === 'quickStartView'} />
-              <ThreeDView
-                show={shownView === 'threeDView'}
-                selectedDb={selectedDb}
-                dbTables={dbTables}
-                dbType={curDBType}
-              />
-              <NewSchemaView
-                query={workingQuery}
-                setQuery={setWorkingQuery}
-                selectedDb={selectedDb}
-                setSelectedDb={setSelectedDb}
-                show={shownView === 'newSchemaView'}
-                curDBType={curDBType}
-                dbTables={dbTables}
-                selectedTable={selectedTable}
-                setSelectedTable={setSelectedTable}
-              />
-              <ConfigView
-                show={showConfigDialog}
-                onClose={() => setConfigDialog(false)}
-              />
-              <CreateDBDialog
-                show={showCreateDialog}
-                DBInfo={DBInfo}
-                onClose={() => setCreateDialog(false)}
-              />
-            </Main>
-            <FeedbackModal />
+            <QueryContextState.Provider value={queryState}>
+              <QueryContextDispatch.Provider value={queryDispatch}>
+                <AppViewContextState.Provider value={appViewState}>
+                  <AppViewContextDispatch.Provider value={appViewDispatch}>
+                    <Sidebar
+                      {...{
+                        selectedDb,
+                        setSelectedDb,
+                        setERView,
+                        curDBType,
+                        setDBType,
+                        DBInfo,
+                        queryDispatch,
+                      }}
+                    />
+                  </AppViewContextDispatch.Provider>
+                </AppViewContextState.Provider>
+
+                <Main $fullwidth={appViewState.sideBarIsHidden}>
+                  <CompareView
+                    queries={queryState.comparedQueries}
+                    show={shownView === 'compareView'}
+                  />
+                  <DbView
+                    selectedDb={selectedDb}
+                    show={shownView === 'dbView'}
+                    setERView={setERView}
+                    ERView={ERView}
+                    curDBType={curDBType}
+                    DBInfo={DBInfo}
+                    dbTables={dbTables}
+                    selectedTable={selectedTable}
+                    setSelectedTable={setSelectedTable}
+                  />
+                  <QueryView
+                    selectedDb={selectedDb}
+                    setSelectedDb={setSelectedDb}
+                    show={shownView === 'queryView'}
+                    curDBType={curDBType}
+                    setDBType={setDBType}
+                    DBInfo={DBInfo}
+                  />
+                  <QuickStartView show={shownView === 'quickStartView'} />
+                  <ThreeDView
+                    show={shownView === 'threeDView'}
+                    selectedDb={selectedDb}
+                    dbTables={dbTables}
+                    dbType={curDBType}
+                  />
+                  <NewSchemaView
+                    selectedDb={selectedDb}
+                    setSelectedDb={setSelectedDb}
+                    show={shownView === 'newSchemaView'}
+                    curDBType={curDBType}
+                    dbTables={dbTables}
+                    selectedTable={selectedTable}
+                    setSelectedTable={setSelectedTable}
+                  />
+
+                  <ConfigView
+                    show={appViewState.showConfigDialog}
+                    onClose={() =>
+                      appViewDispatch({ type: 'TOGGLE_CONFIG_DIALOG' })
+                    }
+                  />
+                  <CreateDBDialog
+                    show={appViewState.showCreateDialog}
+                    DBInfo={DBInfo}
+                    onClose={() =>
+                      appViewDispatch({ type: 'TOGGLE_CREATE_DIALOG' })
+                    }
+                  />
+                </Main>
+                <FeedbackModal />
+              </QueryContextDispatch.Provider>
+            </QueryContextState.Provider>
           </AppContainer>
         </MenuContext.Provider>
       </ThemeProvider>

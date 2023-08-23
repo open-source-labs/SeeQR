@@ -1,6 +1,4 @@
 import React from 'react';
-// REVIEW: old import data:
-// import { Bar, ChartData, defaults } from 'react-chartjs-2';
 import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJs,
@@ -13,7 +11,7 @@ import {
 } from 'chart.js';
 import styled from 'styled-components';
 import { getTotalTime } from '../../../lib/queries';
-import { compareChartColors, textColor } from '../../../style-variables';
+import { compareChartColors } from '../../../style-variables';
 import { AppState } from '../../../types';
 
 const ChartContainer = styled.div`
@@ -36,10 +34,7 @@ ChartJs.register(
  * determine which queries to include in comparison
  */
 
-const getChartData = (
-  queries: AppState['queries'],
-  // REVIEW: Changed type from ChartData<Chart.ChartData> to any. need to fix this.
-): any => {
+const getChartData = (queries: AppState['queries']): any => {
   /**
    * Gets next color from defined pallete.
    */
@@ -70,7 +65,7 @@ const getChartData = (
 
   // Algorithm for grouping speeds by group
   const groups: object = {};
-  for (let i = 0; i < uniqueLabels.length; i++) {
+  for (let i = 0; i < uniqueLabels.length; i += 1) {
     if (groups[queries[uniqueLabels[i]].db]) {
       groups[queries[uniqueLabels[i]].db].push(uniqueLabels[i]);
     } else {
@@ -97,39 +92,6 @@ interface CompareChartProps {
   queries: AppState['queries'];
 }
 
-// REVIEW: old code
-// function CompareChart({ queries }: CompareChartProps) {
-//   return (
-//     <ChartContainer>
-//       <Bar
-//         data={getChartData(queries)}
-//         options={{
-//           title: {
-//             display: true,
-//             text: 'QUERY GROUP VS RUNTIME (ms)',
-//             fontSize: 16,
-//           },
-//           legend: {
-//             display: true,
-//             position: 'right',
-//           },
-//           scales: {
-//             yAxes: [
-//               {
-//                 ticks: {
-//                   beginAtZero: true,
-//                 },
-//               },
-//             ],
-//           },
-//           maintainAspectRatio: false,
-//         }}
-//       />
-//     </ChartContainer>
-//   );
-// }
-
-// REVIEW: it's probably broken, but i'll get to this later.
 function CompareChart({ queries }: CompareChartProps) {
   return (
     <ChartContainer>

@@ -152,20 +152,6 @@ export const SidebarListItem = styled(ListItemButton)<SidebarListItemProps>`
   }
 `;
 
-// REVIEW: old code:
-// export const SidebarListItem = styled(ListItemButton)`
-//   color: ${({ $customSelected }: SidebarListItemProps) => ($customSelected ? selectedColor : textColor)};
-//   background: transparent;
-//   border-bottom: 1px solid transparent;
-//   border-top: 1px solid transparent;
-//   width: 100%
-//   &:hover {
-//     background: transparent;
-//     border-bottom: 1px solid ${hoverColor};
-//     border-top: 1px solid ${hoverColor};
-//   }
-// `;
-
 export const DarkPaperFull = styled(({ ...other }) => (
   <Paper elevation={8} {...other} />
 ))`

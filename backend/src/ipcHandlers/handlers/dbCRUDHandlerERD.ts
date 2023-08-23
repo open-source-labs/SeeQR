@@ -27,8 +27,6 @@ import queryModel from '../../models/queryModel';
  */
 
 export async function erTableSchemaUpdate(event, updatesArray: ErdUpdatesType) {
-  console.log('updatesArray: ', updatesArray);
-
   // send notice to front end that schema update has started
   event.sender.send('async-started');
   let feedback: Feedback = {

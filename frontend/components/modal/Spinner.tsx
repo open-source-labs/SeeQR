@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { BackdropProps, LinearProgress } from '@mui/material';
+import { LinearProgress } from '@mui/material';
 import { ipcRenderer } from 'electron';
 import styled, { ExecutionContext } from 'styled-components';
 
@@ -13,8 +13,7 @@ const StyledLinearProg = styled(LinearProgress)<Props>`
   height: 5px;
   visibility: ${(props?) => (props.$show ? 'visible' : 'hidden')};
 `;
-// REVIEW: old code for line 10
-// ${({ $show? }: { $show: boolean }) => ($show ? 'visible' : 'hidden')};
+
 let delayTimer: NodeJS.Timeout;
 const delay = 500;
 

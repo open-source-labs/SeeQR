@@ -7,7 +7,7 @@
 import fs from 'fs';
 import path from 'path';
 import ms from 'ms';
-import { AppState, QueryData } from '../types';
+import { AppState, QueryData, CreateNewQuery } from '../types';
 import { sendFeedback } from './utils';
 
 /**
@@ -68,6 +68,22 @@ export const getAppDataPath = (file: 'sql' | 'json' = 'json') => {
     default:
       // console.log("Unsupported platform!");
       return process.exit(1);
+  }
+};
+
+/**
+ * create new Query from data
+ */
+export const createNewQuery: CreateNewQuery = (query: QueryData, queries) => {
+  try {
+    // Only save query to saved queries if it contains all minimum information
+    if (query.label && query.db && query.sqlString && query.group) {
+      const newQueries = createQuery(queries, query);
+
+      return newQueries;
+    }
+  } catch (err) {
+    console.log(err);
   }
 };
 

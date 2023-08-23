@@ -3,14 +3,7 @@ import React from 'react';
 import FormatPaintIcon from '@mui/icons-material/FormatPaint';
 import { ButtonGroup, Button, Tooltip } from '@mui/material';
 import styled from 'styled-components';
-// REVIEW: OLD code:
-// import { format } from 'sql-formatter';
-import {
-  DialectOptions,
-  formatDialect,
-  mysql,
-  postgresql,
-} from 'sql-formatter';
+import { formatDialect, postgresql } from 'sql-formatter';
 
 import CodeMirror from '@uiw/react-codemirror';
 import { dracula } from '@uiw/codemirror-theme-dracula';
@@ -44,8 +37,6 @@ interface SchemaSqlInputProps {
 
 function SchemaSqlInput({ sql, onChange, runQuery }: SchemaSqlInputProps) {
   const formatQuery = () => {
-    // REVIEW: OLD CODE:
-    // const formatted = format(sql, { language: 'postgresql', uppercase: true });
     const formatted = formatDialect(sql, {
       dialect: postgresql,
       keywordCase: 'upper',

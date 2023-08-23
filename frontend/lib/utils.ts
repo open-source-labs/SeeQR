@@ -29,12 +29,7 @@ export const readingTime = (str: string) => {
  * Emit feedback event that can be listened to by ipcRenderer.
  * Used to send messages to FeedbackModal.tsx
  */
-// REVIEW: I need to revisit this because it definitely doesn't work
+
 export const sendFeedback = async (feedback: Feedback) => {
-  // TODO: Old code
-  // const rendererId = window
-  //   .require('electron')
-  //   .remote.getCurrentWebContents().id;
-  // ipcRenderer.sendTo(rendererId, 'feedback', feedback);
   await ipcRenderer.invoke('feedback', feedback);
 };
