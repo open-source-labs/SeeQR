@@ -24,7 +24,7 @@ interface CreateDBDialogProps {
 
 function CreateDBDialog({ show, DBInfo, onClose }: CreateDBDialogProps) {
   if (!show) return <></>;
-
+  console.log('arrived here');
   const { dispatch: menuDispatch } = useContext(MenuContext);
 
   const [newDbName, setNewDbName] = useState('');

@@ -4,6 +4,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import React, { useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import styled from 'styled-components';
 
+import { ipcRenderer, IpcRendererEvent } from 'electron';
 import GlobalStyle from '../GlobalStyle';
 
 import { DBType } from '../../backend/BE_types';
@@ -14,6 +15,7 @@ import {
   CreateNewQuery,
   DatabaseInfo,
   DbLists,
+  isDbLists,
   QueryData,
   TableInfo,
 } from '../types';
@@ -147,6 +149,24 @@ function App() {
 
   const [dbTables, setTables] = useState<TableInfo[]>([]);
   const [selectedTable, setSelectedTable] = useState<TableInfo | undefined>();
+
+  // reverted to db-list event listener
+  // TODO: refactor event handlers in back end to return db list rather than emit event
+  useEffect(() => {
+    // Listen to backend for updates to list of available databases
+    const dbListFromBackend = (evt: IpcRendererEvent, dbLists: DbLists) => {
+      if (isDbLists(dbLists)) {
+        setDBInfo(dbLists.databaseList);
+        setTables(dbLists.tableList);
+        setSelectedTable(selectedTable || dbTables[0]);
+      }
+    };
+    ipcRenderer.on('db-lists', dbListFromBackend);
+    // return cleanup function
+    return () => {
+      ipcRenderer.removeListener('db-lists', dbListFromBackend);
+    };
+  });
 
   /**
    * New central source of async calls

@@ -35,7 +35,7 @@ function BottomButtons() {
         onClick={() => {
           if (!appViewStateContext?.showCreateDialog)
             appViewDispatchContext!({
-              type: 'TOGGLE_CONFIG_DIALOG',
+              type: 'TOGGLE_CREATE_DIALOG',
             });
         }}
         $isSelected={appViewStateContext!.showCreateDialog}
