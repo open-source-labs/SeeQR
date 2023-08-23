@@ -1,3 +1,117 @@
+import { DBType } from './dbTypes';
+/**
+ * FRONTEND TABLE TYPES
+ */
+
+export type initialStateType = {
+  db_type: DBType;
+  guiTableArray: any[]; // for now any
+  updatesArray: ErdUpdatesType;
+};
+
+export interface ErdDBInfo {
+  db_name: string;
+  db_type: DBType; // table catalog
+  db_size_kb: number; // used to be string
+}
+
+export type ErdTables = TableType[];
+
+export type TableType = PsqlTable | MysqlTable | SqLiteTable;
+
+type BaseTable = {
+  table_name: string;
+  allows_insert?: boolean;
+  columns: ColumnType[];
+  // table_catalog: string; // name of the databse MOVE TO BE
+};
+
+interface PsqlTable extends BaseTable {
+  table_schema: string;
+}
+
+interface MysqlTable extends BaseTable {
+  information_schema: string;
+}
+
+interface SqLiteTable extends BaseTable {
+  sqlite_schema: string;
+}
+
+type ColumnType = PsqlColumn | MySqlColumn | SqLiteColumn;
+
+type BaseColumn = {
+  name: string;
+  data_type: PSqlDataType | MySqlDataType;
+  character_maximum_length?: number;
+  is_primary: boolean;
+  has_foreign: boolean;
+  is_nullable: boolean; // forgot to add this to backend
+  is_unique: boolean;
+  // need a constraint here
+};
+
+export type PSqlDataType =
+  | 'SMALLINT'
+  | 'INTEGER'
+  | 'BIGINT'
+  | 'CHAR'
+  | 'VARCHAR'
+  | 'TEXT'
+  | 'REAL'
+  | 'DOUBLE PRECISION'
+  | 'DATE'
+  | 'TIMESTAMP'
+  | 'BOOLEAN'
+  | 'BYTEA'
+  | 'UUID'
+  | 'JSON'
+  | 'JSONB';
+
+type MySqlDataType =
+  | 'TINYINT'
+  | 'SMALLINT'
+  | 'MEDIUMINT'
+  | 'INT'
+  | 'BIGINT'
+  | 'FLOAT'
+  | 'DOUBLE'
+  | 'DECIMAL'
+  | 'CHAR'
+  | 'VARCHAR'
+  | 'TINYTEXT'
+  | 'TEXT'
+  | 'MEDIUMTEXT'
+  | 'LONGTEXT'
+  | 'DATE'
+  | 'TIME'
+  | 'DATETIME'
+  | 'TIMESTAMP'
+  | 'YEAR'
+  | 'BINARY'
+  | 'VARBINARY'
+  | 'TINYBLOB'
+  | 'BLOB'
+  | 'MEDIUMBLOB'
+  | 'LONGBLOB'
+  | 'ENUM'
+  | 'SET'
+  | 'JSON';
+
+interface PsqlColumn extends BaseColumn {
+  is_identity: boolean;
+}
+
+interface MySqlColumn extends BaseColumn {
+  column_key: string;
+  extra: string[];
+}
+
+interface SqLiteColumn extends BaseColumn {}
+
+/**
+ * ERD TO BACKEND TYPES
+ */
 /*
 I am expecting an array of objects:
 
@@ -13,10 +127,8 @@ erdObj = [{},{},{},{},{}]
 
 PsqlColumnOperations object will have nique operations for changes in COLUMNS
 columnActions currently are: addColumn, dropColumn, alterColumnType( i need to add the text limit for Char later ), renameColumn, togglePrimary, toggleForeign(one for true, one for false), and toggle unique
-
 */
 
-// MASTER TYPE FOR ERD OBJECT
 export type ErdUpdatesType = OperationType[];
 
 // SQL UNION
@@ -34,17 +146,34 @@ interface BaseOperation<Action extends string, colOperation = any> {
   columnOperations?: colOperation;
 }
 
+export enum TableOperationAction {
+  add = 'add',
+  drop = 'drop',
+  alter = 'alter',
+  column = 'column',
+}
+
 // PSQL
-type PsqlOperationType =
+export type PsqlOperationType =
   | BaseOperation<'add'>
   | BaseOperation<'drop'>
   | BaseOperation<'alter'>
   | BaseOperation<'column', PsqlColumnOperations>;
 
+export enum ColumnOperationAction {
+  add_column = 'addColumn',
+  drop_column = 'dropColumn',
+  alter_type = 'alterColumnType',
+  rename_column = 'renameColumn',
+  toggle_primary = 'togglePrimary',
+  toggle_foreign = 'toggleForeign',
+  toggle_unique = 'toggleUnique',
+}
+
 export type PsqlColumnOperations = (
-  | { columnAction: 'addColumn'; type?: pSqlTypes }
+  | { columnAction: 'addColumn'; type?: PSqlDataType } // add column probably doesn't need type since we are adding each operation sequentially
   | { columnAction: 'dropColumn' }
-  | { columnAction: 'alterColumnType'; type: pSqlTypes }
+  | { columnAction: 'alterColumnType'; type: PSqlDataType }
   | { columnAction: 'renameColumn'; newColumnName: string }
   | { columnAction: 'togglePrimary'; isPrimary: boolean }
   | {
@@ -59,192 +188,28 @@ export type PsqlColumnOperations = (
       hasForeign: false;
       foreignConstraint: string;
     }
+  // missing action for nullable
   | { columnAction: 'toggleUnique'; isUnique: boolean }
 ) & { columnName: string };
 
-type pSqlTypes = 'CHAR' | 'VARCHAR' | 'TEXT' | 'INT';
-
 // MYSQL
-type MySqlOperationType =
+export type MySqlOperationType =
   | BaseOperation<'add'>
   | BaseOperation<'drop'>
   | BaseOperation<'alter'>
   | BaseOperation<'column', MySqlColumnOperations>;
 
 interface MySqlColumnOperations {
-  // specific things for alter like primary key etc
-  columnAction:
-    | 'addColumn'
-    | 'dropColumn'
-    | 'alterColumnType'
-    | 'renameColumn'
-    | 'togglePrimary' // paired with default
-    | 'toggleForeign'
-    | 'toggleUnique';
-
-  columnName: string;
-  newColumnName?: string; // this is for addColumn only
-  type?: 'string'; // could be for addColumn or alterColumm
-  hasPrimary?: boolean;
-
-  // foreign stuff
-  hasForeign?: boolean;
-  foreignConstraint?: string;
-  foreignTable?: string;
-  foreignColumn?: string;
-
-  // unique:
-  hasUnique?: boolean;
-  uniqueConstraint?: string;
+  // tbd
 }
 
 // SQLITE
-type SqLiteOperationType =
+export type SqLiteOperationType =
   | BaseOperation<'add'>
   | BaseOperation<'drop'>
   | BaseOperation<'alter'>
   | BaseOperation<'column', SqLiteColumnOperations>;
 
 interface SqLiteColumnOperations {
-  table_name: string;
-  // more
+  // tbd
 }
-
-/*
-Example:
-array = [
-  {
-    action: 'alter';
-    tableName: 'table1';
-    tableSchema: 'public';
-    alterOperations: {
-      tableAction: 'addColumn'
-    };
-}
-  }
-]
-
-*/
-
-// // old
-// export type UpdatesObjType = {
-//   addTables: AddTablesObjType[];
-//   dropTables: DropTablesObjType[];
-//   alterTables: AlterTablesObjType[];
-// };
-
-// // ADD
-// export type AddTablesObjType = {
-//   is_insertable_into: 'yes' | 'no';
-//   table_catalog: string;
-//   table_name: string;
-//   table_schema: string; // what is this ?
-//   columns: ERTableColumnData[];
-//   ericTestUnitTables?: any;
-//   col_N?: any;
-//   col_T?: any;
-//   col_L?: any;
-// };
-
-// export interface ERTableColumnData extends TableColumn {
-//   new_column_name: string | null;
-//   constraint_name: string | null;
-//   constraint_type: string | null;
-//   foreign_column: string;
-//   foreign_table: string;
-//   unique?: boolean; // optional until implemented
-//   auto_increment?: boolean; // optional until implemented
-// }
-
-// // DROP
-// export type DropTablesObjType = {
-//   table_name: string;
-//   table_schema: string;
-// };
-
-// // ALTER
-// export type AlterTablesObjType = {
-//   is_insertable_into: 'yes' | 'no' | null;
-//   table_catalog: string | null;
-//   table_name: string;
-//   new_table_name: string | null;
-//   table_schema: string | null;
-//   addColumns: AddColumnsObjType[];
-//   dropColumns: DropColumnsObjType[];
-//   alterColumns: AlterColumnsObjType[];
-// };
-
-// export type AddColumnsObjType = {
-//   column_name: string | null;
-//   data_type: DataTypes;
-//   character_maximum_length: number | null;
-// };
-// export type DropColumnsObjType = {
-//   column_name: string;
-// };
-// export type AlterColumnsObjType = {
-//   column_name: string;
-//   character_maximum_length: number | null;
-//   new_column_name: string | null;
-//   add_constraint: AddConstraintObjType[];
-//   current_data_type: string | null;
-//   data_type: string | null;
-//   is_nullable: 'YES' | 'NO' | null;
-//   drop_constraint: string[];
-//   rename_constraint: string | null;
-//   table_schema: string | null;
-//   table_name: string | null;
-//   constraint_type: 'PRIMARY KEY' | 'FOREIGN KEY' | 'UNIQUE' | null;
-// };
-
-// export type AddConstraintObjType = {
-//   constraint_type: 'PRIMARY KEY' | 'FOREIGN KEY' | 'UNIQUE' | null;
-//   constraint_name: string;
-//   foreign_table: string | null;
-//   foreign_column: string | null;
-// };
-
-/*
-const backendObj = {
-    database: 'tester2',
-    updates: {
-     addTables: [
-      {
-       is_insertable_into: 'yes',
-       table_name: 'NewTable8',
-       table_schema: 'puclic',
-       table_catalog: 'tester2',
-       columns: []
-      }
-     ],
-     
-     dropTables: [{
-      table_name: 'newtable5',
-      table_schema: 'puclic'
-      }
-     ],
-
-     alterTables: [
-      {
-        is_insertable_into: null,
-        table_catalog: 'tester2',
-        table_name: 'newtable7',
-        new_table_name: null,
-        table_schema: 'puclic',
-        addColumns: [Array],
-        dropColumns: [],
-        alterColumns: []
-      },
-      {
-        is_insertable_into: null,
-        table_catalog: 'tester2',
-        table_name: 'newtable7',
-        new_table_name: null,
-        table_schema: 'puclic',
-        addColumns: [Array],
-        dropColumns: [],
-        alterColumns: []
-      }]
-    }
-}
-*/
