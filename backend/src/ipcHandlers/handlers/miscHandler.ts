@@ -40,13 +40,10 @@ interface dummyDataRequestPayload {
   dbName: string;
   tableName: string;
   rows: number;
+  dbType: DBType;
 }
 
-export async function dummyData(
-  event,
-  data: dummyDataRequestPayload,
-  dbType: DBType,
-) {
+export async function dummyData(event, data: dummyDataRequestPayload) {
   logger("Received 'generate-dummy-data'", LogType.RECEIVE);
   // send notice to front end that DD generation has been started
   event.sender.send('async-started');
@@ -61,7 +58,7 @@ export async function dummyData(
     // Retrieves the Primary Keys and Foreign Keys for all the tables
     const tableInfo: ColumnObj[] = await databaseModel.getTableInfo(
       data.tableName,
-      dbType,
+      data.dbType,
     ); // passed in dbType to second argument
     // console.log('tableInfo in generate-dummy-data', tableInfo); // working
 
@@ -85,16 +82,16 @@ export async function dummyData(
       .concat(');');
     insertQuery = insertQuery.concat(lastRecordStringified);
     // insert dummy records into DB
-    await queryModel.query('Begin;', [], dbType);
-    await queryModel.query(insertQuery, [], dbType);
-    await queryModel.query('Commit;', [], dbType);
+    await queryModel.query('Begin;', [], data.dbType);
+    await queryModel.query(insertQuery, [], data.dbType);
+    await queryModel.query('Commit;', [], data.dbType);
     feedback = {
       type: 'success',
       message: 'Dummy data successfully generated.',
     };
   } catch (err: any) {
     // rollback transaction if there's an error in insertion and send back feedback to FE
-    await queryModel.query('Rollback;', [], dbType);
+    await queryModel.query('Rollback;', [], data.dbType);
     feedback = {
       type: 'error',
       message: err,
@@ -102,7 +99,7 @@ export async function dummyData(
   } finally {
     // console.log('dbType inside generate-dummy-data', dbType)
     // send updated db info in case query affected table or database information
-    const dbsAndTables: DBList = await databaseModel.getLists('', dbType); // dummy data clear error is from here
+    const dbsAndTables: DBList = await databaseModel.getLists('', data.dbType); // dummy data clear error is from here
     // console.log('dbsAndTables in generate-dummy-data', dbsAndTables)
     event.sender.send('db-lists', dbsAndTables); // dummy data clear error is from here
 
