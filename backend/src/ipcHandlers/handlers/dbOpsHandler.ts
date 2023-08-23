@@ -145,9 +145,7 @@ export async function selectDb(
 
 export async function dropDb(
   event,
-  dbName: string,
-  currDB: boolean,
-  dbType: DBType,
+  { dbName, dbType }: { dbName: string; dbType: DBType },
 ): Promise<void> {
   logger("Received 'drop-db'", LogType.RECEIVE);
 
