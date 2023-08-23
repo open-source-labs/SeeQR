@@ -42,7 +42,7 @@
     "codemirror": "^6.0.1",
     "d3": "^7.8.5",
     "dagre": "^0.8.5",
-    "debounce": "^1.2.1",    
+    "debounce": "^1.2.1",
     "electron": "^25.5.0",
     "fix-path": "^3.0.0",
     "fontsource-roboto": "^4.0.0",

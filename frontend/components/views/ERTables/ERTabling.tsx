@@ -250,7 +250,7 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
   }, [schemaState]);
 
   return (
-    <div style={{ height: 'calc(100vh - 300px)' }}>
+    <div style={{ height: 'calc(100vh - 300px)', width: '100%' }}>
       <StyledViewButton
         variant="contained"
         id="add-table-btn"

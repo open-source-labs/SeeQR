@@ -44,11 +44,11 @@ const Logo = styled.img`
   bottom: 100px;
   left: calc(${sidebarWidth} / 2);
   transform: translateX(-50%);
-  opacity: 0.5;
+  opacity: 0.8;
   z-index: -1;
-  filter: grayscale(100%);
-  width: 100px;
-  height: 100px;
+
+  width: 60px;
+  height: 60px;
 `;
 
 const ShowSidebarBtn = styled(IconButton)`
@@ -84,7 +84,7 @@ const HideSidebarBtn = styled(IconButton)`
 const HideSidebarBtnContainer = styled.div`
   position: absolute;
   display: flex;
-  width: 25px;
+  width: 15px;
   height: 100vh;
   background: transparent;
   flex-direction: column;

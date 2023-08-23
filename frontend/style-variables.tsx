@@ -66,10 +66,10 @@ export const selectedColor = greenPrimary;
 export const hoverColor = greenPrimary;
 
 // Size
-export const sidebarWidth = '375px';
-export const defaultMargin = '20px';
+export const sidebarWidth = '365px';
+export const defaultMargin = '15px';
 export const tableWidth = `calc(100vw - (${defaultMargin} * 3) - ${sidebarWidth})`;
-export const sidebarShowButtonSize = '50px';
+export const sidebarShowButtonSize = '40px';
 
 // Execution Tree
 export const planNodeWidth = '200px';
@@ -125,7 +125,7 @@ export const MuiTheme = createTheme({
 });
 
 export const SidebarList = styled(List)`
-  padding: 0;
+  padding: 2%;
   width: 100%;
 `;
 
