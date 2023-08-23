@@ -41,11 +41,6 @@ const queryModel: queryModelType = {
     }
 
     if (dbType === DBType.SQLite) {
-      // return pools.sqlite_db.all(text, (err, res) => {
-      //   if (err) logger(err.message, LogType.WARNING);
-      //   console.log('res', res);
-      //   return res;
-      // });
       return new Promise((resolve, reject) => {
         pools.sqlite_db?.all(text, (err, res) => {
           if (err) {
@@ -82,7 +77,6 @@ const queryModel: queryModelType = {
                   reject(err2);
                 } else {
                   const elapsedTime = endTime - startTime;
-                  // console.log(`Elapsed time: ${elapsedTime} milliseconds`);
                   resolve(elapsedTime);
                 }
               });

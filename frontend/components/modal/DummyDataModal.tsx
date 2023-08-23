@@ -40,8 +40,6 @@ function DummyDataModal({
   const [isError, setIsError] = useState(false);
   const [isEmpty, setIsEmpty] = useState(true);
 
-  // console.log('curDBType:', curDBType);
-
   const handleClose = () => {
     setIsError(false);
     setIsEmpty(true);
@@ -107,20 +105,6 @@ function DummyDataModal({
       rows,
       dbType,
     };
-
-    // ipcRenderer
-    //   .invoke('generate-dummy-data', payload)
-    //   .catch(() =>
-    //     sendFeedback({
-    //       type: 'error',
-    //       message: 'Failed to generate dummy data',
-    //     }),
-    //   )
-    //   .catch((err: object) => {
-    //     // console.log(err);
-    //   })
-    //   .finally(close);
-
     menuDispatch({
       type: 'ASYNC_TRIGGER',
       loading: 'LOADING',

@@ -74,40 +74,6 @@ function AddNewDbModal({
   };
 
   // Opens modal to select file and sends the selected file to backend
-  // TODO: fix the any type.
-  // REVIEW:
-  // const handleDBimport = async () => {
-  //   const dbt: DBType = (document.getElementById('dbTypeDropdown') as any)
-  //     .value;
-
-  //   const options = {
-  //     title: 'Import DB',
-  //     defaultPath: path.join(__dirname, '../assets/'),
-  //     buttonLabel: 'Import',
-  //     filters: [
-  //       {
-  //         name: 'Custom File Type',
-  //         extensions: ['sql', 'tar'],
-  //       },
-  //     ],
-  //   };
-
-  //   try {
-  //     const filePath = await ipcRenderer.invoke('showOpenDialog', options);
-
-  //     const payload: ImportPayload = {
-  //       newDbName,
-  //       filePath,
-  //     };
-
-  //     const importDB = await ipcRenderer.invoke('import-db', payload, dbt);
-  //   } catch (error) {
-  //     console.log('THIS IS A FRONT END ERROR', error);
-  //   } finally {
-  //     handleClose();
-  //   }
-  // };
-
   const handleDBimport = (dbName: string, closeModal: () => void) => {
     // TODO: fix the any type.
     const dbt: DBType = (document.getElementById('dbTypeDropdown') as any)

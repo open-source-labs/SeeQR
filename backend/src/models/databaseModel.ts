@@ -40,9 +40,7 @@ const databaseModel: databaseModelType = {
     };
     if (dbState.dbsInputted.pg) {
       try {
-        console.log('trying to populate pg dbs');
         const pgDBList = await databaseModel.getDBNames(DBType.Postgres);
-        // console.log('pgDBList', pgDBList)
         listObj.databaseConnected.PG = true;
         listObj.databaseList = [...listObj.databaseList, ...pgDBList];
       } catch (error) {
@@ -83,7 +81,6 @@ const databaseModel: databaseModelType = {
     if (dbState.dbsInputted.sqlite) {
       try {
         const sqliteDBList = await databaseModel.getDBNames(DBType.SQLite);
-        // console.log('sqliteDBList', sqliteDBList)
         listObj.databaseConnected.SQLite = true;
         listObj.databaseList = [...listObj.databaseList, ...sqliteDBList];
       } catch (error) {
@@ -106,7 +103,6 @@ const databaseModel: databaseModelType = {
         );
       }
     }
-    // console.log(listObj);
     return listObj;
   },
 

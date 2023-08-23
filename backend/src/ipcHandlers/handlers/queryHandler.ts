@@ -76,19 +76,13 @@ export async function runQuery(
     // Run Explain
     let explainResults;
     try {
-      // console.log('start of try');
       for (let i = 0; i < numberOfSample; i++) {
-        // console.log('start of for loopo');
         if (dbType === DBType.Postgres) {
           const results = await queryModel.query(
             explainQuery(sqlString, dbType),
             [],
             dbType,
           );
-
-          // console.log('query results', results);
-          // console.log('explain query results', results[1].rows);
-          // console.log('query plan including sample time data', results[1].rows[0]["QUERY PLAN"][0]);
 
           explainResults = results[1].rows;
           const eachSampleTime: any =
@@ -221,18 +215,13 @@ export async function runQuery(
     try {
       const results = await queryModel.query(sqlString, [], dbType);
       if (dbType === DBType.MySQL) {
-        // console.log('mySQL results', results);
         returnedRows = results[0];
-        // console.log('returnedRows in channels for MySQL', returnedRows);
       }
       if (dbType === DBType.Postgres) {
-        // console.log('results in channels for Postgres', results);
         returnedRows = results?.rows;
-        // console.log('returnedRows in channels for Postgres', returnedRows);
       }
       if (dbType === DBType.SQLite) {
         returnedRows = results;
-        // console.log('returnedRows in channels for SQLite', returnedRows)
       }
     } catch (e: any) {
       error = e.toString();

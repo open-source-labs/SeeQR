@@ -47,27 +47,22 @@ export async function dummyData(event, data: dummyDataRequestPayload) {
   logger("Received 'generate-dummy-data'", LogType.RECEIVE);
   // send notice to front end that DD generation has been started
   event.sender.send('async-started');
-  // console.log('genereatedata ipcMain dbType: ', dbType)
   let feedback: Feedback = {
     type: '',
     message: '',
   };
   try {
-    // console.log('data in generate-dummy-data', data); // gets here fine
-
     // Retrieves the Primary Keys and Foreign Keys for all the tables
     const tableInfo: ColumnObj[] = await databaseModel.getTableInfo(
       data.tableName,
       data.dbType,
     ); // passed in dbType to second argument
-    // console.log('tableInfo in generate-dummy-data', tableInfo); // working
 
     // generate dummy data
     const dummyArray: DummyRecords = await generateDummyData(
       tableInfo,
       data.rows,
     );
-    // console.log('dummyArray output: ', dummyArray)
     // generate insert query string to insert dummy records
     const columnsStringified = '('.concat(dummyArray[0].join(', ')).concat(')');
     let insertQuery = `INSERT INTO ${data.tableName} ${columnsStringified} VALUES `;
@@ -97,10 +92,8 @@ export async function dummyData(event, data: dummyDataRequestPayload) {
       message: err,
     };
   } finally {
-    // console.log('dbType inside generate-dummy-data', dbType)
     // send updated db info in case query affected table or database information
     const dbsAndTables: DBList = await databaseModel.getLists('', data.dbType); // dummy data clear error is from here
-    // console.log('dbsAndTables in generate-dummy-data', dbsAndTables)
     event.sender.send('db-lists', dbsAndTables); // dummy data clear error is from here
 
     // send feedback back to FE
