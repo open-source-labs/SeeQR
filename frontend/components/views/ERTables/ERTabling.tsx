@@ -24,7 +24,6 @@ import {
   UpdatesObjType,
 } from '../../../types';
 import nodeTypes from './NodeTypes';
-import { ErdUpdatesType, OperationType } from '@mytypes/erTypes';
 
 import * as colors from '../../../style-variables';
 
@@ -97,7 +96,7 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
     updates,
   });
 
-  // whenever the selectedDb changes, reassign the backendObj to contain this selectedDb ***TG: WE NO LONGER NEED THIS***
+  // whenever the selectedDb changes, reassign the backendObj to contain this selectedDb
   useEffect(() => {
     backendObj.current.database = selectedDb;
   }, [selectedDb]);
@@ -170,8 +169,6 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
 
     // what this is doing is it's creating a json file in your temp folder and saving the layout of the tables in there. so positioning is all saved locally.
     const location: string = await ipcRenderer.invoke('get-path', 'temp');
-
-    // lets put this in the backend
     const filePath = location.concat('/UserTableLayouts.json');
 
     fs.readFile(filePath, 'utf-8', (err, data) => {
@@ -205,6 +202,8 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
       }
     });
   };
+
+  // When you click the save button, you save the layout of the tables and you send a very large object to the backend containing all of the changes.
   function handleClickSave(): void {
     // This function sends a message to the back end with
     // the data in backendObj.current
