@@ -1,7 +1,7 @@
 import React from 'react';
 import { IconButton, Tooltip } from '@mui/material';
 import styled from 'styled-components';
-import { Equalizer, Settings, Coronavirus } from '@mui/icons-material';
+import { Equalizer, Settings, ThreeDRotation } from '@mui/icons-material';
 import HomeIcon from '@mui/icons-material/Home';
 
 import { textColor, hoverColor, selectedColor } from '../../style-variables';
@@ -97,7 +97,7 @@ function TopButtons() {
             })
           }
         >
-          <Coronavirus fontSize="large" />
+          <ThreeDRotation fontSize="large" />
         </StyledIconButton>
       </Tooltip>
     </Container>
