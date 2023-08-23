@@ -232,9 +232,10 @@ function QueryView({
 
           const keys: string[] = Object.keys(queryStateContext!.queries);
           for (let i = 0; i < keys.length; i++) {
+            console.log(keys[i]);
             if (
               keys[i].includes(
-                `label:${localQuery.label} group:${localQuery.group}`,
+                `label:${localQuery?.label} group:${localQuery?.group}`,
               )
             ) {
               return sendFeedback({

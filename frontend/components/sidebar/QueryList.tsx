@@ -154,7 +154,7 @@ function QueryList({ createQuery, show }: QueryListProps) {
       // create a new query
       if (query) {
         if (!queryStateContext) return;
-        const newQueries = createNewQuery(query[0], queryStateContext.queries);
+        const newQueries = createNewQuery(query[0], queryStateContext?.queries);
 
         queryDispatchContext!({
           type: 'UPDATE_QUERIES',
