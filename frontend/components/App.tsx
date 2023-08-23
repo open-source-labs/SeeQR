@@ -233,7 +233,7 @@ function App() {
       shownView = 'dbView';
       break;
     case 'queryView':
-      if (!queryState.queries.selected && !selectedDb) {
+      if (!queryState.queries?.selected && !selectedDb) {
         shownView = 'quickStartView';
         break;
       }
