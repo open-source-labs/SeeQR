@@ -25,24 +25,25 @@ const PageContainer = styled.a`
 `;
 
 const StyledStepper = styled(Stepper)`
-  margin: 70px 0px 20px 0px;
+  margin: 60px 0px 20px 0px;
   background: transparent;
 `;
 
 const StyledStepLabel = styled(StepLabel)`
   width: 10vw;
   & .MuiStepLabel-label {
-    font-size: clamp(1rem, 1.28vw, 1.5rem);
+    font-size: clamp(1rem, 1.28vw, 1.3rem);
   }
 `;
 
 const StyledTypographyInstructions = styled.div`
-  font-size: clamp(1rem, 2.2vw, 1.3rem);
+  font-size: clamp(1rem, 2.2vw, 1.2rem);
   text-align: center;
+  width: 40vw;
 `;
 
 const StyledTypographyTitle = styled(Typography)`
-  font-size: clamp(5rem, 40vw, 5rem);
+  font-size: clamp(2rem, 35vw, 3rem);
 `;
 
 const NavButtons = styled.div`
@@ -59,6 +60,7 @@ const StepContent = styled.div`
 const StepList = styled.ul`
   text-align: left;
   font-size: 0.9em;
+  list-style: circle;
 
   & li {
     margin-top: 7px;
@@ -127,7 +129,7 @@ function getStepContent(step: number) {
             </li>
             <li>
               To export a database, select the file download icon next to the
-              databse name
+              database name
             </li>
           </StepList>
         </StyledTypographyInstructions>
@@ -138,20 +140,17 @@ function getStepContent(step: number) {
           <strong>Step 3:</strong>
           <StepList>
             <li>Select which database you want to query with</li>
-            <li>
-              Go into the queries tab by selecting the &quot;QUERIES&quot; tab
-              in the sidebar
-            </li>
+            <li>Select the &quot;QUERIES&quot; tab in the sidebar</li>
             <li>Give the query a label and a group</li>
             <li>
               Optionally: You can change the database from the
               &quot;Database&quot; dropdown
             </li>
             <li>
-              Use the &quot;Auto-Format&quot; button on the top-left to
-              automatically format the query
+              Use the brush icon on the top-right to automatically format the
+              query
             </li>
-            <li>Select the &quot;RUN QUERY&quot; button to execute</li>
+            <li>Select &quot;RUN QUERY&quot; button to execute</li>
             <li>
               The planning time, execution time, and actual total time now show
             </li>
@@ -168,11 +167,16 @@ function getStepContent(step: number) {
         <StyledTypographyInstructions>
           <strong>Step 4:</strong>
           <StepList>
-            <li>To save a query, click the folder icon in the queries tab</li>
-            <li>Designate a file location and click &quot;Select Path&quot;</li>
             <li>
-              Click the save icon in the query drop down to save queries
-              individually
+              To save a query, click the folder icon in the &quot;QUERIES&quot;
+              tab
+            </li>
+            <li>
+              Designate a save file location and click &quot;Select Path&quot;
+            </li>
+            <li>
+              Click the save icon in the query group drop-down to save queries
+              automatically to designated file location
             </li>
             <li>
               To import a query file, click the import icon, select the file you
@@ -187,11 +191,11 @@ function getStepContent(step: number) {
         <StyledTypographyInstructions>
           <strong>Step 5:</strong>
           <StepList>
+            <li>Select the checkboxes in the query group drop-down</li>
             <li>
-              Select the checkbox of the queries inside the groups you would
-              like to compare
+              Click the chart icon at the top of the sidebar to compare selected
+              queries
             </li>
-            <li>Click the chart icon at the top of the sidebar</li>
           </StepList>
         </StyledTypographyInstructions>
       );
