@@ -30,14 +30,14 @@ import {
   UpdatesObjType,
 } from '../../../types';
 import nodeTypes from './NodeTypes';
+import { ErdUpdatesType } from '../../../../shared/types/erTypes';
 import {
-  ErdTables,
-  TableType,
-  ErdUpdatesType,
-  TableOperationAction,
-  OperationType,
-  ColumnOperationAction,
-} from '../../../../shared/types/erTypes';
+  mainErdReducer,
+  initialErdState,
+} from '../../../state_management/Reducers/ERDReducers';
+import * as PostgresActions from '../../../state_management/Actions/ERDPsqlActions';
+import * as MySqlActions from '../../../state_management/Actions/ERDMySqlActions';
+import * as SqLiteActions from '../../../state_management/Actions/ERDSqLiteActions';
 
 import * as colors from '../../../style-variables';
 
@@ -87,61 +87,15 @@ const StyledViewButton = styled(Button)`
 `;
 
 /**
- * USEREDUCER
- * */
+ * ACTION MAP
+ * This is dynamic since we imported as * we have access to all functions!
+ */
 
-function tableReducer(state, action: TableOperationAction): ErdUpdatesType {
-  let erdUpdatesArray: ErdUpdatesType = [...state];
-
-  let erdUpdatedObject: OperationType | undefined;
-
-  switch (action) {
-    case TableOperationAction.add:
-      erdUpdatedObject.action = TableOperationAction.add;
-      break;
-
-    case TableOperationAction.drop:
-      erdUpdatedObject.action = TableOperationAction.drop;
-      break;
-
-    case TableOperationAction.alter:
-      erdUpdatedObject.action = TableOperationAction.alter;
-      break;
-
-    case TableOperationAction.column: {
-      erdUpdatedObject.action = TableOperationAction.alter;
-      break;
-    }
-  }
-
-  erdUpdatesArray.push(erdUpdatedObject);
-  return erdUpdatesArray;
-}
-
-function columnReducer(
-  state,
-  erdUpdatedObject: OperationType,
-  action: ColumnOperationAction,
-) {
-  switch (action) {
-    case ColumnOperationAction.add_column:
-      erdUpdatedObject.columnOperations.columnAction =
-        ColumnOperationAction.add_column;
-      break;
-
-    case ColumnOperationAction.drop_column:
-      erdUpdatedObject.columnOperations = ColumnOperationAction.drop_column;
-      break;
-
-    case ColumnOperationAction.rename_column:
-      erdUpdatedObject.columnOperations = ColumnOperationAction.rename_column;
-      break;
-
-    case ColumnOperationAction.alter_column:
-      erdUpdatedObject.columnOperations = ColumnOperationAction.alter_column;
-      break;
-  }
-}
+const actionMap = {
+  [DBType.Postgres]: PostgresActions,
+  [DBType.MySQL]: MySqlActions,
+  [DBType.SQLite]: SqLiteActions,
+};
 
 /**
  * MAIN FUNCTION
@@ -153,6 +107,11 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
   });
   const [nodes, setNodes] = useState<Node[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
+
+  /**
+   * USEREDUCER
+   * */
+  const [erdState, erdDispatch] = useReducer(mainErdReducer, initialErdState);
 
   // state for custom controls toggle
   // when tables (which is the database that is selected changes, update SchemaState)
@@ -217,7 +176,6 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
     setSchemaState(schemaStateCopy);
   };
 
-  // REVIEW: derek - old code :  const handleSaveLayout = (): void => {
   const handleSaveLayout = async (): Promise<void> => {
     // get the array of header nodes
     const headerNodes = nodes.filter(
@@ -225,7 +183,6 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
     ) as TableHeaderNodeType[];
     // create object for the current database
 
-    console.log(headerNodes);
     type TablePosObjType = {
       table_name: string;
       table_position: {
@@ -253,22 +210,6 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
       currDatabaseLayout.db_tables.push(tablePosObj);
     });
 
-    // TODO: OLD CODE
-    // const location: string = remote.app
-    // REVIEW:
-    // const location: string = app
-    //   .getPath('temp')
-    //   .concat('/UserTableLayouts.json');
-    // fs.readFile(location, 'utf-8', (err, data) => {
-    //   // check if error exists (no file found)
-    //   if (err) {
-    //     fs.writeFile(
-    //       location,
-    //       JSON.stringify([currDatabaseLayout], null, 2),
-    //       (error) => {
-    //         if (error) console.log(error);
-    //       },
-    //     );
     const location: string = await ipcRenderer.invoke('get-path', 'temp');
     const filePath = location.concat('/UserTableLayouts.json');
 

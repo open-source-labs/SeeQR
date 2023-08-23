@@ -5,6 +5,7 @@ import {
 import {
   PsqlColumnOperations,
   ErdUpdatesType,
+  PSqlDataType,
 } from '../../../../../shared/types/erTypes';
 
 describe('pSqlCUD', () => {
@@ -51,10 +52,10 @@ describe('pSqlCUD', () => {
         const alterColumnType: PsqlColumnOperations = {
           columnAction: 'alterColumnType',
           columnName: 'alterColumnType',
-          type: 'INT',
+          type: 'INTEGER',
         };
         expect(generatePostgresColumnQuery(tableName, alterColumnType)).toEqual(
-          'ALTER COLUMN alterColumnType TYPE INT',
+          'ALTER COLUMN alterColumnType TYPE INTEGER',
         );
       });
     });
