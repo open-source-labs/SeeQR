@@ -84,12 +84,6 @@ const connectionModel: connectionModelType = {
 
     //  LOCAL PG POOL: truthy values means user has inputted info into config -> try to connect
     if (dbState.pg_options.user && dbState.pg_options.password) {
-      // Commented this out because switched to intersection type in DocConfigFile interface
-      // if (typeof PG_Cred.password !== 'string') {
-      //   const calledPass = PG_Cred.password();
-      //   PG_Cred.password = await Promise.resolve(calledPass);
-      // }
-      console.log('SHOULD SEE THIS');
       dbState.pg_options.connectionString = `postgres://${dbState.pg_options.user}:${dbState.pg_options.password}@localhost:${dbState.pg_options.port}`;
       dbState.pg_options.database = 'postgres';
       try {

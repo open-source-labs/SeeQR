@@ -154,8 +154,6 @@ export async function erTableSchemaUpdate(
     backendObj,
   );
 
-  console.log('backendObj: ', backendObj);
-
   // send notice to front end that schema update has started
   event.sender.send('async-started');
   let feedback: Feedback = {

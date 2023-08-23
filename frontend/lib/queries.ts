@@ -66,7 +66,6 @@ export const getAppDataPath = (file: 'sql' | 'json' = 'json') => {
       return path.join(process.env.HOME ?? '', `.SeeQR Data.${file}`);
 
     default:
-      // console.log("Unsupported platform!");
       return process.exit(1);
   }
 };
@@ -108,7 +107,6 @@ export const saveQuery: SaveQuery = (query: QueryData, filePath: string) => {
         console.log(err);
       }
     } else {
-      // console.log('File is found');
       const data: object = JSON.parse(fs.readFileSync(filePath).toString());
       const label: string = `label:${query.label} db:${query.db} group:${query.group}`;
       data[label] = query;

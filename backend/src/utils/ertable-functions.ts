@@ -49,8 +49,6 @@ function backendObjToQuery(backendObj: BackendObjType, dbType: DBType): string {
       }
 
       if (dbType === DBType.SQLite) {
-        console.log('TEST');
-
         outputArray.push(
           `CREATE TABLE ${currTable.table_name}(id INTEGER PRIMARY KEY AUTOINCREMENT); `,
         );

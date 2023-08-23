@@ -98,28 +98,6 @@ function QueryList({ createQuery, show }: QueryListProps) {
     saveQuery(query, filePath);
   };
 
-  // const loadQueryHandler = async () => {
-  //   // annabelle's refactor
-  //   const options = {
-  //     title: 'Upload Query',
-  //     defaultPath: path.join(__dirname, '../assets/'),
-  //     buttonLabel: 'Upload',
-  //     filters: [
-  //       {
-  //         name: 'Text Files',
-  //         extensions: ['json', 'docx', 'txt'],
-  //       },
-  //     ],
-  //   };
-
-  //   try {
-  //     const filePath = await ipcRenderer.invoke('showOpenDialog', options);
-  //     setFilePath(filePath);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
   const loadQueryHandler = async () => {
     const options = {
       title: 'Upload Query',
@@ -154,7 +132,7 @@ function QueryList({ createQuery, show }: QueryListProps) {
       // create a new query
       if (query) {
         if (!queryStateContext) return;
-        const newQueries = createNewQuery(query[0], queryStateContext?.queries);
+        const newQueries = createNewQuery(query[0], queryStateContext.queries);
 
         queryDispatchContext!({
           type: 'UPDATE_QUERIES',

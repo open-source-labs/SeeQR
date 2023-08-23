@@ -63,14 +63,9 @@ export async function returnDbList(event) {
     "Received 'return-db-list' (Note: No Async being sent here)",
     LogType.RECEIVE,
   );
-  console.log('Setting database connections...');
   try {
     await connectionModel.setBaseConnections();
-    console.log('Database connections set. Getting dblists...');
     const data = await databaseModel.getLists();
-    console.log(
-      `Dblists acquired: ${JSON.stringify(data)}\nSending to frontend...`,
-    );
     logger("Sent 'db-lists' from 'return-db-list'", LogType.SEND);
     return data;
   } catch (err: any) {
@@ -309,7 +304,6 @@ export async function importDb(
     try {
       await promExecute(runSQLFunc(newDbName, filePath, dbType));
     } catch (e: any) {
-      console.log('this is error in run temp', e);
       // cleanup: drop created db
       logger(`Dropping duplicate db because: ${e.message}`, LogType.WARNING);
       const dropDBScript = dropDBFunc(newDbName, dbType);

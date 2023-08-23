@@ -47,10 +47,6 @@ function writeConfigDefault(): DocConfigFile {
  * @returns configuration with only valid key value properties
  */
 const checkConfigFile = (currConfig: DocConfigFile): DocConfigFile => {
-  // console.log(
-  //   'This is the current config and it runs this function 4-6 times!! NOT SURE WHY!!!',
-  //   currConfig,
-  // );
   const invalidKeys: string[] = [];
   try {
     // pushes extra data from configFile to invalidKeys array
@@ -76,7 +72,6 @@ const checkConfigFile = (currConfig: DocConfigFile): DocConfigFile => {
   if (invalidKeys.length) {
     const newConfig = { ...currConfig };
     invalidKeys.forEach((key) => {
-      console.log('invalid key: ', key);
       newConfig[key] = defaultFile[key];
     });
     fs.writeFileSync(configPath, JSON.stringify(newConfig));

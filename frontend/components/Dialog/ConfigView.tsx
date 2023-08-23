@@ -97,30 +97,6 @@ function BasicTabs({ onClose }: BasicTabsProps) {
     sqlite: [], // added sqlite
   });
 
-  // function to store user-selected file path in state
-  // REVIEW:
-  // const designateFile = async function (path, setPath) {
-  //   const options = {
-  //     title: 'Select SQLite File',
-  //     defaultPath: '',
-  //     buttonLabel: 'Select File',
-  //     filters: [{ name: 'db', extensions: ['db'] }],
-  //   };
-  //   try {
-  //     const selectedFilePath = await ipcRenderer.invoke(
-  //       'showOpenDialog',
-  //       options,
-  //     );
-  //     setPath({ path: selectedFilePath });
-  //   } catch (err) {
-  //     sendFeedback({
-  //       type: 'error',
-  //       message: 'Error at designate file.',
-  //     });
-  //     console.log(`error at the designate file in ConfigView.tsx ${err}`);
-  //   }
-  // };
-
   const designateFile = (setPath) => {
     const options = {
       title: 'Select SQLite File',

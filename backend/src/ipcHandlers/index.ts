@@ -25,13 +25,11 @@ import {
   feedback,
 } from './handlers/miscHandler';
 
-// console.log('IPCHANDERS SUCCESSFUL');
-
-// // auth
+// auth
 ipcMain.handle('set-config', setConfig);
 ipcMain.handle('get-config', getConfig);
 
-// // db Operations
+// db Operations
 ipcMain.handle('return-db-list', returnDbList);
 ipcMain.handle('select-db', selectDb);
 ipcMain.handle('drop-db', dropDb);
@@ -40,16 +38,16 @@ ipcMain.handle('import-db', importDb);
 ipcMain.handle('export-db', exportDb);
 ipcMain.handle('get-path', getPath);
 
-// // db CRUD functionalities
+// db CRUD functionalities
 ipcMain.handle('initialize-db', intializeDb);
 ipcMain.handle('update-db', updateDb);
 ipcMain.handle('ertable-schemaupdate', erTableSchemaUpdate);
 
-// // // query
+// query
 ipcMain.handle('run-query', runQuery);
 ipcMain.handle('read-query', readQuery);
 
-// // // misc (other events bundled together)
+// misc (other events bundled together)
 ipcMain.handle('generate-dummy-data', dummyData);
 ipcMain.handle('showOpenDialog', showOpenDialog);
 ipcMain.handle('showSaveDialog', showSaveDialog);
