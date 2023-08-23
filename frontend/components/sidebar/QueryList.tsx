@@ -1,7 +1,7 @@
 import path from 'path';
 import AddIcon from '@mui/icons-material/Add';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import FileCopyIcon from '@mui/icons-material/FileCopy';
+import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import { IconButton, Tooltip } from '@mui/material';
 import Accordion from '@mui/material/Accordion';
@@ -10,12 +10,14 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import Typography from '@mui/material/Typography';
 import React, { useContext } from 'react';
 import styled from 'styled-components';
+import { ipcRenderer } from 'electron';
 import {
   deleteQuery,
   getAppDataPath,
   key as queryKey,
   saveQuery,
   setCompare,
+  createNewQuery,
 } from '../../lib/queries';
 import {
   greenPrimary,
@@ -27,6 +29,11 @@ import {
 } from '../../style-variables';
 import { AppState, QueryData } from '../../types';
 import QueryEntry from './QueryEntry';
+
+import {
+  useQueryContext,
+  useQueryDispatch,
+} from '../../state_management/Contexts/QueryContext';
 import MenuContext from '../../state_management/Contexts/MenuContext';
 
 const QueryText = styled(StyledListItemText)`
@@ -35,49 +42,56 @@ const QueryText = styled(StyledListItemText)`
   }
 `;
 
-type QueryListProps = Pick<
-  AppState,
-  | 'queries'
-  | 'setQueries'
-  | 'comparedQueries'
-  | 'setComparedQueries'
-  | 'workingQuery'
-  | 'setWorkingQuery'
-  | 'setFilePath'
-  | 'newFilePath'
-> & {
-  createQuery: () => void;
-  show: boolean;
-};
-
 const StyledSidebarList = styled(SidebarList)`
   background-color: ${greyDarkest};
 `;
 
-function QueryList({
-  queries,
-  createQuery,
-  setQueries,
-  comparedQueries,
-  setComparedQueries,
-  workingQuery,
-  setWorkingQuery,
-  setFilePath,
-  newFilePath,
-  show,
-}: QueryListProps) {
+type QueryListProps = {
+  createQuery: () => void;
+  show: boolean;
+};
+
+function QueryList({ createQuery, show }: QueryListProps) {
   const { dispatch: menuDispatch } = useContext(MenuContext);
+
+  // using query state context and dispatch functions
+  const queryStateContext = useQueryContext();
+  const queryDispatchContext = useQueryDispatch();
+
   const deleteQueryHandler = (query: QueryData) => () => {
-    setQueries(deleteQuery(queries, query));
-    setComparedQueries(deleteQuery(comparedQueries, query));
+    if (!queryStateContext) return;
+    const tempQueries = deleteQuery(queryStateContext.queries, query);
+
+    queryDispatchContext!({
+      type: 'UPDATE_QUERIES',
+      payload: tempQueries,
+    });
+
+    const tempComparedQueries = deleteQuery(
+      queryStateContext.comparedQueries,
+      query,
+    );
+
+    queryDispatchContext!({
+      type: 'UPDATE_COMPARED_QUERIES',
+      payload: tempComparedQueries,
+    });
   };
 
   const setComparisonHandler =
     (query: QueryData) => (evt: React.ChangeEvent<HTMLInputElement>) => {
-      setComparedQueries(
-        setCompare(comparedQueries, queries, query, evt.target.checked),
+      if (!queryStateContext) return;
+      const tempQueries = setCompare(
+        queryStateContext.comparedQueries,
+        queryStateContext.queries,
+        query,
+        evt.target.checked,
       );
-      // setComparedQueries(setCompare(comparedQueries, query));
+
+      queryDispatchContext!({
+        type: 'UPDATE_COMPARED_QUERIES',
+        payload: tempQueries,
+      });
     };
 
   const saveQueryHandler = (query: QueryData, filePath: string) => () => {
@@ -106,7 +120,7 @@ function QueryList({
   //   }
   // };
 
-  const loadQueryHandler = (setFilePath) => {
+  const loadQueryHandler = async () => {
     const options = {
       title: 'Upload Query',
       defaultPath: path.join(__dirname, '../assets/'),
@@ -118,25 +132,52 @@ function QueryList({
         },
       ],
     };
-    const setFilepathCallback = (val) => setFilePath(val);
-    menuDispatch({
-      type: 'ASYNC_TRIGGER',
-      loading: 'LOADING',
-      options: {
-        event: 'showOpenDialog',
-        payload: options,
-        callback: setFilepathCallback,
-      },
-    });
+    // const setFilepathCallback = (val) => setFilePath(val);
+    // menuDispatch({
+    //   type: 'ASYNC_TRIGGER',
+    //   loading: 'LOADING',
+    //   options: {
+    //     event: 'showOpenDialog',
+    //     payload: options,
+    //     callback: setFilepathCallback,
+    //   },
+    // });
+
+    try {
+      // grab the file path of where the query is saved
+      const newFilePath = await ipcRenderer.invoke('showOpenDialog', options);
+      // grab the file data from the back end
+      const data = await ipcRenderer.invoke('read-query', newFilePath);
+      const newData = JSON.parse(data);
+      const query: unknown = Object.values(newData);
+
+      // create a new query
+      if (query) {
+        if (!queryStateContext) return;
+        const newQueries = createNewQuery(query[0], queryStateContext.queries);
+
+        queryDispatchContext!({
+          type: 'UPDATE_QUERIES',
+          payload: newQueries,
+        });
+
+        queryDispatchContext!({
+          type: 'UPDATE_WORKING_QUERIES',
+          payload: query[0],
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   if (!show) return null;
-
-  const values: Array<QueryData> = Object.values(queries);
+  if (!queryStateContext) return null;
+  const values: Array<QueryData> = Object.values(queryStateContext.queries);
   const accordians: object = {};
 
   // Algorithm to create the entrys to be bundled into accoridans
-  const compQ: any = { ...comparedQueries };
+  const compQ: any = { ...queryStateContext?.comparedQueries };
   if (values.length > 0) {
     for (let i = 0; i < values.length; i++) {
       let compared = false;
@@ -155,14 +196,23 @@ function QueryList({
           // This key is used in the .map to create the group label for accordians
           key={`QueryList_${values[i].label}_${values[i].db}_group:::${values[i].group}`}
           query={values[i]}
-          select={() => setWorkingQuery(values[i])}
+          select={() =>
+            queryDispatchContext!({
+              type: 'UPDATE_WORKING_QUERIES',
+              payload: values[i],
+            })
+          }
           isSelected={
-            !!workingQuery && queryKey(values[i]) === queryKey(workingQuery)
+            !!queryStateContext?.workingQuery &&
+            queryKey(values[i]) === queryKey(queryStateContext?.workingQuery)
           }
           deleteThisQuery={deleteQueryHandler(values[i])}
           isCompared={compared}
           setComparison={setComparisonHandler(values[i])}
-          saveThisQuery={saveQueryHandler(values[i], newFilePath)}
+          saveThisQuery={saveQueryHandler(
+            values[i],
+            queryStateContext.newFilePath,
+          )}
         />
       );
 
@@ -176,31 +226,19 @@ function QueryList({
 
   // function to store user-selected file path in state
 
-  // const designateFile = async function () {
-  //   // REVIEW: not sure if supposed to move this to it's own ipcMain
-  //   const options = {
-  //     title: 'Choose File Path',
-  //     defaultPath: `${getAppDataPath()}`,
-  //     buttonLabel: 'Select Path',
-  //     filters: [{ name: 'JSON', extensions: ['json'] }],
-  //   };
-
-  //   try {
-  //     const filePath = await ipcRenderer.invoke('showSaveDialog', options);
-  //     setFilePath(filePath);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
-  const designateFile = (setFilePath) => {
+  const designateFile = () => {
+    // REVIEW: not sure if supposed to move this to it's own ipcMain
     const options = {
       title: 'Choose File Path',
       defaultPath: `${getAppDataPath()}`,
       buttonLabel: 'Select Path',
       filters: [{ name: 'JSON', extensions: ['json'] }],
     };
-    const setFilePathCallback = (val) => setFilePath(val);
+    const setFilePathCallback = (val) =>
+      queryDispatchContext!({
+        type: 'UPDATE_FILEPATH',
+        payload: val,
+      });
     menuDispatch({
       type: 'ASYNC_TRIGGER',
       loading: 'LOADING',
@@ -222,17 +260,14 @@ function QueryList({
         </Tooltip>
 
         <Tooltip title="Import Query">
-          <IconButton
-            onClick={() => loadQueryHandler(setFilePath)}
-            size="large"
-          >
+          <IconButton onClick={() => loadQueryHandler()} size="large">
             <UploadFileIcon fontSize="large" />
           </IconButton>
         </Tooltip>
 
         <Tooltip title="Designate Save Location">
-          <IconButton onClick={() => designateFile(setFilePath)} size="large">
-            <FileCopyIcon fontSize="large" />
+          <IconButton onClick={() => designateFile()} size="large">
+            <DriveFileMoveIcon fontSize="large" />
           </IconButton>
         </Tooltip>
       </span>
