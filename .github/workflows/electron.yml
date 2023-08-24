@@ -1,6 +1,6 @@
 name: Electron Release
 
-# This workflow is responsible for automatically building and releasing the electron app on pushes to the master branch. Build specific configurations are set in electron-builder.yml. 
+# This workflow is responsible for automatically building and releasing the electron app on pushes to the master branch. Build specific configurations are set in electron-builder.yml.
 
 # When ready to release a new version:
 # 1. create a draft release and set tag to the new version
@@ -39,7 +39,7 @@ jobs:
       - name: Install Node.js, NPM and Yarn
         uses: actions/setup-node@v1
         with:
-          node-version: 14
+          node-version: 18
 
       - name: Build/release Electron app
         uses: samuelmeuli/action-electron-builder@v1
