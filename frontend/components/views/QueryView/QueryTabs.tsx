@@ -7,7 +7,7 @@ import { QueryData, ValidTabs } from '../../../types';
 import TabSelector from './TabSelector';
 import QueryResults from './QueryResults';
 import PlanTree from './ExecutionPlan/PlanTree';
-import { sidebarWidth, defaultMargin} from '../../../style-variables'
+import { sidebarWidth, defaultMargin } from '../../../style-variables';
 
 const ToggleDisplay = styled.div<{ $isSelected: boolean }>`
   display: flex;
@@ -26,15 +26,14 @@ const ToggleDisplay = styled.div<{ $isSelected: boolean }>`
   /* Define estimated width so fitView triggered inside TabSelector is close to accurate */
 
   /* define height to prevent react-flow warnings. Ignored due to flex:1 0 */
-  ${({ $isSelected }) =>
-    $isSelected
-      ? ''
-      : `
+  ${({ $isSelected }) => ($isSelected
+    ? ''
+    : `
     position:fixed;
     visibility: hidden;
     width: calc(100vw - ${sidebarWidth} - (${defaultMargin} * 2));
     z-index: -1
-  `}
+  `)}
 `;
 
 interface QueryTabsProps {
@@ -42,27 +41,25 @@ interface QueryTabsProps {
   executionPlan: QueryData['executionPlan'];
 }
 
-const QueryTabs = ({ results, executionPlan }: QueryTabsProps) => {
+function QueryTabs({ results, executionPlan }: QueryTabsProps) {
   const [selectedTab, setSelectedTab] = useState<ValidTabs>('Results');
 
   if (!results && !executionPlan) return null;
   return (
-    <>
-      <ReactFlowProvider>
-        <TabSelector
-          selectedTab={selectedTab}
-          select={(tab: ValidTabs) => setSelectedTab(tab)}
-        />
-        <ToggleDisplay $isSelected={selectedTab === 'Results'}>
-          <QueryResults results={results} />
-        </ToggleDisplay>
+    <ReactFlowProvider>
+      <TabSelector
+        selectedTab={selectedTab}
+        select={(tab: ValidTabs) => setSelectedTab(tab)}
+      />
+      <ToggleDisplay $isSelected={selectedTab === 'Results'}>
+        <QueryResults results={results} />
+      </ToggleDisplay>
 
-        <ToggleDisplay $isSelected={selectedTab === 'Execution Plan'}>
-          <PlanTree data={executionPlan} />
-        </ToggleDisplay>
-      </ReactFlowProvider>
-    </>
+      <ToggleDisplay $isSelected={selectedTab === 'Execution Plan'}>
+        <PlanTree data={executionPlan} />
+      </ToggleDisplay>
+    </ReactFlowProvider>
   );
-};
+}
 
 export default QueryTabs;

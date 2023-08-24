@@ -1,6 +1,8 @@
 /**
  * This file contains common types that need to be used across the backend
  */
+import { PoolOptions } from 'mysql2';
+import { PoolConfig } from 'pg';
 import { UpdatesObjType } from '../frontend/types';
 
 export interface ColumnObj {
@@ -26,12 +28,12 @@ export interface TableDetails {
 }
 export interface DBList {
   databaseConnected: {
-    PG: boolean,
-    MySQL: boolean,
-    RDSPG: boolean,
-    RDSMySQL: boolean,
-    SQLite: boolean,
-    directPGURI: boolean,
+    PG: boolean;
+    MySQL: boolean;
+    RDSPG: boolean;
+    RDSMySQL: boolean;
+    SQLite: boolean;
+    directPGURI: boolean;
   };
   databaseList: dbDetails[];
   tableList: TableDetails[];
@@ -49,7 +51,7 @@ export enum DBType {
   MySQL = 'mysql',
   RDSPostgres = 'rds-pg',
   RDSMySQL = 'rds-mysql',
-  CloudDB = 'cloud-database', //added for cloud dbs
+  CloudDB = 'cloud-database', // added for cloud dbs
   SQLite = 'sqlite',
   directPGURI = 'directPGURI',
 }
@@ -64,12 +66,22 @@ export enum LogType {
 }
 
 export interface DocConfigFile {
-  mysql: { user: string; password: string; port: number };
-  pg: { user: string; password: string; port: number };
-  rds_mysql: { user: string; password: string; port: number; host: string };
-  rds_pg: { user: string; password: string; port: number; host: string };
-  sqlite: { path: '' };
-  directPGURI: { uri: '' };
+  mysql_options: { user: string; password: string; port: number } & PoolOptions;
+  pg_options: { user: string; password: string; port: number } & PoolConfig;
+  rds_mysql_options: {
+    user: string;
+    password: string;
+    port: number;
+    host: string;
+  } & PoolOptions;
+  rds_pg_options: {
+    user: string;
+    password: string;
+    port: number;
+    host: string;
+  } & PoolConfig;
+  sqlite_options: { filename: string };
+  directPGURI_options: { connectionString: string } & PoolConfig;
 }
 
 type dbsInputted = {
@@ -93,27 +105,19 @@ type configExists = {
 type combined = {
   dbsInputted: dbsInputted;
   configExists: configExists;
-}
+};
 
-export interface DBFunctions {
+export interface MysqlQueryResolve {}
+
+export interface DBFunctions extends DocConfigFile {
   pg_uri: string;
-  curPG_DB: string;
-  curMSQL_DB: string;
-  curRDS_MSQL_DB: any;
-  curRDS_PG_DB: {
-    user: string;
-    password: string;
-    host: string;
-  };
-  curSQLite_DB: { path: string };
-  curdirectPGURI_DB: string;
   dbsInputted: dbsInputted;
 
   setBaseConnections: () => Promise<combined>;
-  query: (text: string, params: (string | number)[], dbType: DBType) => void;
+  query: (text: string, params: (string | number)[], dbType: DBType) => any;
   connectToDB: (db: string, dbType?: DBType) => Promise<void>;
   disconnectToDrop: (dbType: DBType) => Promise<void>;
-  getLists: (dbName: string, dbType?: DBType) => Promise<DBList>;
+  getLists: (dbName?: string, dbType?: DBType) => Promise<DBList>;
   getTableInfo: (tableName: string, dbType: DBType) => Promise<ColumnObj[]>;
   getDBNames: (dbType: DBType) => Promise<dbDetails[]>;
   getColumnObjects: (tableName: string, dbType: DBType) => Promise<ColumnObj[]>;

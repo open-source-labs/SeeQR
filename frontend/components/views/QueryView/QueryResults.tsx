@@ -29,16 +29,15 @@ const isNumber = (val: unknown) => {
   return false;
 };
 
-const buildColumns = (row: Record<string, unknown>): Column[] =>
-  Object.entries(row).map(([column, value]) => ({
-    name: column,
-    align: isNumber(value) ? 'right' : 'left',
-  }));
+const buildColumns = (row: Record<string, unknown>): Column[] => Object.entries(row).map(([column, value]) => ({
+  name: column,
+  align: isNumber(value) ? 'right' : 'left',
+}));
 interface QueryResultsProps {
   results: QueryData['returnedRows'];
 }
 
-const QueryResults = ({ results }: QueryResultsProps) => {
+function QueryResults({ results }: QueryResultsProps) {
   if (!results || !results.length) return null;
   const [page, setPage] = React.useState(0);
   const rowsPerPage = 10;
@@ -102,6 +101,6 @@ const QueryResults = ({ results }: QueryResultsProps) => {
       />
     </DarkPaperFull>
   );
-};
+}
 
 export default QueryResults;

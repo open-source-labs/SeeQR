@@ -4,7 +4,7 @@ import { DBType } from '../backend/BE_types';
  * This file contains common types that need to be used across the frontend
  */
 
-type ViewName =
+export type ViewName =
   | 'compareView'
   | 'dbView'
   | 'queryView'
@@ -13,19 +13,16 @@ type ViewName =
   | 'threeDView'; // added for new chart
 
 export interface AppState {
-  selectedView: ViewName;
-  setSelectedView: (selView: ViewName) => void;
+  // createNewQuery: CreateNewQuery;
   selectedDb: string;
   setSelectedDb: (selDb: string) => void;
   workingQuery: QueryData | undefined;
-  setWorkingQuery: (selQuery: QueryData | undefined) => void;
+  // setWorkingQuery: (selQuery: any) => void;
   queries: Record<string, QueryData>;
-  setQueries: (queries: Record<string, QueryData>) => void;
+  // setQueries: (queries: Record<string, QueryData>) => void;
   comparedQueries: Record<string, QueryData>;
-  setComparedQueries: (comparedQueries: Record<string, QueryData>) => void;
-  setSidebarHidden: (isHidden: boolean) => void;
-  sidebarIsHidden: boolean;
-  setFilePath: (filePath: string) => void;
+  // setComparedQueries: (comparedQueries: Record<string, QueryData>) => void;
+  // setFilePath: (filePath: string) => void;
   newFilePath: string;
   setERView?: (boolean) => void;
   curDBType: DBType | undefined;
@@ -36,9 +33,6 @@ export interface AppState {
   setTables?: (tableInfo: TableInfo[]) => void;
   selectedTable?: TableInfo | undefined;
   setSelectedTable?: (tableInfo: TableInfo | undefined) => void;
-  showCreateDialog: boolean;
-  setCreateDialog: (show: boolean) => void;
-  setConfigDialog: (show: boolean) => void;
 }
 
 export interface FilePath {
@@ -46,7 +40,7 @@ export interface FilePath {
   filePath: string;
 }
 
-export type CreateNewQuery = (query: QueryData) => void;
+export type CreateNewQuery = (query: QueryData, queries: any) => void;
 
 export interface QueryData {
   /**
@@ -76,11 +70,11 @@ export interface QueryData {
 
   // flag: boolean
 
-  numberOfSample: number,
-  totalSampleTime: number | string,
-  minimumSampleTime: number | string,
-  maximumSampleTime: number | string,
-  averageSampleTime: number | string,
+  numberOfSample: number;
+  totalSampleTime: number | string;
+  minimumSampleTime: number | string;
+  maximumSampleTime: number | string;
+  averageSampleTime: number | string;
 }
 
 export type ValidTabs = 'Results' | 'Execution Plan';
@@ -107,7 +101,7 @@ export interface Thresholds {
  * Fake type guard that asserts a type to simplify tests inside real type guards
  */
 // type assertions don't work with arrow functions https://github.com/microsoft/TypeScript/issues/34523
-function assumeType<T>(x: unknown): asserts x is T { }
+function assumeType<T>(x: unknown): asserts x is T {}
 
 export interface DatabaseInfo {
   /**
@@ -164,12 +158,12 @@ export interface TableInfo {
 
 export interface DbLists {
   databaseConnected: {
-    PG: boolean,
-    MySQL: boolean,
-    RDSPG: boolean,
-    RDSMySQL: boolean,
-    SQLite: boolean,
-    directPGURI: boolean,
+    PG: boolean;
+    MySQL: boolean;
+    RDSPG: boolean;
+    RDSMySQL: boolean;
+    SQLite: boolean;
+    directPGURI: boolean;
   };
   databaseList: DatabaseInfo[];
   tableList: TableInfo[];
@@ -259,28 +253,20 @@ export type NodeTypes = {
   tableField: JSX.Element;
 };
 
-export type ERTableData = {
+export interface ERTableData extends TableInfo {
   columns: ERTableColumnData[];
-  is_insertable_into: 'yes' | 'no';
-  table_catalog: string;
-  table_name: string;
-  table_schema: string;
   new_table_name: string | null;
-};
+}
 
-export type ERTableColumnData = {
-  column_name: string;
+export interface ERTableColumnData extends TableColumn {
   new_column_name: string | null;
   constraint_name: string | null;
   constraint_type: string | null;
-  data_type: string;
-  character_maximum_length: number | null;
   foreign_column: string;
   foreign_table: string;
-  is_nullable: 'YES' | 'NO';
   unique?: boolean; // optional until implemented
   auto_increment?: boolean; // optional until implemented
-};
+}
 export type DataTypes = 'integer' | 'bigint' | 'varchar' | 'date' | null;
 export type DataTypesMySQL = 'int' | 'bigint' | 'varchar' | 'date' | null;
 
@@ -325,6 +311,7 @@ export type AddTablesObjType = {
   col_T?: any;
   col_L?: any;
 };
+
 export type DropTablesObjType = {
   table_name: string;
   table_schema: string;
@@ -340,12 +327,6 @@ export type AlterTablesObjType = {
   alterColumns: AlterColumnsObjType[];
 };
 
-export type UpdatesObjType = {
-  addTables: AddTablesObjType[];
-  dropTables: DropTablesObjType[];
-  alterTables: AlterTablesObjType[];
-};
-
 export type BackendObjType = {
   current: {
     database: string;
@@ -353,9 +334,15 @@ export type BackendObjType = {
   };
 };
 
+export type UpdatesObjType = {
+  addTables: AddTablesObjType[];
+  dropTables: DropTablesObjType[];
+  alterTables: AlterTablesObjType[];
+};
+
 export type SchemaStateObjType = {
   database: string;
-  tableList: ERTableData[];
+  tableList: TableInfo[];
 };
 
 export type TableHeaderDataObjectType = {

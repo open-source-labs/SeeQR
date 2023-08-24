@@ -21,7 +21,9 @@ interface QueryDbProps {
   dbTypes: DBType[] | undefined;
 }
 
-const QueryDb = ({ db, onDbChange, dbNames, dbTypes }: QueryDbProps) => {
+function QueryDb({
+  db, onDbChange, dbNames, dbTypes,
+}: QueryDbProps) {
   const menuitems: any = [];
   const values: any = {};
 
@@ -33,7 +35,7 @@ const QueryDb = ({ db, onDbChange, dbNames, dbTypes }: QueryDbProps) => {
           key={`queryview_dbselect_${dbNames[i]}`}
         >
           {`${dbNames[i]} [${dbTypes[i]}]`}
-        </StyledMenuItem>
+        </StyledMenuItem>,
       );
       values[dbNames[i]] = [dbNames[i], dbTypes[i]];
     }
@@ -44,18 +46,16 @@ const QueryDb = ({ db, onDbChange, dbNames, dbTypes }: QueryDbProps) => {
       <InputLabel id="queryView-db-label">Database</InputLabel>
       <Select
         value={db}
-        onChange={(evt) =>
-          onDbChange(
-            (values[evt.target.value as string] as Array<any>)[0],
-            (values[evt.target.value as string] as Array<any>)[1]
-          )
-        }
+        onChange={(evt) => onDbChange(
+          (values[evt.target.value] as Array<any>)[0],
+          (values[evt.target.value] as Array<any>)[1],
+        )}
         labelId="queryView-db-label"
       >
         {menuitems}
       </Select>
     </SpacedBox>
   );
-};
+}
 
 export default QueryDb;

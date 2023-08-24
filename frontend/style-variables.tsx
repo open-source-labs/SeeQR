@@ -1,7 +1,7 @@
 /**
  * This file contains all reusable variables for styling in styled-components
  * Individual variables should be named exports
-*/
+ */
 
 import React from 'react';
 import {
@@ -66,10 +66,10 @@ export const selectedColor = greenPrimary;
 export const hoverColor = greenPrimary;
 
 // Size
-export const sidebarWidth = '375px';
-export const defaultMargin = '20px';
+export const sidebarWidth = '365px';
+export const defaultMargin = '15px';
 export const tableWidth = `calc(100vw - (${defaultMargin} * 3) - ${sidebarWidth})`;
-export const sidebarShowButtonSize = '50px';
+export const sidebarShowButtonSize = '40px';
 
 // Execution Tree
 export const planNodeWidth = '200px';
@@ -101,7 +101,7 @@ export const MuiTheme = createTheme({
         root: {
           color: textColor,
           '&:hover': {
-          color: hoverColor,
+            color: hoverColor,
           },
         },
       },
@@ -125,7 +125,7 @@ export const MuiTheme = createTheme({
 });
 
 export const SidebarList = styled(List)`
-  padding: 0;
+  padding: 2%;
   width: 100%;
 `;
 
@@ -137,8 +137,9 @@ interface SidebarListItemProps {
  * Sidebar List item. Designed for dark bg.
  * Takes boolean in $customSelected prop to style selected item
  */
-export const SidebarListItem = styled(ListItemButton)`
-  color: ${({ $customSelected }: SidebarListItemProps) =>
+
+export const SidebarListItem = styled(ListItemButton)<SidebarListItemProps>`
+  color: ${({ $customSelected }: { $customSelected: boolean }) =>
     $customSelected ? selectedColor : textColor};
   background: transparent;
   border-bottom: 1px solid transparent;
@@ -191,7 +192,7 @@ export const StyledButton = styled(Button)`
 export const StyledInputLabel = styled(InputLabel)`
   padding-left: 25px;
   color: #171616;
-`
+`;
 
 export const StyledDropdown = styled(Select)`
   width: 90%;
@@ -208,11 +209,11 @@ export const StyledNativeDropdown = styled(NativeSelect)`
 export const StyledNativeOption = styled.option`
   color: #171616;
   background-color: '#2b2d35';
-`
+`;
 
 export const StyledMenuItem = styled(MenuItem)`
   color: #171616;
-`
+`;
 
 export const StyledTextField = styled(TextField)`
   width: 80%;

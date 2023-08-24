@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
-import '../../lib/style.css';
-import styled from 'styled-components';
 import {
-  Stepper,
+  Button,
   Step,
   StepButton,
   StepLabel,
-  Button,
+  Stepper,
   Typography,
 } from '@mui/material';
+import React, { useState } from 'react';
+import styled from 'styled-components';
 import logo from '../../../assets/logo/seeqr_dock.png';
+import '../../lib/style.css';
 
 interface QuickStartViewProps {
   show: boolean;
@@ -25,24 +25,25 @@ const PageContainer = styled.a`
 `;
 
 const StyledStepper = styled(Stepper)`
-  margin: 70px 0px 20px 0px;
+  margin: 60px 0px 20px 0px;
   background: transparent;
 `;
 
 const StyledStepLabel = styled(StepLabel)`
   width: 10vw;
   & .MuiStepLabel-label {
-    font-size: clamp(1rem, 1.28vw, 1.5rem);
+    font-size: clamp(1rem, 1.28vw, 1.3rem);
   }
 `;
 
 const StyledTypographyInstructions = styled.div`
-  font-size: clamp(1rem, 2.2vw, 1.3rem);
+  font-size: clamp(1rem, 2.2vw, 1.2rem);
   text-align: center;
+  width: 40vw;
 `;
 
 const StyledTypographyTitle = styled(Typography)`
-  font-size: clamp(5rem, 40vw, 5rem);
+  font-size: clamp(2rem, 35vw, 3rem);
 `;
 
 const NavButtons = styled.div`
@@ -59,6 +60,7 @@ const StepContent = styled.div`
 const StepList = styled.ul`
   text-align: left;
   font-size: 0.9em;
+  list-style: circle;
 
   & li {
     margin-top: 7px;
@@ -66,7 +68,13 @@ const StepList = styled.ul`
 `;
 
 function getSteps() {
-  return ['Set Up Servers and Permissions', 'Import a Database', 'Create New Queries', 'Saving/Loading Queries', 'Compare Queries'];
+  return [
+    'Set Up Servers and Permissions',
+    'Import/ Export a Database',
+    'Create New Queries',
+    'Saving/Loading Queries',
+    'Compare Queries',
+  ];
 }
 
 function getStepContent(step: number) {
@@ -76,35 +84,52 @@ function getStepContent(step: number) {
         <StyledTypographyInstructions>
           <strong>Step 1:</strong>
           <StepList>
-            <li>Install PostgreSQL and/or MySQL servers (for Mac, use Homebrew). </li>
-            <li> Ensure that PATH is enabled.</li>
-            <li> Set up a username, password, port, and full permissions for database mainpulation. </li>
-            <li> PostgreSQL username, password, and port is defaulted to &quot;postgres,&quot; &quot;postgres,&quot; and &quot;5432,&quot; respectively. Similarly, MySQL username, password, and port is defaulted to &quot;mysql,&quot;  &quot;mysql,&quot; and &quot;3306,&quot; respectively. </li>
-            <li> Set up usernames, passwords, and ports that match database server profiles. This can be done by clicking the gear on the top-left of the app. If you do not see your database(s), check that your information is correct. </li>
-            <li> Run server(s) in the background. </li>
+            <li>
+              Install PostgreSQL and/or MySQL servers (for Mac, use Homebrew)
+            </li>
+            <li> Run server(s) in the background</li>
+            <li>Ensure that PATH is enabled</li>
+            <li>
+              If existing user - sign in with user and password using gear icon
+              - top of left panel
+            </li>
+            <li>
+              Ports for PostgresSQL and MySQL are defaulted to ‘5432’ and
+              ‘3306’, respectively
+            </li>
+            <li>
+              Postgres new user: create user and password: eg. CREATE USER
+              davide WITH PASSWORD 'jw8s0F4’;
+            </li>
+            <li>Enable full permissions for database manipulation</li>
           </StepList>
-        </StyledTypographyInstructions> 
+        </StyledTypographyInstructions>
       );
     case 1:
       return (
         <StyledTypographyInstructions>
           <strong>Step 2:</strong>
           <StepList>
-            <li>To import a database, select the + icon in the sidebar.</li>
-            <li>Enter a name for your database.</li>
+            <li>
+              To import a database, select the file upload icon in the sidebar
+            </li>
+            <li>Enter a unique name for your database</li>
             <li>
               Click the green &quot;Import File&quot; button and select a .sql
-              file.
+              file
             </li>
-            <li>Select your imported database on the sidebar to view table information.</li>
-        
+            <li>Select your imported database on the sidebar to view</li>
             <li>
               To view each table, click the name of the table in the top tabs
-              bar.
+              bar
             </li>
             <li>
               The chart will include column names, types, and if they are
-              nullable.
+              nullable
+            </li>
+            <li>
+              To export a database, select the file download icon next to the
+              database name
             </li>
           </StepList>
         </StyledTypographyInstructions>
@@ -114,54 +139,63 @@ function getStepContent(step: number) {
         <StyledTypographyInstructions>
           <strong>Step 3:</strong>
           <StepList>
-            <li>Select which database you want to create a query in.</li>
+            <li>Select which database you want to query with</li>
+            <li>Select the &quot;QUERIES&quot; tab in the sidebar</li>
+            <li>Give the query a label and a group</li>
             <li>
-              Go into the queries tab by selecting the &quot;QUERIES&quot; tab
-              in the sidebar.
+              Optionally: You can change the database from the
+              &quot;Database&quot; dropdown
             </li>
             <li>
-              Select the + icon in the sidebar and give the query a label and a group on the
-              right side.
+              Use the brush icon on the top-right to automatically format the
+              query
             </li>
+            <li>Select &quot;RUN QUERY&quot; button to execute</li>
             <li>
-              Optionally: You can change the database to create the query in
-              from the &quot;Database&quot; dropdown.
+              The planning time, execution time, and actual total time now show
             </li>
-            <li>
-              Use the &quot;Auto-Format&quot; button on the top-left to
-              automatically format the query.
-            </li>
-            <li>Select the &quot;RUN QUERY&quot; button to execute.</li>
-            <li>
-              The planning time, execution time, and actual total time now show.
-            </li>
-            <li>The results from the query are in the table below.</li>
+            <li>The results from the query are in the table below</li>
             <li>
               Select the &quot;Execution Plan&quot; button to view the analysis
-              of running the query.
+              of running the query
             </li>
           </StepList>
         </StyledTypographyInstructions>
       );
-      case 3: 
-        return (
-          <StyledTypographyInstructions>
-            <strong>Step 4:</strong>
-            <StepList>
-              <li>To save a query, declare a file location by clicking the &quot;Designate Save Location&quot; button in the queries tab</li>
-              <li>Then, save queries individually by clicking the &quot;Save Query&quot; button</li>
-              <li>To load data into SeeQR just click the &quot;Import Query&quot; button, select the file you wish to upload in your local file system and click &quot;Upload&quot;</li>
-            </StepList>
-          </StyledTypographyInstructions>
-        )
+    case 3:
+      return (
+        <StyledTypographyInstructions>
+          <strong>Step 4:</strong>
+          <StepList>
+            <li>
+              To save a query, click the folder icon in the &quot;QUERIES&quot;
+              tab
+            </li>
+            <li>
+              Designate a save file location and click &quot;Select Path&quot;
+            </li>
+            <li>
+              Click the save icon in the query group drop-down to save queries
+              automatically to designated file location
+            </li>
+            <li>
+              To import a query file, click the import icon, select the file you
+              wish to upload (.json) in your local file system and click
+              &quot;Upload&quot;
+            </li>
+          </StepList>
+        </StyledTypographyInstructions>
+      );
     case 4:
       return (
         <StyledTypographyInstructions>
           <strong>Step 5:</strong>
           <StepList>
-            <li>Select the checkbox of the queries inside the groups you would like to compare.</li>
-            <li>Then, click the Chart Icon at the top of the sidebar.</li>
-            <li>Feel free to continually select and deselect queries to compare.</li>
+            <li>Select the checkboxes in the query group drop-down</li>
+            <li>
+              Click the chart icon at the top of the sidebar to compare selected
+              queries
+            </li>
           </StepList>
         </StyledTypographyInstructions>
       );
@@ -170,7 +204,7 @@ function getStepContent(step: number) {
   }
 }
 
-const QuickStartView = ({ show }: QuickStartViewProps) => {
+function QuickStartView({ show }: QuickStartViewProps) {
   if (!show) return null;
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState(new Set<number>());
@@ -266,13 +300,8 @@ const QuickStartView = ({ show }: QuickStartViewProps) => {
           }
           return (
             <Step key={label} {...stepProps} completed={isStepComplete(index)}>
-              <StepButton
-                onClick={handleStep(index)}
-                {...buttonProps}
-              >
-                <StyledStepLabel className="stepper">
-                  {label}
-                </StyledStepLabel>
+              <StepButton onClick={handleStep(index)} {...buttonProps}>
+                <StyledStepLabel className="stepper">{label}</StyledStepLabel>
               </StepButton>
             </Step>
           );
@@ -331,6 +360,6 @@ const QuickStartView = ({ show }: QuickStartViewProps) => {
       </div>
     </PageContainer>
   );
-};
+}
 
 export default QuickStartView;

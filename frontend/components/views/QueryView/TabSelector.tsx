@@ -3,7 +3,7 @@ import { ButtonGroup, Button } from '@mui/material';
 import Box from '@mui/material/Box';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
-import {useReactFlow} from 'reactflow';
+import { useReactFlow } from 'reactflow';
 import styled from 'styled-components';
 import {
   selectedColor,
@@ -20,8 +20,8 @@ interface ViewButtonProps {
   $isSelected: boolean;
 }
 
-const ViewButton = styled(Button)`
-  background: ${({ $isSelected }: ViewButtonProps) =>
+const ViewButton = styled(Button)<ViewButtonProps>`
+  background: ${({ $isSelected }: { $isSelected: boolean }) =>
     $isSelected ? selectedColor : textColor};
   &:hover {
     background: ${({ $isSelected }: ViewButtonProps) =>
@@ -34,7 +34,7 @@ interface TabSelectorProps {
   select: (tab: ValidTabs) => void;
 }
 
-const TabSelector = ({ selectedTab, select }: TabSelectorProps) => {
+function TabSelector({ selectedTab, select }: TabSelectorProps) {
   const { fitView } = useReactFlow();
 
   const handleSelect = (tabName: ValidTabs) => () => {
@@ -62,6 +62,6 @@ const TabSelector = ({ selectedTab, select }: TabSelectorProps) => {
       </ViewBtnGroup>
     </Box>
   );
-};
+}
 
 export default TabSelector;

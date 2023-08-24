@@ -1,25 +1,27 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { BrowserWindow, Menu, app, session } from 'electron'; // added session here
+import * as path from 'path';
+import * as url from 'url';
+import { app, BrowserWindow, Menu } from 'electron'; // added session here
+import fixPath from 'fix-path';
+
+import MainMenu from './mainMenu';
 
 const dev: boolean = process.env.NODE_ENV === 'development';
-const os = require('os');
-const path = require('path');
-const url = require('url');
-const fixPath = require('fix-path');
-const MainMenu = require('./mainMenu');
 
 // requiring channels file to initialize event listeners
-require('./channels');
 
+// require('./_DEPRECATED_channels');
+require('./src/ipcHandlers/index');
 
 fixPath();
-// Keep a global reference of the window objects, if you don't, the window will be closed automatically when the JavaScript object is garbage collected.
+// Keep a global reference of the window objects, if you don't,
+// the window will be closed automatically when the JavaScript object is garbage collected.
 let mainWindow: BrowserWindow | null;
 
 // for react dev tools to work with electron
 // download react devtools and save them on desktop in folder named ReactDevTools
 // devtools: https://github.com/facebook/react/issues/25843
-// https://github.com/mondaychen/react/raw/017f120369d80a21c0e122106bd7ca1faa48b8ee/packages/react-devtools-extensions/ReactDevTools.zip 
+// https://github.com/mondaychen/react/raw/017f120369d80a21c0e122106bd7ca1faa48b8ee/packages/react-devtools-extensions/ReactDevTools.zip
 // ******************** Comment out when done ******************** //
 // const reactDevToolsPath = path.join(os.homedir(), '/Desktop/ReactDevTools');
 // app.whenReady().then(async () => {
@@ -35,8 +37,7 @@ process.on('uncaughtException', (error) => {
   console.error('Uncaught Exception:', error);
 });
 
-
-
+// this creates the new browserWindow. Had to delete remoteprocess from webPrefences since it was deprecated. It allowed driect access to remote objects and APIs in this main process, so instead we implement ipcRenderer.invoke. WebPreferences nodeintegration and contextisolation are set respectively to ensure api's can be used throughout the entire program without contextbridging
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1800,
@@ -45,7 +46,7 @@ function createWindow() {
     minHeight: 720,
     title: 'SeeQR',
     show: false,
-    webPreferences: { nodeIntegration: true, enableRemoteModule: true },
+    webPreferences: { nodeIntegration: true, contextIsolation: false },
     icon: path.join(__dirname, '../../assets/logo/seeqr_dock.png'),
   });
 
@@ -87,7 +88,8 @@ app.on('ready', createWindow);
 
 // Quit when all windows are closed for Windows and Linux
 app.on('window-all-closed', () => {
-  // On macOS it is common for applications to stay active on their menu bar when the use closes the window
+  // On macOS it is common for applications to stay active on their menu bar
+  // when the use closes the window
   if (process.platform !== 'darwin') {
     app.quit();
   } else {
@@ -96,7 +98,8 @@ app.on('window-all-closed', () => {
 });
 
 app.on('activate', () => {
-  // On macOS it's common to re-create a window in the app when the dock icon is clicked and there are no other windows open.
+  // On macOS it's common to re-create a window in the app when the dock
+  // icon is clicked and there are no other windows open.
   if (mainWindow === null) {
     createWindow();
   }

@@ -5,15 +5,16 @@ import { IconButton, Tooltip, Menu, MenuItem } from '@mui/material';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import AddNewDbModal from '../modal/AddNewDbModalCorrect';
-import {
-  AppState,
-  DatabaseInfo,
-} from '../../types';
+import { AppState, DatabaseInfo } from '../../types';
 import { DBType } from '../../../backend/BE_types';
 import { sendFeedback } from '../../lib/utils';
 import DuplicateDbModal from '../modal/DuplicateDbModal';
 import DbEntry from './DbEntry';
 import { SidebarList, greyDarkest } from '../../style-variables';
+import {
+  useAppViewContext,
+  useAppViewDispatch,
+} from '../../state_management/Contexts/AppViewContext';
 
 const StyledSidebarList = styled(SidebarList)`
   background-color: ${greyDarkest};
@@ -26,7 +27,7 @@ const StyledSidebarList = styled(SidebarList)`
   }
   ::-webkit-scrollbar-track {
     border-radius: 5px;
-    background: rgba(255, 255, 255, .1);
+    background: rgba(255, 255, 255, 0.1);
   }
   ::-webkit-scrollbar-thumb {
     background: white;
@@ -34,31 +35,25 @@ const StyledSidebarList = styled(SidebarList)`
   }
 `;
 
-type DbListProps = Pick<
-  AppState,
-  'selectedDb' | 'setSelectedDb' | 'setSelectedView'
-> & {
+type DbListProps = Pick<AppState, 'selectedDb' | 'setSelectedDb'> & {
   show: boolean;
   curDBType: DBType | undefined;
   setDBType: (dbType: DBType | undefined) => void;
   DBInfo: DatabaseInfo[] | undefined;
-  selectedView: AppState['selectedView'];
 };
 
-const DbList = ({
+function DbList({
   selectedDb,
   setSelectedDb,
-  setSelectedView,
   show,
   curDBType,
   setDBType,
   DBInfo,
-  selectedView,
-}: DbListProps) => {
+}: DbListProps) {
   const [openAdd, setOpenAdd] = useState(false);
   const [openDupe, setOpenDupe] = useState(false);
   const [dbToDupe, setDbToDupe] = useState('');
-  
+
   // filter button
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [filterBy, setFilterBy] = useState<string>('All');
@@ -66,6 +61,9 @@ const DbList = ({
 
   // I think this returns undefined if DBInfo is falsy idk lol
   const dbNames = DBInfo?.map((dbi) => dbi.db_name);
+
+  const appViewStateContext = useAppViewContext();
+  const appViewDispatchContext = useAppViewDispatch();
 
   const handleClickOpenAdd = () => {
     setOpenAdd(true);
@@ -85,7 +83,17 @@ const DbList = ({
   };
 
   const selectHandler = (dbName: string, cdbt: DBType | undefined) => {
-    setSelectedView(selectedView === 'threeDView' ?  'threeDView' : 'dbView');
+    if (appViewStateContext?.selectedView === 'threeDView') {
+      appViewDispatchContext!({
+        type: 'SELECTED_VIEW',
+        payload: 'threeDView',
+      });
+    } else {
+      appViewDispatchContext!({
+        type: 'SELECTED_VIEW',
+        payload: 'dbView',
+      });
+    }
     if (dbName === selectedDb) return;
     ipcRenderer
       .invoke('select-db', dbName, cdbt)
@@ -97,21 +105,28 @@ const DbList = ({
         sendFeedback({
           type: 'error',
           message: `Failed to connect to ${dbName}`,
-        })
+        }),
       );
   };
 
   const handleClickFilter = (e: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(e.currentTarget);
-  }
-  
+  };
+
   const handleCloseFilter = (e) => {
     setAnchorEl(null);
     setFilterBy(e.currentTarget.innerText || filterBy);
-  }
-  
+  };
+
   //  filter options
-  const dbNamesArr = ['All', 'MySql', 'Postgres', 'RDS Mysql', 'RDS Postgres', 'SQLite'];
+  const dbNamesArr = [
+    'All',
+    'MySql',
+    'Postgres',
+    'RDS Mysql',
+    'RDS Postgres',
+    'SQLite',
+  ];
 
   const dbNamesObj = {
     All: 'all',
@@ -120,31 +135,36 @@ const DbList = ({
     'RDS Mysql': 'rds-mysql',
     'RDS Postgres': 'rds-pg',
     SQLite: 'sqlite',
-  }
+  };
 
   if (!show) return null;
   return (
     <>
-      <div style={{ display: 'flex'}}>
+      <div style={{ display: 'flex' }}>
         <Tooltip title="Filter By Database">
           <IconButton onClick={handleClickFilter}>
             <FilterListIcon fontSize="large" />
-          </IconButton>         
+          </IconButton>
         </Tooltip>
         <Menu
           id="filter-menu"
           MenuListProps={{
-          'aria-labelledby': 'filter',
-        }}
+            'aria-labelledby': 'filter',
+          }}
           anchorEl={anchorEl}
           open={openFilter}
           onClose={handleCloseFilter}
         >
           {dbNamesArr.map((option) => (
-            <MenuItem key={option} selected={option === filterBy} onClick={handleCloseFilter} sx={{ color: 'black' }}>
+            <MenuItem
+              key={option}
+              selected={option === filterBy}
+              onClick={handleCloseFilter}
+              sx={{ color: 'black' }}
+            >
               {option}
             </MenuItem>
-        ))}
+          ))}
         </Menu>
         <Tooltip title="Import Database">
           <IconButton onClick={handleClickOpenAdd} size="large">
@@ -164,7 +184,7 @@ const DbList = ({
                 duplicate={() => handleClickOpenDupe(dbi.db_name)}
                 dbType={dbi.db_type}
               />
-              )
+            );
           }
         })}
         {openDupe ? (
@@ -175,7 +195,7 @@ const DbList = ({
             dbNames={dbNames}
             curDBType={curDBType}
           />
-      ) : null}
+        ) : null}
       </StyledSidebarList>
       <AddNewDbModal
         open={openAdd}
@@ -184,7 +204,7 @@ const DbList = ({
         curDBType={curDBType}
       />
     </>
-);
-};
+  );
+}
 
 export default DbList;

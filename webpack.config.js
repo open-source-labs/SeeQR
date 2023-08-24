@@ -1,9 +1,9 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const { spawn } = require('child_process');
-const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
-const webpack = require('webpack');
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+const BundleAnalyzerPlugin =
+  require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -41,7 +41,11 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['@babel/preset-env', '@babel/preset-react'],
+            presets: [
+              '@babel/preset-env',
+              '@babel/preset-react',
+              '@babel/preset-typescript',
+            ],
             plugins: [
               isDevelopment && require.resolve('react-refresh/babel'),
             ].filter(Boolean),
@@ -60,16 +64,8 @@ module.exports = {
       {
         test: /\.(jpg|jpeg|png|ttf|svg)$/,
         use: [
-          'file-loader',
           {
-            loader: 'image-webpack-loader',
-            options: {
-              bypassOnDebug: true,
-              disable: true,
-              mozjpeg: {
-                quality: 10,
-              },
-            },
+            loader: 'file-loader',
           },
         ],
         exclude: /node_modules/,
@@ -91,6 +87,10 @@ module.exports = {
   resolve: {
     // Enable importing JS / JSX files without specifying their extension
     modules: [path.resolve(__dirname, 'node_modules')],
+    alias: {
+      '@mytypes': path.resolve(__dirname, './shared/types/'),
+      // ... any other path aliases ...
+    },
     extensions: [
       '.js',
       '.jsx',
@@ -105,15 +105,11 @@ module.exports = {
   target: 'electron-renderer',
   devServer: {
     // contentBase: path.resolve(__dirname, '/tsCompiled/frontend'),
-    contentBase: path.resolve(__dirname, '/dist/'),
+    static: path.resolve(__dirname, '/dist/'),
     host: 'localhost',
     port: '8080',
     hot: true,
     compress: true,
-    watchContentBase: true,
-    watchOptions: {
-      ignored: /node_modules/,
-    },
   },
   plugins: [
     new HtmlWebpackPlugin({
@@ -137,6 +133,11 @@ module.exports = {
         },
       },
     }),
+    // new BundleAnalyzerPlugin({
+    //   analyzerMode: 'json',
+    //   openAnalzyer: true,
+    //   generateStatsFile: true,
+    // }),
     new ForkTsCheckerWebpackPlugin({
       // // Lint files on error.  Uncomment for Hard Mode :)
       // eslint: {
@@ -148,4 +149,7 @@ module.exports = {
     }),
     isDevelopment && new ReactRefreshWebpackPlugin(),
   ].filter(Boolean),
+  externals: {
+    '@mytypes/dbTypes': 'commonjs @mytypes/dbTypes',
+  },
 };

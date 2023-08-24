@@ -4,18 +4,18 @@ type TableFieldDropDownOptionProps = {
   idName: string;
   option: string;
 }
- 
-const TableFieldDropDownOption = (props: TableFieldDropDownOptionProps)  => {
+
+function TableFieldDropDownOption(props: TableFieldDropDownOptionProps) {
   const { idName, option } = props;
 
   return (
-    <option 
-      key={`${idName}-option-${option}`} 
+    <option
+      key={`${idName}-option-${option}`}
       value={option}
     >
       {option}
     </option>
   );
 }
- 
+
 export default TableFieldDropDownOption;
