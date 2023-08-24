@@ -1,14 +1,14 @@
 import React from 'react';
 
-import styled from 'styled-components';
-import {
-  IconButton,
-  ListItemSecondaryAction,
-  Checkbox,
-  Tooltip,
-} from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import SaveIcon from '@mui/icons-material/Save';
+import {
+  Checkbox,
+  IconButton,
+  ListItemSecondaryAction,
+  Tooltip,
+} from '@mui/material';
+import styled from 'styled-components';
 import {
   SidebarListItem,
   StyledListItemText,
@@ -35,7 +35,7 @@ interface QueryEntryProps {
   saveThisQuery: () => void;
 }
 
-const QueryEntry = ({
+function QueryEntry({
   query,
   select,
   isSelected,
@@ -43,27 +43,27 @@ const QueryEntry = ({
   isCompared,
   deleteThisQuery,
   saveThisQuery,
-}: QueryEntryProps) => (
-  <SidebarListItem $customSelected={isSelected} onClick={select}>
-    <QueryText primary={`${query.label} - ${query.db}`} />
-    <ListItemSecondaryAction>
-      <Tooltip title="View in Comparison">
-        <CompareCheck onChange={setComparison} checked={isCompared} />
-      </Tooltip>
-      <Tooltip title="Save Query">
-        <IconButton onClick={saveThisQuery} size="large">
-          <SaveIcon fontSize='inherit' />
-        </IconButton>
-      </Tooltip>
-      <Tooltip title="Forget Query">
-        <IconButton edge="end" onClick={deleteThisQuery} size="large">
-          <CloseIcon />
-        </IconButton>
-      </Tooltip>
-    </ListItemSecondaryAction>
-  </SidebarListItem>
-);
-
-
+}: QueryEntryProps) {
+  return (
+    <SidebarListItem $customSelected={isSelected} onClick={select}>
+      <QueryText primary={`${query.label} - ${query.db}`} />
+      <ListItemSecondaryAction>
+        <Tooltip title="View in Comparison">
+          <CompareCheck onChange={setComparison} checked={isCompared} />
+        </Tooltip>
+        <Tooltip title="Save Query">
+          <IconButton onClick={saveThisQuery} size="large">
+            <SaveIcon fontSize="inherit" />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Forget Query">
+          <IconButton edge="end" onClick={deleteThisQuery} size="large">
+            <CloseIcon />
+          </IconButton>
+        </Tooltip>
+      </ListItemSecondaryAction>
+    </SidebarListItem>
+  );
+}
 
 export default QueryEntry;

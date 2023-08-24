@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { IpcRendererEvent, ipcRenderer, remote } from 'electron';
+import React, { useState, useEffect, useContext } from 'react';
+import { ipcRenderer } from 'electron';
 import {
   Box,
   Tab,
@@ -16,6 +16,8 @@ import {
   StyledTextField,
 } from '../../style-variables';
 import '../../lib/style.css';
+import { DocConfigFile } from '../../../backend/BE_types';
+import MenuContext from '../../state_management/Contexts/MenuContext';
 
 /*
 junaid
@@ -43,13 +45,14 @@ function TabPanel(props: TabPanelProps) {
       {...other}
     >
       {value === index && (
-        <Box sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '.25rem',
-          alignItems: 'center',
-          pt: 2
-        }}
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '.25rem',
+            alignItems: 'center',
+            pt: 2,
+          }}
         >
           {children}
         </Box>
@@ -65,7 +68,10 @@ function a11yProps(index: number) {
   };
 }
 
-const BasicTabs = ({ onClose }: BasicTabsProps) => {
+function BasicTabs({ onClose }: BasicTabsProps) {
+  // context for async calls
+  const { dispatch: menuDispatch } = useContext(MenuContext);
+
   // useState hooks for database connection information
   const [mysql, setmysql] = useState({});
   const [pg, setpg] = useState({});
@@ -91,24 +97,24 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
     sqlite: [], // added sqlite
   });
 
-  // function to store user-selected file path in state
-  const designateFile = function (path, setPath) {
-    const { dialog } = remote;
-    const WIN = remote.getCurrentWindow();
-
+  const designateFile = (setPath) => {
     const options = {
-      title: "Select SQLite File",
+      title: 'Select SQLite File',
       defaultPath: '',
-      buttonLabel: "Select File", filters: [
-        { name: 'db', extensions: ['db'] }
-      ]
-    }
-
-    dialog.showOpenDialog(WIN, options)
-      .then((res: any) => {
-        setPath({ path: res.filePaths[0] })
-      });
-  }
+      buttonLabel: 'Select File',
+      filters: [{ name: 'db', extensions: ['db'] }],
+    };
+    const setPathCallback = (val) => setPath({ path: val });
+    menuDispatch({
+      type: 'ASYNC_TRIGGER',
+      loading: 'LOADING',
+      options: {
+        event: 'showOpenDialog',
+        payload: options,
+        callback: setPathCallback,
+      },
+    });
+  };
 
   // Function to make StyledTextFields and store them in inputFieldsToRender state
   function inputFieldMaker(dbTypeFromState, setDbTypeFromState, dbString) {
@@ -116,10 +122,14 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
     const arrayToRender: JSX.Element[] = [];
     if (dbString === 'sqlite') {
       arrayToRender.push(
-        <StyledButton variant="contained" color="primary" onClick={() => designateFile(dbTypeFromState, setDbTypeFromState)}>
+        <StyledButton
+          variant="contained"
+          color="primary"
+          onClick={() => designateFile(setDbTypeFromState)}
+        >
           Set db file location
-        </StyledButton>
-      )
+        </StyledButton>,
+      );
     } else {
       // Get key value pairs from passed in database connection info from state
       Object.entries(dbTypeFromState).forEach((entry) => {
@@ -152,7 +162,6 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
         }
         // Push StyledTextField to temporary render array for current key in database connection object from state
 
-
         arrayToRender.push(
           <StyledTextField
             required
@@ -173,9 +182,8 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
             }}
             // Spread special password props if they exist
             {...styledTextFieldProps}
-          />
+          />,
         );
-
       });
     }
     // Update state for our current database type passing in our temporary array of StyledTextField components
@@ -187,21 +195,24 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
 
   useEffect(() => {
     // Listen to backend for updates to list of available databases
-    const configFromBackend = (evt: IpcRendererEvent, config) => {
+    const configFromBackend = (config: DocConfigFile) => {
       // Set state based on parsed config.json object received from backend
-      setmysql({ ...config.mysql });
-      setpg({ ...config.pg });
-      setrds_mysql({ ...config.rds_mysql });
-      setrds_pg({ ...config.rds_pg });
-      setSqlite({ ...config.sqlite }); // added sqlite
+      setmysql({ ...config.mysql_options });
+      setpg({ ...config.pg_options });
+      setrds_mysql({ ...config.rds_mysql_options });
+      setrds_pg({ ...config.rds_pg_options });
+      setSqlite({ ...config.sqlite_options }); // added sqlite
     };
-    ipcRenderer.on('get-config', configFromBackend);
-    ipcRenderer.invoke('get-config');
-    // return cleanup function
-    return () => {
-      ipcRenderer.removeListener('get-config', configFromBackend);
-    };
-  }, []);
+
+    menuDispatch({
+      type: 'ASYNC_TRIGGER',
+      loading: 'LOADING',
+      options: {
+        event: 'get-config',
+        callback: configFromBackend,
+      },
+    });
+  }, [menuDispatch]);
 
   // Invoke functions to generate input StyledTextFields components -- passing in state, setstate hook, and database name string.
   // have it subscribed to changes in db connection info or show password button. Separate hooks to not rerender all fields each time
@@ -227,28 +238,52 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
 
   const handleSubmit = () => {
     // Pass database connection values from state to backend
-    ipcRenderer
-      .invoke('set-config', {
-        mysql: { ...mysql },
-        pg: { ...pg },
-        rds_mysql: { ...rds_mysql },
-        rds_pg: { ...rds_pg },
-        sqlite: { ...sqlite }, // added sqlite
-      })
-      .then(() => {
-        handleClose();
-      })
-      .catch((err) => {
-        sendFeedback({
-          type: 'error',
-          message: err ?? 'Failed to save config.',
-        });
-      });
+    // OLD CODE
+    // ipcRenderer
+    //   .invoke('set-config', {
+    //     mysql_options: { ...mysql },
+    //     pg_options: { ...pg },
+    //     rds_mysql_options: { ...rds_mysql },
+    //     rds_pg_options: { ...rds_pg },
+    //     sqlite_options: { ...sqlite }, // added sqlite
+    //   })
+    //   .then(() => {
+    //     handleClose();
+    //   })
+    //   .catch((err) => {
+    //     sendFeedback({
+    //       type: 'error',
+    //       message: err ?? 'Failed to save config.',
+    //     });
+    //   });
+
+    menuDispatch({
+      type: 'ASYNC_TRIGGER',
+      loading: 'LOADING',
+      options: {
+        event: 'set-config',
+        payload: {
+          mysql_options: { ...mysql },
+          pg_options: { ...pg },
+          rds_mysql_options: { ...rds_mysql },
+          rds_pg_options: { ...rds_pg },
+          sqlite_options: { ...sqlite },
+        },
+        callback: handleClose,
+      },
+    });
   };
+
   // Function to handle onChange -- when tab panels change
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     // On panel change reset all passwords to hidden
-    setShowpass({ mysql: false, pg: false, rds_mysql: false, rds_pg: false, sqlite: false });
+    setShowpass({
+      mysql: false,
+      pg: false,
+      rds_mysql: false,
+      rds_pg: false,
+      sqlite: false,
+    });
     // Change which tab panel is hidden/shown
     setValue(newValue);
   };
@@ -264,11 +299,17 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
           value={value}
           onChange={handleChange}
           aria-label="wrapped label basic tabs"
-          className='db-login-tabs'
+          className="db-login-tabs"
         >
-          {dbNames.map((db, idx) =>
-            <Tab label={db} wrapped {...a11yProps(idx)} className='db-login-tab' key={db} />
-           )}
+          {dbNames.map((db, idx) => (
+            <Tab
+              label={db}
+              wrapped
+              {...a11yProps(idx)}
+              className="db-login-tab"
+              key={db}
+            />
+          ))}
         </Tabs>
       </Box>
       <TabPanel value={value} index={0}>
@@ -288,22 +329,30 @@ const BasicTabs = ({ onClose }: BasicTabsProps) => {
       </TabPanel>
 
       <ButtonContainer>
-        <StyledButton variant="contained" color="secondary" onClick={handleClose}>
+        <StyledButton
+          variant="contained"
+          color="secondary"
+          onClick={handleClose}
+        >
           Cancel
         </StyledButton>
-        <StyledButton variant="contained" color="primary" onClick={handleSubmit}>
+        <StyledButton
+          variant="contained"
+          color="primary"
+          onClick={handleSubmit}
+        >
           Save
         </StyledButton>
       </ButtonContainer>
     </Box>
   );
-};
+}
 interface ConfigViewProps {
   show: boolean;
   onClose: () => void;
 }
 
-const ConfigView = ({ show, onClose }: ConfigViewProps) => {
+function ConfigView({ show, onClose }: ConfigViewProps) {
   const handleClose = () => {
     onClose();
   };
@@ -322,6 +371,6 @@ const ConfigView = ({ show, onClose }: ConfigViewProps) => {
       </Dialog>
     </div>
   );
-};
+}
 
 export default ConfigView;

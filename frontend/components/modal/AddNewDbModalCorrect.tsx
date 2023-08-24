@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import path from 'path';
+import React, { useContext, useState } from 'react';
 import { Dialog, DialogTitle, Tooltip } from '@mui/material/';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import { ipcRenderer, remote } from 'electron';
-import { sendFeedback } from '../../lib/utils';
 import {
   ButtonContainer,
   TextFieldContainer,
@@ -14,13 +13,7 @@ import {
   StyledNativeOption,
 } from '../../style-variables';
 import { DBType } from '../../../backend/BE_types';
-
-const { dialog } = remote;
-
-interface ImportPayload {
-  newDbName: string;
-  filePath: string;
-}
+import MenuContext from '../../state_management/Contexts/MenuContext';
 
 type AddNewDbModalProps = {
   open: boolean;
@@ -29,12 +22,14 @@ type AddNewDbModalProps = {
   curDBType: DBType | undefined;
 };
 
-const AddNewDbModal = ({
+function AddNewDbModal({
   open,
   onClose,
   dbNames,
   curDBType,
-}: AddNewDbModalProps) => {
+}: AddNewDbModalProps) {
+  const { dispatch: menuDispatch } = useContext(MenuContext);
+
   const [newDbName, setNewDbName] = useState('');
   const [isError, setIsError] = useState(false);
   const [isEmpty, setIsEmpty] = useState(true);
@@ -79,45 +74,43 @@ const AddNewDbModal = ({
   };
 
   // Opens modal to select file and sends the selected file to backend
-  const handleFileClick = () => {
-    const dbt: DBType = (document.getElementById('dbTypeDropdown') as any).value;
-    // console.log('curDBType in addnewdbmodalcorrect', curDBType)
-    // console.log('newdbName in addnewdbmodalcorrect', newDbName)
-    // console.log('dbt in addnewdbmodalcorrect', dbt)
-    dialog
-      .showOpenDialog({
-        properties: ['openFile'],
-        filters: [{ name: 'Custom File Type', extensions: ['sql', 'tar'] }],
-        message: 'Please upload .sql or .tar database file',
-      })
-      .then((result) => {
-        if (result.canceled) return;
-
-        if (!result.filePaths.length) {
-          sendFeedback({
-            type: 'warning',
-            message: 'No file was selected',
-          });
-          return;
-        }
-
-        const payload: ImportPayload = {
-          newDbName,
-          filePath: result.filePaths[0],
-        };
-
-
-        ipcRenderer.invoke('import-db', payload, dbt).catch(() =>
-          sendFeedback({
-            type: 'error',
-            message: 'Failed to import database',
-          })
-        );
-      })
-      .catch((err: object) => {
-        // console.log(err);
-      })
-      .finally(handleClose);
+  const handleDBimport = (dbName: string, closeModal: () => void) => {
+    // TODO: fix the any type.
+    const dbt: DBType = (document.getElementById('dbTypeDropdown') as any)
+      .value;
+    const options = {
+      title: 'Import DB',
+      defaultPath: path.join(__dirname, '../assets/'),
+      buttonLabel: 'Import',
+      filters: [
+        {
+          name: 'Custom File Type',
+          extensions: ['sql', 'tar'],
+        },
+      ],
+    };
+    // this runs after opendialog resolves, use as callback
+    const importdb = (filePath: string) => {
+      menuDispatch({
+        type: 'ASYNC_TRIGGER',
+        loading: 'LOADING',
+        options: {
+          event: 'import-db',
+          payload: { newDbName: dbName, filePath, dbType: dbt }, // see importDb for type reqs
+          callback: closeModal,
+        },
+      });
+    };
+    // initial async call
+    menuDispatch({
+      type: 'ASYNC_TRIGGER',
+      loading: 'LOADING',
+      options: {
+        event: 'showOpenDialog',
+        payload: options,
+        callback: importdb,
+      },
+    });
   };
 
   return (
@@ -150,14 +143,20 @@ const AddNewDbModal = ({
           </Tooltip>
         </TextFieldContainer>
         <DropdownContainer>
-          <StyledInputLabel id="dbtype-select-label" variant="standard" htmlFor="uncontrolled-native">
+          <StyledInputLabel
+            id="dbtype-select-label"
+            variant="standard"
+            htmlFor="uncontrolled-native"
+          >
             Database Type
           </StyledInputLabel>
           <StyledNativeDropdown
-            id='dbTypeDropdown'
+            id="dbTypeDropdown"
             defaultValue={DBType.Postgres}
           >
-            <StyledNativeOption value={DBType.Postgres}>Postgres</StyledNativeOption>
+            <StyledNativeOption value={DBType.Postgres}>
+              Postgres
+            </StyledNativeOption>
             <StyledNativeOption value={DBType.MySQL}>MySQL</StyledNativeOption>
           </StyledNativeDropdown>
         </DropdownContainer>
@@ -173,7 +172,11 @@ const AddNewDbModal = ({
             variant="contained"
             color="primary"
             startIcon={<CloudUploadIcon />}
-            onClick={isEmpty || isError ? () => {} : handleFileClick}
+            onClick={
+              isEmpty || isError
+                ? () => {}
+                : () => handleDBimport(newDbName, handleClose)
+            }
           >
             Import
           </StyledButton>
@@ -181,6 +184,6 @@ const AddNewDbModal = ({
       </Dialog>
     </div>
   );
-};
+}
 
 export default AddNewDbModal;

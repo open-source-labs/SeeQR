@@ -7,14 +7,14 @@ interface QueryGroupProps {
   onChange: (newGroup: string) => void;
 }
 
-const QueryGroup = ({ group, onChange }: QueryGroupProps) => (
-  <Box>
+function QueryGroup({ group, onChange }: QueryGroupProps) {
+  return <Box>
     <TextField
       label="Group"
       value={group}
       onChange={(evt) => onChange(evt.target.value)}
     />
   </Box>
-);
- 
+}
+
 export default QueryGroup;

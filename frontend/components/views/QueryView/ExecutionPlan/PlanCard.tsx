@@ -76,17 +76,14 @@ const Accuracy = styled.span<{ $warn: boolean }>`
   ${({ $warn }) => ($warn ? 'color:#e92a2a;' : '')}
 `;
 
-const formatTime = (time: number) =>
-  ms(parseFloat(time.toPrecision(2)), {
-    long: true,
-  });
+const formatTime = (time: number) => ms(parseFloat(time.toPrecision(2)), {
+  long: true,
+});
 
-const totalTime = (plan: SizedPlanNode) =>
-  plan['Actual Total Time'] * (plan['Actual Loops'] ?? 1);
+const totalTime = (plan: SizedPlanNode) => plan['Actual Total Time'] * (plan['Actual Loops'] ?? 1);
 
 const exclusiveTime = (plan: SizedPlanNode) => {
-  const childrenTime =
-    plan.children?.reduce((sum, p) => totalTime(p) + sum, 0) ?? 0;
+  const childrenTime = plan.children?.reduce((sum, p) => totalTime(p) + sum, 0) ?? 0;
   return totalTime(plan) - childrenTime;
 };
 
@@ -99,17 +96,16 @@ interface PlanCardProps {
 /**
  * Memoizing predicate. Compares plan id's and prevent rerender if equal
  */
-const isSameCard = (prevProps: PlanCardProps, nextProps: PlanCardProps) =>
-  prevProps.plan.id === nextProps.plan.id &&
-  prevProps.thresholds === nextProps.thresholds;
+const isSameCard = (prevProps: PlanCardProps, nextProps: PlanCardProps) => prevProps.plan.id === nextProps.plan.id
+  && prevProps.thresholds === nextProps.thresholds;
 
-const PlanCard = ({ plan, totals, thresholds }: PlanCardProps) => {
+function PlanCard({ plan, totals, thresholds }: PlanCardProps) {
   const [detailIsOpen, setDetailOpen] = useState(false);
   const rowRatio = plan['Plan Rows'] / plan['Actual Rows'];
   const exclusive = exclusiveTime(plan);
   const time = totalTime(plan);
   const exclusiveRatio = +((exclusiveTime(plan) / totals.time) * 100).toFixed(
-    2
+    2,
   );
 
   const handleClick = (event: React.MouseEvent) => {
@@ -176,7 +172,7 @@ const PlanCard = ({ plan, totals, thresholds }: PlanCardProps) => {
       />
     </>
   );
-};
+}
 
 // memoize cards by id to improve performance on Zoom
 export default memo(PlanCard, isSameCard);

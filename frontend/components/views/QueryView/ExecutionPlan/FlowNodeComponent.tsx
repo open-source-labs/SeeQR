@@ -10,10 +10,10 @@ type FlowNodeProps = NodeProps<{
   thresholds: Thresholds;
 }>;
 
-const FlowNodeComponent = ({
+function FlowNodeComponent({
   data: { plan, totals, thresholds },
-}: FlowNodeProps) => (
-  <div>
+}: FlowNodeProps) {
+  return <div>
     <Handle
       type="target"
       position={Position.Top}
@@ -26,6 +26,6 @@ const FlowNodeComponent = ({
       style={{ visibility: 'hidden' }}
     />
   </div>
-);
+}
 
 export default FlowNodeComponent;

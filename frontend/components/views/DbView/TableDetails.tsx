@@ -27,8 +27,8 @@ interface TableDetailsProps {
   table: TableInfo | undefined;
 }
 
-const TableDetails = ({ table }: TableDetailsProps) => (
-  <>
+function TableDetails({ table }: TableDetailsProps) {
+  return <>
     <Typography variant="h3">{`${table?.table_name}`}</Typography>
     <br />
     <TableContainer component={StyledPaper}>
@@ -64,6 +64,6 @@ const TableDetails = ({ table }: TableDetailsProps) => (
       </Table>
     </TableContainer>
   </>
-);
+}
 
 export default TableDetails;

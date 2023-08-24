@@ -3,8 +3,7 @@ import React from 'react';
 import FormatPaintIcon from '@mui/icons-material/FormatPaint';
 import { ButtonGroup, Button, Tooltip } from '@mui/material';
 import styled from 'styled-components';
-import { format } from 'sql-formatter';
-
+import { formatDialect, postgresql } from 'sql-formatter';
 import CodeMirror from '@uiw/react-codemirror';
 import { dracula } from '@uiw/codemirror-theme-dracula';
 
@@ -35,9 +34,12 @@ interface QuerySqlInputProps {
   runQuery: () => void;
 }
 
-const QuerySqlInput = ({ sql, onChange, runQuery }: QuerySqlInputProps) => {
+function QuerySqlInput({ sql, onChange, runQuery }: QuerySqlInputProps) {
   const formatQuery = () => {
-    const formatted = format(sql, { language: 'postgresql', uppercase: true });
+    const formatted = formatDialect(sql, {
+      dialect: postgresql,
+      keywordCase: 'upper',
+    });
     onChange(formatted);
   };
 
@@ -52,17 +54,17 @@ const QuerySqlInput = ({ sql, onChange, runQuery }: QuerySqlInputProps) => {
           </Tooltip>
         </ButtonGroup>
       </Toolbar>
-      <CodeMirror 
+      <CodeMirror
         onChange={onChange}
         theme={dracula}
-        height='300px'
+        height="300px"
         value={sql}
         basicSetup={{
-            highlightActiveLine: false
-          }}
+          highlightActiveLine: false,
+        }}
       />
     </Container>
   );
-};
+}
 
 export default QuerySqlInput;

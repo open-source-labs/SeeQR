@@ -11,7 +11,7 @@ import { sidebarShowButtonSize } from '../../../style-variables';
 interface DbViewProps {
   selectedDb: AppState['selectedDb'];
   show: boolean;
-  setERView: (boolean) => void;
+  setERView: (boolean: boolean) => void;
   ERView: boolean;
   curDBType: DBType | undefined;
   DBInfo: DatabaseInfo[] | undefined;
@@ -26,8 +26,17 @@ const StyledDummyButton = styled(Button)`
   right: ${sidebarShowButtonSize};
 `;
 
-const DbView = ({ selectedDb, show, setERView, ERView, curDBType, DBInfo, dbTables, selectedTable, setSelectedTable}: DbViewProps) => {
-
+function DbView({
+  selectedDb,
+  show,
+  setERView,
+  ERView,
+  curDBType,
+  DBInfo,
+  dbTables,
+  selectedTable,
+  setSelectedTable,
+}: DbViewProps) {
   const [open, setOpen] = useState(false);
 
   const handleClickOpen = () => {
@@ -38,6 +47,7 @@ const DbView = ({ selectedDb, show, setERView, ERView, curDBType, DBInfo, dbTabl
     setOpen(false);
   };
 
+  // if the program can't find the database, it will return null. else it will return the selected db.
   const db = DBInfo?.find((dbi) => dbi.db_name === selectedDb);
 
   if (!show) return null;
@@ -55,7 +65,7 @@ const DbView = ({ selectedDb, show, setERView, ERView, curDBType, DBInfo, dbTabl
       />
       <br />
       <br />
-      {(selectedTable && !ERView) ? (
+      {selectedTable && !ERView ? (
         <StyledDummyButton
           variant="contained"
           color="primary"
@@ -73,6 +83,6 @@ const DbView = ({ selectedDb, show, setERView, ERView, curDBType, DBInfo, dbTabl
       />
     </>
   );
-};
+}
 
 export default DbView;

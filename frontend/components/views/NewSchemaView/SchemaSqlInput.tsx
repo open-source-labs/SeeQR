@@ -3,11 +3,10 @@ import React from 'react';
 import FormatPaintIcon from '@mui/icons-material/FormatPaint';
 import { ButtonGroup, Button, Tooltip } from '@mui/material';
 import styled from 'styled-components';
-import { format } from 'sql-formatter';
+import { formatDialect, postgresql } from 'sql-formatter';
 
 import CodeMirror from '@uiw/react-codemirror';
 import { dracula } from '@uiw/codemirror-theme-dracula';
-
 
 const Container = styled.div`
   position: relative;
@@ -30,43 +29,44 @@ const Toolbar = styled.div`
   }
 `;
 
-
-
 interface SchemaSqlInputProps {
-    sql: string;
-    onChange: (newSql: string) => void;
-    runQuery: () => void;
-  }
-  
-  const SchemaSqlInput = ({ sql, onChange, runQuery }: SchemaSqlInputProps) => {
-    const formatQuery = () => {
-      const formatted = format(sql, { language: 'postgresql', uppercase: true });
-      onChange(formatted);
-    };
+  sql: string;
+  onChange: (newSql: string) => void;
+  runQuery: () => void;
+}
 
-    return (
-      <Container>
-        <Toolbar>
-          <ButtonGroup variant="contained">
-            <Tooltip title="Auto-Format Query">
-              <SquareBtn onClick={formatQuery}>
-                <FormatPaintIcon />
-              </SquareBtn>
-            </Tooltip>
-          </ButtonGroup>
-        </Toolbar>
-        <CodeMirror 
-          onChange={onChange}
-          theme={dracula}
-          height='300px'
-          value={sql}
-          basicSetup={{
-            highlightActiveLine: false
-          }}
-        />
-      </Container>
-    );
+function SchemaSqlInput({ sql, onChange, runQuery }: SchemaSqlInputProps) {
+  const formatQuery = () => {
+    const formatted = formatDialect(sql, {
+      dialect: postgresql,
+      keywordCase: 'upper',
+    });
+
+    onChange(formatted);
   };
-  
-  export default SchemaSqlInput;
-  
+
+  return (
+    <Container>
+      <Toolbar>
+        <ButtonGroup variant="contained">
+          <Tooltip title="Auto-Format Query">
+            <SquareBtn onClick={formatQuery}>
+              <FormatPaintIcon />
+            </SquareBtn>
+          </Tooltip>
+        </ButtonGroup>
+      </Toolbar>
+      <CodeMirror
+        onChange={onChange}
+        theme={dracula}
+        height="300px"
+        value={sql}
+        basicSetup={{
+          highlightActiveLine: false,
+        }}
+      />
+    </Container>
+  );
+}
+
+export default SchemaSqlInput;

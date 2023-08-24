@@ -32,7 +32,7 @@ const updateThresholds = debounce(
   (updater: (newThresholds: Thresholds) => void, newThresholds: Thresholds) => {
     updater(newThresholds);
   },
-  500
+  500,
 );
 
 interface ThresholdsDialogProps {
@@ -42,12 +42,12 @@ interface ThresholdsDialogProps {
   setThresholds: (newThresholds: Thresholds) => void;
 }
 
-const ThresholdsDialog = ({
+function ThresholdsDialog({
   thresholds,
   setThresholds,
   handleClose,
   open,
-}: ThresholdsDialogProps) => {
+}: ThresholdsDialogProps) {
   // Maintain local state with threshold value in order to control sliders without affecting debouncing
   const [durThres, setDurThres] = useState(thresholds.percentDuration);
   const [accThres, setAccThres] = useState(thresholds.percentDuration);
@@ -76,7 +76,7 @@ const ThresholdsDialog = ({
           // slots={{
           //   valueLabel: ValueLabelComponent,
           // }}
-          valueLabelDisplay='auto'
+          valueLabelDisplay="auto"
           value={durThres}
           aria-label="custom thumb label"
           onChange={handlePercentChange}
@@ -86,7 +86,7 @@ const ThresholdsDialog = ({
           // slots={{
           //   valueLabel: ValueLabelComponent,
           // }}
-          valueLabelDisplay='auto'
+          valueLabelDisplay="auto"
           value={accThres}
           aria-label="custom thumb label"
           onChange={handleAccuracyChange}
@@ -94,6 +94,6 @@ const ThresholdsDialog = ({
       </DialogContent>
     </Dialog>
   );
-};
+}
 
 export default ThresholdsDialog;

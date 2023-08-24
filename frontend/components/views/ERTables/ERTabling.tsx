@@ -1,28 +1,29 @@
 import fs from 'fs';
-import { ipcRenderer, remote } from 'electron';
-import React, { useCallback, useEffect, useState, useRef } from 'react';
+import { Button } from '@mui/material';
+import { ipcRenderer } from 'electron';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import ReactFlow, {
-  Controls,
   applyEdgeChanges,
   applyNodeChanges,
   Background,
-  Node,
+  Controls,
   Edge,
   MiniMap,
+  Node,
 } from 'reactflow';
-import 'reactflow/dist/style.css'
-import { Button } from '@mui/material';
+import 'reactflow/dist/style.css';
 import styled from 'styled-components';
+import { DBType } from '../../../../backend/BE_types';
 import stateToReactFlow from '../../../lib/convertStateToReactFlow';
-import nodeTypes from './NodeTypes';
 import {
-  UpdatesObjType,
   AddTablesObjType,
-  TableHeaderNodeType,
   AppState,
   SchemaStateObjType,
+  TableHeaderNodeType,
+  TableInfo,
+  UpdatesObjType,
 } from '../../../types';
-import { DBType } from '../../../../backend/BE_types';
+import nodeTypes from './NodeTypes';
 
 import * as colors from '../../../style-variables';
 
@@ -43,7 +44,7 @@ const mmStyle: object = {
 };
 
 // defines the styling for the minimap nodes
-const nodeColor = (node): string => {
+const nodeColor = (node: Node): string => {
   switch (node.type) {
     case 'tableHeader':
       return colors.greyLightest;
@@ -54,9 +55,8 @@ const nodeColor = (node): string => {
   }
 };
 
-
 type ERTablingProps = {
-  tables;
+  tables: TableInfo[];
   selectedDb: AppState['selectedDb'];
   curDBType: DBType | undefined;
 };
@@ -68,6 +68,7 @@ const StyledViewButton = styled(Button)`
   padding: 0.45em;
 `;
 
+// the ERTabling componenet is what deals with the ER Diagram view and it's positioning. All of this gets converted to react flow, as for the backendObj, this is what gets sent to the backend to run all the queries.
 function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
   const [schemaState, setSchemaState] = useState<SchemaStateObjType>({
     database: 'initial',
@@ -75,11 +76,13 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
   });
   const [nodes, setNodes] = useState<Node[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
+
   // state for custom controls toggle
   // when tables (which is the database that is selected changes, update SchemaState)
   useEffect(() => {
     setSchemaState({ database: selectedDb, tableList: tables });
   }, [tables, selectedDb]);
+
   // define an object using the useRef hook to maintain its value throughout all rerenders
   // this object will hold the data that needs to get sent to the backend to update the
   // SQL database. Each node will have access to this backendObj
@@ -92,29 +95,21 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
     database: schemaState.database,
     updates,
   });
-  useEffect(() => {
-    backendObj.current.database = selectedDb;
-  }, [selectedDb]);
 
-  const backendColumnObj = useRef({
-    database: schemaState.database,
-    updates,
-  });
   // whenever the selectedDb changes, reassign the backendObj to contain this selectedDb
   useEffect(() => {
     backendObj.current.database = selectedDb;
-    backendColumnObj.current.database = selectedDb;
   }, [selectedDb]);
 
   // whenever the node changes, this callback gets invoked
   const onNodesChange = useCallback(
     (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
-    [setNodes]
+    [setNodes],
   );
   // whenever the edges changes, this callback gets invoked
   const onEdgesChange = useCallback(
     (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)),
-    [setEdges]
+    [setEdges],
   );
 
   // This function handles the add table button on the ER Diagram view
@@ -125,7 +120,7 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
     const addTableObj: AddTablesObjType = {
       is_insertable_into: 'yes',
       table_name: `NewTable${schemaStateCopy.tableList.length + 1}`,
-      table_schema: `public`,
+      table_schema: 'public',
       table_catalog: `${schemaStateCopy.database}`,
       columns: [],
     };
@@ -133,16 +128,18 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
     backendObj.current.updates.addTables.push(addTableObj);
     // push a new object with blank properties
     schemaStateCopy.tableList.push(addTableObj);
-    // set the state
+    // set the state, which worries about the table positions.
     setSchemaState(schemaStateCopy);
   };
 
-  const handleSaveLayout = (): void => {
+  // This function is supposed to handle the layout saving of the positions of the tables.
+  const handleSaveLayout = async (): Promise<void> => {
     // get the array of header nodes
     const headerNodes = nodes.filter(
-      (node) => node.type === 'tableHeader'
+      (node) => node.type === 'tableHeader',
     ) as TableHeaderNodeType[];
     // create object for the current database
+
     type TablePosObjType = {
       table_name: string;
       table_position: {
@@ -170,20 +167,20 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
       currDatabaseLayout.db_tables.push(tablePosObj);
     });
 
-    const location: string = remote.app
-      .getPath('temp')
-      .concat('/UserTableLayouts.json');
-    fs.readFile(location, 'utf-8', (err, data) => {
+    // what this is doing is it's creating a json file in your temp folder and saving the layout of the tables in there. so positioning is all saved locally.
+    const location: string = await ipcRenderer.invoke('get-path', 'temp');
+    const filePath = location.concat('/UserTableLayouts.json');
+
+    fs.readFile(filePath, 'utf-8', (err, data) => {
       // check if error exists (no file found)
       if (err) {
         fs.writeFile(
-          location,
+          filePath,
           JSON.stringify([currDatabaseLayout], null, 2),
           (error) => {
             if (error) console.log(error);
-          }
+          },
         );
-
         // check if file exists
       } else {
         const dbLayouts = JSON.parse(data) as DatabaseLayoutObjType[];
@@ -199,12 +196,14 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
         if (!dbExists) dbLayouts.push(currDatabaseLayout);
 
         // write changes to the file
-        fs.writeFile(location, JSON.stringify(dbLayouts, null, 2), (error) => {
+        fs.writeFile(filePath, JSON.stringify(dbLayouts, null, 2), (error) => {
           if (error) console.log(error);
         });
       }
     });
   };
+
+  // When you click the save button, you save the layout of the tables and you send a very large object to the backend containing all of the changes.
   function handleClickSave(): void {
     // This function sends a message to the back end with
     // the data in backendObj.current
@@ -251,20 +250,18 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
   }, [schemaState]);
 
   return (
-    <div style={{ height: 'calc(100vh - 300px)' }}>
+    <div style={{ height: 'calc(100vh - 300px)', width: '100%' }}>
       <StyledViewButton
         variant="contained"
         id="add-table-btn"
         onClick={handleAddTable}
       >
         {' '}
-        Add New Table
-        {' '}
+        Add New Table{' '}
       </StyledViewButton>
       <StyledViewButton variant="contained" id="save" onClick={handleClickSave}>
         {' '}
-        Save
-        {' '}
+        Save{' '}
       </StyledViewButton>
       <ReactFlow
         nodes={nodes}

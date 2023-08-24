@@ -42,9 +42,8 @@ const StyledTh = styled.th<{ isSelected: boolean }>`
     box-sizing: border-box;
   }
 
-  ${({ isSelected }) =>
-    isSelected &&
-    css`
+  ${({ isSelected }) => isSelected
+    && css`
       border-left: 3px solid transparent;
       border-right: 3px solid transparent;
       animation: borderAnimation 2s infinite alternate;
@@ -71,9 +70,8 @@ const StyledTd = styled.td<{ isSelected: boolean }>`
   padding: 5px 8px;
   font-size: 15px;
 
-  ${({ isSelected }) =>
-    isSelected &&
-    css`
+  ${({ isSelected }) => isSelected
+    && css`
       border-left: 3px solid transparent;
       border-right: 3px solid transparent;
       animation: borderAnimation2 2s infinite alternate;
@@ -102,8 +100,7 @@ const ClickedNodeDetail: React.FC<ClickedNodeDetailProps> = ({ returnedRows, sel
     if (sortColumn === column) {
       // Toggle sort direction if the same column is clicked
       setSortDirection((prevDirection) => (prevDirection === 'asc' ? 'desc' : 'asc'));
-    } 
-    else {
+    } else {
       // Sort by the clicked column in ascending order by default
       setSortColumn(column);
       setSortDirection('asc');
@@ -148,10 +145,9 @@ const ClickedNodeDetail: React.FC<ClickedNodeDetailProps> = ({ returnedRows, sel
             <tr key={rowIndex}>
               {columns.map((column, columnIndex) => {
                 const cellValue = JSON.stringify(row[column]);
-                const formattedValue =
-                  cellValue[0] === '"' && cellValue[cellValue.length - 1] === '"'
-                    ? cellValue.slice(1, -1)
-                    : cellValue;
+                const formattedValue = cellValue[0] === '"' && cellValue[cellValue.length - 1] === '"'
+                  ? cellValue.slice(1, -1)
+                  : cellValue;
                 return (
                   <StyledTd key={columnIndex} isSelected={column === selectedNode}>
                     {formattedValue}

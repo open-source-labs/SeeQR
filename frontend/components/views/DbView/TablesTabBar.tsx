@@ -11,9 +11,9 @@ import ERTables from '../ERTables/ERTabling';
 
 interface TabPanelProps {
   children?: React.ReactNode;
-  index: any;
-  value: any;
-  curDBType: DBType | undefined;
+  index: number;
+  value: number;
+  /* curDBType: DBType | undefined; */
 }
 const StyledToggleButtonGroup = styled(ToggleButtonGroup)`
   background-color: ${greenPrimary};
@@ -26,18 +26,20 @@ const StyledTabs = styled(Tabs)`
   border-radius: 5px;
 `;
 
-const TabPanel = ({ children, value, index, curDBType }: TabPanelProps) => (
-  <div
-    role="tabpanel"
-    hidden={value !== index}
-    id={`scrollable-auto-tabpanel-${index}`}
-    aria-labelledby={`scrollable-auto-tab-${index}`}
-  >
-    {value === index && children}
-  </div>
-);
+function TabPanel({ children, value, index /* curDBType */ }: TabPanelProps) {
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`scrollable-auto-tabpanel-${index}`}
+      aria-labelledby={`scrollable-auto-tab-${index}`}
+    >
+      {value === index && children}
+    </div>
+  );
+}
 
-const a11yProps = (index: any) => ({
+const a11yProps = (index: number) => ({
   id: `scrollable-auto-tab-${index}`,
   'aria-controls': `scrollable-auto-tabpanel-${index}`,
 });
@@ -47,29 +49,32 @@ interface TablesTabBarProps {
   selectTable: (table: TableInfo) => void;
   selectedTable: TableInfo | undefined;
   selectedDb: AppState['selectedDb'];
-  setERView?: (boolean) => void;
+  setERView?: (boolean: boolean) => void;
   curDBType: DBType | undefined;
 }
 
-const TablesTabs = ({
+interface HandleChangeFunc {
+  (event: React.ChangeEvent<unknown>, newValue: number): void;
+}
+
+interface ErViewProps {
+  active: boolean;
+  tables: TableInfo[];
+  selectedDb: AppState['selectedDb'];
+  curDBType: DBType | undefined;
+  tableIndex: number;
+  handleChange: HandleChangeFunc;
+}
+
+function ErView({
+  active,
   tables,
-  selectTable,
-  selectedTable,
   selectedDb,
-  setERView,
   curDBType,
-}: TablesTabBarProps) => {
-  const handleChange = (event: React.ChangeEvent<{}>, newValue: number) => {
-    selectTable(tables[newValue]);
-  };
-
-  const tableIndex = tables.findIndex(
-    ({ table_name }) => table_name === selectedTable?.table_name
-  );
-
-  const [active, setActive] = useState(true);
-
-  const ErView = () => (
+  tableIndex,
+  handleChange,
+}: ErViewProps) {
+  return (
     <div>
       {active ? (
         <ERTables
@@ -87,7 +92,7 @@ const TablesTabs = ({
             scrollButtons="auto"
             aria-label="scrollable auto tabs example"
           >
-            {tables.map(({ table_name: name }, index) => (
+            {tables.map(({ table_name: name }, index: number) => (
               <Tab label={name} {...a11yProps(index)} key={name} />
             ))}
             ;
@@ -99,7 +104,7 @@ const TablesTabs = ({
               value={tableIndex}
               index={index}
               key={tableMap.table_name}
-              curDBType={curDBType}
+              /* curDBType={curDBType} */
             >
               <TableDetails table={tableMap} />
             </TabPanel>
@@ -108,8 +113,27 @@ const TablesTabs = ({
       )}
     </div>
   );
+}
 
-  const handleView = (e, newActive) => {
+function TablesTabs({
+  tables,
+  selectTable,
+  selectedTable,
+  selectedDb,
+  setERView,
+  curDBType,
+}: TablesTabBarProps) {
+  const handleChange: HandleChangeFunc = (event, newValue) => {
+    selectTable(tables[newValue]);
+  };
+
+  const tableIndex = tables.findIndex(
+    ({ table_name }) => table_name === selectedTable?.table_name,
+  );
+
+  const [active, setActive] = useState(true);
+
+  const handleView = (e, newActive: boolean | null) => {
     // force at least one selected view
     if (newActive !== null) {
       // set the new view to the currect view
@@ -131,16 +155,29 @@ const TablesTabs = ({
         onChange={handleView}
         aria-label="active-view"
       >
-        <ToggleButton value aria-label="er" className='tables-view-btn'>
+        <ToggleButton value aria-label="er" className="tables-view-btn">
           ER diagram
         </ToggleButton>
-        <ToggleButton value={false} aria-label="table" className='tables-view-btn'>
+        <ToggleButton
+          value={false}
+          aria-label="table"
+          className="tables-view-btn"
+        >
           Table
         </ToggleButton>
       </StyledToggleButtonGroup>
-      {ErView()}
+      <ErView
+        {...{
+          active,
+          tables,
+          selectedDb,
+          curDBType,
+          tableIndex,
+          handleChange,
+        }}
+      />
     </div>
   );
-};
+}
 
 export default TablesTabs;
