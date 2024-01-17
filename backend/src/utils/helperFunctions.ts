@@ -119,7 +119,7 @@ const helperFunctions: HelperFunctions = {
   },
 
   // promisified execute to execute commands in the child process
-  promExecute: (cmd: string,  dbType: DBType) =>
+  promExecute: (cmd: string) =>
     new Promise((resolve, reject) => {
       const SQL_data = docConfig.getFullConfig();
       exec( //opens cli
