@@ -1,0 +1,1 @@
+{"mysql_options":{"user":"","password":"","port":""},"pg_options":{"user":"postgres","password":"zoren","port":"5432"},"rds_mysql_options":{"user":"","password":"","port":"","host":""},"rds_pg_options":{"user":"","password":"","port":"","host":""},"sqlite_options":{"filename":""},"directPGURI_options":{"connectionString":""}}

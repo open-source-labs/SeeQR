@@ -94,7 +94,7 @@ function TableHeader({ data }: TableHeaderProps) {
       const tableInputField = document.getElementById(
         `table-name-form-${data.table_name}`,
       ) as HTMLInputElement;
-
+       
       // update backend
       const alterColumnsArray: AlterColumnsObjType[] = [];
       for (let j = 0; j < currentTable.columns.length; j += 1) {

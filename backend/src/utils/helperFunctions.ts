@@ -73,7 +73,7 @@ const helperFunctions: HelperFunctions = {
   // import SQL file into new DB created
   runSQLFunc: function runSQLFunc(dbName, file, dbType: DBType) {
     const SQL_data = docConfig.getFullConfig();
-    const PG = `PGPASSWORD=${SQL_data?.pg_options.password} psql -U ${SQL_data?.pg_options.user} -d "${dbName}" -f "${file}" -p ${SQL_data?.pg_options.port}`;
+    const PG = `psql -U ${SQL_data?.pg_options.user} -d "${dbName}" -f "${file}" -p ${SQL_data?.pg_options.port}`;
     const MYSQL = `export MYSQL_PWD='${SQL_data?.mysql_options.password}'; mysql -u${SQL_data?.mysql_options.user} --port=${SQL_data?.mysql_options.port} ${dbName} < ${file}`;
     if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) return PG;
     if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL) return MYSQL;
@@ -83,7 +83,7 @@ const helperFunctions: HelperFunctions = {
   // import TAR file into new DB created
   runTARFunc: function runTARFunc(dbName, file, dbType: DBType) {
     const SQL_data = docConfig.getFullConfig();
-    const PG = `PGPASSWORD=${SQL_data?.pg_options.password} pg_restore -U ${SQL_data?.pg_options.user} -p ${SQL_data?.pg_options.port} -d "${dbName}" "${file}" `;
+    const PG = `pg_restore -U ${SQL_data?.pg_options.user} -p ${SQL_data?.pg_options.port} -d "${dbName}" "${file}" `;
     const MYSQL = `export MYSQL_PWD='${SQL_data?.mysql_options.password}'; mysqldump -u ${SQL_data?.mysql_options.user} --port=${SQL_data?.mysql_options.port}  ${dbName} > ${file}`;
     if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) return PG;
     if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL) return MYSQL;
@@ -119,13 +119,14 @@ const helperFunctions: HelperFunctions = {
   },
 
   // promisified execute to execute commands in the child process
-  promExecute: (cmd: string) =>
+  promExecute: (cmd: string,  dbType: DBType) =>
     new Promise((resolve, reject) => {
-      exec(
+      const SQL_data = docConfig.getFullConfig();
+      exec( //opens cli
         cmd,
         {
           timeout: 5000,
-          // env: { PGPASSWORD: docConfig.getFullConfig().pg.password },
+          env: {PGPASSWORD: SQL_data?.pg_options.password },
         },
         (error, stdout, stderr) => {
           if (error) {
