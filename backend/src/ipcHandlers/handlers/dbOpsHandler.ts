@@ -228,7 +228,7 @@ export async function duplicateDb(
       ? runFullCopyFunc(sourceDb, tempFilePath, dbType)
       : runHollowCopyFunc(sourceDb, tempFilePath, dbType);
     try {
-      await promExecute(dumpCmd);
+      await promExecute(dumpCmd, dbType);
     } catch (e) {
       throw new Error(
         `Failed to dump ${sourceDb} to temp file at ${tempFilePath}`,
@@ -243,16 +243,16 @@ export async function duplicateDb(
     }
 
     // run temp sql file on new database
-    try {
-      await promExecute(runSQLFunc(newName, tempFilePath, dbType));
-    } catch (e: any) {
-      // cleanup: drop created db
-      logger(`Dropping duplicate db because: ${e.message}`, LogType.WARNING);
-      const dropDBScript = dropDBFunc(newName, dbType);
-      await queryModel.query(dropDBScript, [], dbType);
+    // try {
+    //   await promExecute(runSQLFunc(newName, tempFilePath, dbType));
+    // } catch (e: any) {
+    //   // cleanup: drop created db
+    //   logger(`Dropping duplicate db because: ${e.message}`, LogType.WARNING);
+    //   const dropDBScript = dropDBFunc(newName, dbType);
+    //   await queryModel.query(dropDBScript, [], dbType);
 
-      throw new Error('Failed to populate newly created database');
-    }
+    //   throw new Error('Failed to populate newly created database');
+    // }
 
     // update frontend with new db list
     const dbsAndTableInfo: DBList = await databaseModel.getLists('', dbType);
@@ -302,7 +302,7 @@ export async function importDb(
 
     // run temp sql file on new database
     try {
-      await promExecute(runSQLFunc(newDbName, filePath, dbType));
+      await promExecute(runSQLFunc(newDbName, filePath, dbType), dbType);
     } catch (e: any) {
       // cleanup: drop created db
       logger(`Dropping duplicate db because: ${e.message}`, LogType.WARNING);
@@ -348,7 +348,7 @@ export async function exportDb(event, payload: ExportPayload, dbType: DBType) {
     // dump database to file
     const dumpCmd = runFullCopyFunc(db, filePath, dbType);
     try {
-      await promExecute(dumpCmd);
+      await promExecute(dumpCmd, dbType);
     } catch (e) {
       throw new Error(`Failed to dump ${db} to temp file at ${filePath}`);
     }

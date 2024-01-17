@@ -21,7 +21,7 @@ interface HelperFunctions {
   runTARFunc: CreateCommand;
   runFullCopyFunc: CreateCommand;
   runHollowCopyFunc: CreateCommand;
-  promExecute: (cmd: string) => Promise<{ stdout: string; stderr: string }>;
+  promExecute: (cmd: string, dbType: DBType) => Promise<{ stdout: string; stderr: string }>;
 }
 
 // PG = Postgres - Query necessary to run PG Query/Command
@@ -119,14 +119,25 @@ const helperFunctions: HelperFunctions = {
   },
 
   // promisified execute to execute commands in the child process
-  promExecute: (cmd: string) =>
+  promExecute: (cmd: string, dbType: DBType) =>
     new Promise((resolve, reject) => {
       const SQL_data = docConfig.getFullConfig();
+
+      let envPW = {};
+
+      if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) {
+        envPW = { PGPASSWORD: SQL_data?.pg_options.password };
+      } else if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL) {
+        envPW = { MYSQL_PWD: SQL_data?.mysql_options.password };
+      }
+
+
       exec( //opens cli
         cmd,
         {
           timeout: 5000,
-          env: {PGPASSWORD: SQL_data?.pg_options.password },
+          // env: {PGPASSWORD: SQL_data?.pg_options.password },
+          env: envPW
         },
         (error, stdout, stderr) => {
           if (error) {
