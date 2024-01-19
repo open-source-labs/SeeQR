@@ -161,20 +161,29 @@ function TableField({ data }: TableFieldProps) {
             ) as HTMLSelectElement;
             if (column_name !== columnNameInput.value) {
               alterColumnsObj.new_column_name = columnNameInput.value;
-              schemaStateCopy.tableList[i].columns[j].column_name = columnNameInput.value;
-              schemaStateCopy.tableList[i].columns[j].new_column_name = columnNameInput.value;
-              if (constraint_type === 'PRIMARY KEY') alterColumnsObj.rename_constraint = `pk_${alterTablesObj.table_name}${column_name}`;
-              if (constraint_type === 'FOREIGN KEY') alterColumnsObj.rename_constraint = `fk_${alterTablesObj.table_name}${column_name}`;
-              if (constraint_type === 'UNIQUE') alterColumnsObj.rename_constraint = `unique_${alterTablesObj.table_name}${column_name}`;
+              schemaStateCopy.tableList[i].columns[j].column_name =
+                columnNameInput.value;
+              schemaStateCopy.tableList[i].columns[j].new_column_name =
+                columnNameInput.value;
+              if (constraint_type === 'PRIMARY KEY')
+                alterColumnsObj.rename_constraint = `pk_${alterTablesObj.table_name}${column_name}`;
+              if (constraint_type === 'FOREIGN KEY')
+                alterColumnsObj.rename_constraint = `fk_${alterTablesObj.table_name}${column_name}`;
+              if (constraint_type === 'UNIQUE')
+                alterColumnsObj.rename_constraint = `unique_${alterTablesObj.table_name}${column_name}`;
             }
 
             // handle isNullable change
             const isNullable = document.getElementById(
               `allow-null-chkbox-${tableColumn}`,
             ) as HTMLInputElement;
-            const isNullableString: 'YES' | 'NO' = isNullable.checked ? 'YES' : 'NO';
-            schemaStateCopy.tableList[i].columns[j].is_nullable = isNullableString;
-            alterColumnsObj.is_nullable = isNull !== isNullableString ? isNullableString : null;
+            const isNullableString: 'YES' | 'NO' = isNullable.checked
+              ? 'YES'
+              : 'NO';
+            schemaStateCopy.tableList[i].columns[j].is_nullable =
+              isNullableString;
+            alterColumnsObj.is_nullable =
+              isNull !== isNullableString ? isNullableString : null;
 
             // handle max_character_length change
             const columnMaxCharacterLengthInput = document.getElementById(
@@ -182,8 +191,8 @@ function TableField({ data }: TableFieldProps) {
             ) as HTMLSelectElement;
             if (columnMaxCharacterLengthInput.value) {
               if (
-                character_maximum_length
-                !== parseInt(columnMaxCharacterLengthInput.value, 10)
+                character_maximum_length !==
+                parseInt(columnMaxCharacterLengthInput.value, 10)
               ) {
                 alterColumnsObj.character_maximum_length = parseInt(
                   columnMaxCharacterLengthInput.value,
@@ -203,11 +212,12 @@ function TableField({ data }: TableFieldProps) {
               `type-dd-${tableColumn}`,
             ) as HTMLSelectElement;
             if (
-              (data_type === 'character varying' ? 'varchar' : data_type)
-              !== dataTypeInput.value
+              (data_type === 'character varying' ? 'varchar' : data_type) !==
+              dataTypeInput.value
             ) {
               alterColumnsObj.data_type = dataTypeInput.value;
-              schemaStateCopy.tableList[i].columns[j].data_type = dataTypeInput.value;
+              schemaStateCopy.tableList[i].columns[j].data_type =
+                dataTypeInput.value;
             }
 
             // handle add/Drop Constraint type
@@ -225,8 +235,8 @@ function TableField({ data }: TableFieldProps) {
             ) as HTMLInputElement;
             // if constraint type is PK in state but checkbox is unchecked, drop the constraint
             if (
-              constraint_type === 'PRIMARY KEY'
-              && pkCheckBox.checked === false
+              constraint_type === 'PRIMARY KEY' &&
+              pkCheckBox.checked === false
             ) {
               // modify state to remove constraint
               schemaStateCopy.tableList[i].columns[j].constraint_type = null;
@@ -236,15 +246,19 @@ function TableField({ data }: TableFieldProps) {
               );
             } // if constraint type is not in state but checkbox is checked, add the constraint
             else if (
-              constraint_type !== 'PRIMARY KEY'
-              && pkCheckBox.checked === true
+              constraint_type !== 'PRIMARY KEY' &&
+              pkCheckBox.checked === true
             ) {
               // modify state to remove constraint
-              schemaStateCopy.tableList[i].columns[j].constraint_type = 'PRIMARY KEY';
+              schemaStateCopy.tableList[i].columns[j].constraint_type =
+                'PRIMARY KEY';
               // create a copy in case multiple constraints are added
-              const addConstraintObjCopy: AddConstraintObjType = { ...addConstraintObj };
+              const addConstraintObjCopy: AddConstraintObjType = {
+                ...addConstraintObj,
+              };
               // name the constraint PK_<tableNamecolumn_name>
-              addConstraintObjCopy.constraint_name = `pk_${data.tableName + column_name
+              addConstraintObjCopy.constraint_name = `pk_${
+                data.tableName + column_name
               }`;
               // assign the constraint_type to 'PRIMARY KEY'
               addConstraintObjCopy.constraint_type = 'PRIMARY KEY';
@@ -258,8 +272,8 @@ function TableField({ data }: TableFieldProps) {
             ) as HTMLInputElement;
             // if constraint type is FK in state but checkbox is unchecked, drop the constraint
             if (
-              constraint_type === 'FOREIGN KEY'
-              && fkCheckBox.checked === false
+              constraint_type === 'FOREIGN KEY' &&
+              fkCheckBox.checked === false
             ) {
               // modify state to remove constraint
               schemaStateCopy.tableList[i].columns[j].constraint_type = null;
@@ -268,14 +282,16 @@ function TableField({ data }: TableFieldProps) {
                 `FK_${data.tableName + column_name}`,
               );
             } else if (
-              constraint_type !== 'FOREIGN KEY'
-              && fkCheckBox.checked === true
+              constraint_type !== 'FOREIGN KEY' &&
+              fkCheckBox.checked === true
             ) {
               // modify state to add constraint
-              schemaStateCopy.tableList[i].columns[j].constraint_type = 'FOREIGN KEY';
+              schemaStateCopy.tableList[i].columns[j].constraint_type =
+                'FOREIGN KEY';
               const addConstraintObjCopy = { ...addConstraintObj };
               // name the constraint FK_<tableNameColumn_name>
-              addConstraintObjCopy.constraint_name = `fk_${data.tableName + column_name
+              addConstraintObjCopy.constraint_name = `fk_${
+                data.tableName + column_name
               }`;
               // assign the constraint type to 'FOREIGN KEY'
               addConstraintObjCopy.constraint_type = 'FOREIGN KEY';
@@ -296,21 +312,33 @@ function TableField({ data }: TableFieldProps) {
             }
 
             // handle unique constraint
-            const uniqueCheckBox = document.getElementById(`unique-chkbox-${tableColumn}`) as HTMLInputElement;
-            if (constraint_type === 'UNIQUE' && uniqueCheckBox.checked === false) {
+            const uniqueCheckBox = document.getElementById(
+              `unique-chkbox-${tableColumn}`,
+            ) as HTMLInputElement;
+            if (
+              constraint_type === 'UNIQUE' &&
+              uniqueCheckBox.checked === false
+            ) {
               // modify state to remove constraint
               schemaStateCopy.tableList[i].columns[j].constraint_type = null;
               // add the unique constraint name to the drop constraint array
               alterColumnsObj.drop_constraint.push(
                 `unique_${data.tableName + column_name}`,
               );
-            } else if (constraint_type !== 'UNIQUE' && uniqueCheckBox.checked === true) {
+            } else if (
+              constraint_type !== 'UNIQUE' &&
+              uniqueCheckBox.checked === true
+            ) {
               // modify state to add constraint
-              schemaStateCopy.tableList[i].columns[j].constraint_type = 'UNIQUE';
+              schemaStateCopy.tableList[i].columns[j].constraint_type =
+                'UNIQUE';
               // create a copy in case multiple constraints are added
-              const addConstraintObjCopy: AddConstraintObjType = { ...addConstraintObj };
+              const addConstraintObjCopy: AddConstraintObjType = {
+                ...addConstraintObj,
+              };
               // name the constraint PK_<tableNamecolumn_name>
-              addConstraintObjCopy.constraint_name = `unique_${data.tableName + column_name
+              addConstraintObjCopy.constraint_name = `unique_${
+                data.tableName + column_name
               }`;
               // assign the constraint_type to 'UNIQUE'
               addConstraintObjCopy.constraint_type = 'UNIQUE';
