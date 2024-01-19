@@ -1,4 +1,5 @@
 import path from 'path';
+import * as fs from 'fs'
 import React, { useContext, useState } from 'react';
 import { Dialog, DialogTitle, Tooltip } from '@mui/material/';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
@@ -14,6 +15,7 @@ import {
 } from '../../style-variables';
 import { DBType } from '../../../backend/BE_types';
 import MenuContext from '../../state_management/Contexts/MenuContext';
+
 
 type AddNewDbModalProps = {
   open: boolean;
@@ -89,18 +91,37 @@ function AddNewDbModal({
         },
       ],
     };
-    // this runs after opendialog resolves, use as callback
+    
+    
     const importdb = (filePath: string) => {
-      menuDispatch({
-        type: 'ASYNC_TRIGGER',
-        loading: 'LOADING',
-        options: {
-          event: 'import-db',
-          payload: { newDbName: dbName, filePath, dbType: dbt }, // see importDb for type reqs
-          callback: closeModal,
-        },
-      });
+      fs.readFile(filePath, 'utf-8', (err, data)=> {
+        if(err) {
+          console.error(`Error reading file: ${err.message}`);
+          return;
+        }
+        console.log('DATAAA!', data)
+
+        const keywords = ['USE', 'CREATE DATABASE', '\\connect']
+        const containsKeywords = keywords.some(keyword => data.includes(keyword));
+        if(containsKeywords) {
+          console.log(containsKeywords)
+        } else {
+          console.log('doesnt have keywords')
+        }
+
+        menuDispatch({
+          type: 'ASYNC_TRIGGER',
+          loading: 'LOADING',
+          options: {
+            event: 'import-db',
+            payload: { newDbName: dbName, filePath, dbType: dbt }, // see importDb for type reqs
+            callback: closeModal,
+          },
+        });
+      })
+
     };
+
     // initial async call
     menuDispatch({
       type: 'ASYNC_TRIGGER',
