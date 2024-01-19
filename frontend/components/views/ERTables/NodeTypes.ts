@@ -1,5 +1,6 @@
 import tableHeader from './TableHeaderNode';
 import tableField from './TableFieldNode';
+import tableFooter from './TableFooterNode';
 /**
  * This file is required for React-flow
  * React-flow states:
@@ -13,10 +14,12 @@ import tableField from './TableFieldNode';
 type NodeTypes = {
   tableHeader: any;
   tableField: any;
+  tableFooter: any;
 };
 const nodeTypes: NodeTypes = {
   tableHeader,
   tableField,
+  tableFooter,
 };
 export type TablePosObjType = {
   table_name: string;

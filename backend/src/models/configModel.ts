@@ -7,7 +7,7 @@ import { DocConfigFile } from '../../BE_types';
 
 // HELPER FUNCTIONS
 
-const home = `${os.homedir()}/Documents/SeeQR`;
+const home = process.cwd();
 const configFile = 'config.json';
 const configPath = `${home}/${configFile}`;
 

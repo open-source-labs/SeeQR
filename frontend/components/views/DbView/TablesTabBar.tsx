@@ -163,7 +163,7 @@ function TablesTabs({
           aria-label="table"
           className="tables-view-btn"
         >
-          Table
+          Table View
         </ToggleButton>
       </StyledToggleButtonGroup>
       <ErView
