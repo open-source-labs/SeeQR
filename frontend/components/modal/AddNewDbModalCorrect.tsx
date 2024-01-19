@@ -33,6 +33,9 @@ function AddNewDbModal({
   const { dispatch: menuDispatch } = useContext(MenuContext);
 
   const [newDbName, setNewDbName] = useState('');
+
+  // fixes undefined
+  const [currDbName, setToCurrDbName] = useState('');
   const [isError, setIsError] = useState(false);
   const [isEmpty, setIsEmpty] = useState(true);
   // const [curDBType, setDBType] = useState<DBType>();
@@ -55,7 +58,7 @@ function AddNewDbModal({
     return '';
   };
 
-  //// Set schema name
+  /// / Set schema name
   const handleDbName = (event: React.ChangeEvent<HTMLInputElement>) => {
     const dbNameInput = event.target.value;
     if (dbNameInput.length === 0) {
@@ -79,6 +82,10 @@ function AddNewDbModal({
   const handleDBimport = (dbName: string | undefined, closeModal: () => void) => {
     // TODO: fix the any type.
     const dbt: DBType = (document.getElementById('dbTypeDropdown') as any).value;
+
+    // const dbTypeDropdown = document.getElementById('dbTypeDropdown') as HTMLSelectElement;
+    // const dbt: DBType = dbTypeDropdown.value;
+
     const options = {
       title: 'Import DB',
       defaultPath: path.join(__dirname, '../assets/'),
@@ -102,9 +109,9 @@ function AddNewDbModal({
         const dataArr = data.match(/([a-zA-Z_]+|\S+)/g)!;
         const keyword1 = 'CREATE';
         const keyword2 = 'DATABASE';
+        const keyword3 = 'USE'
         console.log('data', dataArr)
-  
-        const containsKeywords = dataArr.some((word, index) => {
+        const containsKeywords1 = dataArr.some((word, index) => {
           // Check if the current word is 'CREATE' and the next word is 'DATABASE'
           if (word === keyword1 && dataArr[index + 1] === keyword2) {
             return true;
@@ -112,33 +119,53 @@ function AddNewDbModal({
           return false;
         });
 
-        /* checks if the keyword exist in our database file */
-        if(containsKeywords) {
-          console.log('keywords exist:', containsKeywords);
+        // check if there is 'USE' keyword in mySQL DB
+        const containsKeywords2 = dataArr.some((word) => word.includes(keyword3));
 
-          const useIndex = dataArr.indexOf(keyword2);
-          const currDbName = dataArr[useIndex + 1];
-          console.log('dbname:', currDbName);
+          /* checks if the keyword exist in postgres database file */
+        if(containsKeywords1 &&  dbt === DBType.Postgres) {
+          console.log('keywords exist:', containsKeywords1);
+
+          const useIndexPG = dataArr.indexOf(keyword2);
+          const fileDbNamePG = dataArr[useIndexPG + 1];
+          console.log('dbname:', fileDbNamePG);
+
+          // fixes undefined
+          setToCurrDbName(fileDbNamePG)
 
           menuDispatch({
             type: 'ASYNC_TRIGGER',
             loading: 'LOADING',
             options: {
               event: 'import-db',
-              payload: { currDbName, filePath, dbType: dbt }, // see importDb for type reqs
+              payload: { newDbName: currDbName, filePath, dbType: dbt }, // see importDb for type reqs
+              callback: closeModal,
+            },
+          });
+        } else if (containsKeywords2 && dbt === DBType.MySQL) {
+          /* checks if the keyword exist in MYSQL database  file */
+          const useIndexMSQL = dataArr.indexOf(keyword3)
+          const fileDbNameMSQL = dataArr[useIndexMSQL + 1]
+          setToCurrDbName(fileDbNameMSQL)
+          console.log('dbname:', fileDbNameMSQL);
+
+          menuDispatch({
+            type: 'ASYNC_TRIGGER',
+            loading: 'LOADING',
+            options: {
+              event: 'import-db',
+              payload: { newDbName: currDbName, filePath, dbType: dbt }, // see importDb for type reqs
               callback: closeModal,
             },
           });
         } else {
-          // console.log('keywords exists?,', containsKeyword)
-
-          /* if keyword does not exist, run menuDispatch, which requires user to input a database name */
+          /* if keyword does not exist, run menuDispatch */
           menuDispatch({
             type: 'ASYNC_TRIGGER',
             loading: 'LOADING',
             options: {
               event: 'import-db',
-              payload: { newDbName: dbName || '', filePath, dbType: dbt }, // see importDb for type reqs
+              payload: { newDbName: dbName , filePath, dbType: dbt }, // see importDb for type reqs
               callback: closeModal,
             },
           });
