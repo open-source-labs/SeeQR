@@ -55,7 +55,7 @@ function AddNewDbModal({
     return '';
   };
 
-  // Set schema name
+  //// Set schema name
   const handleDbName = (event: React.ChangeEvent<HTMLInputElement>) => {
     const dbNameInput = event.target.value;
     if (dbNameInput.length === 0) {
@@ -76,10 +76,9 @@ function AddNewDbModal({
   };
 
   // Opens modal to select file and sends the selected file to backend
-  const handleDBimport = (dbName: string, closeModal: () => void) => {
+  const handleDBimport = (dbName: string | undefined, closeModal: () => void) => {
     // TODO: fix the any type.
-    const dbt: DBType = (document.getElementById('dbTypeDropdown') as any)
-      .value;
+    const dbt: DBType = (document.getElementById('dbTypeDropdown') as any).value;
     const options = {
       title: 'Import DB',
       defaultPath: path.join(__dirname, '../assets/'),
@@ -99,27 +98,52 @@ function AddNewDbModal({
           console.error(`Error reading file: ${err.message}`);
           return;
         }
-        console.log('DATAAA!', data)
 
-        const keywords = ['USE', 'CREATE DATABASE', '\\connect']
-        const containsKeywords = keywords.some(keyword => data.includes(keyword));
-        if(containsKeywords) {
-          console.log(containsKeywords)
-        } else {
-          console.log('doesnt have keywords')
-        }
-
-        menuDispatch({
-          type: 'ASYNC_TRIGGER',
-          loading: 'LOADING',
-          options: {
-            event: 'import-db',
-            payload: { newDbName: dbName, filePath, dbType: dbt }, // see importDb for type reqs
-            callback: closeModal,
-          },
+        const dataArr = data.match(/([a-zA-Z_]+|\S+)/g)!;
+        const keyword1 = 'CREATE';
+        const keyword2 = 'DATABASE';
+        console.log('data', dataArr)
+  
+        const containsKeywords = dataArr.some((word, index) => {
+          // Check if the current word is 'CREATE' and the next word is 'DATABASE'
+          if (word === keyword1 && dataArr[index + 1] === keyword2) {
+            return true;
+          }
+          return false;
         });
-      })
 
+        /* checks if the keyword exist in our database file */
+        if(containsKeywords) {
+          console.log('keywords exist:', containsKeywords);
+
+          const useIndex = dataArr.indexOf(keyword2);
+          const currDbName = dataArr[useIndex + 1];
+          console.log('dbname:', currDbName);
+
+          menuDispatch({
+            type: 'ASYNC_TRIGGER',
+            loading: 'LOADING',
+            options: {
+              event: 'import-db',
+              payload: { currDbName, filePath, dbType: dbt }, // see importDb for type reqs
+              callback: closeModal,
+            },
+          });
+        } else {
+          // console.log('keywords exists?,', containsKeyword)
+
+          /* if keyword does not exist, run menuDispatch, which requires user to input a database name */
+          menuDispatch({
+            type: 'ASYNC_TRIGGER',
+            loading: 'LOADING',
+            options: {
+              event: 'import-db',
+              payload: { newDbName: dbName || '', filePath, dbType: dbt }, // see importDb for type reqs
+              callback: closeModal,
+            },
+          });
+        }
+      })
     };
 
     // initial async call
@@ -149,7 +173,7 @@ function AddNewDbModal({
           </DialogTitle>
           <Tooltip title="Any special characters will be removed">
             <StyledTextField
-              required
+              // required
               error={isError}
               helperText={errorMessage()}
               id="filled-basic"
@@ -194,9 +218,10 @@ function AddNewDbModal({
             color="primary"
             startIcon={<CloudUploadIcon />}
             onClick={
-              isEmpty || isError
-                ? () => {}
-                : () => handleDBimport(newDbName, handleClose)
+              // isEmpty || isError
+              //   ? () => {}
+              //   : 
+              () => handleDBimport(newDbName, handleClose)
             }
           >
             Import
