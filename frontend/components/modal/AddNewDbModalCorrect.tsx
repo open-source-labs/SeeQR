@@ -59,7 +59,7 @@ function AddNewDbModal({
     return '';
   };
 
-  //// Set schema name
+  /// / Set schema name
   const handleDbName = (event: React.ChangeEvent<HTMLInputElement>) => {
     const dbNameInput = event.target.value;
     if (dbNameInput.length === 0) {
@@ -103,6 +103,7 @@ function AddNewDbModal({
           return;
         }
 
+        // this is for sql files that already have a name via CREATE DATABASE 
         const dataArr = data.match(/([a-zA-Z_]+|\S+)/g)!;
         const keyword1 = 'CREATE';
         const keyword2 = 'DATABASE';
@@ -128,6 +129,7 @@ function AddNewDbModal({
                 fileDbName = dataArr[index + 2];
               }
             }
+            
             console.log('name', fileDbName)
             setToCurrDbName(fileDbName)
 
