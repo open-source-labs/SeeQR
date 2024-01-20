@@ -34,8 +34,9 @@ function AddNewDbModal({
 
   const [newDbName, setNewDbName] = useState('');
 
-  //fixes undefined
+  // fixes undefined copy when importing a database
   const [currDbName, setToCurrDbName] = useState('');
+
   const [isError, setIsError] = useState(false);
   const [isEmpty, setIsEmpty] = useState(true);
   // const [curDBType, setDBType] = useState<DBType>();
@@ -114,17 +115,21 @@ function AddNewDbModal({
           }
           return false;
         });
-
+    
         /* checks if the keyword exist in our database file */
         if(containsKeywords) {
           console.log('keywords exist:', containsKeywords);
 
-          const useIndex = dataArr.indexOf(keyword2);
-          const fileDbName = dataArr[useIndex + 1];
-          console.log('dbname:', fileDbName);
-
-          //fixes undefined
-          setToCurrDbName(fileDbName)
+          let fileDbName = ''
+            // eslint-disable-next-line no-restricted-syntax
+            for (const [index, word] of dataArr.entries()) {
+              if (word === keyword1 && dataArr[index + 1] === keyword2) {
+                // Assuming the database name is the next word after 'DATABASE'
+                fileDbName = dataArr[index + 2];
+              }
+            }
+            console.log('name', fileDbName)
+            setToCurrDbName(fileDbName)
 
           menuDispatch({
             type: 'ASYNC_TRIGGER',
