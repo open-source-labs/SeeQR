@@ -74,7 +74,7 @@ const helperFunctions: HelperFunctions = {
   runSQLFunc: function runSQLFunc(dbName, file, dbType: DBType) {
     const SQL_data = docConfig.getFullConfig();
     const PG = `psql -U ${SQL_data?.pg_options.user} -d "${dbName}" -f "${file}" -p ${SQL_data?.pg_options.port}`;
-    const MYSQL = `export MYSQL_PWD='${SQL_data?.mysql_options.password}'; mysql -u${SQL_data?.mysql_options.user} --port=${SQL_data?.mysql_options.port} ${dbName} < ${file}`;
+    const MYSQL = `mysql -u${SQL_data?.mysql_options.user} --port=${SQL_data?.mysql_options.port} ${dbName} < ${file}`;
     if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) return PG;
     if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL) return MYSQL;
     return 'invalid dbtype';
@@ -84,7 +84,7 @@ const helperFunctions: HelperFunctions = {
   runTARFunc: function runTARFunc(dbName, file, dbType: DBType) {
     const SQL_data = docConfig.getFullConfig();
     const PG = `pg_restore -U ${SQL_data?.pg_options.user} -p ${SQL_data?.pg_options.port} -d "${dbName}" "${file}" `;
-    const MYSQL = `export MYSQL_PWD='${SQL_data?.mysql_options.password}'; mysqldump -u ${SQL_data?.mysql_options.user} --port=${SQL_data?.mysql_options.port}  ${dbName} > ${file}`;
+    const MYSQL = `mysqldump -u ${SQL_data?.mysql_options.user} --port=${SQL_data?.mysql_options.port}  ${dbName} > ${file}`;
     if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) return PG;
     if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL) return MYSQL;
     return 'invalid dbtype';
@@ -98,7 +98,7 @@ const helperFunctions: HelperFunctions = {
   ) {
     const SQL_data = docConfig.getFullConfig();
     const PG = `PGPASSWORD=${SQL_data?.pg_options.password} pg_dump -s -U ${SQL_data?.pg_options.user} -p ${SQL_data?.pg_options.port} -Fp -d ${dbCopyName} > "${newFile}"`;
-    const MYSQL = `export MYSQL_PWD='${SQL_data?.mysql_options.password}'; mysqldump -h localhost -u ${SQL_data?.mysql_options.user}  ${dbCopyName} > ${newFile}`;
+    const MYSQL = `mysqldump -h localhost -u ${SQL_data?.mysql_options.user}  ${dbCopyName} > ${newFile}`;
     if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) return PG;
     if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL) return MYSQL;
     return 'invalid dbtype';
@@ -112,7 +112,7 @@ const helperFunctions: HelperFunctions = {
   ) {
     const SQL_data = docConfig.getFullConfig();
     const PG = ` PGPASSWORD=${SQL_data?.pg_options.password} pg_dump -s -U ${SQL_data?.pg_options.user} -p ${SQL_data?.pg_options.port} -F p -d "${dbCopyName}" > "${file}"`;
-    const MYSQL = `export MYSQL_PWD='${SQL_data?.mysql_options.password}'; mysqldump -h localhost -u ${SQL_data?.mysql_options.user} --port=${SQL_data?.mysql_options.port}  ${dbCopyName} > ${file}`;
+    const MYSQL = `mysqldump -h localhost -u ${SQL_data?.mysql_options.user} --port=${SQL_data?.mysql_options.port}  ${dbCopyName} > ${file}`;
     if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) return PG;
     if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL) return MYSQL;
     return 'invalid dbtype';
