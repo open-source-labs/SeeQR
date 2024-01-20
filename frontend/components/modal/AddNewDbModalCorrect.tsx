@@ -104,7 +104,7 @@ function AddNewDbModal({
         }
 
         // this is for sql files that already have a name via CREATE DATABASE 
-        const dataArr = data.match(/([a-zA-Z_]+|\S+)/g)!;
+        const dataArr = data.replace(/`([^`]+)`|\b([a-zA-Z_]+)\b/g, '$1$2').match(/\S+/g) || [];
         const keyword1 = 'CREATE';
         const keyword2 = 'DATABASE';
         console.log('data', dataArr)
