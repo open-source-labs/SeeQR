@@ -15,6 +15,7 @@ import {
 } from '../../style-variables';
 import { DBType } from '../../../backend/BE_types';
 import MenuContext from '../../state_management/Contexts/MenuContext';
+// import { set } from 'mongoose';
 
 
 type AddNewDbModalProps = {
@@ -33,6 +34,9 @@ function AddNewDbModal({
   const { dispatch: menuDispatch } = useContext(MenuContext);
 
   const [newDbName, setNewDbName] = useState('');
+
+  const [fileSelect, setFileSelect] = useState(true)
+  const [containsKW, setContainsKW] = useState(false)
 
 
   const [isError, setIsError] = useState(false);
@@ -77,97 +81,110 @@ function AddNewDbModal({
     setNewDbName(dbSafeName);
   };
 
-  // Opens modal to select file and sends the selected file to backend
-  const handleDBimport = (dbName: string | undefined, closeModal: () => void) => {
-    // TODO: fix the any type.
-    const dbt: DBType = (document.getElementById('dbTypeDropdown') as any).value;
-    const options = {
-      title: 'Import DB',
-      defaultPath: path.join(__dirname, '../assets/'),
-      buttonLabel: 'Import',
-      filters: [
-        {
-          name: 'Custom File Type',
-          extensions: ['sql', 'tar'],
-        },
-      ],
-    };
-    
-    
-    const importdb = (filePath: string) => {
-      fs.readFile(filePath, 'utf-8', (err, data)=> {
-        if(err) {
-          console.error(`Error reading file: ${err.message}`);
-          return;
-        }
 
-        // this is for sql files that already have a name via CREATE DATABASE 
-        const dataArr = data.replace(/`([^`]+)`|\b([a-zA-Z_]+)\b/g, '$1$2').match(/\S+/g) || [];
-        const keyword1 = 'CREATE';
-        const keyword2 = 'DATABASE';
-        console.log('data', dataArr)
   
-        const containsKeywords = dataArr.some((word, index) => {
-          // Check if the current word is 'CREATE' and the next word is 'DATABASE'
-          if (word === keyword1 && dataArr[index + 1] === keyword2) {
-            return true;
+    // Opens modal to select file 
+    const selectDBFile = () => {
+
+      const options = {
+        title: 'Import DB',
+        defaultPath: path.join(__dirname, '../assets/'),
+        buttonLabel: 'Import',
+        filters: [
+          {
+            name: 'Custom File Type',
+            extensions: ['sql', 'tar'],
+          },
+        ],
+      };
+
+   
+      // checks sql file if it already has a `CREATE DATABASE` query. If so, a input field wont be needed.
+        // if there is no such query, you will need to input a db name.
+      const checkDBFile = (filePath: string) => {
+        // TODO: fix the any type.
+        const dbt: DBType = (document.getElementById('dbTypeDropdown') as any).value;
+
+
+
+        fs.readFile(filePath, 'utf-8', (err, data)=> {
+          if(err) {
+            console.error(`Error reading file: ${err.message}`);
+            return;
           }
-          return false;
-        });
     
-        /* checks if the keyword exist in our database file */
-        if(containsKeywords) {
-          console.log('keywords exist:', containsKeywords);
-
-          let fileDbName = ''
-            // eslint-disable-next-line no-restricted-syntax
-            for (const [index, word] of dataArr.entries()) {
-              if (word === keyword1 && dataArr[index + 1] === keyword2) {
-                // Assuming the database name is the next word after 'DATABASE'
-                fileDbName = dataArr[index + 2];
-              }
+          // this is for sql files that already have a name via CREATE DATABASE 
+          const dataArr = data.replace(/`([^`]+)`|\b([a-zA-Z_]+)\b/g, '$1$2').match(/\S+/g) || [];
+          const keyword1 = 'CREATE';
+          const keyword2 = 'DATABASE';
+          console.log('data', dataArr)
+          
+          const containsKeywords = dataArr.some((word, index) => {
+            // Check if the current word is 'CREATE' and the next word is 'DATABASE'
+            if (word === keyword1 && dataArr[index + 1] === keyword2) {
+              return true;
             }
-            
-            console.log('name', fileDbName)
-            setNewDbName(fileDbName)
-
-          menuDispatch({
-            type: 'ASYNC_TRIGGER',
-            loading: 'LOADING',
-            options: {
-              event: 'import-db',
-              payload: { newDbName: dbName, filePath, dbType: dbt }, // see importDb for type reqs
-              callback: closeModal,
-            },
+            return false;
           });
-        } else {
-          // console.log('keywords exists?,', containsKeyword)
+        
+          /* checks if the keyword exist in our database file */
+           if(containsKeywords) {
+            setContainsKW(true)
+            console.log('keywords exist:', containsKeywords);
 
-          /* if keyword does not exist, run menuDispatch, which requires user to input a database name */
-          menuDispatch({
-            type: 'ASYNC_TRIGGER',
-            loading: 'LOADING',
-            options: {
-              event: 'import-db',
-              payload: { newDbName: dbName , filePath, dbType: dbt }, // see importDb for type reqs
-              callback: closeModal,
-            },
+            // mysql is different where you need to create a database before importing.
+            // most mysql files will have a create database query in file
+            // this function will create a database first
+            if (dbt === DBType.MySQL) {
+            let fileDbName = ''
+              // eslint-disable-next-line no-restricted-syntax
+              for (const [index, word] of dataArr.entries()) {
+                if (word === keyword1 && dataArr[index + 1] === keyword2) {
+                  // Assuming the database name is the next word after 'DATABASE'
+                  fileDbName = dataArr[index + 2];
+                }
+              }
+              setNewDbName(fileDbName)
+              console.log('name', fileDbName)
+            }
+
+            // handles import if keywords exists
+            const handleDBImport = (dbName: string, closeModal: () => void) => {
+            menuDispatch({
+              type: 'ASYNC_TRIGGER',
+              loading: 'LOADING',
+              options: {
+                event: 'import-db',
+                payload: {  newDbName: dbName, filePath , dbType: dbt },
+                callback: closeModal,
+              },
           });
-        }
-      })
+          };
+
+          handleDBImport(newDbName, handleClose)
+          
+            } else {
+              // if keywords dont exist, this will basically render input field
+              setFileSelect(false)
+              setContainsKW(false)
+              console.log('keywords exist:', containsKeywords);
+            }
+        });
+      }
+
+  // initial async call when pressing select file button
+      menuDispatch({
+        type: 'ASYNC_TRIGGER',
+        loading: 'LOADING',
+        options: {
+          event: 'showOpenDialog',
+          payload: options,
+          callback: checkDBFile,
+        },
+      });
     };
 
-    // initial async call
-    menuDispatch({
-      type: 'ASYNC_TRIGGER',
-      loading: 'LOADING',
-      options: {
-        event: 'showOpenDialog',
-        payload: options,
-        callback: importdb,
-      },
-    });
-  };
+
 
   return (
     <div>
@@ -182,9 +199,11 @@ function AddNewDbModal({
           <DialogTitle id="alert-dialog-title">
             Import Existing SQL or TAR File
           </DialogTitle>
+
+        {!fileSelect && !containsKW ?
           <Tooltip title="Any special characters will be removed">
             <StyledTextField
-              // required
+              required
               error={isError}
               helperText={errorMessage()}
               id="filled-basic"
@@ -197,6 +216,10 @@ function AddNewDbModal({
               }}
             />
           </Tooltip>
+          : <> </>
+          }
+
+
         </TextFieldContainer>
         <DropdownContainer>
           <StyledInputLabel
@@ -224,22 +247,37 @@ function AddNewDbModal({
           >
             Cancel
           </StyledButton>
-          <StyledButton
+
+
+          {
+            fileSelect ?
+           <StyledButton
             variant="contained"
             color="primary"
             startIcon={<CloudUploadIcon />}
             onClick={
-              // isEmpty || isError
-              //   ? () => {}
-              //   : 
-              isError
-                ? () => {}
-                : 
-              () => handleDBimport(newDbName, handleClose)
-            }
+             () => selectDBFile()
+            } 
+          
+          >
+            Select File
+          </StyledButton>
+            :
+          <StyledButton
+            variant="contained"
+            color="primary"
+            startIcon={<CloudUploadIcon />}
+            // onClick={
+            //   isEmpty || isError
+            //     ? () => {}
+            //     : () => handleDBImport(newDbName, handleClose) 
+            // }
           >
             Import
           </StyledButton>
+          }
+          
+          
         </ButtonContainer>
       </Dialog>
     </div>
