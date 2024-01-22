@@ -132,7 +132,7 @@ const helperFunctions: HelperFunctions = {
       }
 
 
-      exec( //opens cli
+      exec( // opens cli
         cmd,
         {
           timeout: 2500,

@@ -34,8 +34,6 @@ function AddNewDbModal({
 
   const [newDbName, setNewDbName] = useState('');
 
-  // fixes undefined copy when importing a database
-  const [currDbName, setToCurrDbName] = useState('');
 
   const [isError, setIsError] = useState(false);
   const [isEmpty, setIsEmpty] = useState(true);
@@ -62,11 +60,11 @@ function AddNewDbModal({
   /// / Set schema name
   const handleDbName = (event: React.ChangeEvent<HTMLInputElement>) => {
     const dbNameInput = event.target.value;
-    if (dbNameInput.length === 0) {
-      setIsEmpty(true);
-    } else {
-      setIsEmpty(false);
-    }
+    // if (dbNameInput.length === 0) {
+    //   setIsEmpty(true);
+    // } else {
+    //   setIsEmpty(false);
+    // }
     // check if the newDbName is not a duplicate
     let dbSafeName = dbNameInput;
     // convert input label name to lowercase only with no spacing to comply with db naming convention.
@@ -131,14 +129,14 @@ function AddNewDbModal({
             }
             
             console.log('name', fileDbName)
-            setToCurrDbName(fileDbName)
+            setNewDbName(fileDbName)
 
           menuDispatch({
             type: 'ASYNC_TRIGGER',
             loading: 'LOADING',
             options: {
               event: 'import-db',
-              payload: { newDbName: currDbName, filePath, dbType: dbt }, // see importDb for type reqs
+              payload: { newDbName: dbName, filePath, dbType: dbt }, // see importDb for type reqs
               callback: closeModal,
             },
           });
@@ -234,6 +232,9 @@ function AddNewDbModal({
               // isEmpty || isError
               //   ? () => {}
               //   : 
+              isError
+                ? () => {}
+                : 
               () => handleDBimport(newDbName, handleClose)
             }
           >
