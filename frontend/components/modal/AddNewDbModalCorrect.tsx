@@ -33,16 +33,16 @@ function AddNewDbModal({
 }: AddNewDbModalProps) {
   const { dispatch: menuDispatch } = useContext(MenuContext);
 
-  const [newDbName, setNewDbName] = useState('');
+  const [newDbName, setNewDbName] = useState<string>('');
 
-  const [fileSelect, setFileSelect] = useState(true)
+  const [fileSelect, setFileSelect] = useState<boolean>(true)
 
-  const [selectedFilePath, setFilePath] = useState('')
+  const [selectedFilePath, setFilePath] = useState<string>('')
 
-  const [selectedDBType, setDBType] = useState('')
+  const [selectedDBType, setDBType] = useState<string>('')
 
-  const [isError, setIsError] = useState(false);
-  const [isEmpty, setIsEmpty] = useState(true);
+  const [isError, setIsError] = useState<boolean>(false);
+  const [isEmpty, setIsEmpty] = useState<boolean>(true);
   // const [curDBType, setDBType] = useState<DBType>();
 
   // Resets state for error messages
@@ -121,9 +121,10 @@ function AddNewDbModal({
           }
     
           // this is for sql files that already have a name via CREATE DATABASE 
-          const dataArr = data.replace(/`([^`]+)`|\b([a-zA-Z_]+)\b/g, '$1$2').match(/\S+/g) || [];
+          const dataArr = data.replace(/`([^`]+)`|\b([a-zA-Z_]+)\b/g, '$1$2').replace(/;/g, '').match(/\S+/g) || [];
           const keyword1 = 'CREATE';
           const keyword2 = 'DATABASE';
+          const keyword3 = 'USE'
           console.log('data', dataArr)
           
           const containsKeywords = dataArr.some((word, index) => {
@@ -142,7 +143,7 @@ function AddNewDbModal({
             // mysql is different where you need to create a database before importing.
             // most mysql files will have a create database query in file
             // this function will create a database first
-            if (dbt === DBType.MySQL) {
+            if (dbt === DBType.Postgres) {
             let fileDbName = ''
               // eslint-disable-next-line no-restricted-syntax
               for (const [index, word] of dataArr.entries()) {
@@ -153,8 +154,20 @@ function AddNewDbModal({
               }
               setNewDbName(fileDbName)
               console.log('name', fileDbName)
-            }
+            } else if (dbt === DBType.MySQL) {
+              let fileDbName = ''
+                // eslint-disable-next-line no-restricted-syntax
+                for (const [index, word] of dataArr.entries()) {
+                  if (word === keyword3) {
+                    // Assuming the database name is the next word after 'DATABASE'
+                    fileDbName = dataArr[index + 1];
+                  }
+                }
+                setNewDbName(fileDbName)
+                console.log('name', fileDbName)
+              }
 
+              
             // handles import if keywords exists
             const handleDBImport = (dbName: string, closeModal: () => void) => {
             menuDispatch({
@@ -192,6 +205,7 @@ function AddNewDbModal({
     };
 
 
+    // some sql files will have keywords that are invalid which will need to be edited manually in sql file before importing
     const handleDBImport = (dbName: string, closeModal: () => void) => {
       menuDispatch({
         type: 'ASYNC_TRIGGER',
