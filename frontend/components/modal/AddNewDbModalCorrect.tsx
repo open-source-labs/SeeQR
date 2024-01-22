@@ -36,8 +36,10 @@ function AddNewDbModal({
   const [newDbName, setNewDbName] = useState('');
 
   const [fileSelect, setFileSelect] = useState(true)
-  const [containsKW, setContainsKW] = useState(false)
 
+  const [selectedFilePath, setFilePath] = useState('')
+
+  const [selectedDBType, setDBType] = useState('')
 
   const [isError, setIsError] = useState(false);
   const [isEmpty, setIsEmpty] = useState(true);
@@ -64,11 +66,11 @@ function AddNewDbModal({
   /// / Set schema name
   const handleDbName = (event: React.ChangeEvent<HTMLInputElement>) => {
     const dbNameInput = event.target.value;
-    // if (dbNameInput.length === 0) {
-    //   setIsEmpty(true);
-    // } else {
-    //   setIsEmpty(false);
-    // }
+    if (dbNameInput.length === 0) {
+      setIsEmpty(true);
+    } else {
+      setIsEmpty(false);
+    }
     // check if the newDbName is not a duplicate
     let dbSafeName = dbNameInput;
     // convert input label name to lowercase only with no spacing to comply with db naming convention.
@@ -82,14 +84,13 @@ function AddNewDbModal({
   };
 
 
-  
+
     // Opens modal to select file 
     const selectDBFile = () => {
-
       const options = {
-        title: 'Import DB',
+        title: 'Select DB File',
         defaultPath: path.join(__dirname, '../assets/'),
-        buttonLabel: 'Import',
+        buttonLabel: 'Select File',
         filters: [
           {
             name: 'Custom File Type',
@@ -102,10 +103,16 @@ function AddNewDbModal({
       // checks sql file if it already has a `CREATE DATABASE` query. If so, a input field wont be needed.
         // if there is no such query, you will need to input a db name.
       const checkDBFile = (filePath: string) => {
-        // TODO: fix the any type.
+   
+           // TODO: fix the any type.
         const dbt: DBType = (document.getElementById('dbTypeDropdown') as any).value;
-
-
+      
+        console.log('dbtype', dbt)
+        console.log('filepath', filePath)
+        
+        setFilePath(filePath)
+        
+        setDBType(dbt)
 
         fs.readFile(filePath, 'utf-8', (err, data)=> {
           if(err) {
@@ -129,7 +136,7 @@ function AddNewDbModal({
         
           /* checks if the keyword exist in our database file */
            if(containsKeywords) {
-            setContainsKW(true)
+          
             console.log('keywords exist:', containsKeywords);
 
             // mysql is different where you need to create a database before importing.
@@ -158,15 +165,15 @@ function AddNewDbModal({
                 payload: {  newDbName: dbName, filePath , dbType: dbt },
                 callback: closeModal,
               },
-          });
+            });
           };
 
           handleDBImport(newDbName, handleClose)
           
             } else {
-              // if keywords dont exist, this will basically render input field
+              // if keywords dont exist, this will render input field
               setFileSelect(false)
-              setContainsKW(false)
+
               console.log('keywords exist:', containsKeywords);
             }
         });
@@ -185,6 +192,21 @@ function AddNewDbModal({
     };
 
 
+    const handleDBImport = (dbName: string, closeModal: () => void) => {
+      menuDispatch({
+        type: 'ASYNC_TRIGGER',
+        loading: 'LOADING',
+        options: {
+          event: 'import-db',
+          payload: {  newDbName: dbName, filePath: selectedFilePath , dbType: selectedDBType},
+          callback: closeModal,
+        },
+      });
+      setFileSelect(true)
+    };
+
+
+    
 
   return (
     <div>
@@ -200,7 +222,7 @@ function AddNewDbModal({
             Import Existing SQL or TAR File
           </DialogTitle>
 
-        {!fileSelect && !containsKW ?
+        {!fileSelect ?
           <Tooltip title="Any special characters will be removed">
             <StyledTextField
               required
@@ -267,11 +289,11 @@ function AddNewDbModal({
             variant="contained"
             color="primary"
             startIcon={<CloudUploadIcon />}
-            // onClick={
-            //   isEmpty || isError
-            //     ? () => {}
-            //     : () => handleDBImport(newDbName, handleClose) 
-            // }
+            onClick={
+              isEmpty || isError
+                ? () => {}
+                : () => handleDBImport(newDbName, handleClose) 
+            }
           >
             Import
           </StyledButton>
