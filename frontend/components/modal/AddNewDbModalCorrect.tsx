@@ -163,7 +163,6 @@ function AddNewDbModal({
                     fileDbName = dataArr[index + 1];
                   }
                 }
-                setNewDbName(fileDbName)
                 payloadObj = { newDbName: fileDbName, filePath, dbType: dbt};
               }
 
