@@ -293,13 +293,22 @@ export async function importDb(
   event.sender.send('async-started');
 
   try {
-    // create new empty database
+   
+    // if (dbType === DBType.Postgres) {
+    //   try {
+    //     await queryModel.query(createDBFunc(newDbName, dbType), [], dbType);
+    //   } catch (e) {
+    //     throw new Error('Failed to create Database');
+    //   }
+    // }
+
+ // create new empty database
     try {
       await queryModel.query(createDBFunc(newDbName, dbType), [], dbType);
     } catch (e) {
       throw new Error('Failed to create Database');
     }
-
+    
     // run temp sql file on new database
     try {
       await promExecute(runSQLFunc(newDbName, filePath, dbType), dbType);

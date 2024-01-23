@@ -102,7 +102,7 @@ function AddNewDbModal({
    
       // checks sql file if it already has a `CREATE DATABASE` query. If so, a input field wont be needed.
         // if there is no such query, you will need to input a db name.
-      const checkDBFile = (filePath: string) => {
+      const checkDBFile = (filePath: string, dbName: string) => {
    
            // TODO: fix the any type.
         const dbt: DBType = (document.getElementById('dbTypeDropdown') as any).value;
@@ -137,14 +137,15 @@ function AddNewDbModal({
         
           /* checks if the keyword exist in our database file */
            if(containsKeywords) {
-          
+            let fileDbName = ''
+            let payloadObj
             console.log('keywords exist:', containsKeywords);
 
             // mysql is different where you need to create a database before importing.
             // most mysql files will have a create database query in file
             // this function will create a database first
             if (dbt === DBType.Postgres) {
-            let fileDbName = ''
+       
               // eslint-disable-next-line no-restricted-syntax
               for (const [index, word] of dataArr.entries()) {
                 if (word === keyword1 && dataArr[index + 1] === keyword2) {
@@ -152,10 +153,9 @@ function AddNewDbModal({
                   fileDbName = dataArr[index + 2];
                 }
               }
-              setNewDbName(fileDbName)
-              console.log('name', fileDbName)
+              payloadObj = { newDbName, filePath, dbType: dbt};
             } else if (dbt === DBType.MySQL) {
-              let fileDbName = ''
+            
                 // eslint-disable-next-line no-restricted-syntax
                 for (const [index, word] of dataArr.entries()) {
                   if (word === keyword3) {
@@ -164,24 +164,24 @@ function AddNewDbModal({
                   }
                 }
                 setNewDbName(fileDbName)
-                console.log('name', fileDbName)
+                payloadObj = { newDbName: fileDbName, filePath, dbType: dbt};
               }
 
               
             // handles import if keywords exists
-            const handleDBImport = (dbName: string, closeModal: () => void) => {
+            const handleDBImport = (closeModal: () => void) => {
             menuDispatch({
               type: 'ASYNC_TRIGGER',
               loading: 'LOADING',
               options: {
                 event: 'import-db',
-                payload: {  newDbName: dbName, filePath , dbType: dbt },
+                payload: payloadObj,
                 callback: closeModal,
               },
             });
           };
 
-          handleDBImport(newDbName, handleClose)
+          handleDBImport(handleClose)
           
             } else {
               // if keywords dont exist, this will render input field
