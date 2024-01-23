@@ -102,6 +102,7 @@ export async function runQuery(
           arr.push(eachSampleTime);
           totalSampleTime += eachSampleTime;
 
+          
           // hard coded explainResults just to get it working for now
           explainResults = {
             Plan: {
