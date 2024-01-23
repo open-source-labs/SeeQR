@@ -24,46 +24,42 @@ const StyledCell = styled(TableCell)`
 `;
 
 interface TableDetailsProps {
-  table: TableInfo | undefined;
+  table: TableInfo | undefined,
+  nguyen: string
 }
 
-function TableDetails({ table }: TableDetailsProps) {
-  return <>
-    <Typography variant="h3">{`${table?.table_name}`}</Typography>
-    <br />
-    <TableContainer component={StyledPaper}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>
-              <strong>Column</strong>
-            </TableCell>
-            <TableCell align="right">
-              <strong>Type</strong>
-            </TableCell>
-            <TableCell align="right">
-              <strong>Is Nullable?</strong>
-            </TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {table?.columns.map((row) => (
-            <TableRow key={row.column_name}>
-              <StyledCell key={row?.column_name}>{row?.column_name}</StyledCell>
-              <StyledCell align="right">
-                {`${row?.data_type}${
-                  row?.character_maximum_length
-                    ? `(${row.character_maximum_length})`
-                    : ''
-                }`}
-              </StyledCell>
-              <StyledCell align="right">{row?.is_nullable}</StyledCell>
+// SELECT * FROM table.table_name
+function TableDetails({ table, nguyen }: TableDetailsProps) {
+  //in props we also need access to the database from DatabaseDetails.tsx
+
+  // ipcRenderer.invoke('run-query-select-all', DB, table.table_name)
+  console.log(nguyen)
+  return (
+    <>
+      <Typography variant="h3">{`${table?.table_name}`}</Typography>
+      <br />
+      <TableContainer component={StyledPaper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>
+                {table?.columns.map((row) => (
+                  <StyledCell key={row?.column_name}>
+                    {`${row?.column_name} (${row?.data_type}${
+                      row?.character_maximum_length
+                        ? `(${row.character_maximum_length})`
+                        : ''
+                    }) `}
+                  </StyledCell>
+                ))}
+              </TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  </>
+          </TableHead>
+          {/* <TableBody></TableBody> */}
+        </Table>
+      </TableContainer>
+    </>
+  );
 }
 
 export default TableDetails;
