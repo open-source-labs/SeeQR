@@ -79,7 +79,7 @@ const helperFunctions: HelperFunctions = {
     if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL) return MYSQL;
     return 'invalid dbtype';
   },
-
+  
   // import TAR file into new DB created
   runTARFunc: function runTARFunc(dbName, file, dbType: DBType) {
     const SQL_data = docConfig.getFullConfig();
@@ -97,7 +97,7 @@ const helperFunctions: HelperFunctions = {
     dbType: DBType,
   ) {
     const SQL_data = docConfig.getFullConfig();
-    const PG = `PGPASSWORD=${SQL_data?.pg_options.password} pg_dump -s -U ${SQL_data?.pg_options.user} -p ${SQL_data?.pg_options.port} -Fp -d ${dbCopyName} > "${newFile}"`;
+    const PG = `pg_dump -s -U ${SQL_data?.pg_options.user} -p ${SQL_data?.pg_options.port} -Fp -d ${dbCopyName} > "${newFile}"`;
     const MYSQL = `mysqldump -h localhost -u ${SQL_data?.mysql_options.user}  ${dbCopyName} > ${newFile}`;
     if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) return PG;
     if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL) return MYSQL;
@@ -111,7 +111,7 @@ const helperFunctions: HelperFunctions = {
     dbType: DBType,
   ) {
     const SQL_data = docConfig.getFullConfig();
-    const PG = ` PGPASSWORD=${SQL_data?.pg_options.password} pg_dump -s -U ${SQL_data?.pg_options.user} -p ${SQL_data?.pg_options.port} -F p -d "${dbCopyName}" > "${file}"`;
+    const PG = `pg_dump -s -U ${SQL_data?.pg_options.user} -p ${SQL_data?.pg_options.port} -F p -d "${dbCopyName}" > "${file}"`;
     const MYSQL = `mysqldump -h localhost -u ${SQL_data?.mysql_options.user} --port=${SQL_data?.mysql_options.port}  ${dbCopyName} > ${file}`;
     if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) return PG;
     if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL) return MYSQL;
@@ -135,9 +135,10 @@ const helperFunctions: HelperFunctions = {
       exec( //opens cli
         cmd,
         {
-          timeout: 5000,
+          timeout: 2500,
           // env: {PGPASSWORD: SQL_data?.pg_options.password },
-          env: envPW
+          env: envPW,
+       
         },
         (error, stdout, stderr) => {
           if (error) {

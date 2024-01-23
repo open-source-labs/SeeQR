@@ -306,8 +306,8 @@ export async function importDb(
     } catch (e: any) {
       // cleanup: drop created db
       logger(`Dropping duplicate db because: ${e.message}`, LogType.WARNING);
-      const dropDBScript = dropDBFunc(newDbName, dbType);
-      await queryModel.query(dropDBScript, [], dbType);
+
+      await queryModel.query(dropDBFunc(newDbName, dbType), [], dbType);
 
       throw new Error('Failed to populate newly created database');
     }
