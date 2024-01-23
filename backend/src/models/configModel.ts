@@ -6,7 +6,7 @@ import { DocConfigFile } from '../../BE_types';
 
 // HELPER FUNCTIONS
 
-const home = process.cwd()
+const home = process.cwd();
 const configFile = 'config.json';
 const configPath = `${home}/${configFile}`;
 

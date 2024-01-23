@@ -43,6 +43,8 @@ function QuerySqlInput({ sql, onChange, runQuery }: QuerySqlInputProps) {
     onChange(formatted);
   };
 
+  const regexString = `/\b(SELECT|FROM|WHERE|ORDER BY|GROUP BY|HAVING|VALUES|INSERT INTO|SET|UPDATE|DELETE FROM|TRUNCATE|BETWEEN|CREATE|TABLE|DROP|ALTER|ADD|COLUMN|UNIQUE|INDEX|INNER|JOIN|LEFT|RIGHT|FULL|OUTER|VIEW|AS)\b/gmi`;
+
   return (
     <Container>
       <Toolbar>
@@ -60,7 +62,8 @@ function QuerySqlInput({ sql, onChange, runQuery }: QuerySqlInputProps) {
         height="300px"
         value={sql}
         basicSetup={{
-          highlightActiveLine: false,
+          highlightActiveLine: true,
+          highlightSpecialChars: true,
         }}
       />
     </Container>

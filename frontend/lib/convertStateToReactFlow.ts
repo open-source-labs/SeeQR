@@ -71,28 +71,32 @@ const Table: TableConstructor = class Table implements TableInterface {
   render() {
     // This method gets the table position from the stored file
     const getTablePosition = (): { x: number; y: number } => {
-      try {
-        const location = app.getPath('temp').concat('/UserTableLayouts.json');
-        // refactored code. parse json file, look for current db in saved file, look for current table inside db. return undefined if db or table doesn't exist
-        const parsedData: unknown = JSON.parse(
-          fs.readFileSync(location, 'utf8'),
-        );
-        const foundCurrentDB = isDatabaseLayoutObjTypeArr(parsedData)
-          ? parsedData.find(
-              (db: DatabaseLayoutObjType) => db?.db_name === this.database,
-            )
-          : undefined;
-        const foundCurrentTable = foundCurrentDB?.db_tables.find(
-          (table) => table.table_name === this.name,
-        );
-        // return current table's saved position coordinates else return passed in coordinates if could not find saved coordinates in json
-        return foundCurrentTable
-          ? foundCurrentTable.table_position
-          : { x: this.tableCoordinates.x, y: this.tableCoordinates.y };
-      } catch (error) {
-        return { x: (this.id - 1) * 500, y: 0 };
-      }
+      return { x: (this.id - 1) * 500, y: 0 };
+      // try {
+      // const location = app.getPath('temp').concat('/UserTableLayouts.json');
+      // // refactored code. parse json file, look for current db in saved file, look for current table inside db. return undefined if db or table doesn't exist
+      // const parsedData: unknown = JSON.parse(
+      //   fs.readFileSync(location, 'utf8'),
+      // );
+      // const foundCurrentDB = isDatabaseLayoutObjTypeArr(parsedData)
+      //   ? parsedData.find(
+      //       (db: DatabaseLayoutObjType) => db?.db_name === this.database,
+      //     )
+      //   : undefined;
+      // const foundCurrentTable = foundCurrentDB?.db_tables.find(
+      //   (table) => table.table_name === this.name,
+      // );
+      // console.log(foundCurrentTable);
+      // // return current table's saved position coordinates else return passed in coordinates if could not find saved coordinates in json
+      // // return foundCurrentTable
+      // //   ? foundCurrentTable.table_position
+      // //   : { x: this.tableCoordinates.x, y: this.tableCoordinates.y };
+      // } catch (error) {
+      // return { x: (this.id - 1) * 1000, y: 0 };
+      // }
     };
+    // const test = getTablePosition();
+    // console.log(test);
     // create a nodes array for react flow, the first element will always be a
     // TABLE_HEADER type of node
     const nodes: Node[] = [
@@ -105,6 +109,46 @@ const Table: TableConstructor = class Table implements TableInterface {
         },
       },
     ];
+    // try {
+    //   const location = app.getPath('temp').concat('/UserTableLayouts.json');
+    //   // refactored code. parse json file, look for current db in saved file, look for current table inside db. return undefined if db or table doesn't exist
+    //   const parsedData: unknown = JSON.parse(fs.readFileSync(location, 'utf8'));
+    //   const foundCurrentDB = isDatabaseLayoutObjTypeArr(parsedData)
+    //     ? parsedData.find(
+    //         (db: DatabaseLayoutObjType) => db?.db_name === this.database,
+    //       )
+    //     : undefined;
+    //   console.log(foundCurrentDB);
+
+    //   foundCurrentDB?.db_tables.length === 1
+    //     ? (nodes = [
+    //         {
+    //           id: `table-${this.name}`,
+    //           type: types.TABLE_HEADER,
+    //           position: getTablePosition(),
+    //           data: {
+    //             table_name: this.name,
+    //           },
+    //         },
+    //       ])
+    //     : (nodes = [
+    //         {
+    //           id: `table-${this.name}`,
+    //           type: types.TABLE_HEADER,
+    //           position: {
+    //             x: getTablePosition().x + 500,
+    //             y: getTablePosition().y,
+    //           },
+    //           data: {
+    //             table_name: this.name,
+    //           },
+    //           // group: `table-group-${this.name}`,
+    //         },
+    //       ]);
+    // } catch {
+    //   console.log('unable to set nodes: Node[]');
+    // }
+    // const groupId = `table-group-${this.name}`;
     const edges: Edge[] = [];
     let num = -1;
 
@@ -125,6 +169,7 @@ const Table: TableConstructor = class Table implements TableInterface {
           type: types.TABLE_FIELD,
           parentNode: `table-${this.name}`,
           draggable: false,
+          // position: { x: getTablePosition().x, y: (num + 1) * 78 },
           position: { x: 0, y: (num + 1) * 78 },
           data: {
             tableName: this.name,
@@ -148,6 +193,43 @@ const Table: TableConstructor = class Table implements TableInterface {
         });
       }
     });
+
+    const filterByField = nodes.filter((ele) => ele.type === types.TABLE_FIELD);
+    const grabLastFieldPosition =
+      filterByField[filterByField.length - 1]?.position?.y;
+    // console.log(grabLastFieldPosition);
+
+    const test = grabLastFieldPosition;
+    // console.log(getTablePosition());
+
+    if (test) {
+      // console.log(getTablePosition());
+      nodes.push({
+        id: `table-footer-${this.name}`,
+        type: types.TABLE_FOOTER,
+        position: {
+          x: 0,
+          y: grabLastFieldPosition + 78,
+        },
+        data: {
+          table_name: this.name,
+        },
+        parentNode: `table-${this.name}`,
+        draggable: false,
+      });
+    } else {
+      nodes.push({
+        id: `table-footer-${this.name}`,
+        type: types.TABLE_FOOTER,
+        position: { x: 0, y: 78 },
+        data: {
+          table_name: this.name,
+        },
+        parentNode: `table-${this.name}`,
+        draggable: false,
+      });
+    }
+
     // return an object with nodes and edges
     return {
       nodes,
@@ -191,23 +273,26 @@ const convertStateToReactFlow = {
       );
       // if current table has more columns than any other in its row, set columnGap to new max number of columns * 74(px)
       // filter for duplicate column names -- one imported test db was creating a new column for each constraint and this is a bandaid fix
-      const columnsGapSet = new Set();
-      tables[i].columns.forEach((column) =>
-        columnsGapSet.add(column.column_name),
-      );
-      columnGap = Math.max(columnsGapSet.size * 74, columnGap);
-      // calculate a default rowLength based on sqrt of number of tables
-      const rowLength = Math.floor(Math.sqrt(tables.length));
-      // if table should be the beginning of a new row...
-      if (i % rowLength === 0) {
-        // set x, y coordinates for new row to 0 and +250 respectively;
-        tableCoordinates.x = 0;
-        tableCoordinates.y += 250 + columnGap;
-        columnGap = 0;
-      } else {
-        // ...otherwise increment tables position horizontally in current row.
-        tableCoordinates.x += 500;
-      }
+      // const columnsGapSet = new Set();
+      // tables[i].columns.forEach((column) =>
+      //   columnsGapSet.add(column.column_name),
+      // );
+      // console.log(columnsGapSet);
+
+      // columnGap = Math.max(columnsGapSet.size * 74, columnGap);
+      // console.log(columnGap);
+      // // calculate a default rowLength based on sqrt of number of tables
+      // const rowLength = Math.floor(Math.sqrt(tables.length));
+      // // if table should be the beginning of a new row...
+      // if (i % rowLength === 0) {
+      //   // set x, y coordinates for new row to 0 and +250 respectively;
+      //   tableCoordinates.x = 0;
+      //   tableCoordinates.y += 250 + columnGap;
+      //   columnGap = 0;
+      // } else {
+      //   // ...otherwise increment tables position horizontally in current row.
+      //   tableCoordinates.x += 500;
+      // }
       // create a new instance of Table, push into table array
       const table = new Table(
         i + 1,

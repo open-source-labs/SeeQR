@@ -199,7 +199,7 @@ function AddNewDbModal({
                     event: 'import-db',
                     payload: { newDbName: dbName, filePath, dbType: dbt },
                     callback: () => {
-                      handleDbName(); // Call handleDBName callback
+
                       closeModal(); // Call the existing closeModal callback
                     },
                   },

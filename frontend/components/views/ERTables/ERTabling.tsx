@@ -42,13 +42,15 @@ const mmStyle: object = {
   height: 150,
   overflow: 'hidden',
 };
-
+console.log(Node);
 // defines the styling for the minimap nodes
 const nodeColor = (node: Node): string => {
   switch (node.type) {
     case 'tableHeader':
       return colors.greyLightest;
     case 'tableField':
+      return 'white';
+    case 'tableFooter':
       return 'white';
     default:
       return 'red';
@@ -224,8 +226,11 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
 
   // This useEffect fires when schemaState changes and will convert the state to a form react flow requires
   useEffect(() => {
+    console.log(schemaState);
+    console.log(stateToReactFlow);
     // send the schema state to the convert method to convert the schema to the form react flow requires
     const initialState = stateToReactFlow.convert(schemaState);
+    console.log(initialState);
     // create a deep copy of the state, to ensure the state is not directly modified
     const schemaStateString = JSON.stringify(schemaState);
     const schemaStateCopy = JSON.parse(schemaStateString);

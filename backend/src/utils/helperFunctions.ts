@@ -109,6 +109,7 @@ const helperFunctions: HelperFunctions = {
     dbCopyName,
     file,
     dbType: DBType,
+    
   ) {
     const SQL_data = docConfig.getFullConfig();
     const PG = `pg_dump -s -U ${SQL_data?.pg_options.user} -p ${SQL_data?.pg_options.port} -F p -d "${dbCopyName}" > "${file}"`;
