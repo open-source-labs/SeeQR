@@ -76,7 +76,7 @@ export async function runQuery(
     // Run Explain
     let explainResults;
     try {
-      for (let i = 0; i < numberOfSample; i++) {
+      // for (let i = 0; i < numberOfSample; i++) {
         if (dbType === DBType.Postgres) {
           const results = await queryModel.query(
             explainQuery(sqlString, dbType),
@@ -198,7 +198,7 @@ export async function runQuery(
             'Execution Time': 9999,
           };
         }
-      }
+      // }
       // get 5 decimal points for sample time
       minimumSampleTime = Math.round(Math.min(...arr) * 10 ** 5) / 10 ** 5;
       maximumSampleTime = Math.round(Math.max(...arr) * 10 ** 5) / 10 ** 5;

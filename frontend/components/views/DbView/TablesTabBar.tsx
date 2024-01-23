@@ -13,6 +13,7 @@ interface TabPanelProps {
   children?: React.ReactNode;
   index: number;
   value: number;
+  kevin: string;
   /* curDBType: DBType | undefined; */
 }
 const StyledToggleButtonGroup = styled(ToggleButtonGroup)`
@@ -26,7 +27,7 @@ const StyledTabs = styled(Tabs)`
   border-radius: 5px;
 `;
 
-function TabPanel({ children, value, index /* curDBType */ }: TabPanelProps) {
+function TabPanel({ children, value, index, kevin /* curDBType */ }: TabPanelProps) {
   return (
     <div
       role="tabpanel"
@@ -74,6 +75,7 @@ function ErView({
   tableIndex,
   handleChange,
 }: ErViewProps) {
+  console.log(selectedDb);
   return (
     <div>
       {active ? (
@@ -105,8 +107,9 @@ function ErView({
               index={index}
               key={tableMap.table_name}
               /* curDBType={curDBType} */
+              kevin={selectedDb}
             >
-              <TableDetails table={tableMap} />
+              <TableDetails table={tableMap} nguyen={selectedDb} />
             </TabPanel>
           ))}
         </>
