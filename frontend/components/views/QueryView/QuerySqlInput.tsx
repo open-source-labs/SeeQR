@@ -39,6 +39,7 @@ function QuerySqlInput({ sql, onChange, runQuery }: QuerySqlInputProps) {
     const formatted = formatDialect(sql, {
       dialect: postgresql,
       keywordCase: 'upper',
+      
     });
     onChange(formatted);
   };
@@ -46,9 +47,9 @@ function QuerySqlInput({ sql, onChange, runQuery }: QuerySqlInputProps) {
   return (
     <Container>
       <Toolbar>
-        <ButtonGroup variant="contained">
-          <Tooltip title="Auto-Format Query">
-            <SquareBtn onClick={formatQuery}>
+        <ButtonGroup variant="contained" >
+          <Tooltip title="Auto-Format Query" >
+            <SquareBtn onClick={formatQuery} >
               <FormatPaintIcon />
             </SquareBtn>
           </Tooltip>
@@ -57,11 +58,14 @@ function QuerySqlInput({ sql, onChange, runQuery }: QuerySqlInputProps) {
       <CodeMirror
         onChange={onChange}
         theme={dracula}
+        style={{border:"1px solid white"}}
         height="300px"
         value={sql}
         basicSetup={{
-          highlightActiveLine: false,
+          highlightActiveLine: true,
+          highlightSpecialChars: true,
         }}
+      
       />
     </Container>
   );
