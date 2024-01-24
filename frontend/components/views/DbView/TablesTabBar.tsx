@@ -2,12 +2,17 @@ import React, { useState } from 'react';
 import { Tabs, Tab } from '@mui/material';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import TableViewIcon from '@mui/icons-material/TableView';
+import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import styled from 'styled-components';
 import TableDetails from './TableDetails';
 import { AppState, TableInfo } from '../../../types';
 import { DBType } from '../../../../backend/BE_types';
 import { greyPrimary, greenPrimary } from '../../../style-variables';
 import ERTables from '../ERTables/ERTabling';
+
+
+
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -150,23 +155,29 @@ function TablesTabs({
     }
   };
 
+
+
+
   return (
-    <div style={{ height: 'calc(100vh - 300px)' }}>
+    <div style={{ height: 'calc(100vh - 300px)', width: '100%' }}>
       <StyledToggleButtonGroup
         value={active}
         exclusive
         onChange={handleView}
         aria-label="active-view"
       >
-        <ToggleButton value aria-label="er" className="tables-view-btn">
-          ER diagram
+        <ToggleButton value aria-label="er" className="tables-view-btn" title="Table View">
+          {/* ER diagram */}
+          <AccountTreeIcon sx={{ fontSize: 40 }} style={{ color: 'white'}}/>
         </ToggleButton>
         <ToggleButton
           value={false}
           aria-label="table"
           className="tables-view-btn"
+          title="Table View"
         >
-          Table View
+          {/* Table View */}
+          <TableViewIcon sx={{ fontSize: 40 }} style={{ color: 'white'}}/>
         </ToggleButton>
       </StyledToggleButtonGroup>
       <ErView

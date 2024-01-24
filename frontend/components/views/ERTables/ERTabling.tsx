@@ -1,7 +1,7 @@
 import fs from 'fs';
 import { Button } from '@mui/material';
 import  SaveAsIcon from '@mui/icons-material/SaveAs';
-import AddBoxIcon from '@mui/icons-material/AddBox';
+import AddchartIcon from '@mui/icons-material/Addchart';
 import { ipcRenderer } from 'electron';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import ReactFlow, {
@@ -34,6 +34,7 @@ const rfStyle: object = {
   height: '65vh',
   border: `2px solid ${colors.greenPrimary}`,
   borderRadius: '0.3rem',
+  
 };
 
 // defines the styling for the minimap
@@ -70,6 +71,7 @@ const StyledViewButton = styled(Button)`
   margin-left: 0rem;
   font-size: 25px;
   padding: 0.2em;
+  
 `;
 
 // the ERTabling componenet is what deals with the ER Diagram view and it's positioning. All of this gets converted to react flow, as for the backendObj, this is what gets sent to the backend to run all the queries.
@@ -257,18 +259,19 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
   }, [schemaState]);
 
   return (
-    <div style={{ height: 'calc(100vh - 300px)', width: '100%' }}>
+    <div style={{ height: 'calc(100vh - 300px)', width: '100%' }} >
       <StyledViewButton
         variant="contained"
         id="add-table-btn"
         onClick={handleAddTable}
         title="Add Table"
-      >
-        <AddBoxIcon sx={{ fontSize: 40 }} style={{ color: 'white'}}/>
+      > 
+        <AddchartIcon sx={{ fontSize: 40 }} style={{ color: 'white'}}/>
       </StyledViewButton>
       <StyledViewButton variant="contained" id="save" onClick={handleClickSave} title="Save Database">
         <SaveAsIcon sx={{ fontSize: 40 }} style={{ color: 'white'}}/>
-      </StyledViewButton>
+      </StyledViewButton> 
+      
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -283,7 +286,7 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
         style={rfStyle}
         onlyRenderVisibleElements={false}
       >
-        <MiniMap
+        <MiniMa
           nodeColor={nodeColor}
           style={mmStyle}
           nodeStrokeWidth={3}
