@@ -117,7 +117,7 @@ const StyledViewButton = styled(Button)`
 const StyledViewButton2 = styled(Button)`
   margin: 2rem;
   margin-top: 0rem;
-  margin-left: 0rem;
+  margin-left: -1rem;
   font-size: 25px;
   padding: 0.45em;
 `;
@@ -486,6 +486,7 @@ function TablesTabs({
     </ReactFlow>
 
     :
+    // table view page if user clicks on the table view button
     <>
     <StyledTabs
       value={tableIndex}
