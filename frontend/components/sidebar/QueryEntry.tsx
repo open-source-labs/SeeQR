@@ -46,7 +46,7 @@ function QueryEntry({
 }: QueryEntryProps) {
   return (
     <SidebarListItem $customSelected={isSelected} onClick={select}>
-      <QueryText primary={`${query.label} - ${query.db}`} />
+      <QueryText primary={`${query.label} -  ${query.db}`} />
       <ListItemSecondaryAction>
         <Tooltip title="View in Comparison">
           <CompareCheck onChange={setComparison} checked={isCompared} />

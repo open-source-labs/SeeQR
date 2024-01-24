@@ -292,7 +292,7 @@ function QueryView({
 
   if (!show) return null;
   return (
-    <QueryViewContainer style={{ border: '1px solid purple' }}>
+    <QueryViewContainer>
       <TopRow style={{ border: '1px solid red' }}>
         <QueryLabel label={localQuery.label} onChange={onLabelChange} />
         <QueryGroup group={localQuery.group} onChange={onGroupChange} />
@@ -333,3 +333,5 @@ function QueryView({
 }
 
 export default QueryView;
+
+
