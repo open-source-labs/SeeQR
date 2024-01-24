@@ -114,6 +114,13 @@ const StyledViewButton = styled(Button)`
   padding: 0.45em;
 `;
 
+const StyledViewButton2 = styled(Button)`
+  margin: 2rem;
+  margin-top: 0rem;
+  margin-left: 0rem;
+  font-size: 25px;
+  padding: 0.45em;
+`;
 
 
 
@@ -426,14 +433,13 @@ function TablesTabs({
         {/* ER diagram */}
         <AccountTreeIcon sx={{ fontSize: 40 }} style={{ color: 'white'}}/>
         </ToggleButton>
+
       <ToggleButton
         value={false}
         aria-label="table"
         className="tables-view-btn"
         title="Table View"
       >
-
-
           {/* Table View */}
         <TableViewIcon sx={{ fontSize: 40 }} style={{ color: 'white'}}/>
         </ToggleButton>
@@ -448,9 +454,10 @@ function TablesTabs({
       >
         <AddchartIcon sx={{ fontSize: 40 }} style={{ color: 'white'}}/>
       </StyledViewButton>
-      <StyledViewButton variant="contained" id="save" onClick={handleClickSave} title="Save Database">
+
+      <StyledViewButton2 variant="contained" id="save" onClick={handleClickSave} title="Save Database">
         <SaveAsIcon sx={{ fontSize: 40 }} style={{ color: 'white'}}/>
-      </StyledViewButton>
+      </StyledViewButton2>
 
 
     { active ? <ReactFlow
