@@ -255,46 +255,51 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
     setNodes(nodesArray);
     setEdges(initialState.edges);
   }, [schemaState]);
-
-  return (
-    <div style={{ height: 'calc(100vh - 300px)', width: '100%' }}>
-      <StyledViewButton
-        variant="contained"
-        id="add-table-btn"
-        onClick={handleAddTable}
-        title="Add Table"
-      >
-        <AddBoxIcon sx={{ fontSize: 40 }} style={{ color: 'white'}}/>
-      </StyledViewButton>
-      <StyledViewButton variant="contained" id="save" onClick={handleClickSave} title="Save Database">
-        <SaveAsIcon sx={{ fontSize: 40 }} style={{ color: 'white'}}/>
-      </StyledViewButton>
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        nodeTypes={nodeTypes}
-        nodesConnectable={false}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        zoomOnScroll
-        minZoom={0.1}
-        maxZoom={10}
-        fitView
-        style={rfStyle}
-        onlyRenderVisibleElements={false}
-      >
-        <MiniMap
-          nodeColor={nodeColor}
-          style={mmStyle}
-          nodeStrokeWidth={3}
-          pannable
-          inversePan
-        />
-        <Background />
-        <Controls />
-      </ReactFlow>
-    </div>
+  return(
+    <></>
   )
+//   return (
+  
+//     <div style={{ height: 'calc(100vh - 300px)', width: '100%' }}>
+   
+//      <StyledViewButton
+//        variant="contained"
+//        id="add-table-btn"
+//        onClick={handleAddTable}
+//        title="Add Table"
+//      >
+//        <AddBoxIcon sx={{ fontSize: 40 }} style={{ color: 'white'}}/>
+//      </StyledViewButton>
+//      <StyledViewButton variant="contained" id="save" onClick={handleClickSave} title="Save Database">
+//        <SaveAsIcon sx={{ fontSize: 40 }} style={{ color: 'white'}}/>
+//      </StyledViewButton>
+//      <ReactFlow
+//        nodes={nodes}
+//        edges={edges}
+//        nodeTypes={nodeTypes}
+//        nodesConnectable={false}
+//        onNodesChange={onNodesChange}
+//        onEdgesChange={onEdgesChange}
+//        zoomOnScroll
+//        minZoom={0.1}
+//        maxZoom={10}
+//        fitView
+//        style={rfStyle}
+//        onlyRenderVisibleElements={false}
+//      >
+//        <MiniMap
+//          nodeColor={nodeColor}
+//          style={mmStyle}
+//          nodeStrokeWidth={3}
+//          pannable
+//          inversePan
+//        />
+//        <Background />
+//        <Controls />
+//      </ReactFlow>
+//     </div>
+// )
 }
+
 
 export default ERTabling;
