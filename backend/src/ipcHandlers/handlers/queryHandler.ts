@@ -1,7 +1,7 @@
 import fs from 'fs';
 
 // Types
-import { DBList, DBType, LogType, QueryPayload } from '../../../BE_types';
+import { DBList, DBType, LogType, QueryPayload, SelectAllQueryPayload } from '../../../BE_types';
 
 // Helpers
 import logger from '../../utils/logging/masterlog';
@@ -258,7 +258,63 @@ export async function runQuery(
     event.sender.send('async-complete');
   }
 }
+ 
+export async function runSelectAllQuery(event, {sqlString, selectedDb}:SelectAllQueryPayload, curDBType) {
+  // if (selectedDb !== targetDb)
+  try {
+    let returnedRows;
+    await connectionModel.connectToDB(selectedDb, curDBType);
+    const results = await queryModel.query(sqlString, [], curDBType);
+    console.log(results.rows)
+    return results?.rows
+    // if (curDBType === DBType.MySQL) {
+    //   returnedRows = results[0];
+    // }
+    // if (curDBType === DBType.Postgres) {
+    //   returnedRows = results?.rows;
+    // }
+    // if (curDBType === DBType.SQLite) {
+    //   returnedRows = results;
+    // }
+    // return returnedRows 
+    
+  } catch (error) {
+    console.log(error, 'in runSelectAllQuery')
+  }
+}
+//format of runQuery without all extra junk
+// export async function runQuery(
+//   event,
+//   { targetDb, sqlString, selectedDb, runQueryNumber }: QueryPayload,
+//   dbType: DBType,
+// ) {
+//   try{
+//   await connectionModel.connectToDB(targetDB, dbType);
+//   let returnedRows;
+//   try {
+//     const results = await queryModel.query(sqlString, [], dbType);
+//     if (dbType === DBType.MySQL) {
+//       returnedRows = results[0];
+//     }
+//     if (dbType === DBType.Postgres) {
+//       returnedRows = results?.rows;
+//     }
+//     if (dbType === DBType.SQLite) {
+//       returnedRows = results;
+//     }
+//   } catch (e: any) {
+//     error = e.toString();
+//   }
 
+//   return {
+//     returnedRows
+//   }
+// } 
+
+//finally {
+
+// }
+// }
 // Reads the query JSON file and send it to the front end
 export function readQuery(event, filepath) {
   try {

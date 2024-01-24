@@ -39,8 +39,8 @@ interface TabPanelProps {
   children?: React.ReactNode;
   index: number;
   value: number;
-  kevin: string;
-  /* curDBType: DBType | undefined; */
+  selectedDb: string;
+  curDBType: DBType | undefined;
 }
 
 const StyledToggleButtonGroup = styled(ToggleButtonGroup)`
@@ -62,7 +62,13 @@ const StyledViewButton = styled(Button)`
 
 
 //This is apart of the table view
-function TabPanel({ children, value, index, kevin /* curDBType */ }: TabPanelProps) {
+function TabPanel({
+  children,
+  value,
+  index,
+  selectedDb,
+  curDBType,
+}: TabPanelProps) {
   return (
     <div
       role="tabpanel"
@@ -89,7 +95,7 @@ const mmStyle: object = {
   height: 150,
   overflow: 'hidden',
 };
-console.log(Node);
+// console.log(Node);
 // defines the styling for the minimap nodes
 const nodeColor = (node: Node): string => {
   switch (node.type) {
@@ -109,6 +115,13 @@ type ERTablingProps = {
   selectedDb: AppState['selectedDb'];
   curDBType: DBType | undefined;
 };
+
+const StyledViewButton = styled(Button)`
+  margin: 2rem;
+  margin-top: 0rem;
+  font-size: 25px;
+  padding: 0.45em;
+`;
 
 const a11yProps = (index: number) => ({
   id: `scrollable-auto-tab-${index}`,
@@ -144,13 +157,13 @@ interface HandleChangeFunc {
 //   curDBType,
 //   tableIndex,
 // changes the state
-//   handleChange, 
+//   handleChange,
 // }: ErViewProps) {
 //   console.log(selectedDb);
 //   return (
 //     <div>
 // grabs the state
-//       {active ? ( 
+//       {active ? (
 //         <ERTables
 //           tables={tables}
 //           selectedDb={selectedDb}
@@ -198,7 +211,6 @@ function TablesTabs({
   setERView,
   curDBType,
 }: TablesTabBarProps & ERTablingProps) {
-
   const [schemaState, setSchemaState] = useState<SchemaStateObjType>({
     database: 'initial',
     tableList: [],
@@ -381,8 +393,6 @@ function TablesTabs({
     setEdges(initialState.edges);
   }, [schemaState]);
 
-
-
   const handleChange: HandleChangeFunc = (event, newValue) => {
     selectTable(tables[newValue]);
   };
@@ -415,22 +425,25 @@ function TablesTabs({
         onChange={handleView}
         aria-label="active-view"
       >
-      <ToggleButton value aria-label="er" className="tables-view-btn" title="ER Diagram">
-        {/* ER diagram */}
-        <AccountTreeIcon sx={{ fontSize: 40 }} style={{ color: 'white'}}/>
+        <ToggleButton
+          value
+          aria-label="er"
+          className="tables-view-btn"
+          title="ER Diagram"
+        >
+          {/* ER diagram */}
+          <AccountTreeIcon sx={{ fontSize: 40 }} style={{ color: 'white' }} />
         </ToggleButton>
-
-      <ToggleButton
-        value={false}
-        aria-label="table"
-        className="tables-view-btn"
-        title="Table View"
-      >
+        <ToggleButton
+          value={false}
+          aria-label="table"
+          className="tables-view-btn"
+          title="Table View"
+        >
           {/* Table View */}
-        <TableViewIcon sx={{ fontSize: 40 }} style={{ color: 'white'}}/>
+          <TableViewIcon sx={{ fontSize: 40 }} style={{ color: 'white' }} />
         </ToggleButton>
       </StyledToggleButtonGroup>
-
 
       <StyledViewButton
         variant="contained"
@@ -438,71 +451,76 @@ function TablesTabs({
         onClick={handleAddTable}
         title="Add Table"
       >
-        <AddchartIcon sx={{ fontSize: 40 }} style={{ color: 'white'}}/>
+        <AddchartIcon sx={{ fontSize: 40 }} style={{ color: 'white' }} />
       </StyledViewButton>
-
-      <StyledViewButton variant="contained" id="save" onClick={handleClickSave} title="Save Database">
-        <SaveAsIcon sx={{ fontSize: 40 }} style={{ color: 'white'}}/>
-      </StyledViewButton>
-
-
-    { active ? <ReactFlow
-    nodes={nodes}
-    edges={edges}
-    nodeTypes={nodeTypes}
-    nodesConnectable={false}
-    onNodesChange={onNodesChange}
-    onEdgesChange={onEdgesChange}
-    zoomOnScroll
-    minZoom={0.1}
-    maxZoom={10}
-    fitView
-    style={rfStyle}
-    onlyRenderVisibleElements={false}
-  >
-    <MiniMap
-      nodeColor={nodeColor}
-      style={mmStyle}
-      nodeStrokeWidth={3}
-      pannable
-      inversePan
-    />
-    <Background />
-    <Controls />
-    </ReactFlow>
-
-    :
-    <>
-    <StyledTabs
-      value={tableIndex}
-      onChange={handleChange}
-      indicatorColor="primary"
-      variant="scrollable"
-      scrollButtons="auto"
-      aria-label="scrollable auto tabs example"
-    >
-    {tables.map(({ table_name: name }, index: number) => (
-      <Tab label={name} {...a11yProps(index)} key={name} />
-    ))}
-    ;
-    </StyledTabs>
-    <br />
-    <br />
-    { tables.map((tableMap, index) => (
-      <TabPanel
-        value={tableIndex}
-        index={index}
-        key={tableMap.table_name}
-        // curDBType={curDBType}
-        kevin={selectedDb}
+      <StyledViewButton
+        variant="contained"
+        id="save"
+        onClick={handleClickSave}
+        title="Save Database"
       >
-        <TableDetails table={tableMap} nguyen={selectedDb} />
-      </TabPanel>
-    ))}
-  </>
+        <SaveAsIcon sx={{ fontSize: 40 }} style={{ color: 'white' }} />
+      </StyledViewButton>
 
-  
-  }
+      {active ? (
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          nodeTypes={nodeTypes}
+          nodesConnectable={false}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          zoomOnScroll
+          minZoom={0.1}
+          maxZoom={10}
+          fitView
+          style={rfStyle}
+          onlyRenderVisibleElements={false}
+        >
+          <MiniMap
+            nodeColor={nodeColor}
+            style={mmStyle}
+            nodeStrokeWidth={3}
+            pannable
+            inversePan
+          />
+          <Background />
+          <Controls />
+        </ReactFlow>
+      ) : (
+        <>
+          <StyledTabs
+            value={tableIndex}
+            onChange={handleChange}
+            indicatorColor="primary"
+            variant="scrollable"
+            scrollButtons="auto"
+            aria-label="scrollable auto tabs example"
+          >
+            {tables.map(({ table_name: name }, index: number) => (
+              <Tab label={name} {...a11yProps(index)} key={name} />
+            ))}
+            ;
+          </StyledTabs>
+          <br />
+          <br />
+          {tables.map((tableMap, index) => (
+            <TabPanel
+              value={tableIndex}
+              index={index}
+              key={tableMap.table_name}
+              curDBType={curDBType}
+              selectedDb={selectedDb}
+            >
+              <TableDetails
+                table={tableMap}
+                selectedDb={selectedDb}
+                curDBType={curDBType}
+              />
+            </TabPanel>
+          ))}
+        </>
+      )}
 
       {/* <ErView
         {...{

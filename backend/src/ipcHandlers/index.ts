@@ -17,7 +17,7 @@ import {
   importDb,
   exportDb,
 } from './handlers/dbOpsHandler';
-import { runQuery, readQuery } from './handlers/queryHandler';
+import { runQuery, readQuery, runSelectAllQuery } from './handlers/queryHandler';
 import {
   dummyData,
   showOpenDialog,
@@ -53,4 +53,5 @@ ipcMain.handle('showOpenDialog', showOpenDialog);
 ipcMain.handle('showSaveDialog', showSaveDialog);
 ipcMain.handle('feedback', feedback);
 
-// ipcMain.handle('run-query', runQuery);
+
+ipcMain.handle('run-select-all-query', runSelectAllQuery);
