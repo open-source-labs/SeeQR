@@ -57,7 +57,7 @@ function TableDetails({ table, selectedDb, curDBType }: TableDetailsProps) {
     onDisplay();
   }, [table, selectedDb, curDBType]);
 
-  console.log(data, 'testing this log')
+  // console.log(data, 'testing this log')
 
   // : 
   // {newcolumn1: 'a8i984ia03ykuqko7x08v2hxbdb3pxl3ux9ybq8', newcolumn2: 'eqb30oxyy2bjqt8rpu58v9wg4mnsrzn2gfnjcha6m8rj87rgt8…ng9lioea6p264jhhdhwyzp5ezduro962pl334pocgrri6vy1s'}

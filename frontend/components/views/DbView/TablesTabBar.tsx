@@ -56,7 +56,7 @@ const StyledTabs = styled(Tabs)`
 `;
 
 //This is apart of the table view
-function TabPanel({ children, value, index, kevin /* curDBType */ }: TabPanelProps) {
+function TabPanel({ children, value, index, selectedDb, curDBType }: TabPanelProps) {
   return (
     <div
       role="tabpanel"
@@ -86,7 +86,7 @@ const mmStyle: object = {
   height: 150,
   overflow: 'hidden',
 };
-console.log(Node);
+// console.log(Node);
 // defines the styling for the minimap nodes
 const nodeColor = (node: Node): string => {
   switch (node.type) {
@@ -500,10 +500,11 @@ function TablesTabs({
         value={tableIndex}
         index={index}
         key={tableMap.table_name}
-        // curDBType={curDBType}
-        kevin={selectedDb}
+        curDBType={curDBType}
+        selectedDb={selectedDb}
       >
-        <TableDetails table={tableMap} nguyen={selectedDb} />
+        <TableDetails table={tableMap} selectedDb={selectedDb} curDBType={curDBType}
+ />
       </TabPanel>
     ))}
   </>
