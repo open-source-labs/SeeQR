@@ -131,3 +131,8 @@ export interface QueryPayload {
   selectedDb: string;
   runQueryNumber: number;
 }
+
+export interface SelectAllQueryPayload {
+  sqlString: string;
+  selectedDb: string;
+}
