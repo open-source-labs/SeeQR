@@ -5,7 +5,9 @@ import { Tabs, Tab, Button } from '@mui/material';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import SaveAsIcon from '@mui/icons-material/SaveAs';
-import AddBoxIcon from '@mui/icons-material/AddBox';
+import AddchartIcon from '@mui/icons-material/Addchart';
+import AccountTreeIcon from '@mui/icons-material/AccountTree';
+import TableViewIcon from '@mui/icons-material/TableView';
 import ReactFlow, {
   applyEdgeChanges,
   applyNodeChanges,
@@ -31,7 +33,6 @@ import {
 } from '../../../types';
 import nodeTypes from '../ERTables/NodeTypes';
 import * as colors from '../../../style-variables';
-
 
 
 
@@ -90,10 +91,10 @@ type ERTablingProps = {
 };
 
 const StyledViewButton = styled(Button)`
-  margin: 1rem;
-  margin-left: 0rem;
+  margin: 2rem;
+  margin-top: 0rem;
   font-size: 25px;
-  padding: 0.2em;
+  padding: 0.45em;
 `;
 
 
@@ -407,9 +408,6 @@ function TablesTabs({
     }
   };
 
-
-
-
   return (
     <div style={{ height: 'calc(100vh - 300px)', width: '100%' }}>
       <StyledToggleButtonGroup
@@ -418,7 +416,7 @@ function TablesTabs({
         onChange={handleView}
         aria-label="active-view"
       >
-        <ToggleButton value aria-label="er" className="tables-view-btn" title="Table View">
+        <ToggleButton value aria-label="er" className="tables-view-btn" title="ER Diagram">
           {/* ER diagram */}
           <AccountTreeIcon sx={{ fontSize: 40 }} style={{ color: 'white'}}/>
         </ToggleButton>
@@ -438,7 +436,7 @@ function TablesTabs({
         onClick={handleAddTable}
         title="Add Table"
       >
-        <AddBoxIcon sx={{ fontSize: 40 }} style={{ color: 'white'}}/>
+        <AddchartIcon sx={{ fontSize: 40 }} style={{ color: 'white'}}/>
       </StyledViewButton>
       <StyledViewButton variant="contained" id="save" onClick={handleClickSave} title="Save Database">
         <SaveAsIcon sx={{ fontSize: 40 }} style={{ color: 'white'}}/>
