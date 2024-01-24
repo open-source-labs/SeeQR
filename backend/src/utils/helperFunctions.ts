@@ -74,7 +74,7 @@ const helperFunctions: HelperFunctions = {
   runSQLFunc: function runSQLFunc(dbName, file, dbType: DBType) {
     const SQL_data = docConfig.getFullConfig();
     const PG = `psql -U ${SQL_data?.pg_options.user} -d "${dbName}" -f "${file}" -p ${SQL_data?.pg_options.port}`;
-    const MYSQL = `mysql -u${SQL_data?.mysql_options.user} --port=${SQL_data?.mysql_options.port} ${dbName} < ${file}`;
+    const MYSQL = `mysql -u ${SQL_data?.mysql_options.user} --port=${SQL_data?.mysql_options.port} ${dbName} < ${file}`;
     if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) return PG;
     if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL) return MYSQL;
     return 'invalid dbtype';
@@ -133,7 +133,7 @@ const helperFunctions: HelperFunctions = {
       }
 
 
-      exec( //opens cli
+      exec( // opens cli
         cmd,
         {
           timeout: 2500,

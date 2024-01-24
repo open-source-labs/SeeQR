@@ -17,10 +17,10 @@ function DatabaseDetails({ db }: DatabaseDetailsProps) {
   if (!db) return null;
   return (
     <Container>
-      <Typography variant="h6">
-        {`Database Name: ${db.db_name}`}
-        <br />
-        {`Database Size: ${db.db_size}`}
+      <Typography variant="body2">
+        {`Database Name: ${db.db_name} (${db.db_size})`}
+        {/* <br /> */}
+        {/* {`Database Size: ${db.db_size}`} */}
       </Typography>
     </Container>
   );
