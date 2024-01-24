@@ -1,5 +1,7 @@
 import fs from 'fs';
 import { Button } from '@mui/material';
+import  SaveAsIcon from '@mui/icons-material/SaveAs';
+import AddBoxIcon from '@mui/icons-material/AddBox';
 import { ipcRenderer } from 'electron';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import ReactFlow, {
@@ -66,8 +68,8 @@ type ERTablingProps = {
 const StyledViewButton = styled(Button)`
   margin: 1rem;
   margin-left: 0rem;
-  font-size: 0.78em;
-  padding: 0.45em;
+  font-size: 25px;
+  padding: 0.2em;
 `;
 
 // the ERTabling componenet is what deals with the ER Diagram view and it's positioning. All of this gets converted to react flow, as for the backendObj, this is what gets sent to the backend to run all the queries.
@@ -260,13 +262,12 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
         variant="contained"
         id="add-table-btn"
         onClick={handleAddTable}
+        title="Add Table"
       >
-        {' '}
-        Add New Table{' '}
+        <AddBoxIcon sx={{ fontSize: 40 }} style={{ color: 'white'}}/>
       </StyledViewButton>
-      <StyledViewButton variant="contained" id="save" onClick={handleClickSave}>
-        {' '}
-        Save{' '}
+      <StyledViewButton variant="contained" id="save" onClick={handleClickSave} title="Save Database">
+        <SaveAsIcon sx={{ fontSize: 40 }} style={{ color: 'white'}}/>
       </StyledViewButton>
       <ReactFlow
         nodes={nodes}
@@ -293,7 +294,7 @@ function ERTabling({ tables, selectedDb, curDBType }: ERTablingProps) {
         <Controls />
       </ReactFlow>
     </div>
-  );
+  )
 }
 
 export default ERTabling;

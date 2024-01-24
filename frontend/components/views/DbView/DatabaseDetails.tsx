@@ -19,6 +19,8 @@ function DatabaseDetails({ db }: DatabaseDetailsProps) {
     <Container>
       <Typography variant="body2">
         {`Database Name: ${db.db_name} (${db.db_size})`}
+        {/* <br /> */}
+        {/* {`Database Size: ${db.db_size}`} */}
       </Typography>
     </Container>
   );
