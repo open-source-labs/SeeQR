@@ -3,7 +3,7 @@ import { ipcRenderer } from 'electron';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Tabs, Tab, Button } from '@mui/material';
 import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+// import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import SaveAsIcon from '@mui/icons-material/SaveAs';
 import AddchartIcon from '@mui/icons-material/Addchart';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
@@ -43,23 +43,30 @@ interface TabPanelProps {
   curDBType: DBType | undefined;
 }
 
-const StyledToggleButtonGroup = styled(ToggleButtonGroup)`
-  background-color: ${greenPrimary};
-  margin-bottom: 1em;
+// const StyledToggleButtonGroup = styled(ToggleButtonGroup)`
+//   background-color: ${greenPrimary};
+//   margin-bottom: 1em;
+// `;
+
+const StyledViewButton = styled(Button)`
+  margin: 0em 0.5em 1em 0em;
+  padding: 0.2em;
 `;
 
+const StyledToggleButton = styled(ToggleButton)`
+  background-color: ${greenPrimary};
+  margin: 0em 0.5em 1em 0em;
+  padding: 0.15em 0.7em;
+  box-shadow:0px 3px 1px -2px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12);
+  &:hover {
+    background-color: #11774e
+  }
+`
 const StyledTabs = styled(Tabs)`
   background-color: ${greyPrimary};
   color: white;
   border-radius: 5px;
 `;
-
-const StyledViewButton = styled(Button)`
-  margin: 0 0em 1em 0.5em;
-  font-size: 25px;
-  padding: 0.45em;
-`;
-
 
 //This is apart of the table view
 function TabPanel({
@@ -115,13 +122,6 @@ type ERTablingProps = {
   selectedDb: AppState['selectedDb'];
   curDBType: DBType | undefined;
 };
-
-const StyledViewButton = styled(Button)`
-  margin: 2rem;
-  margin-top: 0rem;
-  font-size: 25px;
-  padding: 0.45em;
-`;
 
 const a11yProps = (index: number) => ({
   id: `scrollable-auto-tab-${index}`,
@@ -418,33 +418,29 @@ function TablesTabs({
   };
 
   return (
-    <div style={{ height: 'calc(100vh - 200px)', width: '100%' }}>
-      <StyledToggleButtonGroup
-        value={active}
-        exclusive
-        onChange={handleView}
-        aria-label="active-view"
-      >
-        <ToggleButton
+    <div style={{ height: 'calc(100vh - 200px)', width: '100%'}}>
+
+      <div style={{ marginBottom: '1em'}}>
+        <StyledToggleButton
           value
           aria-label="er"
           className="tables-view-btn"
           title="ER Diagram"
+          onChange={handleView}
         >
           {/* ER diagram */}
           <AccountTreeIcon sx={{ fontSize: 40 }} style={{ color: 'white' }} />
-        </ToggleButton>
-        <ToggleButton
+        </StyledToggleButton>
+        <StyledToggleButton
           value={false}
           aria-label="table"
           className="tables-view-btn"
           title="Table View"
+          onChange={handleView}
         >
           {/* Table View */}
           <TableViewIcon sx={{ fontSize: 40 }} style={{ color: 'white' }} />
-        </ToggleButton>
-      </StyledToggleButtonGroup>
-
+        </StyledToggleButton>
       <StyledViewButton
         variant="contained"
         id="add-table-btn"
@@ -461,6 +457,7 @@ function TablesTabs({
       >
         <SaveAsIcon sx={{ fontSize: 40 }} style={{ color: 'white' }} />
       </StyledViewButton>
+      </div>
 
       {active ? (
         <ReactFlow
