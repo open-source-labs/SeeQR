@@ -34,8 +34,6 @@ import {
 import nodeTypes from '../ERTables/NodeTypes';
 import * as colors from '../../../style-variables';
 
-
-
 //This is apart of the table view
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -44,9 +42,10 @@ interface TabPanelProps {
   kevin: string;
   /* curDBType: DBType | undefined; */
 }
+
 const StyledToggleButtonGroup = styled(ToggleButtonGroup)`
   background-color: ${greenPrimary};
-  margin-bottom: 10px;
+  margin-bottom: 1em;
 `;
 
 const StyledTabs = styled(Tabs)`
@@ -54,6 +53,13 @@ const StyledTabs = styled(Tabs)`
   color: white;
   border-radius: 5px;
 `;
+
+const StyledViewButton = styled(Button)`
+  margin: 0 0em 1em 0.5em;
+  font-size: 25px;
+  padding: 0.45em;
+`;
+
 
 //This is apart of the table view
 function TabPanel({ children, value, index, kevin /* curDBType */ }: TabPanelProps) {
@@ -69,14 +75,11 @@ function TabPanel({ children, value, index, kevin /* curDBType */ }: TabPanelPro
   );
 }
 
-
 const rfStyle: object = {
   height: '65vh',
   border: `2px solid ${colors.greenPrimary}`,
   borderRadius: '0.3rem',
 };
-
-
 
 // defines the styling for the minimap
 const mmStyle: object = {
@@ -106,23 +109,6 @@ type ERTablingProps = {
   selectedDb: AppState['selectedDb'];
   curDBType: DBType | undefined;
 };
-
-const StyledViewButton = styled(Button)`
-  margin: 2rem;
-  margin-top: 0rem;
-  font-size: 25px;
-  padding: 0.45em;
-`;
-
-const StyledViewButton2 = styled(Button)`
-  margin: 2rem;
-  margin-top: 0rem;
-  margin-left: 0rem;
-  font-size: 25px;
-  padding: 0.45em;
-`;
-
-
 
 const a11yProps = (index: number) => ({
   id: `scrollable-auto-tab-${index}`,
@@ -422,7 +408,7 @@ function TablesTabs({
   };
 
   return (
-    <div style={{ height: 'calc(100vh - 300px)', width: '100%' }}>
+    <div style={{ height: 'calc(100vh - 200px)', width: '100%' }}>
       <StyledToggleButtonGroup
         value={active}
         exclusive
@@ -455,9 +441,9 @@ function TablesTabs({
         <AddchartIcon sx={{ fontSize: 40 }} style={{ color: 'white'}}/>
       </StyledViewButton>
 
-      <StyledViewButton2 variant="contained" id="save" onClick={handleClickSave} title="Save Database">
+      <StyledViewButton variant="contained" id="save" onClick={handleClickSave} title="Save Database">
         <SaveAsIcon sx={{ fontSize: 40 }} style={{ color: 'white'}}/>
-      </StyledViewButton2>
+      </StyledViewButton>
 
 
     { active ? <ReactFlow
