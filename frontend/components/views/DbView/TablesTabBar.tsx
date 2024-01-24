@@ -23,7 +23,7 @@ import { greyPrimary, greenPrimary } from '../../../style-variables';
 import TableDetails from './TableDetails';
 import { AppState, TableInfo } from '../../../types';
 import { DBType } from '../../../../backend/BE_types';
-import ERTables from '../ERTables/ERTabling';
+// import ERTables from '../ERTables/ERTabling';
 import stateToReactFlow from '../../../lib/convertStateToReactFlow';
 import {
   AddTablesObjType,
@@ -36,7 +36,7 @@ import * as colors from '../../../style-variables';
 
 
 
-
+//This is apart of the table view
 interface TabPanelProps {
   children?: React.ReactNode;
   index: number;
@@ -55,11 +55,28 @@ const StyledTabs = styled(Tabs)`
   border-radius: 5px;
 `;
 
+//This is apart of the table view
+function TabPanel({ children, value, index, kevin /* curDBType */ }: TabPanelProps) {
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`scrollable-auto-tabpanel-${index}`}
+      aria-labelledby={`scrollable-auto-tab-${index}`}
+    >
+      {value === index && children}
+    </div>
+  );
+}
+
+
 const rfStyle: object = {
   height: '65vh',
   border: `2px solid ${colors.greenPrimary}`,
   borderRadius: '0.3rem',
 };
+
+
 
 // defines the styling for the minimap
 const mmStyle: object = {
@@ -100,19 +117,6 @@ const StyledViewButton = styled(Button)`
 
 
 
-function TabPanel({ children, value, index, kevin /* curDBType */ }: TabPanelProps) {
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`scrollable-auto-tabpanel-${index}`}
-      aria-labelledby={`scrollable-auto-tab-${index}`}
-    >
-      {value === index && children}
-    </div>
-  );
-}
-
 const a11yProps = (index: number) => ({
   id: `scrollable-auto-tab-${index}`,
   'aria-controls': `scrollable-auto-tabpanel-${index}`,
@@ -131,65 +135,67 @@ interface HandleChangeFunc {
   (event: React.ChangeEvent<unknown>, newValue: number): void;
 }
 
-interface ErViewProps {
-  active: boolean;
-  tables: TableInfo[];
-  selectedDb: AppState['selectedDb'];
-  curDBType: DBType | undefined;
-  tableIndex: number;
-  handleChange: HandleChangeFunc;
-}
+// interface ErViewProps {
+//   active: boolean;
+//   tables: TableInfo[];
+//   selectedDb: AppState['selectedDb'];
+//   curDBType: DBType | undefined;
+//   tableIndex: number;
+//   handleChange: HandleChangeFunc;
+// }
 
-function ErView({
-  active,
-  tables,
-  selectedDb,
-  curDBType,
-  tableIndex,
-  handleChange,
-}: ErViewProps) {
-  console.log(selectedDb);
-  return (
-    <div>
-      {active ? (
-        <ERTables
-          tables={tables}
-          selectedDb={selectedDb}
-          curDBType={curDBType}
-        />
-      ) : (
-        <>
-          <StyledTabs
-            value={tableIndex}
-            onChange={handleChange}
-            indicatorColor="primary"
-            variant="scrollable"
-            scrollButtons="auto"
-            aria-label="scrollable auto tabs example"
-          >
-            {tables.map(({ table_name: name }, index: number) => (
-              <Tab label={name} {...a11yProps(index)} key={name} />
-            ))}
-            ;
-          </StyledTabs>
-          <br />
-          <br />
-          {tables.map((tableMap, index) => (
-            <TabPanel
-              value={tableIndex}
-              index={index}
-              key={tableMap.table_name}
-              /* curDBType={curDBType} */
-              kevin={selectedDb}
-            >
-              <TableDetails table={tableMap} nguyen={selectedDb} />
-            </TabPanel>
-          ))}
-        </>
-      )}
-    </div>
-  );
-}
+// function ErView({
+//   active,
+//   tables,
+//   selectedDb,
+//   curDBType,
+//   tableIndex,
+// changes the state
+//   handleChange, 
+// }: ErViewProps) {
+//   console.log(selectedDb);
+//   return (
+//     <div>
+// grabs the state
+//       {active ? ( 
+//         <ERTables
+//           tables={tables}
+//           selectedDb={selectedDb}
+//           curDBType={curDBType}
+//         />
+//       ) : (
+//         <>
+//           <StyledTabs
+//             value={tableIndex}
+//             onChange={handleChange}
+//             indicatorColor="primary"
+//             variant="scrollable"
+//             scrollButtons="auto"
+//             aria-label="scrollable auto tabs example"
+//           >
+//             {tables.map(({ table_name: name }, index: number) => (
+//               <Tab label={name} {...a11yProps(index)} key={name} />
+//             ))}
+//             ;
+//           </StyledTabs>
+//           <br />
+//           <br />
+//           {tables.map((tableMap, index) => (
+//             <TabPanel
+//               value={tableIndex}
+//               index={index}
+//               key={tableMap.table_name}
+//               // curDBType={curDBType}
+//               kevin={selectedDb}
+//             >
+//               <TableDetails table={tableMap} nguyen={selectedDb} />
+//             </TabPanel>
+//           ))}
+//         </>
+//       )}
+//     </div>
+//   );
+// }
 
 function TablesTabs({
   tables,
@@ -416,20 +422,24 @@ function TablesTabs({
         onChange={handleView}
         aria-label="active-view"
       >
-        <ToggleButton value aria-label="er" className="tables-view-btn" title="ER Diagram">
-          {/* ER diagram */}
-          <AccountTreeIcon sx={{ fontSize: 40 }} style={{ color: 'white'}}/>
+      <ToggleButton value aria-label="er" className="tables-view-btn" title="ER Diagram">
+        {/* ER diagram */}
+        <AccountTreeIcon sx={{ fontSize: 40 }} style={{ color: 'white'}}/>
         </ToggleButton>
-        <ToggleButton
-          value={false}
-          aria-label="table"
-          className="tables-view-btn"
-          title="Table View"
-        >
+      <ToggleButton
+        value={false}
+        aria-label="table"
+        className="tables-view-btn"
+        title="Table View"
+      >
+
+
           {/* Table View */}
-          <TableViewIcon sx={{ fontSize: 40 }} style={{ color: 'white'}}/>
+        <TableViewIcon sx={{ fontSize: 40 }} style={{ color: 'white'}}/>
         </ToggleButton>
       </StyledToggleButtonGroup>
+
+
       <StyledViewButton
         variant="contained"
         id="add-table-btn"
@@ -441,7 +451,9 @@ function TablesTabs({
       <StyledViewButton variant="contained" id="save" onClick={handleClickSave} title="Save Database">
         <SaveAsIcon sx={{ fontSize: 40 }} style={{ color: 'white'}}/>
       </StyledViewButton>
-      <ReactFlow
+
+
+    { active ? <ReactFlow
     nodes={nodes}
     edges={edges}
     nodeTypes={nodeTypes}
@@ -464,8 +476,42 @@ function TablesTabs({
     />
     <Background />
     <Controls />
-  </ReactFlow>
-      <ErView
+    </ReactFlow>
+
+    :
+    <>
+    <StyledTabs
+      value={tableIndex}
+      onChange={handleChange}
+      indicatorColor="primary"
+      variant="scrollable"
+      scrollButtons="auto"
+      aria-label="scrollable auto tabs example"
+    >
+    {tables.map(({ table_name: name }, index: number) => (
+      <Tab label={name} {...a11yProps(index)} key={name} />
+    ))}
+    ;
+    </StyledTabs>
+    <br />
+    <br />
+    { tables.map((tableMap, index) => (
+      <TabPanel
+        value={tableIndex}
+        index={index}
+        key={tableMap.table_name}
+        // curDBType={curDBType}
+        kevin={selectedDb}
+      >
+        <TableDetails table={tableMap} nguyen={selectedDb} />
+      </TabPanel>
+    ))}
+  </>
+
+  
+  }
+
+      {/* <ErView
         {...{
           active,
           tables,
@@ -474,7 +520,7 @@ function TablesTabs({
           tableIndex,
           handleChange,
         }}
-      />
+      /> */}
     </div>
   );
 }
