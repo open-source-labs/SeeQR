@@ -49,14 +49,15 @@ interface TabPanelProps {
 // `;
 
 const StyledViewButton = styled(Button)`
-  margin: 0em 0.5em 1em 0em;
+  margin: 1em 0em 0em 1em;
   padding: 0.2em;
 `;
 
 const StyledToggleButton = styled(ToggleButton)`
   background-color: ${greenPrimary};
   margin: 0em 0.5em 1em 0em;
-  padding: 0.15em 0.7em;
+  padding: 0.2em 1em;
+  font-size: 1em;
   box-shadow:0px 3px 1px -2px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12);
   &:hover {
     background-color: #11774e
@@ -428,8 +429,8 @@ function TablesTabs({
           title="ER Diagram"
           onChange={handleView}
         >
-          {/* ER diagram */}
-          <AccountTreeIcon sx={{ fontSize: 40 }} style={{ color: 'white' }} />
+          ER diagram
+          {/* <AccountTreeIcon sx={{ fontSize: 40 }} style={{ color: 'white' }} /> */}
         </StyledToggleButton>
         <StyledToggleButton
           value={false}
@@ -438,25 +439,9 @@ function TablesTabs({
           title="Table View"
           onChange={handleView}
         >
-          {/* Table View */}
-          <TableViewIcon sx={{ fontSize: 40 }} style={{ color: 'white' }} />
+          Table View
+          {/* <TableViewIcon sx={{ fontSize: 40 }} style={{ color: 'white' }} /> */}
         </StyledToggleButton>
-      <StyledViewButton
-        variant="contained"
-        id="add-table-btn"
-        onClick={handleAddTable}
-        title="Add Table"
-      >
-        <AddchartIcon sx={{ fontSize: 40 }} style={{ color: 'white' }} />
-      </StyledViewButton>
-      <StyledViewButton
-        variant="contained"
-        id="save"
-        onClick={handleClickSave}
-        title="Save Database"
-      >
-        <SaveAsIcon sx={{ fontSize: 40 }} style={{ color: 'white' }} />
-      </StyledViewButton>
       </div>
 
       {active ? (
@@ -474,6 +459,22 @@ function TablesTabs({
           style={rfStyle}
           onlyRenderVisibleElements={false}
         >
+            <StyledViewButton
+        variant="contained"
+        id="add-table-btn"
+        onClick={handleAddTable}
+        title="Add Table"
+      >
+        <AddchartIcon sx={{ fontSize: 40 }} style={{ color: 'white', zIndex: 999}} />
+      </StyledViewButton>
+      <StyledViewButton
+        variant="contained"
+        id="save"
+        onClick={handleClickSave}
+        title="Save Database"
+      >
+        <SaveAsIcon sx={{ fontSize: 40 }} style={{ color: 'white', zIndex: 999 }} />
+      </StyledViewButton>
           <MiniMap
             nodeColor={nodeColor}
             style={mmStyle}
