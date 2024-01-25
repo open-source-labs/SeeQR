@@ -78,7 +78,6 @@ export const createNewQuery: CreateNewQuery = (query: QueryData, queries) => {
     // Only save query to saved queries if it contains all minimum information
     if (query?.label && query?.db && query?.sqlString && query?.group) {
       const newQueries = createQuery(queries, query);
-
       return newQueries;
     }
     return [];
