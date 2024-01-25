@@ -5,9 +5,9 @@ import { Tabs, Tab, Button } from '@mui/material';
 import ToggleButton from '@mui/material/ToggleButton';
 // import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import SaveAsIcon from '@mui/icons-material/SaveAs';
-import AddchartIcon from '@mui/icons-material/Addchart';
+import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
-import TableViewIcon from '@mui/icons-material/TableView';
+import RestorePageIcon from '@mui/icons-material/RestorePage';
 import ReactFlow, {
   applyEdgeChanges,
   applyNodeChanges,
@@ -212,15 +212,45 @@ function TablesTabs({
   setERView,
   curDBType,
 }: TablesTabBarProps & ERTablingProps) {
+
+  //react flow functions to save layout
+  interface FlowType {
+    toObject(): any;
+  }
+  const [nodes, setNodes] = useState<Node[]>([]);
+  const [edges, setEdges] = useState<Edge[]>([]);
+  const flowKey = 'layout-flow';
+  const [rfInstance, setRfInstance] = useState<FlowType | null>(null);
+  const onSave = useCallback(() => {
+    if (rfInstance) {
+      const flow = rfInstance.toObject();
+      localStorage.setItem(flowKey, JSON.stringify(flow));
+    }
+  }, [rfInstance]);
+
+    const onRestore = useCallback(() => {
+      const restoreFlow = () => {
+        const storedFlow = localStorage.getItem(flowKey);
+        const flow = storedFlow ? JSON.parse(storedFlow) : null;
+  
+        if (flow) {
+          setNodes(flow.nodes || []);
+          setEdges(flow.edges || []);
+        }
+      };
+  
+      restoreFlow();
+    }, [setNodes]);
+
+
+
+  // state for custom controls toggle
+  // when tables (which is the database that is selected changes, update SchemaState)
   const [schemaState, setSchemaState] = useState<SchemaStateObjType>({
     database: 'initial',
     tableList: [],
   });
-  const [nodes, setNodes] = useState<Node[]>([]);
-  const [edges, setEdges] = useState<Edge[]>([]);
 
-  // state for custom controls toggle
-  // when tables (which is the database that is selected changes, update SchemaState)
   useEffect(() => {
     setSchemaState({ database: selectedDb, tableList: tables });
   }, [tables, selectedDb]);
@@ -275,81 +305,82 @@ function TablesTabs({
   };
 
   // This function is supposed to handle the layout saving of the positions of the tables.
-  const handleSaveLayout = async (): Promise<void> => {
-    // get the array of header nodes
-    const headerNodes = nodes.filter(
-      (node) => node.type === 'tableHeader',
-    ) as TableHeaderNodeType[];
-    // create object for the current database
+  // const handleSaveLayout = async (): Promise<void> => {
+  //   // get the array of header nodes
+  //   const headerNodes = nodes.filter(
+  //     (node) => node.type === 'tableHeader',
+  //   ) as TableHeaderNodeType[];
+  //   // create object for the current database
 
-    type TablePosObjType = {
-      table_name: string;
-      table_position: {
-        x: number;
-        y: number;
-      };
-    };
+  //   type TablePosObjType = {
+  //     table_name: string;
+  //     table_position: {
+  //       x: number;
+  //       y: number;
+  //     };
+  //   };
 
-    type DatabaseLayoutObjType = {
-      db_name: string;
-      db_tables: TablePosObjType[];
-    };
+  //   type DatabaseLayoutObjType = {
+  //     db_name: string;
+  //     db_tables: TablePosObjType[];
+  //   };
 
-    const currDatabaseLayout: DatabaseLayoutObjType = {
-      db_name: backendObj.current.database,
-      db_tables: [],
-    };
+  //   const currDatabaseLayout: DatabaseLayoutObjType = {
+  //     db_name: backendObj.current.database,
+  //     db_tables: [],
+  //   };
 
-    // populate the db_tables property for the database
-    headerNodes.forEach((node) => {
-      const tablePosObj: TablePosObjType = {
-        table_name: node.tableName,
-        table_position: { x: node.position.x, y: node.position.y },
-      };
-      currDatabaseLayout.db_tables.push(tablePosObj);
-    });
+  //   // populate the db_tables property for the database
+  //   headerNodes.forEach((node) => {
+  //     const tablePosObj: TablePosObjType = {
+  //       table_name: node.tableName,
+  //       table_position: { x: node.position.x, y: node.position.y },
+  //     };
+  //     currDatabaseLayout.db_tables.push(tablePosObj);
+  //   });
 
-    // what this is doing is it's creating a json file in your temp folder and saving the layout of the tables in there. so positioning is all saved locally.
-    const location: string = await ipcRenderer.invoke('get-path', 'temp');
-    const filePath = location.concat('/UserTableLayouts.json');
+  //   // what this is doing is it's creating a json file in your temp folder and saving the layout of the tables in there. so positioning is all saved locally.
+  //   const location: string = await ipcRenderer.invoke('get-path', 'temp');
+  //   const filePath = location.concat('/UserTableLayouts.json');
 
-    fs.readFile(filePath, 'utf-8', (err, data) => {
-      // check if error exists (no file found)
-      if (err) {
-        fs.writeFile(
-          filePath,
-          JSON.stringify([currDatabaseLayout], null, 2),
-          (error) => {
-            if (error) console.log(error);
-          },
-        );
-        // check if file exists
-      } else {
-        const dbLayouts = JSON.parse(data) as DatabaseLayoutObjType[];
-        let dbExists = false;
-        // if db has saved layout settings overwrite them
-        dbLayouts.forEach((db, i) => {
-          if (db.db_name === currDatabaseLayout.db_name) {
-            dbLayouts[i] = currDatabaseLayout;
-            dbExists = true;
-          }
-        });
-        // if db has no saved layout settings add to file
-        if (!dbExists) dbLayouts.push(currDatabaseLayout);
+  //   fs.readFile(filePath, 'utf-8', (err, data) => {
+  //     // check if error exists (no file found)
+  //     if (err) {
+  //       fs.writeFile(
+  //         filePath,
+  //         JSON.stringify([currDatabaseLayout], null, 2),
+  //         (error) => {
+  //           if (error) console.log(error);
+  //         },
+  //       );
+  //       // check if file exists
+  //     } else {
+  //       const dbLayouts = JSON.parse(data) as DatabaseLayoutObjType[];
+  //       let dbExists = false;
+  //       // if db has saved layout settings overwrite them
+  //       dbLayouts.forEach((db, i) => {
+  //         if (db.db_name === currDatabaseLayout.db_name) {
+  //           dbLayouts[i] = currDatabaseLayout;
+  //           dbExists = true;
+  //         }
+  //       });
+  //       // if db has no saved layout settings add to file
+  //       if (!dbExists) dbLayouts.push(currDatabaseLayout);
 
-        // write changes to the file
-        fs.writeFile(filePath, JSON.stringify(dbLayouts, null, 2), (error) => {
-          if (error) console.log(error);
-        });
-      }
-    });
-  };
+  //       // write changes to the file
+  //       fs.writeFile(filePath, JSON.stringify(dbLayouts, null, 2), (error) => {
+  //         if (error) console.log(error);
+  //       });
+  //     }
+  //   });
+  // };
 
   // When you click the save button, you save the layout of the tables and you send a very large object to the backend containing all of the changes.
   function handleClickSave(): void {
     // This function sends a message to the back end with
     // the data in backendObj.current
-    handleSaveLayout();
+    // handleSaveLayout();
+    onSave()
     ipcRenderer
       .invoke('ertable-schemaupdate', backendObj.current, selectedDb, curDBType)
       .then(async () => {
@@ -452,6 +483,7 @@ function TablesTabs({
           nodesConnectable={false}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
+          onInit={setRfInstance}
           zoomOnScroll
           minZoom={0.1}
           maxZoom={10}
@@ -459,13 +491,29 @@ function TablesTabs({
           style={rfStyle}
           onlyRenderVisibleElements={false}
         >
+      <StyledViewButton
+        variant="contained"
+        id="add-table-btn"
+        onClick={onSave}
+        title="Save Layout"
+      >
+        <AccountTreeIcon sx={{ fontSize: 40 }} style={{ color: 'white', zIndex: 999}} />
+      </StyledViewButton>
+      <StyledViewButton
+        variant="contained"
+        id="add-table-btn"
+        onClick={onRestore}
+        title="Restore Layout"
+      >
+        <RestorePageIcon sx={{ fontSize: 40 }} style={{ color: 'white', zIndex: 999}} />
+      </StyledViewButton>
             <StyledViewButton
         variant="contained"
         id="add-table-btn"
         onClick={handleAddTable}
         title="Add Table"
       >
-        <AddchartIcon sx={{ fontSize: 40 }} style={{ color: 'white', zIndex: 999}} />
+        <PlaylistAddIcon sx={{ fontSize: 40 }} style={{ color: 'white', zIndex: 999}} />
       </StyledViewButton>
       <StyledViewButton
         variant="contained"
