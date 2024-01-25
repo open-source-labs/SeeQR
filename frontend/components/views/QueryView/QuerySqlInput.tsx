@@ -35,23 +35,56 @@ interface QuerySqlInputProps {
 }
 
 function QuerySqlInput({ sql, onChange, runQuery }: QuerySqlInputProps) {
+  console.log(sql)
+
   const formatQuery = () => {
     const formatted = formatDialect(sql, {
       dialect: postgresql,
       keywordCase: 'upper',
-      
     });
     onChange(formatted);
+
   };
 
-  const regexString = `/\b(SELECT|FROM|WHERE|ORDER BY|GROUP BY|HAVING|VALUES|INSERT INTO|SET|UPDATE|DELETE FROM|TRUNCATE|BETWEEN|CREATE|TABLE|DROP|ALTER|ADD|COLUMN|UNIQUE|INDEX|INNER|JOIN|LEFT|RIGHT|FULL|OUTER|VIEW|AS)\b/gmi`;
+  // const regexString = `/\b(SELECT|FROM|WHERE|ORDER BY|GROUP BY|HAVING|VALUES|INSERT INTO|SET|UPDATE|DELETE FROM|TRUNCATE|BETWEEN|CREATE|TABLE|DROP|ALTER|ADD|COLUMN|UNIQUE|INDEX|INNER|JOIN|LEFT|RIGHT|FULL|OUTER|VIEW|AS)\b/gmi`;
+  // const highlightedWords = [
+  //   'SELECT',
+  //   'FROM',
+  //   'WHERE',
+  //   'ORDER BY',
+  //   'GROUP BY',
+  //   'HAVING',
+  //   'VALUES',
+  //   'INSERT INTO',
+  //   'SET',
+  //   'UPDATE',
+  //   'DELETE FROM',
+  //   'TRUNCATE',
+  //   'BETWEEN',
+  //   'CREATE',
+  //   'TABLE',
+  //   'DROP',
+  //   'ALTER',
+  //   'ADD',
+  //   'COLUMN',
+  //   'UNIQUE',
+  //   'INDEX',
+  //   'INNER',
+  //   'JOIN',
+  //   'LEFT',
+  //   'RIGHT',
+  //   'FULL',
+  //   'OUTER',
+  //   'VIEW',
+  //   'AS',
+  // ];
 
   return (
     <Container>
       <Toolbar>
-        <ButtonGroup variant="contained" >
-          <Tooltip title="Auto-Format Query" >
-            <SquareBtn onClick={formatQuery} >
+        <ButtonGroup variant="contained">
+          <Tooltip title="Auto-Format Query">
+            <SquareBtn onClick={formatQuery}>
               <FormatPaintIcon />
             </SquareBtn>
           </Tooltip>
@@ -60,14 +93,12 @@ function QuerySqlInput({ sql, onChange, runQuery }: QuerySqlInputProps) {
       <CodeMirror
         onChange={onChange}
         theme={dracula}
-        style={{border:"1px solid white"}}
+        style={{ border: '1px solid white' }}
         height="300px"
         value={sql}
         basicSetup={{
           highlightActiveLine: true,
-          highlightSpecialChars: true,
         }}
-      
       />
     </Container>
   );

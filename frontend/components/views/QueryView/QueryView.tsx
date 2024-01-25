@@ -124,24 +124,7 @@ function QueryView({
       );
   };
   const onSqlChange = (newSql: string) => {
-    // because App's workingQuery changes ref
-    // onChange={(editor, change) => {
-    //   const specialCharsRegex = /\w/; // Customize the regex for special characters
-    //   const specialCharsClass = 'custom-special-char'; // Define the class for styling
-  
-    //   editor.eachLine((lineHandle) => {
-    //     const text = lineHandle.text;
-    //     for (let i = 0; i < text.length; i++) {
-    //       const char = text.charAt(i);
-    //       if (specialCharsRegex.test(char)) {
-    //         const from = { line: lineHandle.lineNo(), ch: i };
-    //         const to = { line: lineHandle.lineNo(), ch: i + 1 };
-    //         editor.markText(from, to, { className: specialCharsClass });
-    //       }
-    //     }
-    //   });
-    // }}
-    // console.log(newSql.includes('SELECT'));
+    
     queryDispatchContext!({
       type: 'UPDATE_WORKING_QUERIES',
       payload: { ...localQuery, sqlString: newSql },
