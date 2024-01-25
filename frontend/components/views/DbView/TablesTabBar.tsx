@@ -6,9 +6,7 @@ import ToggleButton from '@mui/material/ToggleButton';
 // import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import SaveAsIcon from '@mui/icons-material/SaveAs';
 import AddchartIcon from '@mui/icons-material/Addchart';
-// import AccountTreeIcon from '@mui/icons-material/AccountTree';
-// import TableViewIcon from '@mui/icons-material/TableView';
-import DeleteIcon from '@mui/icons-material/Delete';
+import RestorePageIcon from '@mui/icons-material/RestorePage';
 import ReactFlow, {
   applyEdgeChanges,
   applyNodeChanges,
@@ -50,14 +48,15 @@ interface TabPanelProps {
 // `;
 
 const StyledViewButton = styled(Button)`
-  margin: 0em 0.5em 1em 0em;
+  margin: 1em 0em 0em 1em;
   padding: 0.2em;
 `;
 
 const StyledToggleButton = styled(ToggleButton)`
   background-color: ${greenPrimary};
   margin: 0em 0.5em 1em 0em;
-  padding: 0.15em 0.7em;
+  padding: 0.2em 1em;
+  font-size: 1em;
   box-shadow:0px 3px 1px -2px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12);
   &:hover {
     background-color: #11774e
@@ -88,6 +87,7 @@ function TabPanel({
     </div>
   );
 }
+
 
 const rfStyle: object = {
   height: '65vh',
@@ -142,67 +142,6 @@ interface HandleChangeFunc {
   (event: React.ChangeEvent<unknown>, newValue: number): void;
 }
 
-// interface ErViewProps {
-//   active: boolean;
-//   tables: TableInfo[];
-//   selectedDb: AppState['selectedDb'];
-//   curDBType: DBType | undefined;
-//   tableIndex: number;
-//   handleChange: HandleChangeFunc;
-// }
-
-// function ErView({
-//   active,
-//   tables,
-//   selectedDb,
-//   curDBType,
-//   tableIndex,
-// changes the state
-//   handleChange,
-// }: ErViewProps) {
-//   console.log(selectedDb);
-//   return (
-//     <div>
-// grabs the state
-//       {active ? (
-//         <ERTables
-//           tables={tables}
-//           selectedDb={selectedDb}
-//           curDBType={curDBType}
-//         />
-//       ) : (
-//         <>
-//           <StyledTabs
-//             value={tableIndex}
-//             onChange={handleChange}
-//             indicatorColor="primary"
-//             variant="scrollable"
-//             scrollButtons="auto"
-//             aria-label="scrollable auto tabs example"
-//           >
-//             {tables.map(({ table_name: name }, index: number) => (
-//               <Tab label={name} {...a11yProps(index)} key={name} />
-//             ))}
-//             ;
-//           </StyledTabs>
-//           <br />
-//           <br />
-//           {tables.map((tableMap, index) => (
-//             <TabPanel
-//               value={tableIndex}
-//               index={index}
-//               key={tableMap.table_name}
-//               // curDBType={curDBType}
-//               kevin={selectedDb}
-//             >
-//               <TableDetails table={tableMap} nguyen={selectedDb} />
-//             </TabPanel>
-//           ))}
-//         </>
-//       )}
-//     </div>
-//   );
-// }
 
 function TablesTabs({
   tables,
@@ -212,6 +151,8 @@ function TablesTabs({
   setERView,
   curDBType,
 }: TablesTabBarProps & ERTablingProps) {
+  
+  // start of ERTabling / ERD View
   const [schemaState, setSchemaState] = useState<SchemaStateObjType>({
     database: 'initial',
     tableList: [],
@@ -364,6 +305,13 @@ function TablesTabs({
       });
   }
 
+  // when the save button gets clicked on, it should save a copy to restore
+  //so when they chose to remove 
+  function handleRestore(): void {
+
+  }
+
+
   // This useEffect fires when schemaState changes and will convert the state to a form react flow requires
   useEffect(() => {
     console.log(schemaState);
@@ -393,6 +341,11 @@ function TablesTabs({
     setNodes(nodesArray);
     setEdges(initialState.edges);
   }, [schemaState]);
+  
+
+
+  // End of ERTabling / ERD View
+
 
   const handleChange: HandleChangeFunc = (event, newValue) => {
     selectTable(tables[newValue]);
@@ -430,7 +383,6 @@ function TablesTabs({
           onChange={handleView}
         >
           ER diagram
-          {/* <AccountTreeIcon sx={{ fontSize: 40 }} style={{ color: 'white' }} /> */}
         </StyledToggleButton>
         <StyledToggleButton
           value={false}
@@ -440,26 +392,7 @@ function TablesTabs({
           onChange={handleView}
         >
           Table View
-          {/* <TableViewIcon sx={{ fontSize: 40 }} style={{ color: 'white' }} /> */}
         </StyledToggleButton>
-        
-      <StyledViewButton
-        variant="contained"
-        id="add-table-btn"
-        onClick={handleAddTable}
-        title="Add Table"
-      >
-        <AddchartIcon sx={{ fontSize: 40 }} style={{ color: 'white' }} />
-      </StyledViewButton>
-      <StyledViewButton
-        variant="contained"
-        id="save"
-        onClick={handleClickSave}
-        title="Save Database"
-      >
-        <SaveAsIcon sx={{ fontSize: 40 }} style={{ color: 'white' }} />
-      </StyledViewButton>
-
       </div>
 
       {active ? (
@@ -478,6 +411,32 @@ function TablesTabs({
           style={rfStyle}
           onlyRenderVisibleElements={false}
         >
+        <StyledViewButton
+        variant="contained"
+        id="add-table-btn"
+        onClick={handleAddTable}
+        title="Add Table"
+        >
+      <AddchartIcon sx={{ fontSize: 40 }} style={{ color: 'white', zIndex: 999}} />
+      </StyledViewButton>
+      <StyledViewButton
+        variant="contained"
+        id="save"
+        onClick={handleClickSave}
+        title="Save Database"
+      >
+        <SaveAsIcon sx={{ fontSize: 40 }} style={{ color: 'white', zIndex: 999 }} />
+      </StyledViewButton>
+
+      <StyledViewButton
+        variant="contained"
+        id="restore"
+        onClick={handleClickSave}
+        title="Restore Database"
+      >
+        <RestorePageIcon sx={{ fontSize: 40 }} style={{ color: 'white', zIndex: 999 }} />
+      </StyledViewButton>
+
           <MiniMap
             nodeColor={nodeColor}
             style={mmStyle}
@@ -506,8 +465,10 @@ function TablesTabs({
             ))}
             ;
           </StyledTabs>
+      
           <br />
           <br />
+          
           {tables.map((tableMap, index) => (
             <TabPanel
               value={tableIndex}
@@ -522,20 +483,10 @@ function TablesTabs({
                 curDBType={curDBType}
               />
             </TabPanel>
+        
           ))}
         </>
       )}
-
-      {/* <ErView
-        {...{
-          active,
-          tables,
-          selectedDb,
-          curDBType,
-          tableIndex,
-          handleChange,
-        }}
-      /> */}
     </div>
   );
 }
