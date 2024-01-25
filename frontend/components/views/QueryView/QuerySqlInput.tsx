@@ -93,7 +93,6 @@ function QuerySqlInput({ sql, onChange, runQuery }: QuerySqlInputProps) {
       <CodeMirror
         onChange={onChange}
         theme={dracula}
-        style={{ border: '1px solid white' }}
         height="300px"
         value={sql}
         basicSetup={{
