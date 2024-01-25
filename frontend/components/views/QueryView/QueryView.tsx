@@ -291,7 +291,7 @@ function QueryView({
   if (!show) return null;
   return (
     <QueryViewContainer>
-      <TopRow>
+      <TopRow >
         <QueryLabel label={localQuery.label} onChange={onLabelChange} />
         <QueryGroup group={localQuery.group} onChange={onGroupChange} />
         <QueryDb
