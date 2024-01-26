@@ -1,11 +1,13 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import React from 'react';
+import React, {useRef, useEffect} from 'react';
 import FormatPaintIcon from '@mui/icons-material/FormatPaint';
-import { ButtonGroup, Button, Tooltip } from '@mui/material';
+import { ButtonGroup, Button, Tooltip, TableRow } from '@mui/material';
 import styled from 'styled-components';
 import { formatDialect, postgresql } from 'sql-formatter';
-import CodeMirror from '@uiw/react-codemirror';
-import { dracula } from '@uiw/codemirror-theme-dracula';
+import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+import 'monaco-editor/esm/vs/basic-languages/sql/sql.contribution';
+
+
 
 const Container = styled.div`
   position: relative;
@@ -27,6 +29,19 @@ const Toolbar = styled.div`
     opacity: 1;
   }
 `;
+monaco.editor.defineTheme('sql-theme', {
+  base: 'vs-dark',
+  inherit: true,
+  colors: {
+    'editor.background': '#1e1e1e',
+    'editor.foreground': '#d4d4d4',
+  },
+  rules: [
+    { token: 'sql-keyword', foreground: '#828562', fontStyle: 'bold' },
+  ],
+});
+
+monaco.editor.setTheme('sql-theme');
 
 interface QuerySqlInputProps {
   sql: string;
@@ -35,8 +50,40 @@ interface QuerySqlInputProps {
 }
 
 function QuerySqlInput({ sql, onChange, runQuery }: QuerySqlInputProps) {
-  console.log(sql);
+  const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null> (null)
+  
+  useEffect(() => {
+    const container = document.getElementById('editor-container');
 
+    const initializeEditor = () => {
+      if (container && !editorRef.current) {
+        editorRef.current = monaco.editor.create(container, {
+          value: sql,
+          language: 'sql',
+          theme: 'sql-theme'
+        })
+          editorRef.current.onDidChangeModelContent(() => {
+          const newSql = editorRef.current?.getValue();
+          onChange(newSql || '');
+        });
+      }
+    }
+   
+    const loaderScript = document.createElement('script');
+    loaderScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.22.3/min/vs/loader.min.js';
+    loaderScript.async = true;
+    loaderScript.onload = initializeEditor;
+
+    document.body.appendChild(loaderScript);
+
+    // return () => {
+    //   if (loaderScript.parentNode) {
+    //     loaderScript.parentNode.removeChild(loaderScript);
+    //   }
+    // };
+
+  }, [sql])
+  console.log(sql)
   const formatQuery = () => {
     const formatted = formatDialect(sql, {
       dialect: postgresql,
@@ -45,38 +92,6 @@ function QuerySqlInput({ sql, onChange, runQuery }: QuerySqlInputProps) {
     onChange(formatted);
   };
 
-  // const regexString = `/\b(SELECT|FROM|WHERE|ORDER BY|GROUP BY|HAVING|VALUES|INSERT INTO|SET|UPDATE|DELETE FROM|TRUNCATE|BETWEEN|CREATE|TABLE|DROP|ALTER|ADD|COLUMN|UNIQUE|INDEX|INNER|JOIN|LEFT|RIGHT|FULL|OUTER|VIEW|AS)\b/gmi`;
-  // const highlightedWords = [
-  //   'SELECT',
-  //   'FROM',
-  //   'WHERE',
-  //   'ORDER BY',
-  //   'GROUP BY',
-  //   'HAVING',
-  //   'VALUES',
-  //   'INSERT INTO',
-  //   'SET',
-  //   'UPDATE',
-  //   'DELETE FROM',
-  //   'TRUNCATE',
-  //   'BETWEEN',
-  //   'CREATE',
-  //   'TABLE',
-  //   'DROP',
-  //   'ALTER',
-  //   'ADD',
-  //   'COLUMN',
-  //   'UNIQUE',
-  //   'INDEX',
-  //   'INNER',
-  //   'JOIN',
-  //   'LEFT',
-  //   'RIGHT',
-  //   'FULL',
-  //   'OUTER',
-  //   'VIEW',
-  //   'AS',
-  // ];
 
   return (
     <Container>
@@ -89,13 +104,11 @@ function QuerySqlInput({ sql, onChange, runQuery }: QuerySqlInputProps) {
           </Tooltip>
         </ButtonGroup>
       </Toolbar>
-      <CodeMirror
-        onChange={onChange}
-        theme={dracula}
-        height="300px"
-        value={sql}
-        basicSetup={{
-          highlightActiveLine: true,
+      <div 
+        id='editor-container'
+        style={{
+          width: '100%',
+          height: '200px',
         }}
       />
     </Container>
