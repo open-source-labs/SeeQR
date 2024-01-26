@@ -35,7 +35,7 @@ interface QuerySqlInputProps {
 }
 
 function QuerySqlInput({ sql, onChange, runQuery }: QuerySqlInputProps) {
-  console.log(sql)
+  console.log(sql);
 
   const formatQuery = () => {
     const formatted = formatDialect(sql, {
@@ -43,7 +43,6 @@ function QuerySqlInput({ sql, onChange, runQuery }: QuerySqlInputProps) {
       keywordCase: 'upper',
     });
     onChange(formatted);
-
   };
 
   // const regexString = `/\b(SELECT|FROM|WHERE|ORDER BY|GROUP BY|HAVING|VALUES|INSERT INTO|SET|UPDATE|DELETE FROM|TRUNCATE|BETWEEN|CREATE|TABLE|DROP|ALTER|ADD|COLUMN|UNIQUE|INDEX|INNER|JOIN|LEFT|RIGHT|FULL|OUTER|VIEW|AS)\b/gmi`;
@@ -93,7 +92,6 @@ function QuerySqlInput({ sql, onChange, runQuery }: QuerySqlInputProps) {
       <CodeMirror
         onChange={onChange}
         theme={dracula}
-        style={{ border: '1px solid white' }}
         height="300px"
         value={sql}
         basicSetup={{

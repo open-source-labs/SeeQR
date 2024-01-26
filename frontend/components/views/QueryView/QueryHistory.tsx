@@ -1,65 +1,66 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { Select, MenuItem, InputLabel, FormControl } from '@mui/material/';
+import Box from '@mui/material/Box';
 import styled from 'styled-components';
-import { ReactFlowProvider } from 'reactflow';
+import { defaultMargin, greyPrimary } from '../../../style-variables';
 
-import { QueryData, ValidTabs } from '../../../types';
+const SpacedBox = styled(Box)`
+  margin-left: ${defaultMargin};
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
 
-import TabSelector from './TabSelector';
-import QueryResults from './QueryResults';
-import PlanTree from './ExecutionPlan/PlanTree';
-import { sidebarWidth, defaultMargin } from '../../../style-variables';
+const StyledMenuItem = styled(MenuItem)`
+  color: #575151;
+  outline: none;
+`;
 
-// const ToggleDisplay = styled.div<{ $isSelected: boolean }>`
-//   display: flex;
-//   flex-direction: column;
-//   width: 100%;
-//   height: 200px;
-//   flex: 1;
+const StyledFormControl = styled(FormControl)`
+  margin-top: 15px;
+`;
 
-//   /* Hide unselected tab. This allows us to keep the execution plan always
-//   rendered and toggle it visible via css, which prevents it's expesive rendering
-//   from triggering too often */
+const StyledSelect = styled(Select)`
+  outline: none;
+  display: flex;
+  justify-content: center;
+  border-top: 1px solid black;
+  border-right: 1px solid black;
+  border-bottom: 1px solid black;
+  border-radius: none;
+`;
 
-//   /* Remove component from document flow to prevent scrolling if it is a long
-//   table of results */
+const StyledInputLabel = styled(InputLabel)`
+  border-top: 1px solid black;
+  border-left: 1px solid black;
+  border-bottom: 1px solid black;
+  padding-top: 16.5px;
+  padding-bottom: 16.5px;
+  padding-left: 10px;
+  border-radius: 4px;
+`;
 
-//   /* Define estimated width so fitView triggered inside TabSelector is close to accurate */
+interface QueryHistoryProps {
+  history: string[];
+}
 
-//   /* define height to prevent react-flow warnings. Ignored due to flex:1 0 */
-//   ${({ $isSelected }) => ($isSelected
-//     ? ''
-//     : `
-//     position:fixed;
-//     visibility: hidden;
-//     width: calc(100vw - ${sidebarWidth} - (${defaultMargin} * 2));
-//     z-index: -1
-//   `)}
-// `;
-
-// interface QueryTabsProps {
-//   results: QueryData['returnedRows'];
-//   executionPlan: QueryData['executionPlan'];
-// }
-
-// function QueryTabs({ results, executionPlan }: QueryTabsProps) {
-//   const [selectedTab, setSelectedTab] = useState<ValidTabs>('Results');
-
-//   if (!results && !executionPlan) return null;
-//   return (
-//     <ReactFlowProvider>
-//       <TabSelector
-//         selectedTab={selectedTab}
-//         select={(tab: ValidTabs) => setSelectedTab(tab)}
-//       />
-//       <ToggleDisplay $isSelected={selectedTab === 'Results'}>
-//         <QueryResults results={results} />
-//       </ToggleDisplay>
-
-//       <ToggleDisplay $isSelected={selectedTab === 'Execution Plan'}>
-//         <PlanTree data={executionPlan} />
-//       </ToggleDisplay>
-//     </ReactFlowProvider>
-//   );
-// }
+function QueryHistory({ history }: QueryHistoryProps) {
+  const label = 'Previous Queries';
+  return (
+    <div>
+      <StyledFormControl sx={{ width: 450 }}>
+        <InputLabel>{label}</InputLabel>
+        <Select label={label}>
+          {history.map((item, index) => (
+            <StyledMenuItem key={index} value={item}>
+              {item}
+            </StyledMenuItem>
+          ))}
+        </Select>
+      </StyledFormControl>
+    </div>
+  );
+}
 
 export default QueryHistory;
