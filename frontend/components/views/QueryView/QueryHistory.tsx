@@ -62,4 +62,4 @@ import { sidebarWidth, defaultMargin } from '../../../style-variables';
 //   );
 // }
 
-export default QueryHistory;
+// export default QueryHistory;
