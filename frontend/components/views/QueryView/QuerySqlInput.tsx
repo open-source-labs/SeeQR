@@ -90,7 +90,6 @@ function QuerySqlInput({ sql, onChange, runQuery }: QuerySqlInputProps) {
       keywordCase: 'upper',
     });
     onChange(formatted);
-
   };
 
 
