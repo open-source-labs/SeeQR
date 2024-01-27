@@ -106,9 +106,18 @@ const Table: TableConstructor = class Table implements TableInterface {
     // const getTablePosition = (): { x: number; y: number } => 
     //    ({ x: xCoordinate, y: yCoordinate})
 
+    const getTablePosition = (): { x: number; y: number } => {
+      const savedTable = existingLayouts.find(
+        (layout) => layout.db_name === this.database
+      )?.db_tables.find((table) => table.id === `table-${this.name}`);
 
-    const getTablePosition = (): { x: number; y: number } => 
-       ({ x: (this.id - 1) * 500, y: 0 })
+      return savedTable
+        ? savedTable.table_position
+        : { x: (this.id - 1) * 500, y: 0 };
+    };
+
+    // const getTablePosition = (): { x: number; y: number } => 
+    //    ({ x: (this.id - 1) * 500, y: 0 })
 
       // try {
       // const location = app.getPath('temp').concat('/UserTableLayouts.json');
@@ -147,6 +156,7 @@ const Table: TableConstructor = class Table implements TableInterface {
         },
       },
     ];
+    
     // try {
     //   const location = app.getPath('temp').concat('/UserTableLayouts.json');
     //   // refactored code. parse json file, look for current db in saved file, look for current table inside db. return undefined if db or table doesn't exist

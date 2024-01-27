@@ -320,11 +320,13 @@ function TablesTabs({
       };
     };
 
+    // just defines the type
     type DatabaseLayoutObjType = {
       db_name: string;
       db_tables: TablePosObjType[];
     };
 
+    // initializes a variable using the type.
     const currDatabaseLayout: DatabaseLayoutObjType = {
       db_name: backendObj.current.database,
       db_tables: [],
@@ -339,7 +341,6 @@ function TablesTabs({
       currDatabaseLayout.db_tables.push(tablePosObj);
     });
     console.log('currdblayout', currDatabaseLayout)
-
 
 
     // create an array of objects in local storage containing table info from currDatabaselayout
