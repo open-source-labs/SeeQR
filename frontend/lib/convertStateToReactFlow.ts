@@ -19,7 +19,7 @@ interface TableConstructor {
     id: number,
     columns: ERTableColumnData[],
     name: string,
-    tableCoordinates: { x: number; y: number },
+    table_position: { x: number; y: number },
     otherTables: {
       table_name: string;
       column_names: string[];
@@ -41,7 +41,7 @@ const Table: TableConstructor = class Table implements TableInterface {
   private id: number;
   private columns: ERTableColumnData[];
   private name: string;
-  private tableCoordinates: { x: number; y: number };
+  private table_position: { x: number; y: number };
   private otherTables: {
     table_name: string;
     column_names: string[];
@@ -52,7 +52,7 @@ const Table: TableConstructor = class Table implements TableInterface {
     id: number,
     columns: ERTableColumnData[],
     name: string,
-    tableCoordinates: { x: number; y: number },
+    table_position: { x: number; y: number },
     otherTables: {
       table_name: string;
       column_names: string[];
@@ -62,16 +62,54 @@ const Table: TableConstructor = class Table implements TableInterface {
     this.id = id;
     this.columns = columns;
     this.name = name;
-    this.tableCoordinates = tableCoordinates;
+    this.table_position = table_position;
     this.otherTables = otherTables;
     this.database = database;
   }
+  
+  // type TablePosObjType = {
+  //   id: string;
+  //   table_position: {
+  //     x: number;
+  //     y: number;
+  //   };
+  // };
+
+  // type DatabaseLayoutObjType = {
+  //   db_name: string;
+  //   db_tables: TablePosObjType[];
+  // };
 
   // the render method converts the data into the form of react flow
   render() {
     // This method gets the table position from the stored file
-    const getTablePosition = (): { x: number; y: number } => {
-      return { x: (this.id - 1) * 500, y: 0 };
+    const layoutFlowKey = 'layout-key';  
+    const existingLayouts = JSON.parse(localStorage.getItem(layoutFlowKey) ?? '[]');
+    //  const xCoordinate = firstTablePosition.x;
+    //   const yCoordinate = firstTablePosition.y;
+    // if (existingLayouts.length > 0) {
+    //   // Access the first element (for example, you might want to loop through all layouts)
+    //   const firstLayout = existingLayouts[0];
+    
+    //   // Access the first table position in the layout
+    //   const firstTablePosition = firstLayout.db_tables[0].table_position;
+    
+    //   // Access the x and y coordinates
+    //   const xCoordinate = firstTablePosition.x;
+    //   const yCoordinate = firstTablePosition.y;
+    
+    //   console.log('X Coordinate:', xCoordinate);
+    //   console.log('Y Coordinate:', yCoordinate);
+    // } else {
+    //   console.log('No layouts found.');
+    // }
+    // const getTablePosition = (): { x: number; y: number } => 
+    //    ({ x: xCoordinate, y: yCoordinate})
+
+
+    const getTablePosition = (): { x: number; y: number } => 
+       ({ x: (this.id - 1) * 500, y: 0 })
+
       // try {
       // const location = app.getPath('temp').concat('/UserTableLayouts.json');
       // // refactored code. parse json file, look for current db in saved file, look for current table inside db. return undefined if db or table doesn't exist
@@ -94,7 +132,7 @@ const Table: TableConstructor = class Table implements TableInterface {
       // } catch (error) {
       // return { x: (this.id - 1) * 1000, y: 0 };
       // }
-    };
+    ;
     // const test = getTablePosition();
     // console.log(test);
     // create a nodes array for react flow, the first element will always be a
