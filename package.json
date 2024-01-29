@@ -60,7 +60,6 @@
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.2.0",
     "react-force-graph": "^1.43.0",
-    "react-monaco-editor": "^0.55.0",
     "reactflow": "^11.8.3",
     "sql-formatter": "^12.2.4",
     "sqlite3": "^5.1.6",
