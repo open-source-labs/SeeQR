@@ -19,7 +19,7 @@ interface TableConstructor {
     id: number,
     columns: ERTableColumnData[],
     name: string,
-    tableCoordinates: { x: number; y: number },
+    table_position: { x: number; y: number },
     otherTables: {
       table_name: string;
       column_names: string[];
@@ -41,7 +41,7 @@ const Table: TableConstructor = class Table implements TableInterface {
   private id: number;
   private columns: ERTableColumnData[];
   private name: string;
-  private tableCoordinates: { x: number; y: number };
+  private table_position: { x: number; y: number };
   private otherTables: {
     table_name: string;
     column_names: string[];
@@ -52,7 +52,7 @@ const Table: TableConstructor = class Table implements TableInterface {
     id: number,
     columns: ERTableColumnData[],
     name: string,
-    tableCoordinates: { x: number; y: number },
+    table_position: { x: number; y: number },
     otherTables: {
       table_name: string;
       column_names: string[];
@@ -62,39 +62,29 @@ const Table: TableConstructor = class Table implements TableInterface {
     this.id = id;
     this.columns = columns;
     this.name = name;
-    this.tableCoordinates = tableCoordinates;
+    this.table_position = table_position;
     this.otherTables = otherTables;
     this.database = database;
   }
+  
 
   // the render method converts the data into the form of react flow
   render() {
-    // This method gets the table position from the stored file
+    // gets dbname and table positions from the localStorage file
+    const layoutFlowKey = 'layout-key';  
+    const existingLayouts = JSON.parse(localStorage.getItem(layoutFlowKey) ?? '[]');
+
     const getTablePosition = (): { x: number; y: number } => {
-      return { x: (this.id - 1) * 500, y: 0 };
-      // try {
-      // const location = app.getPath('temp').concat('/UserTableLayouts.json');
-      // // refactored code. parse json file, look for current db in saved file, look for current table inside db. return undefined if db or table doesn't exist
-      // const parsedData: unknown = JSON.parse(
-      //   fs.readFileSync(location, 'utf8'),
-      // );
-      // const foundCurrentDB = isDatabaseLayoutObjTypeArr(parsedData)
-      //   ? parsedData.find(
-      //       (db: DatabaseLayoutObjType) => db?.db_name === this.database,
-      //     )
-      //   : undefined;
-      // const foundCurrentTable = foundCurrentDB?.db_tables.find(
-      //   (table) => table.table_name === this.name,
-      // );
-      // console.log(foundCurrentTable);
-      // // return current table's saved position coordinates else return passed in coordinates if could not find saved coordinates in json
-      // // return foundCurrentTable
-      // //   ? foundCurrentTable.table_position
-      // //   : { x: this.tableCoordinates.x, y: this.tableCoordinates.y };
-      // } catch (error) {
-      // return { x: (this.id - 1) * 1000, y: 0 };
-      // }
+      const savedTable = existingLayouts.find(
+        (layout) => layout.db_name === this.database
+      )?.db_tables.find((table) => table.id === `table-${this.name}`);
+
+      return savedTable
+        ? savedTable.table_position
+        : { x: (this.id - 1) * 500, y: 0 };
     };
+
+    ;
     // const test = getTablePosition();
     // console.log(test);
     // create a nodes array for react flow, the first element will always be a
@@ -109,46 +99,8 @@ const Table: TableConstructor = class Table implements TableInterface {
         },
       },
     ];
-    // try {
-    //   const location = app.getPath('temp').concat('/UserTableLayouts.json');
-    //   // refactored code. parse json file, look for current db in saved file, look for current table inside db. return undefined if db or table doesn't exist
-    //   const parsedData: unknown = JSON.parse(fs.readFileSync(location, 'utf8'));
-    //   const foundCurrentDB = isDatabaseLayoutObjTypeArr(parsedData)
-    //     ? parsedData.find(
-    //         (db: DatabaseLayoutObjType) => db?.db_name === this.database,
-    //       )
-    //     : undefined;
-    //   console.log(foundCurrentDB);
-
-    //   foundCurrentDB?.db_tables.length === 1
-    //     ? (nodes = [
-    //         {
-    //           id: `table-${this.name}`,
-    //           type: types.TABLE_HEADER,
-    //           position: getTablePosition(),
-    //           data: {
-    //             table_name: this.name,
-    //           },
-    //         },
-    //       ])
-    //     : (nodes = [
-    //         {
-    //           id: `table-${this.name}`,
-    //           type: types.TABLE_HEADER,
-    //           position: {
-    //             x: getTablePosition().x + 500,
-    //             y: getTablePosition().y,
-    //           },
-    //           data: {
-    //             table_name: this.name,
-    //           },
-    //           // group: `table-group-${this.name}`,
-    //         },
-    //       ]);
-    // } catch {
-    //   console.log('unable to set nodes: Node[]');
-    // }
-    // const groupId = `table-group-${this.name}`;
+    
+  
     const edges: Edge[] = [];
     let num = -1;
 
