@@ -5,7 +5,8 @@ import { Tabs, Tab, Button } from '@mui/material';
 import ToggleButton from '@mui/material/ToggleButton';
 // import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import SaveAsIcon from '@mui/icons-material/SaveAs';
-import AddchartIcon from '@mui/icons-material/Addchart';
+import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
+import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import RestorePageIcon from '@mui/icons-material/RestorePage';
 import ReactFlow, {
   applyEdgeChanges,
@@ -151,17 +152,45 @@ function TablesTabs({
   setERView,
   curDBType,
 }: TablesTabBarProps & ERTablingProps) {
+
+  //react flow functions to save layout
+  interface FlowType {
+    toObject(): any;
+  }
+  const [nodes, setNodes] = useState<Node[]>([]);
+  const [edges, setEdges] = useState<Edge[]>([]);
+  const flowKey = 'layout-flow';
+  const [rfInstance, setRfInstance] = useState<FlowType | null>(null);
+  const onSave = useCallback(() => {
+    if (rfInstance) {
+      const flow = rfInstance.toObject();
+      localStorage.setItem(flowKey, JSON.stringify(flow));
+    }
+  }, [rfInstance]);
+
+    const onRestore = useCallback(() => {
+      const restoreFlow = () => {
+        const storedFlow = localStorage.getItem(flowKey);
+        const flow = storedFlow ? JSON.parse(storedFlow) : null;
   
-  // start of ERTabling / ERD View
+        if (flow) {
+          setNodes(flow.nodes || []);
+          setEdges(flow.edges || []);
+        }
+      };
+  
+      restoreFlow();
+    }, [setNodes]);
+
+
+
+  // state for custom controls toggle & saves a copy of the schema 
+  // when tables (which is the database that is selected changes, update SchemaState)
   const [schemaState, setSchemaState] = useState<SchemaStateObjType>({
     database: 'initial',
     tableList: [],
   });
-  const [nodes, setNodes] = useState<Node[]>([]);
-  const [edges, setEdges] = useState<Edge[]>([]);
 
-  // state for custom controls toggle
-  // when tables (which is the database that is selected changes, update SchemaState)
   useEffect(() => {
     setSchemaState({ database: selectedDb, tableList: tables });
   }, [tables, selectedDb]);
@@ -178,7 +207,6 @@ function TablesTabs({
     database: schemaState.database,
     updates,
   });
-
   // whenever the selectedDb changes, reassign the backendObj to contain this selectedDb
   useEffect(() => {
     backendObj.current.database = selectedDb;
@@ -213,6 +241,8 @@ function TablesTabs({
     schemaStateCopy.tableList.push(addTableObj);
     // set the state, which worries about the table positions.
     setSchemaState(schemaStateCopy);
+
+    // handleClickSave();
   };
 
   // This function is supposed to handle the layout saving of the positions of the tables.
@@ -290,7 +320,8 @@ function TablesTabs({
   function handleClickSave(): void {
     // This function sends a message to the back end with
     // the data in backendObj.current
-    handleSaveLayout();
+    // handleSaveLayout();
+    onSave()
     ipcRenderer
       .invoke('ertable-schemaupdate', backendObj.current, selectedDb, curDBType)
       .then(async () => {
@@ -303,12 +334,6 @@ function TablesTabs({
       .catch((err: object) => {
         console.log(err);
       });
-  }
-
-  // when the save button gets clicked on, it should save a copy to restore
-  //so when they chose to remove 
-  function handleRestore(): void {
-
   }
 
 
@@ -341,12 +366,11 @@ function TablesTabs({
     setNodes(nodesArray);
     setEdges(initialState.edges);
   }, [schemaState]);
-  
+  //end of the schema state
+
 
 
   // End of ERTabling / ERD View
-
-
   const handleChange: HandleChangeFunc = (event, newValue) => {
     selectTable(tables[newValue]);
   };
@@ -370,7 +394,6 @@ function TablesTabs({
       }
     }
   };
-
   return (
     <div style={{ height: 'calc(100vh - 200px)', width: '100%'}}>
 
@@ -404,6 +427,7 @@ function TablesTabs({
           nodesConnectable={false}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
+          onInit={setRfInstance}
           zoomOnScroll
           minZoom={0.1}
           maxZoom={10}
@@ -411,13 +435,29 @@ function TablesTabs({
           style={rfStyle}
           onlyRenderVisibleElements={false}
         >
-        <StyledViewButton
+      <StyledViewButton
+        variant="contained"
+        id="add-table-btn"
+        onClick={onSave}
+        title="Save Layout"
+      >
+        <AccountTreeIcon sx={{ fontSize: 40 }} style={{ color: 'white', zIndex: 999}} />
+      </StyledViewButton>
+      <StyledViewButton
+        variant="contained"
+        id="add-table-btn"
+        onClick={onRestore}
+        title="Restore Layout"
+      >
+        <RestorePageIcon sx={{ fontSize: 40 }} style={{ color: 'white', zIndex: 999}} />
+      </StyledViewButton>
+            <StyledViewButton
         variant="contained"
         id="add-table-btn"
         onClick={handleAddTable}
         title="Add Table"
-        >
-      <AddchartIcon sx={{ fontSize: 40 }} style={{ color: 'white', zIndex: 999}} />
+      >
+      <PlaylistAddIcon sx={{ fontSize: 40 }} style={{ color: 'white', zIndex: 999}} />
       </StyledViewButton>
       <StyledViewButton
         variant="contained"
@@ -426,15 +466,6 @@ function TablesTabs({
         title="Save Database"
       >
         <SaveAsIcon sx={{ fontSize: 40 }} style={{ color: 'white', zIndex: 999 }} />
-      </StyledViewButton>
-
-      <StyledViewButton
-        variant="contained"
-        id="restore"
-        onClick={handleClickSave}
-        title="Restore Database"
-      >
-        <RestorePageIcon sx={{ fontSize: 40 }} style={{ color: 'white', zIndex: 999 }} />
       </StyledViewButton>
 
           <MiniMap
