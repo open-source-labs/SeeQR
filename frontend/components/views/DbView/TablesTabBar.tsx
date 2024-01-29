@@ -219,29 +219,6 @@ function TablesTabs({
   }
   const [nodes, setNodes] = useState<Node[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
-  // const flowKey = 'layout-flow';
-  // const [rfInstance, setRfInstance] = useState<FlowType | null>(null);
-  // const onSave = useCallback(() => {
-  //   if (rfInstance) {
-  //     const flow = rfInstance.toObject();
-  //     localStorage.setItem(flowKey, JSON.stringify(flow));
-  //   }
-  // }, [rfInstance]);
-
-  //   const onRestore = useCallback(() => {
-  //     const restoreFlow = () => {
-  //       const storedFlow = localStorage.getItem(flowKey);
-  //       const flow = storedFlow ? JSON.parse(storedFlow) : null;
-  
-  //       if (flow) {
-  //         setNodes(flow.nodes || []);
-  //         setEdges(flow.edges || []);
-  //       }
-  //     };
-  
-  //     restoreFlow();
-  //   }, [setNodes]);
-
 
   // state for custom controls toggle
   // when tables (which is the database that is selected changes, update SchemaState)
@@ -343,62 +320,30 @@ function TablesTabs({
     console.log('currdblayout', currDatabaseLayout)
 
 
-    // create an array of objects in local storage containing table info from currDatabaselayout
-    const layoutFlowKey = 'layout-key';                                  
-    const existingLayouts: DatabaseLayoutObjType[] = JSON.parse(localStorage.getItem(layoutFlowKey) ?? '[]'); // ?? returns [] if null/notfound    
-    // check if dbname in existinglayouts is equal to currdatabaylayout name (when new db is first initialized/not found, findIndex will return -1)
-    const existingLayoutIndex = existingLayouts.findIndex((layout) => layout.db_name === currDatabaseLayout.db_name); 
-    console.log('layoutindex', existingLayoutIndex)
-      if (existingLayoutIndex !== -1) { 
-        existingLayouts[existingLayoutIndex] = currDatabaseLayout;
-      } else {
-        existingLayouts.push(currDatabaseLayout);
-      }
+       // create an array of objects in local storage containing table info from currDatabaselayout
+       const layoutFlowKey = 'layout-key';
     
-    localStorage.setItem(layoutFlowKey, JSON.stringify(existingLayouts));
-    console.log('nodes', nodes)
-    // current problem: doesnt remove deleted databases from localstorage value
-
-    // what this is doing is it's creating a json file in your temp folder and saving the layout of the tables in there. so positioning is all saved locally.
-    // const location: string = await ipcRenderer.invoke('get-path', 'temp');
-    // const filePath = location.concat('/UserTableLayouts.json');
-    // fs.readFile(filePath, 'utf-8', (err, data) => {
-    //   // check if error exists (no file found)
-    //   if (err) {
-    //     fs.writeFile(
-    //       filePath,
-    //       JSON.stringify([currDatabaseLayout], null, 2),
-    //       (error) => {
-    //         if (error) console.log(error);
-    //       },
-    //     );
-    //     // check if file exists
-    //   } else {
-    //     const dbLayouts = JSON.parse(data) as DatabaseLayoutObjType[];
-    //     let dbExists = false;
-    //     // if db has saved layout settings overwrite them
-    //     dbLayouts.forEach((db, i) => {
-    //       if (db.db_name === currDatabaseLayout.db_name) {
-    //         dbLayouts[i] = currDatabaseLayout;
-    //         dbExists = true;
-    //       }
-    //     });
-    //     // if db has no saved layout settings add to file
-    //     if (!dbExists) dbLayouts.push(currDatabaseLayout);
-
-    //     // write changes to the file
-    //     fs.writeFile(filePath, JSON.stringify(dbLayouts, null, 2), (error) => {
-    //       if (error) console.log(error);
-    //     });
-    //   }
-    // });
+       const existingLayouts: DatabaseLayoutObjType[] = JSON.parse(localStorage.getItem(layoutFlowKey) ?? '[]'); // ?? returns [] if null/notfound  (arr of objs) 
+        
+       // check if dbname in existinglayouts is equal to currdatabaylayout name (when new db is first initialized/not found, findIndex will return -1)
+       const existingLayoutIndex = existingLayouts.findIndex((layout) => layout.db_name === currDatabaseLayout.db_name); 
+       console.log('layoutindex', existingLayoutIndex)
+         if (existingLayoutIndex !== -1) { 
+           existingLayouts[existingLayoutIndex] = currDatabaseLayout; // if it exists, if so, updates to new postions
+         } else {
+           existingLayouts.push(currDatabaseLayout); // if not exists, pushes it to array
+         }
+       
+       localStorage.setItem(layoutFlowKey, JSON.stringify(existingLayouts));
+       console.log('nodes', nodes) 
+       // current problem: doesnt remove deleted databases from existingLayouts value
+   
   };
 
   // When you click the save button, you save the layout of the tables and you send a very large object to the backend containing all of the changes.
   function handleClickSave(): void {
     // This function sends a message to the back end with
     // the data in backendObj.current
-     // onSave()
     handleSaveLayout();
    
     ipcRenderer
@@ -522,14 +467,6 @@ function TablesTabs({
       <StyledViewButton
         variant="contained"
         id="add-table-btn"
-        // onClick={onRestore}
-        title="Restore Layout"
-      >
-        <RestorePageIcon sx={{ fontSize: 40 }} style={{ color: 'white', zIndex: 999}} />
-      </StyledViewButton>
-            <StyledViewButton
-        variant="contained"
-        id="add-table-btn"
         onClick={handleAddTable}
         title="Add Table"
       >
@@ -587,17 +524,6 @@ function TablesTabs({
           ))}
         </>
       )}
-
-      {/* <ErView
-        {...{
-          active,
-          tables,
-          selectedDb,
-          curDBType,
-          tableIndex,
-          handleChange,
-        }}
-      /> */}
     </div>
   );
 }
