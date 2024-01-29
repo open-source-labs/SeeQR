@@ -306,7 +306,6 @@ function QueryView({
       <QuerySqlInput
         sql={localQuery?.sqlString ?? ''}
         onChange={onSqlChange}
-        runQuery={onRun}
       />
       <QueryHistory history={queriesRan} />
       <QueryRunNumber

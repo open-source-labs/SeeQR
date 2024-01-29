@@ -63,4 +63,4 @@ function QueryHistory({ history }: QueryHistoryProps) {
   );
 }
 
-// export default QueryHistory;
+export default QueryHistory;

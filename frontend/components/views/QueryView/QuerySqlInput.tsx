@@ -1,7 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import React, {useRef, useEffect} from 'react';
 import FormatPaintIcon from '@mui/icons-material/FormatPaint';
-import { ButtonGroup, Button, Tooltip, TableRow } from '@mui/material';
+import { ButtonGroup, Button, Tooltip } from '@mui/material';
 import styled from 'styled-components';
 import { formatDialect, postgresql } from 'sql-formatter';
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
@@ -46,10 +46,9 @@ monaco.editor.setTheme('sql-theme');
 interface QuerySqlInputProps {
   sql: string;
   onChange: (newSql: string) => void;
-  runQuery: () => void;
 }
 
-function QuerySqlInput({ sql, onChange, runQuery }: QuerySqlInputProps) {
+function QuerySqlInput({ sql, onChange }: QuerySqlInputProps) {
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null> (null)
   
   useEffect(() => {
@@ -63,12 +62,13 @@ function QuerySqlInput({ sql, onChange, runQuery }: QuerySqlInputProps) {
           theme: 'sql-theme'
         })
           editorRef.current.onDidChangeModelContent(() => {
-          const newSql = editorRef.current?.getValue();
-          onChange(newSql || '');
+            const newSql = editorRef.current?.getValue();
+
+              onChange(newSql || '' );
         });
       }
     }
-   
+
     const loaderScript = document.createElement('script');
     loaderScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.22.3/min/vs/loader.min.js';
     loaderScript.async = true;
@@ -76,6 +76,7 @@ function QuerySqlInput({ sql, onChange, runQuery }: QuerySqlInputProps) {
 
     document.body.appendChild(loaderScript);
 
+    
     // return () => {
     //   if (loaderScript.parentNode) {
     //     loaderScript.parentNode.removeChild(loaderScript);
@@ -85,13 +86,24 @@ function QuerySqlInput({ sql, onChange, runQuery }: QuerySqlInputProps) {
   }, [sql])
   console.log(sql)
   const formatQuery = () => {
-    const formatted = formatDialect(sql, {
-      dialect: postgresql,
-      keywordCase: 'upper',
-    });
-    onChange(formatted);
+    if (editorRef.current) {
+      const model = editorRef.current.getModel();
+      if (model) {
+        // Get the current content of the editor
+        const content = model.getValue();
+        // Format the SQL query using the formatting provider
+        const formatted = formatDialect(content, {
+          dialect: postgresql,
+          keywordCase: 'upper',
+        });
+        // Apply the formatted content back to the editor
+        monaco.editor.setModelLanguage(model, 'sql');
+        model.setValue(formatted);
+        // Update the parent component's state with the formatted query
+        onChange(formatted);
+      }
+    }
   };
-
 
   return (
     <Container>
