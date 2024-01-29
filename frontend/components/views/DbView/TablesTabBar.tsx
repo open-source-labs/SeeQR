@@ -448,7 +448,6 @@ function TablesTabs({
           nodesConnectable={false}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
-          // onInit={setRfInstance}
           zoomOnScroll
           minZoom={0.1}
           maxZoom={10}
@@ -460,7 +459,7 @@ function TablesTabs({
         variant="contained"
         id="add-table-btn"
         onClick={handleSaveLayout}
-        title="Save Layout"
+        title="Save Current Layout"
       >
         <AccountTreeIcon sx={{ fontSize: 40 }} style={{ color: 'white', zIndex: 999}} />
       </StyledViewButton>
@@ -468,7 +467,7 @@ function TablesTabs({
         variant="contained"
         id="add-table-btn"
         onClick={handleAddTable}
-        title="Add Table"
+        title="Add New Table"
       >
         <PlaylistAddIcon sx={{ fontSize: 40 }} style={{ color: 'white', zIndex: 999}} />
       </StyledViewButton>
