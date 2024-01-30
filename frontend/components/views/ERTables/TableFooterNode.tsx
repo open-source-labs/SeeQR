@@ -131,6 +131,7 @@ function TableFooter({ data }: TableFooterProps) {
     backendObj.current.updates.alterTables.push(alterTablesObj);
   };
 
+
   return (
     <div
       style={{ backgroundColor: colors.greyLightest }}

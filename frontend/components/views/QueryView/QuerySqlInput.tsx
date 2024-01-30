@@ -6,6 +6,8 @@ import styled from 'styled-components';
 import { formatDialect, postgresql } from 'sql-formatter';
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import 'monaco-editor/esm/vs/basic-languages/sql/sql.contribution';
+import QueryHistory from './QueryHistory';
+import { exists } from 'fs';
 
 const Container = styled.div`
   position: relative;
@@ -46,25 +48,34 @@ interface QuerySqlInputProps {
 
 function QuerySqlInput({ sql, onChange, runQuery }: QuerySqlInputProps) {
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
-  // const [currentSql, setCurrentSql] = useState(sql)
+ 
   useEffect(() => {
-    console.log(sql);
     const container = document.getElementById('editor-container');
+    if(editorRef.current) {
+      // model will just be an obj
+      const model = editorRef.current.getModel();
+      // get the value in sql 
+      const currentSql = model?.getValue();
+      // checks if the currentSql is not sql then we will reassign the model value to sql
+      if(currentSql !== sql) {
+        model?.setValue(sql)
+      }
+    }
+    
     const initializeEditor = () => {
+      // console.log('sql', sql)
       if (container && !editorRef.current) {
         editorRef.current = monaco.editor.create(container, {
           value: sql,
           language: 'sql',
           theme: 'sql-theme',
         });
+
         editorRef.current.onDidChangeModelContent(() => {
           const newSql = editorRef.current?.getValue();
           onChange(newSql || '');
         });
       }
-      // } else if (editorRef.current) {
-      //   editorRef.current.setValue(sql);
-      // }
     };
 
     const loaderScript = document.createElement('script');
@@ -74,7 +85,7 @@ function QuerySqlInput({ sql, onChange, runQuery }: QuerySqlInputProps) {
     loaderScript.onload = initializeEditor;
 
     document.body.appendChild(loaderScript);
-  }, [sql, onChange]);
+  });
 
   const formatQuery = () => {
     if (editorRef.current) {
