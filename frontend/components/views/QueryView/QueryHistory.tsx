@@ -1,8 +1,10 @@
 import React from 'react';
+import { useState } from 'react';
 import { Select, MenuItem, InputLabel, FormControl } from '@mui/material/';
 import Box from '@mui/material/Box';
 import styled from 'styled-components';
 import { defaultMargin, greyPrimary } from '../../../style-variables';
+import { SelectChangeEvent } from '@mui/material/Select';
 
 const SpacedBox = styled(Box)`
   margin-left: ${defaultMargin};
@@ -43,15 +45,21 @@ const StyledInputLabel = styled(InputLabel)`
 
 interface QueryHistoryProps {
   history: string[];
+  onChange: (newSql: string) => void;
 }
 
-function QueryHistory({ history }: QueryHistoryProps) {
+function QueryHistory({ history, onChange }: QueryHistoryProps) {
   const label = 'Previous Queries';
+
+  const handleSelection = (e: SelectChangeEvent) => {
+    console.log(e.target.value);
+    onChange(e.target.value as string);
+  };
   return (
     <div>
       <StyledFormControl sx={{ width: 450 }}>
         <InputLabel>{label}</InputLabel>
-        <Select label={label}>
+        <Select label={label} onChange={handleSelection}>
           {history.map((item, index) => (
             <StyledMenuItem key={index} value={item}>
               {item}

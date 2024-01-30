@@ -82,12 +82,12 @@ function QueryView({
     averageSampleTime: 0,
   };
 
+
   const localQuery = { ...defaultQuery, ...queryStateContext?.workingQuery };
 
   const [runQueryNumber, setRunQueryNumber] = useState(1);
 
   const [queriesRan, setQueriesRan] = useState<string[]>([]);
-
 
   const onLabelChange = (newLabel: string) => {
     queryDispatchContext!({
@@ -107,7 +107,7 @@ function QueryView({
     // when db is changed we must change selected db state on app, as well as
     // request updates for db and table information. Otherwise database view tab
     // will show wrong information
-
+    
     setSelectedDb(newDb);
     setDBType(nextDBType);
 
@@ -128,6 +128,7 @@ function QueryView({
       );
   };
   const onSqlChange = (newSql: string) => {
+    console.log(newSql);
     queryDispatchContext!({
       type: 'UPDATE_WORKING_QUERIES',
       payload: { ...localQuery, sqlString: newSql },
@@ -135,7 +136,7 @@ function QueryView({
   };
 
   const onRun = () => {
-    // console.log(localQuery.sqlString)
+    console.log(localQuery.sqlString);
     if (!localQuery.label.trim()) {
       sendFeedback({
         type: 'info',
@@ -179,9 +180,8 @@ function QueryView({
             if (queriesRan.length === 5) {
               queriesRan.pop();
             }
-            queriesRan.unshift(
-              sqlString + ' Returned Rows: ' + returnedRows.length,
-            );
+            queriesRan.unshift(sqlString);
+            // setReturnedRows(returnedRows.length)
             setQueriesRan(queriesRan);
           }
           if (error) {
@@ -307,7 +307,7 @@ function QueryView({
         sql={localQuery?.sqlString ?? ''}
         onChange={onSqlChange}
       />
-      <QueryHistory history={queriesRan} />
+      <QueryHistory history={queriesRan} onChange={onSqlChange} />
       <QueryRunNumber
         runNumber={runQueryNumber}
         onChange={onRunQueryNumChange}
