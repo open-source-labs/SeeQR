@@ -49,8 +49,11 @@ interface QueryHistoryProps {
 }
 
 function QueryHistory({ history, onChange }: QueryHistoryProps) {
+  console.log('history', history)
   const label = 'Previous Queries';
+  const noDups = [...new Set(history)];
 
+  console.log('NODUPS', noDups);
   const handleSelection = (e: SelectChangeEvent) => {
     console.log(e.target.value);
     onChange(e.target.value as string);
@@ -60,7 +63,7 @@ function QueryHistory({ history, onChange }: QueryHistoryProps) {
       <StyledFormControl sx={{ width: 450 }}>
         <InputLabel>{label}</InputLabel>
         <Select label={label} onChange={handleSelection}>
-          {history.map((item, index) => (
+          {noDups.map((item, index) => (
             <StyledMenuItem key={index} value={item}>
               {item}
             </StyledMenuItem>

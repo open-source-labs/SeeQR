@@ -48,6 +48,7 @@ const Accordion = styled((props: AccordionProps) => (
   />
 ))(() => ({}));
 
+
 function TableField({ data }: TableFieldProps) {
   const {
     schemaStateCopy,
@@ -67,6 +68,7 @@ function TableField({ data }: TableFieldProps) {
   const tableColumn: string = `${data.tableName}-${column_name}`;
   const isNull: string = is_nullable;
   let setTimeoutVariable;
+
 
   // handles functionality of the drop down delete button
   const handleDropColumn = (): void => {
