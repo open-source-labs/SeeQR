@@ -1,5 +1,5 @@
 import { BackendObjType } from '../../../../shared/types/dbTypes'; 
-import { DBType, LogType,  } from '../../../../backend/BE_types';
+import { DBType, LogType, DBList  } from '../../../../backend/BE_types';
 import { initializeDb, erTableSchemaUpdate } from '../../../../backend/src/ipcHandlers/handlers/dbCRUDHandler';
 import { Feedback } from '../../../../shared/types/utilTypes'
 import queryModel from '../../../../backend/src/models/queryModel';
@@ -19,6 +19,8 @@ interface InitializePayload {
 
 const { createDBFunc } = helperFunctions;
 
+
+
 // create a mock using jest.mock. For functions you are importing, set a key and the value with be a method jest.fn(<insert func you are mocking>)
 jest.mock('../../../../backend/src/ipcHandlers/handlers/dbCRUDHandler.ts', () => ({
   initializeDb: jest.fn(async (event, payload: InitializePayload) => {
@@ -37,9 +39,9 @@ jest.mock('../../../../backend/src/ipcHandlers/handlers/dbCRUDHandler.ts', () =>
       await connectionModel.connectToDB(newDbName, dbType);
   
 
-
       // this causes a bottleneck. import DBList from BETypes
       // update DBList in the sidebar to show this new db
+      
       // const dbsAndTableInfo: DBList = await databaseModel.getLists(
       //   newDbName,
       //   dbType,
@@ -105,9 +107,7 @@ jest.mock('../../../../backend/src/ipcHandlers/handlers/dbCRUDHandler.ts', () =>
 
 
 describe('dbCRUDHandler tests', () => {
-  // afterEach(() => {
-  //   jest.clearAllMocks();
-  // });
+
   // mock event handler
   const event = { sender: { send: jest.fn() } };
 
@@ -159,17 +159,47 @@ describe('dbCRUDHandler tests', () => {
 
   
   describe('initializeDb tests', () => {
+    // mock payload
+    const payloadpg = { newDbName: 'mockTest_pgdb', dbType: DBType.Postgres}
+    const payloadmsql = { newDbName: 'mockTest_msqldb', dbType: DBType.MySQL}
+
     test('it should receive an event and a payload containing newDbName and dbType', async () => {
-      // mock payload
-      const payload = { newDbName: 'mockTest_db', dbType: DBType.Postgres}
-      await initializeDb(event, payload);
+      await initializeDb(event, payloadpg);
       expect(event.sender.send).toHaveBeenCalledWith('async-started');
-      
     })
 
-    // test('it should send backendObj to helper function to receive a queryString and a dbType back as query', () => {
-    //   // const sqlString = 'SELECT * FROM example_table;';
-    // });
+    test('queryModel.query should be invoked with createDBFunc passing in payload and DBType for Postgres', async () => {
+      jest.spyOn(queryModel, "query")
+      await initializeDb(event, payloadpg);
+      expect(queryModel.query).toHaveBeenCalledWith(createDBFunc(payloadpg.newDbName, payloadpg.dbType), [], DBType.Postgres)
+    });
+
+    test('queryModel.query should be invoked with createDBFunc passing in payload and DBType for Postgres', async () => {
+      jest.spyOn(connectionModel, "connectToDB")
+      await initializeDb(event, payloadpg);
+      expect(connectionModel.connectToDB).toHaveBeenCalledWith(payloadpg.newDbName, payloadpg.dbType);
+    });
+
+    test('queryModel.query should be invoked with createDBFunc passing in payload and DBType for Postgres', async () => {
+      jest.spyOn(queryModel, "query")
+      await initializeDb(event, payloadmsql);
+      expect(queryModel.query).toHaveBeenCalledWith(createDBFunc(payloadmsql.newDbName, payloadmsql.dbType), [], DBType.MySQL)
+    });
+
+    test('should receive an error when db creation is unsuccessful', async () => {
+      try {
+        await initializeDb(event, payloadpg);
+        await queryModel.query(createDBFunc(payloadpg.newDbName, payloadpg.dbType), [], DBType.Postgres)
+        await connectionModel.connectToDB(payloadpg.newDbName, payloadpg.dbType)
+      } catch (e) {
+        const err = `Unsuccessful DB Creation for ${payloadpg.newDbName} in ${payloadpg.newDbName} database`;
+        const feedback: Feedback = {
+          type: 'error',
+          message: err,
+        };
+        expect(e).toBe(event.sender.send('feedback', feedback));
+      }
+    })
   })
 
   describe('erTableSchemaUpdate tests', () => {
@@ -178,7 +208,6 @@ describe('dbCRUDHandler tests', () => {
         const dbType: DBType = DBType.Postgres; 
         await erTableSchemaUpdate(event, backendObj, dbName, dbType);
         expect(event.sender.send).toHaveBeenCalledWith('async-started');
-    
       });
     });
 
