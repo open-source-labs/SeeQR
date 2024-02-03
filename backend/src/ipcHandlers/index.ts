@@ -4,7 +4,7 @@ import { ipcMain } from 'electron';
 
 import { setConfig, getConfig } from './handlers/authHandler';
 import {
-  intializeDb,
+  initializeDb,
   updateDb,
   erTableSchemaUpdate,
   getPath,
@@ -39,7 +39,7 @@ ipcMain.handle('export-db', exportDb);
 ipcMain.handle('get-path', getPath);
 
 // db CRUD functionalities
-ipcMain.handle('initialize-db', intializeDb);
+ipcMain.handle('initialize-db', initializeDb);
 ipcMain.handle('update-db', updateDb);
 ipcMain.handle('ertable-schemaupdate', erTableSchemaUpdate);
 
