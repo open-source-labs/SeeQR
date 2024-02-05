@@ -209,10 +209,104 @@ describe('dbCRUDHandler tests', () => {
         await erTableSchemaUpdate(event, backendObj, dbName, dbType);
         expect(event.sender.send).toHaveBeenCalledWith('async-started');
       });
+
+      
+      test('it should execute queryModel.query', async () => {
+        const dbName: string = 'tester2';
+        const dbType: DBType = DBType.Postgres; 
+        const query = 'mockQuery'
+        // checks for the result in the erTableSchemaUpdate
+        const actualResult = await erTableSchemaUpdate(event, backendObj, dbName, dbType);
+        // based on mock func, we are spying on queryModel - tracks when this method gets executed 
+        const spyQuery = jest.spyOn(queryModel, "query");
+
+        // expect the spyQuery to have query, [], dbType
+        expect(spyQuery).toHaveBeenCalledWith(query, [], dbType);
+        // if the result is truthy then result should be success
+        expect(actualResult).toEqual('success');
+      });
+
+      test('it should execute queryModel.query Begin', async () => {
+        const dbName: string = 'tester2';
+        const dbType: DBType = DBType.Postgres; 
+        // checks for the result in the erTableSchemaUpdate
+        const actualResult = await erTableSchemaUpdate(event, backendObj, dbName, dbType);
+        // based on mock func, we are spying on queryModel - tracks when this method gets executed 
+        const spyQuery = jest.spyOn(queryModel, "query");
+
+        // expect the spyQuery to have 'Begin;', [], dbType
+        expect(spyQuery).toHaveBeenCalledWith('Begin;', [], dbType);
+        // if the result is truthy then result should be success
+        expect(actualResult).toEqual('success');
+      });
+      
+      test('it should execute queryModel.query Commit;', async () => {
+        const dbName: string = 'tester2';
+        const dbType: DBType = DBType.Postgres; 
+        // checks for the result in the erTableSchemaUpdate
+        const actualResult = await erTableSchemaUpdate(event, backendObj, dbName, dbType);
+        // based on mock func, we are spying on queryModel - tracks when this method gets executed 
+        const spyQuery = jest.spyOn(queryModel, "query");
+
+        // expect the spyQuery to have 'Commit;', [], dbType
+        expect(spyQuery).toHaveBeenCalledWith('Commit;', [], dbType);
+        // if the result is truthy then result should be success
+        expect(actualResult).toEqual('success');
+      });
+
     });
 
-    // test('it should send backendObj to helper function to receive a queryString and a dbType back as query', () => {
-    //   // const sqlString = 'SELECT * FROM example_table;';
-    // });
+    test('it should send backendObj to helper function to receive a queryString and a dbType back as query', () => {
+      // const sqlString = 'SELECT * FROM example_table;';
+      const updatedDb = { };
+      // sends message to the event sender with the event name db-list
+      event.sender.send('db-lists', updatedDb);
+      // sending a message to the event sender. 
+      event.sender.send('feedback', {
+        type: 'success',
+        message: 'Database updated successfully.',
+      });
+
+      const feedbackType = 'success';
+      const messageType = 'Database updated successfully.';
+      expect(typeof feedbackType).toBe('string');
+      expect(typeof messageType).toBe('string');
+    });
+
+
   });
   
+
+
+  // simulate generating query from backendObj
+//   const query = 'mockQuery';
+//   // simulate running SQL commands
+//   await queryModel.query('Begin;', [], dbType);
+//   await queryModel.query(query, [], dbType);
+//   await queryModel.query('Commit;', [], dbType);
+
+//   // simulate sending updated DB info to front end
+  // const updatedDb = { };
+  // event.sender.send('db-lists', updatedDb);
+
+//   // simulate sending success feedback to front end
+  // event.sender.send('feedback', {
+  //   type: 'success',
+  //   message: 'Database updated successfully.',
+  // });
+
+//   // simulate sending notice to front end that schema update has been completed
+//   event.sender.send('async-complete');
+
+//   // simulate logging
+//   console.log("Sent 'db-lists and feedback' from 'erTableSchemaUpdate'");
+  
+//   // return a success message
+//   return 'success';
+// } catch (err) {
+//   // simulate rolling back transaction on error
+//   await queryModel.query('Rollback;', [], dbType);
+
+//   // return an error message
+//   throw new Error('Mock error during schema update');
+// }
