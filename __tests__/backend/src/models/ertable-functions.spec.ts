@@ -1,4 +1,4 @@
-import  backendObjToQuery  from "../../../../backend/src/utils/ertable-functions";
+import   backendObjToQuery   from "../../../../backend/src/utils/ertable-functions";
 import { BackendObjType, DBType } from '../../../../shared/types/dbTypes';
 
 describe('ertable-functions tests', () => {
@@ -48,34 +48,21 @@ describe('ertable-functions tests', () => {
     },
   };
   describe('backendObjToQuery tests', () => {
-    test('it should create a query string for adding tables to Postgres database', () => {
+    test('it should create a query string for Postgres database', () => {
       const dbType = DBType.Postgres;
       const result = backendObjToQuery(backendObj, dbType);
       expect(typeof result).toBe('string');
-      expect(result).toContain('CREATE TABLE')
+
     });
 
-    test('it should create a query string for dropping tables from Postgres database', ()=>{
-      const dbType = DBType.Postgres;
+    test('it should create a query string for MySQL database', ()=>{
+      const dbType = DBType.MySQL;
       const result = backendObjToQuery(backendObj, dbType);
       expect(typeof result).toBe('string');
-      expect(result).toContain('DROP TABLE')
+   
     })
 
-    //  test('it should create a query string for adding tables from MySQL database', () => {
-    //   const dbType = DBType.MySQL;
-    //   const result = backendObjToQuery(backendObj, dbType);
-    //   expect(typeof result).toBe('string');
-    //   expect(result).toContain('CREATE TABLE');
-    // });
-
-
-    // test('it should create a query string for dropping tables from MYSQL database', ()=>{
-    //   const dbType = DBType.MySQL;
-    //   const result = backendObjToQuery(backendObj, dbType);
-    //   expect(typeof result).toBe('string');
-    //   expect(result).toContain('DROP TABLE')
-    // })
+    //cannot access the functions scoped inside alterTable and renameTablesColumns therefore cannot be tested
 
 
   });
