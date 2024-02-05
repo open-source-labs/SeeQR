@@ -209,6 +209,17 @@ describe('dbCRUDHandler tests', () => {
         await erTableSchemaUpdate(event, backendObj, dbName, dbType);
         expect(event.sender.send).toHaveBeenCalledWith('async-started');
       });
+
+      // simulate sending notice to front end that schema update has been completed
+      event.sender.send('async-complete');
+
+      test('it should execute queryModel.query Begin', async () => {
+        // await queryModel.query('Begin;', [], dbType);
+
+      })
+
+
+
     });
 
     // test('it should send backendObj to helper function to receive a queryString and a dbType back as query', () => {
