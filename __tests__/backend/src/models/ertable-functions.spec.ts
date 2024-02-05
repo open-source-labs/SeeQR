@@ -3,6 +3,7 @@ import { BackendObjType, DBType } from '../../../../shared/types/dbTypes';
 
 describe('ertable-functions tests', () => {
 
+  // mock backendObj
   const backendObj: BackendObjType  = {
     database: 'tester2',
     updates: {
