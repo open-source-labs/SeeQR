@@ -478,4 +478,4 @@ function TablesTabs({
   );
 }
 
-export default TablesTabs;
+export default TablesTabs
