@@ -39,8 +39,6 @@ interface TabPanelProps {
   children?: React.ReactNode;
   index: number;
   value: number;
-  selectedDb: string;
-  curDBType: DBType | undefined;
 }
 
 // const StyledToggleButtonGroup = styled(ToggleButtonGroup)`
@@ -58,11 +56,12 @@ const StyledToggleButton = styled(ToggleButton)`
   margin: 0em 0.5em 1em 0em;
   padding: 0.2em 1em;
   font-size: 1em;
-  box-shadow:0px 3px 1px -2px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 1px 5px 0px rgba(0,0,0,0.12);
+  box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2),
+    0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
   &:hover {
-    background-color: #11774e
+    background-color: #11774e;
   }
-`
+`;
 const StyledTabs = styled(Tabs)`
   background-color: ${greyPrimary};
   color: white;
@@ -74,9 +73,9 @@ function TabPanel({
   children,
   value,
   index,
-  selectedDb,
-  curDBType,
-}: TabPanelProps) {
+}: // selectedDb,
+// curDBType,
+TabPanelProps) {
   return (
     <div
       role="tabpanel"
@@ -212,7 +211,12 @@ function TablesTabs({
   setERView,
   curDBType,
 }: TablesTabBarProps & ERTablingProps) {
-
+  console.log(tables);
+  console.log(selectTable);
+  console.log(selectedTable);
+  console.log(setERView);
+  console.log(curDBType);
+  console.log(selectedDb);
   //react flow functions to save layout
   interface FlowType {
     toObject(): any;
@@ -261,9 +265,10 @@ function TablesTabs({
   );
 
   // This function handles the add table button on the ER Diagram view
-  const handleAddTable = (): void => {
+  function handleAddTable(): void {
     const schemaStateString = JSON.stringify(schemaState);
     const schemaStateCopy = JSON.parse(schemaStateString);
+    console.log(schemaStateCopy);
     // create an addTablesType object with AddTablesObjType
     const addTableObj: AddTablesObjType = {
       is_insertable_into: 'yes',
@@ -276,9 +281,10 @@ function TablesTabs({
     backendObj.current.updates.addTables.push(addTableObj);
     // push a new object with blank properties
     schemaStateCopy.tableList.push(addTableObj);
+    console.log(schemaStateCopy);
     // set the state, which worries about the table positions.
     setSchemaState(schemaStateCopy);
-  };
+  }
 
   // This function is supposed to handle the layout saving of the positions of the tables.
   const handleSaveLayout = async (): Promise<void> => {
@@ -287,7 +293,7 @@ function TablesTabs({
       (node) => node.type === 'tableHeader',
     ) as TableHeaderNodeType[];
     // create object for the current database
-      console.log('header nodes', headerNodes)
+    console.log('header nodes', headerNodes);
 
     type TablePosObjType = {
       id: string;
@@ -317,27 +323,29 @@ function TablesTabs({
       };
       currDatabaseLayout.db_tables.push(tablePosObj);
     });
-    console.log('currdblayout', currDatabaseLayout)
+    console.log('currdblayout', currDatabaseLayout);
 
+    // create an array of objects in local storage containing table info from currDatabaselayout
+    const layoutFlowKey = 'layout-key';
 
-       // create an array of objects in local storage containing table info from currDatabaselayout
-       const layoutFlowKey = 'layout-key';
-    
-       const existingLayouts: DatabaseLayoutObjType[] = JSON.parse(localStorage.getItem(layoutFlowKey) ?? '[]'); // ?? returns [] if null/notfound  (arr of objs) 
-        
-       // check if dbname in existinglayouts is equal to currdatabaylayout name (when new db is first initialized/not found, findIndex will return -1)
-       const existingLayoutIndex = existingLayouts.findIndex((layout) => layout.db_name === currDatabaseLayout.db_name); 
-       console.log('layoutindex', existingLayoutIndex)
-         if (existingLayoutIndex !== -1) { 
-           existingLayouts[existingLayoutIndex] = currDatabaseLayout; // if it exists, if so, updates to new postions
-         } else {
-           existingLayouts.push(currDatabaseLayout); // if not exists, pushes it to array
-         }
-       
-       localStorage.setItem(layoutFlowKey, JSON.stringify(existingLayouts));
-       console.log('nodes', nodes) 
-       // current problem: doesnt remove deleted databases from existingLayouts value
-   
+    const existingLayouts: DatabaseLayoutObjType[] = JSON.parse(
+      localStorage.getItem(layoutFlowKey) ?? '[]',
+    ); // ?? returns [] if null/notfound  (arr of objs)
+
+    // check if dbname in existinglayouts is equal to currdatabaylayout name (when new db is first initialized/not found, findIndex will return -1)
+    const existingLayoutIndex = existingLayouts.findIndex(
+      (layout) => layout.db_name === currDatabaseLayout.db_name,
+    );
+    console.log('layoutindex', existingLayoutIndex);
+    if (existingLayoutIndex !== -1) {
+      existingLayouts[existingLayoutIndex] = currDatabaseLayout; // if it exists, if so, updates to new postions
+    } else {
+      existingLayouts.push(currDatabaseLayout); // if not exists, pushes it to array
+    }
+
+    localStorage.setItem(layoutFlowKey, JSON.stringify(existingLayouts));
+    console.log('nodes', nodes);
+    // current problem: doesnt remove deleted databases from existingLayouts value
   };
 
   // When you click the save button, you save the layout of the tables and you send a very large object to the backend containing all of the changes.
@@ -345,7 +353,7 @@ function TablesTabs({
     // This function sends a message to the back end with
     // the data in backendObj.current
     handleSaveLayout();
-   
+
     ipcRenderer
       .invoke('ertable-schemaupdate', backendObj.current, selectedDb, curDBType)
       .then(async () => {
@@ -362,11 +370,11 @@ function TablesTabs({
 
   // This useEffect fires when schemaState changes and will convert the state to a form react flow requires
   useEffect(() => {
-    console.log(schemaState);
-    console.log(stateToReactFlow);
+    // console.log(schemaState);
+    // console.log(stateToReactFlow);
     // send the schema state to the convert method to convert the schema to the form react flow requires
     const initialState = stateToReactFlow.convert(schemaState);
-    console.log(initialState);
+    // console.log(initialState);
     // create a deep copy of the state, to ensure the state is not directly modified
     const schemaStateString = JSON.stringify(schemaState);
     const schemaStateCopy = JSON.parse(schemaStateString);
@@ -415,9 +423,8 @@ function TablesTabs({
   };
 
   return (
-    <div style={{ height: 'calc(100vh - 200px)', width: '100%'}}>
-
-      <div style={{ marginBottom: '1em'}}>
+    <div style={{ height: 'calc(100vh - 200px)', width: '100%' }}>
+      <div style={{ marginBottom: '1em' }}>
         <StyledToggleButton
           value
           aria-label="er"
@@ -455,30 +462,39 @@ function TablesTabs({
           style={rfStyle}
           onlyRenderVisibleElements={false}
         >
-      <StyledViewButton
-        variant="contained"
-        id="add-table-btn"
-        onClick={handleSaveLayout}
-        title="Save Current Layout"
-      >
-        <AccountTreeIcon sx={{ fontSize: 40 }} style={{ color: 'white', zIndex: 999}} />
-      </StyledViewButton>
-      <StyledViewButton
-        variant="contained"
-        id="add-table-btn"
-        onClick={handleAddTable}
-        title="Add New Table"
-      >
-        <PlaylistAddIcon sx={{ fontSize: 40 }} style={{ color: 'white', zIndex: 999}} />
-      </StyledViewButton>
-      <StyledViewButton
-        variant="contained"
-        id="save"
-        onClick={handleClickSave}
-        title="Save Database"
-      >
-        <SaveAsIcon sx={{ fontSize: 40 }} style={{ color: 'white', zIndex: 999 }} />
-      </StyledViewButton>
+          <StyledViewButton
+            variant="contained"
+            id="add-table-btn"
+            onClick={handleSaveLayout}
+            title="Save Current Layout"
+          >
+            <AccountTreeIcon
+              sx={{ fontSize: 40 }}
+              style={{ color: 'white', zIndex: 999 }}
+            />
+          </StyledViewButton>
+          <StyledViewButton
+            variant="contained"
+            id="add-table-btn"
+            onClick={handleAddTable}
+            title="Add New Table"
+          >
+            <PlaylistAddIcon
+              sx={{ fontSize: 40 }}
+              style={{ color: 'white', zIndex: 999 }}
+            />
+          </StyledViewButton>
+          <StyledViewButton
+            variant="contained"
+            id="save"
+            onClick={handleClickSave}
+            title="Save Database"
+          >
+            <SaveAsIcon
+              sx={{ fontSize: 40 }}
+              style={{ color: 'white', zIndex: 999 }}
+            />
+          </StyledViewButton>
           <MiniMap
             nodeColor={nodeColor}
             style={mmStyle}
@@ -502,7 +518,6 @@ function TablesTabs({
             {tables.map(({ table_name: name }, index: number) => (
               <Tab label={name} {...a11yProps(index)} key={name} />
             ))}
-            ;
           </StyledTabs>
           <br />
           <br />
@@ -511,8 +526,8 @@ function TablesTabs({
               value={tableIndex}
               index={index}
               key={tableMap.table_name}
-              curDBType={curDBType}
-              selectedDb={selectedDb}
+              // curDBType={curDBType}
+              // selectedDb={selectedDb}
             >
               <TableDetails
                 table={tableMap}
@@ -526,5 +541,4 @@ function TablesTabs({
     </div>
   );
 }
-
 export default TablesTabs;

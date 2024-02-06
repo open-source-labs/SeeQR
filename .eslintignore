@@ -4,3 +4,4 @@ assets
 dist
 node_modules
 frontendOld
+jest.config.ts

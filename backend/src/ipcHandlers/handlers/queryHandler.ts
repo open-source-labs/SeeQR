@@ -262,22 +262,10 @@ export async function runQuery(
 export async function runSelectAllQuery(event, {sqlString, selectedDb}:SelectAllQueryPayload, curDBType) {
   // if (selectedDb !== targetDb)
   try {
-    let returnedRows;
     await connectionModel.connectToDB(selectedDb, curDBType);
     const results = await queryModel.query(sqlString, [], curDBType);
-    console.log(results.rows)
+    console.log('good',results.rows)
     return results?.rows
-    // if (curDBType === DBType.MySQL) {
-    //   returnedRows = results[0];
-    // }
-    // if (curDBType === DBType.Postgres) {
-    //   returnedRows = results?.rows;
-    // }
-    // if (curDBType === DBType.SQLite) {
-    //   returnedRows = results;
-    // }
-    // return returnedRows 
-    
   } catch (error) {
     console.log(error, 'in runSelectAllQuery')
   }
