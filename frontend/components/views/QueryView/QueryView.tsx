@@ -89,6 +89,8 @@ function QueryView({
 
   const [queriesRan, setQueriesRan] = useState<string[]>([]);
 
+  const [selectedQueryHx, setSelectedQueryHx] = useState('');
+
   const onLabelChange = (newLabel: string) => {
     queryDispatchContext!({
       type: 'UPDATE_WORKING_QUERIES',
@@ -308,7 +310,10 @@ function QueryView({
         onChange={onSqlChange}
         runQuery={onRun}
       />
-      <QueryHistory history={queriesRan} onChange={onSqlChange} />
+      <QueryHistory 
+        history={queriesRan} 
+        onChange={onSqlChange} 
+        />
       <QueryRunNumber
         runNumber={runQueryNumber}
         onChange={onRunQueryNumChange}

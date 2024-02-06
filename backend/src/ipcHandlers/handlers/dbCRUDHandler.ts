@@ -43,7 +43,7 @@ interface UpdatePayload {
  * 4. send a feedback back to frontend
  */
 
-export async function intializeDb(event, payload: InitializePayload) {
+export async function initializeDb(event, payload: InitializePayload) {
   const { newDbName, dbType } = payload;
   logger(
     `Received 'initialize-db' of dbType: ${dbType} and: `,

@@ -88,6 +88,7 @@ TabPanelProps) {
   );
 }
 
+
 const rfStyle: object = {
   height: '65vh',
   border: `2px solid ${colors.greenPrimary}`,
@@ -141,67 +142,6 @@ interface HandleChangeFunc {
   (event: React.ChangeEvent<unknown>, newValue: number): void;
 }
 
-// interface ErViewProps {
-//   active: boolean;
-//   tables: TableInfo[];
-//   selectedDb: AppState['selectedDb'];
-//   curDBType: DBType | undefined;
-//   tableIndex: number;
-//   handleChange: HandleChangeFunc;
-// }
-
-// function ErView({
-//   active,
-//   tables,
-//   selectedDb,
-//   curDBType,
-//   tableIndex,
-// changes the state
-//   handleChange,
-// }: ErViewProps) {
-//   console.log(selectedDb);
-//   return (
-//     <div>
-// grabs the state
-//       {active ? (
-//         <ERTables
-//           tables={tables}
-//           selectedDb={selectedDb}
-//           curDBType={curDBType}
-//         />
-//       ) : (
-//         <>
-//           <StyledTabs
-//             value={tableIndex}
-//             onChange={handleChange}
-//             indicatorColor="primary"
-//             variant="scrollable"
-//             scrollButtons="auto"
-//             aria-label="scrollable auto tabs example"
-//           >
-//             {tables.map(({ table_name: name }, index: number) => (
-//               <Tab label={name} {...a11yProps(index)} key={name} />
-//             ))}
-//             ;
-//           </StyledTabs>
-//           <br />
-//           <br />
-//           {tables.map((tableMap, index) => (
-//             <TabPanel
-//               value={tableIndex}
-//               index={index}
-//               key={tableMap.table_name}
-//               // curDBType={curDBType}
-//               kevin={selectedDb}
-//             >
-//               <TableDetails table={tableMap} nguyen={selectedDb} />
-//             </TabPanel>
-//           ))}
-//         </>
-//       )}
-//     </div>
-//   );
-// }
 
 function TablesTabs({
   tables,
@@ -224,7 +164,7 @@ function TablesTabs({
   const [nodes, setNodes] = useState<Node[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
 
-  // state for custom controls toggle
+  // state for custom controls toggle & saves a copy of the schema 
   // when tables (which is the database that is selected changes, update SchemaState)
   const [schemaState, setSchemaState] = useState<SchemaStateObjType>({
     database: 'initial',
@@ -247,7 +187,6 @@ function TablesTabs({
     database: schemaState.database,
     updates,
   });
-
   // whenever the selectedDb changes, reassign the backendObj to contain this selectedDb
   useEffect(() => {
     backendObj.current.database = selectedDb;
@@ -368,6 +307,7 @@ function TablesTabs({
       });
   }
 
+
   // This useEffect fires when schemaState changes and will convert the state to a form react flow requires
   useEffect(() => {
     // console.log(schemaState);
@@ -397,7 +337,11 @@ function TablesTabs({
     setNodes(nodesArray);
     setEdges(initialState.edges);
   }, [schemaState]);
+  //end of the schema state
 
+
+
+  // End of ERTabling / ERD View
   const handleChange: HandleChangeFunc = (event, newValue) => {
     selectTable(tables[newValue]);
   };
@@ -421,7 +365,6 @@ function TablesTabs({
       }
     }
   };
-
   return (
     <div style={{ height: 'calc(100vh - 200px)', width: '100%' }}>
       <div style={{ marginBottom: '1em' }}>
@@ -433,7 +376,6 @@ function TablesTabs({
           onChange={handleView}
         >
           ER diagram
-          {/* <AccountTreeIcon sx={{ fontSize: 40 }} style={{ color: 'white' }} /> */}
         </StyledToggleButton>
         <StyledToggleButton
           value={false}
@@ -443,11 +385,11 @@ function TablesTabs({
           onChange={handleView}
         >
           Table View
-          {/* <TableViewIcon sx={{ fontSize: 40 }} style={{ color: 'white' }} /> */}
         </StyledToggleButton>
       </div>
 
       {active ? (
+        
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -504,7 +446,10 @@ function TablesTabs({
           />
           <Background />
           <Controls />
+
         </ReactFlow>
+
+
       ) : (
         <>
           <StyledTabs
@@ -519,8 +464,10 @@ function TablesTabs({
               <Tab label={name} {...a11yProps(index)} key={name} />
             ))}
           </StyledTabs>
+      
           <br />
           <br />
+          
           {tables.map((tableMap, index) => (
             <TabPanel
               value={tableIndex}
@@ -535,6 +482,7 @@ function TablesTabs({
                 curDBType={curDBType}
               />
             </TabPanel>
+        
           ))}
         </>
       )}

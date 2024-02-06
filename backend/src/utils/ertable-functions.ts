@@ -38,14 +38,23 @@ function backendObjToQuery(backendObj: BackendObjType, dbType: DBType): string {
         );
       }
       if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL) {
-        firstAddingMySQLColumnName = `${currAlterTable.addColumns[0].column_name}`;
-        outputArray.push(
-          `CREATE TABLE ${currTable.table_name} 
-                          (${currAlterTable.addColumns[0].column_name}
-                          ${currAlterTable.addColumns[0].data_type}
-                          (${currAlterTable.addColumns[0].character_maximum_length}))
-                          ;`,
-        );
+
+        // check if addColumns is defined and not empty before accessing its properties
+        if (
+          currAlterTable.addColumns &&
+          currAlterTable.addColumns.length > 0
+        ) {
+          firstAddingMySQLColumnName = `${currAlterTable.addColumns[0].column_name}`;
+          outputArray.push(
+            `CREATE TABLE ${currTable.table_name} 
+                            (${currAlterTable.addColumns[0].column_name}
+                            ${currAlterTable.addColumns[0].data_type}
+                            (${currAlterTable.addColumns[0].character_maximum_length}))
+                            ;`,
+          );
+        } else {
+          console.error("addColumns is undefined or empty for MySQL.");
+        }
       }
 
       if (dbType === DBType.SQLite) {
