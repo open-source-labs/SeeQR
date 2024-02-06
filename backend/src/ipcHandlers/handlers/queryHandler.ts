@@ -1,7 +1,7 @@
 import fs from 'fs';
 
 // Types
-import { DBList, DBType, LogType, QueryPayload } from '../../../BE_types';
+import { DBList, DBType, LogType, QueryPayload, SelectAllQueryPayload } from '../../../BE_types';
 
 // Helpers
 import logger from '../../utils/logging/masterlog';
@@ -76,7 +76,7 @@ export async function runQuery(
     // Run Explain
     let explainResults;
     try {
-      for (let i = 0; i < numberOfSample; i++) {
+      // for (let i = 0; i < numberOfSample; i++) {
         if (dbType === DBType.Postgres) {
           const results = await queryModel.query(
             explainQuery(sqlString, dbType),
@@ -102,6 +102,7 @@ export async function runQuery(
           arr.push(eachSampleTime);
           totalSampleTime += eachSampleTime;
 
+          
           // hard coded explainResults just to get it working for now
           explainResults = {
             Plan: {
@@ -198,7 +199,7 @@ export async function runQuery(
             'Execution Time': 9999,
           };
         }
-      }
+      // }
       // get 5 decimal points for sample time
       minimumSampleTime = Math.round(Math.min(...arr) * 10 ** 5) / 10 ** 5;
       maximumSampleTime = Math.round(Math.max(...arr) * 10 ** 5) / 10 ** 5;
@@ -257,7 +258,51 @@ export async function runQuery(
     event.sender.send('async-complete');
   }
 }
+ 
+export async function runSelectAllQuery(event, {sqlString, selectedDb}:SelectAllQueryPayload, curDBType) {
+  // if (selectedDb !== targetDb)
+  try {
+    await connectionModel.connectToDB(selectedDb, curDBType);
+    const results = await queryModel.query(sqlString, [], curDBType);
+    console.log('good',results.rows)
+    return results?.rows
+  } catch (error) {
+    console.log(error, 'in runSelectAllQuery')
+  }
+}
+//format of runQuery without all extra junk
+// export async function runQuery(
+//   event,
+//   { targetDb, sqlString, selectedDb, runQueryNumber }: QueryPayload,
+//   dbType: DBType,
+// ) {
+//   try{
+//   await connectionModel.connectToDB(targetDB, dbType);
+//   let returnedRows;
+//   try {
+//     const results = await queryModel.query(sqlString, [], dbType);
+//     if (dbType === DBType.MySQL) {
+//       returnedRows = results[0];
+//     }
+//     if (dbType === DBType.Postgres) {
+//       returnedRows = results?.rows;
+//     }
+//     if (dbType === DBType.SQLite) {
+//       returnedRows = results;
+//     }
+//   } catch (e: any) {
+//     error = e.toString();
+//   }
 
+//   return {
+//     returnedRows
+//   }
+// } 
+
+//finally {
+
+// }
+// }
 // Reads the query JSON file and send it to the front end
 export function readQuery(event, filepath) {
   try {

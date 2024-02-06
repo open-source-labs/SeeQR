@@ -21,7 +21,7 @@ interface HelperFunctions {
   runTARFunc: CreateCommand;
   runFullCopyFunc: CreateCommand;
   runHollowCopyFunc: CreateCommand;
-  promExecute: (cmd: string) => Promise<{ stdout: string; stderr: string }>;
+  promExecute: (cmd: string, dbType: DBType) => Promise<{ stdout: string; stderr: string }>;
 }
 
 // PG = Postgres - Query necessary to run PG Query/Command
@@ -73,18 +73,18 @@ const helperFunctions: HelperFunctions = {
   // import SQL file into new DB created
   runSQLFunc: function runSQLFunc(dbName, file, dbType: DBType) {
     const SQL_data = docConfig.getFullConfig();
-    const PG = `PGPASSWORD=${SQL_data?.pg_options.password} psql -U ${SQL_data?.pg_options.user} -d "${dbName}" -f "${file}" -p ${SQL_data?.pg_options.port}`;
-    const MYSQL = `export MYSQL_PWD='${SQL_data?.mysql_options.password}'; mysql -u${SQL_data?.mysql_options.user} --port=${SQL_data?.mysql_options.port} ${dbName} < ${file}`;
+    const PG = `psql -U ${SQL_data?.pg_options.user} -d "${dbName}" -f "${file}" -p ${SQL_data?.pg_options.port}`;
+    const MYSQL = `mysql -u ${SQL_data?.mysql_options.user} --port=${SQL_data?.mysql_options.port} ${dbName} < ${file}`;
     if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) return PG;
     if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL) return MYSQL;
     return 'invalid dbtype';
   },
-
+  
   // import TAR file into new DB created
   runTARFunc: function runTARFunc(dbName, file, dbType: DBType) {
     const SQL_data = docConfig.getFullConfig();
-    const PG = `PGPASSWORD=${SQL_data?.pg_options.password} pg_restore -U ${SQL_data?.pg_options.user} -p ${SQL_data?.pg_options.port} -d "${dbName}" "${file}" `;
-    const MYSQL = `export MYSQL_PWD='${SQL_data?.mysql_options.password}'; mysqldump -u ${SQL_data?.mysql_options.user} --port=${SQL_data?.mysql_options.port}  ${dbName} > ${file}`;
+    const PG = `pg_restore -U ${SQL_data?.pg_options.user} -p ${SQL_data?.pg_options.port} -d "${dbName}" "${file}" `;
+    const MYSQL = `mysqldump -u ${SQL_data?.mysql_options.user} --port=${SQL_data?.mysql_options.port}  ${dbName} > ${file}`;
     if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) return PG;
     if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL) return MYSQL;
     return 'invalid dbtype';
@@ -97,8 +97,8 @@ const helperFunctions: HelperFunctions = {
     dbType: DBType,
   ) {
     const SQL_data = docConfig.getFullConfig();
-    const PG = `PGPASSWORD=${SQL_data?.pg_options.password} pg_dump -s -U ${SQL_data?.pg_options.user} -p ${SQL_data?.pg_options.port} -Fp -d ${dbCopyName} > "${newFile}"`;
-    const MYSQL = `export MYSQL_PWD='${SQL_data?.mysql_options.password}'; mysqldump -h localhost -u ${SQL_data?.mysql_options.user}  ${dbCopyName} > ${newFile}`;
+    const PG = `pg_dump -s -U ${SQL_data?.pg_options.user} -p ${SQL_data?.pg_options.port} -Fp -d ${dbCopyName} > "${newFile}"`;
+    const MYSQL = `mysqldump -h localhost -u ${SQL_data?.mysql_options.user}  ${dbCopyName} > ${newFile}`;
     if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) return PG;
     if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL) return MYSQL;
     return 'invalid dbtype';
@@ -112,21 +112,34 @@ const helperFunctions: HelperFunctions = {
     
   ) {
     const SQL_data = docConfig.getFullConfig();
-    const PG = ` PGPASSWORD=${SQL_data?.pg_options.password} pg_dump -s -U ${SQL_data?.pg_options.user} -p ${SQL_data?.pg_options.port} -F p -d "${dbCopyName}" > "${file}"`;
-    const MYSQL = `export MYSQL_PWD='${SQL_data?.mysql_options.password}'; mysqldump -h localhost -u ${SQL_data?.mysql_options.user} --port=${SQL_data?.mysql_options.port}  ${dbCopyName} > ${file}`;
+    const PG = `pg_dump -s -U ${SQL_data?.pg_options.user} -p ${SQL_data?.pg_options.port} -F p -d "${dbCopyName}" > "${file}"`;
+    const MYSQL = `mysqldump -h localhost -u ${SQL_data?.mysql_options.user} --port=${SQL_data?.mysql_options.port}  ${dbCopyName} > ${file}`;
     if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) return PG;
     if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL) return MYSQL;
     return 'invalid dbtype';
   },
 
   // promisified execute to execute commands in the child process
-  promExecute: (cmd: string) =>
+  promExecute: (cmd: string, dbType: DBType) =>
     new Promise((resolve, reject) => {
-      exec(
+      const SQL_data = docConfig.getFullConfig();
+
+      let envPW = {};
+
+      if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) {
+        envPW = { PGPASSWORD: SQL_data?.pg_options.password };
+      } else if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL) {
+        envPW = { MYSQL_PWD: SQL_data?.mysql_options.password };
+      }
+
+
+      exec( // opens cli
         cmd,
         {
-          timeout: 5000,
-          // env: { PGPASSWORD: docConfig.getFullConfig().pg.password },
+          timeout: 2500,
+          // env: {PGPASSWORD: SQL_data?.pg_options.password },
+          env: envPW,
+       
         },
         (error, stdout, stderr) => {
           if (error) {

@@ -48,6 +48,7 @@ const Accordion = styled((props: AccordionProps) => (
   />
 ))(() => ({}));
 
+
 function TableField({ data }: TableFieldProps) {
   const {
     schemaStateCopy,
@@ -67,6 +68,9 @@ function TableField({ data }: TableFieldProps) {
   const tableColumn: string = `${data.tableName}-${column_name}`;
   const isNull: string = is_nullable;
   let setTimeoutVariable;
+
+  // used in handleAccordianClick and handleMouseLeave
+  const [isAccordionExpanded, setAccordionExpanded] = useState(false);
 
   // handles functionality of the drop down delete button
   const handleDropColumn = (): void => {
@@ -117,6 +121,7 @@ function TableField({ data }: TableFieldProps) {
   };
   // handles functionality of the drop down update button
   const handleUpdateColumn = (): void => {
+    setAccordionExpanded(!isAccordionExpanded);
     // create an alterColumns object
     const alterColumnsObj: AlterColumnsObjType = {
       column_name,
@@ -136,11 +141,7 @@ function TableField({ data }: TableFieldProps) {
     for (let i = 0; i < schemaStateCopy.tableList.length; i += 1) {
       if (schemaStateCopy.tableList[i].table_name === data.tableName) {
         // iterate through columns
-        for (
-          let j: number = 0;
-          j < schemaStateCopy.tableList[i].columns.length;
-          j += 1
-        ) {
+        for (let j: number = 0; j < schemaStateCopy.tableList[i].columns.length; j += 1) {
           if (
             schemaStateCopy.tableList[i].columns[j].column_name === column_name
           ) {
@@ -376,6 +377,8 @@ function TableField({ data }: TableFieldProps) {
 
     return options;
   };
+  // create a state for the foreign key drop down options
+  const [fkOptions, setFkOptions] = useState<string[]>(createFieldOptions());
 
   // disable the dropdown menus for fk table and field when fk checkbox is not checked
   const disableForeignKeyMenuHandler = (isChecked) => {
@@ -405,11 +408,6 @@ function TableField({ data }: TableFieldProps) {
     ) as HTMLSelectElement;
     allowNullCheckBox.disabled = isFkChecked || isPkChecked;
   };
-
-  // create a state for the foreign key drop down options
-  const [fkOptions, setFkOptions] = useState<string[]>(createFieldOptions());
-
-  const [isAccordionExpanded, setAccordionExpanded] = useState(false);
 
   // This function handles the click functionality of clicking the accordion
   const handleAccordionClick = (): void => {

@@ -16,6 +16,7 @@ import QuerySqlInput from './QuerySqlInput';
 import QuerySummary from './QuerySummary';
 import QueryTabs from './QueryTabs';
 import QueryRunNumber from './QueryRunNumber';
+import QueryHistory from './QueryHistory';
 
 import {
   useQueryContext,
@@ -81,9 +82,14 @@ function QueryView({
     averageSampleTime: 0,
   };
 
+
   const localQuery = { ...defaultQuery, ...queryStateContext?.workingQuery };
 
   const [runQueryNumber, setRunQueryNumber] = useState(1);
+
+  const [queriesRan, setQueriesRan] = useState<string[]>([]);
+
+  const [selectedQueryHx, setSelectedQueryHx] = useState('');
 
   const onLabelChange = (newLabel: string) => {
     queryDispatchContext!({
@@ -103,7 +109,7 @@ function QueryView({
     // when db is changed we must change selected db state on app, as well as
     // request updates for db and table information. Otherwise database view tab
     // will show wrong information
-
+    
     setSelectedDb(newDb);
     setDBType(nextDBType);
 
@@ -124,7 +130,7 @@ function QueryView({
       );
   };
   const onSqlChange = (newSql: string) => {
-    // because App's workingQuery changes ref
+    console.log(newSql);
     queryDispatchContext!({
       type: 'UPDATE_WORKING_QUERIES',
       payload: { ...localQuery, sqlString: newSql },
@@ -132,6 +138,7 @@ function QueryView({
   };
 
   const onRun = () => {
+    console.log(localQuery.sqlString);
     if (!localQuery.label.trim()) {
       sendFeedback({
         type: 'info',
@@ -171,6 +178,14 @@ function QueryView({
           maximumSampleTime,
           averageSampleTime,
         }) => {
+          if (returnedRows) {
+            if (queriesRan.length === 5) {
+              queriesRan.pop();
+            }
+            queriesRan.unshift(sqlString);
+            // setReturnedRows(returnedRows.length)
+            setQueriesRan(queriesRan);
+          }
           if (error) {
             throw error;
           }
@@ -276,7 +291,7 @@ function QueryView({
   if (!show) return null;
   return (
     <QueryViewContainer>
-      <TopRow>
+      <TopRow >
         <QueryLabel label={localQuery.label} onChange={onLabelChange} />
         <QueryGroup group={localQuery.group} onChange={onGroupChange} />
         <QueryDb
@@ -293,8 +308,11 @@ function QueryView({
       <QuerySqlInput
         sql={localQuery?.sqlString ?? ''}
         onChange={onSqlChange}
-        runQuery={onRun}
       />
+      <QueryHistory 
+        history={queriesRan} 
+        onChange={onSqlChange} 
+        />
       <QueryRunNumber
         runNumber={runQueryNumber}
         onChange={onRunQueryNumChange}

@@ -4,7 +4,7 @@ import { ipcMain } from 'electron';
 
 import { setConfig, getConfig } from './handlers/authHandler';
 import {
-  intializeDb,
+  initializeDb,
   updateDb,
   erTableSchemaUpdate,
   getPath,
@@ -17,7 +17,7 @@ import {
   importDb,
   exportDb,
 } from './handlers/dbOpsHandler';
-import { runQuery, readQuery } from './handlers/queryHandler';
+import { runQuery, readQuery, runSelectAllQuery } from './handlers/queryHandler';
 import {
   dummyData,
   showOpenDialog,
@@ -39,7 +39,7 @@ ipcMain.handle('export-db', exportDb);
 ipcMain.handle('get-path', getPath);
 
 // db CRUD functionalities
-ipcMain.handle('initialize-db', intializeDb);
+ipcMain.handle('initialize-db', initializeDb);
 ipcMain.handle('update-db', updateDb);
 ipcMain.handle('ertable-schemaupdate', erTableSchemaUpdate);
 
@@ -52,3 +52,6 @@ ipcMain.handle('generate-dummy-data', dummyData);
 ipcMain.handle('showOpenDialog', showOpenDialog);
 ipcMain.handle('showSaveDialog', showSaveDialog);
 ipcMain.handle('feedback', feedback);
+
+
+ipcMain.handle('run-select-all-query', runSelectAllQuery);
