@@ -64,6 +64,7 @@
     "sql-formatter": "^12.2.4",
     "sqlite3": "^5.1.6",
     "styled-components": "^6.0.7",
+    "text-encoding": "^0.7.0",
     "three": "^0.155.0",
     "three-spritetext": "^1.8.1"
   },
@@ -73,6 +74,7 @@
     "@babel/preset-react": "^7.22.5",
     "@babel/preset-typescript": "^7.22.5",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.11",
+    "@testing-library/jest-dom": "^6.4.1",
     "@testing-library/react": "^14.0.0",
     "@types/chart.js": "^2.9.37",
     "@types/debounce": "^1.2.1",

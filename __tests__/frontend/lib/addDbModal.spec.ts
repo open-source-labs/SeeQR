@@ -11,7 +11,7 @@ describe('AddNewDbModal import modal', () => {
         })
 
         it('should check if .sql file DOES contain keywords', () => {
-            // starwards does contain the keyword
+            // starwars does contain the keyword
             const filePath = path.join(__dirname, '../../mockDBFiles/starwarspg.sql')
 
             // reads the mock database

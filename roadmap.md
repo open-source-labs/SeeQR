@@ -2,9 +2,11 @@
 
 ## view previous versions roadmap commits for older improvement goals
 
-### v11 roadmap for future iterators
+### v13 roadmap for future iterators
 
 - General
+
+    - Refactor codebase to elimiate prop-drilling allowing for future iterability. 
 
     - Update ui of the initial landing page of application with cloud database instructions
 
