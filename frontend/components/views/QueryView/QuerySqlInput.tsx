@@ -46,7 +46,7 @@ interface QuerySqlInputProps {
   onChange: (newSql: string) => void;
 }
 
-function QuerySqlInput({ sql, onChange, runQuery }: QuerySqlInputProps) {
+function QuerySqlInput({ sql, onChange }: QuerySqlInputProps) {
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
  
   useEffect(() => {
