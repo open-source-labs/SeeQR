@@ -49,7 +49,7 @@ To get started on contributing and editing databases to this project:
 - [React-Flow](https://reactflow.dev/)
 - [Chart.js](https://github.com/chartjs)
 - [Faker.js](https://github.com/Marak/faker.js)
-- [CodeMirror](https://codemirror.net/)
+- [Monaco](https://microsoft.github.io/monaco-editor/)
 - [React-Force-Graph](https://github.com/vasturiano/react-force-graph)
 - [Three.js](https://github.com/mrdoob/three.js/)
 - [D3.js](https://github.com/d3/d3)
@@ -96,7 +96,7 @@ To get started on contributing and editing databases to this project:
           </div>
         <br>
 
-- <strong>NEW</strong> 3D Database Visualization
+- 3D Database Visualization
   - From the 'DATABASES' view, select the '3D View' tab on the far right of the sidebar to launch the brand new 3D database visualizer.
     - Individual table nodes are distinguished by their different colors
     - Column nodes are joined to table nodes and match their source table color
@@ -132,12 +132,13 @@ To get started on contributing and editing databases to this project:
 
 - Queries
 
-  - In the 'QUERIES' view, the main panel is where the query input text field is located, utilizing CodeMirror. The paint button in the top right corner of the panel auto-formats the inputted query.
+  - In the 'QUERIES' view, the main panel is where the query input text field is located, utilizing Monaco. The paint button in the top right corner of the panel auto-formats the inputted query.
   - Users can select the database to use in the 'Database' dropdown above the main panel.
   - Users also have the option to execute a labelled/grouped or unlabelled/ungrouped query — simply provide a label/group in the 'Label'/'Group' field above the main panel to identify the query in later comparisons against other queries.
     - Please note that only labelled queries will be saved in the current session for future references.
   - To execute the query, simply select the 'RUN QUERY' button at the bottom of the panel or press 'Ctrl-Enter' on the keyboard.
-  - The 11th version now includes the functionality to run multiple queries, allowing users to obtain more reliable testing results.
+  - Users have the option to run multiple queries, allowing users to obtain more reliable testing results.
+  - Version 13 introduces a new feature that enables users to access and view previous queries. Upon selecting a previous query, it populates the query input field, allowing users to make edits before executing.
   <br />
   <div align="center">
     <img src="./assets/readmeImages/gifs/multisample.gif" width=800/>
@@ -145,6 +146,9 @@ To get started on contributing and editing databases to this project:
    <br />
   <div align="center">
     <img src="./assets/readmeImages/gifs/Query_Execution.gif" width=800/>
+  </div>
+  <div align="center">
+    <img src="./assets/readmeImages/gifs/seeQR_queryHistory.gif" width=800/>
   </div>
 
 - Save/Load Queries
