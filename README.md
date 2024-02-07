@@ -3,7 +3,7 @@
 <img src="./assets/readmeImages/logo_readme.png" height=300/>
 
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/oslabs-beta/SeeQR)
-![Release: 13.0.0](https://img.shields.io/badge/Release-12.0.0-red)
+![Release: 13.0.0](https://img.shields.io/badge/Release-13.0.0-red)
 ![License: MIT](https://img.shields.io/badge/License-MIT-orange.svg)
 ![Contributions Welcome](https://img.shields.io/badge/Contributions-welcome-blue.svg)
 [![Twitter](https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Ftwitter.com%2Ftheseeqr)](https://twitter.com/theseeqr)
@@ -76,6 +76,8 @@ To get started on contributing and editing databases to this project:
 - Databases
 
   - In the 'DATABASES' view, an interactive Entity Relationship Diagram (`ER DIAGRAM`) is displayed for the selected database.
+    - Users can now save table layout in version 13.
+
   - Users can select `TABLE` to see selected database in tabular form.
 
     - Users can select a table from a list of all the tables in the schema of the currently selected database.
@@ -139,17 +141,12 @@ To get started on contributing and editing databases to this project:
   - To execute the query, simply select the 'RUN QUERY' button at the bottom of the panel or press 'Ctrl-Enter' on the keyboard.
   - Users have the option to run multiple queries, allowing users to obtain more reliable testing results.
   - Version 13 introduces a new feature that enables users to access and view previous queries. Upon selecting a previous query, it populates the query input field, allowing users to make edits before executing.
-  <br />
+  </br>
+  <br>
   <div align="center">
-    <img src="./assets/readmeImages/gifs/multisample.gif" width=800/>
+    <img src="./assets/readmeImages/gifs/query.gif" width=800/>
   </div>
    <br />
-  <div align="center">
-    <img src="./assets/readmeImages/gifs/Query_Execution.gif" width=800/>
-  </div>
-  <div align="center">
-    <img src="./assets/readmeImages/gifs/seeQR_queryHistory.gif" width=800/>
-  </div>
 
 - Save/Load Queries
 
