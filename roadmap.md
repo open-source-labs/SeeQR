@@ -6,7 +6,7 @@
 
 - General
 
-    - Refactor codebase to elimiate prop-drilling allowing for future iterability. 
+    - Refactor codebase to elimiate <strong>prop-drilling</strong> allowing for future iterability. 
 
     - Update ui of the initial landing page of application with cloud database instructions
 
@@ -36,11 +36,11 @@
 
 - Queries page
 
-    - fix query execution plan table view, likely broke while updating frontend dependencies
+    - Fix query execution plan table view, likely broke while updating frontend dependencies
 
-    - add colors back to special words in query view
+    - Implement local storage to save query history. Currently the history disappears when we reload application.
 
-    - work on explain function for mysql and sqlite, may have different metadata from existing postgres implementation, display whatever you can get 
+    - Work on explain function for mysql and sqlite, may have different metadata from existing postgres implementation, display whatever you can get 
 
 
 - 2D visualization / ER tables: 
@@ -83,3 +83,8 @@
     - Implement ER table functions
 
     - Add VR functionality?
+
+- Mac vs Windows:
+
+    - In the '../backend/src/models/configModel.ts' on line 9 - 11 specifies where the configFile will be downloaded. The 'home' variable will be different for Mac and Windows users. Utilize an if conditional statement here to prevent the need for maintaining two branches (main and devosx) for windows and mac.
+

@@ -69,14 +69,21 @@ To get started on contributing and editing databases to this project:
   - Users can toggle between an 'ER DIAGRAM' view and the 'TABLES' view for each database.
 
 <div align="center">
-  <img src="./assets/readmeImages/config_demo2.gif" width=800/>
-  <img src="./assets/readmeImages/gifs/quick_start.gif" width=800/>
+  <img src="./assets/readmeImages/gifs/login.gif" width=800/>
+  <!-- <img src="./assets/readmeImages/gifs/importCreateDB.gif" width=800/> -->
 </div>
 
 - Databases
 
   - In the 'DATABASES' view, an interactive Entity Relationship Diagram (`ER DIAGRAM`) is displayed for the selected database.
     - Users can now save table layout in version 13.
+
+    <br>
+          <div align="center">
+            <img src="./assets/readmeImages/gifs/save_db_layout.gif" width=800/>
+          </div>
+        <br>
+
 
   - Users can select `TABLE` to see selected database in tabular form.
 
@@ -128,7 +135,7 @@ To get started on contributing and editing databases to this project:
 
 <br>
 <div align="center">
-    <img src="./assets/readmeImages/gifs/create_db3.gif" width=800/>
+    <img src="./assets/readmeImages/gifs/importCreateDB.gif" width=800/>
     <img src="./assets/readmeImages/gifs/modify_db.gif" width=800/>
   </div>
 
@@ -144,7 +151,7 @@ To get started on contributing and editing databases to this project:
   </br>
   <br>
   <div align="center">
-    <img src="./assets/readmeImages/gifs/query.gif" width=800/>
+    <img src="./assets/readmeImages/gifs/querySearch.gif" width=800/>
   </div>
    <br />
 
