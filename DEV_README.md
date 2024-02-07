@@ -6,7 +6,7 @@
 
 <b>`Developer's Read Me`</b>
 
-<b>`** v12.0.0 **`</b>
+<b>`** v13.0.0 **`</b>
 
 <p>In this version our team focused on refactoring the broken code base from all previous versions. </p>
 
