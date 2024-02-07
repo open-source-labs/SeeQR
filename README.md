@@ -69,8 +69,8 @@ To get started on contributing and editing databases to this project:
   - Users can toggle between an 'ER DIAGRAM' view and the 'TABLES' view for each database.
 
 <div align="center">
-  <img src="./assets/readmeImages/config_demo2.gif" width=800/>
-  <img src="./assets/readmeImages/gifs/quick_start.gif" width=800/>
+  <img src="./assets/readmeImages/gifs/login.gif" width=800/>
+  <!-- <img src="./assets/readmeImages/gifs/quick_start.gif" width=800/> -->
 </div>
 
 - Databases
@@ -94,7 +94,7 @@ To get started on contributing and editing databases to this project:
 
           <br>
           <div align="center">
-            <img src="./assets/readmeImages/gifs/dummy_data.gif" width=800/>
+            <img src="./assets/readmeImages/gifs/dataTypeChange.gif" width=800/>
           </div>
         <br>
 
