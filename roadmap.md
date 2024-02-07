@@ -83,3 +83,7 @@
     - Implement ER table functions
 
     - Add VR functionality?
+
+- Mac vs Windows:
+
+    - In the '../backend/src/models/configModel.ts' on line 9 - 11 specifies where the configFile will be downloaded. The 'home' variable will be different for Mac and Windows users. Utilize an if conditional statement here to prevent the need for maintaining two branches (main and devosx) for windows and mac.
