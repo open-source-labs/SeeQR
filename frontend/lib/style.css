@@ -88,3 +88,94 @@ main {
   cursor: pointer;
   outline: none;
 }
+
+:root {
+  --greyPrimary: #F0386B;
+}
+
+main {
+  min-width: 650px;
+}
+ /* greyPrimary = '#818584'; */
+
+ /* button {
+   /* background: #11998E;  /* fallback for old browsers */ 
+   /* background: -webkit-linear-gradient(#AFCEB9, #097548);  /* Chrome 10-25, Safari 5.1-6 */
+   /* background: linear-gradient(#AFCEB9, #097548); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+ /* }; */
+
+.tabs {
+  background-color: var(--greyPrimary);
+  color: white;
+  border-radius: 5px;
+};
+
+.db-login-tab.Mui-selected {
+  color: rgb(25, 118, 210) !important;
+}
+
+.db-login-tabs .MuiTabs-indicator {
+  background-color: rgb(25, 118, 210);
+}
+
+/* QuickStartView */
+.step-btn {
+  margin-right: 8px;
+}
+
+.step-btn {
+  margin-right: 8px;
+}
+
+.step-back-btn {
+  margin-right: 8px;
+}
+
+.step-completed {
+  display: inline-block;
+}
+
+.step-instructions {
+  margin-bottom: 24px;
+}
+
+.step-img {
+  margin-top: 16px;
+  margin-bottom: -32px;
+  width: 20vh;
+  height: 20vh;
+  max-height: 300px;
+  max-width: 300px;
+}
+
+.stepper {
+  font-size: 50px;
+}
+
+.Mui-selected:not(.db-login-tab):not(.tables-view-btn) {
+  color: rgb(255, 255, 255) !important;
+  background-color: #11774e;
+  opacity: 1 !important;
+}
+
+.MuiTabs-scroller > div > button:not(.db-login-tab) {
+	color: rgba(255, 255, 255, .3);
+	font-size: 1.25rem;
+  border-right: 1px solid rgba(255, 255, 255, .1);
+  border-left: 1px solid rgba(255, 255, 255, .1);
+  width: 33%;
+}
+
+.query-run-box {
+  margin-top: 1rem;
+}
+
+.hide-3d-btn {
+  color: rgba(255, 255, 255, .8);
+  border: 2px solid rgba(255, 255, 255, .8);
+  border-radius: .5rem;
+  background: transparent;
+  padding: 1rem .5rem;
+  cursor: pointer;
+  outline: none;
+}
