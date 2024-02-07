@@ -1,13 +1,12 @@
 // import path from 'path';
 import fs from 'fs';
-import os from 'os';
 import { DBType, LogType } from '../../../shared/types/dbTypes';
 import logger from '../utils/logging/masterlog';
 import { DocConfigFile } from '../../BE_types';
 
 // HELPER FUNCTIONS
 
-const home = `${os.homedir()}/Documents/SeeQR`;
+const home = process.cwd();
 const configFile = 'config.json';
 const configPath = `${home}/${configFile}`;
 

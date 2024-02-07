@@ -100,7 +100,7 @@ function menuReducer(state: MenuState, action: MenuActions): MenuState {
 export const submitAsyncToBackend = (
   issued: number,
   asyncList: Map<number, async>,
-  invoke: (e: string, p: any) => Promise<any>,
+  invoke: (e: string, p: string | number) => Promise<any>,
   menuDispatch: (v: MenuActions) => void,
 ) => {
   const request = asyncList.get(issued);

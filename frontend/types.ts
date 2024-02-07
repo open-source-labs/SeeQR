@@ -246,11 +246,15 @@ export interface ExplainJson {
  *
  */
 
-export type ERTablingConstants = { TABLE_HEADER } | { TABLE_FIELD };
+export type ERTablingConstants =
+  | { TABLE_HEADER }
+  | { TABLE_FIELD }
+  | { TABLE_FOOTER };
 
 export type NodeTypes = {
   tableHeader: JSX.Element;
   tableField: JSX.Element;
+  tableFooter: JSX.Element;
 };
 
 export interface ERTableData extends TableInfo {

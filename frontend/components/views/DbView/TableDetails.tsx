@@ -1,4 +1,6 @@
+import { ipcRenderer } from 'electron';
 import React from 'react';
+import { useEffect, useState } from 'react';
 import {
   Table,
   TableBody,
@@ -12,6 +14,7 @@ import {
 import styled from 'styled-components';
 import { greyDark, greyPrimary } from '../../../style-variables';
 import { TableInfo } from '../../../types';
+import { DBType } from '../../../../backend/BE_types';
 
 const StyledPaper = styled(({ ...other }) => (
   <Paper elevation={8} {...other} />
@@ -25,45 +28,64 @@ const StyledCell = styled(TableCell)`
 
 interface TableDetailsProps {
   table: TableInfo | undefined;
+  selectedDb: string;
+  curDBType: DBType | undefined;
 }
 
-function TableDetails({ table }: TableDetailsProps) {
-  return <>
-    <Typography variant="h3">{`${table?.table_name}`}</Typography>
-    <br />
-    <TableContainer component={StyledPaper}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>
-              <strong>Column</strong>
-            </TableCell>
-            <TableCell align="right">
-              <strong>Type</strong>
-            </TableCell>
-            <TableCell align="right">
-              <strong>Is Nullable?</strong>
-            </TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {table?.columns.map((row) => (
-            <TableRow key={row.column_name}>
-              <StyledCell key={row?.column_name}>{row?.column_name}</StyledCell>
-              <StyledCell align="right">
-                {`${row?.data_type}${
-                  row?.character_maximum_length
-                    ? `(${row.character_maximum_length})`
-                    : ''
-                }`}
-              </StyledCell>
-              <StyledCell align="right">{row?.is_nullable}</StyledCell>
+function TableDetails({ table, selectedDb, curDBType }: TableDetailsProps) {
+  const [data,setData] = useState([])
+  const onDisplay = () => {
+    ipcRenderer
+      .invoke(
+        'run-select-all-query',
+        {
+          sqlString: `SELECT * FROM ${table?.table_name}`,
+          selectedDb,
+        },
+        curDBType,
+      )
+      .then((data) => {
+        setData(data)
+      })
+      .catch((err) => {
+        console.error('Error in onDisplay ', err);
+      });
+  };
+
+  useEffect(() => {
+    onDisplay();
+  }, [table, selectedDb, curDBType]);
+  
+  return (
+    <>
+      <Typography variant="h3">{`${table?.table_name}`}</Typography>
+      <br />
+      <TableContainer component={StyledPaper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+                {table?.columns.map((row) => (
+              <TableCell>
+                  {`${row?.column_name} (${row?.data_type} ${row.character_maximum_length})`}
+              </TableCell>
+                ))}
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  </>
+          </TableHead>
+          <TableBody>
+            {data?.map((element) => (
+              <TableRow>
+                {Object.keys(element).map((column) => (
+                  <TableCell key={element}>
+                    {element[column]}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </>
+  );
 }
 
 export default TableDetails;

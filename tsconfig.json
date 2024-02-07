@@ -79,5 +79,5 @@
     "forceConsistentCasingInFileNames": true /* Disallow inconsistently-cased references to the same file. */,
     "resolveJsonModule": true /*  Include modules imported with '.json' extension. Requires TypeScript version 2.9 or later. */
   },
-  "include": ["backend", "frontend", "__tests__", "shared"]
+  "include": ["backend", "frontend", "__tests__", "shared", "./node_modules/@monaco-editor/react"]
 }
