@@ -41,7 +41,7 @@ else (database === DBType.sqlite) {}<br>
 
 <img src="./assets/readmeImages/erdArchitecture.png" height=500/>
 
-<p>The road map is finish connecting the siloed pieces for postgres, then moving on to mysql <br><br> <b>***Important*** <br> There is no entry for this system yet but this file frontend/components/iews/ERTables/ERDisplayWindow.tsx will be the entry when completed</b></p>
+<p>The road map is finish connecting the siloed pieces for postgres, then moving on to mysql <br><br> <b>***Important*** <br> There is no entry for this system yet, but this file frontend/components/iews/ERTables/ERDisplayWindow.tsx will be the entry once completed</b></p>
 
 <p><b>3. ERD Logic Update</b><br>Currently, previous wrote the frontend to send back a big bundle of all the operations done in the frontend ERD Table. This ERD table object is divided by add, drop, and alter. All the add operations will execute first then drop, then alter. This is <b>BAD</b>. <br><br> We need to redesign frontend to send back "sequental" operations instead of bundling operations by add, drop, alter because it takes care of multiple edge cases and users in the front can do as many operations they want to ensure <b>SAVE</b> works. I illustrated the problem below. The current backend is written out already. We just need to make sure the frontend is send back the appropriate logic</p>
 
@@ -55,6 +55,7 @@ The main roadblock in the way of finalizing the transfer of event handlers out o
 The spinner currently works in a similar way to feedback. Once all async is completely migrated (including dblist update changes), this spinner can simply be tied to the loading property in the main app state.<br><br>
 There are still some filesystem read/write calls in the front end. This should be refactored to an async call that requests the backend handle the file system read/write for proper separation of concerns.
 </p>
+
 
 <p><b> WHAT IS BROKEN: </b></p>
 
