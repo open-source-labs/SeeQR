@@ -264,6 +264,7 @@ export async function runSelectAllQuery(event, {sqlString, selectedDb}:SelectAll
   try {
     await connectionModel.connectToDB(selectedDb, curDBType);
     const results = await queryModel.query(sqlString, [], curDBType);
+    console.log('good',results.rows)
     return results?.rows
   } catch (error) {
     console.log(error, 'in runSelectAllQuery')
