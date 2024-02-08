@@ -8,42 +8,44 @@
 
     - Refactor codebase to elimiate <strong>prop-drilling</strong> allowing for future iterability. 
 
-    - Update ui of the initial landing page of application with cloud database instructions
+        - Continue working on state management (usereducer, usecontext, etc)
 
-    - continue working on state management (usereducer, usecontext, etc)
+    - Update UI of the initial landing page of application with cloud database instructions
 
-    - fix outdated dependencies, currently packages must be force installed
+    - Fix outdated dependencies, currently packages must be force installed
 
+- Mac vs Windows:
+
+    - In the '../backend/src/models/configModel.ts' on line 9 - 11 specifies where the configFile will be downloaded. The 'home' variable will be different for Mac and Windows users. Utilize an if conditional statement here to prevent the need for maintaining two branches (main and devosx) for windows and mac.
+
+    - For Windows set `home = process.cwd()` on line 10 and for Mac set <br>`home  = ${os.homedir()}/Documents/SeeQR` </br>
 
 - Database management
 
-    - currently postgres imports/duplicates only works for either windows or osx/linux. main branch supports windows, devosx supports mac/linux, resolve this asap to not have to keep up with two branches
+    - Currently postgres imports/duplicates only works for either windows.
 
-        - perhaps use .pgpass file instead of pgpassword environment variable for security (for postgresql imports/duplicates)
+        - Perhaps use .pgpass file instead of pgpassword environment variable for security (for postgresql imports/duplicates)
 
-        - found in backend/helperFunctions.ts
+        - Found in backend/helperFunctions.ts
 
     - Fix importing MySQL databases (currently creating an extra hollow copy or not working at all)
       
         - Currently importing MySQL databases will work when only MySQL server is up on MAC OS.
+        
+        - MySQL databases that are imported will only show data type, but not column name. 
 
-    - add ability to have multiple sqlite databases
-
-    - fix deleting sqlite databases (currently only works randomly, likely not closing connection before attempting unlink)
+    - Fix sqlite and RDS databases (currently only Postgres and MySQL are working)
     
-    - support for amazon aurora (beware of billing)
+    - Support for amazon aurora (beware of billing)
 
 
 - Queries page
 
     - Fix query execution plan table view, likely broke while updating frontend dependencies
-    - Fix query execution plan table view, likely broke while updating frontend dependencies
 
     - Utilize local storage to save query history. Currently the history disappears when we reload application.
 
     - Work on explain function for mysql and sqlite, may have different metadata from existing postgres implementation, display whatever you can get 
-    - Work on explain function for mysql and sqlite, may have different metadata from existing postgres implementation, display whatever you can get 
-
 
 - 2D visualization / ER tables: 
 
@@ -65,11 +67,11 @@
 
     - resolve issue of creating additional columns for each constraint (mostly mysql)
 
-    - rds pg cloud queries seem to be creating the tables in more than just the selected database.
+    - rds pg cloud queries not set up
 
     - rds my sql cloud queries wont let you create multiple tables at once. as in you have to create one table, then make another query to make your second table.
 
-    - when you create a new cloud pg database, it seems to have all the other databases tables aswell.
+    - when you create a new cloud pg database, it seems to have all the other databases tables as well.
  
 
 - 3D visualization: 
@@ -86,9 +88,4 @@
 
     - Add VR functionality?
 
-- Mac vs Windows:
-
-    - In the '../backend/src/models/configModel.ts' on line 9 - 11 specifies where the configFile will be downloaded. The 'home' variable will be different for Mac and Windows users. Utilize an if conditional statement here to prevent the need for maintaining two branches (main and devosx) for windows and mac.
-
-    - For Windows set `home = process.cwd()` on line 10 and for Mac set <br>`home  = ${os.homedir()}/Documents/SeeQR` </br>
 
