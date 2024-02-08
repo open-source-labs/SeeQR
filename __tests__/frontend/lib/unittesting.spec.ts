@@ -46,7 +46,7 @@ describe('runSelectAllQuery', () => {
       { sqlString, selectedDb },
       curDBType,
     );
-
+    console.log(result);
 
     expect(mockConnectionModel.connectToDB).toHaveBeenCalledWith('test', 'pg');
     expect(mockConnectionModel.connectToDB).toHaveBeenCalledTimes(1);

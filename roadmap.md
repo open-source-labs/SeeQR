@@ -37,12 +37,12 @@
 - Queries page
 
     - Fix query execution plan table view, likely broke while updating frontend dependencies
+    - Fix query execution plan table view, likely broke while updating frontend dependencies
 
     - Utilize local storage to save query history. Currently the history disappears when we reload application.
 
     - Work on explain function for mysql and sqlite, may have different metadata from existing postgres implementation, display whatever you can get 
-
-
+    - Work on explain function for mysql and sqlite, may have different metadata from existing postgres implementation, display whatever you can get 
 
 
 - 2D visualization / ER tables: 
