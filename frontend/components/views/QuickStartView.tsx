@@ -90,16 +90,15 @@ function getStepContent(step: number) {
             <li> Run server(s) in the background</li>
             <li>Ensure that PATH is enabled</li>
             <li>
-              If existing user - sign in with user and password using gear icon
-              - top of left panel
+              MySQL username defaults to 'root' and postgres username defaults to 'postgres' 
+              
+            </li>
+            <li>
+              MySQL and postgres password will be your password to log into mySQL and postgres database
             </li>
             <li>
               Ports for PostgresSQL and MySQL are defaulted to ‘5432’ and
               ‘3306’, respectively
-            </li>
-            <li>
-              Postgres new user: create user and password: eg. CREATE USER
-              davide WITH PASSWORD 'jw8s0F4’;
             </li>
             <li>Enable full permissions for database manipulation</li>
           </StepList>
@@ -149,6 +148,9 @@ function getStepContent(step: number) {
             <li>
               Use the brush icon on the top-right to automatically format the
               query
+            </li>
+            <li>
+              Use the previous queries dropdown to view and select previously inputted queries
             </li>
             <li>Select &quot;RUN QUERY&quot; button to execute</li>
             <li>
