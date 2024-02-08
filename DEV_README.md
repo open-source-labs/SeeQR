@@ -8,7 +8,7 @@
 
 <b>`** v13.0.0 **`</b>
 
-<p>In this version our team focused on refactoring the broken code base from all previous versions. </p>
+<p>In this version our team prioritized improving the code base from all prior versions through refactoring. </p>
 
 <p><b> WHAT YOU NEED TO DO FIRST: </b></p>
 
@@ -27,7 +27,9 @@ Run npm run dev twice if you do not manually run tsc to compile the files first.
 
 <p><b> WHAT NEEDS TO BE DONE: </b></p>
 
-<p>1. Refractor tableTabBar </p>
+<p>1. Refactor tableTabBar Component</p>
+
+- Migrated ERTabling to tableTabBar component to access the ERD because it lacked a parent compartment for prop drilling, hindering the addition of new features. Going forward, a more maintainable solution should be implemented like Redux or Zustand.
 
 - Migrated ERTabling to tableTabBar component to access the ERD because it lacked a parent compartment for prop drilling, hindering the addition of new features. Going forward, a more maintainable solution should be implemented like Redux or Zustand.
 
@@ -47,7 +49,7 @@ else (database === DBType.sqlite) {}<br>
 
 <img src="./assets/readmeImages/ERD_before_after.png" height=500/>
 
-<br><br> <b>**_Important_** <br> This is wrtten at backend/src/ipcHandlers/dbCRUDHandlerERD.ts and will replace backend/src/ipcHandlers/dbCRUDHandler.ts when this is ready</b>
+<br><br> <b>**_Important_** <br> This is written at backend/src/ipcHandlers/dbCRUDHandlerERD.ts and will replace backend/src/ipcHandlers/dbCRUDHandler.ts when this is ready</b>
 
 <p><b>4. Async event emmiters between front/backend</b></p>
 <p>Currently, the way the feedback modal works is by handling events that are emitted from both the frontend and the backend. Ideally, this should be refactored to be state dependent rather than event dependent, as it controls the display of the modal. This can be tied into the centralized async event emitter added to frontend/components/app.tsx, in conjunction with migration to reducers from state variables. The goal will be to house modal messages in the store tied to the main app reducer. From there, the async handler can send new messages to the state via main app dispatch, and any other front end feedback can do the same.<br><br>
@@ -74,5 +76,7 @@ There are still some filesystem read/write calls in the front end. This should b
 
 <p>5. Foreign and Primary keys.</p>
 
-- Unable to select the primary and/or foreign key of a newly added column until the column is saved onto the database. Once saved onto the database, we can then select the primary and foreign key and save them onto the database. 
+- Unable to select the primary and/or foreign key of a newly added column until the column is saved onto the database. Once saved onto the database, we can then select the primary and foreign key and save them onto the database.
+
+
 
