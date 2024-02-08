@@ -64,7 +64,7 @@ There are still some filesystem read/write calls in the front end. This should b
 <p><b> WHAT IS BROKEN: </b></p>
 
 <p>1. The application on Windows may periodically crash.</p>
-<p>2. There are import issues on mac computers.</p>
+<p>2. There are import issues on Mac computers.</p>
 
 - Unable to import pg or mySQL database files
 <p>3. Duplicates appear on previous queries.</p>
