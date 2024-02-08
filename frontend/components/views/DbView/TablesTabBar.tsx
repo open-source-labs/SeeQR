@@ -291,7 +291,7 @@ function TablesTabs({
   function handleClickSave(): void {
     // This function sends a message to the back end with
     // the data in backendObj.current
-    // handleSaveLayout();
+    handleSaveLayout();
 
     ipcRenderer
       .invoke('ertable-schemaupdate', backendObj.current, selectedDb, curDBType)
