@@ -151,7 +151,9 @@ To get started on contributing and editing databases to this project:
   </br>
   <br>
   <div align="center">
-    <img src="./assets/readmeImages/gifs/querySearch.gif" width=800/>
+
+    <img src="./assets/readmeImages/gifs/query.gif" width=800/>
+
   </div>
    <br />
 
