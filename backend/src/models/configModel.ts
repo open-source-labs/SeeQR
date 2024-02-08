@@ -1,5 +1,4 @@
 // import path from 'path';
-import os from 'os'
 import fs from 'fs';
 import { DBType, LogType } from '../../../shared/types/dbTypes';
 import logger from '../utils/logging/masterlog';
@@ -9,7 +8,7 @@ import { DocConfigFile } from '../../BE_types';
 
 const home = process.cwd();
 const configFile = 'config.json';
-const configPath = `${os.homedir()}/Documents/SeeQR/${configFile}`;
+const configPath = `${home}/${configFile}`;
 
 // ideally, we want to keep this config in a seperate file as well
 export const defaultFile: DocConfigFile = {

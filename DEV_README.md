@@ -8,7 +8,7 @@
 
 <b>`** v13.0.0 **`</b>
 
-<p>In this version our team prioritized improving the code base from all prior versions through refactoring. </p>
+<p>In this version our team focused on refactoring the broken code base from all previous versions. </p>
 
 <p><b> WHAT YOU NEED TO DO FIRST: </b></p>
 
@@ -27,9 +27,7 @@ Run npm run dev twice if you do not manually run tsc to compile the files first.
 
 <p><b> WHAT NEEDS TO BE DONE: </b></p>
 
-<p>1. Refactor tableTabBar Component</p>
-
-- Migrated ERTabling to tableTabBar component to access the ERD because it lacked a parent compartment for prop drilling, hindering the addition of new features. Going forward, a more maintainable solution should be implemented like Redux or Zustand.
+<p>1. Refractor tableTabBar </p>
 
 <p><b>2. Isolating Database</b> <br> One of the biggest tasks that we tried but <b>did not finish</b> is isolating the concerns of each database type (DBType). The current application has multiple</p>
 <code>if (database === DBType.postgres) {}<br>
@@ -41,13 +39,13 @@ else (database === DBType.sqlite) {}<br>
 
 <img src="./assets/readmeImages/erdArchitecture.png" height=500/>
 
-<p>The road map is finish connecting the siloed pieces for postgres, then moving on to mysql <br><br> <b>***Important*** <br> There is no entry for this system yet, but this file frontend/components/iews/ERTables/ERDisplayWindow.tsx will be the entry once completed</b></p>
+<p>The road map is finish connecting the siloed pieces for postgres, then moving on to mysql <br><br> <b>***Important*** <br> There is not an entry for this system yet but this file frontend/components/iews/ERTables/ERDisplayWindow.tsx will be the entry</b></p>
 
 <p><b>3. ERD Logic Update</b><br>Currently, previous wrote the frontend to send back a big bundle of all the operations done in the frontend ERD Table. This ERD table object is divided by add, drop, and alter. All the add operations will execute first then drop, then alter. This is <b>BAD</b>. <br><br> We need to redesign frontend to send back "sequental" operations instead of bundling operations by add, drop, alter because it takes care of multiple edge cases and users in the front can do as many operations they want to ensure <b>SAVE</b> works. I illustrated the problem below. The current backend is written out already. We just need to make sure the frontend is send back the appropriate logic</p>
 
 <img src="./assets/readmeImages/ERD_before_after.png" height=500/>
 
-<br><br> <b>**_Important_** <br> This is written at backend/src/ipcHandlers/dbCRUDHandlerERD.ts and will replace backend/src/ipcHandlers/dbCRUDHandler.ts when this is ready</b>
+<br><br> <b>**_Important_** <br> This is wrtten at backend/src/ipcHandlers/dbCRUDHandlerERD.ts and will replace backend/src/ipcHandlers/dbCRUDHandler.ts when this is ready</b>
 
 <p><b>4. Async event emmiters between front/backend</b></p>
 <p>Currently, the way the feedback modal works is by handling events that are emitted from both the frontend and the backend. Ideally, this should be refactored to be state dependent rather than event dependent, as it controls the display of the modal. This can be tied into the centralized async event emitter added to frontend/components/app.tsx, in conjunction with migration to reducers from state variables. The goal will be to house modal messages in the store tied to the main app reducer. From there, the async handler can send new messages to the state via main app dispatch, and any other front end feedback can do the same.<br><br>
@@ -55,7 +53,8 @@ The main roadblock in the way of finalizing the transfer of event handlers out o
 The spinner currently works in a similar way to feedback. Once all async is completely migrated (including dblist update changes), this spinner can simply be tied to the loading property in the main app state.<br><br>
 There are still some filesystem read/write calls in the front end. This should be refactored to an async call that requests the backend handle the file system read/write for proper separation of concerns.
 </p>
-
+<p>4. </p>
+<p>5. </p>
 
 <p><b> WHAT IS BROKEN: </b></p>
 
@@ -74,7 +73,5 @@ There are still some filesystem read/write calls in the front end. This should b
 
 <p>5. Foreign and Primary keys.</p>
 
-- Unable to select the primary and/or foreign key of a newly added column until the column is saved onto the database. Once saved onto the database, we can then select the primary and foreign key and save them onto the database.
-
-
+- Unable to select the primary and/or foreign key of a newly added column until the column is saved onto the database. Once saved onto the database, we can then select the primary and foreign key and save them onto the database. 
 
