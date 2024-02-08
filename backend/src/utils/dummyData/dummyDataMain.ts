@@ -26,7 +26,6 @@ export const getRandomInt = (min: number, max: number) => {
 // helper function to generate random data based on a given column's data type
 const generateDataByType = (columnObj: ColumnObj): string | number => {
   let length;
-  console.log(columnObj.data_type);
   // updated the new faker package so updated to follow proper documentation.
   switch (columnObj.data_type) {
     case 'smallint':

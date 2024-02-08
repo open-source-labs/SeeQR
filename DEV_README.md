@@ -31,6 +31,8 @@ Run npm run dev twice if you do not manually run tsc to compile the files first.
 
 - Migrated ERTabling to tableTabBar component to access the ERD because it lacked a parent compartment for prop drilling, hindering the addition of new features. Going forward, a more maintainable solution should be implemented like Redux or Zustand.
 
+- Migrated ERTabling to tableTabBar component to access the ERD because it lacked a parent compartment for prop drilling, hindering the addition of new features. Going forward, a more maintainable solution should be implemented like Redux or Zustand.
+
 <p><b>2. Isolating Database</b> <br> One of the biggest tasks that we tried but <b>did not finish</b> is isolating the concerns of each database type (DBType). The current application has multiple</p>
 <code>if (database === DBType.postgres) {}<br>
 else if (database === DBType.mysql) {}<br>
