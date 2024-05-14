@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { LinearProgress } from '@mui/material';
 import { ipcRenderer } from 'electron';
-import styled, { ExecutionContext } from 'styled-components';
+import styled from 'styled-components';
 
 interface Props {
   $show: boolean;
@@ -11,7 +11,7 @@ const StyledLinearProg = styled(LinearProgress)<Props>`
   /* Material Ui Drawer component used by sidebar has z-index: 1200 */
   z-index: 1300;
   height: 5px;
-  visibility: ${(props?) => (props.$show ? 'visible' : 'hidden')};
+  visibility: ${(props?) => (props?.$show ? 'visible' : 'hidden')};
 `;
 
 let delayTimer: NodeJS.Timeout;

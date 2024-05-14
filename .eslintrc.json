@@ -10,17 +10,15 @@
     "eslint:recommended",
 
     "plugin:react/recommended",
-    "plugin:react-hooks/recommended",
 
     "plugin:@typescript-eslint/recommended",
     "plugin:@typescript-eslint/recommended-requiring-type-checking",
 
-    "airbnb",
-
     "plugin:import/recommended",
     "plugin:import/typescript",
 
-    "prettier"
+    "prettier",
+    "love"
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
@@ -31,7 +29,7 @@
     "sourceType": "module",
     "project": "./tsconfig.json"
   },
-  "plugins": ["react", "react-hooks", "@typescript-eslint", "import"],
+  "plugins": ["react", "n", "@typescript-eslint", "import", "promise"],
   "rules": {
     "react/jsx-filename-extension": [1, { "extensions": [".jsx", ".tsx"] }],
 
