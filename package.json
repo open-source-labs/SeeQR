@@ -89,6 +89,7 @@
     "@types/react-dom": "^18.2.7",
     "@types/styled-components": "^5.1.26",
     "@types/three": "^0.164.0",
+    "@types/webpack": "^5.28.5",
     "@typescript-eslint/eslint-plugin": "^7.9.0",
     "@typescript-eslint/parser": "^7.9.0",
     "babel-loader": "^9.1.3",
