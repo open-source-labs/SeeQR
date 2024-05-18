@@ -49,7 +49,7 @@
     "debounce": "^2.0.0",
     "electron-reloader": "^1.2.3",
     "electron-store": "9.0",
-    "fix-path": "4.0",
+    "fix-path": "3.0",
     "monaco-editor": "^0.48.0",
     "ms": "^2.1.3",
     "mysql": "^2.18.1",
