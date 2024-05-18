@@ -7,11 +7,11 @@ import App from './components/App';
 
 import '@fontsource/roboto';
 
-const root = createRoot(document.createElement('div'));
-root.id = 'root';
-document.body.appendChild(root);
-
-root.render(<App />);
+const doc = document.createElement('div') as HTMLElement;
+doc.id = 'root';
+const element = createRoot(doc);
+document.body.appendChild(doc);
+element.render(<App />);
 
 // const container = document.getElementById('root') as HTMLElement;
 // const root = createRoot(container);
