@@ -5,8 +5,8 @@ import { ButtonGroup, Button, Tooltip } from '@mui/material';
 import styled from 'styled-components';
 import { formatDialect, postgresql } from 'sql-formatter';
 
-import CodeMirror from '@uiw/react-codemirror';
-import { dracula } from '@uiw/codemirror-theme-dracula';
+// import CodeMirror from '@uiw/react-codemirror';
+// import { dracula } from '@uiw/codemirror-theme-dracula';
 
 const Container = styled.div`
   position: relative;
@@ -56,7 +56,7 @@ function SchemaSqlInput({ sql, onChange, runQuery }: SchemaSqlInputProps) {
           </Tooltip>
         </ButtonGroup>
       </Toolbar>
-      <CodeMirror
+      {/* <CodeMirror
         onChange={onChange}
         theme={dracula}
         height="300px"
@@ -64,7 +64,7 @@ function SchemaSqlInput({ sql, onChange, runQuery }: SchemaSqlInputProps) {
         basicSetup={{
           highlightActiveLine: false,
         }}
-      />
+      /> */}
     </Container>
   );
 }
