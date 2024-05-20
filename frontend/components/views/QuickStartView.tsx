@@ -14,7 +14,7 @@ import '../../lib/style.css';
 interface QuickStartViewProps {
   show: boolean;
 }
-
+// welcome page container w/o sidebar
 const PageContainer = styled.a`
   display: flex;
   flex-direction: column;
@@ -23,50 +23,63 @@ const PageContainer = styled.a`
   height: auto;
   width: auto;
 `;
-
+// a container of all the steppers
 const StyledStepper = styled(Stepper)`
-  margin: 60px 0px 20px 0px;
-  background: transparent;
+  margin: 60px 10px 20px 0px;
+  // background: red;
 `;
-
+// Text label for each stepper
 const StyledStepLabel = styled(StepLabel)`
+  & :hover {
+    background: #8bbd9a;
+    transition: 200ms ease-in-out;
+    & .MuiStepLabel-label {
+      color: black;
+    }
+  }
   width: 10vw;
   & .MuiStepLabel-label {
     font-size: clamp(1rem, 1.28vw, 1.3rem);
   }
 `;
+// stepButton
+const StyledStepButton = styled(StepButton)`
+  // background-color: red;
+  border-style: solid;
+  border-color: white;
+`;
 
+// text instructions div
 const StyledTypographyInstructions = styled.div`
   font-size: clamp(1rem, 2.2vw, 1.2rem);
   text-align: center;
   width: 50vw;
-  min-height: 26vw;
-`;
-
-const StyledTypographyTitle = styled(Typography)`
-  font-size: clamp(2rem, 35vw, 3rem);
-  margin-top: 10px;
-`;
-
-const NavButtons = styled.div`
-  margin: 15px auto;
-
   // background: white;
 `;
-
+// title: "welcome to SeeQR"
+const StyledTypographyTitle = styled(Typography)`
+  font-size: clamp(2rem, 35vw, 3rem);
+  margin-top: 5px;
+`;
+// container div for btn back & btn complete
+const NavButtons = styled.div`
+  margin: 8px auto;
+  // background: white;
+`;
+// container for the text instructions and navBtn
 const StepContent = styled.div`
+  min-height: 30vw;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  margin-top: 30px;
+  margin-top: 20px;
 `;
-
+// step list ul
 const StepList = styled.ul`
   text-align: left;
   font-size: 0.9em;
   list-style: circle;
-
   & li {
     margin-top: 7px;
   }
@@ -309,9 +322,9 @@ function QuickStartView({ show }: QuickStartViewProps) {
           }
           return (
             <Step key={label} {...stepProps} completed={isStepComplete(index)}>
-              <StepButton onClick={handleStep(index)} {...buttonProps}>
+              <StyledStepButton onClick={handleStep(index)} {...buttonProps}>
                 <StyledStepLabel className="stepper">{label}</StyledStepLabel>
-              </StepButton>
+              </StyledStepButton>
             </Step>
           );
         })}

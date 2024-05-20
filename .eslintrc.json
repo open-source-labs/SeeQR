@@ -84,7 +84,8 @@
       "typescript": {
         "alwaysTryTypes": true
       }
-    }
+    },
+    "import/core-modules": ["electron"] // resolves "electron s/b listed in proj dep, not devDep"
   },
   "root": true
 }
