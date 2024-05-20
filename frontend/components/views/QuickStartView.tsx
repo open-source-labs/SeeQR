@@ -39,15 +39,19 @@ const StyledStepLabel = styled(StepLabel)`
 const StyledTypographyInstructions = styled.div`
   font-size: clamp(1rem, 2.2vw, 1.2rem);
   text-align: center;
-  width: 40vw;
+  width: 50vw;
+  min-height: 26vw;
 `;
 
 const StyledTypographyTitle = styled(Typography)`
   font-size: clamp(2rem, 35vw, 3rem);
+  margin-top: 10px;
 `;
 
 const NavButtons = styled.div`
   margin: 15px auto;
+
+  // background: white;
 `;
 
 const StepContent = styled.div`
@@ -55,6 +59,7 @@ const StepContent = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  margin-top: 30px;
 `;
 
 const StepList = styled.ul`
@@ -90,15 +95,16 @@ function getStepContent(step: number) {
             <li> Run server(s) in the background</li>
             <li>Ensure that PATH is enabled</li>
             <li>
-              MySQL username defaults to 'root' and postgres username defaults to 'postgres' 
-              
+              MySQL username defaults to &quot;root&quot; and postgres username
+              defaults to &quot;postgres&quot;
             </li>
             <li>
-              MySQL and postgres password will be your password to log into mySQL and postgres database
+              MySQL and postgres password will be your password to log into
+              mySQL and postgres database
             </li>
             <li>
-              Ports for PostgresSQL and MySQL are defaulted to ‘5432’ and
-              ‘3306’, respectively
+              Ports for PostgresSQL and MySQL are defaulted to &quot;5432&quot;
+              and &quot;3306&quot;, respectively
             </li>
             <li>Enable full permissions for database manipulation</li>
           </StepList>
@@ -150,7 +156,8 @@ function getStepContent(step: number) {
               query
             </li>
             <li>
-              Use the previous queries dropdown to view and select previously inputted queries
+              Use the previous queries dropdown to view and select previously
+              inputted queries
             </li>
             <li>Select &quot;RUN QUERY&quot; button to execute</li>
             <li>
