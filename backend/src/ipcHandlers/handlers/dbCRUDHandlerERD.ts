@@ -1,8 +1,11 @@
 // Types
 import { app } from 'electron';
-import { DBList, LogType } from '../../../BE_types';
-import { Feedback } from '../../../../shared/types/utilTypes';
-import { ErdUpdatesType } from '../../../../shared/types/erTypes';
+import {
+  DBListInterface,
+  LogType,
+  Feedback,
+  ErdUpdatesType,
+} from '../../../../shared/types/types';
 import dbState from '../../models/stateModel';
 // Helpers
 import logger from '../../utils/logging/masterlog';
@@ -27,6 +30,7 @@ import queryModel from '../../models/queryModel';
  */
 
 export async function erTableSchemaUpdate(event, updatesArray: ErdUpdatesType) {
+  // need to update return value and type strongly
   // send notice to front end that schema update has started
   event.sender.send('async-started');
   let feedback: Feedback = {
@@ -52,6 +56,7 @@ export async function erTableSchemaUpdate(event, updatesArray: ErdUpdatesType) {
     };
     return 'success';
   } catch (err: any) {
+    // (chore) strongly type err
     // rollback transaction if there's an error in update and send back feedback to FE
     await queryModel.query('Rollback;', [], currentERD);
 
@@ -62,7 +67,7 @@ export async function erTableSchemaUpdate(event, updatesArray: ErdUpdatesType) {
   } finally {
     // send updated db info
 
-    const updatedDb: DBList = await databaseModel.getLists(
+    const updatedDb: DBListInterface = await databaseModel.getLists(
       currentDb,
       currentERD,
     );

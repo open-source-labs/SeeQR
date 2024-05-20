@@ -4,46 +4,16 @@
 import { PoolOptions } from 'mysql2';
 import { PoolConfig } from 'pg';
 
-export interface ColumnObj {
-  column_name: string;
-  data_type: string;
-  character_maximum_length: number | null;
-  is_nullable: string;
-  constraint_type: string | null;
-  foreign_table: string | null;
-  foreign_column: string | null;
-}
-export interface dbDetails {
-  db_name: string;
-  db_size: string;
-  db_type: DBType;
-}
-export interface TableDetails {
-  table_catalog: string;
-  table_schema: string;
-  table_name: string;
-  is_insertable_into: string;
-  columns?: ColumnObj[];
-}
-export interface DBList {
-  databaseConnected: {
-    PG: boolean;
-    MySQL: boolean;
-    RDSPG: boolean;
-    RDSMySQL: boolean;
-    SQLite: boolean;
-    directPGURI: boolean;
-  };
-  databaseList: dbDetails[];
-  tableList: TableDetails[];
-}
+// Electron Interface //
 
-export type DummyRecords = [string[], ...Array<(string | number)[]>];
+// Due to legacy reasons some data arriving from the backend is being treated as
+// unknown types until full typing can be implemented on the backend
 
-export type BackendObjType = {
-  database: string;
-  updates: UpdatesObjType;
-};
+/**
+ * Fake type guard that asserts a type to simplify tests inside real type guards
+ */
+// type assertions don't work with arrow functions https://github.com/microsoft/TypeScript/issues/34523
+function assumeType<T>(x: unknown): asserts x is T {}
 
 export enum DBType {
   Postgres = 'pg',
@@ -63,15 +33,104 @@ export enum LogType {
   SEND = 'SEND',
   RECEIVE = 'RECEIVE',
 }
-
-export interface DocConfigFile {
-  mysql: { user: string; password: string; port: number };
-  pg: { user: string; password: string; port: number };
-  rds_mysql: { user: string; password: string; port: number; host: string };
-  rds_pg: { user: string; password: string; port: number; host: string };
-  sqlite: { path: '' };
-  directPGURI: { uri: '' };
+export interface ColumnObj {
+  column_name: string;
+  data_type: string;
+  character_maximum_length: number | null;
+  is_nullable: string;
+  constraint_type: string | null;
+  foreign_table: string | null;
+  foreign_column: string | null;
 }
+
+export interface dbDetails {
+  db_name: string;
+  db_size: string;
+  db_type: DBType;
+}
+export interface TableDetails {
+  table_catalog: string;
+  table_schema: string;
+  table_name: string;
+  is_insertable_into: string;
+  columns?: ColumnObj[];
+}
+export interface DBListInterface {
+  databaseConnected: {
+    PG: boolean;
+    MySQL: boolean;
+    RDSPG: boolean;
+    RDSMySQL: boolean;
+    SQLite: boolean;
+    directPGURI: boolean;
+  };
+  databaseList: dbDetails[];
+  tableList: TableDetails[];
+}
+
+// need to figure out how to integrate dblistinterface and dblistinterfaces
+export interface DbListsInterface {
+  databaseConnected: {
+    PG: boolean;
+    MySQL: boolean;
+    RDSPG: boolean;
+    RDSMySQL: boolean;
+    SQLite: boolean;
+    directPGURI: boolean;
+  };
+  databaseList: DatabaseInfo[];
+  tableList: TableInfo[];
+  dbType: DBType;
+}
+
+/**
+ * Type guard that checks if obj is compatible with type DbListsInterface
+ */
+export const isDbListsInterface = (obj: unknown): obj is DbListsInterface => {
+  try {
+    assumeType<DbListsInterface>(obj);
+    if (!obj.databaseList || !obj.tableList) return false;
+    if (!Array.isArray(obj.databaseList) || !Array.isArray(obj.tableList))
+      return false;
+    if (obj.databaseList[0] && typeof obj.databaseList[0].db_name !== 'string')
+      return false;
+    // if (obj.databaseList[0] && typeof obj.databaseList[0].db_size !== 'string' )
+    //   return false;
+    if (obj.tableList[0] && typeof obj.tableList[0].table_name !== 'string')
+      return false;
+    if (obj.tableList[0] && typeof obj.tableList[0].table_catalog !== 'string')
+      return false;
+    if (obj.tableList[0] && typeof obj.tableList[0].table_schema !== 'string')
+      return false;
+  } catch (e) {
+    return false;
+  }
+  return true;
+};
+
+export type DummyRecords = [string[], ...Array<(string | number)[]>];
+
+export type BackendObjType = {
+  database: string;
+  updates: UpdatesObjType;
+};
+
+// choose one above or below : Check how this object is being made
+// export type BackendObjType = {
+//   current: {
+//     database: string;
+//     updates: UpdatesObjType;
+//   };
+// };
+
+// export interface DocConfigFile {
+//   mysql: { user: string; password: string; port: number };
+//   pg: { user: string; password: string; port: number };
+//   rds_mysql: { user: string; password: string; port: number; host: string };
+//   rds_pg: { user: string; password: string; port: number; host: string };
+//   sqlite: { path: '' };
+//   directPGURI: { uri: '' };
+// }
 
 export interface DocConfigFile {
   mysql_options: { user: string; password: string; port: number } & PoolOptions;
@@ -92,7 +151,7 @@ export interface DocConfigFile {
   directPGURI_options: { connectionString: string } & PoolConfig;
 }
 
-type dbsInputted = {
+export type dbsInputted = {
   pg: boolean;
   msql: boolean;
   rds_pg: boolean;
@@ -116,11 +175,6 @@ type combined = {
 };
 
 export interface MysqlQueryResolve {} // not implemented yet
-
-type combined = {
-  dbsInputted: dbsInputted;
-  configExists: configExists;
-};
 
 export interface DBFunctions {
   pg_uri: string;
@@ -421,11 +475,6 @@ export type ViewName =
   | 'newSchemaView'
   | 'threeDView';
 
-export interface Feedback {
-  type: string;
-  message: string;
-}
-
 export interface AppState {
   // createNewQuery: CreateNewQuery;
   selectedDb: string;
@@ -493,7 +542,7 @@ export interface QueryData {
 
 export type ValidTabs = 'Results' | 'Execution Plan';
 
-export type FeedbackSeverity = 'error' | 'success' | 'info' | 'warning';
+export type FeedbackSeverity = '' | 'error' | 'success' | 'info' | 'warning';
 
 export interface Feedback {
   type: FeedbackSeverity;
@@ -505,17 +554,6 @@ export interface Thresholds {
   percentDuration: number;
   rowsAccuracy: number;
 }
-
-// Electron Interface //
-
-// Due to legacy reasons some data arriving from the backend is being treated as
-// unknown types until full typing can be implemented on the backend
-
-/**
- * Fake type guard that asserts a type to simplify tests inside real type guards
- */
-// type assertions don't work with arrow functions https://github.com/microsoft/TypeScript/issues/34523
-function assumeType<T>(x: unknown): asserts x is T {}
 
 export interface DatabaseInfo {
   /**
@@ -569,45 +607,6 @@ export interface TableInfo {
   is_insertable_into: 'yes' | 'no';
   columns: TableColumn[];
 }
-
-export interface DbLists {
-  databaseConnected: {
-    PG: boolean;
-    MySQL: boolean;
-    RDSPG: boolean;
-    RDSMySQL: boolean;
-    SQLite: boolean;
-    directPGURI: boolean;
-  };
-  databaseList: DatabaseInfo[];
-  tableList: TableInfo[];
-  dbType: DBType;
-}
-
-/**
- * Type guard that checks if obj is compatible with type DbLists
- */
-export const isDbLists = (obj: unknown): obj is DbLists => {
-  try {
-    assumeType<DbLists>(obj);
-    if (!obj.databaseList || !obj.tableList) return false;
-    if (!Array.isArray(obj.databaseList) || !Array.isArray(obj.tableList))
-      return false;
-    if (obj.databaseList[0] && typeof obj.databaseList[0].db_name !== 'string')
-      return false;
-    // if (obj.databaseList[0] && typeof obj.databaseList[0].db_size !== 'string' )
-    //   return false;
-    if (obj.tableList[0] && typeof obj.tableList[0].table_name !== 'string')
-      return false;
-    if (obj.tableList[0] && typeof obj.tableList[0].table_catalog !== 'string')
-      return false;
-    if (obj.tableList[0] && typeof obj.tableList[0].table_schema !== 'string')
-      return false;
-  } catch (e) {
-    return false;
-  }
-  return true;
-};
 
 // type of node when explain is run with Analyze and Costs
 // optionals vs mandatory were guessed based on examples. Needs confirmation
@@ -743,13 +742,6 @@ export type AlterTablesObjType = {
   addColumns: AddColumnsObjType[];
   dropColumns: DropColumnsObjType[];
   alterColumns: AlterColumnsObjType[];
-};
-
-export type BackendObjType = {
-  current: {
-    database: string;
-    updates: UpdatesObjType;
-  };
 };
 
 export type UpdatesObjType = {

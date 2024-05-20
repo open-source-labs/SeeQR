@@ -5,12 +5,12 @@ import { RowDataPacket } from 'mysql2';
 import {
   ColumnObj,
   dbDetails,
-  DBList,
+  DBListInterface,
   DBType,
   LogType,
   TableDetails,
   databaseModelType,
-} from '../../../shared/types/dbTypes';
+} from '../../../shared/types/types';
 import logger from '../utils/logging/masterlog';
 import pools from '../db/poolVariables';
 
@@ -26,7 +26,7 @@ const databaseModel: databaseModelType = {
   // getLists: this list object is what will be returned at the end of the function. function will get lists for all four databases depending on which is logged in
 
   getLists: async (dbName = '', dbType) => {
-    const listObj: DBList = {
+    const listObj: DBListInterface = {
       databaseConnected: {
         PG: false,
         MySQL: false,
@@ -98,7 +98,7 @@ const databaseModel: databaseModelType = {
         listObj.tableList = listData;
       } catch (error) {
         logger(
-          `COULNT GET DATABASE LIST FOR ${dbType} ${dbName} DATABASE`,
+          `COULD NOT GET DATABASE LIST FOR ${dbType} ${dbName} DATABASE`,
           LogType.ERROR,
         );
       }
@@ -235,8 +235,7 @@ const databaseModel: databaseModelType = {
       }
     }),
 
-  // THIS FUNCTION IS FKED
-
+  // check if function works (chore)
   getColumnObjects: (tableName, dbType) => {
     let queryString: string;
     const value = [tableName];

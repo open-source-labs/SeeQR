@@ -8,8 +8,7 @@ import styled from 'styled-components';
 import logo from '../../../assets/logo/seeqr_dock.png';
 
 // Types
-import { AppState, DatabaseInfo } from '../../types';
-import { DBType } from '../../../backend/BE_types';
+import { AppState, DatabaseInfo, DBType } from '../../../shared/types/types';
 
 import BottomButtons from './BottomButtons';
 import DbList from './DbList';

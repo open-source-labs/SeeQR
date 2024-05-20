@@ -1,7 +1,5 @@
 import { performance } from 'perf_hooks';
-
-import { DBType, LogType, queryModelType } from '../../../shared/types/dbTypes';
-
+import { DBType, LogType, queryModelType } from '../../../shared/types/types';
 import logger from '../utils/logging/masterlog';
 import pools from '../db/poolVariables';
 

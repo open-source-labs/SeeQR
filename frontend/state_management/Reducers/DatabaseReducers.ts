@@ -1,7 +1,10 @@
 import { ipcRenderer } from 'electron';
-import { DBList, DBType } from '@mytypes/dbTypes';
+import {
+  DBListInterface,
+  DBType,
+  TableInfo,
+} from '../../../shared/types/types';
 import databaseActions from '../Actions/DatabaseActions';
-import { TableInfo } from '../../types';
 
 type TableChange<C extends 'CREATE' | 'ALTER' | 'DELETE'> = {
   dbName: string;
@@ -12,7 +15,7 @@ type TableChange<C extends 'CREATE' | 'ALTER' | 'DELETE'> = {
 };
 
 type databaseState<C extends 'CREATE' | 'ALTER' | 'DELETE'> = {
-  dbList: DBList;
+  dbList: DBListInterface;
   selectedDb: { name: string; type: DBType };
   selectedTable: TableInfo | null;
   currentChanges: TableChange<C>[];

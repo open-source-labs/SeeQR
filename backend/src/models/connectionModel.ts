@@ -1,7 +1,10 @@
 import fs from 'fs';
 import docConfig from './configModel';
-import { LogType } from '../../BE_types';
-import { DBType, connectionModelType } from '../../../shared/types/dbTypes';
+import {
+  DBType,
+  connectionModelType,
+  LogType,
+} from '../../../shared/types/types';
 import connectionFunctions from '../db/databaseConnections';
 import logger from '../utils/logging/masterlog';
 import pools from '../db/poolVariables';

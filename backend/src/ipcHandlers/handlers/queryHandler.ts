@@ -1,7 +1,13 @@
 import fs from 'fs';
 
 // Types
-import { DBList, DBType, LogType, QueryPayload, SelectAllQueryPayload } from '../../../BE_types';
+import {
+  DBListInterface,
+  DBType,
+  LogType,
+  QueryPayload,
+  SelectAllQueryPayload,
+} from '../../../../shared/types/types';
 
 // Helpers
 import logger from '../../utils/logging/masterlog';
@@ -77,128 +83,127 @@ export async function runQuery(
     let explainResults;
     try {
       // for (let i = 0; i < numberOfSample; i++) {
-        if (dbType === DBType.Postgres) {
-          const results = await queryModel.query(
-            explainQuery(sqlString, dbType),
-            [],
-            dbType,
-          );
+      if (dbType === DBType.Postgres) {
+        const results = await queryModel.query(
+          explainQuery(sqlString, dbType),
+          [],
+          dbType,
+        );
 
-          explainResults = results[1].rows;
-          const eachSampleTime: any =
-            results[1].rows[0]['QUERY PLAN'][0]['Planning Time'] +
-            results[1].rows[0]['QUERY PLAN'][0]['Execution Time'];
-          arr.push(eachSampleTime);
-          totalSampleTime += eachSampleTime;
-        } else if (dbType === DBType.MySQL) {
-          const results = await queryModel.query(
-            explainQuery(sqlString, dbType),
-            [],
-            dbType,
-          );
-          const eachSampleTime: any = parseExplainExplanation(
-            results[0][0].EXPLAIN,
-          );
-          arr.push(eachSampleTime);
-          totalSampleTime += eachSampleTime;
+        explainResults = results[1].rows;
+        const eachSampleTime: any =
+          results[1].rows[0]['QUERY PLAN'][0]['Planning Time'] +
+          results[1].rows[0]['QUERY PLAN'][0]['Execution Time'];
+        arr.push(eachSampleTime);
+        totalSampleTime += eachSampleTime;
+      } else if (dbType === DBType.MySQL) {
+        const results = await queryModel.query(
+          explainQuery(sqlString, dbType),
+          [],
+          dbType,
+        );
+        const eachSampleTime: any = parseExplainExplanation(
+          results[0][0].EXPLAIN,
+        );
+        arr.push(eachSampleTime);
+        totalSampleTime += eachSampleTime;
 
-          
-          // hard coded explainResults just to get it working for now
-          explainResults = {
-            Plan: {
-              'Node Type': 'Seq Scan',
-              'Parallel Aware': false,
-              'Async Capable': false,
-              'Relation Name': 'newtable1',
-              Schema: 'public',
-              Alias: 'newtable1',
-              'Startup Cost': 0,
-              'Total Cost': 7,
-              'Plan Rows': 200,
-              'Plan Width': 132,
-              'Actual Startup Time': 0.015,
-              'Actual Total Time': 0.113,
-              'Actual Rows': 200,
-              'Actual Loops': 1,
-              Output: ['newcolumn1'],
-              'Shared Hit Blocks': 5,
-              'Shared Read Blocks': 0,
-              'Shared Dirtied Blocks': 0,
-              'Shared Written Blocks': 0,
-              'Local Hit Blocks': 0,
-              'Local Read Blocks': 0,
-              'Local Dirtied Blocks': 0,
-              'Local Written Blocks': 0,
-              'Temp Read Blocks': 0,
-              'Temp Written Blocks': 0,
-            },
-            Planning: {
-              'Shared Hit Blocks': 64,
-              'Shared Read Blocks': 0,
-              'Shared Dirtied Blocks': 0,
-              'Shared Written Blocks': 0,
-              'Local Hit Blocks': 0,
-              'Local Read Blocks': 0,
-              'Local Dirtied Blocks': 0,
-              'Local Written Blocks': 0,
-              'Temp Read Blocks': 0,
-              'Temp Written Blocks': 0,
-            },
-            'Planning Time': 9999,
-            Triggers: [],
-            'Execution Time': 9999,
-          };
-        } else if (dbType === DBType.SQLite) {
-          const sampleTime = await queryModel.sampler(sqlString);
-          arr.push(sampleTime);
-          totalSampleTime += sampleTime;
+        // hard coded explainResults just to get it working for now
+        explainResults = {
+          Plan: {
+            'Node Type': 'Seq Scan',
+            'Parallel Aware': false,
+            'Async Capable': false,
+            'Relation Name': 'newtable1',
+            Schema: 'public',
+            Alias: 'newtable1',
+            'Startup Cost': 0,
+            'Total Cost': 7,
+            'Plan Rows': 200,
+            'Plan Width': 132,
+            'Actual Startup Time': 0.015,
+            'Actual Total Time': 0.113,
+            'Actual Rows': 200,
+            'Actual Loops': 1,
+            Output: ['newcolumn1'],
+            'Shared Hit Blocks': 5,
+            'Shared Read Blocks': 0,
+            'Shared Dirtied Blocks': 0,
+            'Shared Written Blocks': 0,
+            'Local Hit Blocks': 0,
+            'Local Read Blocks': 0,
+            'Local Dirtied Blocks': 0,
+            'Local Written Blocks': 0,
+            'Temp Read Blocks': 0,
+            'Temp Written Blocks': 0,
+          },
+          Planning: {
+            'Shared Hit Blocks': 64,
+            'Shared Read Blocks': 0,
+            'Shared Dirtied Blocks': 0,
+            'Shared Written Blocks': 0,
+            'Local Hit Blocks': 0,
+            'Local Read Blocks': 0,
+            'Local Dirtied Blocks': 0,
+            'Local Written Blocks': 0,
+            'Temp Read Blocks': 0,
+            'Temp Written Blocks': 0,
+          },
+          'Planning Time': 9999,
+          Triggers: [],
+          'Execution Time': 9999,
+        };
+      } else if (dbType === DBType.SQLite) {
+        const sampleTime = await queryModel.sampler(sqlString);
+        arr.push(sampleTime);
+        totalSampleTime += sampleTime;
 
-          // hard coded explainResults just to get it working for now
-          explainResults = {
-            Plan: {
-              'Node Type': 'Seq Scan',
-              'Parallel Aware': false,
-              'Async Capable': false,
-              'Relation Name': 'newtable1',
-              Schema: 'public',
-              Alias: 'newtable1',
-              'Startup Cost': 0,
-              'Total Cost': 7,
-              'Plan Rows': 200,
-              'Plan Width': 132,
-              'Actual Startup Time': 0.015,
-              'Actual Total Time': 0.113,
-              'Actual Rows': 200,
-              'Actual Loops': 1,
-              Output: ['newcolumn1'],
-              'Shared Hit Blocks': 5,
-              'Shared Read Blocks': 0,
-              'Shared Dirtied Blocks': 0,
-              'Shared Written Blocks': 0,
-              'Local Hit Blocks': 0,
-              'Local Read Blocks': 0,
-              'Local Dirtied Blocks': 0,
-              'Local Written Blocks': 0,
-              'Temp Read Blocks': 0,
-              'Temp Written Blocks': 0,
-            },
-            Planning: {
-              'Shared Hit Blocks': 64,
-              'Shared Read Blocks': 0,
-              'Shared Dirtied Blocks': 0,
-              'Shared Written Blocks': 0,
-              'Local Hit Blocks': 0,
-              'Local Read Blocks': 0,
-              'Local Dirtied Blocks': 0,
-              'Local Written Blocks': 0,
-              'Temp Read Blocks': 0,
-              'Temp Written Blocks': 0,
-            },
-            'Planning Time': 9999,
-            Triggers: [],
-            'Execution Time': 9999,
-          };
-        }
+        // hard coded explainResults just to get it working for now
+        explainResults = {
+          Plan: {
+            'Node Type': 'Seq Scan',
+            'Parallel Aware': false,
+            'Async Capable': false,
+            'Relation Name': 'newtable1',
+            Schema: 'public',
+            Alias: 'newtable1',
+            'Startup Cost': 0,
+            'Total Cost': 7,
+            'Plan Rows': 200,
+            'Plan Width': 132,
+            'Actual Startup Time': 0.015,
+            'Actual Total Time': 0.113,
+            'Actual Rows': 200,
+            'Actual Loops': 1,
+            Output: ['newcolumn1'],
+            'Shared Hit Blocks': 5,
+            'Shared Read Blocks': 0,
+            'Shared Dirtied Blocks': 0,
+            'Shared Written Blocks': 0,
+            'Local Hit Blocks': 0,
+            'Local Read Blocks': 0,
+            'Local Dirtied Blocks': 0,
+            'Local Written Blocks': 0,
+            'Temp Read Blocks': 0,
+            'Temp Written Blocks': 0,
+          },
+          Planning: {
+            'Shared Hit Blocks': 64,
+            'Shared Read Blocks': 0,
+            'Shared Dirtied Blocks': 0,
+            'Shared Written Blocks': 0,
+            'Local Hit Blocks': 0,
+            'Local Read Blocks': 0,
+            'Local Dirtied Blocks': 0,
+            'Local Written Blocks': 0,
+            'Temp Read Blocks': 0,
+            'Temp Written Blocks': 0,
+          },
+          'Planning Time': 9999,
+          Triggers: [],
+          'Execution Time': 9999,
+        };
+      }
       // }
       // get 5 decimal points for sample time
       minimumSampleTime = Math.round(Math.min(...arr) * 10 ** 5) / 10 ** 5;
@@ -248,7 +253,10 @@ export async function runQuery(
 
     // send updated db info in case query affected table or database information
     // must be run after we connect back to the originally selected so tables information is accurate
-    const dbsAndTables: DBList = await databaseModel.getLists('', dbType);
+    const dbsAndTables: DBListInterface = await databaseModel.getLists(
+      '',
+      dbType,
+    );
     event.sender.send('db-lists', dbsAndTables);
     logger(
       "Sent 'db-lists' from 'run-query'",
@@ -258,16 +266,20 @@ export async function runQuery(
     event.sender.send('async-complete');
   }
 }
- 
-export async function runSelectAllQuery(event, {sqlString, selectedDb}:SelectAllQueryPayload, curDBType) {
+
+export async function runSelectAllQuery(
+  event,
+  { sqlString, selectedDb }: SelectAllQueryPayload,
+  curDBType,
+) {
   // if (selectedDb !== targetDb)
   try {
     await connectionModel.connectToDB(selectedDb, curDBType);
     const results = await queryModel.query(sqlString, [], curDBType);
-    console.log('good',results.rows)
-    return results?.rows
+    console.log('good', results.rows);
+    return results?.rows;
   } catch (error) {
-    console.log(error, 'in runSelectAllQuery')
+    console.log(error, 'in runSelectAllQuery');
   }
 }
 //format of runQuery without all extra junk
@@ -297,7 +309,7 @@ export async function runSelectAllQuery(event, {sqlString, selectedDb}:SelectAll
 //   return {
 //     returnedRows
 //   }
-// } 
+// }
 
 //finally {
 

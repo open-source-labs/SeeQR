@@ -1,5 +1,9 @@
 import { faker } from '@faker-js/faker';
-import { ColumnObj, DummyRecords, LogType } from '../../../BE_types';
+import {
+  ColumnObj,
+  DummyRecords,
+  LogType,
+} from '../../../../shared/types/types';
 import logger from '../logging/masterlog';
 import queryModel from '../../models/queryModel';
 

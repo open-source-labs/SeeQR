@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 // entry point for electron
 import { app, BrowserWindow, Menu } from 'electron'; // added session here
-import fixPath from 'fix-path'; // app.getPath may be a replacement for this 3 yr old package
+import fixPath from 'fix-path';
 import * as path from 'path';
 import * as url from 'url';
 import MainMenu from './mainMenu';
