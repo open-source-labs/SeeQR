@@ -4,7 +4,7 @@ import { ipcRenderer, IpcRendererEvent } from 'electron';
 import React, { useEffect, useState } from 'react';
 
 import { readingTime } from '../../lib/utils';
-import type { Feedback, FeedbackSeverity } from '../../types';
+import type { Feedback, FeedbackSeverity } from '../../../shared/types/types';
 
 function Alert(props: AlertProps) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;

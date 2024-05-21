@@ -1,5 +1,5 @@
 import { performance } from 'perf_hooks';
-import { DBType, LogType, queryModelType } from '../../../shared/types/types';
+import { DBType, LogType } from '../../../shared/types/types';
 import logger from '../utils/logging/masterlog';
 import pools from '../db/poolVariables';
 
@@ -7,6 +7,12 @@ import pools from '../db/poolVariables';
 README: "queryModel" deals with business logic of any incoming queries from the query sidebar*?. Implement furthur query functionalities here NOT ERDtable
 FUNCTIONS: query, sampler
 */
+
+// definition: for query Models
+interface queryModelType {
+  query: (text: string, params: (string | number)[], dbType: DBType) => any;
+  sampler: (queryString: string) => Promise<number>;
+}
 
 // Functions
 const queryModel: queryModelType = {

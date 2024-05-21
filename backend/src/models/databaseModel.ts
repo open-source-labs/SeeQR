@@ -9,7 +9,6 @@ import {
   DBType,
   LogType,
   TableDetails,
-  databaseModelType,
 } from '../../../shared/types/types';
 import logger from '../utils/logging/masterlog';
 import pools from '../db/poolVariables';
@@ -20,6 +19,15 @@ import dbState from './stateModel';
 README: "databaseModel" deals with business logic of connetion actions. This file dealswith logining and connections to different kinds of databases.
 FUNCTIONS: getLists, getTableInfo, getDBNames, getColumnObjects, getDBLists
 */
+
+// definition: for database Models
+interface databaseModelType {
+  getLists: (dbName?: string, dbType?: DBType) => Promise<DBListInterface>;
+  getTableInfo: (tableName: string, dbType: DBType) => Promise<ColumnObj[]>;
+  getDBNames: (dbType: DBType) => Promise<dbDetails[]>;
+  getColumnObjects: (tableName: string, dbType: DBType) => Promise<ColumnObj[]>;
+  getDBLists: (dbType: DBType, dbName: string) => Promise<TableDetails[]>;
+}
 
 // Functions
 const databaseModel: databaseModelType = {

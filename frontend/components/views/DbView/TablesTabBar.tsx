@@ -1,8 +1,7 @@
 // import fs from 'fs';
 import { ipcRenderer } from 'electron';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Tabs, Tab, Button } from '@mui/material';
-import ToggleButton from '@mui/material/ToggleButton';
+import { Tabs, Tab, Button, ToggleButton } from '@mui/material';
 // import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { SaveAs, AccountTree, PlaylistAdd } from '@mui/icons-material';
 // import RestorePageIcon from '@mui/icons-material/RestorePage';

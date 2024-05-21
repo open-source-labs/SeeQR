@@ -15,7 +15,7 @@ import {
   defaultMargin,
   greenPrimary,
 } from '../../../style-variables';
-import { AppState, QueryData } from '../../../types';
+import { AppState, QueryData } from '../../../../shared/types/types';
 
 const TableBg = styled(DarkPaperFull)`
   margin-top: ${defaultMargin};

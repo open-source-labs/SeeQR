@@ -5,8 +5,6 @@ import {
   DBListInterface,
   DBType,
   LogType,
-  QueryPayload,
-  SelectAllQueryPayload,
 } from '../../../../shared/types/types';
 
 // Helpers
@@ -37,10 +35,22 @@ const { explainQuery } = helperFunctions;
  * 8. returns getLists object back
  *
  * ISSUES:
- * 1. currently there are functionalities in this handler. lets break them away.
+ * 1. currently there are too many functionalities in this handler. lets break them away.
  * 2. personally not a fan of global queries. why aren't queries local? and if you do want global queries, you should not be able to go back to your current db view (aka silo the query page to a different entity)
- * CRUD is not distringuished
+ * CRUD is not distinguished
  */
+
+interface QueryPayload {
+  targetDb: string;
+  sqlString: string;
+  selectedDb: string;
+  runQueryNumber: number;
+}
+
+interface SelectAllQueryPayload {
+  sqlString: string;
+  selectedDb: string;
+}
 
 export async function runQuery(
   event,

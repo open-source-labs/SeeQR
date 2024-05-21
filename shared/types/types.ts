@@ -176,6 +176,7 @@ type combined = {
 
 export interface MysqlQueryResolve {} // not implemented yet
 
+// Where do we use DBFunctions?
 export interface DBFunctions {
   pg_uri: string;
   curPG_DB: string;
@@ -194,7 +195,7 @@ export interface DBFunctions {
   query: (text: string, params: (string | number)[], dbType: DBType) => void;
   connectToDB: (db: string, dbType?: DBType) => Promise<void>;
   disconnectToDrop: (dbType: DBType) => Promise<void>;
-  getLists: (dbName: string, dbType?: DBType) => Promise<DBList>;
+  getLists: (dbName: string, dbType?: DBType) => Promise<DBListInterface>;
   getTableInfo: (tableName: string, dbType: DBType) => Promise<ColumnObj[]>;
   getDBNames: (dbType: DBType) => Promise<dbDetails[]>;
   getColumnObjects: (tableName: string, dbType: DBType) => Promise<ColumnObj[]>;
@@ -202,54 +203,27 @@ export interface DBFunctions {
   sampler: (queryString: string) => Promise<number>;
 }
 
-export interface DBFunctions extends DocConfigFile {
-  pg_uri: string;
-  dbsInputted: dbsInputted;
+// export interface DBFunctions extends DocConfigFile {
+//   pg_uri: string;
+//   dbsInputted: dbsInputted;
 
-  setBaseConnections: () => Promise<combined>;
-  query: (text: string, params: (string | number)[], dbType: DBType) => any;
-  connectToDB: (db: string, dbType?: DBType) => Promise<void>;
-  disconnectToDrop: (dbType: DBType) => Promise<void>;
-  getLists: (dbName?: string, dbType?: DBType) => Promise<DBList>;
-  getTableInfo: (tableName: string, dbType: DBType) => Promise<ColumnObj[]>;
-  getDBNames: (dbType: DBType) => Promise<dbDetails[]>;
-  getColumnObjects: (tableName: string, dbType: DBType) => Promise<ColumnObj[]>;
-  getDBLists: (dbType: DBType, dbName: string) => Promise<TableDetails[]>;
-  sampler: (queryString: string) => Promise<number>;
-}
-
-export interface QueryPayload {
-  targetDb: string;
-  sqlString: string;
-  selectedDb: string;
-  runQueryNumber: number;
-}
-
-export interface SelectAllQueryPayload {
-  sqlString: string;
-  selectedDb: string;
-}
+//   setBaseConnections: () => Promise<combined>;
+//   query: (text: string, params: (string | number)[], dbType: DBType) => any;
+//   connectToDB: (db: string, dbType?: DBType) => Promise<void>;
+//   disconnectToDrop: (dbType: DBType) => Promise<void>;
+//   getLists: (dbName?: string, dbType?: DBType) => Promise<DBList>;
+//   getTableInfo: (tableName: string, dbType: DBType) => Promise<ColumnObj[]>;
+//   getDBNames: (dbType: DBType) => Promise<dbDetails[]>;
+//   getColumnObjects: (tableName: string, dbType: DBType) => Promise<ColumnObj[]>;
+//   getDBLists: (dbType: DBType, dbName: string) => Promise<TableDetails[]>;
+//   sampler: (queryString: string) => Promise<number>;
+// }
 
 // definition: for connection Models
 export interface connectionModelType {
   setBaseConnections: () => Promise<combined>;
   connectToDB: (db: string, dbType?: DBType) => Promise<void>;
   disconnectToDrop: (dbType: DBType) => Promise<void>;
-}
-
-// definition: for query Models
-export interface queryModelType {
-  query: (text: string, params: (string | number)[], dbType: DBType) => any;
-  sampler: (queryString: string) => Promise<number>;
-}
-
-// definition: for database Models
-export interface databaseModelType {
-  getLists: (dbName?: string, dbType?: DBType) => Promise<DBList>;
-  getTableInfo: (tableName: string, dbType: DBType) => Promise<ColumnObj[]>;
-  getDBNames: (dbType: DBType) => Promise<dbDetails[]>;
-  getColumnObjects: (tableName: string, dbType: DBType) => Promise<ColumnObj[]>;
-  getDBLists: (dbType: DBType, dbName: string) => Promise<TableDetails[]>;
 }
 
 /**
@@ -262,14 +236,17 @@ export type initialStateType = {
   updatesArray: ErdUpdatesType;
 };
 
+// currently unused
 export interface ErdDBInfo {
   db_name: string;
   db_type: DBType; // table catalog
   db_size_kb: number; // used to be string
 }
 
+// currently unused
 export type ErdTables = TableType[];
 
+// currently unused
 export type TableType = PsqlTable | MysqlTable | SqLiteTable;
 
 type BaseTable = {
@@ -295,7 +272,7 @@ type ColumnType = PsqlColumn | MySqlColumn | SqLiteColumn;
 
 type BaseColumn = {
   name: string;
-  data_type: PSqlDataType | MySqlDataType;
+  data_type: PSqlDataType | MySqlDataType | SqLiteDataType;
   character_maximum_length?: number;
   is_primary: boolean;
   has_foreign: boolean;
@@ -351,6 +328,8 @@ type MySqlDataType =
   | 'SET'
   | 'JSON';
 
+type SqLiteDataType = 'NULL' | 'INTEGER' | 'REAL' | 'TEXT' | 'BLOB' | 'NUMERIC';
+
 interface PsqlColumn extends BaseColumn {
   is_identity: boolean;
 }
@@ -360,7 +339,9 @@ interface MySqlColumn extends BaseColumn {
   extra: string[];
 }
 
-interface SqLiteColumn extends BaseColumn {}
+interface SqLiteColumn extends BaseColumn {
+  // add sqlite specific column data
+}
 
 /**
  * ERD TO BACKEND TYPES
@@ -475,6 +456,7 @@ export type ViewName =
   | 'newSchemaView'
   | 'threeDView';
 
+// export type Dialogs = implement dialogs type
 export interface AppState {
   // createNewQuery: CreateNewQuery;
   selectedDb: string;
@@ -498,6 +480,7 @@ export interface AppState {
   setSelectedTable?: (tableInfo: TableInfo | undefined) => void;
 }
 
+// Not used currently
 export interface FilePath {
   cancelled: boolean;
   filePath: string;
@@ -658,12 +641,13 @@ export interface ExplainJson {
  *
  *
  */
-
+// Type never used
 export type ERTablingConstants =
   | { TABLE_HEADER }
   | { TABLE_FIELD }
   | { TABLE_FOOTER };
 
+// used with react flow not sure if this is needed
 export type NodeTypes = {
   tableHeader: JSX.Element;
   tableField: JSX.Element;
@@ -684,8 +668,8 @@ export interface ERTableColumnData extends TableColumn {
   unique?: boolean; // optional until implemented
   auto_increment?: boolean; // optional until implemented
 }
-export type DataTypes = 'integer' | 'bigint' | 'varchar' | 'date' | null;
-export type DataTypesMySQL = 'int' | 'bigint' | 'varchar' | 'date' | null;
+type DataTypes = 'integer' | 'bigint' | 'varchar' | 'date' | null;
+type DataTypesMySQL = 'int' | 'bigint' | 'varchar' | 'date' | null;
 
 export type AddColumnsObjType = {
   column_name: string | null;

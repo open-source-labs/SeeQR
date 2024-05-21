@@ -1,7 +1,6 @@
 /* eslint-disable func-names */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-// import { LogType } from '@mytypes/dbTypes';
-import { LogType } from '../../../../shared/types/dbTypes';
+import { LogType } from '../../../../shared/types/types';
 
 // file to print color coded logs in the console
 
@@ -13,9 +12,9 @@ const saveLogMessage = (message) => {
 // Export
 const logger = function (
   message: string,
-  logType: LogType = LogType.NORMAL,
   opt1?,
   opt2?,
+  logType: LogType = LogType.NORMAL,
 ) {
   // Code for the log color
   let colorCode = 0;
