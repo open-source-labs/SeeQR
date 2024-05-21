@@ -10,7 +10,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import logo from '../../../assets/logo/seeqr_dock.png';
 import '../../lib/style.css';
-
+import { greenPrimary, greenLight, greyDark } from '../../style-variables';
 interface QuickStartViewProps {
   show: boolean;
 }
@@ -26,27 +26,40 @@ const PageContainer = styled.a`
 // a container of all the steppers
 const StyledStepper = styled(Stepper)`
   margin: 60px 10px 20px 0px;
-  // background: red;
+
+  // & :hover {
+  //   background: #8bbd9a;
+  //   border-radius: 8px;
+  //   border-color: red;
+  //   border-style: solid;
+  // }
 `;
 // Text label for each stepper
 const StyledStepLabel = styled(StepLabel)`
   & :hover {
-    background: #8bbd9a;
     transition: 200ms ease-in-out;
     & .MuiStepLabel-label {
-      color: black;
+      color: ${greyDark};
     }
   }
   width: 10vw;
   & .MuiStepLabel-label {
-    font-size: clamp(1rem, 1.28vw, 1.3rem);
+    font-size: 1.2rem;
+    // font-size: clamp(1rem, 1.28vw, 1.3rem);
   }
 `;
-// stepButton
+// stepButton with all elements inside
 const StyledStepButton = styled(StepButton)`
   // background-color: red;
   border-style: solid;
-  border-color: white;
+  border-color: red;
+  border-weight: 1.5px;
+
+  & :hover {
+    color: ${greenPrimary};
+    background-color: ${greenLight};
+    text-color: ${greyDark};
+  }
 `;
 
 // text instructions div
@@ -59,12 +72,15 @@ const StyledTypographyInstructions = styled.div`
 // title: "welcome to SeeQR"
 const StyledTypographyTitle = styled(Typography)`
   font-size: clamp(2rem, 35vw, 3rem);
-  margin-top: 5px;
+  margin-top: 2px;
 `;
 // container div for btn back & btn complete
 const NavButtons = styled.div`
-  margin: 8px auto;
-  // background: white;
+  width: 80%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  margin-bottom: 15px;
 `;
 // container for the text instructions and navBtn
 const StepContent = styled.div`
@@ -85,17 +101,16 @@ const StepList = styled.ul`
   }
 `;
 
-function getSteps() {
-  return [
-    'Set Up Servers and Permissions',
-    'Import/ Export a Database',
-    'Create New Queries',
-    'Saving/Loading Queries',
-    'Compare Queries',
-  ];
-}
-
-function getStepContent(step: number) {
+// array to hold all the steps
+const steps: string[] = [
+  'Set Up Servers and Permissions',
+  'Import/ Export a Database',
+  'Create New Queries',
+  'Saving/Loading Queries',
+  'Compare Queries',
+];
+// func to help get step instructions and render it
+function getStepContent(step: number): JSX.Element | string {
   switch (step) {
     case 0:
       return (
@@ -229,79 +244,55 @@ function getStepContent(step: number) {
 function QuickStartView({ show }: QuickStartViewProps) {
   if (!show) return null;
   const [activeStep, setActiveStep] = useState(0);
-  const [completed, setCompleted] = useState(new Set<number>());
-  const [skipped, setSkipped] = useState(new Set<number>());
-  const steps = getSteps();
+  const [completed, setCompleted] = useState<{ [k: number]: boolean }>({});
 
-  const totalSteps = () => getSteps().length;
+  const totalSteps = () => steps.length;
 
-  const isStepOptional = (step: number) => step === null;
+  // count completed steps number
+  const completedSteps = (): number => Object.keys(completed).length;
 
-  const handleSkip = () => {
-    if (!isStepOptional(activeStep)) {
-      // You probably want to guard against something like this
-      // it should never occur unless someone's actively trying to break something.
-      throw new Error("You can't skip a step that isn't optional.");
-    }
+  // check if it is the last step
+  const isLastStep = (): boolean => activeStep === totalSteps() - 1;
 
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    setSkipped((prevSkipped) => {
-      const newSkipped = new Set(prevSkipped.values());
-      newSkipped.add(activeStep);
-      return newSkipped;
-    });
-  };
+  // check if all steps are completed
+  const allStepsCompleted = (): boolean => completedSteps() === totalSteps();
 
-  const skippedSteps = () => skipped.size;
-
-  const completedSteps = () => completed.size;
-
-  const allStepsCompleted = () =>
-    completedSteps() === totalSteps() - skippedSteps();
-
-  const isLastStep = () => activeStep === totalSteps() - 1;
-
+  // func to handle next btn
   const handleNext = () => {
     const newActiveStep =
       isLastStep() && !allStepsCompleted()
         ? // It's the last step, but not all steps have been completed
           // find the first step that has been completed
-          steps.findIndex((step, i) => !completed.has(i))
+          steps.findIndex((step, i) => !(i in completed))
         : activeStep + 1;
-
     setActiveStep(newActiveStep);
   };
 
+  // func to handle back btn
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
+  // func to handle not display back btn on step 1
+  const handleDisplay = () => (activeStep === 0 ? 'none' : 'contents');
 
+  // func to set activeStep
   const handleStep = (step: number) => () => {
     setActiveStep(step);
   };
-
+  // func to handle each complete step btn
   const handleComplete = () => {
-    const newCompleted = new Set(completed);
-    newCompleted.add(activeStep);
+    const newCompleted = completed;
+    newCompleted[activeStep] = true;
     setCompleted(newCompleted);
-
-    if (completed.size !== totalSteps() - skippedSteps()) {
-      handleNext();
-    }
+    handleNext();
   };
-
+  // handle reset btn after all steps completed
   const handleReset = () => {
     setActiveStep(0);
-    setCompleted(new Set<number>());
-    setSkipped(new Set<number>());
+    setCompleted({});
   };
 
-  const isStepSkipped = (step: number) => skipped.has(step);
-
-  function isStepComplete(step: number) {
-    return completed.has(step);
-  }
-
+  // render components
   return (
     <PageContainer>
       <StyledTypographyTitle align="center">
@@ -309,73 +300,79 @@ function QuickStartView({ show }: QuickStartViewProps) {
       </StyledTypographyTitle>
       <img className="step-img" src={logo} alt="Logo" />
       <StyledStepper alternativeLabel nonLinear activeStep={activeStep}>
-        {steps.map((label, index) => {
-          const stepProps: { completed?: boolean } = {};
-          const buttonProps: { optional?: React.ReactNode } = {};
-          if (isStepOptional(index)) {
-            buttonProps.optional = (
-              <Typography variant="caption">Optional</Typography>
-            );
-          }
-          if (isStepSkipped(index)) {
-            stepProps.completed = false;
-          }
-          return (
-            <Step key={label} {...stepProps} completed={isStepComplete(index)}>
-              <StyledStepButton onClick={handleStep(index)} {...buttonProps}>
-                <StyledStepLabel className="stepper">{label}</StyledStepLabel>
-              </StyledStepButton>
-            </Step>
-          );
-        })}
+        {steps.map((label, index) => (
+          <Step key={label} completed={completed[index]}>
+            <StyledStepButton onClick={handleStep(index)}>
+              <StyledStepLabel className="stepper">{label}</StyledStepLabel>
+            </StyledStepButton>
+          </Step>
+        ))}
       </StyledStepper>
       <div>
         {allStepsCompleted() ? (
-          <div>
+          <div className="step-completed-div">
             <StyledTypographyInstructions className="step-instructions">
               All steps completed - you&apos;re ready to use SeeQr!
             </StyledTypographyInstructions>
-            <Button onClick={handleReset}>Reset</Button>
+            <Button
+              variant="outlined"
+              onClick={handleReset}
+              className="step-btn"
+              id="step-reset-btn"
+            >
+              RESET
+            </Button>
           </div>
         ) : (
           <StepContent>
             {getStepContent(activeStep)}
             <NavButtons>
               <Button
+                variant="outlined"
                 disabled={activeStep === 0}
                 onClick={handleBack}
+                color="primary"
                 className="step-btn"
+                id="step-back-btn"
               >
-                Back
+                {activeStep === 0 ? '' : 'BACK'}
               </Button>
-              {isStepOptional(activeStep) && !completed.has(activeStep) && (
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleSkip}
-                  className="step-btn"
-                >
-                  Skip
-                </Button>
-              )}
+
               {activeStep !== steps.length &&
-                (completed.has(activeStep) ? (
-                  <Typography variant="caption" className="step-completed">
-                    Step
-                    {` ${activeStep + 1} `}
-                    already completed
-                  </Typography>
+                (completed[activeStep] ? (
+                  <Button
+                    onClick={handleNext}
+                    color="primary"
+                    variant="contained"
+                    className="step-btn"
+                    id="step-next-btn"
+                  >
+                    NEXT
+                  </Button>
                 ) : (
+                  // <Typography variant="caption" className="step-completed-btn">
+                  //   {`Step ${activeStep + 1} already`}
+                  //   <br /> completed
+                  // </Typography>
                   <Button
                     variant="contained"
                     color="primary"
+                    className="step-btn"
+                    id="step-complete-next-btn"
                     onClick={handleComplete}
                   >
-                    {completedSteps() === totalSteps() - 1
-                      ? 'Finish'
-                      : 'Complete Step'}
+                    {completedSteps() === totalSteps() - 1 ? 'FINISH' : 'NEXT'}
                   </Button>
                 ))}
+              {/* <Button
+                onClick={handleNext}
+                color="primary"
+                variant="contained"
+                className="step-btn"
+                id="step-next-btn"
+              >
+                NEXT
+              </Button> */}
             </NavButtons>
           </StepContent>
         )}
