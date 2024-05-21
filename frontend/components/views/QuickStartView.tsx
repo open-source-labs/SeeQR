@@ -10,7 +10,14 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import logo from '../../../assets/logo/seeqr_dock.png';
 import '../../lib/style.css';
-import { greenPrimary, greenLight, greyDark } from '../../style-variables';
+import {
+  greenPrimary,
+  greenLight,
+  greyDark,
+  greyMedium,
+  greyPrimary,
+} from '../../style-variables';
+
 interface QuickStartViewProps {
   show: boolean;
 }
@@ -23,42 +30,23 @@ const PageContainer = styled.a`
   height: auto;
   width: auto;
 `;
-// a container of all the steppers
+// each stepper component
 const StyledStepper = styled(Stepper)`
   margin: 60px 10px 20px 0px;
-
-  // & :hover {
-  //   background: #8bbd9a;
-  //   border-radius: 8px;
-  //   border-color: red;
-  //   border-style: solid;
-  // }
-`;
-// Text label for each stepper
-const StyledStepLabel = styled(StepLabel)`
-  & :hover {
-    transition: 200ms ease-in-out;
-    & .MuiStepLabel-label {
-      color: ${greyDark};
-    }
-  }
-  width: 10vw;
-  & .MuiStepLabel-label {
-    font-size: 1.2rem;
-    // font-size: clamp(1rem, 1.28vw, 1.3rem);
-  }
 `;
 // stepButton with all elements inside
 const StyledStepButton = styled(StepButton)`
-  // background-color: red;
-  border-style: solid;
-  border-color: red;
-  border-weight: 1.5px;
-
+  padding-top: 25px;
   & :hover {
-    color: ${greenPrimary};
-    background-color: ${greenLight};
-    text-color: ${greyDark};
+    background-color: ${greyPrimary};
+    transition: 200ms ease-in-out;
+  }
+`;
+// Text label for each stepper
+const StyledStepLabel = styled(StepLabel)`
+  width: 10vw;
+  & .MuiStepLabel-label {
+    font-size: clamp(1rem, 1.28vw, 1.3rem);
   }
 `;
 
@@ -67,12 +55,11 @@ const StyledTypographyInstructions = styled.div`
   font-size: clamp(1rem, 2.2vw, 1.2rem);
   text-align: center;
   width: 50vw;
-  // background: white;
 `;
 // title: "welcome to SeeQR"
 const StyledTypographyTitle = styled(Typography)`
   font-size: clamp(2rem, 35vw, 3rem);
-  margin-top: 2px;
+  // margin-top: 1px;
 `;
 // container div for btn back & btn complete
 const NavButtons = styled.div`
@@ -272,8 +259,6 @@ function QuickStartView({ show }: QuickStartViewProps) {
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
-  // func to handle not display back btn on step 1
-  const handleDisplay = () => (activeStep === 0 ? 'none' : 'contents');
 
   // func to set activeStep
   const handleStep = (step: number) => () => {
@@ -316,6 +301,7 @@ function QuickStartView({ show }: QuickStartViewProps) {
             </StyledTypographyInstructions>
             <Button
               variant="outlined"
+              color="primary"
               onClick={handleReset}
               className="step-btn"
               id="step-reset-btn"
