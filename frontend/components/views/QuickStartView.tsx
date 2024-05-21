@@ -10,13 +10,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import logo from '../../../assets/logo/seeqr_dock.png';
 import '../../lib/style.css';
-import {
-  greenPrimary,
-  greenLight,
-  greyDark,
-  greyMedium,
-  greyPrimary,
-} from '../../style-variables';
+import { greyPrimary } from '../../style-variables';
 
 interface QuickStartViewProps {
   show: boolean;
