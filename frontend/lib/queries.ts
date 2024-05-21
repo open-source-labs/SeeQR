@@ -7,7 +7,7 @@
 import fs from 'fs';
 import path from 'path';
 import ms from 'ms';
-import { AppState, QueryData, CreateNewQuery } from '../types';
+import { AppState, QueryData, CreateNewQuery } from '../../shared/types/types';
 import { sendFeedback } from './utils';
 
 /**

@@ -1,18 +1,17 @@
-import  backendObjToQuery   from "../../../../backend/src/utils/ertable-functions";
-import { BackendObjType, DBType } from '../../../../shared/types/dbTypes';
+import backendObjToQuery from '../../../../backend/src/utils/ertable-functions';
 import {
+  BackendObjType,
+  DBType,
   AddTablesObjType,
   DropTablesObjType,
   AlterTablesObjType,
   AlterColumnsObjType,
   AddConstraintObjType,
-} from '../../../../frontend/types';
-
+} from '../../../../shared/types/types';
 
 describe('ertable-functions tests', () => {
-
-    // mock backendObj
-  const backendObj: BackendObjType  = {
+  // mock backendObj
+  const backendObj: BackendObjType = {
     database: 'tester2',
     updates: {
       addTables: [
@@ -47,7 +46,6 @@ describe('ertable-functions tests', () => {
     },
   };
 
-  
   describe('backendObjToQuery tests', () => {
     test('it should create a query string for Postgres database', () => {
       const dbType = DBType.Postgres;
@@ -55,71 +53,75 @@ describe('ertable-functions tests', () => {
       expect(typeof result).toBe('string');
     });
 
-    test('it should create a query string for MySQL database', ()=>{
+    test('it should create a query string for MySQL database', () => {
       const dbType = DBType.MySQL;
       const result = backendObjToQuery(backendObj, dbType);
       expect(typeof result).toBe('string');
-    })
+    });
 
     test('it should invoke addTable passing in an addtable and altertable arrays', () => {
       const dbType = DBType.Postgres;
       // need an outputArray, which was in the outer scope of addTable
       const outputArray: string[] = [];
       // mock function for addTable, copied and pasted from erTable-functions.ts
-      const addTable = jest.fn((
-        addTableArray: AddTablesObjType[],
-        alterTablesArray: AlterTablesObjType[],
-      ): void => {
-        for (let i = 0; i < addTableArray.length; i += 1) {
-          const currTable: AddTablesObjType = addTableArray[i];
-          const currAlterTable: AlterTablesObjType = alterTablesArray[i]
-          if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) {
-            outputArray.push(
-              `CREATE TABLE ${currTable.table_schema}.${currTable.table_name}(); `
-            );
+      const addTable = jest.fn(
+        (
+          addTableArray: AddTablesObjType[],
+          alterTablesArray: AlterTablesObjType[],
+        ): void => {
+          for (let i = 0; i < addTableArray.length; i += 1) {
+            const currTable: AddTablesObjType = addTableArray[i];
+            const currAlterTable: AlterTablesObjType = alterTablesArray[i];
+            if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) {
+              outputArray.push(
+                `CREATE TABLE ${currTable.table_schema}.${currTable.table_name}(); `,
+              );
+            }
           }
-        }
-      })
-      
-        // invoke addTable passining in params
+        },
+      );
+
+      // invoke addTable passining in params
       addTable(backendObj.updates.addTables, backendObj.updates.alterTables);
-      expect(addTable).toBeCalledWith(backendObj.updates.addTables, backendObj.updates.alterTables);
-      
-        // output array should have a string passed into output array. table name and schema are from the mock obj.
-      expect(outputArray).toEqual(["CREATE TABLE public.NewTable8(); "]);
-      });
-    });
-
-    test('it should invoke dropTable passing in a dropTable array', () => {
-      const dbType = DBType.Postgres;
-          // need an outputArray, which was in the outer scope of addTable
-      const outputArray: string[] = [];
-         // mock function for dropTable, copied and pasted from erTable-functions.ts
-      const dropTable = jest.fn((dropTableArray: DropTablesObjType[]): void => {
-        for (let i = 0; i < dropTableArray.length; i += 1) {
-          const currTable: DropTablesObjType = dropTableArray[i];
-          if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) {
-            outputArray.push(
-              `DROP TABLE ${currTable.table_schema}.${currTable.table_name}; `,
-            );
-          }
-        }
-      })
-
-      // invoke dropTable passining in params
-      dropTable(backendObj.updates.dropTables);
-      expect(dropTable).toBeCalledWith(backendObj.updates.dropTables);
+      expect(addTable).toBeCalledWith(
+        backendObj.updates.addTables,
+        backendObj.updates.alterTables,
+      );
 
       // output array should have a string passed into output array. table name and schema are from the mock obj.
-      expect(outputArray).toEqual(["DROP TABLE public.newtable5; "]);
+      expect(outputArray).toEqual(['CREATE TABLE public.NewTable8(); ']);
+    });
+  });
+
+  test('it should invoke dropTable passing in a dropTable array', () => {
+    const dbType = DBType.Postgres;
+    // need an outputArray, which was in the outer scope of addTable
+    const outputArray: string[] = [];
+    // mock function for dropTable, copied and pasted from erTable-functions.ts
+    const dropTable = jest.fn((dropTableArray: DropTablesObjType[]): void => {
+      for (let i = 0; i < dropTableArray.length; i += 1) {
+        const currTable: DropTablesObjType = dropTableArray[i];
+        if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) {
+          outputArray.push(
+            `DROP TABLE ${currTable.table_schema}.${currTable.table_name}; `,
+          );
+        }
+      }
     });
 
+    // invoke dropTable passining in params
+    dropTable(backendObj.updates.dropTables);
+    expect(dropTable).toBeCalledWith(backendObj.updates.dropTables);
 
+    // output array should have a string passed into output array. table name and schema are from the mock obj.
+    expect(outputArray).toEqual(['DROP TABLE public.newtable5; ']);
+  });
 
-    test('it should invoke alterTable passing in an alterTable array', () => {
-      const dbType = DBType.Postgres;
-      const outputArray: string[] = [];
-      const alterTables = jest.fn((alterTableArray: AlterTablesObjType[]): void => {
+  test('it should invoke alterTable passing in an alterTable array', () => {
+    const dbType = DBType.Postgres;
+    const outputArray: string[] = [];
+    const alterTables = jest.fn(
+      (alterTableArray: AlterTablesObjType[]): void => {
         // Add column to table
         function addColumn(currTable: AlterTablesObjType): string {
           let addColumnString: string = '';
@@ -146,7 +148,7 @@ describe('ertable-functions tests', () => {
           }
           return addColumnString;
         }
-    
+
         // Remove column from table
         function dropColumn(currTable: AlterTablesObjType): string {
           let dropColumnString: string = '';
@@ -160,7 +162,7 @@ describe('ertable-functions tests', () => {
           }
           return dropColumnString;
         }
-    
+
         // Add/remove constraints from column
         function alterTableConstraint(currTable: AlterTablesObjType): string {
           let alterTableConstraintString: string = '';
@@ -173,7 +175,7 @@ describe('ertable-functions tests', () => {
             if (currColumn.current_data_type === 'character varying')
               defaultRowValue = 'A';
             else defaultRowValue = 1;
-    
+
             if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres)
               alterTableConstraintString += `ALTER TABLE ${currTable.table_schema}.${currTable.table_name} ADD CONSTRAINT ${currConstraint.constraint_name} PRIMARY KEY (${currColumn.column_name}); INSERT INTO ${currTable.table_schema}.${currTable.table_name} (${currColumn.column_name}) VALUES ('${defaultRowValue}'); `;
             // if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL)
@@ -206,13 +208,13 @@ describe('ertable-functions tests', () => {
             // if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL)
             //   alterTableConstraintString += `ALTER TABLE ${currTable.table_name} DROP CONSTRAINT ${currDrop}; `;
           }
-    
+
           for (let i = 0; i < currTable.alterColumns.length; i += 1) {
             const currColumn: AlterColumnsObjType = currTable.alterColumns[i];
             for (let j = 0; j < currColumn.add_constraint.length; j += 1) {
               const currConstraint: AddConstraintObjType =
                 currColumn.add_constraint[j];
-    
+
               if (currConstraint.constraint_type === 'PRIMARY KEY') {
                 addPrimaryKey(currConstraint, currColumn);
               } else if (currConstraint.constraint_type === 'FOREIGN KEY') {
@@ -228,7 +230,7 @@ describe('ertable-functions tests', () => {
           }
           return alterTableConstraintString;
         }
-    
+
         // Add/remove not null constraint from column
         function alterNotNullConstraint(currTable: AlterTablesObjType): string {
           let notNullConstraintString: string = '';
@@ -242,7 +244,7 @@ describe('ertable-functions tests', () => {
           }
           return notNullConstraintString;
         }
-    
+
         // Change the data type of the column
         function alterType(currTable: AlterTablesObjType): string {
           let alterTypeString: string = '';
@@ -259,9 +261,11 @@ describe('ertable-functions tests', () => {
           }
           return alterTypeString;
         }
-    
+
         // Change the max character length of a varchar
-        function alterMaxCharacterLength(currTable: AlterTablesObjType): string {
+        function alterMaxCharacterLength(
+          currTable: AlterTablesObjType,
+        ): string {
           let alterMaxCharacterLengthString: string = '';
           for (let i = 0; i < currTable.alterColumns.length; i += 1) {
             if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres) {
@@ -277,7 +281,7 @@ describe('ertable-functions tests', () => {
           }
           return alterMaxCharacterLengthString;
         }
-    
+
         for (let i = 0; i < alterTableArray.length; i += 1) {
           const currTable: AlterTablesObjType = alterTableArray[i];
           outputArray.push(
@@ -288,20 +292,22 @@ describe('ertable-functions tests', () => {
             )}${alterMaxCharacterLength(currTable)}`,
           );
         }
-      })
+      },
+    );
 
-      alterTables(backendObj.updates.alterTables);
-      expect(alterTables).toBeCalledWith(backendObj.updates.alterTables);
-      expect(outputArray).toEqual([""]);
-      expect(outputArray).not.toEqual(["ALTER TABLE public.newTable7 ALTER COLUMN newTable7.mockColumn TYPE varchar(255); "])
-    });
+    alterTables(backendObj.updates.alterTables);
+    expect(alterTables).toBeCalledWith(backendObj.updates.alterTables);
+    expect(outputArray).toEqual(['']);
+    expect(outputArray).not.toEqual([
+      'ALTER TABLE public.newTable7 ALTER COLUMN newTable7.mockColumn TYPE varchar(255); ',
+    ]);
+  });
 
-    
-    test('it should invoke renameTablesColumns passing in an alterTable array', () => {
-  
-      const outputArray: string[] = [];
-      const dbType = DBType.Postgres;
-      const renameTablesColumns = jest.fn((renameTableArray: AlterTablesObjType[]): void => {
+  test('it should invoke renameTablesColumns passing in an alterTable array', () => {
+    const outputArray: string[] = [];
+    const dbType = DBType.Postgres;
+    const renameTablesColumns = jest.fn(
+      (renameTableArray: AlterTablesObjType[]): void => {
         let renameString: string = '';
         const columnsNames: object = {};
         const tablesNames: object = {};
@@ -319,7 +325,8 @@ describe('ertable-functions tests', () => {
         // Populates the columnsNames object with new column names
         function renameColumn(currTable: AlterTablesObjType): void {
           for (let i = 0; i < currTable.alterColumns.length; i += 1) {
-            const currAlterColumn: AlterColumnsObjType = currTable.alterColumns[i];
+            const currAlterColumn: AlterColumnsObjType =
+              currTable.alterColumns[i];
             // populates an array of objects with all of the new column names
             if (currAlterColumn.new_column_name) {
               columnsNames[currAlterColumn.column_name] = {
@@ -336,7 +343,8 @@ describe('ertable-functions tests', () => {
         // Populates the constraintsNAmes object with new constraint names
         function renameConstraint(currTable): void {
           for (let i = 0; i < currTable.alterColumns.length; i += 1) {
-            const currAlterColumn: AlterColumnsObjType = currTable.alterColumns[i];
+            const currAlterColumn: AlterColumnsObjType =
+              currTable.alterColumns[i];
             // populates an array of objects with all of the new constraint names
             if (currAlterColumn.rename_constraint) {
               constraintsNames[currAlterColumn.rename_constraint] = {
@@ -357,13 +365,13 @@ describe('ertable-functions tests', () => {
             }
           }
         }
-      
+
         for (let i = 0; i < renameTableArray.length; i += 1) {
           if (renameTableArray[i].new_table_name)
             renameConstraintCache[renameTableArray[i].table_name] =
               renameTableArray[i].new_table_name;
         }
-      
+
         for (let i = 0; i < renameTableArray.length; i += 1) {
           const currTable: AlterTablesObjType = renameTableArray[i];
           renameConstraint(currTable);
@@ -373,7 +381,8 @@ describe('ertable-functions tests', () => {
         // Goes through the columnsNames object and adds the query for renaming
         const columnsToRename: string[] = Object.keys(columnsNames);
         for (let i = 0; i < columnsToRename.length; i += 1) {
-          const currColumn: AlterColumnsObjType = columnsNames[columnsToRename[i]];
+          const currColumn: AlterColumnsObjType =
+            columnsNames[columnsToRename[i]];
           // only renames a column with the most recent name that was saved
           if (dbType === DBType.Postgres || dbType === DBType.RDSPostgres)
             renameString += `ALTER TABLE ${currColumn.table_schema}.${currColumn.table_name} RENAME COLUMN ${currColumn.column_name} TO ${currColumn.new_column_name}; `;
@@ -402,16 +411,16 @@ describe('ertable-functions tests', () => {
           //   renameString += `ALTER TABLE ${currColumn.table_name} RENAME CONSTRAINT ${constraintsToRename[i]} TO ${currColumn.constraint_type}_${currColumn.table_name}${currColumn.column_name}; `;
         }
         outputArray.push(renameString);
-      })
+      },
+    );
 
+    renameTablesColumns(backendObj.updates.alterTables);
+    expect(renameTablesColumns).toBeCalledWith(backendObj.updates.alterTables);
 
-      renameTablesColumns(backendObj.updates.alterTables);
-      expect(renameTablesColumns).toBeCalledWith(backendObj.updates.alterTables);
-
-      // alter column array is empty in mock backendObj
-      expect(outputArray).toEqual([]);
-      expect(outputArray).not.toEqual(["ALTER TABLE public.newTable7 RENAME COLUMN mockColumn TO mockColumn2; "]);
-
-    });
+    // alter column array is empty in mock backendObj
+    expect(outputArray).toEqual([]);
+    expect(outputArray).not.toEqual([
+      'ALTER TABLE public.newTable7 RENAME COLUMN mockColumn TO mockColumn2; ',
+    ]);
+  });
 });
-

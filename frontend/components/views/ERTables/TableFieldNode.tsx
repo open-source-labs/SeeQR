@@ -11,7 +11,7 @@ import {
   DropColumnsObjType,
   AlterColumnsObjType,
   AddConstraintObjType,
-} from '../../../types';
+} from '../../../../shared/types/types';
 import TableFieldCheckBox from './TableFieldCheckBox';
 import TableFieldInput from './TableFieldInput';
 import TableFieldDropDown from './TableFieldDropDown';
@@ -48,7 +48,7 @@ const Accordion = styled((props: AccordionProps) => (
   />
 ))(() => ({}));
 
-
+// (chore) define types find out form of incoming data
 function TableField({ data }: TableFieldProps) {
   const {
     schemaStateCopy,
@@ -141,7 +141,11 @@ function TableField({ data }: TableFieldProps) {
     for (let i = 0; i < schemaStateCopy.tableList.length; i += 1) {
       if (schemaStateCopy.tableList[i].table_name === data.tableName) {
         // iterate through columns
-        for (let j: number = 0; j < schemaStateCopy.tableList[i].columns.length; j += 1) {
+        for (
+          let j: number = 0;
+          j < schemaStateCopy.tableList[i].columns.length;
+          j += 1
+        ) {
           if (
             schemaStateCopy.tableList[i].columns[j].column_name === column_name
           ) {

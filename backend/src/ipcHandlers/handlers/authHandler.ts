@@ -1,6 +1,9 @@
 // Types
-import { DBList, LogType } from '../../../BE_types';
-import { Feedback } from '../../../../shared/types/utilTypes';
+import {
+  DBListInterface,
+  LogType,
+  Feedback,
+} from '../../../../shared/types/types';
 
 // Helpers
 import logger from '../../utils/logging/masterlog';
@@ -25,6 +28,7 @@ import databaseModel from '../../models/databaseModel';
  */
 
 export function setConfig(event, configObj) {
+  // need to type configObj + event (chore)
   // at some point change this name docConfig as well
   docConfig.saveConfig(configObj); // saves login info from frontend into config file
 
@@ -46,7 +50,7 @@ export function setConfig(event, configObj) {
         event.sender.send('feedback', feedback);
       }
       logger('Successfully reset base connections', LogType.SUCCESS);
-      return databaseModel.getLists().then((data: DBList) => {
+      return databaseModel.getLists().then((data: DBListInterface) => {
         event.sender.send('db-lists', data); // used to populate sidebar
       });
     })

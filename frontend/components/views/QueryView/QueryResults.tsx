@@ -9,7 +9,7 @@ import {
   TablePagination,
 } from '@mui/material';
 import styled from 'styled-components';
-import { QueryData } from '../../../types';
+import { QueryData } from '../../../../shared/types/types';
 import { greyPrimary, DarkPaperFull } from '../../../style-variables';
 
 const StyledCell = styled(TableCell)`
@@ -29,10 +29,11 @@ const isNumber = (val: unknown) => {
   return false;
 };
 
-const buildColumns = (row: Record<string, unknown>): Column[] => Object.entries(row).map(([column, value]) => ({
-  name: column,
-  align: isNumber(value) ? 'right' : 'left',
-}));
+const buildColumns = (row: Record<string, unknown>): Column[] =>
+  Object.entries(row).map(([column, value]) => ({
+    name: column,
+    align: isNumber(value) ? 'right' : 'left',
+  }));
 interface QueryResultsProps {
   results: QueryData['returnedRows'];
 }

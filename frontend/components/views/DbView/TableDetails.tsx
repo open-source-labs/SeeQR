@@ -1,6 +1,5 @@
 import { ipcRenderer } from 'electron';
-import React from 'react';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Table,
   TableBody,
@@ -13,8 +12,7 @@ import {
 } from '@mui/material';
 import styled from 'styled-components';
 import { greyDark, greyPrimary } from '../../../style-variables';
-import { TableInfo } from '../../../types';
-import { DBType } from '../../../../backend/BE_types';
+import { TableInfo, DBType } from '../../../../shared/types/types';
 
 const StyledPaper = styled(({ ...other }) => (
   <Paper elevation={8} {...other} />
@@ -33,7 +31,7 @@ interface TableDetailsProps {
 }
 
 function TableDetails({ table, selectedDb, curDBType }: TableDetailsProps) {
-  const [data,setData] = useState([])
+  const [data, setData] = useState([]);
   const onDisplay = () => {
     ipcRenderer
       .invoke(
@@ -45,7 +43,7 @@ function TableDetails({ table, selectedDb, curDBType }: TableDetailsProps) {
         curDBType,
       )
       .then((data) => {
-        setData(data)
+        setData(data);
       })
       .catch((err) => {
         console.error('Error in onDisplay ', err);
@@ -55,7 +53,7 @@ function TableDetails({ table, selectedDb, curDBType }: TableDetailsProps) {
   useEffect(() => {
     onDisplay();
   }, [table, selectedDb, curDBType]);
-  
+
   return (
     <>
       <Typography variant="h3">{`${table?.table_name}`}</Typography>
@@ -64,20 +62,18 @@ function TableDetails({ table, selectedDb, curDBType }: TableDetailsProps) {
         <Table>
           <TableHead>
             <TableRow>
-                {table?.columns.map((row) => (
-              <TableCell>
+              {table?.columns.map((row) => (
+                <TableCell>
                   {`${row?.column_name} (${row?.data_type} ${row.character_maximum_length})`}
-              </TableCell>
-                ))}
+                </TableCell>
+              ))}
             </TableRow>
           </TableHead>
           <TableBody>
             {data?.map((element) => (
               <TableRow>
                 {Object.keys(element).map((column) => (
-                  <TableCell key={element}>
-                    {element[column]}
-                  </TableCell>
+                  <TableCell key={element}>{element[column]}</TableCell>
                 ))}
               </TableRow>
             ))}

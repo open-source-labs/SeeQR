@@ -19,18 +19,16 @@
 // } from 'reactflow';
 // import 'reactflow/dist/style.css';
 // import styled from 'styled-components';
-// import { DBType } from '../../../../backend/BE_types';
-// import stateToReactFlow from '../../../lib/convertStateToReactFlow';
-// import {
-//   AddTablesObjType,
+// import { DBType,
+// ErdUpdatesType,
+// AddTablesObjType,
 //   AppState,
 //   SchemaStateObjType,
 //   TableHeaderNodeType,
 //   TableInfo,
-//   UpdatesObjType,
-// } from '../../../types';
+//   UpdatesObjType, } from ''../../../../shared/types/types'';
+// import stateToReactFlow from '../../../lib/convertStateToReactFlow';
 // import nodeTypes from './NodeTypes';
-// import { ErdUpdatesType } from '../../../../shared/types/erTypes';
 // import {
 //   mainErdReducer,
 //   initialErdState,

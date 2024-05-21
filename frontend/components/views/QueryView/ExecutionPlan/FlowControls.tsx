@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { useReactFlow } from 'reactflow';
 import { ButtonGroup, Button, Tooltip } from '@mui/material';
-import FullscreenIcon from '@mui/icons-material/Fullscreen';
-import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
-import FilterCenterFocusIcon from '@mui/icons-material/FilterCenterFocus';
-import ZoomInIcon from '@mui/icons-material/ZoomIn';
-import ZoomOutIcon from '@mui/icons-material/ZoomOut';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import {
+  Fullscreen,
+  FullscreenExit,
+  FilterCenterFocus,
+  ZoomIn,
+  ZoomOut,
+  ErrorOutline,
+} from '@mui/icons-material';
 import styled from 'styled-components';
-import type { Thresholds } from '../../../../types';
+import { Thresholds } from '../../../../../shared/types/types';
 import ThresholdsDialog from './ThresholdsDialog';
 
 const SquareBtn = styled(Button)`
@@ -45,27 +47,27 @@ function FlowControls({
         <ButtonGroup orientation="vertical" variant="contained" size="small">
           <Tooltip title="Fit tree to view" enterDelay={tooltipDelay}>
             <SquareBtn onClick={() => fitView({ padding: 0.2 })}>
-              <FilterCenterFocusIcon />
+              <FilterCenterFocus />
             </SquareBtn>
           </Tooltip>
           <Tooltip title="Fullscreen" enterDelay={tooltipDelay}>
             <SquareBtn onClick={toggleFullscreen}>
-              {fullscreen ? <FullscreenExitIcon /> : <FullscreenIcon />}
+              {fullscreen ? <FullscreenExit /> : <Fullscreen />}
             </SquareBtn>
           </Tooltip>
           <Tooltip title="Zoom Out" enterDelay={tooltipDelay}>
             <SquareBtn onClick={() => zoomOut()}>
-              <ZoomOutIcon />
+              <ZoomOut />
             </SquareBtn>
           </Tooltip>
           <Tooltip title="Zoom In" enterDelay={tooltipDelay}>
             <SquareBtn onClick={() => zoomIn()}>
-              <ZoomInIcon />
+              <ZoomIn />
             </SquareBtn>
           </Tooltip>
           <Tooltip title="Set Warning Thresholds" enterDelay={tooltipDelay}>
             <SquareBtn onClick={() => setShowThresholdsDialog(true)}>
-              <ErrorOutlineIcon />
+              <ErrorOutline />
             </SquareBtn>
           </Tooltip>
         </ButtonGroup>

@@ -5,8 +5,7 @@ import { IconButton, Tooltip, Menu, MenuItem } from '@mui/material';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import AddNewDbModal from '../modal/AddNewDbModalCorrect';
-import { AppState, DatabaseInfo } from '../../types';
-import { DBType } from '../../../backend/BE_types';
+import { AppState, DatabaseInfo, DBType } from '../../../shared/types/types';
 import { sendFeedback } from '../../lib/utils';
 import DuplicateDbModal from '../modal/DuplicateDbModal';
 import DbEntry from './DbEntry';
@@ -113,7 +112,7 @@ function DbList({
     setAnchorEl(e.currentTarget);
   };
 
-  const handleCloseFilter = (e) => {
+  const handleCloseFilter = (e: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(null);
     setFilterBy(e.currentTarget.innerText || filterBy);
   };
@@ -173,7 +172,7 @@ function DbList({
         </Tooltip>
       </div>
       <StyledSidebarList>
-        {DBInfo?.map((dbi) => {
+        {DBInfo?.map((dbi): JSX.Element | undefined => {
           if (dbi.db_type === dbNamesObj[filterBy] || filterBy === 'All') {
             return (
               <DbEntry
@@ -186,6 +185,7 @@ function DbList({
               />
             );
           }
+          return undefined;
         })}
         {openDupe ? (
           <DuplicateDbModal

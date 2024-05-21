@@ -9,5 +9,5 @@
   "liveSassCompile.settings.generateMap": false,
   "yaml.schemas": {
     "https://json.schemastore.org/electron-builder": ["electron-builder.yml"]
-  }
+  },
 }

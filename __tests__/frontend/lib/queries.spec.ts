@@ -1,7 +1,7 @@
 import * as queries from '../../../frontend/lib/queries';
-import type { QueryData } from '../../../frontend/types';
+import { QueryData } from '../../../shared/types/types';
 
-window.require = ((str: string) => str) as any
+window.require = ((str: string) => str) as any;
 
 const first: Partial<QueryData> = {
   label: 'firstQuery',
@@ -24,11 +24,11 @@ const first: Partial<QueryData> = {
     },
     'Planning Time': 1,
     'Execution Time': 1,
-    'numberOfSample': 1,
-    'totalSampleTime': 2, 
-    'minimumSampleTime': 2, 
-    'maximumSampleTime': 2, 
-    'averageSampleTime': 2
+    numberOfSample: 1,
+    totalSampleTime: 2,
+    minimumSampleTime: 2,
+    maximumSampleTime: 2,
+    averageSampleTime: 2,
   },
 };
 
@@ -40,16 +40,20 @@ const second: Partial<QueryData> = {
 
 describe('key generation', () => {
   it('should create key from label and db given as params', () => {
-    expect(queries.keyFromData('LABEL', 'DB', 'GROUP')).toEqual('label:LABEL db:DB group:GROUP');
+    expect(queries.keyFromData('LABEL', 'DB', 'GROUP')).toEqual(
+      'label:LABEL db:DB group:GROUP',
+    );
   });
 
   it('should create key from query object', () => {
     const query = {
       label: 'query1',
       db: 'db1',
-      group: 'group1'
+      group: 'group1',
     };
-    expect(queries.key(query as QueryData)).toEqual('label:query1 db:db1 group:group1');
+    expect(queries.key(query as QueryData)).toEqual(
+      'label:query1 db:db1 group:group1',
+    );
   });
 });
 
@@ -61,8 +65,8 @@ describe('getTotalTime', () => {
   it('should return sum of Execution Time and Planning Time', () => {
     const dummy = {
       executionPlan: {
-        'numberOfSample': 3,
-        'totalSampleTime': 6000, 
+        numberOfSample: 3,
+        totalSampleTime: 6000,
       },
     };
     expect(queries.getTotalTime(dummy as QueryData)).toEqual(2000);
@@ -77,16 +81,16 @@ describe('getPrettyTime', () => {
   it('should return pretty string with rounded result', () => {
     const fractional = {
       executionPlan: {
-        'numberOfSample': 2,
-        'totalSampleTime': 0.2222, 
+        numberOfSample: 2,
+        totalSampleTime: 0.2222,
       },
     };
     expect(queries.getPrettyTime(fractional as QueryData)).toBe('0.1111 ms');
 
     const integer = {
       executionPlan: {
-        'numberOfSample': 3,
-        'totalSampleTime': 6200, 
+        numberOfSample: 3,
+        totalSampleTime: 6200,
       },
     };
     expect(queries.getPrettyTime(integer as QueryData)).toBe('2 seconds');
@@ -102,7 +106,7 @@ describe('createQuery', () => {
     expect(Object.keys(newCollection).length).toBe(1);
     const secondNewCollection = queries.createQuery(
       newCollection,
-      second as QueryData
+      second as QueryData,
     );
     expect(Object.keys(secondNewCollection).length).toBe(2);
   });
@@ -122,11 +126,11 @@ describe('createQuery', () => {
     const initial = queries.createQuery(collection, first as QueryData);
     const updatedCollection = queries.createQuery(
       initial,
-      newFirst as QueryData
+      newFirst as QueryData,
     );
     expect(Object.keys(updatedCollection).length).toEqual(1);
     expect(updatedCollection[queries.key(newFirst as QueryData)]).toEqual(
-      newFirst
+      newFirst,
     );
   });
 });
@@ -134,12 +138,12 @@ describe('createQuery', () => {
 describe('deleteQuery', () => {
   const oneQuery: Record<string, QueryData> = queries.createQuery(
     {},
-    first as QueryData
+    first as QueryData,
   );
 
   const collection: Record<string, QueryData> = queries.createQuery(
     oneQuery,
-    second as QueryData
+    second as QueryData,
   );
 
   it('should not mutate original collection', () => {
@@ -176,15 +180,36 @@ describe('setCompare', () => {
   });
 
   it('should set execution time to 0 if given false for isCompared', () => {
-    const qs:any = { [`${queries.key(first as QueryData)}`]: first };
+    const qs: any = { [`${queries.key(first as QueryData)}`]: first };
     expect(Object.keys(collection).length).toBe(0);
     const newCollection = queries.setCompare({}, qs, first as QueryData, true);
     expect(Object.keys(newCollection).length).toBe(1);
-    expect(newCollection[queries.key(first as QueryData)].executionPlan['Planning Time']).toBe(1);
-    expect(newCollection[queries.key(first as QueryData)].executionPlan['Execution Time']).toBe(1);
-    const newSetCollection = queries.setCompare(newCollection, qs, first as QueryData, false);
+    expect(
+      newCollection[queries.key(first as QueryData)].executionPlan[
+        'Planning Time'
+      ],
+    ).toBe(1);
+    expect(
+      newCollection[queries.key(first as QueryData)].executionPlan[
+        'Execution Time'
+      ],
+    ).toBe(1);
+    const newSetCollection = queries.setCompare(
+      newCollection,
+      qs,
+      first as QueryData,
+      false,
+    );
     expect(Object.keys(newSetCollection).length).toBe(1);
-    expect(newSetCollection[queries.key(first as QueryData)].executionPlan['Planning Time']).toBe(0);
-    expect(newSetCollection[queries.key(first as QueryData)].executionPlan['Execution Time']).toBe(0);
+    expect(
+      newSetCollection[queries.key(first as QueryData)].executionPlan[
+        'Planning Time'
+      ],
+    ).toBe(0);
+    expect(
+      newSetCollection[queries.key(first as QueryData)].executionPlan[
+        'Execution Time'
+      ],
+    ).toBe(0);
   });
 });

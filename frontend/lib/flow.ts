@@ -1,4 +1,4 @@
-import { PlanNode, ExplainJson, Thresholds } from '../types';
+import { PlanNode, ExplainJson, Thresholds } from '../../shared/types/types';
 import { planNodeWidth, planNodeHeight } from '../style-variables';
 import createLayout, { SizedNode, Graph } from './planLayout';
 

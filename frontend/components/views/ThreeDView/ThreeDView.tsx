@@ -1,7 +1,6 @@
 import React from 'react';
 import ThreeDUniverse from './ThreeDUniverse';
-import { AppState, TableInfo } from '../../../types';
-import { DBType } from '../../../../backend/BE_types';
+import { DBType, AppState, TableInfo } from '../../../../shared/types/types';
 
 interface ThreeDModelProps {
   show: boolean;
@@ -10,9 +9,7 @@ interface ThreeDModelProps {
   dbType: DBType | undefined;
 }
 
-function ThreeDView({
-  show, selectedDb, dbTables, dbType,
-}: ThreeDModelProps) {
+function ThreeDView({ show, selectedDb, dbTables, dbType }: ThreeDModelProps) {
   if (!show) return null;
   return (
     <ThreeDUniverse

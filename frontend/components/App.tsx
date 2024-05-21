@@ -6,19 +6,18 @@ import styled from 'styled-components';
 
 import { ipcRenderer, IpcRendererEvent } from 'electron';
 import GlobalStyle from '../GlobalStyle';
-
-import { DBType } from '../../backend/BE_types';
-import { createQuery } from '../lib/queries';
+// import { createQuery } from '../lib/queries';
 import '../lib/style.css';
 import {
   AppState,
-  CreateNewQuery,
+  DBType,
+  // CreateNewQuery,
   DatabaseInfo,
-  DbLists,
-  isDbLists,
-  QueryData,
+  DbListsInterface,
+  isDbListsInterface,
+  // QueryData,
   TableInfo,
-} from '../types';
+} from '../../shared/types/types';
 
 import {
   bgColor,
@@ -69,6 +68,7 @@ import {
   QueryState,
 } from '../state_management/Reducers/QueryReducers';
 
+// uncommented unused imports
 declare module '@mui/material/styles/' {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
   interface DefaultTheme extends Theme {}
@@ -154,8 +154,11 @@ function App() {
   // TODO: refactor event handlers in back end to return db list rather than emit event
   useEffect(() => {
     // Listen to backend for updates to list of available databases
-    const dbListFromBackend = (evt: IpcRendererEvent, dbLists: DbLists) => {
-      if (isDbLists(dbLists)) {
+    const dbListFromBackend = (
+      evt: IpcRendererEvent,
+      dbLists: DbListsInterface,
+    ) => {
+      if (isDbListsInterface(dbLists)) {
         setDBInfo(dbLists.databaseList);
         setTables(dbLists.tableList);
         setSelectedTable(selectedTable || dbTables[0]);
@@ -193,7 +196,7 @@ function App() {
 
   // populate initial dblist
   useEffect(() => {
-    const dbListFromBackend = (dbLists: DbLists) => {
+    const dbListFromBackend = (dbLists: DbListsInterface) => {
       setDBInfo(dbLists.databaseList);
       setTables(dbLists.tableList);
       appViewDispatch({
