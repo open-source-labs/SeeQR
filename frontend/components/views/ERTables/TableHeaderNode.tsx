@@ -2,16 +2,14 @@ import React from 'react';
 import Tooltip from '@mui/material/Tooltip';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Save } from '@mui/icons-material';
-import IconButton from '@mui/material/IconButton';
-import TextField from '@mui/material/TextField';
-import { InputAdornment } from '@mui/material';
+import { IconButton, TextField, InputAdornment } from '@mui/material';
 import {
   AlterTablesObjType,
-  AddColumnsObjType,
+  // AddColumnsObjType,
   DropTablesObjType,
   TableHeaderDataObjectType,
   AlterColumnsObjType,
-} from '../../../types';
+} from '../../../../shared/types/types';
 import './styles.css';
 import * as colors from '../../../style-variables';
 import { sendFeedback } from '../../../lib/utils';

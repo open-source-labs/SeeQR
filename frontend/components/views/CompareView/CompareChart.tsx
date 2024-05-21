@@ -12,7 +12,7 @@ import {
 import styled from 'styled-components';
 import { getTotalTime } from '../../../lib/queries';
 import { compareChartColors } from '../../../style-variables';
-import { AppState } from '../../../types';
+import { AppState } from '../../../../shared/types/types';
 
 const ChartContainer = styled.div`
   height: 400px;

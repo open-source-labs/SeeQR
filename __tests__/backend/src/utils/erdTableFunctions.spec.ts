@@ -1,6 +1,5 @@
 import erdUpdatesToQuery from '../../../../backend/src/utils/erdTableFunctions';
-import { ErdUpdatesType } from '../../../../shared/types/erTypes';
-import { DBType } from '../../../../shared/types/dbTypes';
+import { ErdUpdatesType, DBType } from '../../../../shared/types/types';
 
 describe('erdTableFunctions', () => {
   //   jest.mock(

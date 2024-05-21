@@ -14,7 +14,7 @@ import {
   StyledListItemText,
   textColor,
 } from '../../style-variables';
-import { QueryData } from '../../types';
+import { QueryData } from '../../../shared/types/types';
 
 const QueryText = styled(StyledListItemText)`
   & .MuiListItemText-secondary {

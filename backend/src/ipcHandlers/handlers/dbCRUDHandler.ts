@@ -1,7 +1,12 @@
 // Types
 import { app } from 'electron';
-import { BackendObjType, DBList, DBType, LogType } from '../../../BE_types';
-import { Feedback } from '../../../../shared/types/utilTypes';
+import {
+  BackendObjType,
+  DBListInterface,
+  DBType,
+  LogType,
+  Feedback,
+} from '../../../../shared/types/types';
 
 // Helpers
 import logger from '../../utils/logging/masterlog';
@@ -58,8 +63,8 @@ export async function initializeDb(event, payload: InitializePayload) {
     // connect to initialized db
     await connectionModel.connectToDB(newDbName, dbType);
 
-    // update DBList in the sidebar to show this new db
-    const dbsAndTableInfo: DBList = await databaseModel.getLists(
+    // update DBListInterface in the sidebar to show this new db
+    const dbsAndTableInfo: DBListInterface = await databaseModel.getLists(
       newDbName,
       dbType,
     );
@@ -117,7 +122,10 @@ export async function updateDb(
   } finally {
     // send updated db info in case query affected table or database information
     // must be run after we connect back to the originally selected so tables information is accurate
-    const dbsAndTables: DBList = await databaseModel.getLists('', dbType);
+    const dbsAndTables: DBListInterface = await databaseModel.getLists(
+      '',
+      dbType,
+    );
     event.sender.send('db-lists', dbsAndTables);
     logger("Sent 'db-lists' from 'update-db'", LogType.SEND);
 
@@ -183,7 +191,10 @@ export async function erTableSchemaUpdate(
   } finally {
     // send updated db info
 
-    const updatedDb: DBList = await databaseModel.getLists(dbName, dbType);
+    const updatedDb: DBListInterface = await databaseModel.getLists(
+      dbName,
+      dbType,
+    );
     event.sender.send('db-lists', updatedDb);
 
     // send feedback back to FE

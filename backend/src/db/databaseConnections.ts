@@ -1,7 +1,7 @@
 import mysql from 'mysql2/promise';
 import { Pool, PoolConfig } from 'pg';
 import sqlite3 from 'sqlite3';
-import { LogType } from '../../../shared/types/dbTypes';
+import { LogType } from '../../../shared/types/types';
 import logger from '../utils/logging/masterlog';
 import pools from './poolVariables';
 

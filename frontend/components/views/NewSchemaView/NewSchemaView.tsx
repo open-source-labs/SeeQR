@@ -1,10 +1,13 @@
 import { ipcRenderer } from 'electron';
 import React, { useState } from 'react';
-import { Button, Typography } from '@mui/material/';
-import Box from '@mui/material/Box';
+import { Button, Typography, Box } from '@mui/material/';
 import styled from 'styled-components';
-import { QueryData, AppState, TableInfo } from '../../../types';
-import { DBType } from '../../../../backend/BE_types';
+import {
+  DBType,
+  QueryData,
+  AppState,
+  TableInfo,
+} from '../../../../shared/types/types';
 import { defaultMargin } from '../../../style-variables';
 
 // not sure what this is yet...seems necessary for error message listeners

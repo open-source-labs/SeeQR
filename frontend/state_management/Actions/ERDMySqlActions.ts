@@ -4,7 +4,7 @@ import {
   PsqlOperationType,
   ColumnOperationAction,
   PSqlDataType,
-} from '@mytypes/erTypes';
+} from '../../../shared/types/types';
 
 type postgresTableAction = {
   type: TableOperationAction;

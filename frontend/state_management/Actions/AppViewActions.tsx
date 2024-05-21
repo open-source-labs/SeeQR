@@ -1,4 +1,4 @@
-import { ViewName } from '../../types';
+import { ViewName } from '../../../shared/types/types';
 
 // these are currently the only possible actions that the app view can take
 export type AppViewStateAction =

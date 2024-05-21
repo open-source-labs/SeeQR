@@ -10,7 +10,7 @@ import {
   textColor,
   defaultMargin,
 } from '../../../style-variables';
-import type { ValidTabs } from '../../../types';
+import type { ValidTabs } from '../../../../shared/types/types';
 
 const ViewBtnGroup = styled(ButtonGroup)`
   margin: ${defaultMargin} 0;

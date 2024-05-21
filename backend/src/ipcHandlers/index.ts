@@ -1,7 +1,5 @@
 import { ipcMain } from 'electron';
-
 // // imports all other handlers to this index for main to require/import
-
 import { setConfig, getConfig } from './handlers/authHandler';
 import {
   initializeDb,
@@ -17,7 +15,11 @@ import {
   importDb,
   exportDb,
 } from './handlers/dbOpsHandler';
-import { runQuery, readQuery, runSelectAllQuery } from './handlers/queryHandler';
+import {
+  runQuery,
+  readQuery,
+  runSelectAllQuery,
+} from './handlers/queryHandler';
 import {
   dummyData,
   showOpenDialog,
@@ -52,6 +54,5 @@ ipcMain.handle('generate-dummy-data', dummyData);
 ipcMain.handle('showOpenDialog', showOpenDialog);
 ipcMain.handle('showSaveDialog', showSaveDialog);
 ipcMain.handle('feedback', feedback);
-
 
 ipcMain.handle('run-select-all-query', runSelectAllQuery);
