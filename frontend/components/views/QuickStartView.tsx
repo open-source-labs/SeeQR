@@ -53,7 +53,6 @@ const StyledTypographyInstructions = styled.div`
 // title: "welcome to SeeQR"
 const StyledTypographyTitle = styled(Typography)`
   font-size: clamp(2rem, 35vw, 3rem);
-  // margin-top: 1px;
 `;
 // container div for btn back & btn complete
 const NavButtons = styled.div`
@@ -309,9 +308,9 @@ function QuickStartView({ show }: QuickStartViewProps) {
             <NavButtons>
               <Button
                 variant="outlined"
+                color="primary"
                 disabled={activeStep === 0}
                 onClick={handleBack}
-                color="primary"
                 className="step-btn"
                 id="step-back-btn"
               >
@@ -321,9 +320,9 @@ function QuickStartView({ show }: QuickStartViewProps) {
               {activeStep !== steps.length &&
                 (completed[activeStep] ? (
                   <Button
-                    onClick={handleNext}
-                    color="primary"
                     variant="contained"
+                    color="primary"
+                    onClick={handleNext}
                     className="step-btn"
                     id="step-next-btn"
                   >
@@ -344,15 +343,6 @@ function QuickStartView({ show }: QuickStartViewProps) {
                     {completedSteps() === totalSteps() - 1 ? 'FINISH' : 'NEXT'}
                   </Button>
                 ))}
-              {/* <Button
-                onClick={handleNext}
-                color="primary"
-                variant="contained"
-                className="step-btn"
-                id="step-next-btn"
-              >
-                NEXT
-              </Button> */}
             </NavButtons>
           </StepContent>
         )}

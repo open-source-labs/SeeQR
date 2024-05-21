@@ -28,6 +28,7 @@ main {
 }
 
 /* QuickStartView */
+/* step btn class */
 .step-btn {
   margin-right: 8px;
   padding-left: 50px;
@@ -39,29 +40,24 @@ main {
 #step-reset-btn {
   margin-top: 20px;
   border-width: 1.5px;
-  color: #cbd4d6;
+  color: rgb(203, 212, 214); /* textColor */
 }
-/* next btn */
-#step-next-btn {
-  color: greyDark;
-}
+
 /* back btn */
 #step-back-btn {
-  color: #cbd4d6;
+  color: rgb(203, 212, 214); /* textColor */
   border-width: 1.5px;
 }
-/* complete-next btn */
-#step-complete-next-btn {
-  background-color: #57a777;
-}
+/* div on step 5 */
 .step-completed-div {
   text-align: center;
 }
-/* Step x already complete */
-.step-completed {
+/* Step x already complete -- not need */
+/* .step-completed {
   display: inline-block;
-}
+} */
 
+/* instruction on step 5 */
 .step-instructions {
   margin-bottom: 24px;
 }
