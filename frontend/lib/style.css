@@ -28,39 +28,29 @@ main {
 }
 
 /* QuickStartView */
-/* step btn class */
-.step-btn {
-  margin-right: 8px;
-  padding-left: 50px;
-  padding-right: 50px;
-  border-radius: 15px;
-}
 
 /* reset btn */
 #step-reset-btn {
-  margin-top: 20px;
-  border-width: 1.5px;
   color: rgb(203, 212, 214); /* textColor */
 }
 
 /* back btn */
 #step-back-btn {
   color: rgb(203, 212, 214); /* textColor */
-  border-width: 1.5px;
 }
 /* div on step 5 */
-.step-completed-div {
+/* .step-completed-div {
   text-align: center;
-}
+} */
 /* Step x already complete -- not need */
 /* .step-completed {
   display: inline-block;
 } */
 
 /* instruction on step 5 */
-.step-instructions {
+/* .step-instructions {
   margin-bottom: 24px;
-}
+} */
 
 /* logo img in QuickStartView  */
 .step-img {

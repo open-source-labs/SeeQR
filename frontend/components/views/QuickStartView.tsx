@@ -10,7 +10,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import logo from '../../../assets/logo/seeqr_dock.png';
 import '../../lib/style.css';
-import { greyPrimary } from '../../style-variables';
+import { greyPrimary, greenPrimary, textColor } from '../../style-variables';
 
 interface QuickStartViewProps {
   show: boolean;
@@ -46,6 +46,7 @@ const StyledStepLabel = styled(StepLabel)`
 
 // text instructions div
 const StyledTypographyInstructions = styled.div`
+  margin-bottom: 24px;
   font-size: clamp(1rem, 2.2vw, 1.2rem);
   text-align: center;
   width: 50vw;
@@ -56,11 +57,12 @@ const StyledTypographyTitle = styled(Typography)`
 `;
 // container div for btn back & btn complete
 const NavButtons = styled.div`
-  width: 80%;
+  width: 100%;
   display: flex;
   flex-direction: row;
   justify-content: space-around;
   margin-bottom: 15px;
+  text-align: center;
 `;
 // container for the text instructions and navBtn
 const StepContent = styled.div`
@@ -292,39 +294,54 @@ function QuickStartView({ show }: QuickStartViewProps) {
             <StyledTypographyInstructions className="step-instructions">
               All steps completed - you&apos;re ready to use SeeQr!
             </StyledTypographyInstructions>
-            <Button
-              variant="outlined"
-              color="primary"
-              onClick={handleReset}
-              className="step-btn"
-              id="step-reset-btn"
-            >
-              RESET
-            </Button>
+            <NavButtons>
+              <Button
+                variant="outlined"
+                onClick={handleReset}
+                className="step-btn"
+                id="step-reset-btn"
+                sx={{
+                  mt: 3,
+                  border: 1,
+                  borderColor: greenPrimary,
+                  borderRadius: 3,
+                  width: 150,
+                }}
+              >
+                RESET
+              </Button>
+            </NavButtons>
           </div>
         ) : (
           <StepContent>
             {getStepContent(activeStep)}
             <NavButtons>
-              <Button
-                variant="outlined"
-                color="primary"
-                disabled={activeStep === 0}
-                onClick={handleBack}
-                className="step-btn"
-                id="step-back-btn"
-              >
-                {activeStep === 0 ? '' : 'BACK'}
-              </Button>
+              {activeStep === 0 ? undefined : (
+                <Button
+                  variant="outlined"
+                  onClick={handleBack}
+                  className="step-btn"
+                  id="step-back-btn"
+                  sx={{
+                    mt: 1,
+                    border: 1,
+                    borderColor: greenPrimary,
+                    borderRadius: 3,
+                    width: 150,
+                  }}
+                >
+                  BACK
+                </Button>
+              )}
 
               {activeStep !== steps.length &&
                 (completed[activeStep] ? (
                   <Button
                     variant="contained"
-                    color="primary"
                     onClick={handleNext}
                     className="step-btn"
                     id="step-next-btn"
+                    sx={{ mt: 1, borderRadius: 3, width: 150 }}
                   >
                     NEXT
                   </Button>
@@ -335,10 +352,10 @@ function QuickStartView({ show }: QuickStartViewProps) {
                   // </Typography>
                   <Button
                     variant="contained"
-                    color="primary"
                     className="step-btn"
                     id="step-complete-next-btn"
                     onClick={handleComplete}
+                    sx={{ mt: 1, borderRadius: 3, width: 150 }}
                   >
                     {completedSteps() === totalSteps() - 1 ? 'FINISH' : 'NEXT'}
                   </Button>
