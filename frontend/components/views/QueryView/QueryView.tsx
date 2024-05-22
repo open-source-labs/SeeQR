@@ -1,10 +1,13 @@
 import { ipcRenderer } from 'electron';
 import React, { useState } from 'react';
-import { Button } from '@mui/material/';
-import Box from '@mui/material/Box';
+import { Button, Box } from '@mui/material/';
 import styled from 'styled-components';
-import { QueryData, AppState, DatabaseInfo } from '../../../types';
-import { DBType } from '../../../../backend/BE_types';
+import {
+  DBType,
+  QueryData,
+  AppState,
+  DatabaseInfo,
+} from '../../../../shared/types/types';
 import { defaultMargin } from '../../../style-variables';
 import { getPrettyTime, createNewQuery } from '../../../lib/queries';
 import { sendFeedback } from '../../../lib/utils';
@@ -82,7 +85,6 @@ function QueryView({
     averageSampleTime: 0,
   };
 
-
   const localQuery = { ...defaultQuery, ...queryStateContext?.workingQuery };
 
   const [runQueryNumber, setRunQueryNumber] = useState(1);
@@ -109,7 +111,7 @@ function QueryView({
     // when db is changed we must change selected db state on app, as well as
     // request updates for db and table information. Otherwise database view tab
     // will show wrong information
-    
+
     setSelectedDb(newDb);
     setDBType(nextDBType);
 
@@ -291,7 +293,7 @@ function QueryView({
   if (!show) return null;
   return (
     <QueryViewContainer>
-      <TopRow >
+      <TopRow>
         <QueryLabel label={localQuery.label} onChange={onLabelChange} />
         <QueryGroup group={localQuery.group} onChange={onGroupChange} />
         <QueryDb
@@ -305,14 +307,8 @@ function QueryView({
           totalTime={getPrettyTime(queryStateContext?.workingQuery)}
         />
       </TopRow>
-      <QuerySqlInput
-        sql={localQuery?.sqlString ?? ''}
-        onChange={onSqlChange}
-      />
-      <QueryHistory 
-        history={queriesRan} 
-        onChange={onSqlChange} 
-        />
+      <QuerySqlInput sql={localQuery?.sqlString ?? ''} onChange={onSqlChange} />
+      <QueryHistory history={queriesRan} onChange={onSqlChange} />
       <QueryRunNumber
         runNumber={runQueryNumber}
         onChange={onRunQueryNumChange}

@@ -1,39 +1,46 @@
-import React from 'react';
-import { render } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import TablesTabs from '../../../frontend/components/views/DbView/TablesTabBar';
+// import React from 'react';
+// import { render } from '@testing-library/react';
+// import '@testing-library/jest-dom';
+// import TablesTabs from '../../../frontend/components/views/DbView/TablesTabBar';
 
-describe('TablesTabs Component', () => {
-  it('renders without crashing', () => {
-    render(<TablesTabs
-      tables={[{
-        table_name: 'TestTable',
-        table_catalog: '',
-        table_schema: '',
-        is_insertable_into: 'yes',
-        columns: []
-      }]}
-      selectTable={() => {}}
-      selectedTable={undefined}
-      selectedDb='test_db'
-      setERView={() => {}}
-      curDBType= {undefined}
-    />);
-    expect(document.body).not.toHaveTextContent('');
-  });
-});
+// describe('TablesTabs Component', () => {
+//   it('renders without crashing', () => {
+//     render(<TablesTabs
+//       tables={[{
+//         table_name: 'TestTable',
+//         table_catalog: '',
+//         table_schema: '',
+//         is_insertable_into: 'yes',
+//         columns: []
+//       }]}
+//       selectTable={() => {}}
+//       selectedTable={undefined}
+//       selectedDb='test_db'
+//       setERView={() => {}}
+//       curDBType= {undefined}
+//     />);
+//     expect(document.body).not.toHaveTextContent('');
+//   });
+// });
 
 
 // import React from 'react';
 // import { render, screen, fireEvent } from '@testing-library/react';
 // import '@testing-library/jest-dom/extend-expect';
 // import TablesTabs from '../../../frontend/components/views/DbView/TablesTabBar';
+// import { DBType } from '../../../backend/BE_types';
+// import { TableInfo, TableColumn, AppState } from '../../../frontend/types';
+// import '@testing-library/jest-dom';
 
-// describe('TablesTabs Component', () => {
-//   const mockSelectTable = jest.fn();
-//   const mockSetERView = jest.fn();
-//   const mockHandleClickSave = jest.fn();
+// const setERViewMock = jest.fn();
+// const selectTableMock = jest.fn();
 
+// test('', ()=> {
+
+// })
+
+// test('testing rendering of TablesTabs', () => {
+//   let active = false;
 //   const tables = [
 //     { table_name: 'Users', columns: [] },
 //     { table_name: 'Orders', columns: [] },

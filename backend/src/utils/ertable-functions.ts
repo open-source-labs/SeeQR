@@ -1,12 +1,12 @@
 import {
+  BackendObjType,
+  DBType,
   AddTablesObjType,
   DropTablesObjType,
   AlterTablesObjType,
   AlterColumnsObjType,
   AddConstraintObjType,
-} from '../../../frontend/types';
-
-import { BackendObjType, DBType } from '../../../shared/types/dbTypes';
+} from '../../../shared/types/types';
 
 /**
  *
@@ -38,12 +38,8 @@ function backendObjToQuery(backendObj: BackendObjType, dbType: DBType): string {
         );
       }
       if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL) {
-
         // check if addColumns is defined and not empty before accessing its properties
-        if (
-          currAlterTable.addColumns &&
-          currAlterTable.addColumns.length > 0
-        ) {
+        if (currAlterTable.addColumns && currAlterTable.addColumns.length > 0) {
           firstAddingMySQLColumnName = `${currAlterTable.addColumns[0].column_name}`;
           outputArray.push(
             `CREATE TABLE ${currTable.table_name} 
@@ -53,7 +49,7 @@ function backendObjToQuery(backendObj: BackendObjType, dbType: DBType): string {
                             ;`,
           );
         } else {
-          console.error("addColumns is undefined or empty for MySQL.");
+          console.error('addColumns is undefined or empty for MySQL.');
         }
       }
 

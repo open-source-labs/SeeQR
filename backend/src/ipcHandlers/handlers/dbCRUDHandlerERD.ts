@@ -1,8 +1,11 @@
 // Types
 import { app } from 'electron';
-import { DBList, LogType } from '../../../BE_types';
-import { Feedback } from '../../../../shared/types/utilTypes';
-import { ErdUpdatesType } from '../../../../shared/types/erTypes';
+import {
+  DBListInterface,
+  LogType,
+  Feedback,
+  ErdUpdatesType,
+} from '../../../../shared/types/types';
 import dbState from '../../models/stateModel';
 // Helpers
 import logger from '../../utils/logging/masterlog';
@@ -26,11 +29,12 @@ import queryModel from '../../models/queryModel';
  *
  */
 
-export async function erTableSchemaUpdate(event, updatesArray: ErdUpdatesType) {
+export async function erTableSchemaUpdate(e, updatesArray: ErdUpdatesType) {
+  // need to update return value and type strongly
   // send notice to front end that schema update has started
-  event.sender.send('async-started');
+  e.sender.send('async-started');
   let feedback: Feedback = {
-    type: '',
+    type: 'success',
     message: '',
   };
 
@@ -52,6 +56,7 @@ export async function erTableSchemaUpdate(event, updatesArray: ErdUpdatesType) {
     };
     return 'success';
   } catch (err: any) {
+    // (chore) strongly type err
     // rollback transaction if there's an error in update and send back feedback to FE
     await queryModel.query('Rollback;', [], currentERD);
 
@@ -62,17 +67,17 @@ export async function erTableSchemaUpdate(event, updatesArray: ErdUpdatesType) {
   } finally {
     // send updated db info
 
-    const updatedDb: DBList = await databaseModel.getLists(
+    const updatedDb: DBListInterface = await databaseModel.getLists(
       currentDb,
       currentERD,
     );
-    event.sender.send('db-lists', updatedDb);
+    e.sender.send('db-lists', updatedDb);
 
     // send feedback back to FE
-    event.sender.send('feedback', feedback);
+    e.sender.send('feedback', feedback);
 
     // send notice to FE that schema update has been completed
-    event.sender.send('async-complete');
+    e.sender.send('async-complete');
 
     logger(
       "Sent 'db-lists and feedback' from 'ertable-schemaupdate'",
@@ -81,6 +86,6 @@ export async function erTableSchemaUpdate(event, updatesArray: ErdUpdatesType) {
   }
 }
 
-export function getPath(event, pathType) {
+export function getPath(e, pathType) {
   return app.getPath(pathType);
 }

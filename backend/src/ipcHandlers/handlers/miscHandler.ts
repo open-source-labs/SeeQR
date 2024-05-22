@@ -3,12 +3,12 @@ import { BrowserWindow, dialog } from 'electron';
 // Types
 import {
   ColumnObj,
-  DBList,
+  DBListInterface,
   DBType,
   DummyRecords,
   LogType,
-} from '../../../BE_types';
-import { Feedback } from '../../../../shared/types/utilTypes';
+  Feedback,
+} from '../../../../shared/types/types';
 
 // Helpers
 import generateDummyData from '../../utils/dummyData/dummyDataMain';
@@ -48,7 +48,7 @@ export async function dummyData(event, data: dummyDataRequestPayload) {
   // send notice to front end that DD generation has been started
   event.sender.send('async-started');
   let feedback: Feedback = {
-    type: '',
+    type: 'success',
     message: '',
   };
   try {
@@ -93,7 +93,10 @@ export async function dummyData(event, data: dummyDataRequestPayload) {
     };
   } finally {
     // send updated db info in case query affected table or database information
-    const dbsAndTables: DBList = await databaseModel.getLists('', data.dbType); // dummy data clear error is from here
+    const dbsAndTables: DBListInterface = await databaseModel.getLists(
+      '',
+      data.dbType,
+    ); // dummy data clear error is from here
     event.sender.send('db-lists', dbsAndTables); // dummy data clear error is from here
 
     // send feedback back to FE

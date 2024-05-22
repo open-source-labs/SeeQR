@@ -3,7 +3,7 @@ import {
   PsqlOperationType,
   ColumnOperationAction,
   PSqlDataType,
-} from '@mytypes/erTypes';
+} from '../../../shared/types/types';
 
 export type posgresAction = {
   type: ColumnOperationAction | TableOperationAction;

@@ -16,7 +16,7 @@ import FileDownloadIcon from '@mui/icons-material/FileDownload';
 
 import { SidebarListItem, StyledListItemText } from '../../style-variables';
 import { sendFeedback } from '../../lib/utils';
-import { DBType } from '../../../backend/BE_types';
+import { DBType } from '../../../shared/types/types';
 import { getAppDataPath } from '../../lib/queries';
 
 const { ipcRenderer } = window.require('electron');

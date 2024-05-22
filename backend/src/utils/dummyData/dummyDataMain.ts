@@ -1,7 +1,12 @@
 import { faker } from '@faker-js/faker';
-import { ColumnObj, DummyRecords, LogType } from '../../../BE_types';
+import {
+  ColumnObj,
+  DummyRecords,
+  LogType,
+} from '../../../../shared/types/types';
 import logger from '../logging/masterlog';
-import queryModel from '../../models/queryModel';
+// import queryModel from '../../models/queryModel';
+// commented out unused imports
 
 /*   THIS FILE CONTAINS THE ALGORITHMS THAT GENERATE DUMMY DATA    */
 /*                                                                 */

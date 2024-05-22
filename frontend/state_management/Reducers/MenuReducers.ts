@@ -1,4 +1,4 @@
-import { Dialogs, ViewName } from '../../../shared/types/frontendTypes';
+import { Dialogs, ViewName } from '../../../shared/types/types';
 import MenuActions, { async } from '../Actions/MenuActions';
 
 // idea: Loading event will take a payload: {dispatch: dispatch function, action: appropriate action}

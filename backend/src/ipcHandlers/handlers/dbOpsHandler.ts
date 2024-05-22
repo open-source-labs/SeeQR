@@ -2,9 +2,12 @@ import fs from 'fs';
 import path from 'path';
 
 // Types
-import { DBList, LogType } from '../../../BE_types';
-import { Feedback } from '../../../../shared/types/utilTypes';
-import { DBType } from '../../../../shared/types/dbTypes';
+import {
+  Feedback,
+  DBListInterface,
+  LogType,
+  DBType,
+} from '../../../../shared/types/types';
 
 // Helpers
 import logger from '../../utils/logging/masterlog';
@@ -42,10 +45,7 @@ interface ImportPayload {
 
 interface ExportPayload extends ImportPayload {
   db: string;
-}
-
-interface ExportPayload {
-  sourceDb: string;
+  // sourceDb: string; from other ExportPayload in file figure out form of payload
 }
 
 /**
@@ -117,7 +117,10 @@ export async function selectDb(
     dbState.currentDb = dbName;
 
     // send updated db info
-    const dbsAndTables: DBList = await databaseModel.getLists(dbName, dbType);
+    const dbsAndTables: DBListInterface = await databaseModel.getLists(
+      dbName,
+      dbType,
+    );
     event.sender.send('db-lists', dbsAndTables);
     logger("Sent 'db-lists' from 'select-db'", LogType.SEND);
   } finally {
@@ -182,7 +185,10 @@ export async function dropDb(
       await queryModel.query(dropDBFunc(dbName, dbType), [], dbType);
 
     // send updated db info
-    const dbsAndTables: DBList = await databaseModel.getLists(dbName, dbType);
+    const dbsAndTables: DBListInterface = await databaseModel.getLists(
+      dbName,
+      dbType,
+    );
     event.sender.send('db-lists', dbsAndTables);
     logger("Sent 'db-lists' from 'drop-db'", LogType.SEND);
   } finally {
@@ -255,7 +261,10 @@ export async function duplicateDb(
     // }
 
     // update frontend with new db list
-    const dbsAndTableInfo: DBList = await databaseModel.getLists('', dbType);
+    const dbsAndTableInfo: DBListInterface = await databaseModel.getLists(
+      '',
+      dbType,
+    );
     event.sender.send('db-lists', dbsAndTableInfo);
     logger("Sent 'db-lists' from 'duplicate-db'", LogType.SEND);
   } finally {
@@ -293,7 +302,6 @@ export async function importDb(
   event.sender.send('async-started');
 
   try {
-   
     // if (dbType === DBType.Postgres) {
     //   try {
     //     await queryModel.query(createDBFunc(newDbName, dbType), [], dbType);
@@ -302,13 +310,13 @@ export async function importDb(
     //   }
     // }
 
- // create new empty database
+    // create new empty database
     try {
       await queryModel.query(createDBFunc(newDbName, dbType), [], dbType);
     } catch (e) {
       throw new Error('Failed to create Database');
     }
-    
+
     // run temp sql file on new database
     try {
       await promExecute(runSQLFunc(newDbName, filePath, dbType), dbType);
@@ -322,7 +330,10 @@ export async function importDb(
     }
 
     // update frontend with new db list
-    const dbsAndTableInfo: DBList = await databaseModel.getLists('', dbType);
+    const dbsAndTableInfo: DBListInterface = await databaseModel.getLists(
+      '',
+      dbType,
+    );
     event.sender.send('db-lists', dbsAndTableInfo);
     logger("Sent 'db-lists' from 'duplicate-db'", LogType.SEND);
   } finally {
@@ -349,7 +360,7 @@ export async function exportDb(event, payload: ExportPayload, dbType: DBType) {
   const { db, filePath } = payload;
 
   const feedback: Feedback = {
-    type: '',
+    type: 'success',
     message: '',
   };
 

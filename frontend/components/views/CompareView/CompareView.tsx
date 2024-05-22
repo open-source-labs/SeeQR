@@ -1,6 +1,5 @@
 import React from 'react';
-import { AppState } from '../../../types';
-
+import { AppState } from '../../../../shared/types/types';
 import CompareChart from './CompareChart';
 import CompareTable from './CompareTable';
 

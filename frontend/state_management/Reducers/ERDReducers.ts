@@ -1,6 +1,4 @@
-import { initialStateType } from '@mytypes/erTypes';
-import { DBType } from '../../../backend/BE_types';
-
+import { DBType, initialStateType } from '../../../shared/types/types';
 import ERDPsqlReducers from './ERDReducerHelpers/ERDPsqlReducers';
 import { posgresAction } from '../Actions/ERDPsqlActions';
 
