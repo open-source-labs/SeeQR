@@ -33,7 +33,7 @@ function TableHeader({ data }: TableHeaderProps) {
       table_schema: currentTable.table_schema,
     };
     // update backendObj
-    backendObj.current.updates.dropTables.push(dropTablesObj);
+    backendObj.updates.dropTables.push(dropTablesObj);
     // update frontend
     schemaStateCopy.tableList = schemaStateCopy.tableList.filter(
       (table) => table.table_name !== table_name,
@@ -103,7 +103,7 @@ function TableHeader({ data }: TableHeaderProps) {
       console.log(schemaStateCopy);
     }
     console.log(alterTablesObj);
-    backendObj.current.updates.alterTables.push(alterTablesObj);
+    backendObj.updates.alterTables.push(alterTablesObj);
   };
 
   return (

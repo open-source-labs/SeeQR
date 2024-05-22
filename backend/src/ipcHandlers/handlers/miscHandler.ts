@@ -48,7 +48,7 @@ export async function dummyData(event, data: dummyDataRequestPayload) {
   // send notice to front end that DD generation has been started
   event.sender.send('async-started');
   let feedback: Feedback = {
-    type: '',
+    type: 'success',
     message: '',
   };
   try {

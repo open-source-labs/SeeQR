@@ -230,6 +230,8 @@ export interface connectionModelType {
  * FRONTEND TABLE TYPES
  */
 
+export type Dialogs = unknown;
+
 export type initialStateType = {
   db_type: DBType;
   guiTableArray: any[]; // for now any
@@ -456,7 +458,6 @@ export type ViewName =
   | 'newSchemaView'
   | 'threeDView';
 
-// export type Dialogs = implement dialogs type
 export interface AppState {
   // createNewQuery: CreateNewQuery;
   selectedDb: string;
@@ -525,7 +526,7 @@ export interface QueryData {
 
 export type ValidTabs = 'Results' | 'Execution Plan';
 
-export type FeedbackSeverity = '' | 'error' | 'success' | 'info' | 'warning';
+export type FeedbackSeverity = 'error' | 'success' | 'info' | 'warning';
 
 export interface Feedback {
   type: FeedbackSeverity;

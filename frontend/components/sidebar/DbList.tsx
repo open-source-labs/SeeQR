@@ -36,10 +36,12 @@ const StyledSidebarList = styled(SidebarList)`
 
 type DbListProps = Pick<AppState, 'selectedDb' | 'setSelectedDb'> & {
   show: boolean;
-  curDBType: DBType | undefined;
+  curDBType?: DBType;
   setDBType: (dbType: DBType | undefined) => void;
-  DBInfo: DatabaseInfo[] | undefined;
+  DBInfo?: DatabaseInfo[];
 };
+
+type dbNamesType = string[];
 
 function DbList({
   selectedDb,
@@ -58,8 +60,14 @@ function DbList({
   const [filterBy, setFilterBy] = useState<string>('All');
   const openFilter = Boolean(anchorEl);
 
-  // I think this returns undefined if DBInfo is falsy idk lol
-  const dbNames = DBInfo?.map((dbi) => dbi.db_name);
+  // check if DBInfo was passed in
+  let dbNames: dbNamesType;
+  if (!DBInfo) {
+    dbNames = [];
+    console.log('No DBInfo provided');
+  } else {
+    dbNames = DBInfo.map((dbi) => dbi.db_name);
+  }
 
   const appViewStateContext = useAppViewContext();
   const appViewDispatchContext = useAppViewDispatch();

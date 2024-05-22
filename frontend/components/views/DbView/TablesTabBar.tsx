@@ -26,6 +26,7 @@ import {
   SchemaStateObjType,
   TableHeaderNodeType,
   UpdatesObjType,
+  BackendObjType,
 } from '../../../../shared/types/types';
 // import ERTables from '../ERTables/ERTabling';
 import stateToReactFlow from '../../../lib/convertStateToReactFlow';

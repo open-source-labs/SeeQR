@@ -330,7 +330,10 @@ export async function importDb(
     }
 
     // update frontend with new db list
-    const dbsAndTableInfo: DBList = await databaseModel.getLists('', dbType);
+    const dbsAndTableInfo: DBListInterface = await databaseModel.getLists(
+      '',
+      dbType,
+    );
     event.sender.send('db-lists', dbsAndTableInfo);
     logger("Sent 'db-lists' from 'duplicate-db'", LogType.SEND);
   } finally {
@@ -357,7 +360,7 @@ export async function exportDb(event, payload: ExportPayload, dbType: DBType) {
   const { db, filePath } = payload;
 
   const feedback: Feedback = {
-    type: '',
+    type: 'success',
     message: '',
   };
 
