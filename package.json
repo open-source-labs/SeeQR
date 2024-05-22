@@ -61,7 +61,6 @@
     "react-force-graph": "^1.43.0",
     "react-redux": "^9.1.2",
     "reactflow": "^11.8.3",
-    "redux": "^5.0.1",
     "sql-formatter": "^15.3.1",
     "sqlite3": "5.1.6",
     "styled-components": "^6.0.7",
