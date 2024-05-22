@@ -16,7 +16,7 @@ import {
   StyledTextField,
 } from '../../style-variables';
 import '../../lib/style.css';
-import { DocConfigFile } from '../../../backend/BE_types';
+import { DocConfigFile } from '../../../shared/types/types';
 import MenuContext from '../../state_management/Contexts/MenuContext';
 
 /*

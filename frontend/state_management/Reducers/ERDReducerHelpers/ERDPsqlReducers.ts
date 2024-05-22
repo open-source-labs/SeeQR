@@ -4,7 +4,7 @@ import {
   OperationType,
   TableOperationAction,
   ColumnOperationAction,
-} from '@mytypes/erTypes';
+} from '../../../../shared/types/types';
 import { posgresAction } from '../../Actions/ERDPsqlActions';
 
 function ERDPsqlReducers(state: initialStateType, action: posgresAction) {

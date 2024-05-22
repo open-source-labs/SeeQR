@@ -1,7 +1,7 @@
 import React from 'react';
 import { Typography } from '@mui/material';
 import styled from 'styled-components';
-import { DatabaseInfo } from '../../../types';
+import { DatabaseInfo } from '../../../../shared/types/types';
 
 interface DatabaseDetailsProps {
   db: DatabaseInfo | undefined;

@@ -1,13 +1,10 @@
-import fs from 'fs';
+// import fs from 'fs';
 import { ipcRenderer } from 'electron';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Tabs, Tab, Button } from '@mui/material';
-import ToggleButton from '@mui/material/ToggleButton';
+import { Tabs, Tab, Button, ToggleButton } from '@mui/material';
 // import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-import SaveAsIcon from '@mui/icons-material/SaveAs';
-import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
-import AccountTreeIcon from '@mui/icons-material/AccountTree';
-import RestorePageIcon from '@mui/icons-material/RestorePage';
+import { SaveAs, AccountTree, PlaylistAdd } from '@mui/icons-material';
+// import RestorePageIcon from '@mui/icons-material/RestorePage';
 import ReactFlow, {
   applyEdgeChanges,
   applyNodeChanges,
@@ -21,20 +18,23 @@ import 'reactflow/dist/style.css';
 import styled from 'styled-components';
 import { greyPrimary, greenPrimary } from '../../../style-variables';
 import TableDetails from './TableDetails';
-import { AppState, TableInfo } from '../../../types';
-import { DBType } from '../../../../backend/BE_types';
-// import ERTables from '../ERTables/ERTabling';
-import stateToReactFlow from '../../../lib/convertStateToReactFlow';
 import {
+  AppState,
+  TableInfo,
+  DBType,
   AddTablesObjType,
   SchemaStateObjType,
   TableHeaderNodeType,
   UpdatesObjType,
-} from '../../../types';
+  BackendObjType,
+} from '../../../../shared/types/types';
+// import ERTables from '../ERTables/ERTabling';
+import stateToReactFlow from '../../../lib/convertStateToReactFlow';
 import nodeTypes from '../ERTables/NodeTypes';
 import * as colors from '../../../style-variables';
+// commented out imports that are not used currently before review
 
-//This is apart of the table view
+// This is apart of the table view
 interface TabPanelProps {
   children?: React.ReactNode;
   index: number;
@@ -68,7 +68,7 @@ const StyledTabs = styled(Tabs)`
   border-radius: 5px;
 `;
 
-//This is apart of the table view
+// This is apart of the table view
 function TabPanel({
   children,
   value,
@@ -87,7 +87,6 @@ TabPanelProps) {
     </div>
   );
 }
-
 
 const rfStyle: object = {
   height: '65vh',
@@ -142,7 +141,6 @@ interface HandleChangeFunc {
   (event: React.ChangeEvent<unknown>, newValue: number): void;
 }
 
-
 function TablesTabs({
   tables,
   selectTable,
@@ -157,14 +155,14 @@ function TablesTabs({
   console.log(setERView);
   console.log(curDBType);
   console.log(selectedDb);
-  //react flow functions to save layout
+  // react flow functions to save layout
   interface FlowType {
     toObject(): any;
   }
   const [nodes, setNodes] = useState<Node[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
 
-  // state for custom controls toggle & saves a copy of the schema 
+  // state for custom controls toggle & saves a copy of the schema
   // when tables (which is the database that is selected changes, update SchemaState)
   const [schemaState, setSchemaState] = useState<SchemaStateObjType>({
     database: 'initial',
@@ -307,7 +305,6 @@ function TablesTabs({
       });
   }
 
-
   // This useEffect fires when schemaState changes and will convert the state to a form react flow requires
   useEffect(() => {
     // console.log(schemaState);
@@ -337,9 +334,7 @@ function TablesTabs({
     setNodes(nodesArray);
     setEdges(initialState.edges);
   }, [schemaState]);
-  //end of the schema state
-
-
+  // end of the schema state
 
   // End of ERTabling / ERD View
   const handleChange: HandleChangeFunc = (event, newValue) => {
@@ -389,7 +384,6 @@ function TablesTabs({
       </div>
 
       {active ? (
-        
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -410,7 +404,7 @@ function TablesTabs({
             onClick={handleSaveLayout}
             title="Save Current Layout"
           >
-            <AccountTreeIcon
+            <AccountTree
               sx={{ fontSize: 40 }}
               style={{ color: 'white', zIndex: 999 }}
             />
@@ -421,7 +415,7 @@ function TablesTabs({
             onClick={handleAddTable}
             title="Add New Table"
           >
-            <PlaylistAddIcon
+            <PlaylistAdd
               sx={{ fontSize: 40 }}
               style={{ color: 'white', zIndex: 999 }}
             />
@@ -432,7 +426,7 @@ function TablesTabs({
             onClick={handleClickSave}
             title="Save Database"
           >
-            <SaveAsIcon
+            <SaveAs
               sx={{ fontSize: 40 }}
               style={{ color: 'white', zIndex: 999 }}
             />
@@ -446,10 +440,7 @@ function TablesTabs({
           />
           <Background />
           <Controls />
-
         </ReactFlow>
-
-
       ) : (
         <>
           <StyledTabs
@@ -464,10 +455,10 @@ function TablesTabs({
               <Tab label={name} {...a11yProps(index)} key={name} />
             ))}
           </StyledTabs>
-      
+
           <br />
           <br />
-          
+
           {tables.map((tableMap, index) => (
             <TabPanel
               value={tableIndex}
@@ -482,7 +473,6 @@ function TablesTabs({
                 curDBType={curDBType}
               />
             </TabPanel>
-        
           ))}
         </>
       )}

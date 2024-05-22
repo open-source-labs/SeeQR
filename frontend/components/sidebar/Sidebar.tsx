@@ -1,22 +1,17 @@
 // Mui imports
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import { ArrowBackIos, ArrowForwardIos } from '@mui/icons-material';
 import { Drawer, IconButton, Tooltip } from '@mui/material/';
-
 import React from 'react';
 import styled from 'styled-components';
 import logo from '../../../assets/logo/seeqr_dock.png';
-
 // Types
-import { AppState, DatabaseInfo } from '../../types';
-import { DBType } from '../../../backend/BE_types';
+import { AppState, DatabaseInfo, DBType } from '../../../shared/types/types';
 
 import BottomButtons from './BottomButtons';
 import DbList from './DbList';
 import QueryList from './QueryList';
 import TopButtons from './TopButtons';
 import ViewSelector from './ViewSelector';
-
 import {
   greyDarkest,
   sidebarShowButtonSize,
@@ -134,7 +129,7 @@ function Sidebar({
       {/* this componenet just shows tooltip when you hover your mouse over the sidebar open and close button. */}
       <Tooltip title="Show Sidebar">
         <ShowSidebarBtn onClick={toggleOpen} size="small">
-          <ArrowForwardIosIcon />
+          <ArrowForwardIos />
         </ShowSidebarBtn>
       </Tooltip>
 
@@ -176,7 +171,7 @@ function Sidebar({
         <HideSidebarBtnContainer>
           <Tooltip title="Hide Sidebar">
             <HideSidebarBtn onClick={toggleOpen} size="large">
-              <ArrowBackIosIcon />
+              <ArrowBackIos />
             </HideSidebarBtn>
           </Tooltip>
         </HideSidebarBtnContainer>

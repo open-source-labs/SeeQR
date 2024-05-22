@@ -4,11 +4,15 @@ import { Edge, MarkerType, Node } from 'reactflow';
 import 'reactflow/dist/style.css';
 import * as types from '../constants/constants';
 import { greenPrimary } from '../style-variables';
-import { ERTableColumnData, ERTableData, SchemaStateObjType } from '../types';
 import {
-  DatabaseLayoutObjType,
-  isDatabaseLayoutObjTypeArr,
-} from '../components/views/ERTables/NodeTypes';
+  ERTableColumnData,
+  ERTableData,
+  SchemaStateObjType,
+} from '../../shared/types/types';
+// import {
+//   DatabaseLayoutObjType,
+//   isDatabaseLayoutObjTypeArr,
+// } from '../components/views/ERTables/NodeTypes';
 
 // Need interface for table props
 // Need interface for convertStateToReactFlow obect (methods)
@@ -66,25 +70,25 @@ const Table: TableConstructor = class Table implements TableInterface {
     this.otherTables = otherTables;
     this.database = database;
   }
-  
 
   // the render method converts the data into the form of react flow
   render() {
     // gets dbname and table positions from the localStorage file
-    const layoutFlowKey = 'layout-key';  
-    const existingLayouts = JSON.parse(localStorage.getItem(layoutFlowKey) ?? '[]');
+    const layoutFlowKey = 'layout-key';
+    const existingLayouts = JSON.parse(
+      localStorage.getItem(layoutFlowKey) ?? '[]',
+    );
 
     const getTablePosition = (): { x: number; y: number } => {
-      const savedTable = existingLayouts.find(
-        (layout) => layout.db_name === this.database
-      )?.db_tables.find((table) => table.id === `table-${this.name}`);
+      const savedTable = existingLayouts
+        .find((layout) => layout.db_name === this.database)
+        ?.db_tables.find((table) => table.id === `table-${this.name}`);
 
       return savedTable
         ? savedTable.table_position
         : { x: (this.id - 1) * 500, y: 0 };
     };
 
-    ;
     // const test = getTablePosition();
     // console.log(test);
     // create a nodes array for react flow, the first element will always be a
@@ -99,8 +103,7 @@ const Table: TableConstructor = class Table implements TableInterface {
         },
       },
     ];
-    
-  
+
     const edges: Edge[] = [];
     let num = -1;
 

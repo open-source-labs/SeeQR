@@ -1,13 +1,18 @@
 import path from 'path';
-import AddIcon from '@mui/icons-material/Add';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
-import UploadFileIcon from '@mui/icons-material/UploadFile';
-import { IconButton, Tooltip } from '@mui/material';
-import Accordion from '@mui/material/Accordion';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import Typography from '@mui/material/Typography';
+import {
+  Add,
+  ExpandMore,
+  DriveFileMove,
+  UploadFile,
+} from '@mui/icons-material';
+import {
+  IconButton,
+  Tooltip,
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Typography,
+} from '@mui/material';
 import React, { useContext } from 'react';
 import styled from 'styled-components';
 import { ipcRenderer } from 'electron';
@@ -27,7 +32,7 @@ import {
   StyledListItemText,
   textColor,
 } from '../../style-variables';
-import { AppState, QueryData } from '../../types';
+import { AppState, QueryData } from '../../../shared/types/types';
 import QueryEntry from './QueryEntry';
 
 import {
@@ -233,19 +238,19 @@ function QueryList({ createQuery, show }: QueryListProps) {
       <span>
         <Tooltip title="New Query">
           <IconButton onClick={createQuery} size="large">
-            <AddIcon fontSize="large" />
+            <Add fontSize="large" />
           </IconButton>
         </Tooltip>
 
         <Tooltip title="Import Query">
           <IconButton onClick={() => loadQueryHandler()} size="large">
-            <UploadFileIcon fontSize="large" />
+            <UploadFile fontSize="large" />
           </IconButton>
         </Tooltip>
 
         <Tooltip title="Designate Save Location">
           <IconButton onClick={() => designateFile()} size="large">
-            <DriveFileMoveIcon fontSize="large" />
+            <DriveFileMove fontSize="large" />
           </IconButton>
         </Tooltip>
       </span>
@@ -259,7 +264,7 @@ function QueryList({ createQuery, show }: QueryListProps) {
                   backgroundColor: `${greenPrimary}`,
                   color: 'black',
                 }}
-                expandIcon={<ExpandMoreIcon />}
+                expandIcon={<ExpandMore />}
                 aria-controls="panel1a-content"
                 id="panel1a-header"
               >

@@ -6,6 +6,27 @@ import { StyledEngineProvider, ThemeProvider } from '@mui/material/';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ipcRenderer, IpcRendererEvent } from 'electron';
 import GlobalStyle from '../GlobalStyle';
+// import { createQuery } from '../lib/queries';
+import '../lib/style.css';
+import {
+  AppState,
+  DBType,
+  // CreateNewQuery,
+  DatabaseInfo,
+  DbListsInterface,
+  isDbListsInterface,
+  // QueryData,
+  TableInfo,
+} from '../../shared/types/types';
+
+import {
+  bgColor,
+  defaultMargin,
+  MuiTheme,
+  sidebarShowButtonSize,
+  sidebarWidth,
+} from '../style-variables';
+
 import Sidebar from './sidebar/Sidebar';
 import CompareView from './views/CompareView/CompareView';
 import DbView from './views/DbView/DbView';
@@ -25,13 +46,15 @@ import MenuContext from '../state_management/Contexts/MenuContext';
 import { submitAsyncToBackend } from '../state_management/Reducers/MenuReducers';
 import invoke from '../lib/electronHelper';
 
-// Import styles and types
-import '../lib/style.css';
-import { DBType } from '../../backend/BE_types';
-import { bgColor, defaultMargin, MuiTheme, sidebarShowButtonSize, sidebarWidth } from '../style-variables';
-import { AppState, DatabaseInfo, DbLists, isDbLists, TableInfo } from '../types';
 
-// // Define styled components
+declare module '@mui/material/styles/' {
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  interface DefaultTheme extends Theme {}
+}
+
+const emitter = new EventEmitter();
+emitter.setMaxListeners(20);
+
 const AppContainer = styled.div`
   display: grid;
   grid: 'sidebar main' 1fr / ${sidebarWidth} 1fr;
@@ -70,8 +93,12 @@ function App() {
 
   // Listen to backend for updates to list of available databases
   useEffect(() => {
-    const dbListFromBackend = (evt: IpcRendererEvent, dbLists: DbLists) => {
-      if (isDbLists(dbLists)) {
+    // Listen to backend for updates to list of available databases
+    const dbListFromBackend = (
+      evt: IpcRendererEvent,
+      dbLists: DbListsInterface,
+    ) => {
+      if (isDbListsInterface(dbLists)) {
         setDBInfo(dbLists.databaseList);
         setTables(dbLists.tableList);
         setSelectedTable(selectedTable || dbTables[0]);
@@ -95,7 +122,7 @@ function App() {
 
   // Populate initial dblist
   useEffect(() => {
-    const dbListFromBackend = (dbLists: DbLists) => {
+    const dbListFromBackend = (dbLists: DbListsInterface) => {
       setDBInfo(dbLists.databaseList);
       setTables(dbLists.tableList);
       appViewDispatch({

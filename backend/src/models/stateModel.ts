@@ -1,5 +1,8 @@
-import { dbsInputted, DBType } from '../../../shared/types/dbTypes';
-import { DocConfigFile } from '../../BE_types';
+import {
+  dbsInputted,
+  DBType,
+  DocConfigFile,
+} from '../../../shared/types/types';
 import { defaultFile } from './configModel';
 
 type DBState = DocConfigFile & {

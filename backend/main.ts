@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 // entry point for electron
 import { app, BrowserWindow, Menu } from 'electron'; // added session here
-// import fixPath from 'fix-path'; // app.getPath may be a replacement for this 3 yr old package
+import fixPath from 'fix-path';
 import * as path from 'path';
 import * as url from 'url';
 import MainMenu from './mainMenu';
@@ -11,8 +11,8 @@ const dev: boolean = process.env.NODE_ENV === 'development';
 // requiring channels file to initialize event listeners
 
 // require('./_DEPRECATED_channels');
-require('./src/ipcHandlers/index');
-// fixPath();
+import('./src/ipcHandlers/index');
+fixPath();
 // Keep a global reference of the window objects, if you don't,
 // the window will be closed automatically when the JavaScript object is garbage collected.
 let mainWindow: BrowserWindow | null;
