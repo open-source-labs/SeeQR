@@ -142,3 +142,4 @@ export interface databaseModelType {
   getColumnObjects: (tableName: string, dbType: DBType) => Promise<ColumnObj[]>;
   getDBLists: (dbType: DBType, dbName: string) => Promise<TableDetails[]>;
 }
+
