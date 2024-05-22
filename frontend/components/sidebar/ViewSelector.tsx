@@ -1,7 +1,7 @@
 import React from 'react';
 import { ButtonGroup, Button } from '@mui/material/';
 import styled from 'styled-components';
-import { AppState } from '../../types';
+import { AppState } from '../../../shared/types/types';
 import { selectedColor, textColor, defaultMargin } from '../../style-variables';
 import {
   useAppViewContext,

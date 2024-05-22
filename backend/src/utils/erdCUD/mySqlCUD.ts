@@ -2,7 +2,7 @@ import {
   ErdUpdatesType,
   OperationType,
   PsqlColumnOperations,
-} from '../../../../shared/types/erTypes';
+} from '../../../../shared/types/types';
 
 /**
  * POSTGRESQL COLUMN HELPER

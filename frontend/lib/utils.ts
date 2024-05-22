@@ -1,7 +1,7 @@
 import ms from 'ms';
 
 import { ipcRenderer } from 'electron';
-import type { Feedback } from '../types';
+import type { Feedback } from '../../shared/types/types';
 
 /**
  * Execute function at most once. Doesn't passthrough functions returned value

@@ -1,6 +1,6 @@
 /* eslint-disable object-shorthand */
 import { exec } from 'child_process'; // Child_Process: Importing Node.js' child_process API
-import { DBType } from '../../../shared/types/dbTypes';
+import { DBType } from '../../../shared/types/types';
 import docConfig from '../models/configModel';
 // ************************************** CLI COMMANDS & SQL Queries TO CREATE, DELETE, COPY DB SCHEMA, etc. ************************************** //
 
@@ -21,7 +21,10 @@ interface HelperFunctions {
   runTARFunc: CreateCommand;
   runFullCopyFunc: CreateCommand;
   runHollowCopyFunc: CreateCommand;
-  promExecute: (cmd: string, dbType: DBType) => Promise<{ stdout: string; stderr: string }>;
+  promExecute: (
+    cmd: string,
+    dbType: DBType,
+  ) => Promise<{ stdout: string; stderr: string }>;
 }
 
 // PG = Postgres - Query necessary to run PG Query/Command
@@ -79,7 +82,7 @@ const helperFunctions: HelperFunctions = {
     if (dbType === DBType.MySQL || dbType === DBType.RDSMySQL) return MYSQL;
     return 'invalid dbtype';
   },
-  
+
   // import TAR file into new DB created
   runTARFunc: function runTARFunc(dbName, file, dbType: DBType) {
     const SQL_data = docConfig.getFullConfig();
@@ -109,7 +112,6 @@ const helperFunctions: HelperFunctions = {
     dbCopyName,
     file,
     dbType: DBType,
-    
   ) {
     const SQL_data = docConfig.getFullConfig();
     const PG = `pg_dump -s -U ${SQL_data?.pg_options.user} -p ${SQL_data?.pg_options.port} -F p -d "${dbCopyName}" > "${file}"`;
@@ -132,14 +134,13 @@ const helperFunctions: HelperFunctions = {
         envPW = { MYSQL_PWD: SQL_data?.mysql_options.password };
       }
 
-
-      exec( // opens cli
+      exec(
+        // opens cli
         cmd,
         {
           timeout: 2500,
           // env: {PGPASSWORD: SQL_data?.pg_options.password },
           env: envPW,
-       
         },
         (error, stdout, stderr) => {
           if (error) {

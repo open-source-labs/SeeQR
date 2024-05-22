@@ -44,6 +44,13 @@
       "args": [".", "--remote-debugging-port=9222"],
       "outputCapture": "std",
       "console": "integratedTerminal"
+    },
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "Launch Chrome against localhost",
+      "url": "http://localhost:8080",
+      "webRoot": "${workspaceFolder}"
     }
   ]
 }

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { ReactFlowProvider } from 'reactflow';
 
-import { QueryData, ValidTabs } from '../../../types';
+import { QueryData, ValidTabs } from '../../../../shared/types/types';
 
 import TabSelector from './TabSelector';
 import QueryResults from './QueryResults';
@@ -26,14 +26,15 @@ const ToggleDisplay = styled.div<{ $isSelected: boolean }>`
   /* Define estimated width so fitView triggered inside TabSelector is close to accurate */
 
   /* define height to prevent react-flow warnings. Ignored due to flex:1 0 */
-  ${({ $isSelected }) => ($isSelected
-    ? ''
-    : `
+  ${({ $isSelected }) =>
+    $isSelected
+      ? ''
+      : `
     position:fixed;
     visibility: hidden;
     width: calc(100vw - ${sidebarWidth} - (${defaultMargin} * 2));
     z-index: -1
-  `)}
+  `}
 `;
 
 interface QueryTabsProps {
