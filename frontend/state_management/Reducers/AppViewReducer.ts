@@ -1,5 +1,6 @@
 // Define the state type
 import { AppViewStateAction } from '../Actions/AppViewActions';
+
 // notice in the view state for sidebarishidden, showconfig dialog, and show create dialog, those are just toggles, so there is no payload. When invoked with the specific action type, it just toggles true or false for the variable.
 export interface AppViewState {
   selectedView: string;
@@ -33,3 +34,5 @@ export const appViewStateReducer = (
       return state;
   }
 };
+
+

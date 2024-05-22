@@ -1,159 +1,75 @@
-import { EventEmitter } from 'events';
-import { StyledEngineProvider, Theme, ThemeProvider } from '@mui/material/';
-import CssBaseline from '@mui/material/CssBaseline';
-import React, { useEffect, useMemo, useReducer, useRef, useState } from 'react';
+// Import necessary libraries and components
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-
+import { useDispatch, useSelector } from 'react-redux';
+import { StyledEngineProvider, ThemeProvider } from '@mui/material/';
+import CssBaseline from '@mui/material/CssBaseline';
 import { ipcRenderer, IpcRendererEvent } from 'electron';
 import GlobalStyle from '../GlobalStyle';
-
-import { DBType } from '../../backend/BE_types';
-import { createQuery } from '../lib/queries';
-import '../lib/style.css';
-import {
-  AppState,
-  CreateNewQuery,
-  DatabaseInfo,
-  DbLists,
-  isDbLists,
-  QueryData,
-  TableInfo,
-} from '../types';
-
-import {
-  bgColor,
-  defaultMargin,
-  MuiTheme,
-  sidebarShowButtonSize,
-  sidebarWidth,
-} from '../style-variables';
-
 import Sidebar from './sidebar/Sidebar';
-
 import CompareView from './views/CompareView/CompareView';
 import DbView from './views/DbView/DbView';
 import NewSchemaView from './views/NewSchemaView/NewSchemaView';
 import QueryView from './views/QueryView/QueryView';
 import QuickStartView from './views/QuickStartView';
 import ThreeDView from './views/ThreeDView/ThreeDView';
-
 import FeedbackModal from './modal/FeedbackModal';
 import Spinner from './modal/Spinner';
-
 import ConfigView from './Dialog/ConfigView';
 import CreateDBDialog from './Dialog/CreateDBDialog';
 
+import { RootState, AppDispatch } from '../state_management/store';
+import { AppViewContextState, AppViewContextDispatch } from '../state_management/Contexts/AppViewContext';
+import { QueryContextState, QueryContextDispatch } from '../state_management/Contexts/QueryContext';
 import MenuContext from '../state_management/Contexts/MenuContext';
-import menuReducer, {
-  initialMenuState,
-  submitAsyncToBackend,
-} from '../state_management/Reducers/MenuReducers';
+import { submitAsyncToBackend } from '../state_management/Reducers/MenuReducers';
 import invoke from '../lib/electronHelper';
 
-import {
-  appViewStateReducer,
-  AppViewState,
-} from '../state_management/Reducers/AppViewReducer';
-import {
-  AppViewContextState,
-  AppViewContextDispatch,
-} from '../state_management/Contexts/AppViewContext';
+// Import styles and types
+import '../lib/style.css';
+import { DBType } from '../../backend/BE_types';
+import { bgColor, defaultMargin, MuiTheme, sidebarShowButtonSize, sidebarWidth } from '../style-variables';
+import { AppState, DatabaseInfo, DbLists, isDbLists, TableInfo } from '../types';
 
-// Query Context and Reducer Imports
-import {
-  QueryContextState,
-  QueryContextDispatch,
-} from '../state_management/Contexts/QueryContext';
-import {
-  queryReducer,
-  QueryState,
-} from '../state_management/Reducers/QueryReducers';
-
-declare module '@mui/material/styles/' {
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  interface DefaultTheme extends Theme {}
-}
-
-const emitter = new EventEmitter();
-emitter.setMaxListeners(20);
-
+// // Define styled components
 const AppContainer = styled.div`
   display: grid;
   grid: 'sidebar main' 1fr / ${sidebarWidth} 1fr;
   padding: 0;
 `;
 
-// prettier-ignore lint//
 const Main = styled.main<{ $fullwidth: boolean }>`
   grid-area: ${({ $fullwidth }) => ($fullwidth ? '1 / 1 / -1 / -1' : 'main')};
   background: ${bgColor};
   height: calc(100vh - (2 * ${defaultMargin}));
-  max-width: ${({ $fullwidth }) =>
-    $fullwidth ? '' : `calc(90vw - ${sidebarWidth} )`};
+  max-width: ${({ $fullwidth }) => $fullwidth ? '' : `calc(90vw - ${sidebarWidth})`};
   padding: ${defaultMargin} ${sidebarShowButtonSize};
   margin: 0;
 `;
 
+// Define the main App component
 function App() {
-  /**
-   * Reducers
-   * useMemo prevents rerenders when state does not change. necessary because of useContext
-   */
-  const [menuState, menuDispatch] = useReducer(menuReducer, initialMenuState);
-  const menuProvider = useMemo(
-    () => ({ state: menuState, dispatch: menuDispatch }),
-    [menuState],
-  );
 
-  // initializing the initial viewState object
-  // this is the app views that will be passed through a provider to any children components wrapped in it. Right now, only sidebar is wrapped in it.
-  const initialAppViewState: AppViewState = {
-    selectedView: 'dbView',
-    sideBarIsHidden: false,
-    showConfigDialog: false,
-    showCreateDialog: false,
-    PG_isConnected: false,
-    MYSQL_isConnected: false,
-  };
+  const dispatch = useDispatch(); 
+  // Connect Redux store
+  const appViewState = useSelector((state: RootState) => state.appView);
+  const appViewDispatch = useDispatch<AppDispatch>();
+  const queryState = useSelector((state: RootState) => state.query);
+  const queryDispatch = useDispatch<AppDispatch>();
+  const menuState = useSelector((state: RootState) => state.menu);
+  const menuDispatch = useDispatch<AppDispatch>();
 
-  const initialQueryState: QueryState = {
-    queries: {},
-    comparedQueries: {},
-    workingQuery: undefined,
-    newFilePath: '',
-  };
 
-  // creating the reducer to reduce all state changes to a single state object
-  // This reducer manages all the state calls for the app views
-  const [appViewState, appViewDispatch] = useReducer(
-    appViewStateReducer,
-    initialAppViewState,
-  );
-  // this reducer manages query states
-  const [queryState, queryDispatch] = useReducer(
-    queryReducer,
-    initialQueryState,
-  );
-
-  // tablesReducer stuff here
-
-  // ---
-  // In the future, we'd love to see all of these state varaiables to be condensed to their own reducer.
-
+  // Define local component state
   const [selectedDb, setSelectedDb] = useState<AppState['selectedDb']>('');
-
   const [ERView, setERView] = useState(true);
-
   const [DBInfo, setDBInfo] = useState<DatabaseInfo[]>();
   const [curDBType, setDBType] = useState<DBType>();
-
   const [dbTables, setTables] = useState<TableInfo[]>([]);
   const [selectedTable, setSelectedTable] = useState<TableInfo | undefined>();
 
-  // reverted to db-list event listener
-  // TODO: refactor event handlers in back end to return db list rather than emit event
+  // Listen to backend for updates to list of available databases
   useEffect(() => {
-    // Listen to backend for updates to list of available databases
     const dbListFromBackend = (evt: IpcRendererEvent, dbLists: DbLists) => {
       if (isDbLists(dbLists)) {
         setDBInfo(dbLists.databaseList);
@@ -162,36 +78,22 @@ function App() {
       }
     };
     ipcRenderer.on('db-lists', dbListFromBackend);
-    // return cleanup function
     return () => {
       ipcRenderer.removeListener('db-lists', dbListFromBackend);
     };
   });
 
-  /**
-   * New central source of async calls
-   */
+  // Handle async calls
   const asyncCount = useRef(0);
   useEffect(() => {
     const { issued, resolved, asyncList } = menuState.loading;
-    // Check that we are here because a new async was issued
     if (issued - resolved > asyncCount.current) {
-      /**
-       * FLOW: new async request
-       * - async call submitted by component
-       * - menuReducer adds request to tracked ongoing asyncs
-       * - this useEffect triggers; something in the state contains necessary info to launch invoke
-       *
-       * NOTE: moved this logic to MenuReducers to keep logic localized and utilize
-       *       dependency injection for testing purposes
-       */
       submitAsyncToBackend(issued, asyncList, invoke, menuDispatch);
     }
-    // keep track of ongoing asyncs in this useRef, even when arriving here as an async resolves
     asyncCount.current = issued - resolved;
-  }, [menuState.loading]);
+  }, [menuState.loading, menuDispatch]);
 
-  // populate initial dblist
+  // Populate initial dblist
   useEffect(() => {
     const dbListFromBackend = (dbLists: DbLists) => {
       setDBInfo(dbLists.databaseList);
@@ -200,13 +102,10 @@ function App() {
         type: 'IS_PG_CONNECTED',
         payload: dbLists.databaseConnected.PG,
       });
-
       appViewDispatch({
         type: 'IS_MYSQL_CONNECTED',
         payload: dbLists.databaseConnected.MySQL,
       });
-
-      // setSelectedTable(selectedTable || dbTables[0]);
     };
     menuDispatch({
       type: 'ASYNC_TRIGGER',
@@ -218,8 +117,7 @@ function App() {
     });
   }, []);
 
-  // determine which view should be visible depending on selected view and
-  // prerequisites for each view
+  // Determine which view should be visible
   let shownView;
   switch (appViewState.selectedView) {
     case 'compareView':
@@ -251,10 +149,9 @@ function App() {
   }
 
   return (
-    // Styled Components must be injected last in order to override Material UI style: https://material-ui.com/guides/interoperability/#controlling-priority-3
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={MuiTheme}>
-        <MenuContext.Provider value={menuProvider}>
+        <MenuContext.Provider value={{ state: menuState, dispatch }}>
           <Spinner />
           <AppContainer>
             <CssBaseline />
@@ -293,7 +190,7 @@ function App() {
                     selectedTable={selectedTable}
                     setSelectedTable={setSelectedTable}
                   />
-                  <QueryView
+                                   <QueryView
                     selectedDb={selectedDb}
                     setSelectedDb={setSelectedDb}
                     show={shownView === 'queryView'}
@@ -343,3 +240,6 @@ function App() {
 }
 
 export default App;
+
+
+
