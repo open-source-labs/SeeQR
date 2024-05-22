@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AppViewState } from '../Reducers/AppViewReducer';
-import { ViewName } from '../../types';
+import { ViewName } from '../../../shared/types/types';
 
 // Define initial state for the app view
 const initialState: AppViewState = {

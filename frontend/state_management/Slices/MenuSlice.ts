@@ -1,7 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { MenuState } from '../Reducers/MenuReducers';
-import { Dialogs } from '../../../shared/types/frontendTypes';
-import { ViewName } from '../../types';
+import { Dialogs, ViewName } from '../../../shared/types/types';
 
 const initialState: MenuState = {
   selectedView: 'quickStartView',

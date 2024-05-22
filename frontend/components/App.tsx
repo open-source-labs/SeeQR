@@ -2,7 +2,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
-import { StyledEngineProvider, ThemeProvider } from '@mui/material/';
+import { StyledEngineProvider, ThemeProvider, Theme } from '@mui/material/';
+import { EventEmitter } from 'events';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ipcRenderer, IpcRendererEvent } from 'electron';
 import GlobalStyle from '../GlobalStyle';
