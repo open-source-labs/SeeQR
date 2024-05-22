@@ -27,50 +27,6 @@ main {
   background-color: rgb(25, 118, 210);
 }
 
-/* QuickStartView */
-
-/* reset btn */
-#step-reset-btn {
-  color: rgb(203, 212, 214); /* textColor */
-}
-
-/* back btn */
-#step-back-btn {
-  color: rgb(203, 212, 214); /* textColor */
-}
-/* div on step 5 */
-/* .step-completed-div {
-  text-align: center;
-} */
-/* Step x already complete -- not need */
-/* .step-completed {
-  display: inline-block;
-} */
-
-/* instruction on step 5 */
-/* .step-instructions {
-  margin-bottom: 24px;
-} */
-
-/* logo img in QuickStartView  */
-.step-img {
-  margin-top: 10px;
-  margin-bottom: -32px;
-  width: 20vh;
-  height: 20vh;
-  max-height: 300px;
-  max-width: 300px;
-}
-/* StyledStepLabel component - class stepper */
-.stepper {
-  font-size: 40px;
-  padding-left: 1%;
-  padding-right: 1%;
-  padding-bottom: 8px;
-  border-radius: 8px;
-  margin-bottom: 10px;
-}
-
 .Mui-selected:not(.db-login-tab):not(.tables-view-btn) {
   color: rgb(255, 255, 255) !important;
   background-color: #11774e;
