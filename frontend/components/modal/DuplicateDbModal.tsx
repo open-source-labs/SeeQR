@@ -36,11 +36,11 @@ type copyDbModalProps = {
   open: boolean;
   onClose: () => void;
   dbCopyName: string;
-  dbNames: string[] | undefined;
+  dbNames: string[];
   curDBType: DBType | undefined;
 };
 
-const handleDBName = (dbCopyName: string, dbNames: string[] | undefined) => {
+const handleDBName = (dbCopyName: string, dbNames: string[]) => {
   // use regex to separate the number
   // increment only the digit
   let dbName = dbCopyName;

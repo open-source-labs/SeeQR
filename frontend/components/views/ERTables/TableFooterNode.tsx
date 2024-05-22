@@ -61,7 +61,7 @@ function TableFooter({ data }: TableFooterProps) {
     // add the addColumnsObj to the alterTablesObj
     alterTablesObj.addColumns.push(addColumnsObj);
     // update the backendObj
-    backendObj.current.updates.alterTables.push(alterTablesObj);
+    backendObj.updates.alterTables.push(alterTablesObj);
     // push a new object with blank properties
     currentTable.columns.push({
       column_name: `NewColumn${currentTable.columns?.length + 1 || 1}`,
@@ -134,7 +134,7 @@ function TableFooter({ data }: TableFooterProps) {
   //     console.log(schemaStateCopy);
   //   }
   //   console.log(alterTablesObj);
-  //   backendObj.current.updates.alterTables.push(alterTablesObj);
+  //   backendObj.updates.alterTables.push(alterTablesObj);
   // };
 
   return (

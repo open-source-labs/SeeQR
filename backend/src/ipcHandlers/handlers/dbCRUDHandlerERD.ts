@@ -29,12 +29,12 @@ import queryModel from '../../models/queryModel';
  *
  */
 
-export async function erTableSchemaUpdate(event, updatesArray: ErdUpdatesType) {
+export async function erTableSchemaUpdate(e, updatesArray: ErdUpdatesType) {
   // need to update return value and type strongly
   // send notice to front end that schema update has started
-  event.sender.send('async-started');
+  e.sender.send('async-started');
   let feedback: Feedback = {
-    type: '',
+    type: 'success',
     message: '',
   };
 
@@ -71,13 +71,13 @@ export async function erTableSchemaUpdate(event, updatesArray: ErdUpdatesType) {
       currentDb,
       currentERD,
     );
-    event.sender.send('db-lists', updatedDb);
+    e.sender.send('db-lists', updatedDb);
 
     // send feedback back to FE
-    event.sender.send('feedback', feedback);
+    e.sender.send('feedback', feedback);
 
     // send notice to FE that schema update has been completed
-    event.sender.send('async-complete');
+    e.sender.send('async-complete');
 
     logger(
       "Sent 'db-lists and feedback' from 'ertable-schemaupdate'",
@@ -86,6 +86,6 @@ export async function erTableSchemaUpdate(event, updatesArray: ErdUpdatesType) {
   }
 }
 
-export function getPath(event, pathType) {
+export function getPath(e, pathType) {
   return app.getPath(pathType);
 }
