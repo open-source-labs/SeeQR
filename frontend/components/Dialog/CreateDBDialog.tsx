@@ -1,9 +1,8 @@
 import React, { useContext, useState } from 'react';
 import { DialogTitle, Dialog, Tooltip } from '@mui/material/';
-import { ipcRenderer } from 'electron';
-import { DatabaseInfo } from '../../types';
-import { DBType } from '../../../backend/BE_types';
-import { sendFeedback } from '../../lib/utils';
+// import { ipcRenderer } from 'electron';
+import { DatabaseInfo, DBType } from '../../../shared/types/types';
+// import { sendFeedback } from '../../lib/utils';
 import {
   ButtonContainer,
   TextFieldContainer,
@@ -23,6 +22,7 @@ interface CreateDBDialogProps {
 }
 
 function CreateDBDialog({ show, DBInfo, onClose }: CreateDBDialogProps) {
+  // add error modal?
   if (!show) return <></>;
   const { dispatch: menuDispatch } = useContext(MenuContext);
 

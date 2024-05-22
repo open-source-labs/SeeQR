@@ -1,9 +1,8 @@
 import React from 'react';
-import { Select, MenuItem, InputLabel } from '@mui/material/';
-import Box from '@mui/material/Box';
+import { Select, MenuItem, InputLabel, Box } from '@mui/material/';
 import styled from 'styled-components';
 import { defaultMargin, greyPrimary } from '../../../style-variables';
-import { DBType } from '../../../../backend/BE_types';
+import { DBType } from '../../../../shared/types/types';
 
 const SpacedBox = styled(Box)`
   margin-left: ${defaultMargin};
@@ -21,9 +20,7 @@ interface QueryDbProps {
   dbTypes: DBType[] | undefined;
 }
 
-function QueryDb({
-  db, onDbChange, dbNames, dbTypes,
-}: QueryDbProps) {
+function QueryDb({ db, onDbChange, dbNames, dbTypes }: QueryDbProps) {
   const menuitems: any = [];
   const values: any = {};
 
@@ -46,10 +43,12 @@ function QueryDb({
       <InputLabel id="queryView-db-label">Database</InputLabel>
       <Select
         value={db}
-        onChange={(evt) => onDbChange(
-          (values[evt.target.value] as Array<any>)[0],
-          (values[evt.target.value] as Array<any>)[1],
-        )}
+        onChange={(evt) =>
+          onDbChange(
+            (values[evt.target.value] as Array<any>)[0],
+            (values[evt.target.value] as Array<any>)[1],
+          )
+        }
         labelId="queryView-db-label"
       >
         {menuitems}

@@ -1,6 +1,8 @@
+import { NodeTypes } from 'reactflow';
 import tableHeader from './TableHeaderNode';
 import tableField from './TableFieldNode';
 import tableFooter from './TableFooterNode';
+
 /**
  * This file is required for React-flow
  * React-flow states:
@@ -11,11 +13,14 @@ import tableFooter from './TableFooterNode';
  *  https://reactflow.dev/docs/guides/custom-nodes/
  *
  */
-type NodeTypes = {
-  tableHeader: any;
-  tableField: any;
-  tableFooter: any;
-};
+
+// not sure if we should use flow type or create our own NodeTypes
+// export type NodeTypes = {
+//   tableHeader: any;
+//   tableField: any;
+//   tableFooter: any;
+// };
+
 const nodeTypes: NodeTypes = {
   tableHeader,
   tableField,

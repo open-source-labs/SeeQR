@@ -1,8 +1,7 @@
-import { ErdUpdatesType } from '../../../shared/types/erTypes';
+import { ErdUpdatesType, DBType } from '../../../shared/types/types';
 import { queryPostgres } from './erdCUD/pSqlCUD';
 import { queryMySql } from './erdCUD/mySqlCUD';
 import { querySqLite } from './erdCUD/SqLiteCUD';
-import { DBType } from '../../../shared/types/dbTypes';
 
 function erdUpdatesToQuery(
   updatesArray: ErdUpdatesType,

@@ -9,7 +9,7 @@ import {
   StyledDialogTitle,
 } from '../../style-variables';
 import { sendFeedback } from '../../lib/utils';
-import { DBType } from '../../../backend/BE_types';
+import { DBType, Feedback } from '../../../shared/types/types';
 import MenuContext from '../../state_management/Contexts/MenuContext';
 
 interface DummyPayload {

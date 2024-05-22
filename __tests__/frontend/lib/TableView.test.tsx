@@ -3,8 +3,7 @@
 // import React from 'react';
 // import { render, screen, cleanup } from '@testing-library/react';
 // import TablesTabs from '../../../frontend/components/views/DbView/TablesTabBar';
-// import { DBType } from '../../../backend/BE_types';
-// import { TableInfo, TableColumn, AppState } from '../../../frontend/types';
+// import { TableInfo, TableColumn, AppState, DBType } from '../../../shared/types/types';
 // import '@testing-library/jest-dom';
 
 // const setERViewMock = jest.fn();

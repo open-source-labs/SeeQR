@@ -1,5 +1,5 @@
 import { QueryActions } from '../Actions/QueryActions';
-import { AppState } from '../../types';
+import { AppState } from '../../../shared/types/types';
 
 export interface QueryState {
   queries: AppState['queries'];
