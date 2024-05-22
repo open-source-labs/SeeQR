@@ -240,12 +240,11 @@ function getStepContent(step: number): JSX.Element | string {
   }
 }
 
-function QuickStartView({ show }: QuickStartViewProps) {
-  if (!show) return null;
-  const [activeStep, setActiveStep] = useState(0);
+function QuickStartView({ show }: QuickStartViewProps): JSX.Element | null {
+  const [activeStep, setActiveStep] = useState<number>(0);
   const [completed, setCompleted] = useState<{ [k: number]: boolean }>({});
-
-  const totalSteps = () => steps.length;
+  if (!show) return null;
+  const totalSteps = (): number => steps.length;
 
   // count completed steps number
   const completedSteps = (): number => Object.keys(completed).length;
@@ -288,7 +287,6 @@ function QuickStartView({ show }: QuickStartViewProps) {
     setActiveStep(0);
     setCompleted({});
   };
-
   // render components
   return (
     <PageContainer>
