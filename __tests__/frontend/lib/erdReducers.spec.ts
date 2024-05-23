@@ -1,10 +1,10 @@
 
-import { createStore } from 'redux';
+import { createStoreHook } from 'react-redux';
 import { mainErdReducer, initialErdState } from '../../../frontend/state_management/Reducers/ERDReducers';
 
 describe('mainErdReducer', () => {
   it('should not change the initial state when an unrecognized action is dispatched', () => {
-    const store = createStore(mainErdReducer);
+    const store = createStoreHook(mainErdReducer);
 
     // make an unknown action
     store.dispatch({ type: 'UNKNOWN_ACTION', payload: null });
