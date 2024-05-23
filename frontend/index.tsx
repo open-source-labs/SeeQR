@@ -7,7 +7,6 @@ const doc = document.createElement('div') as HTMLElement;
 doc.id = 'root';
 const element = createRoot(doc);
 document.body.appendChild(doc);
-
 element.render(<App />);
 
 // const container = document.getElementById('root') as HTMLElement;
