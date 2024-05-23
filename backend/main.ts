@@ -1,9 +1,10 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 // entry point for electron
-import { app, BrowserWindow, Menu } from 'electron'; // added session here
-import fixPath from 'fix-path';
+import { app, BrowserWindow, Menu } from 'electron'; // added session here for DevTool if needed
+import fixPath from 'fix-path'; 
 import * as path from 'path';
 import * as url from 'url';
+// import os from 'node:os'; // only for DevTool
 import MainMenu from './mainMenu';
 
 const dev: boolean = process.env.NODE_ENV === 'development';
@@ -22,7 +23,7 @@ let mainWindow: BrowserWindow | null;
 // devtools: https://github.com/facebook/react/issues/25843
 // https://github.com/mondaychen/react/raw/017f120369d80a21c0e122106bd7ca1faa48b8ee/packages/react-devtools-extensions/ReactDevTools.zip
 // ******************** Comment out when done ******************** //
-// const reactDevToolsPath = path.join(os.homedir(), '/Desktop/ReactDevTools');
+//const reactDevToolsPath = path.join(os.homedir(), '/Desktop/ReactDevTools');
 // app.whenReady().then(async () => {
 //   await session.defaultSession.loadExtension(reactDevToolsPath);
 // });
