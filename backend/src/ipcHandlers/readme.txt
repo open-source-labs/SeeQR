@@ -5,6 +5,6 @@ Format for new events:
  *
  * DEFINITION:
  *
- * Process involes the following steps:
+ * Process involves the following steps:
  */
 
