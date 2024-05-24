@@ -176,6 +176,7 @@ function App() {
       shownView = 'quickStartView';
   }
 
+  // Styled Components must be injected last in order to override Material UI style: https://material-ui.com/guides/interoperability/#controlling-priority-3
   return (
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={MuiTheme}>
