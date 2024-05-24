@@ -6,7 +6,7 @@ import store from './state_management/store';
 import '@fontsource/roboto';
 
 // Create a rootElement for the React app
-const rootElement = document.createElement('div');
+const rootElement: HTMLElement = document.createElement('div');
 rootElement.id = 'root';
 document.body.appendChild(rootElement);
 
