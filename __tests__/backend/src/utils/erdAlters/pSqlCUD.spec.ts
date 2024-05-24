@@ -6,8 +6,8 @@ import {
 import {
   PsqlColumnOperations,
   ErdUpdatesType,
-  // PSqlDataType,
-} from '../../../../../shared/types/types';
+  PSqlDataType,
+} from '../../../../../shared/types/erTypes';
 
 describe('pSqlCUD', () => {
   describe('generatePostgresAlterQuery', () => {
