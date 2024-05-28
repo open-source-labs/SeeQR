@@ -1,11 +1,10 @@
 import React from 'react';
 import { ButtonGroup, Button } from '@mui/material/';
 import styled from 'styled-components';
+import { useDispatch, useSelector } from 'react-redux';
 import { selectedColor, textColor, defaultMargin } from '../../style-variables';
-import {
-  useAppViewContext,
-  useAppViewDispatch,
-} from '../../state_management/Contexts/AppViewContext';
+import { RootState } from '../../state_management/store';
+import { toggleCreateDialog } from '../../state_management/Slices/AppViewSlice';
 
 const ViewBtnGroup = styled(ButtonGroup)`
   margin: ${defaultMargin} 5px;
@@ -27,18 +26,20 @@ const ViewButton = styled(Button)<ViewButtonProps>`
  * Selector for view on sidebar. Updates App state with selected view
  */
 function BottomButtons() {
-  const appViewStateContext = useAppViewContext();
-  const appViewDispatchContext = useAppViewDispatch();
+  // Get the dispatch function from the Redux store
+  const dispatch = useDispatch();
+  // Get the current state of the showCreateDialog from the Redux store
+  const showCreateDialog = useSelector((state: RootState) => state.appView.showCreateDialog);
+
+  // Render a button to create a new database
   return (
     <ViewBtnGroup variant="contained" fullWidth>
       <ViewButton
         onClick={() => {
-          if (!appViewStateContext?.showCreateDialog)
-            appViewDispatchContext!({
-              type: 'TOGGLE_CREATE_DIALOG',
-            });
+          if (!showCreateDialog)
+            dispatch(toggleCreateDialog());
         }}
-        $isSelected={appViewStateContext!.showCreateDialog}
+        $isSelected={showCreateDialog}
       >
         Create New Database
       </ViewButton>

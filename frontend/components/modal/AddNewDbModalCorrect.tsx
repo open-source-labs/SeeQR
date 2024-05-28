@@ -1,6 +1,7 @@
 import path from 'path';
 import * as fs from 'fs';
 import React, { useContext, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { Dialog, DialogTitle, Tooltip } from '@mui/material/';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import {
@@ -14,8 +15,8 @@ import {
   StyledNativeOption,
 } from '../../style-variables';
 import { DBType } from '../../../shared/types/types';
-import MenuContext from '../../state_management/Contexts/MenuContext';
-// import { set } from 'mongoose';
+import { asyncTrigger } from '../../state_management/Slices/MenuSlice'; 
+
 
 type AddNewDbModalProps = {
   open: boolean;
@@ -23,14 +24,17 @@ type AddNewDbModalProps = {
   dbNames: string[] | undefined;
   curDBType: DBType | undefined;
 };
-
+/**
+ * Component for adding a new database via a modal dialog
+ */
 function AddNewDbModal({
   open,
   onClose,
   dbNames,
   curDBType,
 }: AddNewDbModalProps) {
-  const { dispatch: menuDispatch } = useContext(MenuContext);
+  // Hook to dispatch actions
+  const dispatch = useDispatch(); 
 
   const [newDbName, setNewDbName] = useState<string>('');
 
@@ -62,7 +66,7 @@ function AddNewDbModal({
     return '';
   };
 
-  /// / Set schema name
+  // Handle changes in the database name input field
   const handleDbName = (event: React.ChangeEvent<HTMLInputElement>) => {
     const dbNameInput = event.target.value;
     if (dbNameInput.length === 0) {
@@ -82,7 +86,28 @@ function AddNewDbModal({
     setNewDbName(dbSafeName);
   };
 
+  // Handles database import action
+  const handleDBImport = (dbName: string, closeModal: () => void) => {
+    const payloadObj = {
+      newDbName: dbName,
+      filePath: selectedFilePath,
+      dbType: selectedDBType,
+    };
+
+    dispatch(
+    asyncTrigger({
+      loading: 'LOADING',
+      options: {
+      event: 'import-db',
+      payload: payloadObj,
+      callback: closeModal,
+    },
+  })
+  );
+  setFileSelect(true);
+  };
   // Opens modal to select file
+  // Handles file selection and checks the content of the selected file
   const selectDBFile = () => {
     const options = {
       title: 'Select DB File',
@@ -103,8 +128,8 @@ function AddNewDbModal({
       const dbt: DBType = (document.getElementById('dbTypeDropdown') as any)
         .value;
 
-      console.log('dbtype', dbt);
-      console.log('filepath', filePath);
+      // console.log('dbtype', dbt);
+      // console.log('filepath', filePath);
 
       setFilePath(filePath);
 
@@ -125,7 +150,7 @@ function AddNewDbModal({
         const keyword1 = 'CREATE';
         const keyword2 = 'DATABASE';
         const keyword3 = 'USE';
-        console.log('data', dataArr);
+        // console.log('data', dataArr);
 
         const containsKeywords = dataArr.some((word, index) => {
           // Check if the current word is 'CREATE' and the next word is 'DATABASE'
@@ -138,8 +163,8 @@ function AddNewDbModal({
         /* checks if the keyword exist in our database file */
         if (containsKeywords) {
           let fileDbName = '';
-          let payloadObj;
-          console.log('keywords exist:', containsKeywords);
+          // let payloadObj;
+          // console.log('keywords exist:', containsKeywords);
 
           // mysql is different where you need to create a database before importing.
           // most mysql files will have a create database query in file
@@ -152,7 +177,7 @@ function AddNewDbModal({
                 fileDbName = dataArr[index + 2];
               }
             }
-            payloadObj = { newDbName, filePath, dbType: dbt };
+            // payloadObj = { newDbName, filePath, dbType: dbt };
           } else if (dbt === DBType.MySQL) {
             // eslint-disable-next-line no-restricted-syntax
             for (const [index, word] of dataArr.entries()) {
@@ -161,61 +186,35 @@ function AddNewDbModal({
                 fileDbName = dataArr[index + 1];
               }
             }
-            payloadObj = { newDbName: fileDbName, filePath, dbType: dbt };
+            // payloadObj = { newDbName: fileDbName, filePath, dbType: dbt };
           }
 
-          // handles import if keywords exists
-          const handleDBImport = (closeModal: () => void) => {
-            menuDispatch({
-              type: 'ASYNC_TRIGGER',
-              loading: 'LOADING',
-              options: {
-                event: 'import-db',
-                payload: payloadObj,
-                callback: closeModal,
-              },
-            });
-          };
+            // Handles database import action
+            // some sql files will have keywords that are invalid which will need to be edited manually in sql file before importing
 
-          handleDBImport(handleClose);
+          handleDBImport(fileDbName, handleClose);
         } else {
           // if keywords dont exist, this will render input field
           setFileSelect(false);
 
-          console.log('keywords exist:', containsKeywords);
+          // console.log('keywords exist:', containsKeywords);
         }
       });
     };
 
     // initial async call when pressing select file button
-    menuDispatch({
-      type: 'ASYNC_TRIGGER',
-      loading: 'LOADING',
-      options: {
-        event: 'showOpenDialog',
-        payload: options,
-        callback: checkDBFile,
-      },
-    });
+    dispatch(
+      asyncTrigger({
+        loading: 'LOADING',
+        options: {
+          event: 'showOpenDialog',
+          payload: options,
+          callback: checkDBFile,
+        },
+      })
+    );
   };
 
-  // some sql files will have keywords that are invalid which will need to be edited manually in sql file before importing
-  const handleDBImport = (dbName: string, closeModal: () => void) => {
-    menuDispatch({
-      type: 'ASYNC_TRIGGER',
-      loading: 'LOADING',
-      options: {
-        event: 'import-db',
-        payload: {
-          newDbName: dbName,
-          filePath: selectedFilePath,
-          dbType: selectedDBType,
-        },
-        callback: closeModal,
-      },
-    });
-    setFileSelect(true);
-  };
 
   return (
     <div>
@@ -308,3 +307,4 @@ function AddNewDbModal({
 }
 
 export default AddNewDbModal;
+
