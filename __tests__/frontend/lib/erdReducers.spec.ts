@@ -1,25 +1,18 @@
-// import {
-//   erdReducer,
-//   ERDState,
-// } from '../../../frontend/state_management/Reducers/ERDReducers';
 
-// import { ERDActions } from '../../../frontend/state_management/Actions/ERDActions';
+import { createStoreHook } from 'react-redux';
+import { mainErdReducer, initialErdState } from '../../../frontend/state_management/Reducers/ERDReducers';
 
-// const initialState: ERDState[] = [];
-// let actionObject: ERDActions;
-// describe('erdReducer', () => {
-//   beforeEach(() => {
-//     actionObject = {
-//       type: 'ADD_TABLE',
-//       payload: { tableName: 'newTableName' },
-//     };
-//   });
+describe('mainErdReducer', () => {
+  it('should not change the initial state when an unrecognized action is dispatched', () => {
+    const store = createStoreHook(mainErdReducer);
 
-//   it('should return the initial state without modifying it at all', () => {
-//     expect(erdReducer(initialState, actionObject)).not.toBe(initialState);
-//   });
+    // make an unknown action
+    store.dispatch({ type: 'UNKNOWN_ACTION', payload: null });
 
-//   it('should handle ADD_TABLE', () => {
-//     console.log(erdReducer(initialState, actionObject));
-//   });
-// });
+    // Get the current state 
+    const currentState = store.getState();
+
+    
+    expect(currentState).toEqual(initialErdState);
+  });
+});
