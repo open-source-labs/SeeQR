@@ -1,5 +1,6 @@
 import { ipcRenderer } from 'electron';
 import React, { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { Button, Box } from '@mui/material/';
 import styled from 'styled-components';
 import {
@@ -21,11 +22,10 @@ import QueryTabs from './QueryTabs';
 import QueryRunNumber from './QueryRunNumber';
 import QueryHistory from './QueryHistory';
 
-import {
-  useQueryContext,
-  useQueryDispatch,
-} from '../../../state_management/Contexts/QueryContext';
+import { RootState, AppDispatch } from '../../../state_management/store';
+import { updateQueries, updateWorkingQuery, updateLocalQuery } from '../../../state_management/Slices/QuerySlice'; 
 
+// Styled components for layout and styling
 const TopRow = styled(Box)`
   display: flex;
   align-items: flex-end;
@@ -48,6 +48,7 @@ const QueryViewContainer = styled.div`
   flex-direction: column;
 `;
 
+// Interface for component props
 interface QueryViewProps {
   selectedDb: AppState['selectedDb'];
   setSelectedDb: AppState['setSelectedDb'];
@@ -65,97 +66,75 @@ function QueryView({
   setDBType,
   DBInfo,
 }: QueryViewProps) {
-  // using query state context and dispatch functions
-  const queryStateContext = useQueryContext();
-  const queryDispatchContext = useQueryDispatch();
+  // Get working query from Redux store using useSelector
+  const localQuery = useSelector((state: any) => state.query.workingQuery);
+  // const localQuery: QueryData = useSelector((state: any) => state.query.workingQuery);
 
-  // I think this returns undefined if DBInfo is falsy idk lol
+
+  // Get dispatch function from react-redux
+  const dispatch = useDispatch<AppDispatch>(); 
+
+  // Extract database names and types from DBInfo
   const dbNames = DBInfo?.map((dbi) => dbi.db_name);
   const dbTypes = DBInfo?.map((dbi) => dbi.db_type);
+    
+  const [runQueryNumber, setRunQueryNumber] = useState(1); // Local state for run query number
+  const [queriesRan, setQueriesRan] = useState<string[]>([]); // Local state for queries history
 
-  const defaultQuery: QueryData = {
-    label: '',
-    db: selectedDb,
-    sqlString: '',
-    group: '',
-    numberOfSample: 0,
-    totalSampleTime: 0,
-    minimumSampleTime: 0,
-    maximumSampleTime: 0,
-    averageSampleTime: 0,
-  };
-
-  const localQuery = { ...defaultQuery, ...queryStateContext?.workingQuery };
-
-  const [runQueryNumber, setRunQueryNumber] = useState(1);
-
-  const [queriesRan, setQueriesRan] = useState<string[]>([]);
-
-  const [selectedQueryHx, setSelectedQueryHx] = useState('');
-
+  // Handles changing the query label
   const onLabelChange = (newLabel: string) => {
-    queryDispatchContext!({
-      type: 'UPDATE_WORKING_QUERIES',
-      payload: { ...localQuery, label: newLabel },
-    });
+    dispatch(updateWorkingQuery({ ...localQuery, label: newLabel }));
   };
 
+  // Handles changing the query group
   const onGroupChange = (newGroup: string) => {
-    queryDispatchContext!({
-      type: 'UPDATE_WORKING_QUERIES',
-      payload: { ...localQuery, group: newGroup },
-    });
+    dispatch(updateWorkingQuery({ ...localQuery, group: newGroup }));
   };
 
+  // Handles changing the selected database
   const onDbChange = (newDb: string, nextDBType: DBType) => {
     // when db is changed we must change selected db state on app, as well as
     // request updates for db and table information. Otherwise database view tab
     // will show wrong information
-
     setSelectedDb(newDb);
     setDBType(nextDBType);
 
     ipcRenderer
+      // Invoke main process to select database
       .invoke('select-db', newDb, nextDBType)
       .then(() => {
-        queryDispatchContext!({
-          type: 'UPDATE_WORKING_QUERIES',
-          payload: { ...localQuery, db: newDb },
-        });
+        dispatch(updateWorkingQuery({ ...localQuery, db: newDb }));
       })
-
       .catch(() =>
         sendFeedback({
           type: 'error',
           message: `Failed to connect to ${newDb}`,
-        }),
+        })
       );
   };
-  const onSqlChange = (newSql: string) => {
-    console.log(newSql);
-    queryDispatchContext!({
-      type: 'UPDATE_WORKING_QUERIES',
-      payload: { ...localQuery, sqlString: newSql },
-    });
+   // Handles changing the SQL string
+   const onSqlChange = (newSql: string) => {
+    // console.log(newSql);
+    dispatch(updateWorkingQuery({ ...localQuery, sqlString: newSql }));
   };
 
   const onRun = () => {
-    console.log(localQuery.sqlString);
+    // Run the query logic
     if (!localQuery.label.trim()) {
       sendFeedback({
         type: 'info',
         message: "Queries without a label will run but won't be saved",
-      });
+      }).catch(error => console.error(error)); ;
     }
 
     if (!localQuery.group.trim()) {
       sendFeedback({
         type: 'info',
         message: "Queries without a group will run but won't be saved",
-      });
+      }).catch(error => console.error(error)); ;
     }
 
-    // request backend to run query
+    // Request backend to run query
     ipcRenderer
       .invoke(
         'run-query',
@@ -180,12 +159,12 @@ function QueryView({
           maximumSampleTime,
           averageSampleTime,
         }) => {
+          // Handle the results from running the query
           if (returnedRows) {
             if (queriesRan.length === 5) {
               queriesRan.pop();
             }
             queriesRan.unshift(sqlString);
-            // setReturnedRows(returnedRows.length)
             setQueriesRan(queriesRan);
           }
           if (error) {
@@ -193,6 +172,7 @@ function QueryView({
           }
           let transformedData;
 
+          // Transform data based on the database type
           if (curDBType === DBType.Postgres) {
             transformedData = {
               sqlString,
@@ -223,7 +203,6 @@ function QueryView({
                 minimumSampleTime,
                 maximumSampleTime,
                 averageSampleTime,
-                // ...explainResults[0]['QUERY PLAN'][0],
                 ...explainResults,
               },
             };
@@ -245,13 +224,12 @@ function QueryView({
               },
             };
           }
-
-          const keys: string[] = Object.keys(queryStateContext!.queries);
+          // Check if the query already exists
+          const keys: string[] = Object.keys(localQuery.queries);
           for (let i = 0; i < keys.length; i++) {
-            console.log(keys[i]);
             if (
               keys[i].includes(
-                `label:${localQuery?.label} group:${localQuery?.group}`,
+                `label:${localQuery.label} group:${localQuery.group}`,
               )
             ) {
               return sendFeedback({
@@ -260,19 +238,19 @@ function QueryView({
               });
             }
           }
-          const newQueries = createNewQuery(
-            transformedData,
-            queryStateContext?.queries,
-          );
-          queryDispatchContext!({
-            type: 'UPDATE_QUERIES',
-            payload: newQueries,
-          });
-
-          queryDispatchContext!({
-            type: 'UPDATE_WORKING_QUERIES',
-            payload: transformedData,
-          });
+          // Create a new query object based on the transformed data and add it to the queries list
+          // const newQueries = createNewQuery(
+          //   transformedData,
+          //   localQuery.queries,
+          // );
+          const newQueries = { 
+            ...localQuery.queries, 
+            [`label:${localQuery.label} group:${localQuery.group}`]: transformedData 
+          }; 
+          // Dispatch an action to update the queries list with the new query
+          dispatch(updateQueries(newQueries))
+          // Dispatch an action to update the working query with the transformed data
+          dispatch(updateWorkingQuery(transformedData));
         },
       )
       .then(() => {
@@ -285,7 +263,7 @@ function QueryView({
         });
       });
   };
-
+  // Handler for changing the run query number
   const onRunQueryNumChange = (runNumber: number) => {
     setRunQueryNumber(runNumber);
   };
@@ -303,11 +281,11 @@ function QueryView({
           dbTypes={dbTypes}
         />
         <QueryTopSummary
-          rows={queryStateContext?.workingQuery?.returnedRows?.length}
-          totalTime={getPrettyTime(queryStateContext?.workingQuery)}
+          rows={localQuery.returnedRows?.length}
+          totalTime={getPrettyTime(localQuery)}
         />
       </TopRow>
-      <QuerySqlInput sql={localQuery?.sqlString ?? ''} onChange={onSqlChange} />
+      <QuerySqlInput sql={localQuery.sqlString} onChange={onSqlChange} />
       <QueryHistory history={queriesRan} onChange={onSqlChange} />
       <QueryRunNumber
         runNumber={runQueryNumber}
@@ -319,11 +297,11 @@ function QueryView({
         </RunButton>
       </CenterButton>
       <QuerySummary
-        executionPlan={queryStateContext?.workingQuery?.executionPlan}
+        executionPlan={localQuery.executionPlan}
       />
       <QueryTabs
-        results={queryStateContext?.workingQuery?.returnedRows}
-        executionPlan={queryStateContext?.workingQuery?.executionPlan}
+        results={localQuery.returnedRows}
+        executionPlan={localQuery.executionPlan}
       />
     </QueryViewContainer>
   );

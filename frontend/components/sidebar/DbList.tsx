@@ -1,20 +1,22 @@
 import React, { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { ipcRenderer } from 'electron';
 import { IconButton, Tooltip, Menu, MenuItem } from '@mui/material';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import AddNewDbModal from '../modal/AddNewDbModalCorrect';
-import { AppState, DatabaseInfo, DBType } from '../../../shared/types/types';
+import { DatabaseInfo, DBType } from '../../../shared/types/types';
 import { sendFeedback } from '../../lib/utils';
 import DuplicateDbModal from '../modal/DuplicateDbModal';
 import DbEntry from './DbEntry';
 import { SidebarList, greyDarkest } from '../../style-variables';
+import { RootState, AppDispatch } from '../../state_management/store'; 
 import {
-  useAppViewContext,
-  useAppViewDispatch,
-} from '../../state_management/Contexts/AppViewContext';
+  selectedView,
+} from '../../state_management/Slices/AppViewSlice'; 
 
+// Styled component for the sidebar list
 const StyledSidebarList = styled(SidebarList)`
   background-color: ${greyDarkest};
   width: 90%;
@@ -34,14 +36,17 @@ const StyledSidebarList = styled(SidebarList)`
   }
 `;
 
-type DbListProps = Pick<AppState, 'selectedDb' | 'setSelectedDb'> & {
+// Define props for DbList component
+type DbListProps = {
+  selectedDb: string;
+  setSelectedDb: (dbName: string) => void;
   show: boolean;
   curDBType?: DBType;
   setDBType: (dbType: DBType | undefined) => void;
   DBInfo?: DatabaseInfo[];
 };
 
-type dbNamesType = string[];
+// type dbNamesType = string[];
 
 function DbList({
   selectedDb,
@@ -54,24 +59,35 @@ function DbList({
   const [openAdd, setOpenAdd] = useState(false);
   const [openDupe, setOpenDupe] = useState(false);
   const [dbToDupe, setDbToDupe] = useState('');
-
-  // filter button
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [filterBy, setFilterBy] = useState<string>('All');
   const openFilter = Boolean(anchorEl);
 
-  // check if DBInfo was passed in
-  let dbNames: dbNamesType;
-  if (!DBInfo) {
-    dbNames = [];
-    console.log('No DBInfo provided');
-  } else {
-    dbNames = DBInfo.map((dbi) => dbi.db_name);
-  }
+  // Extract dbNames from DBInfo if it exists
+const dbNames = DBInfo ? DBInfo.map(dbi => dbi.db_name) : [];
 
-  const appViewStateContext = useAppViewContext();
-  const appViewDispatchContext = useAppViewDispatch();
+  const dbNamesArr = [
+    'All',
+    'MySql',
+    'Postgres',
+    'RDS Mysql',
+    'RDS Postgres',
+    'SQLite',
+  ];
+  // Map filter options to their corresponding database types
+  const dbNamesObj = {
+    All: 'all',
+    MySql: 'mysql',
+    Postgres: 'pg',
+    'RDS Mysql': 'rds-mysql',
+    'RDS Postgres': 'rds-pg',
+    SQLite: 'sqlite',
+  };
 
+  const dispatch = useDispatch<AppDispatch>();
+  const appViewState = useSelector((state: RootState) => state.appView);
+
+  // Handlers for opening and closing modals
   const handleClickOpenAdd = () => {
     setOpenAdd(true);
   };
@@ -88,19 +104,10 @@ function DbList({
   const handleCloseDupe = () => {
     setOpenDupe(false);
   };
-
+  // Handler for selecting a database
   const selectHandler = (dbName: string, cdbt: DBType | undefined) => {
-    if (appViewStateContext?.selectedView === 'threeDView') {
-      appViewDispatchContext!({
-        type: 'SELECTED_VIEW',
-        payload: 'threeDView',
-      });
-    } else {
-      appViewDispatchContext!({
-        type: 'SELECTED_VIEW',
-        payload: 'dbView',
-      });
-    }
+    const viewType = appViewState.selectedView === 'threeDView' ? 'threeDView' : 'dbView';
+    dispatch(selectedView(viewType));
     if (dbName === selectedDb) return;
     ipcRenderer
       .invoke('select-db', dbName, cdbt)
@@ -115,7 +122,7 @@ function DbList({
         }),
       );
   };
-
+  // Handlers for opening and closing filter menu
   const handleClickFilter = (e: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(e.currentTarget);
   };
@@ -123,25 +130,6 @@ function DbList({
   const handleCloseFilter = (e: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(null);
     setFilterBy(e.currentTarget.innerText || filterBy);
-  };
-
-  //  filter options
-  const dbNamesArr = [
-    'All',
-    'MySql',
-    'Postgres',
-    'RDS Mysql',
-    'RDS Postgres',
-    'SQLite',
-  ];
-
-  const dbNamesObj = {
-    All: 'all',
-    MySql: 'mysql',
-    Postgres: 'pg',
-    'RDS Mysql': 'rds-mysql',
-    'RDS Postgres': 'rds-pg',
-    SQLite: 'sqlite',
   };
 
   if (!show) return null;

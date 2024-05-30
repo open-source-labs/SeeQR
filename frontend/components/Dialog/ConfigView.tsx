@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { ipcRenderer } from 'electron';
 import {
   Box,
@@ -17,7 +18,7 @@ import {
 } from '../../style-variables';
 import '../../lib/style.css';
 import { DocConfigFile } from '../../../shared/types/types';
-import MenuContext from '../../state_management/Contexts/MenuContext';
+import { RootState } from '../../state_management/store';
 
 /*
 junaid
@@ -70,7 +71,7 @@ function a11yProps(index: number) {
 
 function BasicTabs({ onClose }: BasicTabsProps) {
   // context for async calls
-  const { dispatch: menuDispatch } = useContext(MenuContext);
+  const dispatch = useDispatch();
 
   // useState hooks for database connection information
   const [mysql, setmysql] = useState({});
@@ -105,7 +106,7 @@ function BasicTabs({ onClose }: BasicTabsProps) {
       filters: [{ name: 'db', extensions: ['db'] }],
     };
     const setPathCallback = (val) => setPath({ path: val });
-    menuDispatch({
+    dispatch({
       type: 'ASYNC_TRIGGER',
       loading: 'LOADING',
       options: {
@@ -204,7 +205,7 @@ function BasicTabs({ onClose }: BasicTabsProps) {
       setSqlite({ ...config.sqlite_options }); // added sqlite
     };
 
-    menuDispatch({
+    dispatch({
       type: 'ASYNC_TRIGGER',
       loading: 'LOADING',
       options: {
@@ -212,7 +213,7 @@ function BasicTabs({ onClose }: BasicTabsProps) {
         callback: configFromBackend,
       },
     });
-  }, [menuDispatch]);
+  }, [dispatch]);
 
   // Invoke functions to generate input StyledTextFields components -- passing in state, setstate hook, and database name string.
   // have it subscribed to changes in db connection info or show password button. Separate hooks to not rerender all fields each time
@@ -257,7 +258,7 @@ function BasicTabs({ onClose }: BasicTabsProps) {
     //     });
     //   });
 
-    menuDispatch({
+    dispatch({
       type: 'ASYNC_TRIGGER',
       loading: 'LOADING',
       options: {

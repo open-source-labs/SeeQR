@@ -1,4 +1,5 @@
 import React, { useContext, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { DialogTitle, Dialog, Tooltip } from '@mui/material/';
 // import { ipcRenderer } from 'electron';
 import { DatabaseInfo, DBType } from '../../../shared/types/types';
@@ -13,8 +14,9 @@ import {
   StyledNativeDropdown,
   StyledNativeOption,
 } from '../../style-variables';
-import MenuContext from '../../state_management/Contexts/MenuContext';
+import { asyncTrigger } from '../../state_management/Slices/MenuSlice';
 
+// Define props interface for CreateDBDialog component
 interface CreateDBDialogProps {
   show: boolean;
   DBInfo: DatabaseInfo[] | undefined;
@@ -23,8 +25,8 @@ interface CreateDBDialogProps {
 
 function CreateDBDialog({ show, DBInfo, onClose }: CreateDBDialogProps) {
   // add error modal?
-  if (!show) return <></>;
-  const { dispatch: menuDispatch } = useContext(MenuContext);
+  if (!show) return null;
+  const dispatch = useDispatch();
 
   const [newDbName, setNewDbName] = useState('');
   const [isError, setIsError] = useState(false);
@@ -70,9 +72,9 @@ function CreateDBDialog({ show, DBInfo, onClose }: CreateDBDialogProps) {
     setNewDbName(dbSafeName);
   };
 
-  const handleSubmit = (handleClose) => {
+  const handleSubmit = () => {
     // it needs to be as any because otherwise typescript thinks it doesn't have a 'value' param idk why
-    const dbt: DBType = (document.getElementById('dbTypeDropdown') as any)
+    const dbt = (document.getElementById('dbTypeDropdown') as HTMLSelectElement)
       .value;
 
     // ipcRenderer
@@ -89,15 +91,16 @@ function CreateDBDialog({ show, DBInfo, onClose }: CreateDBDialogProps) {
     //       message: err ?? 'Failed to initialize db',
     //     });
     //   });
-    menuDispatch({
-      type: 'ASYNC_TRIGGER',
-      loading: 'LOADING',
-      options: {
-        event: 'initialize-db',
-        payload: { newDbName, dbType: dbt },
-        callback: handleClose,
-      },
-    });
+    dispatch(
+      asyncTrigger({
+        loading: 'LOADING',
+        options: {
+          event: 'initialize-db',
+          payload: { newDbName, dbType: dbt },
+          callback: handleClose,
+        },
+      })
+    );
   };
 
   return (
@@ -170,7 +173,7 @@ function CreateDBDialog({ show, DBInfo, onClose }: CreateDBDialogProps) {
             variant="contained"
             color="primary"
             onClick={
-              isEmpty || isError ? () => {} : () => handleSubmit(handleClose)
+              isEmpty || isError ? () => {} : () => handleSubmit
             }
           >
             Confirm
