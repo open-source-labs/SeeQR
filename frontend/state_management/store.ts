@@ -10,10 +10,11 @@ const store = configureStore({
     appView: appViewReducer,
     menu: menuReducer,
     query: queryReducer,
+    // Add more reducers if needed
   },
 });
 
-// exporting type of State for use in other files
+// Define TypeScript type for the overall state and the dispatch function of the redux store
 export type RootState = ReturnType<typeof store.getState>;
 // exporting dispatch type & useDispatch method to use in component files
 export type AppDispatch = typeof store.dispatch;
