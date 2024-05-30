@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
+// import { useAppDispatch, AppDispatch } from '../../state_management/store';
+// import { appViewSlice } from '../../state_management/Slices/AppViewSlice';
 import { ipcRenderer } from 'electron';
 import {
   Box,
@@ -71,6 +73,7 @@ function a11yProps(index: number) {
 function BasicTabs({ onClose }: BasicTabsProps) {
   // context for async calls
   const { dispatch: menuDispatch } = useContext(MenuContext);
+  // useAppDispatch();
 
   // useState hooks for database connection information
   const [mysql, setmysql] = useState({});
@@ -275,7 +278,7 @@ function BasicTabs({ onClose }: BasicTabsProps) {
   };
 
   // Function to handle onChange -- when tab panels change
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleChange = (e: React.SyntheticEvent, newValue: number) => {
     // On panel change reset all passwords to hidden
     setShowpass({
       mysql: false,
