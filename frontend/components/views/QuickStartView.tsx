@@ -9,8 +9,7 @@ import {
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import logo from '../../../assets/logo/seeqr_dock.png';
-import '../../lib/style.css';
-import { greyPrimary } from '../../style-variables';
+import { greyPrimary, greenPrimary, textColor } from '../../style-variables';
 
 interface QuickStartViewProps {
   show: boolean;
@@ -24,6 +23,10 @@ const PageContainer = styled.a`
   height: auto;
   width: auto;
 `;
+// title: "welcome to SeeQR"
+const StyledTypographyTitle = styled(Typography)`
+  font-size: clamp(2rem, 35vw, 3rem);
+`;
 // each stepper component
 const StyledStepper = styled(Stepper)`
   margin: 60px 10px 20px 0px;
@@ -36,31 +39,14 @@ const StyledStepButton = styled(StepButton)`
     transition: 200ms ease-in-out;
   }
 `;
-// Text label for each stepper
+// Text label or stepper root
 const StyledStepLabel = styled(StepLabel)`
+  padding: 0 1% 4%;
+  border-radius: 8px;
   width: 10vw;
   & .MuiStepLabel-label {
     font-size: clamp(1rem, 1.28vw, 1.3rem);
   }
-`;
-
-// text instructions div
-const StyledTypographyInstructions = styled.div`
-  font-size: clamp(1rem, 2.2vw, 1.2rem);
-  text-align: center;
-  width: 50vw;
-`;
-// title: "welcome to SeeQR"
-const StyledTypographyTitle = styled(Typography)`
-  font-size: clamp(2rem, 35vw, 3rem);
-`;
-// container div for btn back & btn complete
-const NavButtons = styled.div`
-  width: 80%;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-  margin-bottom: 15px;
 `;
 // container for the text instructions and navBtn
 const StepContent = styled.div`
@@ -71,6 +57,13 @@ const StepContent = styled.div`
   align-items: center;
   margin-top: 20px;
 `;
+// text instructions div
+const StyledTypographyInstructions = styled.div`
+  min-height: 25vw;
+  font-size: clamp(1rem, 2.2vw, 1.2rem);
+  text-align: center;
+  width: 50vw;
+`;
 // step list ul
 const StepList = styled.ul`
   text-align: left;
@@ -80,7 +73,33 @@ const StepList = styled.ul`
     margin-top: 7px;
   }
 `;
-
+// container div for btn back & btn next
+const NavButtons = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  margin-bottom: 15px;
+  text-align: center;
+`;
+// back & reset Btn style
+const StyledButton = styled(Button)`
+  color: ${textColor};
+  border-width: 1px;
+  border-color: ${greenPrimary};
+  border-radius: 10px;
+  width: 150px;
+  margin-top: 8px;
+`;
+// logo img
+const StyledImg = styled.img`
+  margin-top: 10px;
+  margin-bottom: -32px;
+  width: 20vh;
+  height: 20vh;
+  max-height: 300px;
+  max-width: 300px;
+`;
 // array to hold all the steps
 const steps: string[] = [
   'Set Up Servers and Permissions',
@@ -221,12 +240,11 @@ function getStepContent(step: number): JSX.Element | string {
   }
 }
 
-function QuickStartView({ show }: QuickStartViewProps) {
-  if (!show) return null;
-  const [activeStep, setActiveStep] = useState(0);
+function QuickStartView({ show }: QuickStartViewProps): JSX.Element | null {
+  const [activeStep, setActiveStep] = useState<number>(0);
   const [completed, setCompleted] = useState<{ [k: number]: boolean }>({});
-
-  const totalSteps = () => steps.length;
+  if (!show) return null;
+  const totalSteps = (): number => steps.length;
 
   // count completed steps number
   const completedSteps = (): number => Object.keys(completed).length;
@@ -269,14 +287,13 @@ function QuickStartView({ show }: QuickStartViewProps) {
     setActiveStep(0);
     setCompleted({});
   };
-
   // render components
   return (
     <PageContainer>
       <StyledTypographyTitle align="center">
         Welcome to SeeQR
       </StyledTypographyTitle>
-      <img className="step-img" src={logo} alt="Logo" />
+      <StyledImg className="logo-img" src={logo} alt="SeeQR Logo" />
       <StyledStepper alternativeLabel nonLinear activeStep={activeStep}>
         {steps.map((label, index) => (
           <Step key={label} completed={completed[index]}>
@@ -288,57 +305,55 @@ function QuickStartView({ show }: QuickStartViewProps) {
       </StyledStepper>
       <div>
         {allStepsCompleted() ? (
-          <div className="step-completed-div">
+          <StepContent>
             <StyledTypographyInstructions className="step-instructions">
-              All steps completed - you&apos;re ready to use SeeQr!
+              <strong>All Steps Completed</strong>
+              <p>You&apos;re ready to use SeeQR!</p>
             </StyledTypographyInstructions>
-            <Button
-              variant="outlined"
-              color="primary"
-              onClick={handleReset}
-              className="step-btn"
-              id="step-reset-btn"
-            >
-              RESET
-            </Button>
-          </div>
+            <NavButtons>
+              <StyledButton
+                variant="outlined"
+                onClick={handleReset}
+                className="step-btn"
+                id="step-reset-btn"
+              >
+                RESET
+              </StyledButton>
+            </NavButtons>
+          </StepContent>
         ) : (
           <StepContent>
             {getStepContent(activeStep)}
             <NavButtons>
-              <Button
-                variant="outlined"
-                color="primary"
-                disabled={activeStep === 0}
-                onClick={handleBack}
-                className="step-btn"
-                id="step-back-btn"
-              >
-                {activeStep === 0 ? '' : 'BACK'}
-              </Button>
+              {activeStep === 0 ? undefined : (
+                <StyledButton
+                  variant="outlined"
+                  onClick={handleBack}
+                  className="step-btn"
+                  id="step-back-btn"
+                >
+                  BACK
+                </StyledButton>
+              )}
 
               {activeStep !== steps.length &&
                 (completed[activeStep] ? (
                   <Button
                     variant="contained"
-                    color="primary"
                     onClick={handleNext}
                     className="step-btn"
                     id="step-next-btn"
+                    sx={{ mt: 1, borderRadius: '10px', width: 150 }}
                   >
                     NEXT
                   </Button>
                 ) : (
-                  // <Typography variant="caption" className="step-completed-btn">
-                  //   {`Step ${activeStep + 1} already`}
-                  //   <br /> completed
-                  // </Typography>
                   <Button
                     variant="contained"
-                    color="primary"
                     className="step-btn"
                     id="step-complete-next-btn"
                     onClick={handleComplete}
+                    sx={{ mt: 1, borderRadius: '10px', width: 150 }}
                   >
                     {completedSteps() === totalSteps() - 1 ? 'FINISH' : 'NEXT'}
                   </Button>
