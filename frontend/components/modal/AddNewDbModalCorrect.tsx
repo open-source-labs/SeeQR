@@ -1,6 +1,6 @@
 import path from 'path';
 import * as fs from 'fs';
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Dialog, DialogTitle, Tooltip } from '@mui/material/';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
@@ -15,8 +15,7 @@ import {
   StyledNativeOption,
 } from '../../style-variables';
 import { DBType } from '../../../shared/types/types';
-import { asyncTrigger } from '../../state_management/Slices/MenuSlice'; 
-
+import { asyncTrigger } from '../../state_management/Slices/MenuSlice';
 
 type AddNewDbModalProps = {
   open: boolean;
@@ -34,7 +33,7 @@ function AddNewDbModal({
   curDBType,
 }: AddNewDbModalProps) {
   // Hook to dispatch actions
-  const dispatch = useDispatch(); 
+  const dispatch = useDispatch();
 
   const [newDbName, setNewDbName] = useState<string>('');
 
@@ -95,16 +94,16 @@ function AddNewDbModal({
     };
 
     dispatch(
-    asyncTrigger({
-      loading: 'LOADING',
-      options: {
-      event: 'import-db',
-      payload: payloadObj,
-      callback: closeModal,
-    },
-  })
-  );
-  setFileSelect(true);
+      asyncTrigger({
+        loading: 'LOADING',
+        options: {
+          event: 'import-db',
+          payload: payloadObj,
+          callback: closeModal,
+        },
+      }),
+    );
+    setFileSelect(true);
   };
   // Opens modal to select file
   // Handles file selection and checks the content of the selected file
@@ -189,8 +188,8 @@ function AddNewDbModal({
             // payloadObj = { newDbName: fileDbName, filePath, dbType: dbt };
           }
 
-            // Handles database import action
-            // some sql files will have keywords that are invalid which will need to be edited manually in sql file before importing
+          // Handles database import action
+          // some sql files will have keywords that are invalid which will need to be edited manually in sql file before importing
 
           handleDBImport(fileDbName, handleClose);
         } else {
@@ -211,10 +210,9 @@ function AddNewDbModal({
           payload: options,
           callback: checkDBFile,
         },
-      })
+      }),
     );
   };
-
 
   return (
     <div>
@@ -307,4 +305,3 @@ function AddNewDbModal({
 }
 
 export default AddNewDbModal;
-

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { DialogTitle, Dialog, Tooltip } from '@mui/material/';
 // import { ipcRenderer } from 'electron';
@@ -35,7 +35,7 @@ function CreateDBDialog({ show, DBInfo, onClose }: CreateDBDialogProps) {
   const dbNames = DBInfo?.map((dbi: DatabaseInfo) => dbi.db_name);
 
   // Resets state for error messages
-  const handleClose = () => {
+  const handleClose = (): void => {
     setIsError(false);
     setIsEmpty(true);
     onClose();
@@ -72,7 +72,7 @@ function CreateDBDialog({ show, DBInfo, onClose }: CreateDBDialogProps) {
     setNewDbName(dbSafeName);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (close: () => void) => {
     // it needs to be as any because otherwise typescript thinks it doesn't have a 'value' param idk why
     const dbt = (document.getElementById('dbTypeDropdown') as HTMLSelectElement)
       .value;
@@ -97,9 +97,9 @@ function CreateDBDialog({ show, DBInfo, onClose }: CreateDBDialogProps) {
         options: {
           event: 'initialize-db',
           payload: { newDbName, dbType: dbt },
-          callback: handleClose,
+          callback: close,
         },
-      })
+      }),
     );
   };
 
@@ -173,7 +173,7 @@ function CreateDBDialog({ show, DBInfo, onClose }: CreateDBDialogProps) {
             variant="contained"
             color="primary"
             onClick={
-              isEmpty || isError ? () => {} : () => handleSubmit
+              isEmpty || isError ? () => {} : () => handleSubmit(handleClose)
             }
           >
             Confirm
