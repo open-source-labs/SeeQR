@@ -53,8 +53,8 @@ function CreateDBDialog({ show, DBInfo, onClose }: CreateDBDialogProps) {
   };
 
   // Set schema name
-  const handleDbName = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const dbNameInput = event.target.value;
+  const handleDbName = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const dbNameInput = e.target.value;
     if (dbNameInput.length === 0) {
       setIsEmpty(true);
     } else {
@@ -72,7 +72,7 @@ function CreateDBDialog({ show, DBInfo, onClose }: CreateDBDialogProps) {
     setNewDbName(dbSafeName);
   };
 
-  const handleSubmit = (close: () => void) => {
+  const handleSubmit = (closefn: () => void) => {
     // it needs to be as any because otherwise typescript thinks it doesn't have a 'value' param idk why
     const dbt = (document.getElementById('dbTypeDropdown') as HTMLSelectElement)
       .value;
@@ -97,7 +97,7 @@ function CreateDBDialog({ show, DBInfo, onClose }: CreateDBDialogProps) {
         options: {
           event: 'initialize-db',
           payload: { newDbName, dbType: dbt },
-          callback: close,
+          callback: closefn,
         },
       }),
     );

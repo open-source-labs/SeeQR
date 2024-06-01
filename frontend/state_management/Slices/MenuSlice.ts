@@ -39,10 +39,10 @@ export const submitAsyncToBackend = createAsyncThunk(
   async ({ issued, asyncList, invoke }: AsyncPayload, { dispatch }) => {
     const request = asyncList.get(issued);
     if (!request) return;
-    const { event, payload, callback, args } = request;
+    const { e, payload, callback, args } = request;
 
     try {
-      const response = await invoke(event, payload);
+      const response = await invoke(e, payload);
       if (callback) callback(...(args || []), response);
       dispatch(asyncTrigger({ loading: 'IDLE', key: issued }));
       // TODO feedback modal call
@@ -50,7 +50,7 @@ export const submitAsyncToBackend = createAsyncThunk(
       console.log('error communicating with the backend', err);
       // TODO feedback modal call
     }
-  }
+  },
 );
 
 // Create a slice for munu state management
@@ -64,7 +64,10 @@ const menuSlice = createSlice({
     toggleDialog: (state, action: PayloadAction<Dialogs | null>) => {
       state.visibleDialog = action.payload;
     },
-    toggleSidebar: (state, action: PayloadAction<'CLOSED' | 'QUERIES' | 'DATABASES'>) => {
+    toggleSidebar: (
+      state,
+      action: PayloadAction<'CLOSED' | 'QUERIES' | 'DATABASES'>,
+    ) => {
       state.sidebarState = action.payload;
     },
     asyncTrigger: (
@@ -72,27 +75,39 @@ const menuSlice = createSlice({
       action: PayloadAction<{
         loading: 'LOADING' | 'IDLE';
         key?: number;
-        options?: { event: string; callback?: any; args?: any[]; payload?: any };
-      }>
+        options?: {
+          event: string;
+          callback?: any;
+          args?: any[];
+          payload?: any;
+        };
+      }>,
     ) => {
-      if (action.payload.loading === 'IDLE' && action.payload.key !== undefined) {
+      if (
+        action.payload.loading === 'IDLE' &&
+        action.payload.key !== undefined
+      ) {
         state.loading.asyncList.delete(action.payload.key);
         state.loading.resolved += 1;
         if (state.loading.issued === state.loading.resolved) {
           state.loading.status = 'IDLE';
         }
-      } else if (action.payload.loading === 'LOADING' && action.payload.options) {
+      } else if (
+        action.payload.loading === 'LOADING' &&
+        action.payload.options
+      ) {
         state.loading.issued += 1;
-        state.loading.asyncList.set(state.loading.issued, action.payload.options);
+        state.loading.asyncList.set(
+          state.loading.issued,
+          action.payload.options,
+        );
         state.loading.status = 'LOADING';
       }
     },
   },
 });
 
-export const { changeView, toggleDialog, toggleSidebar, asyncTrigger } = menuSlice.actions;
+export const { changeView, toggleDialog, toggleSidebar, asyncTrigger } =
+  menuSlice.actions;
 
 export default menuSlice.reducer;
-
-
-

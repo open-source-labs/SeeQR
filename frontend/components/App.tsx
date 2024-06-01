@@ -41,6 +41,10 @@ import ConfigView from './Dialog/ConfigView';
 import CreateDBDialog from './Dialog/CreateDBDialog';
 
 import { RootState, AppDispatch } from '../state_management/store';
+import {
+  toggleConfigDialog,
+  toggleCreateDialog,
+} from '../state_management/Slices/AppViewSlice';
 import { submitAsyncToBackend } from '../state_management/Slices/MenuSlice';
 import invoke from '../lib/electronHelper';
 
@@ -233,12 +237,12 @@ function App() {
 
             <ConfigView
               show={appViewState.showConfigDialog}
-              onClose={() => dispatch({ type: 'TOGGLE_CONFIG_DIALOG' })}
+              onClose={() => dispatch(toggleConfigDialog())}
             />
             <CreateDBDialog
               show={appViewState.showCreateDialog}
               DBInfo={DBInfo}
-              onClose={() => dispatch({ type: 'TOGGLE_CREATE_DIALOG' })}
+              onClose={() => dispatch(toggleCreateDialog())}
             />
           </Main>
           <FeedbackModal />

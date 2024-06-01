@@ -22,7 +22,6 @@ interface TabPanelProps {
 // Material UI TabPanel component
 function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props;
-
   return (
     <div
       role="tabpanel"
@@ -104,88 +103,88 @@ export default function BasicTabs({ onClose }: BasicTabsProps) {
   };
 
   // Function to make StyledTextFields and store them in inputFieldsToRender state
-  const inputFieldMaker = useCallback(
-    (
-      dbTypeFromState: object,
-      setDbTypeFromState: React.Dispatch<React.SetStateAction<object>>,
-      dbString: string,
-    ) => {
-      // Push all StyledTextFields into this temporary array
-      const arrayToRender: JSX.Element[] = [];
-      if (dbString === 'sqlite') {
-        arrayToRender.push(
-          <StyledButton
-            variant="contained"
-            color="primary"
-            onClick={() => designateFile(setDbTypeFromState)}
-          >
-            Set db file location
-          </StyledButton>,
-        );
-      } else {
-        // Get key value pairs from passed in database connection info from state
-        Object.entries(dbTypeFromState).forEach((entry) => {
-          // entry looks like [user: 'username'] or [password: 'password]
-          const [dbEntryKey, dbEntryValue] = entry;
-          // If we are rendering a password StyledTextField, then add special props
-          let styledTextFieldProps;
-          if (dbEntryKey === 'password') {
-            styledTextFieldProps = {
-              type: showpass[dbString] ? 'text' : 'password',
-              InputProps: {
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={() =>
-                        setShowpass({
-                          ...showpass,
-                          [dbString]: !showpass[dbString],
-                        })
-                      }
-                      size="large"
-                    >
-                      {showpass[dbString] ? <Visibility /> : <VisibilityOff />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              },
-            };
-          }
-          // Push StyledTextField to temporary render array for current key in database connection object from state
+  const inputFieldMaker = (
+    dbTypeFromState: object,
+    setDbTypeFromState: React.Dispatch<React.SetStateAction<object>>,
+    dbString: string,
+  ) => {
+    // Push all StyledTextFields into this temporary array
+    const arrayToRender: JSX.Element[] = [];
+    if (dbString === 'sqlite') {
+      arrayToRender.push(
+        <StyledButton
+          variant="contained"
+          color="primary"
+          onClick={() => designateFile(setDbTypeFromState)}
+        >
+          Set db file location
+        </StyledButton>,
+      );
+    } else {
+      // Get key value pairs from passed in database connection info from state
+      Object.entries(dbTypeFromState).forEach((entry) => {
+        // entry looks like [user: 'username'] or [password: 'password]
+        const [dbEntryKey, dbEntryValue] = entry;
+        // If we are rendering a password StyledTextField, then add special props
+        let styledTextFieldProps;
+        if (dbEntryKey === 'password') {
+          styledTextFieldProps = {
+            type: showpass[dbString] ? 'text' : 'password',
+            InputProps: {
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={() =>
+                      setShowpass({
+                        ...showpass,
+                        [dbString]: !showpass[dbString],
+                      })
+                    }
+                    size="large"
+                  >
+                    {showpass[dbString] ? <Visibility /> : <VisibilityOff />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            },
+          };
+        }
+        // Push StyledTextField to temporary render array for current key in database connection object from state
 
-          arrayToRender.push(
-            <StyledTextField
-              required
-              id="filled-basic"
-              label={`${dbString.toUpperCase()} ${dbEntryKey.toUpperCase()}`}
-              size="small"
-              variant="outlined"
-              key={`${dbString} ${dbEntryKey}`}
-              onChange={(e) => {
-                setDbTypeFromState({
-                  ...dbTypeFromState,
-                  [dbEntryKey]: e.target.value,
-                });
-              }}
-              defaultValue={dbEntryValue}
-              InputProps={{
-                style: { color: '#575151' },
-              }}
-              // Spread special password props if they exist
-              {...styledTextFieldProps}
-            />,
-          );
-        });
-      }
-      // Update state for our current database type passing in our temporary array of StyledTextField components
-      setInputFieldsToRender({
-        ...inputFieldsToRender,
-        [dbString]: arrayToRender,
+        arrayToRender.push(
+          <StyledTextField
+            required
+            id="filled-basic"
+            label={`${dbString.toUpperCase()} ${dbEntryKey.toUpperCase()}`}
+            size="small"
+            variant="outlined"
+            key={`${dbString} ${dbEntryKey}`}
+            onChange={(e) => {
+              setDbTypeFromState({
+                ...dbTypeFromState,
+                [dbEntryKey]: e.target.value,
+              });
+            }}
+            defaultValue={dbEntryValue}
+            InputProps={{
+              style: { color: '#575151' },
+            }}
+            // Spread special password props if they exist
+            {...styledTextFieldProps}
+          />,
+        );
       });
-    },
-    [designateFile, inputFieldsToRender, showpass],
-  );
+    }
+    console.log('array', arrayToRender);
+
+    // Update state for our current database type passing in our temporary array of StyledTextField components
+    setInputFieldsToRender({
+      ...inputFieldsToRender,
+      [dbString]: arrayToRender,
+    });
+    console.log('inputstate', inputFieldsToRender);
+  };
 
   useEffect(() => {
     // Listen to backend for updates to list of available databases
@@ -212,19 +211,19 @@ export default function BasicTabs({ onClose }: BasicTabsProps) {
   // have it subscribed to changes in db connection info or show password button. Separate hooks to not rerender all fields each time
   useEffect(() => {
     inputFieldMaker(pg, setpg, 'pg');
-  }, [inputFieldMaker, pg, showpass.pg]);
+  }, [pg, showpass.pg]);
   useEffect(() => {
     inputFieldMaker(mysql, setmysql, 'mysql');
-  }, [inputFieldMaker, mysql, showpass.mysql]);
+  }, [mysql, showpass.mysql]);
   useEffect(() => {
     inputFieldMaker(rds_pg, setrds_pg, 'rds_pg');
-  }, [inputFieldMaker, rds_pg, showpass.rds_pg]);
+  }, [rds_pg, showpass.rds_pg]);
   useEffect(() => {
     inputFieldMaker(rds_mysql, setrds_mysql, 'rds_mysql');
-  }, [inputFieldMaker, rds_mysql, showpass.rds_mysql]);
+  }, [rds_mysql, showpass.rds_mysql]);
   useEffect(() => {
     inputFieldMaker(sqlite, setSqlite, 'sqlite'); // added sqlite
-  }, [inputFieldMaker, sqlite]);
+  }, [sqlite]);
 
   const handleClose = (): void => {
     onClose();
@@ -232,25 +231,6 @@ export default function BasicTabs({ onClose }: BasicTabsProps) {
 
   const handleSubmit = (): void => {
     // Pass database connection values from state to backend
-    // OLD CODE
-    // ipcRenderer
-    //   .invoke('set-config', {
-    //     mysql_options: { ...mysql },
-    //     pg_options: { ...pg },
-    //     rds_mysql_options: { ...rds_mysql },
-    //     rds_pg_options: { ...rds_pg },
-    //     sqlite_options: { ...sqlite }, // added sqlite
-    //   })
-    //   .then(() => {
-    //     handleClose();
-    //   })
-    //   .catch((err) => {
-    //     sendFeedback({
-    //       type: 'error',
-    //       message: err ?? 'Failed to save config.',
-    //     });
-    //   });
-
     dispatch({
       type: 'ASYNC_TRIGGER',
       loading: 'LOADING',

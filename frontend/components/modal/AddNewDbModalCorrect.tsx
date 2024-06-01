@@ -66,8 +66,8 @@ function AddNewDbModal({
   };
 
   // Handle changes in the database name input field
-  const handleDbName = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const dbNameInput = event.target.value;
+  const handleDbName = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const dbNameInput = e.target.value;
     if (dbNameInput.length === 0) {
       setIsEmpty(true);
     } else {
@@ -124,8 +124,9 @@ function AddNewDbModal({
     // if there is no such query, you will need to input a db name.
     const checkDBFile = (filePath: string, dbName: string) => {
       // TODO: fix the any type.
-      const dbt: DBType = (document.getElementById('dbTypeDropdown') as any)
-        .value;
+      const dbt = (
+        document.getElementById('dbTypeDropdown') as HTMLSelectElement
+      ).value;
 
       // console.log('dbtype', dbt);
       // console.log('filepath', filePath);
