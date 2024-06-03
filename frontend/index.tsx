@@ -5,6 +5,9 @@ import { enableMapSet } from 'immer';
 import App from './components/App';
 import store from './state_management/store';
 import '@fontsource/roboto';
+import { enableMapSet } from 'immer';
+// enabling map set to use Map objects with redux
+enableMapSet();
 
 // enabling map set to use Map objects with redux
 enableMapSet();

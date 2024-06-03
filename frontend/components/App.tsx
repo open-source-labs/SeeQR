@@ -42,10 +42,15 @@ import CreateDBDialog from './Dialog/CreateDBDialog';
 
 import { RootState, AppDispatch } from '../state_management/store';
 import {
+  submitAsyncToBackend,
+  asyncTrigger,
+} from '../state_management/Slices/MenuSlice';
+import {
   toggleConfigDialog,
   toggleCreateDialog,
+  setPGConnected,
+  setMYSQLConnected,
 } from '../state_management/Slices/AppViewSlice';
-import { submitAsyncToBackend } from '../state_management/Slices/MenuSlice';
 import invoke from '../lib/electronHelper';
 
 declare module '@mui/material/styles/' {
@@ -125,25 +130,18 @@ function App() {
     const dbListFromBackend = (dbLists: DbListsInterface) => {
       setDBInfo(dbLists.databaseList);
       setTables(dbLists.tableList);
-      dispatch({
-        type: 'appView/setPGConnected',
-        payload: dbLists.databaseConnected.PG,
-      });
-      dispatch({
-        type: 'appView/setMYSQLConnected',
-        payload: dbLists.databaseConnected.MySQL,
-      });
+      dispatch(setPGConnected(dbLists.databaseConnected.PG));
+      dispatch(setMYSQLConnected(dbLists.databaseConnected.MySQL));
     };
-    dispatch({
-      type: 'menu/ASYNC_TRIGGER',
-      payload: {
+    dispatch(
+      asyncTrigger({
         loading: 'LOADING',
         options: {
           event: 'return-db-list',
           callback: dbListFromBackend,
         },
-      },
-    });
+      }),
+    );
   }, [dispatch]);
 
   // Determine which view should be visible
@@ -192,7 +190,7 @@ function App() {
             curDBType={curDBType}
             setDBType={setDBType}
             DBInfo={DBInfo}
-            queryDispatch={dispatch}
+            // queryDispatch={dispatch}
           />
           <Main $fullwidth={appViewState.sideBarIsHidden}>
             <CompareView

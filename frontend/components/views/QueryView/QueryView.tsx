@@ -68,8 +68,6 @@ function QueryView({
 }: QueryViewProps) {
   // Get working query from Redux store using useSelector
   const localQuery = useSelector((state: any) => state.query.workingQuery);
-  // const localQuery: QueryData = useSelector((state: any) => state.query.workingQuery);
-
 
   // Get dispatch function from react-redux
   const dispatch = useDispatch<AppDispatch>(); 
@@ -238,11 +236,7 @@ function QueryView({
               });
             }
           }
-          // Create a new query object based on the transformed data and add it to the queries list
-          // const newQueries = createNewQuery(
-          //   transformedData,
-          //   localQuery.queries,
-          // );
+          
           const newQueries = { 
             ...localQuery.queries, 
             [`label:${localQuery.label} group:${localQuery.group}`]: transformedData 

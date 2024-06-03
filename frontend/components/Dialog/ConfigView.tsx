@@ -3,12 +3,7 @@ import { Dialog } from '@mui/material';
 import BasicTabs from './BasicTabs';
 import { sendFeedback } from '../../lib/utils';
 import '../../lib/style.css';
-import { RootState } from '../../state_management/store';
 
-/*
-junaid
-frontend database login component
-*/
 interface ConfigViewProps {
   show: boolean;
   onClose: () => void;

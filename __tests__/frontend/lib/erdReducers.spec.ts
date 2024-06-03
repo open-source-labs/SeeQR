@@ -4,7 +4,12 @@
 // describe('mainErdReducer', () => {
 //   it('should not change the initial state when an unrecognized action is dispatched', () => {
 //     const store = createStoreHook(mainErdReducer);
+// describe('mainErdReducer', () => {
+//   it('should not change the initial state when an unrecognized action is dispatched', () => {
+//     const store = createStoreHook(mainErdReducer);
 
+//     // make an unknown action
+//     store.dispatch({ type: 'UNKNOWN_ACTION', payload: null });
 //     // make an unknown action
 //     store.dispatch({ type: 'UNKNOWN_ACTION', payload: null });
 

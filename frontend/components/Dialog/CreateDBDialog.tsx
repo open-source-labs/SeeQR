@@ -174,6 +174,7 @@ function CreateDBDialog({ show, DBInfo, onClose }: CreateDBDialogProps) {
             color="primary"
             onClick={
               isEmpty || isError ? () => {} : () => handleSubmit(handleClose)
+              isEmpty || isError ? () => {} : () => handleSubmit(handleClose)
             }
           >
             Confirm
