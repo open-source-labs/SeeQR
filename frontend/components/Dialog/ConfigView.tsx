@@ -130,7 +130,10 @@ function BasicTabs({ onClose }: BasicTabsProps) {
     );
   };
   // const updateStateWithPrevState = () =>{
-  //   setState()
+  //   setState(prevState => {
+  //     ...prevState,
+  //     ...newSate,
+  //   }));
   // }
 
   // Function to make StyledTextFields and store them in inputFieldsToRender state
@@ -232,34 +235,34 @@ function BasicTabs({ onClose }: BasicTabsProps) {
     );
   }, [dispatch]);
 
-  const useInputFieldMaker = (state, setState, dbName, showPass) => {
-    useEffect(() => {
-      inputFieldMaker(state, setState, dbName);
-    }, [state, showPass]);
-  };
-  useInputFieldMaker(pg, setpg, 'pg', showpass.pg);
-  useInputFieldMaker(mysql, setmysql, 'mysql', showpass.mysql);
-  useInputFieldMaker(rds_pg, setrds_pg, 'rds_pg', showpass.rds_pg);
-  useInputFieldMaker(rds_mysql, setrds_mysql, 'rds_mysql', showpass.rds_mysql);
-  useInputFieldMaker(sqlite, setSqlite, 'sqlite', showpass.sqlite);
+  // const useInputFieldMaker = (state, setState, dbName, showPass) => {
+  //   useEffect(() => {
+  //     inputFieldMaker(state, setState, dbName);
+  //   }, [state, showPass]);
+  // };
+  // useInputFieldMaker(pg, setpg, 'pg', showpass.pg);
+  // useInputFieldMaker(mysql, setmysql, 'mysql', showpass.mysql);
+  // useInputFieldMaker(rds_pg, setrds_pg, 'rds_pg', showpass.rds_pg);
+  // useInputFieldMaker(rds_mysql, setrds_mysql, 'rds_mysql', showpass.rds_mysql);
+  // useInputFieldMaker(sqlite, setSqlite, 'sqlite', showpass.sqlite);
 
   // Invoke functions to generate input StyledTextFields components -- passing in state, setstate hook, and database name string.
   // have it subscribed to changes in db connection info or show password button. Separate hooks to not rerender all fields each time
-  // useEffect(() => {
-  //   inputFieldMaker(pg, setpg, 'pg');
-  // }, [pg, showpass.pg]);
-  // useEffect(() => {
-  //   inputFieldMaker(mysql, setmysql, 'mysql');
-  // }, [mysql, showpass.mysql]);
-  // useEffect(() => {
-  //   inputFieldMaker(rds_pg, setrds_pg, 'rds_pg');
-  // }, [rds_pg, showpass.rds_pg]);
-  // useEffect(() => {
-  //   inputFieldMaker(rds_mysql, setrds_mysql, 'rds_mysql');
-  // }, [rds_mysql, showpass.rds_mysql]);
-  // useEffect(() => {
-  //   inputFieldMaker(sqlite, setSqlite, 'sqlite'); // added sqlite
-  // }, [sqlite]);
+  useEffect(() => {
+    inputFieldMaker(pg, setpg, 'pg');
+  }, [pg, showpass.pg]);
+  useEffect(() => {
+    inputFieldMaker(mysql, setmysql, 'mysql');
+  }, [mysql, showpass.mysql]);
+  useEffect(() => {
+    inputFieldMaker(rds_pg, setrds_pg, 'rds_pg');
+  }, [rds_pg, showpass.rds_pg]);
+  useEffect(() => {
+    inputFieldMaker(rds_mysql, setrds_mysql, 'rds_mysql');
+  }, [rds_mysql, showpass.rds_mysql]);
+  useEffect(() => {
+    inputFieldMaker(sqlite, setSqlite, 'sqlite'); // added sqlite
+  }, []);
 
   const handleClose = () => {
     onClose();
