@@ -33,26 +33,6 @@ const initialState: MenuState = {
   },
 };
 
-// Thunk for handling async logic
-export const submitAsyncToBackend = createAsyncThunk(
-  'menu/submitAsyncToBackend',
-  async ({ issued, asyncList, invoke }: AsyncPayload, { dispatch }) => {
-    const request = asyncList.get(issued);
-    if (!request) return;
-    const { e, payload, callback, args } = request;
-
-    try {
-      const response = await invoke(e, payload);
-      if (callback) callback(...(args || []), response);
-      dispatch(asyncTrigger({ loading: 'IDLE', key: issued }));
-      // TODO feedback modal call
-    } catch (err) {
-      console.log('error communicating with the backend', err);
-      // TODO feedback modal call
-    }
-  },
-);
-
 // Create a slice for munu state management
 const menuSlice = createSlice({
   name: 'menu',
@@ -107,6 +87,25 @@ const menuSlice = createSlice({
   },
 });
 
+// Thunk for handling async logic
+export const submitAsyncToBackend = createAsyncThunk(
+  'menu/submitAsyncToBackend',
+  async ({ issued, asyncList, invoke }: AsyncPayload, { dispatch }) => {
+    const request = asyncList.get(issued);
+    if (!request) return;
+    const { event, payload, callback, args } = request;
+
+    try {
+      const response = await invoke(event, payload);
+      if (callback) callback(...(args || []), response);
+      dispatch(asyncTrigger({ loading: 'IDLE', key: issued }));
+      // TODO feedback modal call
+    } catch (err) {
+      console.log('error communicating with the backend,', err);
+      // TODO feedback modal call
+    }
+  },
+);
 export const { changeView, toggleDialog, toggleSidebar, asyncTrigger } =
   menuSlice.actions;
 

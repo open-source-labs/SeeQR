@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { ipcRenderer } from 'electron';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
@@ -8,6 +8,7 @@ import {
   StyledButton,
   StyledTextField,
 } from '../../style-variables';
+import { asyncTrigger } from '../../state_management/Slices/MenuSlice';
 import { DocConfigFile } from '../../../shared/types/types';
 import { RootState } from '../../state_management/store';
 
@@ -18,6 +19,14 @@ interface TabPanelProps {
   children?: React.ReactNode;
   index: number;
   value: number;
+}
+
+interface inputFieldsType {
+  pg: JSX.Element[];
+  mysql: JSX.Element[];
+  rds_mysql: JSX.Element[];
+  rds_pg: JSX.Element[];
+  sqlite: JSX.Element[];
 }
 // Material UI TabPanel component
 function TabPanel(props: TabPanelProps) {
@@ -59,11 +68,11 @@ export default function BasicTabs({ onClose }: BasicTabsProps) {
   const dispatch = useDispatch();
 
   // useState hooks for database connection information
-  const [mysql, setmysql] = useState({});
-  const [pg, setpg] = useState({});
-  const [rds_mysql, setrds_mysql] = useState({});
-  const [rds_pg, setrds_pg] = useState({});
-  const [sqlite, setSqlite] = useState({}); // added sqlite
+  const [mysqlCreds, setmysql] = useState({});
+  const [pgCreds, setpg] = useState({});
+  const [rds_mysqlCreds, setrds_mysql] = useState({});
+  const [rds_pgCreds, setrds_pg] = useState({});
+  const [sqliteCreds, setSqlite] = useState({}); // added sqlite
   // Toggle TabPanel display
   const [value, setValue] = useState(0);
   // Toggle show password in input fields
@@ -75,13 +84,14 @@ export default function BasicTabs({ onClose }: BasicTabsProps) {
     sqlite: false,
   });
   // Storing input StyledTextFields to render in state
-  const [inputFieldsToRender, setInputFieldsToRender] = useState({
-    pg: [],
-    mysql: [],
-    rds_mysql: [],
-    rds_pg: [],
-    sqlite: [], // added sqlite
-  });
+  const [inputFieldsToRender, setInputFieldsToRender] =
+    useState<inputFieldsType>({
+      pg: [],
+      mysql: [],
+      rds_mysql: [],
+      rds_pg: [],
+      sqlite: [], // added sqlite
+    });
 
   const designateFile = (setPath) => {
     const options = {
@@ -91,15 +101,16 @@ export default function BasicTabs({ onClose }: BasicTabsProps) {
       filters: [{ name: 'db', extensions: ['db'] }],
     };
     const setPathCallback = (val) => setPath({ path: val });
-    dispatch({
-      type: 'ASYNC_TRIGGER',
-      loading: 'LOADING',
-      options: {
-        event: 'showOpenDialog',
-        payload: options,
-        callback: setPathCallback,
-      },
-    });
+    dispatch(
+      asyncTrigger({
+        loading: 'LOADING',
+        options: {
+          event: 'showOpenDialog',
+          payload: options,
+          callback: setPathCallback,
+        },
+      }),
+    );
   };
 
   // Function to make StyledTextFields and store them in inputFieldsToRender state
@@ -151,7 +162,6 @@ export default function BasicTabs({ onClose }: BasicTabsProps) {
           };
         }
         // Push StyledTextField to temporary render array for current key in database connection object from state
-
         arrayToRender.push(
           <StyledTextField
             required
@@ -176,14 +186,11 @@ export default function BasicTabs({ onClose }: BasicTabsProps) {
         );
       });
     }
-    console.log('array', arrayToRender);
-
     // Update state for our current database type passing in our temporary array of StyledTextField components
-    setInputFieldsToRender({
-      ...inputFieldsToRender,
+    setInputFieldsToRender((prevState) => ({
+      ...prevState,
       [dbString]: arrayToRender,
-    });
-    console.log('inputstate', inputFieldsToRender);
+    }));
   };
 
   useEffect(() => {
@@ -197,33 +204,35 @@ export default function BasicTabs({ onClose }: BasicTabsProps) {
       setSqlite({ ...config.sqlite_options }); // added sqlite
     };
 
-    dispatch({
-      type: 'ASYNC_TRIGGER',
-      loading: 'LOADING',
-      options: {
-        event: 'get-config',
-        callback: configFromBackend,
-      },
-    });
+    dispatch(
+      asyncTrigger({
+        loading: 'LOADING',
+        options: { event: 'get-config', callback: configFromBackend },
+      }),
+    );
   }, [dispatch]);
 
   // Invoke functions to generate input StyledTextFields components -- passing in state, setstate hook, and database name string.
-  // have it subscribed to changes in db connection info or show password button. Separate hooks to not rerender all fields each time
+  // have it subscribed to changes in db connection info and/or show password button. Separate hooks to not rerender all fields each time
   useEffect(() => {
-    inputFieldMaker(pg, setpg, 'pg');
-  }, [pg, showpass.pg]);
+    inputFieldMaker(rds_pgCreds, setrds_pg, 'rds_pg');
+  }, [rds_pgCreds, showpass.rds_pg]);
+
   useEffect(() => {
-    inputFieldMaker(mysql, setmysql, 'mysql');
-  }, [mysql, showpass.mysql]);
+    inputFieldMaker(pgCreds, setpg, 'pg');
+  }, [pgCreds, showpass.pg]);
+
   useEffect(() => {
-    inputFieldMaker(rds_pg, setrds_pg, 'rds_pg');
-  }, [rds_pg, showpass.rds_pg]);
+    inputFieldMaker(mysqlCreds, setmysql, 'mysql');
+  }, [mysqlCreds, showpass.mysql]);
+
   useEffect(() => {
-    inputFieldMaker(rds_mysql, setrds_mysql, 'rds_mysql');
-  }, [rds_mysql, showpass.rds_mysql]);
+    inputFieldMaker(rds_mysqlCreds, setrds_mysql, 'rds_mysql');
+  }, [rds_mysqlCreds, showpass.rds_mysql]);
+
   useEffect(() => {
-    inputFieldMaker(sqlite, setSqlite, 'sqlite'); // added sqlite
-  }, [sqlite]);
+    inputFieldMaker(sqliteCreds, setSqlite, 'sqlite'); // added sqlite
+  }, []);
 
   const handleClose = (): void => {
     onClose();
@@ -231,21 +240,22 @@ export default function BasicTabs({ onClose }: BasicTabsProps) {
 
   const handleSubmit = (): void => {
     // Pass database connection values from state to backend
-    dispatch({
-      type: 'ASYNC_TRIGGER',
-      loading: 'LOADING',
-      options: {
-        event: 'set-config',
-        payload: {
-          mysql_options: { ...mysql },
-          pg_options: { ...pg },
-          rds_mysql_options: { ...rds_mysql },
-          rds_pg_options: { ...rds_pg },
-          sqlite_options: { ...sqlite },
+    dispatch(
+      asyncTrigger({
+        loading: 'LOADING',
+        options: {
+          event: 'set-config',
+          payload: {
+            mysql_options: { ...mysqlCreds },
+            pg_options: { ...pgCreds },
+            rds_mysql_options: { ...rds_mysqlCreds },
+            rds_pg_options: { ...rds_pgCreds },
+            sqlite_options: { ...sqliteCreds },
+          },
+          callback: handleClose,
         },
-        callback: handleClose,
-      },
-    });
+      }),
+    );
   };
 
   // Function to handle onChange -- when tab panels change
