@@ -28,7 +28,16 @@ interface DbEntryProps {
   duplicate: () => void;
   dbType: DBType;
 }
-
+// interface SaveDialogOptions {
+//   title: string;
+//   defaultPath: string;
+//   buttonLabel: string;
+//   filters: { name: string; extensions: string[] }[];
+// }
+// interface ExportPayload {
+//   db: any; // Replace 'any' with the actual type of 'db'
+//   filePath: string;
+// }
 function DbEntry({ db, isSelected, select, duplicate, dbType }: DbEntryProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
@@ -55,12 +64,14 @@ function DbEntry({ db, isSelected, select, duplicate, dbType }: DbEntryProps) {
     try {
       const filePath = await ipcRenderer.invoke('showSaveDialog', options);
 
+      // if (filePath) {
       const payload = {
         db,
         filePath,
       };
 
       await ipcRenderer.invoke('export-db', payload, dbType);
+      // }
     } catch (error) {
       console.log(error);
     }

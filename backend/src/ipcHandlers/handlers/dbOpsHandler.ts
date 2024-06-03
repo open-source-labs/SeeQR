@@ -53,7 +53,7 @@ interface ExportPayload extends ImportPayload {
  *
  * DEFINITION: returns a db-list from frontend. for Sidebar
  *
- * Process involes the following steps:
+ * Process involves the following steps:
  * 1. connectionModel.setBaseConections
  * 2. get listObj from databaseModel.getLists
  */

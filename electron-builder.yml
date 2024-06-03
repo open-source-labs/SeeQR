@@ -5,6 +5,7 @@ files:
   - dist/**/*
   - ./assets/electron-builder/*
   - ./assets/logo/seeqr_dock.png
+  - ./assets/logo/logo_monochrome.png
 directories:
   output: release-builds/${os}
   buildResources: ./assets/electron-builder

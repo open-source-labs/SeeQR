@@ -50,6 +50,16 @@ import {
   setPGConnected,
   setMYSQLConnected,
 } from '../state_management/Slices/AppViewSlice';
+import {
+  submitAsyncToBackend,
+  asyncTrigger,
+} from '../state_management/Slices/MenuSlice';
+import {
+  toggleConfigDialog,
+  toggleCreateDialog,
+  setPGConnected,
+  setMYSQLConnected,
+} from '../state_management/Slices/AppViewSlice';
 import invoke from '../lib/electronHelper';
 
 declare module '@mui/material/styles/' {
@@ -72,12 +82,15 @@ const Main = styled.main<{ $fullwidth: boolean }>`
   height: calc(100vh - (2 * ${defaultMargin}));
   max-width: ${({ $fullwidth }) =>
     $fullwidth ? '' : `calc(90vw - ${sidebarWidth})`};
+  max-width: ${({ $fullwidth }) =>
+    $fullwidth ? '' : `calc(90vw - ${sidebarWidth})`};
   padding: ${defaultMargin} ${sidebarShowButtonSize};
   margin: 0;
 `;
 
 // Define the main App component
 function App() {
+  const dispatch = useDispatch<AppDispatch>();
   const dispatch = useDispatch<AppDispatch>();
   // Initialize dispatch and state selectors from Redux
   const appViewState = useSelector((state: RootState) => state.appView);
@@ -113,6 +126,7 @@ function App() {
   // Handle async calls
   const asyncCount = useRef(0);
   //
+  //
   useEffect(() => {
     const { issued, asyncList } = menuState.loading;
     // Check if there are pending async tasks
@@ -123,6 +137,7 @@ function App() {
     // Update the asyncCount ref with the latest issued count
     asyncCount.current = issued;
   }, [menuState.loading, dispatch]);
+
 
   // Populate initial dblist
   useEffect(() => {
@@ -136,8 +151,13 @@ function App() {
       asyncTrigger({
         loading: 'LOADING',
         options: {
+        loading: 'LOADING',
+        options: {
           event: 'return-db-list',
           callback: dbListFromBackend,
+        },
+      }),
+    );
         },
       }),
     );
@@ -175,6 +195,7 @@ function App() {
   }
 
   // Removed Context Providers, instead used Redux's useDispatch and useSelector hooks to interact with the state
+  // Styled Components must be injected last in order to override Material UI style: https://material-ui.com/guides/interoperability/#controlling-priority-3
   return (
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={MuiTheme}>
