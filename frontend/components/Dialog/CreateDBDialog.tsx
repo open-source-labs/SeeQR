@@ -76,7 +76,6 @@ function CreateDBDialog({ show, DBInfo, onClose }: CreateDBDialogProps) {
     // it needs to be as any because otherwise typescript thinks it doesn't have a 'value' param idk why
     const dbt = (document.getElementById('dbTypeDropdown') as HTMLSelectElement)
       .value;
-
     // ipcRenderer
     //   .invoke('initialize-db', {
     //     newDbName,
@@ -173,7 +172,6 @@ function CreateDBDialog({ show, DBInfo, onClose }: CreateDBDialogProps) {
             variant="contained"
             color="primary"
             onClick={
-              isEmpty || isError ? () => {} : () => handleSubmit(handleClose)
               isEmpty || isError ? () => {} : () => handleSubmit(handleClose)
             }
           >

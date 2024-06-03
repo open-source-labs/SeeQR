@@ -39,7 +39,6 @@ import FeedbackModal from './modal/FeedbackModal';
 import Spinner from './modal/Spinner';
 import ConfigView from './Dialog/ConfigView';
 import CreateDBDialog from './Dialog/CreateDBDialog';
-
 import { RootState, AppDispatch } from '../state_management/store';
 import {
   submitAsyncToBackend,
