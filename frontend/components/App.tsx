@@ -39,12 +39,18 @@ import FeedbackModal from './modal/FeedbackModal';
 import Spinner from './modal/Spinner';
 import ConfigView from './Dialog/ConfigView';
 import CreateDBDialog from './Dialog/CreateDBDialog';
-
 import { RootState, AppDispatch } from '../state_management/store';
-import { submitAsyncToBackend, asyncTrigger } from '../state_management/Slices/MenuSlice';
-import { toggleConfigDialog, toggleCreateDialog, setPGConnected, setMYSQLConnected } from '../state_management/Slices/AppViewSlice';
+import {
+  submitAsyncToBackend,
+  asyncTrigger,
+} from '../state_management/Slices/MenuSlice';
+import {
+  toggleConfigDialog,
+  toggleCreateDialog,
+  setPGConnected,
+  setMYSQLConnected,
+} from '../state_management/Slices/AppViewSlice';
 import invoke from '../lib/electronHelper';
-
 
 declare module '@mui/material/styles/' {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -64,15 +70,15 @@ const Main = styled.main<{ $fullwidth: boolean }>`
   grid-area: ${({ $fullwidth }) => ($fullwidth ? '1 / 1 / -1 / -1' : 'main')};
   background: ${bgColor};
   height: calc(100vh - (2 * ${defaultMargin}));
-  max-width: ${({ $fullwidth }) => $fullwidth ? '' : `calc(90vw - ${sidebarWidth})`};
+  max-width: ${({ $fullwidth }) =>
+    $fullwidth ? '' : `calc(90vw - ${sidebarWidth})`};
   padding: ${defaultMargin} ${sidebarShowButtonSize};
   margin: 0;
 `;
 
 // Define the main App component
 function App() {
-
-  const dispatch = useDispatch<AppDispatch>(); 
+  const dispatch = useDispatch<AppDispatch>();
   // Initialize dispatch and state selectors from Redux
   const appViewState = useSelector((state: RootState) => state.appView);
   const queryState = useSelector((state: RootState) => state.query);
@@ -104,10 +110,9 @@ function App() {
     };
   }, [selectedTable, dbTables]);
 
-
   // Handle async calls
   const asyncCount = useRef(0);
-  // 
+  //
   useEffect(() => {
     const { issued, asyncList } = menuState.loading;
     // Check if there are pending async tasks
@@ -119,7 +124,6 @@ function App() {
     asyncCount.current = issued;
   }, [menuState.loading, dispatch]);
 
-  
   // Populate initial dblist
   useEffect(() => {
     const dbListFromBackend = (dbLists: DbListsInterface) => {
@@ -130,15 +134,14 @@ function App() {
     };
     dispatch(
       asyncTrigger({
-        loading:'LOADING',
-        options:{
+        loading: 'LOADING',
+        options: {
           event: 'return-db-list',
           callback: dbListFromBackend,
-        }
-      })
-    )
+        },
+      }),
+    );
   }, [dispatch]);
-  
 
   // Determine which view should be visible
   let shownView;
@@ -175,80 +178,75 @@ function App() {
   return (
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={MuiTheme}>
-          <Spinner />
-          <AppContainer>
-            <CssBaseline />
-            <GlobalStyle />
-                    <Sidebar
-                        selectedDb={selectedDb}
-                        setSelectedDb={setSelectedDb}
-                        setERView={setERView}
-                        curDBType={curDBType}
-                        setDBType={setDBType}
-                        DBInfo={DBInfo}
-                        // queryDispatch={dispatch}
-                    />
-                <Main $fullwidth={appViewState.sideBarIsHidden}>
-                  <CompareView
-                    queries={queryState.comparedQueries}
-                    show={shownView === 'compareView'}
-                  />
-                  <DbView
-                    selectedDb={selectedDb}
-                    show={shownView === 'dbView'}
-                    setERView={setERView}
-                    ERView={ERView}
-                    curDBType={curDBType}
-                    DBInfo={DBInfo}
-                    dbTables={dbTables}
-                    selectedTable={selectedTable}
-                    setSelectedTable={setSelectedTable}
-                  />
-                  <QueryView
-                    selectedDb={selectedDb}
-                    setSelectedDb={setSelectedDb}
-                    show={shownView === 'queryView'}
-                    curDBType={curDBType}
-                    setDBType={setDBType}
-                    DBInfo={DBInfo}
-                  />
-                  <QuickStartView show={shownView === 'quickStartView'} />
-                  <ThreeDView
-                    show={shownView === 'threeDView'}
-                    selectedDb={selectedDb}
-                    dbTables={dbTables}
-                    dbType={curDBType}
-                  />
-                  <NewSchemaView
-                    selectedDb={selectedDb}
-                    setSelectedDb={setSelectedDb}
-                    show={shownView === 'newSchemaView'}
-                    curDBType={curDBType}
-                    dbTables={dbTables}
-                    selectedTable={selectedTable}
-                    setSelectedTable={setSelectedTable}
-                  />
+        <Spinner />
+        <AppContainer>
+          <CssBaseline />
+          <GlobalStyle />
+          <Sidebar
+            selectedDb={selectedDb}
+            setSelectedDb={setSelectedDb}
+            setERView={setERView}
+            curDBType={curDBType}
+            setDBType={setDBType}
+            DBInfo={DBInfo}
+            // queryDispatch={dispatch}
+          />
+          <Main $fullwidth={appViewState.sideBarIsHidden}>
+            <CompareView
+              queries={queryState.comparedQueries}
+              show={shownView === 'compareView'}
+            />
+            <DbView
+              selectedDb={selectedDb}
+              show={shownView === 'dbView'}
+              setERView={setERView}
+              ERView={ERView}
+              curDBType={curDBType}
+              DBInfo={DBInfo}
+              dbTables={dbTables}
+              selectedTable={selectedTable}
+              setSelectedTable={setSelectedTable}
+            />
+            <QueryView
+              selectedDb={selectedDb}
+              setSelectedDb={setSelectedDb}
+              show={shownView === 'queryView'}
+              curDBType={curDBType}
+              setDBType={setDBType}
+              DBInfo={DBInfo}
+            />
+            <QuickStartView show={shownView === 'quickStartView'} />
+            <ThreeDView
+              show={shownView === 'threeDView'}
+              selectedDb={selectedDb}
+              dbTables={dbTables}
+              dbType={curDBType}
+            />
+            <NewSchemaView
+              selectedDb={selectedDb}
+              setSelectedDb={setSelectedDb}
+              show={shownView === 'newSchemaView'}
+              curDBType={curDBType}
+              dbTables={dbTables}
+              selectedTable={selectedTable}
+              setSelectedTable={setSelectedTable}
+            />
 
-                  <ConfigView
-                    show={appViewState.showConfigDialog}
-                    onClose={() =>
-                      dispatch(toggleConfigDialog())
-                    }
-                  />
-                  <CreateDBDialog
-                    show={appViewState.showCreateDialog}
-                    DBInfo={DBInfo}
-                    onClose={() =>
-                      dispatch(toggleCreateDialog())
-                    }
-                  />
-                </Main>
-                <FeedbackModal />
-          </AppContainer>
+            <ConfigView
+              show={appViewState.showConfigDialog}
+              onClose={() => dispatch(toggleConfigDialog())}
+            />
+            <CreateDBDialog
+              show={appViewState.showCreateDialog}
+              DBInfo={DBInfo}
+              onClose={() => dispatch(toggleCreateDialog())}
+            />
+          </Main>
+          <FeedbackModal />
+        </AppContainer>
       </ThemeProvider>
     </StyledEngineProvider>
   );
-  
 }
 
 export default App;

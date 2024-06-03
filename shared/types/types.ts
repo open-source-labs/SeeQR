@@ -115,14 +115,6 @@ export type BackendObjType = {
   updates: UpdatesObjType;
 };
 
-// choose one above or below : Check how this object is being made
-// export type BackendObjType = {
-//   current: {
-//     database: string;
-//     updates: UpdatesObjType;
-//   };
-// };
-
 // export interface DocConfigFile {
 //   mysql: { user: string; password: string; port: number };
 //   pg: { user: string; password: string; port: number };
