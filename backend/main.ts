@@ -1,32 +1,34 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
 // entry point for electron
 import { app, BrowserWindow, Menu } from 'electron'; // added session here for DevTool if needed
-import fixPath from 'fix-path'; 
+import fixPath from 'fix-path';
 import * as path from 'path';
 import * as url from 'url';
-// import os from 'node:os'; // only for DevTool
+import os from 'node:os'; // only for DevTool
 import MainMenu from './mainMenu';
 
 const dev: boolean = process.env.NODE_ENV === 'development';
 
 // requiring channels file to initialize event listeners
 
-// require('./_DEPRECATED_channels');
 import('./src/ipcHandlers/index');
 fixPath();
 // Keep a global reference of the window objects, if you don't,
 // the window will be closed automatically when the JavaScript object is garbage collected.
 let mainWindow: BrowserWindow | null;
 
-// for react dev tools to work with electron
+// for react dev tools to work with electron: AS OF 6/2024 dev tool does not seem to work. May need to find v 4.25 of react dev tool.
+// React also removed support of manifest v2 causing more issues
 // download react devtools and save them on desktop in folder named ReactDevTools
 // devtools: https://github.com/facebook/react/issues/25843
 // https://github.com/mondaychen/react/raw/017f120369d80a21c0e122106bd7ca1faa48b8ee/packages/react-devtools-extensions/ReactDevTools.zip
 // ******************** Comment out when done ******************** //
-//const reactDevToolsPath = path.join(os.homedir(), '/Desktop/ReactDevTools');
-// app.whenReady().then(async () => {
-//   await session.defaultSession.loadExtension(reactDevToolsPath);
-// });
+// const reactDevToolsPath = path.join(os.homedir(), '/Desktop/ReactDevTools');
+// app
+//   .whenReady()
+//   .then(async () => {
+//     await session.defaultSession.loadExtension(reactDevToolsPath);
+//   })
+//   .catch((err) => console.error(err));
 // ******************** Comment out when done ******************** //
 
 // Add an event listener for uncaught exceptions
