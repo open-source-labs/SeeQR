@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { DialogTitle, Dialog, Tooltip } from '@mui/material/';
 // import { ipcRenderer } from 'electron';
@@ -35,7 +35,7 @@ function CreateDBDialog({ show, DBInfo, onClose }: CreateDBDialogProps) {
   const dbNames = DBInfo?.map((dbi: DatabaseInfo) => dbi.db_name);
 
   // Resets state for error messages
-  const handleClose = () => {
+  const handleClose = (): void => {
     setIsError(false);
     setIsEmpty(true);
     onClose();
@@ -53,8 +53,8 @@ function CreateDBDialog({ show, DBInfo, onClose }: CreateDBDialogProps) {
   };
 
   // Set schema name
-  const handleDbName = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const dbNameInput = event.target.value;
+  const handleDbName = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const dbNameInput = e.target.value;
     if (dbNameInput.length === 0) {
       setIsEmpty(true);
     } else {
@@ -72,11 +72,10 @@ function CreateDBDialog({ show, DBInfo, onClose }: CreateDBDialogProps) {
     setNewDbName(dbSafeName);
   };
 
-  const handleSubmit = (handleClose) => {
+  const handleSubmit = (closefn: () => void) => {
     // it needs to be as any because otherwise typescript thinks it doesn't have a 'value' param idk why
     const dbt = (document.getElementById('dbTypeDropdown') as HTMLSelectElement)
       .value;
-
     // ipcRenderer
     //   .invoke('initialize-db', {
     //     newDbName,
@@ -97,9 +96,9 @@ function CreateDBDialog({ show, DBInfo, onClose }: CreateDBDialogProps) {
         options: {
           event: 'initialize-db',
           payload: { newDbName, dbType: dbt },
-          callback: handleClose,
+          callback: closefn,
         },
-      })
+      }),
     );
   };
 

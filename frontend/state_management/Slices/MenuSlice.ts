@@ -33,6 +33,60 @@ const initialState: MenuState = {
   },
 };
 
+// Create a slice for munu state management
+const menuSlice = createSlice({
+  name: 'menu',
+  initialState,
+  reducers: {
+    changeView: (state, action: PayloadAction<ViewName>) => {
+      state.selectedView = action.payload;
+    },
+    toggleDialog: (state, action: PayloadAction<Dialogs | null>) => {
+      state.visibleDialog = action.payload;
+    },
+    toggleSidebar: (
+      state,
+      action: PayloadAction<'CLOSED' | 'QUERIES' | 'DATABASES'>,
+    ) => {
+      state.sidebarState = action.payload;
+    },
+    asyncTrigger: (
+      state,
+      action: PayloadAction<{
+        loading: 'LOADING' | 'IDLE';
+        key?: number;
+        options?: {
+          event: string;
+          callback?: any;
+          args?: any[];
+          payload?: any;
+        };
+      }>,
+    ) => {
+      if (
+        action.payload.loading === 'IDLE' &&
+        action.payload.key !== undefined
+      ) {
+        state.loading.asyncList.delete(action.payload.key);
+        state.loading.resolved += 1;
+        if (state.loading.issued === state.loading.resolved) {
+          state.loading.status = 'IDLE';
+        }
+      } else if (
+        action.payload.loading === 'LOADING' &&
+        action.payload.options
+      ) {
+        state.loading.issued += 1;
+        state.loading.asyncList.set(
+          state.loading.issued,
+          action.payload.options,
+        );
+        state.loading.status = 'LOADING';
+      }
+    },
+  },
+});
+
 // Thunk for handling async logic
 export const submitAsyncToBackend = createAsyncThunk(
   'menu/submitAsyncToBackend',
@@ -47,52 +101,12 @@ export const submitAsyncToBackend = createAsyncThunk(
       dispatch(asyncTrigger({ loading: 'IDLE', key: issued }));
       // TODO feedback modal call
     } catch (err) {
-      console.log('error communicating with the backend', err);
+      console.log('error communicating with the backend,', err);
       // TODO feedback modal call
     }
-  }
-);
-
-// Create a slice for munu state management
-const menuSlice = createSlice({
-  name: 'menu',
-  initialState,
-  reducers: {
-    changeView: (state, action: PayloadAction<ViewName>) => {
-      state.selectedView = action.payload;
-    },
-    toggleDialog: (state, action: PayloadAction<Dialogs | null>) => {
-      state.visibleDialog = action.payload;
-    },
-    toggleSidebar: (state, action: PayloadAction<'CLOSED' | 'QUERIES' | 'DATABASES'>) => {
-      state.sidebarState = action.payload;
-    },
-    asyncTrigger: (
-      state,
-      action: PayloadAction<{
-        loading: 'LOADING' | 'IDLE';
-        key?: number;
-        options?: { event: string; callback?: any; args?: any[]; payload?: any };
-      }>
-    ) => {
-      if (action.payload.loading === 'IDLE' && action.payload.key !== undefined) {
-        state.loading.asyncList.delete(action.payload.key);
-        state.loading.resolved += 1;
-        if (state.loading.issued === state.loading.resolved) {
-          state.loading.status = 'IDLE';
-        }
-      } else if (action.payload.loading === 'LOADING' && action.payload.options) {
-        state.loading.issued += 1;
-        state.loading.asyncList.set(state.loading.issued, action.payload.options);
-        state.loading.status = 'LOADING';
-      }
-    },
   },
-});
-
-export const { changeView, toggleDialog, toggleSidebar, asyncTrigger } = menuSlice.actions;
+);
+export const { changeView, toggleDialog, toggleSidebar, asyncTrigger } =
+  menuSlice.actions;
 
 export default menuSlice.reducer;
-
-
-
