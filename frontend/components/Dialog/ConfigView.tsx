@@ -83,6 +83,7 @@ function BasicTabs({ onClose }: BasicTabsProps) {
   
   // Toggle TabPanel display
   const [value, setValue] = useState(0);
+
   // Toggle show password in input fields
   const [showpass, setShowpass] = useState({
     pg: false,
@@ -118,6 +119,14 @@ function BasicTabs({ onClose }: BasicTabsProps) {
       },
       })
     )
+  };
+
+  // Function to update state with previous state
+  const updateStateWithPrevState = (setState, newState) => {
+    setState(prevState => ({
+      ...prevState,
+      ...newState,
+    }));
   };
 
   // Function to make StyledTextFields and store them in inputFieldsToRender state
@@ -175,8 +184,11 @@ function BasicTabs({ onClose }: BasicTabsProps) {
             variant="outlined"
             key={`${dbString} ${dbEntryKey}`}
             onChange={(event) => {
-              setDbTypeFromState({
-                ...dbTypeFromState,
+              // setDbTypeFromState({
+              //   ...dbTypeFromState,
+              //   [dbEntryKey]: event.target.value,
+              // });
+              updateStateWithPrevState(setDbTypeFromState, {
                 [dbEntryKey]: event.target.value,
               });
             }}
@@ -191,10 +203,10 @@ function BasicTabs({ onClose }: BasicTabsProps) {
       });
     }
     // Update state for our current database type passing in our temporary array of StyledTextField components
-    setInputFieldsToRender({
-      ...inputFieldsToRender,
+    setInputFieldsToRender(prevState => ({
+      ...prevState,
       [dbString]: arrayToRender,
-    });
+    }));
   }
 
   useEffect(() => {
