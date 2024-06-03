@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { ipcRenderer } from 'electron';
 import {
   Box,
@@ -17,7 +18,8 @@ import {
 } from '../../style-variables';
 import '../../lib/style.css';
 import { DocConfigFile } from '../../../shared/types/types';
-import MenuContext from '../../state_management/Contexts/MenuContext';
+import { RootState } from '../../state_management/store';
+import { asyncTrigger } from '../../state_management/Slices/MenuSlice';
 
 /*
 junaid
@@ -70,7 +72,7 @@ function a11yProps(index: number) {
 
 function BasicTabs({ onClose }: BasicTabsProps) {
   // context for async calls
-  const { dispatch: menuDispatch } = useContext(MenuContext);
+  const dispatch = useDispatch();
 
   // useState hooks for database connection information
   const [mysql, setmysql] = useState({});
@@ -78,6 +80,7 @@ function BasicTabs({ onClose }: BasicTabsProps) {
   const [rds_mysql, setrds_mysql] = useState({});
   const [rds_pg, setrds_pg] = useState({});
   const [sqlite, setSqlite] = useState({}); // added sqlite
+  
   // Toggle TabPanel display
   const [value, setValue] = useState(0);
   // Toggle show password in input fields
@@ -105,15 +108,16 @@ function BasicTabs({ onClose }: BasicTabsProps) {
       filters: [{ name: 'db', extensions: ['db'] }],
     };
     const setPathCallback = (val) => setPath({ path: val });
-    menuDispatch({
-      type: 'ASYNC_TRIGGER',
-      loading: 'LOADING',
-      options: {
+    dispatch(
+      asyncTrigger({
+        loading: 'LOADING',
+        options: {
         event: 'showOpenDialog',
         payload: options,
         callback: setPathCallback,
       },
-    });
+      })
+    )
   };
 
   // Function to make StyledTextFields and store them in inputFieldsToRender state
@@ -204,15 +208,16 @@ function BasicTabs({ onClose }: BasicTabsProps) {
       setSqlite({ ...config.sqlite_options }); // added sqlite
     };
 
-    menuDispatch({
-      type: 'ASYNC_TRIGGER',
-      loading: 'LOADING',
-      options: {
+    dispatch(
+      asyncTrigger({
+        loading: 'LOADING',
+        options: {
         event: 'get-config',
         callback: configFromBackend,
       },
-    });
-  }, [menuDispatch]);
+      })
+    )
+  }, [dispatch]);
 
   // Invoke functions to generate input StyledTextFields components -- passing in state, setstate hook, and database name string.
   // have it subscribed to changes in db connection info or show password button. Separate hooks to not rerender all fields each time
@@ -257,21 +262,22 @@ function BasicTabs({ onClose }: BasicTabsProps) {
     //     });
     //   });
 
-    menuDispatch({
-      type: 'ASYNC_TRIGGER',
-      loading: 'LOADING',
-      options: {
-        event: 'set-config',
-        payload: {
-          mysql_options: { ...mysql },
-          pg_options: { ...pg },
-          rds_mysql_options: { ...rds_mysql },
-          rds_pg_options: { ...rds_pg },
-          sqlite_options: { ...sqlite },
+    dispatch(
+      asyncTrigger({
+        loading: 'LOADING',
+        options: {
+          event: 'set-config',
+          payload: {
+            mysql_options: { ...mysql },
+            pg_options: { ...pg },
+            rds_mysql_options: { ...rds_mysql },
+            rds_pg_options: { ...rds_pg },
+            sqlite_options: { ...sqlite },
+          },
+          callback: handleClose,
         },
-        callback: handleClose,
-      },
-    });
+      })
+    );
   };
 
   // Function to handle onChange -- when tab panels change
