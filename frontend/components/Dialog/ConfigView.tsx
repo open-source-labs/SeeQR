@@ -19,6 +19,7 @@ import {
 import '../../lib/style.css';
 import { DocConfigFile } from '../../../shared/types/types';
 import { RootState } from '../../state_management/store';
+import { asyncTrigger } from '../../state_management/Slices/MenuSlice';
 
 /*
 junaid
@@ -106,15 +107,16 @@ function BasicTabs({ onClose }: BasicTabsProps) {
       filters: [{ name: 'db', extensions: ['db'] }],
     };
     const setPathCallback = (val) => setPath({ path: val });
-    dispatch({
-      type: 'ASYNC_TRIGGER',
-      loading: 'LOADING',
-      options: {
+    dispatch(
+      asyncTrigger({
+        loading: 'LOADING',
+        options: {
         event: 'showOpenDialog',
         payload: options,
         callback: setPathCallback,
       },
-    });
+      })
+    )
   };
 
   // Function to make StyledTextFields and store them in inputFieldsToRender state
@@ -205,14 +207,15 @@ function BasicTabs({ onClose }: BasicTabsProps) {
       setSqlite({ ...config.sqlite_options }); // added sqlite
     };
 
-    dispatch({
-      type: 'ASYNC_TRIGGER',
-      loading: 'LOADING',
-      options: {
+    dispatch(
+      asyncTrigger({
+        loading: 'LOADING',
+        options: {
         event: 'get-config',
         callback: configFromBackend,
       },
-    });
+      })
+    )
   }, [dispatch]);
 
   // Invoke functions to generate input StyledTextFields components -- passing in state, setstate hook, and database name string.
@@ -258,21 +261,22 @@ function BasicTabs({ onClose }: BasicTabsProps) {
     //     });
     //   });
 
-    dispatch({
-      type: 'ASYNC_TRIGGER',
-      loading: 'LOADING',
-      options: {
-        event: 'set-config',
-        payload: {
-          mysql_options: { ...mysql },
-          pg_options: { ...pg },
-          rds_mysql_options: { ...rds_mysql },
-          rds_pg_options: { ...rds_pg },
-          sqlite_options: { ...sqlite },
+    dispatch(
+      asyncTrigger({
+        loading: 'LOADING',
+        options: {
+          event: 'set-config',
+          payload: {
+            mysql_options: { ...mysql },
+            pg_options: { ...pg },
+            rds_mysql_options: { ...rds_mysql },
+            rds_pg_options: { ...rds_pg },
+            sqlite_options: { ...sqlite },
+          },
+          callback: handleClose,
         },
-        callback: handleClose,
-      },
-    });
+      })
+    );
   };
 
   // Function to handle onChange -- when tab panels change

@@ -5,7 +5,7 @@ import { QueryData } from '../../../shared/types/types';
 export interface QueryState {
   queries: Record<string, QueryData>; 
   comparedQueries: Record<string, QueryData>; 
-  workingQuery: QueryData;
+  workingQuery: QueryData | undefined;
   newFilePath: string; 
   localQuery: {
     queries: Record<string, QueryData>;
@@ -16,7 +16,7 @@ export interface QueryState {
 const initialState: QueryState = {
   queries: {},
   comparedQueries: {},
-  workingQuery: {} as QueryData,
+  workingQuery: undefined,
   newFilePath: '',
   localQuery: {
     queries: {},
@@ -34,8 +34,8 @@ const querySlice = createSlice({
     updateComparedQueries: (state, action: PayloadAction<Record<string, QueryData>>) => {
       state.comparedQueries = action.payload;
     },
-    updateWorkingQuery: (state, action: PayloadAction<QueryData>) => {
-      state.workingQuery = action.payload;
+    updateWorkingQuery: (state, action: PayloadAction<QueryData | undefined>) => {
+      state.workingQuery = action.payload !== undefined ? action.payload : {} as QueryData;
     },
     updateFilePath: (state, action: PayloadAction<string>) => {
       state.newFilePath = action.payload;
@@ -51,7 +51,7 @@ export const {
   updateComparedQueries,
   updateWorkingQuery,
   updateFilePath,
-  updateLocalQuery
+  updateLocalQuery,
 } = querySlice.actions;
 
 export default querySlice.reducer;

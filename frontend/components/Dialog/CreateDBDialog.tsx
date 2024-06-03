@@ -72,7 +72,7 @@ function CreateDBDialog({ show, DBInfo, onClose }: CreateDBDialogProps) {
     setNewDbName(dbSafeName);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (handleClose) => {
     // it needs to be as any because otherwise typescript thinks it doesn't have a 'value' param idk why
     const dbt = (document.getElementById('dbTypeDropdown') as HTMLSelectElement)
       .value;
@@ -173,7 +173,7 @@ function CreateDBDialog({ show, DBInfo, onClose }: CreateDBDialogProps) {
             variant="contained"
             color="primary"
             onClick={
-              isEmpty || isError ? () => {} : () => handleSubmit
+              isEmpty || isError ? () => {} : () => handleSubmit(handleClose)
             }
           >
             Confirm

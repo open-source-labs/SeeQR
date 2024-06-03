@@ -42,7 +42,7 @@ import {
   updateComparedQueries,
   updateWorkingQuery,
   updateFilePath,
-  updateLocalQuery
+  updateLocalQuery,
 } from '../../state_management/Slices/QuerySlice';
 import { asyncTrigger } from '../../state_management/Slices/MenuSlice';
 
@@ -77,6 +77,7 @@ function QueryList({ createQuery, show }: QueryListProps) {
     const tempComparedQueries = deleteQuery(queryState.comparedQueries, query);
     dispatch(updateComparedQueries(tempComparedQueries));
   };
+
 
   // Handler to set a query for comparison
   const setComparisonHandler =

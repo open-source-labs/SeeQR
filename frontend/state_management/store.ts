@@ -1,8 +1,8 @@
 import { configureStore } from '@reduxjs/toolkit';
+import { useDispatch } from 'react-redux';
 import appViewReducer from './Slices/AppViewSlice';
 import menuReducer from './Slices/MenuSlice';
 import queryReducer from './Slices/QuerySlice';
-import { useDispatch } from 'react-redux';
 
 // Configure the Redux store with slices for app view, menu, and query state
 const store = configureStore({

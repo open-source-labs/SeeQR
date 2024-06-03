@@ -41,7 +41,8 @@ import ConfigView from './Dialog/ConfigView';
 import CreateDBDialog from './Dialog/CreateDBDialog';
 
 import { RootState, AppDispatch } from '../state_management/store';
-import { submitAsyncToBackend } from '../state_management/Slices/MenuSlice';
+import { submitAsyncToBackend, asyncTrigger } from '../state_management/Slices/MenuSlice';
+import { toggleConfigDialog, toggleCreateDialog } from '../state_management/Slices/AppViewSlice';
 import invoke from '../lib/electronHelper';
 
 
@@ -127,16 +128,15 @@ function App() {
       dispatch({ type: 'appView/setPGConnected', payload: dbLists.databaseConnected.PG });
       dispatch({ type: 'appView/setMYSQLConnected', payload: dbLists.databaseConnected.MySQL });
     };
-    dispatch({
-      type: 'menu/ASYNC_TRIGGER',
-      payload: {
-        loading: 'LOADING',
-        options: {
+    dispatch(
+      asyncTrigger({
+        loading:'LOADING',
+        options:{
           event: 'return-db-list',
           callback: dbListFromBackend,
-        },
-      },
-    });
+        }
+      })
+    )
   }, [dispatch]);
   
 
@@ -186,7 +186,7 @@ function App() {
                         curDBType={curDBType}
                         setDBType={setDBType}
                         DBInfo={DBInfo}
-                        queryDispatch={dispatch}
+                        // queryDispatch={dispatch}
                     />
                 <Main $fullwidth={appViewState.sideBarIsHidden}>
                   <CompareView
@@ -232,14 +232,14 @@ function App() {
                   <ConfigView
                     show={appViewState.showConfigDialog}
                     onClose={() =>
-                      dispatch({ type: 'TOGGLE_CONFIG_DIALOG' })
+                      dispatch(toggleConfigDialog())
                     }
                   />
                   <CreateDBDialog
                     show={appViewState.showCreateDialog}
                     DBInfo={DBInfo}
                     onClose={() =>
-                      dispatch({ type: 'TOGGLE_CREATE_DIALOG' })
+                      dispatch(toggleCreateDialog())
                     }
                   />
                 </Main>
@@ -252,4 +252,3 @@ function App() {
 }
 
 export default App;
-
