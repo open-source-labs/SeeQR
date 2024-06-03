@@ -80,6 +80,7 @@ function BasicTabs({ onClose }: BasicTabsProps) {
   const [rds_mysql, setrds_mysql] = useState({});
   const [rds_pg, setrds_pg] = useState({});
   const [sqlite, setSqlite] = useState({}); // added sqlite
+  
   // Toggle TabPanel display
   const [value, setValue] = useState(0);
   // Toggle show password in input fields

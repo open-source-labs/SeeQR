@@ -42,7 +42,7 @@ import CreateDBDialog from './Dialog/CreateDBDialog';
 
 import { RootState, AppDispatch } from '../state_management/store';
 import { submitAsyncToBackend, asyncTrigger } from '../state_management/Slices/MenuSlice';
-import { toggleConfigDialog, toggleCreateDialog } from '../state_management/Slices/AppViewSlice';
+import { toggleConfigDialog, toggleCreateDialog, setPGConnected, setMYSQLConnected } from '../state_management/Slices/AppViewSlice';
 import invoke from '../lib/electronHelper';
 
 
@@ -125,8 +125,8 @@ function App() {
     const dbListFromBackend = (dbLists: DbListsInterface) => {
       setDBInfo(dbLists.databaseList);
       setTables(dbLists.tableList);
-      dispatch({ type: 'appView/setPGConnected', payload: dbLists.databaseConnected.PG });
-      dispatch({ type: 'appView/setMYSQLConnected', payload: dbLists.databaseConnected.MySQL });
+      dispatch(setPGConnected(dbLists.databaseConnected.PG));
+      dispatch(setMYSQLConnected(dbLists.databaseConnected.MySQL));
     };
     dispatch(
       asyncTrigger({
