@@ -1,7 +1,7 @@
 // Import necessary libraries and components
 import React, { useEffect, useRef, useState } from 'react';
-import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
+import styled from 'styled-components';
 import { StyledEngineProvider, ThemeProvider, Theme } from '@mui/material/';
 import { EventEmitter } from 'events';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -41,10 +41,8 @@ import ConfigView from './Dialog/ConfigView';
 import CreateDBDialog from './Dialog/CreateDBDialog';
 
 import { RootState, AppDispatch } from '../state_management/store';
-import { AppViewContextState, AppViewContextDispatch } from '../state_management/Contexts/AppViewContext';
-import { QueryContextState, QueryContextDispatch } from '../state_management/Contexts/QueryContext';
-import MenuContext from '../state_management/Contexts/MenuContext';
-import { submitAsyncToBackend } from '../state_management/Reducers/MenuReducers';
+import { submitAsyncToBackend, asyncTrigger } from '../state_management/Slices/MenuSlice';
+import { toggleConfigDialog, toggleCreateDialog, setPGConnected, setMYSQLConnected } from '../state_management/Slices/AppViewSlice';
 import invoke from '../lib/electronHelper';
 
 
@@ -74,15 +72,11 @@ const Main = styled.main<{ $fullwidth: boolean }>`
 // Define the main App component
 function App() {
 
-  const dispatch = useDispatch(); 
-  // Connect Redux store
+  const dispatch = useDispatch<AppDispatch>(); 
+  // Initialize dispatch and state selectors from Redux
   const appViewState = useSelector((state: RootState) => state.appView);
-  const appViewDispatch = useDispatch<AppDispatch>();
   const queryState = useSelector((state: RootState) => state.query);
-  const queryDispatch = useDispatch<AppDispatch>();
   const menuState = useSelector((state: RootState) => state.menu);
-  const menuDispatch = useDispatch<AppDispatch>();
-
 
   // Define local component state
   const [selectedDb, setSelectedDb] = useState<AppState['selectedDb']>('');
@@ -92,9 +86,8 @@ function App() {
   const [dbTables, setTables] = useState<TableInfo[]>([]);
   const [selectedTable, setSelectedTable] = useState<TableInfo | undefined>();
 
-  // Listen to backend for updates to list of available databases
+  // Listen to backend for updates to list of available databases from the backend
   useEffect(() => {
-    // Listen to backend for updates to list of available databases
     const dbListFromBackend = (
       evt: IpcRendererEvent,
       dbLists: DbListsInterface,
@@ -109,41 +102,43 @@ function App() {
     return () => {
       ipcRenderer.removeListener('db-lists', dbListFromBackend);
     };
-  });
+  }, [selectedTable, dbTables]);
+
 
   // Handle async calls
   const asyncCount = useRef(0);
+  // 
   useEffect(() => {
-    const { issued, resolved, asyncList } = menuState.loading;
-    if (issued - resolved > asyncCount.current) {
-      submitAsyncToBackend(issued, asyncList, invoke, menuDispatch);
+    const { issued, asyncList } = menuState.loading;
+    // Check if there are pending async tasks
+    if (issued > 0 && issued > asyncCount.current) {
+      // Dispatch the submitAsyncToBackend thunk action
+      dispatch(submitAsyncToBackend({ issued, asyncList, invoke }));
     }
-    asyncCount.current = issued - resolved;
-  }, [menuState.loading, menuDispatch]);
+    // Update the asyncCount ref with the latest issued count
+    asyncCount.current = issued;
+  }, [menuState.loading, dispatch]);
 
+  
   // Populate initial dblist
   useEffect(() => {
     const dbListFromBackend = (dbLists: DbListsInterface) => {
       setDBInfo(dbLists.databaseList);
       setTables(dbLists.tableList);
-      appViewDispatch({
-        type: 'IS_PG_CONNECTED',
-        payload: dbLists.databaseConnected.PG,
-      });
-      appViewDispatch({
-        type: 'IS_MYSQL_CONNECTED',
-        payload: dbLists.databaseConnected.MySQL,
-      });
+      dispatch(setPGConnected(dbLists.databaseConnected.PG));
+      dispatch(setMYSQLConnected(dbLists.databaseConnected.MySQL));
     };
-    menuDispatch({
-      type: 'ASYNC_TRIGGER',
-      loading: 'LOADING',
-      options: {
-        event: 'return-db-list',
-        callback: dbListFromBackend,
-      },
-    });
-  }, []);
+    dispatch(
+      asyncTrigger({
+        loading:'LOADING',
+        options:{
+          event: 'return-db-list',
+          callback: dbListFromBackend,
+        }
+      })
+    )
+  }, [dispatch]);
+  
 
   // Determine which view should be visible
   let shownView;
@@ -176,33 +171,23 @@ function App() {
       shownView = 'quickStartView';
   }
 
-  // Styled Components must be injected last in order to override Material UI style: https://material-ui.com/guides/interoperability/#controlling-priority-3
+  // Removed Context Providers, instead used Redux's useDispatch and useSelector hooks to interact with the state
   return (
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={MuiTheme}>
-        <MenuContext.Provider value={{ state: menuState, dispatch }}>
           <Spinner />
           <AppContainer>
             <CssBaseline />
             <GlobalStyle />
-            <QueryContextState.Provider value={queryState}>
-              <QueryContextDispatch.Provider value={queryDispatch}>
-                <AppViewContextState.Provider value={appViewState}>
-                  <AppViewContextDispatch.Provider value={appViewDispatch}>
                     <Sidebar
-                      {...{
-                        selectedDb,
-                        setSelectedDb,
-                        setERView,
-                        curDBType,
-                        setDBType,
-                        DBInfo,
-                        queryDispatch,
-                      }}
+                        selectedDb={selectedDb}
+                        setSelectedDb={setSelectedDb}
+                        setERView={setERView}
+                        curDBType={curDBType}
+                        setDBType={setDBType}
+                        DBInfo={DBInfo}
+                        // queryDispatch={dispatch}
                     />
-                  </AppViewContextDispatch.Provider>
-                </AppViewContextState.Provider>
-
                 <Main $fullwidth={appViewState.sideBarIsHidden}>
                   <CompareView
                     queries={queryState.comparedQueries}
@@ -219,7 +204,7 @@ function App() {
                     selectedTable={selectedTable}
                     setSelectedTable={setSelectedTable}
                   />
-                                   <QueryView
+                  <QueryView
                     selectedDb={selectedDb}
                     setSelectedDb={setSelectedDb}
                     show={shownView === 'queryView'}
@@ -247,28 +232,23 @@ function App() {
                   <ConfigView
                     show={appViewState.showConfigDialog}
                     onClose={() =>
-                      appViewDispatch({ type: 'TOGGLE_CONFIG_DIALOG' })
+                      dispatch(toggleConfigDialog())
                     }
                   />
                   <CreateDBDialog
                     show={appViewState.showCreateDialog}
                     DBInfo={DBInfo}
                     onClose={() =>
-                      appViewDispatch({ type: 'TOGGLE_CREATE_DIALOG' })
+                      dispatch(toggleCreateDialog())
                     }
                   />
                 </Main>
                 <FeedbackModal />
-              </QueryContextDispatch.Provider>
-            </QueryContextState.Provider>
           </AppContainer>
-        </MenuContext.Provider>
       </ThemeProvider>
     </StyledEngineProvider>
   );
+  
 }
 
 export default App;
-
-
-

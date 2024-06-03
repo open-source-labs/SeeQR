@@ -1,9 +1,18 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { AppViewState } from '../Reducers/AppViewReducer';
 import { ViewName } from '../../../shared/types/types';
 
+// Define the state interface
+export interface AppState {
+    selectedView: ViewName;
+    sideBarIsHidden: boolean;
+    showConfigDialog: boolean;
+    showCreateDialog: boolean;
+    PG_isConnected: boolean;
+    MYSQL_isConnected: boolean;
+}
+
 // Define initial state for the app view
-const initialState: AppViewState = {
+const initialState: AppState = {
   selectedView: 'dbView',
   sideBarIsHidden: false,
   showConfigDialog: false,
