@@ -5,13 +5,17 @@ import { ArrowBackIos, ArrowForwardIos } from '@mui/icons-material';
 import { Drawer, IconButton, Tooltip } from '@mui/material/';
 import React from 'react';
 import styled from 'styled-components';
-import logo from '../../../assets/logo/seeqr_dock.png';
-
+// import logo from '../../../assets/logo/seeqr_dock.png';
+import logo from '../../../assets/logo/logo_monochrome.png';
 // Types
 import { AppState, DatabaseInfo, DBType } from '../../../shared/types/types';
 import { RootState } from '../../state_management/store';
-import { toggleSidebar, selectedView } from '../../state_management/Slices/AppViewSlice';
-
+// Import Redux action from Slice
+import {
+  toggleSidebar,
+  selectedView,
+} from '../../state_management/Slices/AppViewSlice';
+import { updateWorkingQuery } from '../../state_management/Slices/QuerySlice';
 import BottomButtons from './BottomButtons';
 import DbList from './DbList';
 import QueryList from './QueryList';
@@ -37,21 +41,20 @@ const StyledDrawer = styled(Drawer)`
 
 const Logo = styled.img`
   position: fixed;
-  bottom: 100px;
+  bottom: 50px;
   left: calc(${sidebarWidth} / 2);
   transform: translateX(-50%);
-  opacity: 0.8;
+  opacity: 1;
   z-index: -1;
-
-  width: 60px;
-  height: 60px;
+  width: 160px;
+  height: 160px;
 `;
 
 const ShowSidebarBtn = styled(IconButton)`
   width: 40px;
   height: ${sidebarShowButtonSize};
   position: fixed;
-  top: 50%;
+  top: 49%;
   z-index: 200;
   background: #57a777;
   border-radius: 0 15px 15px 0;

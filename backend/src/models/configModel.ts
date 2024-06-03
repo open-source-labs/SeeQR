@@ -13,7 +13,7 @@ const configPath = `${home}/${configFile}`;
 // ideally, we want to keep this config in a separate file as well
 export const defaultFile: DocConfigFile = {
   mysql_options: { user: 'root', password: '', port: 3306 },
-  pg_options: { user: 'postgres', password: '', port: 5432 },
+  pg_options: { user: 'postgres', password: 'postgres', port: 5432 },
   rds_mysql_options: {
     user: '',
     password: '',

@@ -13,7 +13,7 @@ import {
   AccordionSummary,
   Typography,
 } from '@mui/material';
-import React, { useContext } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { ipcRenderer } from 'electron';
@@ -42,7 +42,7 @@ import {
   updateComparedQueries,
   updateWorkingQuery,
   updateFilePath,
-  updateLocalQuery
+  updateLocalQuery,
 } from '../../state_management/Slices/QuerySlice';
 import { asyncTrigger } from '../../state_management/Slices/MenuSlice';
 
@@ -130,7 +130,10 @@ function QueryList({ createQuery, show }: QueryListProps) {
       if (query) {
         const newQueries = createNewQuery(query[0], queryState.queries);
         // dispatch(updateQueries(newQueries));
-        const newLocalQueries = createNewQuery(query[0], queryState.localQuery.queries);
+        const newLocalQueries = createNewQuery(
+          query[0],
+          queryState.localQuery.queries,
+        );
         // dispatch(updateLocalQuery({ queries: newLocalQueries }));
         dispatch(updateWorkingQuery(query[0]));
       }
@@ -156,10 +159,7 @@ function QueryList({ createQuery, show }: QueryListProps) {
       }
     }
 
-    const isSelected = (
-      query: QueryData,
-      workingQuery: any
-    ): boolean => {
+    const isSelected = (query: QueryData, workingQuery: any): boolean => {
       return (
         workingQuery !== null &&
         workingQuery !== undefined &&
@@ -195,16 +195,17 @@ function QueryList({ createQuery, show }: QueryListProps) {
       buttonLabel: 'Select Path',
       filters: [{ name: 'JSON', extensions: ['json'] }],
     };
-    const setFilePathCallback = (val: string) =>
-      dispatch(updateFilePath(val));
-    dispatch(asyncTrigger({
-      loading: 'LOADING',
-      options: {
-        event: 'showSaveDialog',
-        payload: options,
-        callback: setFilePathCallback,
-      },
-    }));
+    const setFilePathCallback = (val: string) => dispatch(updateFilePath(val));
+    dispatch(
+      asyncTrigger({
+        loading: 'LOADING',
+        options: {
+          event: 'showSaveDialog',
+          payload: options,
+          callback: setFilePathCallback,
+        },
+      }),
+    );
   };
 
   return (
