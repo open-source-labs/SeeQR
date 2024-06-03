@@ -50,16 +50,6 @@ import {
   setPGConnected,
   setMYSQLConnected,
 } from '../state_management/Slices/AppViewSlice';
-import {
-  submitAsyncToBackend,
-  asyncTrigger,
-} from '../state_management/Slices/MenuSlice';
-import {
-  toggleConfigDialog,
-  toggleCreateDialog,
-  setPGConnected,
-  setMYSQLConnected,
-} from '../state_management/Slices/AppViewSlice';
 import invoke from '../lib/electronHelper';
 
 declare module '@mui/material/styles/' {
@@ -90,7 +80,6 @@ const Main = styled.main<{ $fullwidth: boolean }>`
 
 // Define the main App component
 function App() {
-  const dispatch = useDispatch<AppDispatch>();
   const dispatch = useDispatch<AppDispatch>();
   // Initialize dispatch and state selectors from Redux
   const appViewState = useSelector((state: RootState) => state.appView);
@@ -138,7 +127,6 @@ function App() {
     asyncCount.current = issued;
   }, [menuState.loading, dispatch]);
 
-
   // Populate initial dblist
   useEffect(() => {
     const dbListFromBackend = (dbLists: DbListsInterface) => {
@@ -151,13 +139,8 @@ function App() {
       asyncTrigger({
         loading: 'LOADING',
         options: {
-        loading: 'LOADING',
-        options: {
           event: 'return-db-list',
           callback: dbListFromBackend,
-        },
-      }),
-    );
         },
       }),
     );
