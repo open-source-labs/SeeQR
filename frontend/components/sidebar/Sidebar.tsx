@@ -16,6 +16,7 @@ import {
   selectedView,
 } from '../../state_management/Slices/AppViewSlice';
 import { updateWorkingQuery } from '../../state_management/Slices/QuerySlice';
+
 import BottomButtons from './BottomButtons';
 import DbList from './DbList';
 import QueryList from './QueryList';
@@ -100,7 +101,6 @@ interface SideBarProps {
   curDBType: DBType | undefined;
   setDBType: (dbType: DBType | undefined) => void;
   DBInfo: DatabaseInfo[] | undefined;
-  queryDispatch: ({ type, payload }: { type: string; payload?: any }) => void;
 }
 function Sidebar({
   selectedDb,
@@ -109,8 +109,8 @@ function Sidebar({
   curDBType,
   setDBType,
   DBInfo,
-  queryDispatch,
-}: SideBarProps) {
+}: // queryDispatch,
+SideBarProps) {
   const dispatch = useDispatch();
   const appViewState = useSelector((state: RootState) => state.appView);
 
@@ -125,11 +125,7 @@ function Sidebar({
    */
   const showEmptyQuery = () => {
     dispatch(selectedView('queryView'));
-
-    queryDispatch({
-      type: 'UPDATE_WORKING_QUERIES',
-      payload: undefined,
-    });
+    dispatch(updateWorkingQuery(undefined));
   };
 
   return (

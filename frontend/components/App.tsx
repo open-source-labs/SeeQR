@@ -41,7 +41,16 @@ import ConfigView from './Dialog/ConfigView';
 import CreateDBDialog from './Dialog/CreateDBDialog';
 
 import { RootState, AppDispatch } from '../state_management/store';
-import { submitAsyncToBackend } from '../state_management/Slices/MenuSlice';
+import {
+  submitAsyncToBackend,
+  asyncTrigger,
+} from '../state_management/Slices/MenuSlice';
+import {
+  toggleConfigDialog,
+  toggleCreateDialog,
+  setPGConnected,
+  setMYSQLConnected,
+} from '../state_management/Slices/AppViewSlice';
 import invoke from '../lib/electronHelper';
 import {
   toggleConfigDialog,
@@ -125,25 +134,18 @@ function App() {
     const dbListFromBackend = (dbLists: DbListsInterface) => {
       setDBInfo(dbLists.databaseList);
       setTables(dbLists.tableList);
-      dispatch({
-        type: 'appView/setPGConnected',
-        payload: dbLists.databaseConnected.PG,
-      });
-      dispatch({
-        type: 'appView/setMYSQLConnected',
-        payload: dbLists.databaseConnected.MySQL,
-      });
+      dispatch(setPGConnected(dbLists.databaseConnected.PG));
+      dispatch(setMYSQLConnected(dbLists.databaseConnected.MySQL));
     };
-    dispatch({
-      type: 'menu/ASYNC_TRIGGER',
-      payload: {
+    dispatch(
+      asyncTrigger({
         loading: 'LOADING',
         options: {
           event: 'return-db-list',
           callback: dbListFromBackend,
         },
-      },
-    });
+      }),
+    );
   }, [dispatch]);
 
   // Determine which view should be visible
@@ -193,7 +195,7 @@ function App() {
             curDBType={curDBType}
             setDBType={setDBType}
             DBInfo={DBInfo}
-            queryDispatch={dispatch}
+            // queryDispatch={dispatch}
           />
           <Main $fullwidth={appViewState.sideBarIsHidden}>
             <CompareView
@@ -235,7 +237,72 @@ function App() {
               selectedTable={selectedTable}
               setSelectedTable={setSelectedTable}
             />
+            <Spinner />
+            <AppContainer>
+              <CssBaseline />
+              <GlobalStyle />
+              <Sidebar
+                selectedDb={selectedDb}
+                setSelectedDb={setSelectedDb}
+                setERView={setERView}
+                curDBType={curDBType}
+                setDBType={setDBType}
+                DBInfo={DBInfo}
+                queryDispatch={dispatch}
+              />
+              <Main $fullwidth={appViewState.sideBarIsHidden}>
+                <CompareView
+                  queries={queryState.comparedQueries}
+                  show={shownView === 'compareView'}
+                />
+                <DbView
+                  selectedDb={selectedDb}
+                  show={shownView === 'dbView'}
+                  setERView={setERView}
+                  ERView={ERView}
+                  curDBType={curDBType}
+                  DBInfo={DBInfo}
+                  dbTables={dbTables}
+                  selectedTable={selectedTable}
+                  setSelectedTable={setSelectedTable}
+                />
+                <QueryView
+                  selectedDb={selectedDb}
+                  setSelectedDb={setSelectedDb}
+                  show={shownView === 'queryView'}
+                  curDBType={curDBType}
+                  setDBType={setDBType}
+                  DBInfo={DBInfo}
+                />
+                <QuickStartView show={shownView === 'quickStartView'} />
+                <ThreeDView
+                  show={shownView === 'threeDView'}
+                  selectedDb={selectedDb}
+                  dbTables={dbTables}
+                  dbType={curDBType}
+                />
+                <NewSchemaView
+                  selectedDb={selectedDb}
+                  setSelectedDb={setSelectedDb}
+                  show={shownView === 'newSchemaView'}
+                  curDBType={curDBType}
+                  dbTables={dbTables}
+                  selectedTable={selectedTable}
+                  setSelectedTable={setSelectedTable}
+                />
 
+                <ConfigView
+                  show={appViewState.showConfigDialog}
+                  onClose={() => dispatch(toggleConfigDialog())}
+                />
+                <CreateDBDialog
+                  show={appViewState.showCreateDialog}
+                  DBInfo={DBInfo}
+                  onClose={() => dispatch(toggleCreateDialog())}
+                />
+              </Main>
+              <FeedbackModal />
+            </AppContainer>
             <ConfigView
               show={appViewState.showConfigDialog}
               onClose={() => dispatch(toggleConfigDialog())}
