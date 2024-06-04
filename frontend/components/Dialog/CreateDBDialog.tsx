@@ -26,6 +26,7 @@ interface CreateDBDialogProps {
 function CreateDBDialog({ show, DBInfo, onClose }: CreateDBDialogProps) {
   // add error modal?
   if (!show) return null;
+  
   const dispatch = useDispatch();
 
   const [newDbName, setNewDbName] = useState('');

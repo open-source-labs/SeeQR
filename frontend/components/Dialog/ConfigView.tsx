@@ -10,6 +10,7 @@ interface ConfigViewProps {
 }
 
 function ConfigView({ show, onClose }: ConfigViewProps) {
+  // Handler for closing the dialog
   const handleClose = () => {
     onClose();
   };
