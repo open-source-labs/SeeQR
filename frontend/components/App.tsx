@@ -7,14 +7,16 @@ import { EventEmitter } from 'events';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ipcRenderer, IpcRendererEvent } from 'electron';
 import GlobalStyle from '../GlobalStyle';
-
+// import { createQuery } from '../lib/queries';
 import '../lib/style.css';
 import {
   AppState,
   DBType,
+  // CreateNewQuery,
   DatabaseInfo,
   DbListsInterface,
   isDbListsInterface,
+  // QueryData,
   TableInfo,
 } from '../../shared/types/types';
 
