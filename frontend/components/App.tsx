@@ -1,4 +1,3 @@
-// Import necessary libraries and components
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -51,9 +50,7 @@ import {
   setMYSQLConnected,
 } from '../state_management/Slices/AppViewSlice';
 import invoke from '../lib/electronHelper';
-
 declare module '@mui/material/styles/' {
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
   interface DefaultTheme extends Theme {}
 }
 
