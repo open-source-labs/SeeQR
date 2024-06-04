@@ -41,6 +41,7 @@ To get started on contributing and editing databases to this project:
 
 - [Electron](https://www.electronjs.org/docs)
 - [React](https://reactjs.org/)
+- [React-Redux](https://react-redux.js.org/)
 - [Typescript](https://www.typescriptlang.org/)
 - [PostgreSQL](https://www.postgresql.org/)
 - [MySQL](https://www.mysql.com/)
