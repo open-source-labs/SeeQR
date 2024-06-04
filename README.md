@@ -3,7 +3,7 @@
 <img src="./assets/readmeImages/logo_readme.png" height=300/>
 
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/oslabs-beta/SeeQR)
-![Release: 13.0.0](https://img.shields.io/badge/Release-13.0.0-red)
+![Release: 14.0.0](https://img.shields.io/badge/Release-14.0.0-red)
 ![License: MIT](https://img.shields.io/badge/License-MIT-orange.svg)
 ![Contributions Welcome](https://img.shields.io/badge/Contributions-welcome-blue.svg)
 [![Twitter](https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Ftwitter.com%2Ftheseeqr)](https://twitter.com/theseeqr)
@@ -15,7 +15,7 @@
 
 </div>
 
-### For the latest in-depth docs for v13.0.0, please visit our [docs site](http://www.seeqrapp.com/docs).
+### For the latest in-depth docs for v14.0.0, please visit our [docs site](http://www.seeqrapp.com/docs).
 
 ## Table of Contents
 
