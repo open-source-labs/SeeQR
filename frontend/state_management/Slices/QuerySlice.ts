@@ -46,6 +46,7 @@ const querySlice = createSlice({
   },
 });
 
+// Export actions for Query slice
 export const {
   updateQueries,
   updateComparedQueries,
@@ -54,5 +55,6 @@ export const {
   updateLocalQuery,
 } = querySlice.actions;
 
+// Export the reducer to be used in the store
 export default querySlice.reducer;
 
