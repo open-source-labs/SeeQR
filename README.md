@@ -76,13 +76,13 @@ To get started on contributing and editing databases to this project:
 - Databases
 
   - In the 'DATABASES' view, an interactive Entity Relationship Diagram (`ER DIAGRAM`) is displayed for the selected database.
+
     - Users can now save table layout in version 13.
       <br>
 
       <div align="center">
         <img src="./assets/readmeImages/gifs/save_db_layout.gif" width=800/>
       </div>
-
 
   - Users can select `TABLE` to see selected database in tabular form.
 
@@ -146,11 +146,11 @@ To get started on contributing and editing databases to this project:
   - To execute the query, simply select the 'RUN QUERY' button at the bottom of the panel or press 'Ctrl-Enter' on the keyboard.
   - Users have the option to run multiple queries, allowing users to obtain more reliable testing results.
   - Version 13 introduces a new feature that enables users to access and view previous queries. Upon selecting a previous query, it populates the query input field, allowing users to make edits before executing.
-  </br>
-  <br>
-  <div align="center">
+    </br>
+    <br>
+    <div align="center">
 
-    <img src="./assets/readmeImages/gifs/query.gif" width=800/>
+      <img src="./assets/readmeImages/gifs/query.gif" width=800/>
 
   </div>
    <br />
@@ -206,7 +206,9 @@ The outcome results from each query, both retrieved data and analytics, are stor
 
 ## Contributing
 
-We've released SeeQR because it's a useful tool to help optimize SQL databases. Additional features, extensions, and improvements will continue to be introduced. We are thankful for any contributions from the community and we encourage you to try SeeQR out to make or suggest improvements where you see fit! If you encounter any issues with the application, please report them in the issues tab or submit a PR. Thank you for your interest!
+We've released SeeQR because it's a useful tool to help optimize SQL databases. Additional features, extensions, and improvements will continue to be introduced. Please refer to the [DEV_README](https://github.com/open-source-labs/seeqr/releases/latest) for a list of improvements we are looking to implement and that are open to contributors.
+
+We are thankful for any contributions from the community and we encourage you to try SeeQR out to make or suggest improvements where you see fit! If you encounter any issues with the application, please report them in the issues tab or submit a PR. Thank you for your interest!
 
 ## Core Team
 
