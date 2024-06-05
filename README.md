@@ -127,11 +127,11 @@ To get started on contributing and editing databases to this project:
   </div>
 
 <br>
-- Create/Edit Database
 
-- Users can create a new database from scratch by clicking the `Create New Database` button at the bottom of the sidebar.
-- Users can modify the newly created database as well as any existing databases using the `ER Diagram` to create/change/delete tables and columns.
-- The `Export` button will write a .sql file on the user's desktop of the selected database.
+- Create/Edit Database
+  - Users can create a new database from scratch by clicking the `Create New Database` button at the bottom of the sidebar.
+  - Users can modify the newly created database as well as any existing databases using the `ER Diagram` to create/change/delete tables and columns.
+  - The `Export` button will write a .sql file on the user's desktop of the selected database.
 
 <br>
 <div align="center">
