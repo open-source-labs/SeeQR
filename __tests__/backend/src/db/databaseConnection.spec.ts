@@ -1,8 +1,7 @@
-import mysql from 'mysql2/promise';
+// import mysql from 'mysql2/promise';
 import databaseConnections from '../../../../backend/src/db/databaseConnections';
-
 const { PG_DBConnect, PG_DBDisconnect, MSQL_DBConnect, MSQL_DBQuery, RDS_PG_DBConnect, RDS_MSQL_DBConnect, RDS_MSQL_DBQuery, SQLite_DBConnect } = databaseConnections
-import { PoolConfig } from 'pg';
+// import { PoolConfig } from 'pg';
 
 
 

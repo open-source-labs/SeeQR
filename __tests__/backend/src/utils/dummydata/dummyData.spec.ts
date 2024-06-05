@@ -51,6 +51,5 @@ describe('Dummy Data Generator', () => {
       ]);
     });
 
-    // Add more tests
   });
 });
