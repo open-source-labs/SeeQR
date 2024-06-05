@@ -243,7 +243,9 @@ function getStepContent(step: number): JSX.Element | string {
 function QuickStartView({ show }: QuickStartViewProps): JSX.Element | null {
   const [activeStep, setActiveStep] = useState<number>(0);
   const [completed, setCompleted] = useState<{ [k: number]: boolean }>({});
+  // for cases QuickStartView won't be rendered
   if (!show) return null;
+  // get total steps number
   const totalSteps = (): number => steps.length;
 
   // count completed steps number
@@ -293,12 +295,12 @@ function QuickStartView({ show }: QuickStartViewProps): JSX.Element | null {
       <StyledTypographyTitle align="center">
         Welcome to SeeQR
       </StyledTypographyTitle>
-      <StyledImg className="logo-img" src={logo} alt="SeeQR Logo" />
+      <StyledImg src={logo} alt="SeeQR Logo" />
       <StyledStepper alternativeLabel nonLinear activeStep={activeStep}>
         {steps.map((label, index) => (
           <Step key={label} completed={completed[index]}>
             <StyledStepButton onClick={handleStep(index)}>
-              <StyledStepLabel className="stepper">{label}</StyledStepLabel>
+              <StyledStepLabel>{label}</StyledStepLabel>
             </StyledStepButton>
           </Step>
         ))}
@@ -306,17 +308,12 @@ function QuickStartView({ show }: QuickStartViewProps): JSX.Element | null {
       <div>
         {allStepsCompleted() ? (
           <StepContent>
-            <StyledTypographyInstructions className="step-instructions">
+            <StyledTypographyInstructions>
               <strong>All Steps Completed</strong>
               <p>You&apos;re ready to use SeeQR!</p>
             </StyledTypographyInstructions>
             <NavButtons>
-              <StyledButton
-                variant="outlined"
-                onClick={handleReset}
-                className="step-btn"
-                id="step-reset-btn"
-              >
+              <StyledButton variant="outlined" onClick={handleReset}>
                 RESET
               </StyledButton>
             </NavButtons>
@@ -326,12 +323,7 @@ function QuickStartView({ show }: QuickStartViewProps): JSX.Element | null {
             {getStepContent(activeStep)}
             <NavButtons>
               {activeStep === 0 ? undefined : (
-                <StyledButton
-                  variant="outlined"
-                  onClick={handleBack}
-                  className="step-btn"
-                  id="step-back-btn"
-                >
+                <StyledButton variant="outlined" onClick={handleBack}>
                   BACK
                 </StyledButton>
               )}
@@ -341,8 +333,6 @@ function QuickStartView({ show }: QuickStartViewProps): JSX.Element | null {
                   <Button
                     variant="contained"
                     onClick={handleNext}
-                    className="step-btn"
-                    id="step-next-btn"
                     sx={{ mt: 1, borderRadius: '10px', width: 150 }}
                   >
                     NEXT
@@ -350,8 +340,6 @@ function QuickStartView({ show }: QuickStartViewProps): JSX.Element | null {
                 ) : (
                   <Button
                     variant="contained"
-                    className="step-btn"
-                    id="step-complete-next-btn"
                     onClick={handleComplete}
                     sx={{ mt: 1, borderRadius: '10px', width: 150 }}
                   >

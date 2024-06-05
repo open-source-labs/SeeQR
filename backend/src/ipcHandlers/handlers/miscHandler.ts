@@ -134,9 +134,9 @@ export async function showOpenDialog(event, options) {
 /**
  * EVENT: 'showSaveDialog'
  *
- * DEFINITION: I blieve this is the window for saving files to desktop. (?)
+ * DEFINITION: I believe this is the window for saving files to desktop. (?)
  *
- * Process involes the following steps:
+ * Process involves the following steps:
  * 1. select a browerwindow
  * 2. open it with dialog.showOpenDialog
  */
