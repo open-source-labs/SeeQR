@@ -12,7 +12,7 @@ export default {
    * @param pg_uri URI created in models.ts using login info
    * @param db Name of target database that the login has access to. Initially empty string
    */
-  async PG_DBConnect(pg_uri: string, db: string) {
+    async PG_DBConnect(pg_uri: string, db: string) {
     const newURI = `${pg_uri}/${db}`;
     const newPool = new Pool({ connectionString: newURI });
     pools.pg_pool = newPool;

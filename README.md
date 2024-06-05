@@ -3,7 +3,7 @@
 <img src="./assets/readmeImages/logo_readme.png" height=300/>
 
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/oslabs-beta/SeeQR)
-![Release: 13.0.0](https://img.shields.io/badge/Release-13.0.0-red)
+![Release: 14.0.0](https://img.shields.io/badge/Release-14.0.0-red)
 ![License: MIT](https://img.shields.io/badge/License-MIT-orange.svg)
 ![Contributions Welcome](https://img.shields.io/badge/Contributions-welcome-blue.svg)
 [![Twitter](https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Ftwitter.com%2Ftheseeqr)](https://twitter.com/theseeqr)
@@ -15,7 +15,7 @@
 
 </div>
 
-### For the latest in-depth docs for v13.0.0, please visit our [docs site](http://www.seeqrapp.com/docs).
+### For the latest in-depth docs for v14.0.0, please visit our [docs site](http://www.seeqrapp.com/docs).
 
 ## Table of Contents
 
@@ -41,6 +41,7 @@ To get started on contributing and editing databases to this project:
 
 - [Electron](https://www.electronjs.org/docs)
 - [React](https://reactjs.org/)
+- [React-Redux](https://react-redux.js.org/)
 - [Typescript](https://www.typescriptlang.org/)
 - [PostgreSQL](https://www.postgresql.org/)
 - [MySQL](https://www.mysql.com/)
@@ -212,7 +213,7 @@ We are thankful for any contributions from the community and we encourage you to
 
 ## Core Team
 
-[Kevin Chou](https://github.com/choukevin612) |[Zoren Labrador](https://github.com/zorenal) |[Elaine Wong](https://github.com/user-byte123) | [Cathy Luong](https://github.com/cyliang93) | [Derek Koh](https://github.com/derekoko) | [Peter Zepf](https://github.com/peterzepf) | [Tony Gao](https://github.com/tgao17) | [Ching-Yuan Lai (Eric)](https://github.com/paranoidFrappe) | [Jamie Zhang](https://github.com/haemie) | [Julian Macalalag](https://github.com/juzi3) | [Nathan Chong](https://github.com/nathanhchong) | [Junaid Ahmed](https://github.com/junaid-ahmed7) | [Chase Sizemore](https://github.com/ChaseSizemore) | [Oscar Romero](https://github.com/creaturenex) | [Anthony Deng](https://github.com/anthonyadeng) | [Aya Moosa](https://github.com/Hiya-its-Aya) | [Trevor Ferguson](https://github.com/TrevorJFerguson) | [Pauline Nguyen](https://github.com/paulinekpn) | [Utkarsh Uppal](https://github.com/utyvert) | [Fred Jeong](https://github.com/fred-jeong) | [Gabriel Kime](https://github.com/wizardbusiness) | [Chris Fryer](github.com/frynoceros) | [Ian Grepo](https://github.com/RadiantGH) | [Michelle Chang](https://github.com/mkchang168) | [Jake Bradbeer](https://github.com/JBradbeer) | [Bryan Santos](https://github.com/santosb93) | [William Trey Lewis](https://github.com/treyfrog128) | [Brandon Lee](https://github.com/BrandonW-Lee) | [Casey Escovedo](https://github.com/caseyescovedo) | [Casey Walker](https://github.com/cwalker3011) | [Catherine Chiu](https://github.com/catherinechiu) | [Chris Akinrinade](https://github.com/chrisakinrinade) | [Cindy Chau](https://github.com/cindychau) | [Claudio Santos](https://github.com/Claudiohbsantos) | [Eric Han](https://github.com/ericJH92) | [Faraz Akhtar](https://github.com/faraza22) | [Frank Norton](https://github.com/FrankNorton32) | [Harrison Nam](https://github.com/harrynam07) | [James Kolotouros](https://github.com/dkolotouros) | [Jennifer Courtner](https://github.com/jcourtner) | [John Wagner](https://github.com/jwagner988) | [Justin Dury-Agri](https://github.com/justinD-A) | [Justin Hicks](https://github.com/JuiceBawks) | [Katie Klochan](https://github.com/kklochan) | [May Wirapa Boonyasurat](https://github.com/mimiwrp) | [Mercer Stronck](https://github.com/mercerstronck) | [Muhammad Trad](https://github.com/muhammadtrad) | [Richard Guo](https://github.com/richardguoo) | [Richard Lam](https://github.com/rlam108) | [Sam Frakes](https://github.com/frakes413) | [Serena Kuo](https://github.com/serenackuo) | [Timothy Sin](https://github.com/timothysin) | [Vincent Trang](https://github.com/vincentt114)
+[Zhijiao Li](https://github.com/lovelyjoy1991) | [Ting Li](https://github.com/Tingg-v1) | [Michael Ma](https://github.com/michaelma7) | [Ivan Navarro](https://github.com/navaiva) | [Joseph Cho](https://github.com/jocho5) | [Kevin Chou](https://github.com/choukevin612) |[Zoren Labrador](https://github.com/zorenal) |[Elaine Wong](https://github.com/user-byte123) | [Cathy Luong](https://github.com/cyliang93) | [Derek Koh](https://github.com/derekoko) | [Peter Zepf](https://github.com/peterzepf) | [Tony Gao](https://github.com/tgao17) | [Ching-Yuan Lai (Eric)](https://github.com/paranoidFrappe) | [Jamie Zhang](https://github.com/haemie) | [Julian Macalalag](https://github.com/juzi3) | [Nathan Chong](https://github.com/nathanhchong) | [Junaid Ahmed](https://github.com/junaid-ahmed7) | [Chase Sizemore](https://github.com/ChaseSizemore) | [Oscar Romero](https://github.com/creaturenex) | [Anthony Deng](https://github.com/anthonyadeng) | [Aya Moosa](https://github.com/Hiya-its-Aya) | [Trevor Ferguson](https://github.com/TrevorJFerguson) | [Pauline Nguyen](https://github.com/paulinekpn) | [Utkarsh Uppal](https://github.com/utyvert) | [Fred Jeong](https://github.com/fred-jeong) | [Gabriel Kime](https://github.com/wizardbusiness) | [Chris Fryer](github.com/frynoceros) | [Ian Grepo](https://github.com/RadiantGH) | [Michelle Chang](https://github.com/mkchang168) | [Jake Bradbeer](https://github.com/JBradbeer) | [Bryan Santos](https://github.com/santosb93) | [William Trey Lewis](https://github.com/treyfrog128) | [Brandon Lee](https://github.com/BrandonW-Lee) | [Casey Escovedo](https://github.com/caseyescovedo) | [Casey Walker](https://github.com/cwalker3011) | [Catherine Chiu](https://github.com/catherinechiu) | [Chris Akinrinade](https://github.com/chrisakinrinade) | [Cindy Chau](https://github.com/cindychau) | [Claudio Santos](https://github.com/Claudiohbsantos) | [Eric Han](https://github.com/ericJH92) | [Faraz Akhtar](https://github.com/faraza22) | [Frank Norton](https://github.com/FrankNorton32) | [Harrison Nam](https://github.com/harrynam07) | [James Kolotouros](https://github.com/dkolotouros) | [Jennifer Courtner](https://github.com/jcourtner) | [John Wagner](https://github.com/jwagner988) | [Justin Dury-Agri](https://github.com/justinD-A) | [Justin Hicks](https://github.com/JuiceBawks) | [Katie Klochan](https://github.com/kklochan) | [May Wirapa Boonyasurat](https://github.com/mimiwrp) | [Mercer Stronck](https://github.com/mercerstronck) | [Muhammad Trad](https://github.com/muhammadtrad) | [Richard Guo](https://github.com/richardguoo) | [Richard Lam](https://github.com/rlam108) | [Sam Frakes](https://github.com/frakes413) | [Serena Kuo](https://github.com/serenackuo) | [Timothy Sin](https://github.com/timothysin) | [Vincent Trang](https://github.com/vincentt114)
 
 ## License
 

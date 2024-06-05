@@ -1,0 +1,3 @@
+# some of the tests was working but after last merge we broke some of them in the way the we move files and delete files some of them can fix with the path of some import files the rest will need extra work .
+# the failing tests are commented to not interfere when anyone run the app.
+# npm test -- --findRelatedTests path/to/your-test-file.test.js this command can help to test just one file at the time.

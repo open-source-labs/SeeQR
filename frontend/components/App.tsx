@@ -109,7 +109,7 @@ function App() {
 
   // Handle async calls
   const asyncCount = useRef(0);
-  //
+  
   useEffect(() => {
     const { issued, asyncList } = menuState.loading;
     // Check if there are pending async tasks
@@ -172,9 +172,9 @@ function App() {
   }
 
   /**
-  * Removed Context Providers, instead used Redux's useDispatch and useSelector hooks to interact with the state
-  * Return the main app component with necessary providers and state management
- */
+   * Removed Context Providers, instead used Redux's useDispatch and useSelector hooks to interact with the state
+   * Return the main app component with necessary providers and state management
+   */
   return (
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={MuiTheme}>
