@@ -78,15 +78,14 @@ function QueryList({ createQuery, show }: QueryListProps) {
     dispatch(updateComparedQueries(tempComparedQueries));
   };
 
-
   // Handler to set a query for comparison
   const setComparisonHandler =
-    (query: QueryData) => (evt: React.ChangeEvent<HTMLInputElement>) => {
+    (query: QueryData) => (e: React.ChangeEvent<HTMLInputElement>) => {
       const tempQueries = setCompare(
         queryState.comparedQueries,
         queryState.queries,
         query,
-        evt.target.checked,
+        e.target.checked,
       );
       dispatch(updateComparedQueries(tempQueries));
     };
