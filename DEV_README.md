@@ -13,9 +13,9 @@
 <p><b> WHAT YOU NEED TO DO FIRST: </b></p>
 
 Run npm run dev twice if you do not manually run tsc to compile the files first. The ts files have to compile before electron-dev and webpack-dev can start.<br>
-<code>npm run install<br></code><code>
-npm run postinstall<br></code>
-<code>npm run build<br></code>
+<code>npm run install</code><br>
+<code>npm run postinstall</code><br>
+<code>npm run build</code><br>
 <code>npm run dev</code> or <code>npm run start</code>(this is more stable but no hot module reloading)
 
 <p><b> WHAT WE UPDATED: </b></p>
