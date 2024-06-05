@@ -207,7 +207,7 @@ The outcome results from each query, both retrieved data and analytics, are stor
 
 ## Contributing
 
-We've released SeeQR because it's a useful tool to help optimize SQL databases. Additional features, extensions, and improvements will continue to be introduced. Please refer to the [DEV_README](https://github.com/open-source-labs/seeqr/releases/latest) for a list of improvements we are looking to implement and that are open to contributors.
+We've released SeeQR because it's a useful tool to help optimize SQL databases. Additional features, extensions, and improvements will continue to be introduced. Please refer to the [DEV_README](https://github.com/open-source-labs/SeeQR/blob/main/DEV_README.md) for a list of improvements we are looking to implement and that are open to contributors.
 
 We are thankful for any contributions from the community and we encourage you to try SeeQR out to make or suggest improvements where you see fit! If you encounter any issues with the application, please report them in the issues tab or submit a PR. Thank you for your interest!
 
