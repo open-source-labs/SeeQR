@@ -1,10 +1,13 @@
 import { ipcRenderer } from 'electron';
 import React, { useState } from 'react';
-import { Button, Typography } from '@mui/material/';
-import Box from '@mui/material/Box';
+import { useSelector, useDispatch } from 'react-redux'; 
+import { Button, Typography, Box } from '@mui/material/';
 import styled from 'styled-components';
-import { QueryData, AppState, TableInfo } from '../../../types';
-import { DBType } from '../../../../backend/BE_types';
+import {
+  DBType,
+  TableInfo,
+  QueryData
+} from '../../../../shared/types/types';
 import { defaultMargin } from '../../../style-variables';
 
 // not sure what this is yet...seems necessary for error message listeners
@@ -15,10 +18,8 @@ import SchemaName from './SchemaName';
 import TablesTabs from '../DbView/TablesTabBar';
 import SchemaSqlInput from './SchemaSqlInput';
 
-import {
-  useQueryContext,
-  useQueryDispatch,
-} from '../../../state_management/Contexts/QueryContext';
+import { updateWorkingQuery } from '../../../state_management/Slices/QuerySlice';
+
 
 // top row container
 const TopRow = styled(Box)`
@@ -67,10 +68,10 @@ const NewSchemaViewContainer = styled.div`
   flex-direction: column;
 `;
 
-// props interface
+// Define the props interface for NewSchemaView component
 interface NewSchemaViewProps {
-  setSelectedDb: AppState['setSelectedDb'];
-  selectedDb: AppState['selectedDb'];
+  setSelectedDb: (db: string) => void;
+  selectedDb: string;
   show: boolean;
   curDBType: DBType | undefined;
   dbTables: TableInfo[];
@@ -78,6 +79,7 @@ interface NewSchemaViewProps {
   setSelectedTable: (tableInfo: TableInfo | undefined) => void;
 }
 
+// Define the props interface for NewSchemaView component
 function NewSchemaView({
   setSelectedDb,
   selectedDb,
@@ -87,46 +89,31 @@ function NewSchemaView({
   selectedTable,
   setSelectedTable,
 }: NewSchemaViewProps) {
-  // using query state context and dispatch functions
-  const queryStateContext = useQueryContext();
-  const queryDispatchContext = useQueryDispatch();
+  // Get dispatch function from react-redux
+  const dispatch = useDispatch(); 
 
   const [currentSql, setCurrentSql] = useState('');
 
   const TEMP_DBTYPE = DBType.Postgres;
 
-  const defaultQuery: QueryData = {
-    label: '', // required by QueryData interface, but not necessary for this view
-    db: '', // name that user inputs in SchemaName.tsx
-    sqlString: '', // sql string that user inputs in SchemaSqlInput.tsx
-    group: '', // group string for sorting queries in accordians
-    numberOfSample: 0,
-    totalSampleTime: 0,
-    minimumSampleTime: 0,
-    maximumSampleTime: 0,
-    averageSampleTime: 0,
-  };
+  // By leveraging Redux for state management and using useSelector to access the workingQuery, no need for defaultQuery within the component
+  // Get working query from Redux store using useSelector
+  const localQuery = useSelector((state: any) => state.query.workingQuery);
+  // const localQuery: QueryData = useSelector((state: any) => state.query.workingQuery);
 
-  const localQuery = { ...defaultQuery, ...queryStateContext!.workingQuery };
 
   // handles naming of schema
   const onNameChange = (newName: string) => {
-    queryDispatchContext!({
-      type: 'UPDATE_WORKING_QUERIES',
-      payload: { ...localQuery, db: newName },
-    });
-
+    // Update working query in Redux store using dispatch
+    dispatch(updateWorkingQuery({ ...localQuery, db: newName }));
     setSelectedDb(newName);
   };
 
   // handles sql string input
   const onSqlChange = (newSql: string) => {
-    // because App's workingQuery changes ref
     setCurrentSql(newSql);
-    queryDispatchContext!({
-      type: 'UPDATE_WORKING_QUERIES',
-      payload: { ...localQuery, sqlString: newSql },
-    });
+    // Update working query in Redux store using dispatch
+    dispatch(updateWorkingQuery({ ...localQuery, sqlString: newSql }));
   };
 
   // handle intializing new schema
@@ -225,3 +212,5 @@ function NewSchemaView({
   );
 }
 export default NewSchemaView;
+
+

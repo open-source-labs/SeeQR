@@ -1,31 +1,27 @@
-// Mui imports
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import { useSelector, useDispatch } from 'react-redux';
+import { ArrowBackIos, ArrowForwardIos } from '@mui/icons-material';
 import { Drawer, IconButton, Tooltip } from '@mui/material/';
-
 import React from 'react';
 import styled from 'styled-components';
 import logo from '../../../assets/logo/seeqr_dock.png';
-
-// Types
-import { AppState, DatabaseInfo } from '../../types';
-import { DBType } from '../../../backend/BE_types';
-
+import { AppState, DatabaseInfo, DBType } from '../../../shared/types/types';
+import { RootState } from '../../state_management/store';
+// Import Redux action from Slice
+import {
+  toggleSidebar,
+  selectedView,
+} from '../../state_management/Slices/AppViewSlice';
+import { updateWorkingQuery } from '../../state_management/Slices/QuerySlice';
 import BottomButtons from './BottomButtons';
 import DbList from './DbList';
 import QueryList from './QueryList';
 import TopButtons from './TopButtons';
 import ViewSelector from './ViewSelector';
-
 import {
   greyDarkest,
   sidebarShowButtonSize,
   sidebarWidth,
 } from '../../style-variables';
-import {
-  useAppViewContext,
-  useAppViewDispatch,
-} from '../../state_management/Contexts/AppViewContext';
 
 const StyledDrawer = styled(Drawer)`
   & .MuiDrawer-paper {
@@ -46,7 +42,6 @@ const Logo = styled.img`
   transform: translateX(-50%);
   opacity: 0.8;
   z-index: -1;
-
   width: 60px;
   height: 60px;
 `;
@@ -93,6 +88,7 @@ const HideSidebarBtnContainer = styled.div`
   align-self: flex-end;
 `;
 
+// Props for the Sidebar component
 interface SideBarProps {
   selectedDb: AppState['selectedDb'];
   setSelectedDb: AppState['setSelectedDb'];
@@ -100,7 +96,6 @@ interface SideBarProps {
   curDBType: DBType | undefined;
   setDBType: (dbType: DBType | undefined) => void;
   DBInfo: DatabaseInfo[] | undefined;
-  queryDispatch: ({ type, payload }) => void;
 }
 function Sidebar({
   selectedDb,
@@ -109,32 +104,33 @@ function Sidebar({
   curDBType,
   setDBType,
   DBInfo,
-  queryDispatch,
-}: SideBarProps) {
-  // allowing the use of context and dispatch from the parent provider.
-  const appViewStateContext = useAppViewContext();
-  const appViewDispatchContext = useAppViewDispatch();
-  const toggleOpen = () => appViewDispatchContext!({ type: 'TOGGLE_SIDEBAR' });
+}: // queryDispatch,
+SideBarProps) {
+  // Get the dispatch function from the Redux store
+  const dispatch = useDispatch();
+  // Get the current state of the app view from the Redux store
+  const appViewState = useSelector((state: RootState) => state.appView);
+
+  // Function to toggle the sidebar open or closed
+  const toggleOpen = () => {
+    dispatch(toggleSidebar());
+  };
+
   /**
    * Show empty query view for user to create new query.
    * Deselects all queries and goes to queryView
    */
   const showEmptyQuery = () => {
-    appViewDispatchContext!({ type: 'SELECTED_VIEW', payload: 'queryView' });
-
-    queryDispatch({
-      type: 'UPDATE_WORKING_QUERIES',
-      payload: undefined,
-    });
-    // setWorkingQuery(undefined);
+    dispatch(selectedView('queryView'));
+    dispatch(updateWorkingQuery(undefined));
   };
 
   return (
     <>
-      {/* this componenet just shows tooltip when you hover your mouse over the sidebar open and close button. */}
+      {/* this component just shows tooltip when you hover your mouse over the sidebar open and close button. */}
       <Tooltip title="Show Sidebar">
         <ShowSidebarBtn onClick={toggleOpen} size="small">
-          <ArrowForwardIosIcon />
+          <ArrowForwardIos />
         </ShowSidebarBtn>
       </Tooltip>
 
@@ -142,22 +138,30 @@ function Sidebar({
       <StyledDrawer
         variant="persistent"
         anchor="left"
-        open={!appViewStateContext?.sideBarIsHidden}
+        open={!appViewState.sideBarIsHidden}
       >
         <div>
           <TopButtons />
-          <ViewSelector {...{ setERView }} />
+          {/* <ViewSelector {...{ setERView }} /> */}
+          <ViewSelector
+            selectedDb={selectedDb}
+            setSelectedDb={setSelectedDb}
+            show={true}
+            curDBType={curDBType}
+            setDBType={setDBType}
+            DBInfo={DBInfo}
+          />
         </div>
         {/* this is just the list of all the connected dbs */}
         <DbList
           selectedDb={selectedDb}
           setSelectedDb={setSelectedDb}
-          // the question marks are just for typescript because it thinks there could be a null value, so we're just letting it abide by that strict rule that there is a possibility of a null value.
+          // the question marks are just for TypeScript because it thinks there could be a null value, so we're just letting it abide by that strict rule that there is a possibility of a null value.
           show={
-            appViewStateContext?.selectedView === 'dbView' ||
-            appViewStateContext?.selectedView === 'quickStartView' ||
-            appViewStateContext?.selectedView === 'newSchemaView' ||
-            appViewStateContext?.selectedView === 'threeDView'
+            appViewState.selectedView === 'dbView' ||
+            appViewState.selectedView === 'quickStartView' ||
+            appViewState.selectedView === 'newSchemaView' ||
+            appViewState.selectedView === 'threeDView'
           }
           curDBType={curDBType}
           setDBType={setDBType}
@@ -167,8 +171,8 @@ function Sidebar({
         <QueryList
           createQuery={showEmptyQuery}
           show={
-            appViewStateContext?.selectedView === 'queryView' ||
-            appViewStateContext?.selectedView === 'compareView'
+            appViewState.selectedView === 'queryView' ||
+            appViewState.selectedView === 'compareView'
           }
         />
         <BottomButtons />
@@ -176,7 +180,7 @@ function Sidebar({
         <HideSidebarBtnContainer>
           <Tooltip title="Hide Sidebar">
             <HideSidebarBtn onClick={toggleOpen} size="large">
-              <ArrowBackIosIcon />
+              <ArrowBackIos />
             </HideSidebarBtn>
           </Tooltip>
         </HideSidebarBtnContainer>
