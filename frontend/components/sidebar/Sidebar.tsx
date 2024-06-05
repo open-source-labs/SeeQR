@@ -5,8 +5,7 @@ import { ArrowBackIos, ArrowForwardIos } from '@mui/icons-material';
 import { Drawer, IconButton, Tooltip } from '@mui/material/';
 import React from 'react';
 import styled from 'styled-components';
-// import logo from '../../../assets/logo/seeqr_dock.png';
-import logo from '../../../assets/logo/logo_monochrome.png';
+import logo from '../../../assets/logo/seeqr_dock.png';
 // Types
 import { AppState, DatabaseInfo, DBType } from '../../../shared/types/types';
 import { RootState } from '../../state_management/store';
@@ -42,20 +41,20 @@ const StyledDrawer = styled(Drawer)`
 
 const Logo = styled.img`
   position: fixed;
-  bottom: 50px;
+  bottom: 100px;
   left: calc(${sidebarWidth} / 2);
   transform: translateX(-50%);
-  opacity: 1;
+  opacity: 0.8;
   z-index: -1;
-  width: 160px;
-  height: 160px;
+  width: 60px;
+  height: 60px;
 `;
 
 const ShowSidebarBtn = styled(IconButton)`
   width: 40px;
   height: ${sidebarShowButtonSize};
   position: fixed;
-  top: 49%;
+  top: 50%;
   z-index: 200;
   background: #57a777;
   border-radius: 0 15px 15px 0;

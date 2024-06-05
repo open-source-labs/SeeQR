@@ -20,7 +20,6 @@ interface ViewButtonProps {
 const ViewButton = styled(Button)<ViewButtonProps>`
   background: ${({ $isSelected }: { $isSelected?: boolean }) =>
     $isSelected ? textColor : selectedColor};
-  border-radius: 10px;
 `;
 
 /**
