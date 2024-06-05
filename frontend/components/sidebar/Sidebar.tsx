@@ -12,12 +12,6 @@ import {
   selectedView,
 } from '../../state_management/Slices/AppViewSlice';
 import { updateWorkingQuery } from '../../state_management/Slices/QuerySlice';
-
-import {
-  toggleSidebar,
-  selectedView,
-} from '../../state_management/Slices/AppViewSlice';
-import { updateWorkingQuery } from '../../state_management/Slices/QuerySlice';
 import BottomButtons from './BottomButtons';
 import DbList from './DbList';
 import QueryList from './QueryList';
