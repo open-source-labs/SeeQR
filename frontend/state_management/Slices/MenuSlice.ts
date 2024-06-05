@@ -87,7 +87,7 @@ const menuSlice = createSlice({
   },
 });
 
-// Thunk for handling async logic
+// Create async thunk for submitting async tasks to backend
 export const submitAsyncToBackend = createAsyncThunk(
   'menu/submitAsyncToBackend',
   async ({ issued, asyncList, invoke }: AsyncPayload, { dispatch }) => {
@@ -106,7 +106,10 @@ export const submitAsyncToBackend = createAsyncThunk(
     }
   },
 );
+
+// Export actions for Menu slice
 export const { changeView, toggleDialog, toggleSidebar, asyncTrigger } =
   menuSlice.actions;
 
+// Export the reducer to be used in the store
 export default menuSlice.reducer;

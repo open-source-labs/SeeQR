@@ -79,8 +79,9 @@ function DbList({
     'RDS Postgres': 'rds-pg',
     SQLite: 'sqlite',
   };
-
+  // Get the dispatch function from the Redux store
   const dispatch = useDispatch<AppDispatch>();
+  // Get the current state of the app view from the Redux store
   const appViewState = useSelector((state: RootState) => state.appView);
 
   // Handlers for opening and closing modals
@@ -104,6 +105,7 @@ function DbList({
   const selectHandler = (dbName: string, cdbt: DBType | undefined) => {
     const viewType =
       appViewState.selectedView === 'threeDView' ? 'threeDView' : 'dbView';
+    // Dispatch the selectedView action to update the view
     dispatch(selectedView(viewType));
     if (dbName === selectedDb) return;
     ipcRenderer

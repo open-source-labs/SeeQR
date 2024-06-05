@@ -25,6 +25,7 @@ type AddNewDbModalProps = {
 };
 /**
  * Component for adding a new database via a modal dialog
+ * Use Redux to dispatch asynchronous actions for database operations
  */
 function AddNewDbModal({
   open,
@@ -92,7 +93,7 @@ function AddNewDbModal({
       filePath: selectedFilePath,
       dbType: selectedDBType,
     };
-
+    // Dispatch an asynchronous action to import the database
     dispatch(
       asyncTrigger({
         loading: 'LOADING',
@@ -202,7 +203,7 @@ function AddNewDbModal({
       });
     };
 
-    // initial async call when pressing select file button
+    // Dispatch an asynchronous action to open the file dialog
     dispatch(
       asyncTrigger({
         loading: 'LOADING',
