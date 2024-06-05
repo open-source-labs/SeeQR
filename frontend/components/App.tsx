@@ -109,8 +109,7 @@ function App() {
 
   // Handle async calls
   const asyncCount = useRef(0);
-  //
-  //
+  
   useEffect(() => {
     const { issued, asyncList } = menuState.loading;
     // Check if there are pending async tasks
