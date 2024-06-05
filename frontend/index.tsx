@@ -1,23 +1,24 @@
 import React from 'react';
-import { render } from 'react-dom';
-// import { createRoot } from 'react-dom/client';
-
+import { createRoot } from 'react-dom/client';
+import { Provider } from 'react-redux';
+import { enableMapSet } from 'immer';
 import App from './components/App';
-// import 'codemirror/lib/codemirror.css';
+import store from './state_management/store';
+import '@fontsource/roboto';
 
-import 'fontsource-roboto';
+// enabling map set to use Map objects with redux
+enableMapSet();
+// Create a rootElement for the React app
+const rootElement: HTMLElement = document.createElement('div');
+rootElement.id = 'root';
+document.body.appendChild(rootElement);
 
-const root = document.createElement('div');
-root.id = 'root';
-document.body.appendChild(root);
+// Use the new createRoot method from react-dom/client
+const root = createRoot(rootElement);
 
-render(
-  <div>
+// Render the React app with the Redux provider
+root.render(
+  <Provider store={store}>
     <App />
-  </div>,
-  document.getElementById('root'),
+  </Provider>,
 );
-
-// const container = document.getElementById('root') as HTMLElement;
-// const root = createRoot(container);
-// root.render(<App />);

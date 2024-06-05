@@ -1,7 +1,7 @@
 import mysql from 'mysql2/promise';
 import { Pool, PoolConfig } from 'pg';
 import sqlite3 from 'sqlite3';
-import { LogType } from '../../../shared/types/dbTypes';
+import { LogType } from '../../../shared/types/types';
 import logger from '../utils/logging/masterlog';
 import pools from './poolVariables';
 
@@ -12,7 +12,7 @@ export default {
    * @param pg_uri URI created in models.ts using login info
    * @param db Name of target database that the login has access to. Initially empty string
    */
-  async PG_DBConnect(pg_uri: string, db: string) {
+    async PG_DBConnect(pg_uri: string, db: string) {
     const newURI = `${pg_uri}/${db}`;
     const newPool = new Pool({ connectionString: newURI });
     pools.pg_pool = newPool;

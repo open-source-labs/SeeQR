@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import ReactFlow, { Background } from 'reactflow';
 import 'reactflow/dist/style.css';
 import buildFlowGraph from '../../../../lib/flow';
-import { ExplainJson, Thresholds } from '../../../../types';
+import { ExplainJson, Thresholds } from '../../../../../shared/types/types';
 import { DarkPaperFull } from '../../../../style-variables';
 import FlowControls from './FlowControls';
 import nodeTypes from './ExecutionPlanNodeTypes';

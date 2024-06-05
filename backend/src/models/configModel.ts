@@ -1,9 +1,8 @@
 // import path from 'path';
 import fs from 'fs';
 import os from 'os';
-import { DBType, LogType } from '../../../shared/types/dbTypes';
+import { DBType, LogType, DocConfigFile } from '../../../shared/types/types';
 import logger from '../utils/logging/masterlog';
-import { DocConfigFile } from '../../BE_types';
 
 // HELPER FUNCTIONS
 
@@ -11,7 +10,7 @@ const home = `${os.homedir()}/Documents/SeeQR`;
 const configFile = 'config.json';
 const configPath = `${home}/${configFile}`;
 
-// ideally, we want to keep this config in a seperate file as well
+// ideally, we want to keep this config in a separate file as well
 export const defaultFile: DocConfigFile = {
   mysql_options: { user: 'root', password: '', port: 3306 },
   pg_options: { user: 'postgres', password: '', port: 5432 },
@@ -192,3 +191,5 @@ const docConfig = {
 };
 
 export default docConfig;
+
+

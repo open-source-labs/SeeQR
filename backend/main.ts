@@ -1,43 +1,47 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
+// entry point for electron
+import { app, BrowserWindow, Menu } from 'electron'; // added session here for DevTool if needed
+import fixPath from 'fix-path';
 import * as path from 'path';
 import * as url from 'url';
-import { app, BrowserWindow, Menu } from 'electron'; // added session here
-import fixPath from 'fix-path';
-
+import os from 'node:os'; // only for DevTool
 import MainMenu from './mainMenu';
 
 const dev: boolean = process.env.NODE_ENV === 'development';
 
 // requiring channels file to initialize event listeners
 
-// require('./_DEPRECATED_channels');
-require('./src/ipcHandlers/index');
-
+import('./src/ipcHandlers/index');
 fixPath();
 // Keep a global reference of the window objects, if you don't,
 // the window will be closed automatically when the JavaScript object is garbage collected.
 let mainWindow: BrowserWindow | null;
 
-// for react dev tools to work with electron
+// for react dev tools to work with electron: AS OF 6/2024 dev tool does not seem to work. May need to find v 4.25 of react dev tool.
+// React also removed support of manifest v2 causing more issues
 // download react devtools and save them on desktop in folder named ReactDevTools
 // devtools: https://github.com/facebook/react/issues/25843
 // https://github.com/mondaychen/react/raw/017f120369d80a21c0e122106bd7ca1faa48b8ee/packages/react-devtools-extensions/ReactDevTools.zip
 // ******************** Comment out when done ******************** //
 // const reactDevToolsPath = path.join(os.homedir(), '/Desktop/ReactDevTools');
-// app.whenReady().then(async () => {
-//   await session.defaultSession.loadExtension(reactDevToolsPath);
-// });
+// app
+//   .whenReady()
+//   .then(async () => {
+//     await session.defaultSession.loadExtension(reactDevToolsPath);
+//   })
+//   .catch((err) => console.error(err));
 // ******************** Comment out when done ******************** //
 
 // Add an event listener for uncaught exceptions
-// The major purpose is trying to hidding the pop out warning or error message from electron/react
+// The major purpose is to hide the pop out warning or error message from electron/react
 // That is, put everything undertable
 process.on('uncaughtException', (error) => {
   // Hiding the error on the terminal as well
   console.error('Uncaught Exception:', error);
 });
 
-// this creates the new browserWindow. Had to delete remoteprocess from webPrefences since it was deprecated. It allowed driect access to remote objects and APIs in this main process, so instead we implement ipcRenderer.invoke. WebPreferences nodeintegration and contextisolation are set respectively to ensure api's can be used throughout the entire program without contextbridging
+// this creates the new browserWindow. Had to delete remoteprocess from webPrefences since it was deprecated.
+// It allowed direct access to remote objects and APIs in this main process, so instead we implement ipcRenderer.invoke.
+// WebPreferences nodeintegration and contextisolation are set respectively to ensure api's can be used throughout the entire program without contextbridging
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1800,
@@ -75,7 +79,9 @@ function createWindow() {
     });
   }
 
-  mainWindow.loadURL(indexPath);
+  mainWindow
+    .loadURL(indexPath)
+    .catch((err) => console.error('Uncaught Exception:', err));
 
   // Window will display once it is ready and loaded
   mainWindow.once('ready-to-show', () => {
@@ -84,7 +90,16 @@ function createWindow() {
 }
 
 // Invoke createWindow to create browser windows after Electron has been initialized.
-app.on('ready', createWindow);
+// app.on('ready', () => {
+// createWindow();
+// });
+// testing tutorial code
+app
+  .whenReady()
+  .then(() => {
+    createWindow();
+  })
+  .catch((err) => console.error('Uncaught Exception:', err));
 
 // Quit when all windows are closed for Windows and Linux
 app.on('window-all-closed', () => {
@@ -97,6 +112,7 @@ app.on('window-all-closed', () => {
   }
 });
 
+// 5.16.24 Tutorial has activate in whenReady .then statement. Not sure if I need to move this there
 app.on('activate', () => {
   // On macOS it's common to re-create a window in the app when the dock
   // icon is clicked and there are no other windows open.

@@ -1,26 +1,26 @@
 import React from 'react';
 import Tooltip from '@mui/material/Tooltip';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { Save } from '@mui/icons-material';
-// import { } from '@mui/icons-material';
+// import DeleteIcon from '@mui/icons-material/Delete';
+// import { Save } from '@mui/icons-material';
 import IconButton from '@mui/material/IconButton';
-import TextField from '@mui/material/TextField';
+// import TextField from '@mui/material/TextField';
 import {
   AlterTablesObjType,
   AddColumnsObjType,
-  DropTablesObjType,
-  TableHeaderDataObjectType,
-  AlterColumnsObjType,
+  // DropTablesObjType,
+  // TableHeaderDataObjectType,
+  // AlterColumnsObjType,
   BackendObjType,
-} from '../../../types';
+} from '../../../../shared/types/types';
 import './styles.css';
 import * as colors from '../../../style-variables';
-import { sendFeedback } from '../../../lib/utils';
+// import { sendFeedback } from '../../../lib/utils';
+// commented out unused imports
 
 type TableFooterObjectType = {
   table_name: string;
   schemaStateCopy: any;
-  setSchemaState: (string) => {};
+  setSchemaState: (dbName: string) => void;
   backendObj: BackendObjType;
 };
 type TableFooterProps = {
@@ -28,7 +28,12 @@ type TableFooterProps = {
 };
 
 function TableFooter({ data }: TableFooterProps) {
-  const { table_name, schemaStateCopy, setSchemaState, backendObj } = data;
+  const {
+    table_name,
+    schemaStateCopy,
+    setSchemaState,
+    backendObj,
+  }: TableFooterObjectType = data;
   // find table we are editing in schemaStateCopy to use throughout all of our TableHeader functions
   const currentTable = schemaStateCopy.tableList.find(
     (table) => table.table_name === table_name,
@@ -49,18 +54,18 @@ function TableFooter({ data }: TableFooterProps) {
     };
     // create an addColumnsType object
     const addColumnsObj: AddColumnsObjType = {
-      column_name: `NewColumn${currentTable.columns?.length + 1 || 1}`,
+      column_name: `NewColumn${currentTable.columns.length + 1 || 1}`,
       data_type: 'varchar',
       character_maximum_length: 255,
     };
     // add the addColumnsObj to the alterTablesObj
     alterTablesObj.addColumns.push(addColumnsObj);
     // update the backendObj
-    backendObj.current.updates.alterTables.push(alterTablesObj);
+    backendObj.updates.alterTables.push(alterTablesObj);
     // push a new object with blank properties
     currentTable.columns.push({
-      column_name: `NewColumn${currentTable.columns?.length + 1 || 1}`,
-      new_column_name: `NewColumn${currentTable.columns?.length + 1 || 1}`,
+      column_name: `NewColumn${currentTable.columns.length + 1 || 1}`,
+      new_column_name: `NewColumn${currentTable.columns.length + 1 || 1}`,
       constraint_name: null,
       constraint_type: null,
       data_type: 'varchar',
@@ -129,9 +134,8 @@ function TableFooter({ data }: TableFooterProps) {
   //     console.log(schemaStateCopy);
   //   }
   //   console.log(alterTablesObj);
-  //   backendObj.current.updates.alterTables.push(alterTablesObj);
+  //   backendObj.updates.alterTables.push(alterTablesObj);
   // };
-
 
   return (
     <div

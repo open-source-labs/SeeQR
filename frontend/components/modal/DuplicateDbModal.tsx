@@ -17,7 +17,7 @@ import {
   MuiTheme,
   StyledDialogTitle,
 } from '../../style-variables';
-import { DBType } from '../../../backend/BE_types';
+import { DBType } from '../../../shared/types/types';
 
 declare module '@mui/material/styles/' {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -36,11 +36,11 @@ type copyDbModalProps = {
   open: boolean;
   onClose: () => void;
   dbCopyName: string;
-  dbNames: string[] | undefined;
+  dbNames: string[];
   curDBType: DBType | undefined;
 };
 
-const handleDBName = (dbCopyName, dbNames) => {
+const handleDBName = (dbCopyName: string, dbNames: string[]) => {
   // use regex to separate the number
   // increment only the digit
   let dbName = dbCopyName;
@@ -149,7 +149,9 @@ function DuplicateDbModal({
               </StyledDialogTitle>
               <Tooltip
                 title={
-                  checked ? 'Deselect to only copy shell' : 'Select to copy data'
+                  checked
+                    ? 'Deselect to only copy shell'
+                    : 'Select to copy data'
                 }
               >
                 <FormControlLabel

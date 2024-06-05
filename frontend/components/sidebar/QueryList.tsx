@@ -1,14 +1,20 @@
 import path from 'path';
-import AddIcon from '@mui/icons-material/Add';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
-import UploadFileIcon from '@mui/icons-material/UploadFile';
-import { IconButton, Tooltip } from '@mui/material';
-import Accordion from '@mui/material/Accordion';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import Typography from '@mui/material/Typography';
-import React, { useContext } from 'react';
+import {
+  Add,
+  ExpandMore,
+  DriveFileMove,
+  UploadFile,
+} from '@mui/icons-material';
+import {
+  IconButton,
+  Tooltip,
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Typography,
+} from '@mui/material';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { ipcRenderer } from 'electron';
 import {
@@ -27,14 +33,18 @@ import {
   StyledListItemText,
   textColor,
 } from '../../style-variables';
-import { AppState, QueryData } from '../../types';
+import { AppState, QueryData } from '../../../shared/types/types';
 import QueryEntry from './QueryEntry';
 
+import { RootState } from '../../state_management/store';
 import {
-  useQueryContext,
-  useQueryDispatch,
-} from '../../state_management/Contexts/QueryContext';
-import MenuContext from '../../state_management/Contexts/MenuContext';
+  updateQueries,
+  updateComparedQueries,
+  updateWorkingQuery,
+  updateFilePath,
+  updateLocalQuery,
+} from '../../state_management/Slices/QuerySlice';
+import { asyncTrigger } from '../../state_management/Slices/MenuSlice';
 
 const QueryText = styled(StyledListItemText)`
   & .MuiListItemText-secondary {
@@ -52,52 +62,39 @@ type QueryListProps = {
 };
 
 function QueryList({ createQuery, show }: QueryListProps) {
-  const { dispatch: menuDispatch } = useContext(MenuContext);
+  const dispatch = useDispatch();
+  const queryState = useSelector((state: RootState) => state.query);
 
-  // using query state context and dispatch functions
-  const queryStateContext = useQueryContext();
-  const queryDispatchContext = useQueryDispatch();
-
+  // Handler to delete a query
   const deleteQueryHandler = (query: QueryData) => () => {
-    if (!queryStateContext) return;
-    const tempQueries = deleteQuery(queryStateContext.queries, query);
+    const tempQueries = deleteQuery(queryState.queries, query);
+    const tempLocalQueries = deleteQuery(queryState.localQuery.queries, query);
 
-    queryDispatchContext!({
-      type: 'UPDATE_QUERIES',
-      payload: tempQueries,
-    });
+    // Update the state with the new set of queries after deletion
+    dispatch(updateQueries(tempQueries));
+    dispatch(updateLocalQuery({ queries: tempLocalQueries }));
 
-    const tempComparedQueries = deleteQuery(
-      queryStateContext.comparedQueries,
-      query,
-    );
-
-    queryDispatchContext!({
-      type: 'UPDATE_COMPARED_QUERIES',
-      payload: tempComparedQueries,
-    });
+    const tempComparedQueries = deleteQuery(queryState.comparedQueries, query);
+    dispatch(updateComparedQueries(tempComparedQueries));
   };
 
+  // Handler to set a query for comparison
   const setComparisonHandler =
-    (query: QueryData) => (evt: React.ChangeEvent<HTMLInputElement>) => {
-      if (!queryStateContext) return;
+    (query: QueryData) => (e: React.ChangeEvent<HTMLInputElement>) => {
       const tempQueries = setCompare(
-        queryStateContext.comparedQueries,
-        queryStateContext.queries,
+        queryState.comparedQueries,
+        queryState.queries,
         query,
-        evt.target.checked,
+        e.target.checked,
       );
-
-      queryDispatchContext!({
-        type: 'UPDATE_COMPARED_QUERIES',
-        payload: tempQueries,
-      });
+      dispatch(updateComparedQueries(tempQueries));
     };
 
+  // Handler to save a query
   const saveQueryHandler = (query: QueryData, filePath: string) => () => {
     saveQuery(query, filePath);
   };
-
+  // Handler to load a query from a file
   const loadQueryHandler = async () => {
     const options = {
       title: 'Upload Query',
@@ -131,18 +128,14 @@ function QueryList({ createQuery, show }: QueryListProps) {
 
       // create a new query
       if (query) {
-        if (!queryStateContext) return;
-        const newQueries = createNewQuery(query[0], queryStateContext.queries);
-
-        queryDispatchContext!({
-          type: 'UPDATE_QUERIES',
-          payload: newQueries,
-        });
-
-        queryDispatchContext!({
-          type: 'UPDATE_WORKING_QUERIES',
-          payload: query[0],
-        });
+        const newQueries = createNewQuery(query[0], queryState.queries);
+        // dispatch(updateQueries(newQueries));
+        const newLocalQueries = createNewQuery(
+          query[0],
+          queryState.localQuery.queries,
+        );
+        // dispatch(updateLocalQuery({ queries: newLocalQueries }));
+        dispatch(updateWorkingQuery(query[0]));
       }
     } catch (error) {
       console.log(error);
@@ -150,60 +143,50 @@ function QueryList({ createQuery, show }: QueryListProps) {
   };
 
   if (!show) return null;
-  if (!queryStateContext) return null;
-  const values: Array<QueryData> = Object.values(queryStateContext.queries);
-  const accordians: object = {};
+  // if (!queryStateContext) return null;
+
+  // Convert query objects to an array of query data
+  const values: Array<QueryData> = Object.values(queryState.queries);
+  const accordions: Record<string, JSX.Element[]> = {};
 
   // Algorithm to create the entrys to be bundled into accoridans
-  const compQ: any = { ...queryStateContext?.comparedQueries };
-  if (values.length > 0) {
-    for (let i = 0; i < values.length; i++) {
-      let compared = false;
-      if (compQ[queryKey(values[i])]) {
-        if (compQ[queryKey(values[i])].hasOwnProperty('executionPlan')) {
-          if (
-            compQ[queryKey(values[i])].executionPlan['Execution Time'] !== 0
-          ) {
-            compared = true;
-          }
-        }
-      }
-
-      const entry: JSX.Element = (
-        <QueryEntry
-          // This key is used in the .map to create the group label for accordians
-          key={`QueryList_${values[i].label}_${values[i].db}_group:::${values[i].group}`}
-          query={values[i]}
-          select={() =>
-            queryDispatchContext!({
-              type: 'UPDATE_WORKING_QUERIES',
-              payload: values[i],
-            })
-          }
-          isSelected={
-            !!queryStateContext?.workingQuery &&
-            queryKey(values[i]) === queryKey(queryStateContext?.workingQuery)
-          }
-          deleteThisQuery={deleteQueryHandler(values[i])}
-          isCompared={compared}
-          setComparison={setComparisonHandler(values[i])}
-          saveThisQuery={saveQueryHandler(
-            values[i],
-            queryStateContext.newFilePath,
-          )}
-        />
-      );
-
-      if (!accordians[values[i].group]) {
-        accordians[values[i].group] = [entry];
-      } else {
-        accordians[values[i].group].push([entry]);
+  values.forEach((value) => {
+    let compared = false;
+    const comparedQuery = queryState.comparedQueries[queryKey(value)];
+    if (comparedQuery && comparedQuery.executionPlan) {
+      if (comparedQuery.executionPlan['Execution Time'] !== 0) {
+        compared = true;
       }
     }
-  }
 
-  // function to store user-selected file path in state
+    const isSelected = (query: QueryData, workingQuery: any): boolean => {
+      return (
+        workingQuery !== null &&
+        workingQuery !== undefined &&
+        queryKey(query) === queryKey(workingQuery)
+      );
+    };
 
+    const entry: JSX.Element = (
+      <QueryEntry
+        key={`QueryList_${value.label}_${value.db}_group:::${value.group}`}
+        query={value}
+        select={() => dispatch(updateWorkingQuery(value))}
+        isSelected={isSelected(value, queryState.workingQuery)}
+        deleteThisQuery={deleteQueryHandler(value)}
+        isCompared={compared}
+        setComparison={setComparisonHandler(value)}
+        saveThisQuery={saveQueryHandler(value, queryState.newFilePath)}
+      />
+    );
+    if (!accordions[value.group]) {
+      accordions[value.group] = [entry];
+    } else {
+      accordions[value.group].push(entry);
+    }
+  });
+
+  // Handler to designate a file path
   const designateFile = () => {
     // REVIEW: not sure if supposed to move this to it's own ipcMain
     const options = {
@@ -212,20 +195,17 @@ function QueryList({ createQuery, show }: QueryListProps) {
       buttonLabel: 'Select Path',
       filters: [{ name: 'JSON', extensions: ['json'] }],
     };
-    const setFilePathCallback = (val) =>
-      queryDispatchContext!({
-        type: 'UPDATE_FILEPATH',
-        payload: val,
-      });
-    menuDispatch({
-      type: 'ASYNC_TRIGGER',
-      loading: 'LOADING',
-      options: {
-        event: 'showSaveDialog',
-        payload: options,
-        callback: setFilePathCallback,
-      },
-    });
+    const setFilePathCallback = (val: string) => dispatch(updateFilePath(val));
+    dispatch(
+      asyncTrigger({
+        loading: 'LOADING',
+        options: {
+          event: 'showSaveDialog',
+          payload: options,
+          callback: setFilePathCallback,
+        },
+      }),
+    );
   };
 
   return (
@@ -233,25 +213,25 @@ function QueryList({ createQuery, show }: QueryListProps) {
       <span>
         <Tooltip title="New Query">
           <IconButton onClick={createQuery} size="large">
-            <AddIcon fontSize="large" />
+            <Add fontSize="large" />
           </IconButton>
         </Tooltip>
 
         <Tooltip title="Import Query">
           <IconButton onClick={() => loadQueryHandler()} size="large">
-            <UploadFileIcon fontSize="large" />
+            <UploadFile fontSize="large" />
           </IconButton>
         </Tooltip>
 
         <Tooltip title="Designate Save Location">
           <IconButton onClick={() => designateFile()} size="large">
-            <DriveFileMoveIcon fontSize="large" />
+            <DriveFileMove fontSize="large" />
           </IconButton>
         </Tooltip>
       </span>
 
       <StyledSidebarList>
-        {Object.values(accordians).map((arrGroup: any) => (
+        {Object.values(accordions).map((arrGroup: any) => (
           <Tooltip title="drop down">
             <Accordion>
               <AccordionSummary
@@ -259,7 +239,7 @@ function QueryList({ createQuery, show }: QueryListProps) {
                   backgroundColor: `${greenPrimary}`,
                   color: 'black',
                 }}
-                expandIcon={<ExpandMoreIcon />}
+                expandIcon={<ExpandMore />}
                 aria-controls="panel1a-content"
                 id="panel1a-header"
               >

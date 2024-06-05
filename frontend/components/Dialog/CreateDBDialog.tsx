@@ -1,9 +1,9 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { DialogTitle, Dialog, Tooltip } from '@mui/material/';
-import { ipcRenderer } from 'electron';
-import { DatabaseInfo } from '../../types';
-import { DBType } from '../../../backend/BE_types';
-import { sendFeedback } from '../../lib/utils';
+// import { ipcRenderer } from 'electron';
+import { DatabaseInfo, DBType } from '../../../shared/types/types';
+// import { sendFeedback } from '../../lib/utils';
 import {
   ButtonContainer,
   TextFieldContainer,
@@ -14,8 +14,9 @@ import {
   StyledNativeDropdown,
   StyledNativeOption,
 } from '../../style-variables';
-import MenuContext from '../../state_management/Contexts/MenuContext';
+import { asyncTrigger } from '../../state_management/Slices/MenuSlice';
 
+// Define props interface for CreateDBDialog component
 interface CreateDBDialogProps {
   show: boolean;
   DBInfo: DatabaseInfo[] | undefined;
@@ -23,8 +24,10 @@ interface CreateDBDialogProps {
 }
 
 function CreateDBDialog({ show, DBInfo, onClose }: CreateDBDialogProps) {
-  if (!show) return <></>;
-  const { dispatch: menuDispatch } = useContext(MenuContext);
+  // add error modal?
+  if (!show) return null;
+  
+  const dispatch = useDispatch();
 
   const [newDbName, setNewDbName] = useState('');
   const [isError, setIsError] = useState(false);
@@ -33,7 +36,7 @@ function CreateDBDialog({ show, DBInfo, onClose }: CreateDBDialogProps) {
   const dbNames = DBInfo?.map((dbi: DatabaseInfo) => dbi.db_name);
 
   // Resets state for error messages
-  const handleClose = () => {
+  const handleClose = (): void => {
     setIsError(false);
     setIsEmpty(true);
     onClose();
@@ -51,8 +54,8 @@ function CreateDBDialog({ show, DBInfo, onClose }: CreateDBDialogProps) {
   };
 
   // Set schema name
-  const handleDbName = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const dbNameInput = event.target.value;
+  const handleDbName = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const dbNameInput = e.target.value;
     if (dbNameInput.length === 0) {
       setIsEmpty(true);
     } else {
@@ -70,11 +73,10 @@ function CreateDBDialog({ show, DBInfo, onClose }: CreateDBDialogProps) {
     setNewDbName(dbSafeName);
   };
 
-  const handleSubmit = (handleClose) => {
+  const handleSubmit = (closefn: () => void) => {
     // it needs to be as any because otherwise typescript thinks it doesn't have a 'value' param idk why
-    const dbt: DBType = (document.getElementById('dbTypeDropdown') as any)
+    const dbt = (document.getElementById('dbTypeDropdown') as HTMLSelectElement)
       .value;
-
     // ipcRenderer
     //   .invoke('initialize-db', {
     //     newDbName,
@@ -89,15 +91,16 @@ function CreateDBDialog({ show, DBInfo, onClose }: CreateDBDialogProps) {
     //       message: err ?? 'Failed to initialize db',
     //     });
     //   });
-    menuDispatch({
-      type: 'ASYNC_TRIGGER',
-      loading: 'LOADING',
-      options: {
-        event: 'initialize-db',
-        payload: { newDbName, dbType: dbt },
-        callback: handleClose,
-      },
-    });
+    dispatch(
+      asyncTrigger({
+        loading: 'LOADING',
+        options: {
+          event: 'initialize-db',
+          payload: { newDbName, dbType: dbt },
+          callback: closefn,
+        },
+      }),
+    );
   };
 
   return (

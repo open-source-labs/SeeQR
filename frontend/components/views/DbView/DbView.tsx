@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
 import { Button } from '@mui/material';
 import styled from 'styled-components';
-import { AppState, DatabaseInfo, TableInfo } from '../../../types';
-import { DBType } from '../../../../backend/BE_types';
+import {
+  DBType,
+  AppState,
+  DatabaseInfo,
+  TableInfo,
+} from '../../../../shared/types/types';
 import TablesTabs from './TablesTabBar';
 import DatabaseDetails from './DatabaseDetails';
 import DummyDataModal from '../../modal/DummyDataModal';

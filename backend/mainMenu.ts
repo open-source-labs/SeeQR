@@ -7,7 +7,6 @@
  */
 
 // import shell so a new browser window can open for external links
-// const { shell } = require('electron');
 import { MenuItem, shell } from 'electron';
 
 // darwin is the process platform for Macs
@@ -17,21 +16,21 @@ const arr: MenuItem[] = [
   // App menu
   ...(isMac
     ? [
-      new MenuItem({
-        label: 'Electron',
-        submenu: [
-          { role: 'about' },
-          { type: 'separator' },
-          { role: 'services' },
-          { type: 'separator' },
-          { role: 'hide' },
-          { role: 'hideOthers' },
-          { role: 'unhide' },
-          { type: 'separator' },
-          { role: 'quit' },
-        ],
-      }),
-    ]
+        new MenuItem({
+          label: 'SeeQR',
+          submenu: [
+            { role: 'about' },
+            { type: 'separator' },
+            { role: 'services' },
+            { type: 'separator' },
+            { role: 'hide' },
+            { role: 'hideOthers' },
+            { role: 'unhide' },
+            { type: 'separator' },
+            { role: 'quit' },
+          ],
+        }),
+      ]
     : []),
   // File menu
   new MenuItem({
@@ -53,9 +52,9 @@ const arr: MenuItem[] = [
       { type: 'separator' },
       isMac
         ? {
-          label: 'Speech',
-          submenu: [{ role: 'startSpeaking' }, { role: 'stopSpeaking' }],
-        }
+            label: 'Speech',
+            submenu: [{ role: 'startSpeaking' }, { role: 'stopSpeaking' }],
+          }
         : { label: 'Test' },
     ],
   }),

@@ -8,8 +8,8 @@ import {
   Tooltip,
   Slider,
 } from '@mui/material';
-import { debounce } from 'debounce';
-import type { Thresholds } from '../../../../types';
+import debounce from 'debounce';
+import type { Thresholds } from '../../../../../shared/types/types';
 
 interface Props {
   children: React.ReactElement;

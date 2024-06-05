@@ -7,7 +7,7 @@ import {
   TableRow,
 } from '@mui/material';
 import styled from 'styled-components';
-import { QueryData } from '../../../types';
+import { QueryData } from '../../../../shared/types/types';
 
 const FlexChild = styled(TableContainer)`
   flex: 0 0 auto;

@@ -1,4 +1,5 @@
 import React, { useContext, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux'; 
 import { Dialog } from '@mui/material/';
 import { ipcRenderer } from 'electron';
 import {
@@ -9,16 +10,18 @@ import {
   StyledDialogTitle,
 } from '../../style-variables';
 import { sendFeedback } from '../../lib/utils';
-import { DBType } from '../../../backend/BE_types';
-import MenuContext from '../../state_management/Contexts/MenuContext';
+import { DBType, Feedback } from '../../../shared/types/types';
+import { RootState } from '../../state_management/store';
+import { submitAsyncToBackend } from '../../state_management/Slices/MenuSlice'; 
 
+// Define DummyPayload interface to describe the payload for generating dummy data
 interface DummyPayload {
   dbName: string;
   tableName: string;
   rows: number;
   dbType: DBType;
 }
-
+// Define the type for DummyDataModalProps to describe the props of the component
 type DummyDataModalProps = {
   open: boolean;
   onClose: () => void;
@@ -34,7 +37,10 @@ function DummyDataModal({
   tableName,
   curDBType,
 }: DummyDataModalProps) {
-  const { dispatch: menuDispatch } = useContext(MenuContext);
+  // Hook to dispatch actions
+  const dispatch = useDispatch();
+  // Use useSelector hook to get the loading status from the Redux state
+  const loading = useSelector((state: RootState) => state.menu.loading.status);
 
   const [rowNum, setRowNum] = useState(0);
   const [isError, setIsError] = useState(false);
@@ -105,15 +111,15 @@ function DummyDataModal({
       rows,
       dbType,
     };
-    menuDispatch({
-      type: 'ASYNC_TRIGGER',
-      loading: 'LOADING',
-      options: {
-        event: 'generate-dummy-data',
-        payload,
-        callback: close,
-      },
-    });
+    // Dispatch action to trigger async logic
+    dispatch<any>(
+      submitAsyncToBackend({
+        issued: Date.now(),
+        asyncList: new Map(),
+        invoke: (event, payload) => Promise.resolve(),
+      })
+    );
+    close();
   };
 
   return (
