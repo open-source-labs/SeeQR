@@ -1,3 +1,12 @@
+/** This file contains all reused types. Previously separated and had some duplicated types.
+ * Only NodeTypes.ts not included due to it being for React Flow
+ * There are a couple of types that are not fully implemented from previous groups
+ * specifically Dialog, Sqlite column data etc.
+ * There needs to be an audit on AppState interface. There should be a refactor
+ * to reduce what is in AppState and new interfaces that extend AppState that can
+ * be used around the application
+ */
+
 /**
  * This section contains common types that need to be used across the backend
  */
@@ -114,6 +123,8 @@ export type BackendObjType = {
   database: string;
   updates: UpdatesObjType;
 };
+
+// Duplicate DocConfigFile
 
 // export interface DocConfigFile {
 //   mysql: { user: string; password: string; port: number };

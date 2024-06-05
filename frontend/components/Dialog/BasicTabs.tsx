@@ -187,6 +187,7 @@ export default function BasicTabs({ onClose }: BasicTabsProps) {
       });
     }
     // Update state for our current database type passing in our temporary array of StyledTextField components
+    // prevState is used to ensure that the multiple calls from useEffect force react to update state every call and not batch updates
     setInputFieldsToRender((prevState) => ({
       ...prevState,
       [dbString]: arrayToRender,
