@@ -29,15 +29,16 @@ function BottomButtons() {
   // Get the dispatch function from the Redux store
   const dispatch = useDispatch();
   // Get the current state of the showCreateDialog from the Redux store
-  const showCreateDialog = useSelector((state: RootState) => state.appView.showCreateDialog);
+  const showCreateDialog = useSelector(
+    (state: RootState) => state.appView.showCreateDialog,
+  );
 
   // Render a button to create a new database
   return (
     <ViewBtnGroup variant="contained" fullWidth>
       <ViewButton
         onClick={() => {
-          if (!showCreateDialog)
-            dispatch(toggleCreateDialog());
+          if (!showCreateDialog) dispatch(toggleCreateDialog());
         }}
         $isSelected={showCreateDialog}
       >

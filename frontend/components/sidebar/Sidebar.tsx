@@ -1,19 +1,17 @@
 import { useSelector, useDispatch } from 'react-redux';
-
-// Mui imports
 import { ArrowBackIos, ArrowForwardIos } from '@mui/icons-material';
 import { Drawer, IconButton, Tooltip } from '@mui/material/';
 import React from 'react';
 import styled from 'styled-components';
 import logo from '../../../assets/logo/seeqr_dock.png';
-
-// Types
 import { AppState, DatabaseInfo, DBType } from '../../../shared/types/types';
 import { RootState } from '../../state_management/store';
 // Import Redux action from Slice
-import { toggleSidebar, selectedView } from '../../state_management/Slices/AppViewSlice';
-import { updateWorkingQuery } from '../../state_management/Slices/QuerySlice'; 
-
+import {
+  toggleSidebar,
+  selectedView,
+} from '../../state_management/Slices/AppViewSlice';
+import { updateWorkingQuery } from '../../state_management/Slices/QuerySlice';
 import BottomButtons from './BottomButtons';
 import DbList from './DbList';
 import QueryList from './QueryList';
@@ -44,7 +42,6 @@ const Logo = styled.img`
   transform: translateX(-50%);
   opacity: 0.8;
   z-index: -1;
-
   width: 60px;
   height: 60px;
 `;
@@ -107,9 +104,11 @@ function Sidebar({
   curDBType,
   setDBType,
   DBInfo,
-  // queryDispatch,
-}: SideBarProps) {
+}: // queryDispatch,
+SideBarProps) {
+  // Get the dispatch function from the Redux store
   const dispatch = useDispatch();
+  // Get the current state of the app view from the Redux store
   const appViewState = useSelector((state: RootState) => state.appView);
 
   // Function to toggle the sidebar open or closed
@@ -123,7 +122,7 @@ function Sidebar({
    */
   const showEmptyQuery = () => {
     dispatch(selectedView('queryView'));
-    dispatch(updateWorkingQuery(undefined))
+    dispatch(updateWorkingQuery(undefined));
   };
 
   return (

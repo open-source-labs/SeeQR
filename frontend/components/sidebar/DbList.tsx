@@ -11,10 +11,8 @@ import { sendFeedback } from '../../lib/utils';
 import DuplicateDbModal from '../modal/DuplicateDbModal';
 import DbEntry from './DbEntry';
 import { SidebarList, greyDarkest } from '../../style-variables';
-import { RootState, AppDispatch } from '../../state_management/store'; 
-import {
-  selectedView,
-} from '../../state_management/Slices/AppViewSlice'; 
+import { RootState, AppDispatch } from '../../state_management/store';
+import { selectedView } from '../../state_management/Slices/AppViewSlice';
 
 // Styled component for the sidebar list
 const StyledSidebarList = styled(SidebarList)`
@@ -46,8 +44,6 @@ type DbListProps = {
   DBInfo?: DatabaseInfo[];
 };
 
-// type dbNamesType = string[];
-
 function DbList({
   selectedDb,
   setSelectedDb,
@@ -64,7 +60,7 @@ function DbList({
   const openFilter = Boolean(anchorEl);
 
   // Extract dbNames from DBInfo if it exists
-const dbNames = DBInfo ? DBInfo.map(dbi => dbi.db_name) : [];
+  const dbNames = DBInfo ? DBInfo.map((dbi) => dbi.db_name) : [];
 
   const dbNamesArr = [
     'All',
@@ -83,8 +79,9 @@ const dbNames = DBInfo ? DBInfo.map(dbi => dbi.db_name) : [];
     'RDS Postgres': 'rds-pg',
     SQLite: 'sqlite',
   };
-
+  // Get the dispatch function from the Redux store
   const dispatch = useDispatch<AppDispatch>();
+  // Get the current state of the app view from the Redux store
   const appViewState = useSelector((state: RootState) => state.appView);
 
   // Handlers for opening and closing modals
@@ -106,7 +103,9 @@ const dbNames = DBInfo ? DBInfo.map(dbi => dbi.db_name) : [];
   };
   // Handler for selecting a database
   const selectHandler = (dbName: string, cdbt: DBType | undefined) => {
-    const viewType = appViewState.selectedView === 'threeDView' ? 'threeDView' : 'dbView';
+    const viewType =
+      appViewState.selectedView === 'threeDView' ? 'threeDView' : 'dbView';
+    // Dispatch the selectedView action to update the view
     dispatch(selectedView(viewType));
     if (dbName === selectedDb) return;
     ipcRenderer
