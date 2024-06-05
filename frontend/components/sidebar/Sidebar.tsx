@@ -42,7 +42,6 @@ const Logo = styled.img`
   transform: translateX(-50%);
   opacity: 0.8;
   z-index: -1;
-
   width: 60px;
   height: 60px;
 `;
