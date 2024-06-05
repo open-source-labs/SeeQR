@@ -111,7 +111,9 @@ function Sidebar({
   DBInfo,
 }: // queryDispatch,
 SideBarProps) {
+  // Get the dispatch function from the Redux store
   const dispatch = useDispatch();
+  // Get the current state of the app view from the Redux store
   const appViewState = useSelector((state: RootState) => state.appView);
 
   // Function to toggle the sidebar open or closed

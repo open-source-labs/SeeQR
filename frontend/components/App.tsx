@@ -56,7 +56,7 @@ declare module '@mui/material/styles/' {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
   interface DefaultTheme extends Theme {}
 }
-
+// EventEmitter to handle multiple listeners
 const emitter = new EventEmitter();
 emitter.setMaxListeners(20);
 
@@ -146,7 +146,7 @@ function App() {
     );
   }, [dispatch]);
 
-  // Determine which view should be visible
+  // Determine which view should be visible based on the app view state
   let shownView;
   switch (appViewState.selectedView) {
     case 'compareView':
@@ -177,8 +177,10 @@ function App() {
       shownView = 'quickStartView';
   }
 
-  // Removed Context Providers, instead used Redux's useDispatch and useSelector hooks to interact with the state
-  // Styled Components must be injected last in order to override Material UI style: https://material-ui.com/guides/interoperability/#controlling-priority-3
+  /**
+   * Removed Context Providers, instead used Redux's useDispatch and useSelector hooks to interact with the state
+   * Return the main app component with necessary providers and state management
+   */
   return (
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={MuiTheme}>
@@ -193,7 +195,6 @@ function App() {
             curDBType={curDBType}
             setDBType={setDBType}
             DBInfo={DBInfo}
-            // queryDispatch={dispatch}
           />
           <Main $fullwidth={appViewState.sideBarIsHidden}>
             <CompareView

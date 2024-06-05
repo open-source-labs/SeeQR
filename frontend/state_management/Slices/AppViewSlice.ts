@@ -47,7 +47,7 @@ const appViewSlice = createSlice({
   },
 });
 
-
+// Export actions for AppView slice
 export const {
   selectedView,
   toggleSidebar,
@@ -57,6 +57,7 @@ export const {
   setMYSQLConnected,
 } = appViewSlice.actions;
 
+// Export the reducer to be used in the store
 export default appViewSlice.reducer;
 
 
