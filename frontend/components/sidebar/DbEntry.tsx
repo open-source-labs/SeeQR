@@ -55,14 +55,12 @@ function DbEntry({ db, isSelected, select, duplicate, dbType }: DbEntryProps) {
     try {
       const filePath = await ipcRenderer.invoke('showSaveDialog', options);
 
-      // if (filePath) {
       const payload = {
         db,
         filePath,
       };
 
       await ipcRenderer.invoke('export-db', payload, dbType);
-      // }
     } catch (error) {
       console.log(error);
     }
