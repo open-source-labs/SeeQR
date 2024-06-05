@@ -69,8 +69,6 @@ const Main = styled.main<{ $fullwidth: boolean }>`
   height: calc(100vh - (2 * ${defaultMargin}));
   max-width: ${({ $fullwidth }) =>
     $fullwidth ? '' : `calc(90vw - ${sidebarWidth})`};
-  max-width: ${({ $fullwidth }) =>
-    $fullwidth ? '' : `calc(90vw - ${sidebarWidth})`};
   padding: ${defaultMargin} ${sidebarShowButtonSize};
   margin: 0;
 `;
