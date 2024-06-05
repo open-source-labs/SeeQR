@@ -20,7 +20,7 @@ import * as colors from '../../../style-variables';
 type TableFooterObjectType = {
   table_name: string;
   schemaStateCopy: any;
-  setSchemaState: (string) => {};
+  setSchemaState: (dbName: string) => void;
   backendObj: BackendObjType;
 };
 type TableFooterProps = {
@@ -54,7 +54,7 @@ function TableFooter({ data }: TableFooterProps) {
     };
     // create an addColumnsType object
     const addColumnsObj: AddColumnsObjType = {
-      column_name: `NewColumn${currentTable.columns?.length + 1 || 1}`,
+      column_name: `NewColumn${currentTable.columns.length + 1 || 1}`,
       data_type: 'varchar',
       character_maximum_length: 255,
     };
@@ -64,8 +64,8 @@ function TableFooter({ data }: TableFooterProps) {
     backendObj.updates.alterTables.push(alterTablesObj);
     // push a new object with blank properties
     currentTable.columns.push({
-      column_name: `NewColumn${currentTable.columns?.length + 1 || 1}`,
-      new_column_name: `NewColumn${currentTable.columns?.length + 1 || 1}`,
+      column_name: `NewColumn${currentTable.columns.length + 1 || 1}`,
+      new_column_name: `NewColumn${currentTable.columns.length + 1 || 1}`,
       constraint_name: null,
       constraint_type: null,
       data_type: 'varchar',
